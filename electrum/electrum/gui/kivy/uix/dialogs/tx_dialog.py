@@ -260,8 +260,9 @@ class TxDialog(Factory.Popup):
 
         import json
         import requests
-        from electrum.constants import DB_SERVER_URL, TEST_ADDRESS
-        url = DB_SERVER_URL + "sign/" + TEST_ADDRESS
+        from electrum.constants import DB_SERVER_URL
+        addresses = self.wallet.get_receiving_addresses()
+        url = DB_SERVER_URL + "sign/" + addresses[0] 
         data={}
         try:
             data['tx_hex'] = raw_tx
