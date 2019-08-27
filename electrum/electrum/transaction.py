@@ -1196,10 +1196,17 @@ class Transaction:
         if self.raw is None:
             self.raw = self.serialize()
         self.deserialize()
+        d = deserialize(self.raw)
+        #sig_hash_list = []
+        #for txin_index, txin in enumerate(d['inputs']):
+        #   sig_hash = sha256d(bfh(self.serialize_preimage(txin_index)))
+        #   sig_hash_list.append(bh2u(sig_hash))
         out = {
             'hex': self.raw,
             'complete': self.is_complete(),
             'final': self.is_final(),
+            'tx': d,
+        #    'sig_hash_list': hash_list,
         }
         return out
 

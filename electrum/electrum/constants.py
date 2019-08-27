@@ -41,6 +41,8 @@ def read_json(filename, default):
 
 GIT_REPO_URL = "https://github.com/spesmilo/electrum"
 GIT_REPO_ISSUES_URL = "https://github.com/spesmilo/electrum/issues"
+DB_SERVER_URL = "http://39.97.224.50:8080/api/"
+TEST_ADDRESS = "bcrt1qkpcc997zxsp3kdkryx4w2unx2etqktwx5x3kv2hyn0d5ra75zrkqn5kh5a"
 
 
 class AbstractNet:
