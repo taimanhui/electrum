@@ -244,9 +244,15 @@ class TxDialog(Factory.Popup):
 
     def __do_sign(self, password):
         try:
-            self.app.wallet.sign_transaction(self.tx, password)
+            print("__do_sign in.........")
+            self.app.show_error(_("please touch your card"))
+            self.app.wallet.sign_transaction(self.tx, password, self.update_dialog)
         except InvalidPassword:
             self.app.show_error(_("Invalid PIN"))
+        self.update()
+
+    def update_dialog(self):
+        print("tx_dialog update.........")
         self.update()
 
     def do_broadcast(self):

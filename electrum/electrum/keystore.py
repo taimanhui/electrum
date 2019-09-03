@@ -86,8 +86,8 @@ class KeyStore(Logger):
         return keypairs
 
     def can_sign(self, tx):
-        if self.is_watching_only():
-            return False
+        # if self.is_watching_only():
+        #     return False
         return bool(self.get_tx_derivations(tx))
 
     def ready_to_sign(self):
@@ -116,18 +116,18 @@ class Software_KeyStore(KeyStore):
         decrypted = ec.decrypt_message(message)
         return decrypted
 
-    def sign_transaction(self, tx, password):
-        if self.is_watching_only():
-            return
+    def sign_transaction(self, tx, password, callback = None):
+        # if self.is_watching_only():
+        #     return
         # Raise if password is not correct.
-        self.check_password(password)
+        #self.check_password(password)
         # Add private keys
         keypairs = self.get_tx_derivations(tx)
-        for k, v in keypairs.items():
-            keypairs[k] = self.get_private_key(v, password)
-        # Sign
-        if keypairs:
-            tx.sign(keypairs)
+        # for k, v in keypairs.items():
+        #     keypairs[k] = self.get_private_key(v, password)
+        # # Sign
+        # if keypairs:
+        tx.sign(keypairs, callback)
 
     def update_password(self, old_password, new_password):
         raise NotImplementedError()  # implemented by subclasses

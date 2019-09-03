@@ -9,6 +9,7 @@ from kivy.utils import platform
 if platform != 'android':
     raise ImportError
 import threading
+import binascii
 
 from . import NFCBase
 from jnius import autoclass, cast
@@ -27,6 +28,7 @@ PendingIntent = autoclass('android.app.PendingIntent')
 Ndef = autoclass('android.nfc.tech.Ndef')
 NdefRecord = autoclass('android.nfc.NdefRecord')
 NdefMessage = autoclass('android.nfc.NdefMessage')
+IsoDep = autoclass('android.nfc.tech.IsoDep')
 
 app = None
 
@@ -39,13 +41,13 @@ class ScannerAndroid(NFCBase):
 
     name = 'NFCAndroid'
 
-    def nfc_init(self):
+    def nfc_init(self, callback):
         ''' This is where we initialize NFC adapter.
         '''
         # Initialize NFC
         global app
         app = App.get_running_app()
-
+        self.callback = callback
         # Make sure we are listening to new intent 
         activity.bind(on_new_intent=self.on_new_intent)
 
@@ -55,7 +57,6 @@ class ScannerAndroid(NFCBase):
         # Check if adapter exists
         if not self.nfc_adapter:
             return False
-        
         # specify that we want our activity to remain on top when a new intent
         # is fired
         self.nfc_pending_intent = PendingIntent.getActivity(context, 0,
@@ -131,26 +132,26 @@ class ScannerAndroid(NFCBase):
         ''' This function is called when the application receives a
         new intent, for the ones the application has registered previously,
         either in the manifest or in the foreground dispatch setup in the
-        nfc_init function above. 
+        nfc_init function above.
         '''
-
-        action_list = (NfcAdapter.ACTION_NDEF_DISCOVERED,)
-        # get TAG
-        #tag = cast('android.nfc.Tag', intent.getParcelableExtra(NfcAdapter.EXTRA_TAG))
-
-        #details = self.get_ndef_details(tag)
-
+        print("on_new_intent in................")
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        action_list = (NfcAdapter.ACTION_NDEF_DISCOVERED,
+                       NfcAdapter.ACTION_TECH_DISCOVERED,
+                       NfcAdapter.ACTION_TAG_DISCOVERED)
         if intent.getAction() not in action_list:
             print('unknow action, avoid.')
             return
-
-        rawmsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
-        if not rawmsgs:
-            return
-        for message in rawmsgs:
-            message = cast(NdefMessage, message)
-            payload = message.getRecords()[0].getPayload()
-            print('payload: {}'.format(''.join(map(chr, payload))))
+        tag = cast('android.nfc.Tag', intent.getParcelableExtra(NfcAdapter.EXTRA_TAG))
+        isoDep = IsoDep.get(tag)
+        if isoDep:
+            isoDep.connect()
+            isoDep.setTimeout(5000)
+        selectcmd = binascii.unhexlify("00A404000611223344550100")
+        result = isoDep.transceive(selectcmd)
+        print('transaction on_new_intent select result.............',
+              ''.join(['%02X ' % b for b in result]))
+        self.callback(isoDep)
 
     def nfc_disable(self):
         '''Disable app from handling tags.
@@ -205,7 +206,7 @@ class ScannerAndroid(NFCBase):
         '''Start listening for new tags
         '''
         self.nfc_adapter.enableForegroundDispatch(self.j_context,
-                self.nfc_pending_intent, self.ndef_exchange_filters, self.ndef_tech_list)
+                self.nfc_pending_intent, None, None)
 
     @run_on_ui_thread
     def _nfc_enable_ndef_exchange(self, data):

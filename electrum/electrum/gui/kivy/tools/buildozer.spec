@@ -65,7 +65,7 @@ fullscreen = False
 #
 
 # (list) Permissions
-android.permissions = INTERNET, CAMERA
+android.permissions = INTERNET, CAMERA, NFC
 
 # (int) Android API to use
 android.api = 28
@@ -182,7 +182,7 @@ p4a.source_dir = /opt/python-for-android
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 1
+log_level = 2
 
 
 # -----------------------------------------------------------------------------

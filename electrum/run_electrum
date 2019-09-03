@@ -312,6 +312,7 @@ if __name__ == '__main__':
         config_options = {
             'verbosity': '',
             'cmd': 'gui',
+            'regtest': True,
             'gui': 'kivy',
         }
     else:

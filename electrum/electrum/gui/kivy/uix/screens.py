@@ -322,9 +322,10 @@ class SendScreen(CScreen):
         def on_failure(error):
             self.app.show_error(error)
         if self.app.wallet.can_sign(tx):
-            self.app.show_info("Signing...")
-            self.app.sign_tx(tx, password, on_success, on_failure)
-        else:
+        #     self.app.show_info("Signing...")
+        #     self.app.sign_tx(tx, password, on_success, on_failure)
+        # else:
+            print("send_tx in screen.py.........")
             self.app.tx_dialog(tx)
 
 

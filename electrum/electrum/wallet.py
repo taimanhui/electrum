@@ -1098,9 +1098,9 @@ class Abstract_Wallet(AddressSynchronizer):
                 info[addr] = TxOutputHwInfo(index, sorted_xpubs, num_sig, self.txin_type)
         tx.output_info = info
 
-    def sign_transaction(self, tx, password):
-        if self.is_watching_only():
-            return
+    def sign_transaction(self, tx, password, callback = None):
+        # if self.is_watching_only():
+        #     return
         tx.add_inputs_info(self)
         # hardware wallets require extra info
         if any([(isinstance(k, Hardware_KeyStore) and k.can_sign(tx)) for k in self.get_keystores()]):
@@ -1109,7 +1109,7 @@ class Abstract_Wallet(AddressSynchronizer):
         for k in sorted(self.get_keystores(), key=lambda ks: ks.ready_to_sign(), reverse=True):
             try:
                 if k.can_sign(tx):
-                    k.sign_transaction(tx, password)
+                    k.sign_transaction(tx, password, callback)
             except UserCancelled:
                 continue
         return tx
@@ -1903,6 +1903,7 @@ class Multisig_Wallet(Deterministic_Wallet):
             name = 'x%d/'%(i+1)
             self.keystores[name] = load_keystore(self.storage, name)
         self.keystore = self.keystores['x1/']
+        print("xpub is %s=======" %self.keystore.xpub)
         xtype = bip32.xpub_type(self.keystore.xpub)
         self.txin_type = 'p2sh' if xtype == 'standard' else xtype
 

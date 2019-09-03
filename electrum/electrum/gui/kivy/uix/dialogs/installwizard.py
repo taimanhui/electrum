@@ -2,6 +2,7 @@
 from functools import partial
 import threading
 import os
+import binascii
 
 from kivy.app import App
 from kivy.clock import Clock
@@ -22,6 +23,10 @@ from electrum.util import is_valid_email
 from . import EventsDialog
 from ...i18n import _
 from .password_dialog import PasswordDialog
+
+from electrum.bip32 import *
+from electrum.constants import *
+from electrum.bitcoin import rev_hex, int_to_hex, EncodeBase58Check
 
 # global Variables
 is_test = (platform == "linux")
@@ -454,6 +459,9 @@ Builder.load_string('''
         WizardButton:
             text: _('Clear')
             on_release: root.do_clear()
+        WizardButton:
+            text: _('SmartCard')
+            on_release: root.nfc_xpub()
 
 
 <ShowXpubDialog>
@@ -932,7 +940,21 @@ class AddXpubDialog(WizardDialog):
     def do_clear(self):
         self.ids.text_input.text = ''
 
-
+    def nfc_xpub(self):
+        def on_complete(text):
+            if self.allow_multi:
+                self.ids.text_input.text += text + '\n'
+            else:
+                textByte = binascii.unhexlify(text)
+                net = constants.set_testnet()
+                xpub = (xpub_header("standard", net=constants.net) +
+                        b'\x00' +
+                        (b'\x00'*4) +
+                        (b'\x00'*4) +
+                        binascii.unhexlify("00250000460180000000487309E0FC9817C42743782FA84DAFB5DDD136E2E15C") +
+                        textByte)
+                self.ids.text_input.text = EncodeBase58Check(xpub)
+        self.app.scan_nfc(on_complete)
 
 
 class InstallWizard(BaseWizard, Widget):
