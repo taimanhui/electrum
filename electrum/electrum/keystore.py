@@ -126,8 +126,8 @@ class Software_KeyStore(KeyStore):
         # for k, v in keypairs.items():
         #     keypairs[k] = self.get_private_key(v, password)
         # # Sign
-        # if keypairs:
-        tx.sign(keypairs, callback)
+        if keypairs:
+            tx.sign(keypairs, callback)
 
     def update_password(self, old_password, new_password):
         raise NotImplementedError()  # implemented by subclasses
@@ -299,6 +299,7 @@ class Xpub:
         # xpub:
         pk = pk[1:]
         xkey = bitcoin.EncodeBase58Check(pk[0:78])
+
         # derivation:
         dd = pk[78:]
         s = []
@@ -690,7 +691,6 @@ def is_xpubkey(x_pubkey):
 def parse_xpubkey(x_pubkey):
     assert x_pubkey[0:2] == 'ff'
     return BIP32_KeyStore.parse_xpubkey(x_pubkey)
-
 
 def xpubkey_to_address(x_pubkey):
     if x_pubkey[0:2] == 'fd':

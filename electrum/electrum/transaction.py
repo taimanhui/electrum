@@ -32,7 +32,6 @@ import traceback
 import sys
 import threading
 import binascii
-
 from typing import (Sequence, Union, NamedTuple, Tuple, Optional, Iterable,
                     Callable, List, Dict)
 
@@ -48,6 +47,8 @@ from .keystore import xpubkey_to_address, xpubkey_to_pubkey
 from .logging import get_logger
 
 from .gui.kivy.nfc_scanner.scanner_android import ScannerAndroid
+from .bitcoin import rev_hex, int_to_hex, EncodeBase58Check, DecodeBase58Check
+from .bip32 import *
 
 _logger = get_logger(__name__)
 
@@ -684,6 +685,7 @@ class Transaction:
 
     def add_signature_to_txin(self, i, signingPos, sig):
         txin = self._inputs[i]
+
         txin['signatures'][signingPos] = sig
         txin['scriptSig'] = None  # force re-serialization
         txin['witness'] = None    # force re-serialization
@@ -706,7 +708,6 @@ class Transaction:
     def deserialize(self, force_full_parse=False):
         if self.raw is None:
             return
-            #self.raw = self.serialize()
         if self._inputs is not None:
             return
         d = deserialize(self.raw, force_full_parse)
@@ -1150,7 +1151,7 @@ class Transaction:
         s, r = self.signature_count()
         return r == s
 
-    def get_sign_info(self, iosDep):
+    def get_sign_info(self):
         #sign
         bip143_shared_txdigest_fields = self._calc_bip143_shared_txdigest_fields()
         for i, txin in enumerate(self.inputs()):
@@ -1164,66 +1165,98 @@ class Transaction:
                     _pubkey = x_pubkey
                 else:
                     continue
+
                 _logger.info(f"adding signature for {_pubkey}")
                 sec, compressed = self.keypairs.get(_pubkey)
-                sig = self.sign_txin(iosDep, i, sec, bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)
+                sig = self.sign_txin(txin, i, sec, bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)
                 self.add_signature_to_txin(i, j, sig)
-        iosDep.close()
         
+        scan.isoDepClose()
         t1 =threading.Thread(target=self.stop_nfc)
         t1.start()
-
+        
         _logger.info(f"is_complete {self.is_complete()}")
         self.raw = self.serialize()
-        self.callback()
+        print("after txin = %s" %txin)
+        self.callback(self)
 
     def stop_nfc(self):
         # disable nfc
-        self.scan.nfc_disable()
+        scan.nfc_disable()
 
     def sign(self, keypairs, callback=None) -> None:
         # add nfc init and enable nfc
         print("sign in ....")
-        self.scan = ScannerAndroid()
-        self.scan.nfc_init(self.get_sign_info)
-        self.scan.nfc_enable()
+        scan.nfc_init(self.get_sign_info)
+        scan.nfc_enable()
         self.keypairs = keypairs
         self.callback = callback
 
-    def sign_txin(self, isoDep, txin_index, privkey_bytes, *, bip143_shared_txdigest_fields=None) -> str:
+    def sign_txin(self, txin, txin_index, privkey_bytes, *, bip143_shared_txdigest_fields=None) -> str:
         pre_hash = sha256d(bfh(self.serialize_preimage(txin_index,
                                                        bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)))
-        print('hash data is.........',
+        print('pre data is.........',
               ''.join(['%02X ' % b for b in pre_hash]))
-        
-        apdu = [0x00, 0x08, 0x00, 0x00, 0x01, 0x00]
-        result = isoDep.transceive(bytearray(apdu))
-        pubc = result[32:-2]
+        # #get path
+        pubkey = txin['x_pubkeys'][0]
+        print("++++++++++pubkey = %s................" %pubkey)
+        pk = binascii.unhexlify("".join(pubkey))
+        pk = pk[1:]
 
-        apdu = [0x00, 0x06, 0x00, 0x00]
-        params = []
-        params.extend(bytearray(pubc))
-        params.extend(bytearray(pre_hash))
-        apdu.append(len(params))
-        apdu.extend(params)
-        send_apdu = bytearray(apdu)
-        sigbyte = isoDep.transceive(send_apdu)
+        s = []
+        dd = pk[78:]
+        while dd:
+            # 2 bytes for derivation path index
+            n = int.from_bytes(dd[0:2], byteorder="little")
+            dd = dd[2:]
+            # in case of overflow, drop these 2 bytes; and use next 4 bytes instead
+            if n == 0xffff:
+                n = int.from_bytes(dd[0:4], byteorder="little")
+                dd = dd[4:]
+            s.append(n)
+        assert len(s) == 2
+
+        print("s=%s" %s)
+        dpath = '/'.join(['%s' % b for b in s])
+        path = "0'/"
+        path += dpath
+        print("path = %s+++++++++++" %path)
+        sigbyte = scan.sign_hash(path, pre_hash)
+        #sigbyte = scan.sign_hash("0'/0/0", pre_hash)
         sig = bh2u(bytes(sigbyte))
         sig = sig[:-4]
-        s = ecc.string_to_number(binascii.unhexlify(sig[len(sig)-33*2:-2]))
-        #N = 115792089237316195423570985008687907852837564279074904382605163141518161494337
+        sig += "01"
+        print("before sig = %s" %sig)
+
+        # s too high
+        sigbyte = binascii.unhexlify(sig)
+        rLength = sigbyte[3]
+        sLength = sigbyte[4 + rLength + 1]
+        s = sigbyte[4 + rLength + 2:-1]
+        s = ecc.string_to_number(s)
         N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
         maxN = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
         if s > maxN:
             s = N - s
-            sStr = ecc.number_to_string(s, ecc.CURVE_ORDER)
-            str1 = str(binascii.hexlify(sStr))
-            str2 = str1[2:-1] # str1 = b'www'  str2=www
-            #sigend:the modified sig
-            sigend = sig[:len(sig)-33*2]
-            sigend += str2
-            sigend += sig[-2:] # add 0x01
+            s = ecc.number_to_string(s, ecc.CURVE_ORDER)
+            sh = binascii.hexlify(s)
+            sigend = sigbyte[:4 + rLength + 1]
+            sigend += bytes((32,))
+            sigend += s
+            sigend += sigbyte[-1:]
+            #signestr = ''.join(['%b' % b for b in sigend])
+            sigendh = binascii.hexlify(bytes(sigend))
+            sig = str(sigendh)
+            sig = sig[2:-1]
+
+            siglen = int(sig[3])
+            siglen = siglen - 1
+            sigstr = str(siglen)
+            sigend = sig[:3]
+            sigend += sigstr
+            sigend += sig[4:]
             sig = sigend
+        print("after sig = %s" %sig)
         return sig
 
     def get_outputs_for_UI(self) -> Sequence[TxOutputForUI]:

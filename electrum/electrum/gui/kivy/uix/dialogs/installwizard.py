@@ -946,13 +946,17 @@ class AddXpubDialog(WizardDialog):
                 self.ids.text_input.text += text + '\n'
             else:
                 textByte = binascii.unhexlify(text)
-                net = constants.set_testnet()
+                chaincodeByte = textByte[65:]
+                from electrum.gui.kivy.btchipHelpers import compress_public_key
+                keyByte = compress_public_key(textByte[:65])
+
+                net = constants.set_regtest()
                 xpub = (xpub_header("standard", net=constants.net) +
                         b'\x00' +
                         (b'\x00'*4) +
                         (b'\x00'*4) +
-                        binascii.unhexlify("00250000460180000000487309E0FC9817C42743782FA84DAFB5DDD136E2E15C") +
-                        textByte)
+                        chaincodeByte +
+                        keyByte)
                 self.ids.text_input.text = EncodeBase58Check(xpub)
         self.app.scan_nfc(on_complete)
 

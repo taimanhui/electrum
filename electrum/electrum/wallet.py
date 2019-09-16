@@ -66,6 +66,9 @@ from .ecc_fast import is_using_fast_ecc
 from .mnemonic import Mnemonic
 from .logging import get_logger
 
+from .bitcoin import rev_hex, int_to_hex, EncodeBase58Check, DecodeBase58Check
+from .keystore import *
+
 if TYPE_CHECKING:
     from .network import Network
     from .simple_config import SimpleConfig
@@ -778,6 +781,8 @@ class Abstract_Wallet(AddressSynchronizer):
                 txi = []
                 txo = []
                 old_change_addrs = []
+                #Fixed change address
+                #old_change_addrs = self.derive_address(False, 0)
             # change address. if empty, coin_chooser will set it
             change_addrs = self.get_change_addresses_for_new_transaction(change_addr or old_change_addrs)
             tx = coin_chooser.make_tx(coins, txi, outputs[:] + txo, change_addrs,
@@ -802,6 +807,7 @@ class Abstract_Wallet(AddressSynchronizer):
 
         # Timelock tx to current height.
         tx.locktime = get_locktime_for_new_transaction(self.network)
+
         run_hook('make_unsigned_transaction', self, tx)
         return tx
 
@@ -812,7 +818,7 @@ class Abstract_Wallet(AddressSynchronizer):
         tx.set_rbf(rbf)
         if tx_version is not None:
             tx.version = tx_version
-        self.sign_transaction(tx, password)
+        #self.sign_transaction(tx, password)
         return tx
 
     def is_frozen_address(self, addr: str) -> bool:
@@ -1754,7 +1760,8 @@ class Deterministic_Wallet(Abstract_Wallet):
 
     def derive_address(self, for_change, n):
         x = self.derive_pubkeys(for_change, n)
-        return self.pubkeys_to_address(x)
+        address =  self.pubkeys_to_address(x)
+        return address
 
     def create_new_address(self, for_change=False):
         assert type(for_change) is bool
@@ -1903,7 +1910,6 @@ class Multisig_Wallet(Deterministic_Wallet):
             name = 'x%d/'%(i+1)
             self.keystores[name] = load_keystore(self.storage, name)
         self.keystore = self.keystores['x1/']
-        print("xpub is %s=======" %self.keystore.xpub)
         xtype = bip32.xpub_type(self.keystore.xpub)
         self.txin_type = 'p2sh' if xtype == 'standard' else xtype
 

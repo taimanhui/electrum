@@ -71,12 +71,11 @@ Label.register('Roboto',
                'electrum/gui/kivy/data/fonts/Roboto-Bold.ttf',
                'electrum/gui/kivy/data/fonts/Roboto-Bold.ttf')
 
-from .nfc_scanner.scanner_android import ScannerAndroid
+from .nfc_scanner.scanner_android import *
 
 from electrum.util import (base_units, NoDynamicFeeEstimates, decimal_point_to_base_unit_name,
                            base_unit_name_to_decimal_point, NotEnoughFunds, UnknownBaseUnit,
                            DECIMAL_POINT_DEFAULT)
-
 
 class ElectrumWindow(App):
 
@@ -444,7 +443,7 @@ class ElectrumWindow(App):
     def get_unsigned_tx(self, on_complete):
         import requests
         from electrum.bitcoin import base_encode
-        from electrum.util import bfh 
+        from electrum.util import bfh
         from electrum.constants import DB_SERVER_URL
         addresses = self.wallet.get_receiving_addresses()
         url = DB_SERVER_URL + "sign/" + addresses[0] 
@@ -483,50 +482,37 @@ class ElectrumWindow(App):
                 activity.unbind(on_activity_result=on_qr_result)
         activity.bind(on_activity_result=on_qr_result)
         PythonActivity.mActivity.startActivityForResult(intent, 0)
-
-    def compress_public_key(self, publicKey):
-        if publicKey[0] == 0x04:
-            if (publicKey[64] & 1) != 0:
-                prefix = 0x03
-            else:
-                prefix = 0x02
-            result = [prefix]
-            result.extend(publicKey[1:33])
-            return bytearray(result)
-        elif publicKey[0] == 0x03 or publicKey[0] == 0x02:
-            return publicKey
         
     def scan_nfc(self, on_complete):
         if platform != 'android':
             return
-        self.scan = ScannerAndroid()
-        self.scan.nfc_init(self._scan_nfc)
-        self.scan.nfc_enable()
+        
+        print("start nfc..........")
+        scan.nfc_init(self._scan_nfc)
+        scan.nfc_enable()
         self.on_complete = on_complete
     
     def stop_nfc(self):
-        self.scan.nfc_disable()
+        print("stop nfc........")
+        scan.nfc_disable()
 
-    def _scan_nfc(self, isoDep):
-        #smart card export apdu is 000800000100
-        selectcmd = binascii.unhexlify("000800000100")
+    def _scan_nfc(self):
+        #scan.setup(OPERATION_MODE_WALLET, FEATURE_RFC6979, 0x00, 0x05, "1234", None, None, None)
+        result = scan.getWalletPublicKey("0'")
+        unComPubk = result['publicKey']
+        chainCode = result['chainCode']
+        print('_scan_nfc get uncom pubc.............',
+              ''.join(['%02X ' % b for b in unComPubk]))
+        print('_scan_nfc get chainCode.............',
+              ''.join(['%02X ' % b for b in chainCode]))
 
-        result = isoDep.transceive(selectcmd)
-        print('_scan_nfc select result.............',
-              ''.join(['%02X ' % b for b in result]))
-        pubk = result[32:-2]
-        print('_scan_nfc pubk.............',
-              ''.join(['%02X ' % b for b in pubk]))
-        compubk = self.compress_public_key(pubk)
-        print('_scan_nfc get com pubc.............',
-              ''.join(['%02X ' % b for b in compubk]))
-        isoDep.close()
-        pubcbyte = bytes(compubk)
-        pubcstr = binascii.hexlify(pubcbyte)
-        self.on_complete(pubcstr)
-        
+        scan.isoDepClose()
         t1 =threading.Thread(target=self.stop_nfc)
         t1.start()
+
+        xpubNeedByte = bytes(unComPubk+chainCode)
+        pubcStr = binascii.hexlify(xpubNeedByte)
+        self.on_complete(pubcStr)
 
     def do_share(self, data, title):
         if platform != 'android':

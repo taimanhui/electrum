@@ -16,7 +16,7 @@ from electrum.gui.kivy.i18n import _
 from electrum.util import InvalidPassword
 from electrum.address_synchronizer import TX_HEIGHT_LOCAL
 from electrum.wallet import CannotBumpFee
-
+from electrum.transaction import TxOutput, Transaction, tx_from_str
 
 Builder.load_string('''
 
@@ -244,15 +244,14 @@ class TxDialog(Factory.Popup):
 
     def __do_sign(self, password):
         try:
-            print("__do_sign in.........")
             self.app.show_error(_("please touch your card"))
             self.app.wallet.sign_transaction(self.tx, password, self.update_dialog)
         except InvalidPassword:
             self.app.show_error(_("Invalid PIN"))
         self.update()
 
-    def update_dialog(self):
-        print("tx_dialog update.........")
+    def update_dialog(self, tx):
+        self.tx = tx
         self.update()
 
     def do_broadcast(self):

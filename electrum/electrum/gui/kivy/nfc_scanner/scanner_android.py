@@ -16,6 +16,9 @@ from jnius import autoclass, cast
 from android.runnable import run_on_ui_thread
 from android import activity
 
+from electrum.gui.kivy.btchipHelpers import *
+from electrum.gui.kivy.bitcoinVarint import *
+
 BUILDVERSION = autoclass('android.os.Build$VERSION').SDK_INT
 NfcAdapter = autoclass('android.nfc.NfcAdapter')
 PythonActivity = autoclass('org.kivy.android.PythonActivity')
@@ -33,14 +36,26 @@ IsoDep = autoclass('android.nfc.tech.IsoDep')
 app = None
 
 
+BTCHIP_CLA = 0x00
+BTCHIP_JC_EXT_CLA = 0x20
+BTCHIP_INS_SETUP = 0x20
+BTCHIP_INS_HASH_SIGN = 0x12
+BTCHIP_INS_EXT_CACHE_HAS_PUBLIC_KEY = 0x21
+BTCHIP_INS_EXT_GET_HALF_PUBLIC_KEY = 0x20
+BTCHIP_INS_EXT_CACHE_PUT_PUBLIC_KEY = 0x22
+BTCHIP_INS_GET_WALLET_PUBLIC_KEY = 0x40
+
+OPERATION_MODE_WALLET = 0x01
+FEATURE_RFC6979 = 0x02
+
+SELECT_APPLET_CMD = "00A404000611223344550100"
 
 class ScannerAndroid(NFCBase):
     ''' This is the class responsible for handling the interface with the
     Android NFC adapter. See Module Documentation for details.
     '''
-
     name = 'NFCAndroid'
-
+    needKeyCache = True
     def nfc_init(self, callback):
         ''' This is where we initialize NFC adapter.
         '''
@@ -143,15 +158,15 @@ class ScannerAndroid(NFCBase):
             print('unknow action, avoid.')
             return
         tag = cast('android.nfc.Tag', intent.getParcelableExtra(NfcAdapter.EXTRA_TAG))
-        isoDep = IsoDep.get(tag)
-        if isoDep:
-            isoDep.connect()
-            isoDep.setTimeout(5000)
-        selectcmd = binascii.unhexlify("00A404000611223344550100")
-        result = isoDep.transceive(selectcmd)
+        self.isoDep = IsoDep.get(tag)
+        if self.isoDep:
+            self.isoDep.connect()
+            self.isoDep.setTimeout(5000)
+        selectcmd = binascii.unhexlify(SELECT_APPLET_CMD)
+        result = self.isoDep.transceive(selectcmd)
         print('transaction on_new_intent select result.............',
               ''.join(['%02X ' % b for b in result]))
-        self.callback(isoDep)
+        self.callback()
 
     def nfc_disable(self):
         '''Disable app from handling tags.
@@ -183,6 +198,9 @@ class ScannerAndroid(NFCBase):
                 '',
                 data)
         return extRecord
+
+    def isoDepClose(self):
+        self.isoDep.close()
 
     def create_ndef_message(self, *recs):
         ''' Create the Ndef message that will be written to tag
@@ -241,3 +259,164 @@ class ScannerAndroid(NFCBase):
         ''' Disable Ndef exchange for p2p
         '''
         self._nfc_disable_ndef_exchange()
+
+    def parse_bip32_path_internal(self, path):
+        if len(path) == 0:
+            return []
+        result = []
+        elements = path.split('/')
+        for pathElement in elements:
+            element = pathElement.split('\'')
+            if len(element) == 1:
+                result.append(int(element[0]))
+            else:
+                result.append(0x80000000 | int(element[0]))
+        return result
+
+    def sign_hash(self, path, hashdata):
+        donglePath = parse_bip32_path(path)
+        if self.needKeyCache:
+             self.resolvePublicKeysInPath(path)
+        apdu = [BTCHIP_CLA, BTCHIP_INS_HASH_SIGN, 0x00, 0x00 ]
+        params = []
+        params.extend(donglePath)
+        params.extend(bytearray(hashdata))
+        apdu.append(len(params))
+        apdu.extend(params)
+        send = bytearray(apdu)
+        
+        sig = self.exchange(send)
+        return sig
+
+    def exchange(self, data):
+        print('exchange send apdu.............',
+               ''.join(['%02X ' % b for b in data]))
+        result = self.isoDep.transceive(data)
+        print('exchange result.............',
+               ''.join(['%02X ' % b for b in result]))
+        return result
+        
+    # def setup(self, operationModeFlags, featuresFlag, keyVersion, keyVersionP2SH, userPin, wipePin, keymapEncoding, seed=None, developerKey=None):
+    #     if isinstance(userPin, str):
+    #         userPin = userPin.encode('utf-8')
+    #     result = {}
+    #     params = []
+    #     apdu = [ BTCHIP_CLA, BTCHIP_INS_SETUP, 0x00, 0x00 ]
+    #     if seed is not None:
+    #         params.append(len(seed))
+    #         params.extend(seed)
+    #     apdu.append(len(params))
+    #     apdu.extend(params)
+    #     response = self.exchange(bytearray(apdu))
+    #     result['trustedInputKey'] = response[0:16]
+    #     result['developerKey'] = response[16:]
+    #     return result
+
+    def getWalletPublicKey(self, path, showOnScreen=False, segwit=False, segwitNative=False, cashAddr=False):
+        result = {}
+        donglePath = parse_bip32_path(path)
+        if self.needKeyCache:
+            self.resolvePublicKeysInPath(path)
+        apdu = [ BTCHIP_CLA, BTCHIP_INS_GET_WALLET_PUBLIC_KEY, 0x01 if showOnScreen else 0x00, 0x03 if cashAddr else 0x02 if segwitNative else 0x01 if segwit else 0x00, len(donglePath) ]
+        apdu.extend(donglePath)
+        response = self.exchange(bytearray(apdu))
+        offset = 0
+        result['publicKey'] = response[offset + 1 : offset + 1 + response[offset]]
+        offset = offset + 1 + response[offset]
+        #result['address'] = str(response[offset + 1 : offset + 1 + response[offset]])
+        #offset = offset + 1 + response[offset]
+        result['chainCode'] = response[offset : offset + 32]
+        return result
+
+    def resolvePublicKeysInPath(self, path):
+        splitPath = self.parse_bip32_path_internal(path)
+        # Locate the first public key in path
+        offset = 0
+        startOffset = 0
+        while(offset < len(splitPath)):
+            if (splitPath[offset] < 0x80000000):
+                startOffset = offset
+                break
+            offset = offset + 1
+        if startOffset != 0:
+            searchPath = splitPath[0:startOffset - 1]
+            offset = startOffset - 1
+            while(offset < len(splitPath)):
+                searchPath = searchPath + [ splitPath[offset] ]
+                self.resolvePublicKey(searchPath)
+                offset = offset + 1
+        self.resolvePublicKey(splitPath)
+
+    def parse_bip32_path_internal(self, path):
+        if len(path) == 0:
+            return []
+        result = []
+        elements = path.split('/')
+        for pathElement in elements:
+            element = pathElement.split('\'')
+            if len(element) == 1:
+                result.append(int(element[0]))
+            else:
+                result.append(0x80000000 | int(element[0]))
+        return result
+
+    def serialize_bip32_path_internal(self, path):
+        result = []
+        for pathElement in path:
+            writeUint32BE(pathElement, result)
+        return bytearray([ len(path) ] + result)
+        
+    def resolvePublicKey(self, path):
+        expandedPath = self.serialize_bip32_path_internal(path)
+        # apdu = [ BTCHIP_JC_EXT_CLA, BTCHIP_INS_EXT_CACHE_HAS_PUBLIC_KEY, 0x00, 0x00 ]
+        # apdu.append(len(expandedPath))
+        # apdu.extend(expandedPath)
+        # result = self.exchange(bytearray(apdu))
+        # if (result[0] == 0):
+            # Not present, need to be inserted into the cache
+        apdu = [ BTCHIP_JC_EXT_CLA, BTCHIP_INS_EXT_GET_HALF_PUBLIC_KEY, 0x00, 0x00 ]
+        apdu.append(len(expandedPath))
+        apdu.extend(expandedPath)
+        result = self.exchange(bytearray(apdu))
+        hashData = result[0:32]
+        keyX = result[32:64]
+        signature = result[64:-2]
+        hashData = ''.join(['%02X' % b for b in hashData])
+        print("hashdata = %s" %hashData)
+        keyX = ''.join(['%02X' % b for b in keyX])
+        print("keyx = %s" %keyX)
+        signature = ''.join(['%02X' % b for b in signature])
+        print("signature = %s" %signature)
+        keyXY = self.recoverKey(signature, hashData, keyX)
+        apdu = [ BTCHIP_JC_EXT_CLA, BTCHIP_INS_EXT_CACHE_PUT_PUBLIC_KEY, 0x00, 0x00 ]
+        apdu.append(len(expandedPath) + 65)
+        apdu.extend(expandedPath)
+        apdu.extend(keyXY)
+        self.exchange(bytearray(apdu))
+
+    def recoverKey(self, signature, hashValue, keyX):
+        signature = binascii.unhexlify(signature)
+        hashValue = binascii.unhexlify(hashValue)
+        keyX = binascii.unhexlify(keyX)
+        rLength = signature[3]
+        r = signature[4: 4 + rLength]
+        sLength = signature[4 + rLength + 1]
+        s = signature[4 + rLength + 2:]
+        if rLength == 33:
+            r = r[1:]
+        if sLength == 33:
+            s = s[1:]
+
+        for i in range(4):
+            try:
+                from electrum.ecc import _MyVerifyingKey, point_to_ser, SECP256k1
+                print("len(r+s) = %s" %len(r+s))
+                key = _MyVerifyingKey.from_signature(r+s, i, hashValue, curve=SECP256k1)
+                candidate = point_to_ser(key.pubkey.point, False)
+                if candidate[1:33] == keyX:
+                    return candidate
+            except:
+                pass
+        raise Exception("Key recovery failed")
+
+scan = ScannerAndroid()
