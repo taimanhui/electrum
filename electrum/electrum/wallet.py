@@ -807,7 +807,7 @@ class Abstract_Wallet(AddressSynchronizer):
 
         # Timelock tx to current height.
         tx.locktime = get_locktime_for_new_transaction(self.network)
-
+        
         run_hook('make_unsigned_transaction', self, tx)
         return tx
 
@@ -818,7 +818,7 @@ class Abstract_Wallet(AddressSynchronizer):
         tx.set_rbf(rbf)
         if tx_version is not None:
             tx.version = tx_version
-        #self.sign_transaction(tx, password)
+        self.sign_transaction(tx, password)
         return tx
 
     def is_frozen_address(self, addr: str) -> bool:
@@ -1760,8 +1760,7 @@ class Deterministic_Wallet(Abstract_Wallet):
 
     def derive_address(self, for_change, n):
         x = self.derive_pubkeys(for_change, n)
-        address =  self.pubkeys_to_address(x)
-        return address
+        return self.pubkeys_to_address(x)
 
     def create_new_address(self, for_change=False):
         assert type(for_change) is bool

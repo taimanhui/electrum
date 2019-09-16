@@ -200,7 +200,8 @@ class ScannerAndroid(NFCBase):
         return extRecord
 
     def isoDepClose(self):
-        self.isoDep.close()
+        if self.isoDep:
+            self.isoDep.close()
 
     def create_ndef_message(self, *recs):
         ''' Create the Ndef message that will be written to tag
@@ -260,19 +261,6 @@ class ScannerAndroid(NFCBase):
         '''
         self._nfc_disable_ndef_exchange()
 
-    def parse_bip32_path_internal(self, path):
-        if len(path) == 0:
-            return []
-        result = []
-        elements = path.split('/')
-        for pathElement in elements:
-            element = pathElement.split('\'')
-            if len(element) == 1:
-                result.append(int(element[0]))
-            else:
-                result.append(0x80000000 | int(element[0]))
-        return result
-
     def sign_hash(self, path, hashdata):
         donglePath = parse_bip32_path(path)
         if self.needKeyCache:
@@ -295,22 +283,6 @@ class ScannerAndroid(NFCBase):
         print('exchange result.............',
                ''.join(['%02X ' % b for b in result]))
         return result
-        
-    # def setup(self, operationModeFlags, featuresFlag, keyVersion, keyVersionP2SH, userPin, wipePin, keymapEncoding, seed=None, developerKey=None):
-    #     if isinstance(userPin, str):
-    #         userPin = userPin.encode('utf-8')
-    #     result = {}
-    #     params = []
-    #     apdu = [ BTCHIP_CLA, BTCHIP_INS_SETUP, 0x00, 0x00 ]
-    #     if seed is not None:
-    #         params.append(len(seed))
-    #         params.extend(seed)
-    #     apdu.append(len(params))
-    #     apdu.extend(params)
-    #     response = self.exchange(bytearray(apdu))
-    #     result['trustedInputKey'] = response[0:16]
-    #     result['developerKey'] = response[16:]
-    #     return result
 
     def getWalletPublicKey(self, path, showOnScreen=False, segwit=False, segwitNative=False, cashAddr=False):
         result = {}
@@ -323,8 +295,6 @@ class ScannerAndroid(NFCBase):
         offset = 0
         result['publicKey'] = response[offset + 1 : offset + 1 + response[offset]]
         offset = offset + 1 + response[offset]
-        #result['address'] = str(response[offset + 1 : offset + 1 + response[offset]])
-        #offset = offset + 1 + response[offset]
         result['chainCode'] = response[offset : offset + 32]
         return result
 

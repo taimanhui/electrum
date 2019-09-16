@@ -1244,7 +1244,6 @@ class Transaction:
             sigend += bytes((32,))
             sigend += s
             sigend += sigbyte[-1:]
-            #signestr = ''.join(['%b' % b for b in sigend])
             sigendh = binascii.hexlify(bytes(sigend))
             sig = str(sigendh)
             sig = sig[2:-1]

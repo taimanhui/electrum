@@ -497,7 +497,6 @@ class ElectrumWindow(App):
         scan.nfc_disable()
 
     def _scan_nfc(self):
-        #scan.setup(OPERATION_MODE_WALLET, FEATURE_RFC6979, 0x00, 0x05, "1234", None, None, None)
         result = scan.getWalletPublicKey("0'")
         unComPubk = result['publicKey']
         chainCode = result['chainCode']
