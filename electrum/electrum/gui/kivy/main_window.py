@@ -151,7 +151,12 @@ class ElectrumWindow(App):
 
     use_change = BooleanProperty(False)
     def on_use_change(self, instance, x):
-        self.electrum_config.set_key('use_change', self.use_change, True)
+        self.electrum_config.set_key('use_change', self.use_change, x)
+        if self.wallet is not None:
+            usechange_result = x
+            if self.wallet.use_change != usechange_result:
+                self.wallet.use_change = usechange_result
+                self.wallet.storage.put('use_change', self.wallet.use_change)
 
     use_unconfirmed = BooleanProperty(False)
     def on_use_unconfirmed(self, instance, x):
