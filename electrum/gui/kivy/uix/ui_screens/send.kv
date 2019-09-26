@@ -115,8 +115,9 @@ SendScreen:
             Button:
                 text: _('Clear')
                 on_release: s.parent.do_clear()
-            Widget:
-                size_hint: 1, 1
+            Button:
+                text: _('Get')
+                on_release: Clock.schedule_once(lambda dt: app.get_unsigned_tx(on_complete=app.on_qr))
             Button:
                 text: _('Pay')
                 size_hint: 1, 1

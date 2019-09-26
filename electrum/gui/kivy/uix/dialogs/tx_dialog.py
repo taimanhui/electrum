@@ -101,6 +101,11 @@ Builder.load_string('''
             Button:
                 size_hint: 0.5, None
                 height: '48dp'
+                text: _('Submit')
+                on_release: root.submit() 
+            Button:
+                size_hint: 0.5, None
+                height: '48dp'
                 text: _('Close')
                 on_release: root.dismiss()
 ''')
@@ -114,11 +119,12 @@ class ActionButtonOption(NamedTuple):
 
 class TxDialog(Factory.Popup):
 
-    def __init__(self, app, tx):
+    def __init__(self, app, tx, rid=0):
         Factory.Popup.__init__(self)
         self.app = app
         self.wallet = self.app.wallet
         self.tx = tx
+        self.rid = rid
         self._action_button_fn = lambda btn: None
 
     def on_open(self):
@@ -246,6 +252,25 @@ class TxDialog(Factory.Popup):
     def do_broadcast(self):
         self.app.broadcast(self.tx)
 
+    def submit(self):
+        from electrum.bitcoin import base_encode, bfh
+        raw_tx = str(self.tx)
+        text = bfh(raw_tx)
+        text = base_encode(text, base=43)
+
+        import json
+        import requests
+        from electrum.constants import DB_SERVER_URL
+        addresses = self.wallet.get_receiving_addresses()
+        url = DB_SERVER_URL + "sign/" + addresses[0] 
+        data={}
+        try:
+            data['tx_hex'] = raw_tx
+            data['rid'] = self.rid
+            res =requests.post(url, json=json.dumps(data))
+        except Exception as e:
+            self.show_message(_(e))
+ 
     def show_qr(self):
         from electrum.bitcoin import base_encode, bfh
         raw_tx = str(self.tx)

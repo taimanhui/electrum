@@ -346,7 +346,7 @@ class ElectrumWindow(App):
             self.show_error("invoice error:" + pr.error)
             self.send_screen.do_clear()
 
-    def on_qr(self, data):
+    def on_qr(self, data, rid=0):
         from electrum.bitcoin import base_decode, is_address
         data = data.strip()
         if is_address(data):
@@ -365,7 +365,7 @@ class ElectrumWindow(App):
         except:
             tx = None
         if tx:
-            self.tx_dialog(tx)
+            self.tx_dialog(tx, rid)
             return
         # show error
         self.show_error("Unable to decode QR data")
@@ -441,6 +441,24 @@ class ElectrumWindow(App):
                          text_for_clipboard=text_for_clipboard)
         popup.open()
 
+    def get_unsigned_tx(self, on_complete):
+        import requests
+        from electrum.bitcoin import base_encode
+        from electrum.util import bfh 
+        from electrum.constants import DB_SERVER_URL
+        addresses = self.wallet.get_receiving_addresses()
+        url = DB_SERVER_URL + "sign/" + addresses[0] 
+        try:
+            res =requests.get(url)
+            tx = res.json()
+            data = tx['hex']
+            record_id = tx['rid']
+
+            data = base_encode(bfh(tx['hex']), 43)
+            self.on_qr(data, record_id)
+        except Exception as e:
+            send_exception_to_crash_reporter(e)
+     
     def scan_qr(self, on_complete):
         if platform != 'android':
             return
@@ -929,9 +947,9 @@ class ElectrumWindow(App):
             pos = (win.center[0], win.center[1] - (info_bubble.height/2))
         info_bubble.show(pos, duration, width, modal=modal, exit=exit)
 
-    def tx_dialog(self, tx):
+    def tx_dialog(self, tx, rid=0):
         from .uix.dialogs.tx_dialog import TxDialog
-        d = TxDialog(self, tx)
+        d = TxDialog(self, tx, rid)
         d.open()
 
     def sign_tx(self, *args):

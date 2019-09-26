@@ -134,6 +134,9 @@ class TxDialog(QDialog, MessageBoxMixin):
         self.export_button = b = QPushButton(_("Export"))
         b.clicked.connect(self.export)
 
+        self.submit_button = b = QPushButton(_("Submit"))
+        b.clicked.connect(self.submit)
+
         self.cancel_button = b = QPushButton(_("Close"))
         b.clicked.connect(self.close)
         b.setDefault(True)
@@ -147,7 +150,7 @@ class TxDialog(QDialog, MessageBoxMixin):
         # Action buttons
         self.buttons = [self.sign_button, self.broadcast_button, self.cancel_button]
         # Transaction sharing buttons
-        self.sharing_buttons = [self.copy_button, self.qr_button, self.export_button, self.save_button]
+        self.sharing_buttons = [self.copy_button, self.qr_button, self.export_button, self.submit_button, self.save_button]
 
         run_hook('transaction_dialog', self)
 
@@ -224,6 +227,19 @@ class TxDialog(QDialog, MessageBoxMixin):
                 f.write(json.dumps(self.tx.as_dict(), indent=4) + '\n')
             self.show_message(_("Transaction exported successfully"))
             self.saved = True
+
+    def submit(self):
+        import requests
+        from electrum.constants import DB_SERVER_URL
+        url = DB_SERVER_URL + "add"
+        data = json.dumps(self.tx.as_dict(), indent=4)
+        try:
+            requests.post(url, json=data)
+        except Exception as e:
+            self.show_message(_(e))
+            return
+        self.show_message(_("Transaction exported successfully"))
+        self.saved = True
 
     def update(self):
         desc = self.desc

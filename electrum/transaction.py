@@ -1196,10 +1196,12 @@ class Transaction:
         if self.raw is None:
             self.raw = self.serialize()
         self.deserialize()
+        d = deserialize(self.raw)
         out = {
             'hex': self.raw,
             'complete': self.is_complete(),
             'final': self.is_final(),
+            'tx': d,
         }
         return out
 
