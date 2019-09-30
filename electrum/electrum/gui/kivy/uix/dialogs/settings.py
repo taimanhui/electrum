@@ -10,6 +10,7 @@ from electrum.plugin import run_hook
 from electrum import coinchooser
 
 from .choice_dialog import ChoiceDialog
+from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
 
 Builder.load_string('''
 #:import partial functools.partial
@@ -235,7 +236,6 @@ class SettingsDialog(Factory.Popup):
         self._fx_dialog.open()
 
     def reset_cw_pw(self):
-        from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
         result = scan.reset_PIN(self.old_pin, self.new_pin)
         if result[0] == 1:
             self.app.show_error("reset successful")
@@ -247,7 +247,6 @@ class SettingsDialog(Factory.Popup):
         if comfirm_new_pin != new_pin:
             self.app.show_error("Inconsistent password input")
         else:
-            from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
             scan.nfc_init(self.reset_cw_pw)
             scan.nfc_enable()
             self.app.show_error("please touch your chard")
@@ -257,7 +256,6 @@ class SettingsDialog(Factory.Popup):
 
     def unlock_cw_pw(self):
         import binascii
-        from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
         result = scan.unlock_PIN(self.pin)
         resultHex = binascii.hexlify(bytes(result))
         if resultHex == b'9000':
@@ -267,7 +265,6 @@ class SettingsDialog(Factory.Popup):
         self.rt.dismiss()
 
     def unlock_pin(self, rt, password):
-        from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
         scan.nfc_init(self.unlock_cw_pw)
         scan.nfc_enable()
         self.app.show_error("please touch your chard")

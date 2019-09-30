@@ -218,7 +218,7 @@ class Abstract_Wallet(AddressSynchronizer):
         AddressSynchronizer.__init__(self, storage.db)
 
         # saved fields
-        self.use_change            = storage.get('use_change')
+        self.use_change            = storage.get('use_change',True)
         self.multiple_change       = storage.get('multiple_change', False)
         self.labels                = storage.get('labels', {})
         self.frozen_addresses      = set(storage.get('frozen_addresses', []))
