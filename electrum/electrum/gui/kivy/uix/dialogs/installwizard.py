@@ -914,6 +914,7 @@ class AddXpubDialog(WizardDialog):
         self.is_valid = is_valid
         self.title = kwargs['title']
         self.message = kwargs['message']
+        self.type = kwargs['type']
         self.allow_multi = kwargs.get('allow_multi', False)
 
     def check_text(self, dt):
@@ -950,8 +951,21 @@ class AddXpubDialog(WizardDialog):
                 from electrum.gui.kivy.btchipHelpers import compress_public_key
                 keyByte = compress_public_key(textByte[:65])
 
+                sewgit = True
+                if self.type == 'standard':
+                    if not sewgit:
+                        #typeStr = "p2pkh"
+                        typeStr = "standard"
+                    else:
+                        typeStr = "p2wpkh"
+                else:
+                    if not sewgit:
+                        typeStr = "standard"
+                    else:
+                        typeStr = "p2wsh"
+
                 net = constants.set_regtest()
-                xpub = (xpub_header("standard", net=constants.net) +
+                xpub = (xpub_header("p2wsh", net=constants.net) +
                         b'\x00' +
                         (b'\x00'*4) +
                         (b'\x00'*4) +
@@ -1043,11 +1057,13 @@ class InstallWizard(BaseWizard, Widget):
 
     def add_xpub_dialog(self, **kwargs):
         kwargs['message'] += ' ' + _('Use the camera button to scan a QR code.')
+        kwargs["type"] = self.data['wallet_type']
         AddXpubDialog(self, **kwargs).open()
 
     def add_cosigner_dialog(self, **kwargs):
         kwargs['title'] = _("Add Cosigner") + " %d"%kwargs['index']
         kwargs['message'] = _('Please paste your cosigners master public key, or scan it using the camera button.')
+        kwargs["type"] = self.data['wallet_type']
         AddXpubDialog(self, **kwargs).open()
 
     def show_xpub_dialog(self, **kwargs): ShowXpubDialog(self, **kwargs).open()

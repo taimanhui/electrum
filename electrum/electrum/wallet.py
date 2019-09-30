@@ -218,7 +218,7 @@ class Abstract_Wallet(AddressSynchronizer):
         AddressSynchronizer.__init__(self, storage.db)
 
         # saved fields
-        self.use_change            = storage.get('use_change', True)
+        self.use_change            = storage.get('use_change')
         self.multiple_change       = storage.get('multiple_change', False)
         self.labels                = storage.get('labels', {})
         self.frozen_addresses      = set(storage.get('frozen_addresses', []))
@@ -1104,7 +1104,7 @@ class Abstract_Wallet(AddressSynchronizer):
                 info[addr] = TxOutputHwInfo(index, sorted_xpubs, num_sig, self.txin_type)
         tx.output_info = info
 
-    def sign_transaction(self, tx, password, callback = None):
+    def sign_transaction(self, tx, password, callback=None, pw_dialog=None):
         # if self.is_watching_only():
         #     return
         tx.add_inputs_info(self)
@@ -1115,7 +1115,7 @@ class Abstract_Wallet(AddressSynchronizer):
         for k in sorted(self.get_keystores(), key=lambda ks: ks.ready_to_sign(), reverse=True):
             try:
                 if k.can_sign(tx):
-                    k.sign_transaction(tx, password, callback)
+                    k.sign_transaction(tx, password, callback, pw_dialog)
             except UserCancelled:
                 continue
         return tx

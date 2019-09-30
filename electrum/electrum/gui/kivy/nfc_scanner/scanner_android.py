@@ -39,8 +39,12 @@ app = None
 BTCHIP_CLA = 0x00
 BTCHIP_JC_EXT_CLA = 0x20
 BTCHIP_INS_SETUP = 0x20
+BTCHIP_VERITY_PW = 0x08
+BTCHIP_GET_CARD_STATUS = 0x24
 BTCHIP_INS_HASH_SIGN = 0x12
-BTCHIP_INS_EXT_CACHE_HAS_PUBLIC_KEY = 0x21
+BTCHIP_RESET_PIN = 0x16
+BTCHIP_UNLOCK_PIN = 0x18
+BTCHIP_INS_EXT_CACHE_HAS_PUBLIC_KEY = 0x26
 BTCHIP_INS_EXT_GET_HALF_PUBLIC_KEY = 0x20
 BTCHIP_INS_EXT_CACHE_PUT_PUBLIC_KEY = 0x22
 BTCHIP_INS_GET_WALLET_PUBLIC_KEY = 0x40
@@ -149,7 +153,6 @@ class ScannerAndroid(NFCBase):
         either in the manifest or in the foreground dispatch setup in the
         nfc_init function above.
         '''
-        print("on_new_intent in................")
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         action_list = (NfcAdapter.ACTION_NDEF_DISCOVERED,
                        NfcAdapter.ACTION_TECH_DISCOVERED,
@@ -163,9 +166,7 @@ class ScannerAndroid(NFCBase):
             self.isoDep.connect()
             self.isoDep.setTimeout(5000)
         selectcmd = binascii.unhexlify(SELECT_APPLET_CMD)
-        result = self.isoDep.transceive(selectcmd)
-        print('transaction on_new_intent select result.............',
-              ''.join(['%02X ' % b for b in result]))
+        result = self.exchange(selectcmd)
         self.callback()
 
     def nfc_disable(self):
@@ -261,10 +262,23 @@ class ScannerAndroid(NFCBase):
         '''
         self._nfc_disable_ndef_exchange()
 
+    def verify_password(self, pw):
+        apdu = [BTCHIP_CLA, BTCHIP_VERITY_PW, 0x00, 0x00 ]
+        if isinstance(pw, str):
+            pw = pw.encode('utf-8')
+        params = []
+        params.append(len(pw))
+        params.extend(bytearray(pw))
+        apdu.append(len(params))
+        apdu.extend(params)
+        result = self.exchange(bytearray(apdu))
+        return result
+        
     def sign_hash(self, path, hashdata):
         donglePath = parse_bip32_path(path)
+        keyX = ""
         if self.needKeyCache:
-             self.resolvePublicKeysInPath(path)
+             keyX = self.resolvePublicKeysInPath(path)
         apdu = [BTCHIP_CLA, BTCHIP_INS_HASH_SIGN, 0x00, 0x00 ]
         params = []
         params.extend(donglePath)
@@ -274,7 +288,48 @@ class ScannerAndroid(NFCBase):
         send = bytearray(apdu)
         
         sig = self.exchange(send)
-        return sig
+        return sig, keyX
+
+    def init_card(self, pw):
+        if isinstance(pw, str):
+            pw = pw.encode('utf-8')
+        apdu = [ BTCHIP_CLA, BTCHIP_INS_SETUP, 0x00, 0x00 ]
+        params = []
+        params.append(len(pw))
+        params.extend(bytearray(pw))
+        apdu.append(len(params))
+        apdu.extend(params)
+        self.exchange(bytearray(apdu))
+
+    def get_card_info(self):
+        apdu = [ BTCHIP_CLA, BTCHIP_GET_CARD_STATUS, 0x00, 0x00]
+        return self.exchange(bytearray(apdu))
+
+    def reset_PIN(self, old_pin, new_pin):
+        if isinstance(old_pin, str):
+            old_pin = old_pin.encode('utf-8')
+        if isinstance(new_pin, str):
+            new_pin = new_pin.encode('utf-8')
+        apdu = [ BTCHIP_CLA, BTCHIP_RESET_PIN, 0x00, 0x00 ]
+        params = []
+        params.append(len(old_pin))
+        params.extend(bytearray(old_pin))
+        params.append(len(new_pin))
+        params.extend(bytearray(new_pin))
+        apdu.append(len(params))
+        apdu.extend(params)
+        return self.exchange(bytearray(apdu))
+
+    def unlock_PIN(self, pw):
+        if isinstance(pw, str):
+            pw = pw.encode('utf-8')
+        apdu = [ BTCHIP_CLA, BTCHIP_UNLOCK_PIN, 0x00, 0x00 ]
+        params = []
+        params.append(len(pw))
+        params.extend(bytearray(pw))
+        apdu.append(len(params))
+        apdu.extend(params)
+        return self.exchange(bytearray(apdu))
 
     def exchange(self, data):
         print('exchange send apdu.............',
@@ -315,7 +370,7 @@ class ScannerAndroid(NFCBase):
                 searchPath = searchPath + [ splitPath[offset] ]
                 self.resolvePublicKey(searchPath)
                 offset = offset + 1
-        self.resolvePublicKey(splitPath)
+        return self.resolvePublicKey(splitPath)
 
     def parse_bip32_path_internal(self, path):
         if len(path) == 0:
@@ -337,32 +392,37 @@ class ScannerAndroid(NFCBase):
         return bytearray([ len(path) ] + result)
         
     def resolvePublicKey(self, path):
+        # if isinstance(pw, str):
+        #     pw = pw.encode('utf-8')
         expandedPath = self.serialize_bip32_path_internal(path)
-        # apdu = [ BTCHIP_JC_EXT_CLA, BTCHIP_INS_EXT_CACHE_HAS_PUBLIC_KEY, 0x00, 0x00 ]
+        # apdu = [ BTCHIP_CLA, BTCHIP_INS_EXT_CACHE_HAS_PUBLIC_KEY, 0x00, 0x00 ]
         # apdu.append(len(expandedPath))
         # apdu.extend(expandedPath)
         # result = self.exchange(bytearray(apdu))
-        # if (result[0] == 0):
+        #if (result[0] == 0):
             # Not present, need to be inserted into the cache
         apdu = [ BTCHIP_JC_EXT_CLA, BTCHIP_INS_EXT_GET_HALF_PUBLIC_KEY, 0x00, 0x00 ]
+            # params = []
+            # params.append(len(pw))
+            # params.extend(bytearray(pw))
         apdu.append(len(expandedPath))
         apdu.extend(expandedPath)
+            # apdu.append(len(params))
+            # apdu.extend(params)
         result = self.exchange(bytearray(apdu))
         hashData = result[0:32]
         keyX = result[32:64]
         signature = result[64:-2]
         hashData = ''.join(['%02X' % b for b in hashData])
-        print("hashdata = %s" %hashData)
         keyX = ''.join(['%02X' % b for b in keyX])
-        print("keyx = %s" %keyX)
         signature = ''.join(['%02X' % b for b in signature])
-        print("signature = %s" %signature)
         keyXY = self.recoverKey(signature, hashData, keyX)
         apdu = [ BTCHIP_JC_EXT_CLA, BTCHIP_INS_EXT_CACHE_PUT_PUBLIC_KEY, 0x00, 0x00 ]
         apdu.append(len(expandedPath) + 65)
         apdu.extend(expandedPath)
         apdu.extend(keyXY)
         self.exchange(bytearray(apdu))
+        return keyX
 
     def recoverKey(self, signature, hashValue, keyX):
         signature = binascii.unhexlify(signature)
@@ -380,7 +440,6 @@ class ScannerAndroid(NFCBase):
         for i in range(4):
             try:
                 from electrum.ecc import _MyVerifyingKey, point_to_ser, SECP256k1
-                print("len(r+s) = %s" %len(r+s))
                 key = _MyVerifyingKey.from_signature(r+s, i, hashValue, curve=SECP256k1)
                 candidate = point_to_ser(key.pubkey.point, False)
                 if candidate[1:33] == keyX:

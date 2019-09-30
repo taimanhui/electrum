@@ -82,6 +82,16 @@ Builder.load_string('''
                     description: _("Send your change to separate addresses.")
                     message: _('Send excess coins to change addresses')
                     action: partial(root.boolean_dialog, 'use_change', _('Use change addresses'), self.message)
+                CardSeparator
+                SettingsItem:
+                    title: _("Reset Password")
+                    description: _("Reset password for smart card")
+                    action: lambda x: app.popup_dialog('resetpin')
+                CardSeparator
+                SettingsItem:
+                    title: _("Unlock Password")
+                    description: _("Unlock password for smart card")
+                    action: lambda x: app.popup_dialog('unlockpin')
 
                 # disabled: there is currently only one coin selection policy
                 #CardSeparator
@@ -223,3 +233,43 @@ class SettingsDialog(Factory.Popup):
                 label.status = self.fx_status()
             self._fx_dialog = FxDialog(self.app, self.plugins, self.config, cb)
         self._fx_dialog.open()
+
+    def reset_cw_pw(self):
+        from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
+        result = scan.reset_PIN(self.old_pin, self.new_pin)
+        if result[0] == 1:
+            self.app.show_error("reset successful")
+        else:
+            self.app.show_error("reset failed")
+        self.rt.dismiss()
+
+    def reset_pin(self, rt, old_pin, new_pin, comfirm_new_pin):
+        if comfirm_new_pin != new_pin:
+            self.app.show_error("Inconsistent password input")
+        else:
+            from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
+            scan.nfc_init(self.reset_cw_pw)
+            scan.nfc_enable()
+            self.app.show_error("please touch your chard")
+            self.rt = rt
+            self.old_pin = old_pin
+            self.new_pin = new_pin
+
+    def unlock_cw_pw(self):
+        import binascii
+        from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
+        result = scan.unlock_PIN(self.pin)
+        resultHex = binascii.hexlify(bytes(result))
+        if resultHex == b'9000':
+            self.app.show_error("unlock successful")
+        else:
+            self.app.show_error("unlock failed")
+        self.rt.dismiss()
+
+    def unlock_pin(self, rt, password):
+        from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
+        scan.nfc_init(self.unlock_cw_pw)
+        scan.nfc_enable()
+        self.app.show_error("please touch your chard")
+        self.pin = password
+        self.rt = rt

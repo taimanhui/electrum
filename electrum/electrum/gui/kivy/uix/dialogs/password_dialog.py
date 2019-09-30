@@ -102,8 +102,7 @@ class PasswordDialog(Factory.Popup):
                 return True
         else:
             if self.on_success:
-                args = (self.pw, self.new_password) if self.is_change else (self.pw,)
-                Clock.schedule_once(lambda dt: self.on_success(*args), 0.1)
+                Clock.schedule_once(lambda dt: self.on_success(self.pw,), 0.1)
 
     def update_password(self, c):
         kb = self.ids.kb
@@ -118,25 +117,10 @@ class PasswordDialog(Factory.Popup):
 
     def on_password(self, pw):
         if len(pw) == 6:
-            if self.check_password(pw):
-                if self.is_change == 0:
-                    self.success = True
-                    self.pw = pw
-                    self.message = _('Please wait...')
-                    self.dismiss()
-                elif self.is_change == 1:
-                    self.pw = pw
-                    self.message = _('Enter new PIN')
-                    self.ids.kb.password = ''
-                    self.is_change = 2
-                elif self.is_change == 2:
-                    self.new_password = pw
-                    self.message = _('Confirm new PIN')
-                    self.ids.kb.password = ''
-                    self.is_change = 3
-                elif self.is_change == 3:
-                    self.success = pw == self.new_password
-                    self.dismiss()
-            else:
-                self.app.show_error(_('Wrong PIN'))
-                self.ids.kb.password = ''
+            self.success = True
+            self.pw = pw
+            if self.is_change == 0:
+                self.message = _('Please wait...')
+            elif self.is_change == 1:
+                self.message = _('Signing')
+            self.dismiss()

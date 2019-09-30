@@ -1165,11 +1165,11 @@ class Transaction:
                     _pubkey = x_pubkey
                 else:
                     continue
-
+                
                 _logger.info(f"adding signature for {_pubkey}")
                 sec, compressed = self.keypairs.get(_pubkey)
-                sig = self.sign_txin(txin, i, sec, bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)
-                self.add_signature_to_txin(i, j, sig)
+                sig, sigIndex = self.sign_txin(txin, i, sec, bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)
+                self.add_signature_to_txin(i, sigIndex, sig)
         
         scan.isoDepClose()
         t1 =threading.Thread(target=self.stop_nfc)
@@ -1178,17 +1178,33 @@ class Transaction:
         _logger.info(f"is_complete {self.is_complete()}")
         self.raw = self.serialize()
         print("after txin = %s" %txin)
-        self.callback(self)
+        print("serialize = %s" %self.raw)
+        self.callback(self, -1)
 
     def stop_nfc(self):
         # disable nfc
         scan.nfc_disable()
 
-    def sign(self, keypairs, callback=None) -> None:
+    def check_pw(self):
+        if self.pw_dialog is not None:
+            self.pw_dialog(self.get_pw, is_change=1)
+        if self.success:
+            self.callback(self, -1)
+
+    def get_pw(self, pw):
+        verifyResult = scan.verify_password(pw)
+        if verifyResult[0] == 0x01:
+            self.success = True
+            self.get_sign_info()
+        else:
+            self.success = False
+            self.callback(self, verifyResult[1])
+
+    def sign(self, keypairs, callback=None, password=None, pw_dialog=None) -> None:
         # add nfc init and enable nfc
-        print("sign in ....")
-        scan.nfc_init(self.get_sign_info)
+        scan.nfc_init(self.check_pw)
         scan.nfc_enable()
+        self.pw_dialog = pw_dialog
         self.keypairs = keypairs
         self.callback = callback
 
@@ -1197,9 +1213,9 @@ class Transaction:
                                                        bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)))
         print('pre data is.........',
               ''.join(['%02X ' % b for b in pre_hash]))
+            
         # #get path
         pubkey = txin['x_pubkeys'][0]
-        print("++++++++++pubkey = %s................" %pubkey)
         pk = binascii.unhexlify("".join(pubkey))
         pk = pk[1:]
 
@@ -1216,17 +1232,23 @@ class Transaction:
             s.append(n)
         assert len(s) == 2
 
-        print("s=%s" %s)
         dpath = '/'.join(['%s' % b for b in s])
         path = "0'/"
         path += dpath
         print("path = %s+++++++++++" %path)
-        sigbyte = scan.sign_hash(path, pre_hash)
+        sigbyte, keyX = scan.sign_hash(path, pre_hash)
         #sigbyte = scan.sign_hash("0'/0/0", pre_hash)
         sig = bh2u(bytes(sigbyte))
         sig = sig[:-4]
         sig += "01"
         print("before sig = %s" %sig)
+
+        sig_index = 0
+        for i, pubkeys in enumerate(txin['pubkeys']):
+            if pubkeys[2:] != keyX.lower():
+                continue
+            sig_index = i
+        print("sig_index = %s" % sig_index)
 
         # s too high
         sigbyte = binascii.unhexlify(sig)
@@ -1256,7 +1278,7 @@ class Transaction:
             sigend += sig[4:]
             sig = sigend
         print("after sig = %s" %sig)
-        return sig
+        return sig, sig_index
 
     def get_outputs_for_UI(self) -> Sequence[TxOutputForUI]:
         outputs = []

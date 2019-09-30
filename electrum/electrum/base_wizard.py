@@ -242,6 +242,7 @@ class BaseWizard(Logger):
             i = len(self.keystores) + 1
             self.add_cosigner_dialog(index=i, run_next=self.on_restore_from_key, is_valid=keystore.is_bip32_key)
 
+
     def on_restore_from_key(self, text):
         k = keystore.from_master_key(text)
         self.on_keystore(k)

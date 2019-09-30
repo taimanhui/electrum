@@ -152,11 +152,10 @@ class ElectrumWindow(App):
     use_change = BooleanProperty(False)
     def on_use_change(self, instance, x):
         self.electrum_config.set_key('use_change', self.use_change, x)
-        if self.wallet is not None:
-            usechange_result = x
-            if self.wallet.use_change != usechange_result:
-                self.wallet.use_change = usechange_result
-                self.wallet.storage.put('use_change', self.wallet.use_change)
+        if self.wallet:
+            self.wallet.use_change = self.use_change
+            self.wallet.storage.put('use_change', self.use_change)
+            self.wallet.storage.write()
 
     use_unconfirmed = BooleanProperty(False)
     def on_use_unconfirmed(self, instance, x):
@@ -312,7 +311,7 @@ class ElectrumWindow(App):
         self.fx = self.daemon.fx
 
         self.use_rbf = config.get('use_rbf', True)
-        self.use_change = config.get('use_change', True)
+        self.use_change = config.get('use_change')
         self.use_unconfirmed = not config.get('confirmed_only', False)
 
         # create triggers so as to minimize updating a max of 2 times a sec
@@ -451,7 +450,7 @@ class ElectrumWindow(App):
         from electrum.util import bfh
         from electrum.constants import DB_SERVER_URL
         addresses = self.wallet.get_receiving_addresses()
-        url = DB_SERVER_URL + "sign/" + addresses[0] 
+        url = DB_SERVER_URL + "sign/" + addresses[0]
         try:
             res =requests.get(url)
             tx = res.json()
@@ -491,14 +490,43 @@ class ElectrumWindow(App):
     def scan_nfc(self, on_complete):
         if platform != 'android':
             return
-        
-        print("start nfc..........")
-        scan.nfc_init(self._scan_nfc)
+        self.show_error("please touch your card")
+        scan.nfc_init(self.get_card_status)
         scan.nfc_enable()
         self.on_complete = on_complete
     
+    def get_card_status(self):
+        self.exist = scan.get_card_info()
+        if self.exist[0] == 0:
+            self.password_dialog(self.wallet, _('set password'), self.get_pw, self.stop_nfc)
+            
+        else:
+            self.password_dialog(self.wallet, _('Enter password'), self.get_pw, self.stop_nfc)
+    
+    def verify_password_limit(self, num):
+        if num == 0:
+            msg = "your card have unlocked,please to unlock it"
+        else:
+            msg = "verify failed, lave times = "
+            msg += str(num)
+        self.show_error(_(msg))
+
+    def get_pw(self, pw):
+        self.pw = pw
+        success = False
+        if self.exist[0] == 0:
+            scan.init_card(pw)
+            success = True
+        else:
+            verifyResult = scan.verify_password(pw)
+            if verifyResult[0] == 0x01:
+                success = True
+            else:
+                self.verify_password_limit(verifyResult[1])
+        if success:
+            self._scan_nfc()
+
     def stop_nfc(self):
-        print("stop nfc........")
         scan.nfc_disable()
 
     def _scan_nfc(self):
@@ -516,6 +544,7 @@ class ElectrumWindow(App):
 
         xpubNeedByte = bytes(unComPubk+chainCode)
         pubcStr = binascii.hexlify(xpubNeedByte)
+       
         self.on_complete(pubcStr)
 
     def do_share(self, data, title):
@@ -779,7 +808,7 @@ class ElectrumWindow(App):
             self._trigger_update_wallet()
 
     @profiler
-    def load_wallet(self, wallet):
+    def load_wallet(self, wallet: 'Abstract_Wallet'):
         if self.wallet:
             self.stop_wallet()
         self.wallet = wallet
@@ -796,6 +825,9 @@ class ElectrumWindow(App):
         except InternalAddressCorruption as e:
             self.show_error(str(e))
             send_exception_to_crash_reporter(e)
+            #return
+        
+        #self.use_change = self.wallet.use_change
 
     def update_status(self, *dt):
         if not self.wallet:
@@ -1084,7 +1116,7 @@ class ElectrumWindow(App):
 
     def on_fee(self, event, *arg):
         self.fee_status = self.electrum_config.get_fee_status()
-
+        
     def protected(self, msg, f, args):
         if self.wallet.has_password():
             on_success = lambda pw: f(*(args + (pw,)))
@@ -1136,11 +1168,11 @@ class ElectrumWindow(App):
         if passphrase:
             label.text += '\n\n' + _('Passphrase') + ': ' + passphrase
 
-    def password_dialog(self, wallet, msg, on_success, on_failure):
+    def password_dialog(self, wallet, msg, on_success, on_failure, is_change = 0):
         from .uix.dialogs.password_dialog import PasswordDialog
         if self._password_dialog is None:
             self._password_dialog = PasswordDialog()
-        self._password_dialog.init(self, wallet, msg, on_success, on_failure)
+        self._password_dialog.init(self, wallet, msg, on_success, on_failure, is_change)
         self._password_dialog.open()
 
     def change_password(self, cb):

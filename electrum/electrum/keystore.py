@@ -116,7 +116,7 @@ class Software_KeyStore(KeyStore):
         decrypted = ec.decrypt_message(message)
         return decrypted
 
-    def sign_transaction(self, tx, password, callback = None):
+    def sign_transaction(self, tx, password, callback=None, pw_dialog=None):
         # if self.is_watching_only():
         #     return
         # Raise if password is not correct.
@@ -127,7 +127,7 @@ class Software_KeyStore(KeyStore):
         #     keypairs[k] = self.get_private_key(v, password)
         # # Sign
         if keypairs:
-            tx.sign(keypairs, callback)
+            tx.sign(keypairs, callback, password, pw_dialog)
 
     def update_password(self, old_password, new_password):
         raise NotImplementedError()  # implemented by subclasses

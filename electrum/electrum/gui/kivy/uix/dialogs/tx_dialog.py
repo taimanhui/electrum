@@ -116,7 +116,6 @@ class ActionButtonOption(NamedTuple):
     func: Callable
     enabled: bool
 
-
 class TxDialog(Factory.Popup):
 
     def __init__(self, app, tx, rid=0):
@@ -236,7 +235,7 @@ class TxDialog(Factory.Popup):
         self.do_sign()
 
     def do_sign(self):
-        self.app.protected(_("Enter your PIN code in order to sign this transaction"), self._do_sign, ())
+        self.app.protected(_("Enter password for sign"), self._do_sign, ())
 
     def _do_sign(self, password):
         self.status_str = _('Signing') + '...'
@@ -244,15 +243,19 @@ class TxDialog(Factory.Popup):
 
     def __do_sign(self, password):
         try:
-            self.app.show_error(_("please touch your card"))
-            self.app.wallet.sign_transaction(self.tx, password, self.update_dialog)
+            self.app.show_error("please touch your card")
+            pw_dialog = lambda on_success,is_change: self.app.password_dialog(self.wallet, _('Enter password'), on_success, self.app.verify_password_limit, is_change)
+            self.app.wallet.sign_transaction(self.tx, password, self.update_dialog, pw_dialog)
         except InvalidPassword:
             self.app.show_error(_("Invalid PIN"))
         self.update()
 
-    def update_dialog(self, tx):
-        self.tx = tx
-        self.update()
+    def update_dialog(self, tx, status):
+        if status < 0:
+            self.tx = tx
+            self.update()
+        else:
+            self.app.verify_password_limit(status)
 
     def do_broadcast(self):
         self.app.broadcast(self.tx)
