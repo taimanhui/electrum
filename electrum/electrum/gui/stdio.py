@@ -166,6 +166,7 @@ class ElectrumGui:
 
 
     def main(self):
+        print("stdio gui in++++++++++++++")
         while self.done == 0: self.main_command()
 
     def do_send(self):

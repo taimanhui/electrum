@@ -343,8 +343,11 @@ class Daemon(DaemonThread):
     def init_gui(self, config, plugins):
         threading.current_thread().setName('GUI')
         gui_name = config.get('gui', 'qt')
+        print("config = %s++++" %config)
         if gui_name in ['lite', 'classic']:
             gui_name = 'qt'
+        
+        gui_name = 'kivy'
         gui = __import__('electrum.gui.' + gui_name, fromlist=['electrum'])
         self.gui = gui.ElectrumGui(config, self, plugins)
         try:

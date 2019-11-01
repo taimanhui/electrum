@@ -315,6 +315,7 @@ class ElectrumGui(Logger):
                 wizard.terminate()
 
     def main(self):
+        print("qt gui in++++++++++++++")
         try:
             self.init_network()
         except UserCancelled:

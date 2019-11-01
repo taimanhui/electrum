@@ -64,7 +64,9 @@ def check_imports():
         import jsonrpclib
         import aiorpcx
     except ImportError as e:
+        # print("e = %s" %e)
         sys.exit(f"Error: {str(e)}. Try 'sudo python3 -m pip install <module-name>'")
+
     # the following imports are for pyinstaller
     from google.protobuf import descriptor
     from google.protobuf import message
@@ -312,7 +314,8 @@ if __name__ == '__main__':
         config_options = {
             'verbosity': '',
             'cmd': 'gui',
-            'regtest': True,
+            #'regtest': True,
+            'testnet': True,
             'gui': 'kivy',
         }
     else:
@@ -346,7 +349,10 @@ if __name__ == '__main__':
     config = SimpleConfig(config_options)
 
     cmdname = config.get('cmd')
+    print("cmdname = %s++++" %cmdname)
 
+    ##test code
+    constants.set_testnet()
     if config.get('testnet'):
         constants.set_testnet()
     elif config.get('regtest'):

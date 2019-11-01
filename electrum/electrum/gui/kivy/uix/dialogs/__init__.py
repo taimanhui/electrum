@@ -58,7 +58,7 @@ class AnimatedPopup(Factory.Popup):
         anim.bind(on_complete=on_complete)
         anim.start(self)
 
-class EventsDialog(Factory.Popup):
+class EventsDialog(Factory.ModalView):
     ''' Abstract Popup that provides the following events
     .. events::
         `on_release`

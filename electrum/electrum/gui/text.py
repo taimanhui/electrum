@@ -311,7 +311,7 @@ class ElectrumGui:
         pass
 
     def main(self):
-
+        print("text gui in++++++++++++++")
         tty.setraw(sys.stdin)
         try:
             while self.tab != -1:

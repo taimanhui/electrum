@@ -65,11 +65,15 @@ Factory.register('TabbedCarousel', module='electrum.gui.kivy.uix.screens')
 # Register fonts without this you won't be able to use bold/italic...
 # inside markup.
 from kivy.core.text import Label
+#'''
 Label.register('Roboto',
                'electrum/gui/kivy/data/fonts/Roboto.ttf',
                'electrum/gui/kivy/data/fonts/Roboto.ttf',
                'electrum/gui/kivy/data/fonts/Roboto-Bold.ttf',
                'electrum/gui/kivy/data/fonts/Roboto-Bold.ttf')
+#'''
+Label.register('Roboto',
+               'electrum/gui/kivy/data/fonts/DroidSansFallback.ttf',)
 
 from .nfc_scanner.scanner_android import *
 
@@ -81,6 +85,7 @@ class ElectrumWindow(App):
 
     electrum_config = ObjectProperty(None)
     language = StringProperty('en')
+    #language = StringProperty('zh_CN')
 
     # properties might be updated by the network
     num_blocks = NumericProperty(0)
@@ -278,6 +283,11 @@ class ElectrumWindow(App):
     '''
 
     def __init__(self, **kwargs):
+        #import kivy
+        #kivy.resources.resource_add_path('electrum/gui/kivy/data/fonts/')
+        #self.font_cn = kivy.resources.resource_find('DroidSansFallback.ttf')
+        #print("font_cn in app is %s...." %self.font_cn)
+
         # initialize variables
         self._clipboard = Clipboard
         self.info_bubble = None
@@ -288,11 +298,12 @@ class ElectrumWindow(App):
         self.pause_time = 0
         self.asyncio_loop = asyncio.get_event_loop()
 
+        print("main_windows.py init in.....+++++++++++++++++++")
         App.__init__(self)#, **kwargs)
 
         title = _('Electrum App')
         self.electrum_config = config = kwargs.get('config', None)
-        self.language = config.get('language', 'en')
+        self.language = config.get('language', 'zh_CN')
         self.network = network = kwargs.get('network', None)  # type: Network
         if self.network:
             self.num_blocks = self.network.get_local_height()
@@ -325,6 +336,13 @@ class ElectrumWindow(App):
         # cached dialogs
         self._settings_dialog = None
         self._password_dialog = None
+        self._nfc_scan_dialog = None
+        self._new_wallet_dialog = None
+        self._create_multi_dialog = None
+        self._add_cosigner_dialog = []
+        self._get_cosigner_info_dialog = []
+
+        self.wizard = None
         self.fee_status = self.electrum_config.get_fee_status()
 
     def on_pr(self, pr):
@@ -463,8 +481,8 @@ class ElectrumWindow(App):
             send_exception_to_crash_reporter(e)
      
     def scan_qr(self, on_complete):
-        if platform != 'android':
-            return
+        # if platform != 'android':
+        #     return
         from jnius import autoclass, cast
         from android import activity
         PythonActivity = autoclass('org.kivy.android.PythonActivity')
@@ -488,8 +506,8 @@ class ElectrumWindow(App):
         PythonActivity.mActivity.startActivityForResult(intent, 0)
         
     def scan_nfc(self, on_complete):
-        if platform != 'android':
-            return
+        # if platform != 'android':
+        #     return
         self.show_error("please touch your card")
         scan.nfc_init(self.get_card_status)
         scan.nfc_enable()
@@ -548,8 +566,8 @@ class ElectrumWindow(App):
         self.on_complete(pubcStr)
 
     def do_share(self, data, title):
-        if platform != 'android':
-            return
+        # if platform != 'android':
+        #     return
         from jnius import autoclass, cast
         JS = autoclass('java.lang.String')
         Intent = autoclass('android.content.Intent')
@@ -628,12 +646,20 @@ class ElectrumWindow(App):
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
             self.load_wallet(wallet)
+            # from .uix.dialogs.create_wallet_success import CreateWalletSuccDialog
+            # d = CreateWalletSuccDialog(self, wizard.path)
+            # d.open()
+
+            # from electrum.gui.kivy.uix.dialogs.get_cosigner_info import GetCosignerDialogInfo
+            # d = GetCosignerDialogInfo(self.wizard)
+            # d.open()
+            self.popup_dialog("get_cosigner_info")
         elif not self.wallet:
             # wizard did not return a wallet; and there is no wallet open atm
             # try to open last saved wallet (potentially start wizard again)
             self.load_wallet_by_name(self.electrum_config.get_wallet_path(), ask_if_wizard=True)
 
-    def load_wallet_by_name(self, path, ask_if_wizard=False):
+    def load_wallet_by_name(self, path, ask_if_wizard=False, m=2, n=2):
         if not path:
             return
         if self.wallet and self.wallet.storage.path == path:
@@ -646,16 +672,18 @@ class ElectrumWindow(App):
                 self.load_wallet(wallet)
         else:
             def launch_wizard():
-                wizard = Factory.InstallWizard(self.electrum_config, self.plugins)
-                wizard.path = path
-                wizard.bind(on_wizard_complete=self.on_wizard_complete)
+                self.wizard = Factory.InstallWizard(self.electrum_config, self.plugins)
+                self.wizard.path = path
+                self.wizard.set_wallet_data(self, path, m, n)
+                self.wizard.bind(on_wizard_complete=self.on_wizard_complete)
+                print("launch_wizard path = %s" %path)
                 storage = WalletStorage(path, manual_upgrades=True)
                 if not storage.file_exists():
-                    wizard.run('new')
+                    self.wizard.run('new')
                 elif storage.is_encrypted():
                     raise Exception("Kivy GUI does not support encrypted wallet files.")
                 elif storage.requires_upgrade():
-                    wizard.upgrade_storage(storage)
+                    self.wizard.upgrade_storage(storage)
                 else:
                     raise Exception("unexpected storage file situation")
             if not ask_if_wizard:
@@ -712,17 +740,81 @@ class ElectrumWindow(App):
             #self.gui.main_gui.toggle_settings(self)
             return True
 
+    def close_open_dialog(self):
+        #pass
+        #if self._new_wallet_dialog is not None:
+        self._new_wallet_dialog.dismiss()
+        self._new_wallet_dialog = None
+       # if self._create_multi_dialog is not None:
+        self._create_multi_dialog.dismiss()
+        self._create_multi_dialog = None
+
+        for d in self._add_cosigner_dialog:
+            print("_add_cosigner_dialog d=%s" %d)
+            d.dismiss()
+        self._add_cosigner_dialog = []
+
+        for d in self._get_cosigner_info_dialog:
+            print("_get_cosigner_info_dialog d=%s" % d)
+            d.dismiss()
+        _get_cosigner_info_dialog = []
+
+    def new_wallet_dialog(self):
+        from .uix.dialogs.new_wallet import NewWalletDialog
+        if self._new_wallet_dialog is None:
+            self._new_wallet_dialog = NewWalletDialog(self)
+       # self._settings_dialog.update()
+        print("setting test...")
+        self._new_wallet_dialog.open()
+
+    def create_multi_dialog(self):
+        from .uix.dialogs.create_multi_wallet import CreateMultiWalletDialog
+        if self._create_multi_dialog is None:
+            self._create_multi_dialog = CreateMultiWalletDialog(self)
+        # self._settings_dialog.update()
+        print("setting test...")
+        self._create_multi_dialog.open()
+
     def settings_dialog(self):
         from .uix.dialogs.settings import SettingsDialog
         if self._settings_dialog is None:
             self._settings_dialog = SettingsDialog(self)
-        self._settings_dialog.update()
+       # self._settings_dialog.update()
+        print("setting test...")
         self._settings_dialog.open()
+
+    def nfc_scan_dialog(self):
+        from .uix.dialogs.nfc_scan import NfcScanDialog
+        if self._nfc_scan_dialog is None:
+            self._nfc_scan_dialog = NfcScanDialog(self)
+        # self._settings_dialog.update()
+        self._nfc_scan_dialog.open()
 
     def popup_dialog(self, name):
         if name == 'settings':
             self.settings_dialog()
+        elif name == 'nfcscan':
+            self.nfc_scan_dialog()
+        elif name == 'create_wallet_success':
+            from .uix.dialogs.create_wallet_success import CreateWalletSuccDialog
+            d = CreateWalletSuccDialog(self)
+            d.open()
+        elif name == 'create_multi_wallet':
+            self.create_multi_dialog()
+        elif name == 'get_cosigner_info':
+            from .uix.dialogs.get_cosigner_info import GetCosignerDialogInfo
+            d = GetCosignerDialogInfo(self)
+            self._get_cosigner_info_dialog.append(d)
+            d.open()
+        elif name == 'add_cosigner':
+            from .uix.dialogs.add_cosigner import AddCosignerDialog
+            d = AddCosignerDialog(self)
+            self._add_cosigner_dialog.append(d)
+            d.open()
+        elif name == 'new_wallet':
+            self.new_wallet_dialog()
         elif name == 'wallets':
+            path = os.path.dirname(self.get_wallet_path())
             from .uix.dialogs.wallets import WalletDialog
             d = WalletDialog()
             d.open()
@@ -1173,6 +1265,7 @@ class ElectrumWindow(App):
         if self._password_dialog is None:
             self._password_dialog = PasswordDialog()
         self._password_dialog.init(self, wallet, msg, on_success, on_failure, is_change)
+        print("test.....")
         self._password_dialog.open()
 
     def change_password(self, cb):

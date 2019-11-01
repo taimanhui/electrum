@@ -55,6 +55,7 @@ class ElectrumGui:
     def main(self):
         from .main_window import ElectrumWindow
         self.config.open_last_wallet()
+        print("kivy gui in++++++++++++++")
         w = ElectrumWindow(config=self.config,
                            network=self.network,
                            plugins = self.plugins,

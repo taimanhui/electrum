@@ -1208,13 +1208,8 @@ class Transaction:
         self.keypairs = keypairs
         self.callback = callback
 
-    def sign_txin(self, txin, txin_index, privkey_bytes, *, bip143_shared_txdigest_fields=None) -> str:
-        pre_hash = sha256d(bfh(self.serialize_preimage(txin_index,
-                                                       bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)))
-        print('pre data is.........',
-              ''.join(['%02X ' % b for b in pre_hash]))
-            
-        # #get path
+    def get_derive_path(self, txin):
+        #get path
         pubkey = txin['x_pubkeys'][0]
         pk = binascii.unhexlify("".join(pubkey))
         pk = pk[1:]
@@ -1235,7 +1230,16 @@ class Transaction:
         dpath = '/'.join(['%s' % b for b in s])
         path = "0'/"
         path += dpath
-        print("path = %s+++++++++++" %path)
+        return path
+
+    def sign_txin(self, txin, txin_index, privkey_bytes, *, bip143_shared_txdigest_fields=None) -> str:
+        pre_hash = sha256d(bfh(self.serialize_preimage(txin_index,
+                                                       bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)))
+        print('pre data is.........',
+              ''.join(['%02X ' % b for b in pre_hash]))
+            
+        path = self.get_derive_path(txin)
+        print("path = %s" %path)
         sigbyte, keyX = scan.sign_hash(path, pre_hash)
         #sigbyte = scan.sign_hash("0'/0/0", pre_hash)
         sig = bh2u(bytes(sigbyte))
@@ -1250,6 +1254,11 @@ class Transaction:
             sig_index = i
         print("sig_index = %s" % sig_index)
 
+        sig = self.get_canonicalize_signature(sig)
+        print("after sig = %s" %sig)
+        return sig, sig_index
+
+    def get_canonicalize_signature(self, sig):
         # s too high
         sigbyte = binascii.unhexlify(sig)
         rLength = sigbyte[3]
@@ -1261,24 +1270,13 @@ class Transaction:
         if s > maxN:
             s = N - s
             s = ecc.number_to_string(s, ecc.CURVE_ORDER)
-            sh = binascii.hexlify(s)
-            sigend = sigbyte[:4 + rLength + 1]
-            sigend += bytes((32,))
-            sigend += s
-            sigend += sigbyte[-1:]
-            sigendh = binascii.hexlify(bytes(sigend))
-            sig = str(sigendh)
-            sig = sig[2:-1]
+            sigend = (sigbyte[:4 + rLength + 1] + bytes((32,)) + s + sigbyte[-1:])
+            sigendHex = binascii.hexlify(bytes(sigend))
+            sig = (str(sigendHex))[2:-1]
 
-            siglen = int(sig[3])
-            siglen = siglen - 1
-            sigstr = str(siglen)
-            sigend = sig[:3]
-            sigend += sigstr
-            sigend += sig[4:]
-            sig = sigend
-        print("after sig = %s" %sig)
-        return sig, sig_index
+            sigstr = str(int(sig[3]) - 1)
+            sig = (sig[:3] + sigstr + sig[4:])
+        return sig
 
     def get_outputs_for_UI(self) -> Sequence[TxOutputForUI]:
         outputs = []

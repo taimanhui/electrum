@@ -964,7 +964,8 @@ class AddXpubDialog(WizardDialog):
                     else:
                         typeStr = "p2wsh"
 
-                net = constants.set_regtest()
+                #net = constants.set_regtest()
+                net = constants.set_testnet()
                 xpub = (xpub_header("p2wsh", net=constants.net) +
                         b'\x00' +
                         (b'\x00'*4) +
@@ -987,6 +988,11 @@ class InstallWizard(BaseWizard, Widget):
     def on_wizard_complete(self, wallet):
         """overriden by main_window"""
         pass
+
+    def set_wallet_data(self, app, path, m, n):
+        self.main_app = app
+        self.path = path
+        super(InstallWizard, self).set_wallet_info(m, n)
 
     def waiting_dialog(self, task, msg, on_finished=None):
         '''Perform a blocking task in the background by running the passed

@@ -6,32 +6,32 @@ from kivy.app import App
 from kivy.clock import Clock
 #Detect which platform we are on
 from kivy.utils import platform
-if platform != 'android':
-    raise ImportError
+# if platform != 'android':
+#     raise ImportError
 import threading
 import binascii
 
 from . import NFCBase
-from jnius import autoclass, cast
-from android.runnable import run_on_ui_thread
-from android import activity
+#from jnius import autoclass, cast
+#from android.runnable import run_on_ui_thread
+#from android import activity
 
 from electrum.gui.kivy.btchipHelpers import *
 from electrum.gui.kivy.bitcoinVarint import *
 
-BUILDVERSION = autoclass('android.os.Build$VERSION').SDK_INT
-NfcAdapter = autoclass('android.nfc.NfcAdapter')
-PythonActivity = autoclass('org.kivy.android.PythonActivity')
-JString = autoclass('java.lang.String')
-Charset = autoclass('java.nio.charset.Charset')
-locale = autoclass('java.util.Locale')
-Intent = autoclass('android.content.Intent')
-IntentFilter = autoclass('android.content.IntentFilter')
-PendingIntent = autoclass('android.app.PendingIntent')
-Ndef = autoclass('android.nfc.tech.Ndef')
-NdefRecord = autoclass('android.nfc.NdefRecord')
-NdefMessage = autoclass('android.nfc.NdefMessage')
-IsoDep = autoclass('android.nfc.tech.IsoDep')
+# BUILDVERSION = autoclass('android.os.Build$VERSION').SDK_INT
+# NfcAdapter = autoclass('android.nfc.NfcAdapter')
+# PythonActivity = autoclass('org.kivy.android.PythonActivity')
+# JString = autoclass('java.lang.String')
+# Charset = autoclass('java.nio.charset.Charset')
+# locale = autoclass('java.util.Locale')
+# Intent = autoclass('android.content.Intent')
+# IntentFilter = autoclass('android.content.IntentFilter')
+# PendingIntent = autoclass('android.app.PendingIntent')
+# Ndef = autoclass('android.nfc.tech.Ndef')
+# NdefRecord = autoclass('android.nfc.NdefRecord')
+# NdefMessage = autoclass('android.nfc.NdefMessage')
+# IsoDep = autoclass('android.nfc.tech.IsoDep')
 
 app = None
 
@@ -215,20 +215,20 @@ class ScannerAndroid(NFCBase):
         return NdefMessage(records)
 
 
-    @run_on_ui_thread
+    #@run_on_ui_thread
     def disable_foreground_dispatch(self):
         '''Disable foreground dispatch when app is paused.
         '''
         self.nfc_adapter.disableForegroundDispatch(self.j_context)
 
-    @run_on_ui_thread
+    #@run_on_ui_thread
     def enable_foreground_dispatch(self):
         '''Start listening for new tags
         '''
         self.nfc_adapter.enableForegroundDispatch(self.j_context,
                 self.nfc_pending_intent, None, None)
 
-    @run_on_ui_thread
+    #@run_on_ui_thread
     def _nfc_enable_ndef_exchange(self, data):
         # Enable p2p exchange
         # Create record
@@ -246,7 +246,7 @@ class ScannerAndroid(NFCBase):
         self.nfc_adapter.enableForegroundDispatch(self.j_context,
                 self.nfc_pending_intent, self.ndef_exchange_filters, [])
 
-    @run_on_ui_thread
+    #@run_on_ui_thread
     def _nfc_disable_ndef_exchange(self):
         # Disable p2p exchange
         self.nfc_adapter.disableForegroundNdefPush(self.j_context)
