@@ -61,7 +61,7 @@ Builder.load_string('''
             text_size: self.width, None
         TextInput:
             id: xpub
-            text:_('please input extended public key')
+            hint_text:_('please input extended public key')
             pos_hint: {'x':0.05, 'top':.55}
             foreground_color:(0.286, 0.286, 0.286, 1) if self.focus else [0.702, 0.702, 0.702, 1]
             background_normal: ''

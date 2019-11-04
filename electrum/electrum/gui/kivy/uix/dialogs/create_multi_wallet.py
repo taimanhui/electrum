@@ -18,10 +18,11 @@ Builder.load_string('''
 #:import os os
 
 <TextInputModel@TextInput>
-    text:_('Please input')
+    #text:_('Please input')
     size_hint: .5, 1
     multiline:False
     font_size: '15sp'
+    hint_text:_('Please input')
     foreground_color:(0.286, 0.286, 0.286, 1) if self.focus else [0.702, 0.702, 0.702, 1]
     background_normal: ''
     background_color: (1, 1, 1, 1)
