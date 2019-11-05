@@ -162,5 +162,11 @@ class CreateMultiWalletDialog(Factory.ModalView):
         self.path = self.ids.name.text
         self.m = self.ids.m.text
         self.n = self.ids.n.text
+        #dirname = os.path.dirname(self.app.get_wallet_path())
+        #self.app.load_wallet_by_name(os.path.join(dirname, self.path), m=int(self.m), n=int(self.n))
+
         dirname = os.path.dirname(self.app.get_wallet_path())
+        if dirname == '':
+            dirname = self.app.electrum_config.get_wallet_path()
+            dirname = dirname[:-15]
         self.app.load_wallet_by_name(os.path.join(dirname, self.path), m=int(self.m), n=int(self.n))

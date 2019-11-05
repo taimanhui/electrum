@@ -65,35 +65,34 @@ class NfcScanDialog(Factory.ModalView):
         self.plugins = self.app.plugins
         self.config = self.app.electrum_config
         Factory.ModalView.__init__(self)
+        scan.nfc_init(self.get_card_status)
+        scan.nfc_enable()
 
-        #scan.nfc_init(self.get_card_status)
-        #scan.nfc_enable()
     def on_open(self):
         print("on_open")
-        import time
-        time.sleep(2)
-        self.get_card_status()
-        #from threading import Timer
-        #t = Timer(1, self.get_card_status())
-       # t.start()
+        # import time
+        # time.sleep(2)
+        # self.get_card_status()
 
     def get_card_status(self):
-        #self.exist = scan.get_card_info()
-        #self.exist[1] = 0
-        #if self.exist[0] == 0:
-        #    self.password_dialog(self.wallet, _('set password'), self.get_pw, self.stop_nfc)
-        #else:
-        self.app.password_dialog(self.app.wallet, _('New Password'), self.get_pw, self.stop_nfc, is_change=3)
-        #self.app.popup_dialog('settings')
+        #get status from smart card
+        exist = scan.get_card_info()
+        if exist[0] == 0:
+            #activate smart card
+            self.app.password_dialog(self.app.wallet, _('New Password'), self.get_pw, self.stop_nfc, is_change=3)
+        else:
+            print("Already activated,popup have been activated dialog")
+            #Already activated,popup have been activated dialog
+            #self.app.popup_dialog('')
 
     def stop_nfc(self):
         print("stop_nfc")
         #scan.nfc_disable()
 
     def get_pw(self, pw):
-        self.pw = pw
-        print("get_pw = %s" %self.pw)
         success = False
+        #if self.exist[0] == 0:
+        scan.init_card(pw)
 '''
         if self.exist[0] == 0:
             #scan.init_card(pw)

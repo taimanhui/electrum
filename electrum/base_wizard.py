@@ -86,6 +86,12 @@ class BaseWizard(Logger):
     def get_keystore(self):
         return self.keystores
 
+    def delete_xpub(self, xpub):
+        for pub in map(lambda x: x.xpub, self.keystores):
+            if pub == xpub:
+                self.keystores.pop()
+                break
+
     def set_icon(self, icon):
         pass
 

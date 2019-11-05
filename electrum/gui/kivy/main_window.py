@@ -85,7 +85,6 @@ class ElectrumWindow(App):
 
     electrum_config = ObjectProperty(None)
     language = StringProperty('en')
-    #language = StringProperty('zh_CN')
 
     # properties might be updated by the network
     num_blocks = NumericProperty(0)
@@ -627,7 +626,12 @@ class ElectrumWindow(App):
             self.network.register_callback(self.on_quotes, ['on_quotes'])
             self.network.register_callback(self.on_history, ['on_history'])
         # load wallet
-        self.load_wallet_by_name(self.electrum_config.get_wallet_path())
+       # self.load_wallet_by_name(self.electrum_config.get_wallet_path())
+        path = self.electrum_config.get_wallet_path()
+        if os.path.exists(path):
+            self.load_wallet_by_name(self.electrum_config.get_wallet_path())
+        else:
+            self.popup_dialog("new_wallet")
         # URI passed in config
         uri = self.electrum_config.get('url')
         if uri:
