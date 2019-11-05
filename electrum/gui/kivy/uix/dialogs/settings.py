@@ -33,196 +33,135 @@ Builder.load_string('''
         HeadModel:
             message: _('Settings')
             action: partial(root.dismiss)
-        BoxLayout:
-            orientation: 'horizontal'
-            pos_hint: {'x': 0, 'y':.78}
-            size_hint: 1, None
-            height: '50dp'
-            padding: '25dp'
+        
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [10,100]
+        spacing: 10
+        Button:
+            background_color: [0.97, 0.976, 0.988, 0] 
+            on_release:
+                Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                center_y: self.parent.center_y
+                x: self.parent.width - dp(20)
+                size: 11, 18
+                allow_stretch: True
             Label:
-                text_size: self.width-dp(20), self.height-dp(13 )
-                size_hint: .7, None
+                x : self.parent.x + dp(60)
+                center_y: self.parent.center_y
                 text: _("check/activation cold wallet")
-                color: [0.098, 0.098, 0.439, 1]
-                halign: 'left'
-            Button:
-                size_hint: None, None
-                size: 50, 30
-                background_normal: ''
-                background_color: [0.972, 0.976, 0.988, 1]
-                on_release:
-                    Clock.schedule_once(lambda x: app.popup_dialog('activation'))
-                Image:
-                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
-                    y: self.parent.y+dp(5)
-                    x: self.parent.x+dp(20)
-                    size: 11, 18
-                    allow_stretch: True
+                color: [0, 0, 0, 1]
         CardSeparatorLine:
             pos_hint: {'x':.06, 'y': .81}
-        BoxLayout:
-            orientation: 'horizontal'
-            pos_hint: {'x': 0, 'y':.69}
-            size_hint: 1, None
-            height: '50dp'
-            padding: '30dp'
+        Button:
+            background_color: [0.972, 0.976, 0.988, 0] 
+            on_release:
+                Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                center_y: self.parent.center_y
+                x: self.parent.width - dp(20)
+                size: 11, 18
+                allow_stretch: True
             Label:
-                text_size: self.width-dp(20), self.height-dp(13)
-                size_hint: .7, None
+                x: self.parent.x + dp(35)
+                center_y: self.parent.center_y
                 text: _("message manager")
-                color: [0.098, 0.098, 0.439, 1]
-                halign: 'left'
-            Button:
-                size_hint: None, None
-                size: 50, 30
-                background_normal: ''
-                background_color: [0.972, 0.976, 0.988, 1]
-                on_release:
-                    Clock.schedule_once(lambda x: app.popup_dialog('activation'))
-                Image:
-                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
-                    y: self.parent.y+dp(5)
-                    x: self.parent.x+dp(20)
-                    size: 11, 18
-                    allow_stretch: True
+                color: [0, 0, 0, 1]
         CardSeparatorLine:
-            pos_hint: {'x':.06, 'y':.73}
-        BoxLayout:
-            orientation: 'horizontal'
-            pos_hint: {'x': 0, 'y':.61}
-            size_hint: 1, None
-            height: '50dp'
-            padding: '30dp'
+            pos_hint: {'x':.06, 'y': .81}
+        Button:
+            background_color: [0.972, 0.976, 0.988, 0] 
+            on_release:
+                Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                center_y: self.parent.center_y
+                x: self.parent.width - dp(20)
+                size: 11, 18
+                allow_stretch: True
             Label:
-                text_size: self.width-dp(20), self.height-dp(13)
-                size_hint: .7, None
+                x : self.parent.x + dp(20)
+                center_y: self.parent.center_y
                 text: _("Language")
-                color: [0.098, 0.098, 0.439, 1]
-                halign: 'left'
-            Button:
-                size_hint: None, None
-                size: 50, 30
-                background_normal: ''
-                background_color: [0.972, 0.976, 0.988, 1]
-                on_release:
-                    Clock.schedule_once(partial(root.language_dialog, self))
-                Image:
-                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
-                    y: self.parent.y+dp(5)
-                    x: self.parent.x+dp(20)
-                    size: 11, 18
-                    allow_stretch: True
+                color: [0, 0, 0, 1]
         CardSeparatorLine:
-            pos_hint: {'x':.06, 'y':.64}
-        BoxLayout:
-            orientation: 'horizontal'
-            pos_hint: {'x': 0, 'y':.53}
-            size_hint: 1, None
-            height: '50dp'
-            padding: '30dp'
+            pos_hint: {'x':.06, 'y': .81}
+        Button:
+            background_color: [0.972, 0.976, 0.988, 0] 
+            on_release:
+                Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                center_y: self.parent.center_y
+                x: self.parent.width - dp(20)
+                size: 11, 18
+                allow_stretch: True
             Label:
-                text_size: self.width-dp(20), self.height-dp(13)
-                size_hint: .7, None
+                x : self.parent.x + dp(35)
+                center_y: self.parent.center_y
                 text: _("server setting")
-                color: [0.098, 0.098, 0.439, 1]
-                halign: 'left'
-            Button:
-                size_hint: None, None
-                size: 50, 30
-                background_normal: ''
-                background_color: [0.972, 0.976, 0.988, 1]
-                on_release:
-                    Clock.schedule_once(partial(root.language_dialog, self))
-                Image:
-                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
-                    y: self.parent.y+dp(5)
-                    x: self.parent.x+dp(20)
-                    size: 11, 18
-                    allow_stretch: True
+                color: [0, 0, 0, 1]
         CardSeparatorLine:
-            pos_hint: {'x':.06, 'y':.56}
-        BoxLayout:
-            orientation: 'horizontal'
-            pos_hint: {'x': 0, 'y':.45}
-            size_hint: 1, None
-            height: '50dp'
-            padding: '30dp'
+            pos_hint: {'x':.06, 'y': .81}
+        Button:
+            background_color: [0.972, 0.976, 0.988, 0] 
+            on_release:
+                Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                center_y: self.parent.center_y
+                x: self.parent.width - dp(20)
+                size: 11, 18
+                allow_stretch: True
             Label:
-                text_size: self.width-dp(20), self.height-dp(13)
-                size_hint: .7, None
+                x : self.parent.x + dp(25)
+                center_y: self.parent.center_y
                 text: _("transaction setting")
-                color: [0.098, 0.098, 0.439, 1]
-                halign: 'left'
-            Button:
-                size_hint: None, None
-                size: 50, 30
-                background_normal: ''
-                background_color: [0.972, 0.976, 0.988, 1]
-                on_release:
-                    Clock.schedule_once(partial(root.language_dialog, self))
-                Image:
-                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
-                    y: self.parent.y+dp(5)
-                    x: self.parent.x+dp(20)
-                    size: 11, 18
-                    allow_stretch: True
+                color: [0, 0, 0, 1]
         CardSeparatorLine:
-            pos_hint: {'x':.06, 'y':.48}
-        BoxLayout:
-            orientation: 'horizontal'
-            pos_hint: {'x':0 , 'y':.3}
-            size_hint: 1, None
-            height: '50dp'
-            padding: '30dp' 
+            pos_hint: {'x':.06, 'y': .81}
+        Button:
+            background_color: [0.972, 0.976, 0.988, 0] 
+            on_release:
+                Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                center_y: self.parent.center_y
+                x: self.parent.width - dp(20)
+                size: 11, 18
+                allow_stretch: True
             Label:
-                text_size: self.width-dp(20), self.height-dp(13)
-                size_hint: .7, None
+                x : self.parent.x + dp(30)
+                center_y: self.parent.center_y
                 text: _("service online")
-                color: [0.098, 0.098, 0.439, 1]
-                halign: 'left'
-            Button:
-                size_hint: None, None
-                size: 50, 30
-                background_normal: ''
-                background_color: [0.972, 0.976, 0.988, 1]
-                on_release:
-                    Clock.schedule_once(lambda x: app.popup_dialog('activation'))
-                Image:
-                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
-                    y: self.parent.y+dp(5)
-                    x: self.parent.x+dp(20)
-                    size: 11, 18
-                    allow_stretch: True
+                color: [0, 0, 0, 1]
         CardSeparatorLine:
-            pos_hint: {'x':.06, 'y':.33}
-        BoxLayout:
-            orientation: 'horizontal'
-            pos_hint: {'x':0 , 'y':.22}
-            size_hint: 1, None
-            height: '50dp'
-            padding: '30dp' 
+            pos_hint: {'x':.06, 'y': .81}
+        Button:
+            background_color: [0.972, 0.976, 0.988, 0] 
+            on_release:
+                Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                center_y: self.parent.center_y
+                x: self.parent.width - dp(20)
+                size: 11, 18
+                allow_stretch: True
             Label:
-                text_size: self.width-dp(20), self.height-dp(13)
-                size_hint: .7, None
+                x : self.parent.x + dp(50)
+                center_y: self.parent.center_y
                 text: _("about(protocol)")
-                color: [0.098, 0.098, 0.439, 1]
-                halign: 'left'
-            Button:
-                size_hint: None, None
-                size: 50, 30
-                background_normal: ''
-                background_color: [0.972, 0.976, 0.988, 1]
-                on_release:
-                    Clock.schedule_once(lambda x: app.popup_dialog('activation'))
-                Image:
-                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
-                    y: self.parent.y+dp(5)
-                    x: self.parent.x+dp(20)
-                    size: 11, 18
-                    allow_stretch: True
-        CardSeparatorLine:
-            pos_hint: {'x':.06, 'y':.25}
-
+                color: [0, 0, 0, 1]
 ''')
 
 
