@@ -274,7 +274,7 @@
             size: self.size
             pos: self.pos
     Button:
-        pos_hint: {'x':0, 'top':1}
+        pos_hint: {'x':.015, 'top':.7}
         size_hint: .1, None
         height:50
         on_release: Clock.schedule_once(self.parent.action)
@@ -284,7 +284,7 @@
             source: 'atlas://electrum/gui/kivy/theming/light/arrow_back'
             y: self.parent.y+dp(5)
             x: self.parent.x
-            size: 50, 30
+            size: 35, 35
             allow_stretch: True
     Label:
         text: root.message
@@ -527,17 +527,6 @@ BoxLayout:
                 font_size: '22dp'
                 #minimum_width: '1dp'
                 on_release: app.popup_dialog('status')
-
-            ActionButton:
-                id: action_setting
-                important: True
-                size_hint: 1, 1
-                bold: True
-                color: 1, 1, 1, 1
-                text: 'Set'
-                font_size: '22dp'
-                #minimum_width: '1dp'
-                on_release: app.popup_dialog('settings')
 
             ActionOverflow:
                 id: ao
