@@ -6,13 +6,10 @@ from numbers import Number
 
 from electrum.network import filter_protocol, Network
 from electrum.util import create_and_start_event_loop, log_exceptions
-from electrum.simple_config import SimpleConfig
 
-
-config = SimpleConfig()
 
 loop, stopping_fut, loop_thread = create_and_start_event_loop()
-network = Network(config)
+network = Network()
 network.start()
 
 @log_exceptions

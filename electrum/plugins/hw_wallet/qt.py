@@ -36,7 +36,6 @@ from electrum.gui.qt.util import (read_QIcon, WWLabel, OkButton, WindowModalDial
 
 from electrum.i18n import _
 from electrum.logging import Logger
-from electrum.util import parse_URI, InvalidBitcoinURI
 
 from .plugin import OutdatedHwFirmwareException
 
@@ -256,14 +255,6 @@ class QtPluginBase(object):
         receive_address_e = main_window.receive_address_e
 
         def show_address():
-            addr = str(receive_address_e.text())
-            # note: 'addr' could be ln invoice or BIP21 URI
-            try:
-                uri = parse_URI(addr)
-            except InvalidBitcoinURI:
-                pass
-            else:
-                addr = uri.get('address')
+            addr = receive_address_e.text()
             keystore.thread.add(partial(plugin.show_address, wallet, addr, keystore))
-        dev_name = f"{plugin.device} ({keystore.label})"
-        receive_address_e.addButton("eye1.png", show_address, _("Show on {}").format(dev_name))
+        receive_address_e.addButton("eye1.png", show_address, _("Show on {}").format(plugin.device))

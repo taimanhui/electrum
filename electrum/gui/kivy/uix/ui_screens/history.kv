@@ -7,9 +7,11 @@
 
 
 <CardLabel@Label>
-    color: .7, .7, .7, 1
+    color: 0.95, 0.95, 0.95, 1
+    size_hint: 1, None
+    text: ''
     text_size: self.width, None
-    #height: self.texture_size[1]
+    height: self.texture_size[1]
     halign: 'left'
     valign: 'top'
 
@@ -17,15 +19,13 @@
 <HistoryItem@CardItem>
     icon: 'atlas://electrum/gui/kivy/theming/light/important'
     message: ''
-    fee_text: ''
     is_mine: True
     amount: '--'
+    action: _('Sent') if self.is_mine else _('Received')
     amount_color: '#FF6657' if self.is_mine else '#2EA442'
     confirmations: 0
     date: ''
     quote_text: ''
-    amount_str: self.quote_text if app.is_fiat else self.amount
-    unit_str: app.fx.ccy if app.is_fiat else app.base_unit
     Image:
         id: icon
         source: root.icon
@@ -34,36 +34,18 @@
         width: self.height*1.5
         mipmap: True
     BoxLayout:
-        spacing: '8dp'
-        height: '32dp'
         orientation: 'vertical'
         Widget
         CardLabel:
-            color: 0.95, 0.95, 0.95, 1
-            text: root.message
-            shorten: True
-            shorten_from: 'right'
+            text:
+                u'[color={color}]{s}[/color]'.format(s='<<' if root.is_mine else '>>', color=root.amount_color)\
+                + ' ' + root.action + ' ' + (root.quote_text if app.is_fiat else root.amount)
             font_size: '15sp'
-        Widget
         CardLabel:
-            font_size: '12sp'
+            color: .699, .699, .699, 1
+            font_size: '14sp'
             shorten: True
-            text: root.date
-        Widget
-    BoxLayout:
-        spacing: '8dp'
-        height: '32dp'
-        orientation: 'vertical'
-        Widget
-        CardLabel:
-            text: u'[color={color}]{s}[/color]'.format(s=root.amount_str, color=root.amount_color) + ' ' + '[size=12sp]' + root.unit_str + '[/size]'
-            halign: 'right'
-            font_size: '15sp'
-        Widget
-        CardLabel:
-            text: root.fee_text
-            halign: 'right'
-            font_size: '12sp'
+            text: root.date + '   ' + root.message
         Widget
 
 <HistoryRecycleView>:

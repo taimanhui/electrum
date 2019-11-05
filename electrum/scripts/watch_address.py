@@ -6,7 +6,6 @@ import asyncio
 from electrum.network import Network
 from electrum.util import print_msg, create_and_start_event_loop
 from electrum.synchronizer import SynchronizerBase
-from electrum.simple_config import SimpleConfig
 
 
 try:
@@ -15,11 +14,9 @@ except Exception:
     print("usage: watch_address <bitcoin_address>")
     sys.exit(1)
 
-config = SimpleConfig()
-
 # start network
 loop = create_and_start_event_loop()[0]
-network = Network(config)
+network = Network()
 network.start()
 
 

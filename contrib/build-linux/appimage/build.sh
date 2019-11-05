@@ -20,13 +20,11 @@ SQUASHFSKIT_COMMIT="ae0d656efa2d0df2fcac795b6823b44462f19386"
 VERSION=`git describe --tags --dirty --always`
 APPIMAGE="$DISTDIR/electrum-$VERSION-x86_64.AppImage"
 
-. "$CONTRIB"/build_tools_util.sh
-
 rm -rf "$BUILDDIR"
 mkdir -p "$APPDIR" "$CACHEDIR" "$DISTDIR"
 
-# potential leftover from setuptools that might make pip put garbage in binary
-rm -rf "$PROJECT_ROOT/build"
+
+. "$CONTRIB"/build_tools_util.sh
 
 
 info "downloading some dependencies."
@@ -86,8 +84,8 @@ info "building libsecp256k1."
     git reset --hard "$LIBSECP_VERSION"
     git clean -f -x -q
     export SOURCE_DATE_EPOCH=1530212462
-    echo "LDFLAGS = -no-undefined" >> Makefile.am
     ./autogen.sh
+    echo "LDFLAGS = -no-undefined" >> Makefile.am
     ./configure \
       --prefix="$APPDIR/usr" \
       --enable-module-recovery \
@@ -141,7 +139,7 @@ mkdir -p "$CACHEDIR/pip_cache"
 
 
 info "copying zbar"
-cp "/usr/lib/x86_64-linux-gnu/libzbar.so.0" "$APPDIR/usr/lib/libzbar.so.0"
+cp "/usr/lib/libzbar.so.0" "$APPDIR/usr/lib/libzbar.so.0"
 
 
 info "desktop integration."
@@ -221,11 +219,8 @@ rm -rf "$PYDIR"/site-packages/PyQt5/Qt.so
 # these are deleted as they were not deterministic; and are not needed anyway
 find "$APPDIR" -path '*/__pycache__*' -delete
 rm "$APPDIR"/usr/lib/libsecp256k1.a
-# note that jsonschema-*.dist-info is needed by that package as it uses 'pkg_resources.get_distribution'
-for f in "$PYDIR"/site-packages/jsonschema-*.dist-info; do mv "$f" "$(echo "$f" | sed s/\.dist-info/\.dist-info2/)"; done
 rm -rf "$PYDIR"/site-packages/*.dist-info/
 rm -rf "$PYDIR"/site-packages/*.egg-info/
-for f in "$PYDIR"/site-packages/jsonschema-*.dist-info2; do mv "$f" "$(echo "$f" | sed s/\.dist-info2/\.dist-info/)"; done
 
 
 find -exec touch -h -d '2000-11-11T11:11:11+00:00' {} +

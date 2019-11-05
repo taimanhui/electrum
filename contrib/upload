@@ -2,14 +2,13 @@
 
 set -e
 
-host=$1
 version=`git describe --tags`
 echo $version
 
 here=$(dirname "$0")
 cd $here/../dist
 
-sftp -oBatchMode=no -b - thomasv@$host << !
+sftp -oBatchMode=no -b - thomasv@download.electrum.org << !
    cd electrum-downloads
    mkdir $version
    cd $version

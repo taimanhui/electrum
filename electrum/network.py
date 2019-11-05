@@ -20,7 +20,6 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import asyncio
 import time
 import queue
 import os
@@ -33,7 +32,7 @@ import json
 import sys
 import ipaddress
 import asyncio
-from typing import NamedTuple, Optional, Sequence, List, Dict, Tuple, TYPE_CHECKING
+from typing import NamedTuple, Optional, Sequence, List, Dict, Tuple
 import traceback
 
 import dns
@@ -53,21 +52,14 @@ from . import blockchain
 from . import bitcoin
 from .blockchain import Blockchain, HEADER_SIZE
 from .interface import (Interface, serialize_server, deserialize_server,
-                        RequestTimedOut, NetworkTimeout, BUCKET_NAME_OF_ONION_SERVERS,
-                        NetworkException)
+                        RequestTimedOut, NetworkTimeout, BUCKET_NAME_OF_ONION_SERVERS)
 from .version import PROTOCOL_VERSION
 from .simple_config import SimpleConfig
 from .i18n import _
 from .logging import get_logger, Logger
 
-if TYPE_CHECKING:
-    from .channel_db import ChannelDB
-    from .lnworker import LNGossip
-    from .lnwatcher import WatchTower
-
 
 _logger = get_logger(__name__)
-
 
 
 NODES_RETRY_INTERVAL = 60
@@ -182,10 +174,10 @@ def deserialize_proxy(s: str) -> Optional[dict]:
     return proxy
 
 
-class BestEffortRequestFailed(NetworkException): pass
+class BestEffortRequestFailed(Exception): pass
 
 
-class TxBroadcastError(NetworkException):
+class TxBroadcastError(Exception):
     def get_message_for_gui(self):
         raise NotImplementedError()
 
@@ -213,7 +205,7 @@ class TxBroadcastUnknownError(TxBroadcastError):
                     _("Consider trying to connect to a different server, or updating Electrum."))
 
 
-class UntrustedServerReturnedError(NetworkException):
+class UntrustedServerReturnedError(Exception):
     def __init__(self, *, original_exception):
         self.original_exception = original_exception
 
@@ -224,7 +216,7 @@ class UntrustedServerReturnedError(NetworkException):
         return f"<UntrustedServerReturnedError original_exception: {repr(self.original_exception)}>"
 
 
-_INSTANCE = None
+INSTANCE = None
 
 
 class Network(Logger):
@@ -234,19 +226,19 @@ class Network(Logger):
 
     LOGGING_SHORTCUT = 'n'
 
-    def __init__(self, config: SimpleConfig):
-        global _INSTANCE
-        assert _INSTANCE is None, "Network is a singleton!"
-        _INSTANCE = self
+    def __init__(self, config: SimpleConfig=None):
+        global INSTANCE
+        INSTANCE = self
 
         Logger.__init__(self)
 
         self.asyncio_loop = asyncio.get_event_loop()
-        assert self.asyncio_loop.is_running(), "event loop not running"
+       # assert self.asyncio_loop.is_running(), "event loop not running"
         self._loop_thread = None  # type: threading.Thread  # set by caller; only used for sanity checks
 
-        assert isinstance(config, SimpleConfig), f"config should be a SimpleConfig instead of {type(config)}"
-        self.config = config
+        if config is None:
+            config = {}  # Do not use mutables as default values!
+        self.config = SimpleConfig(config) if isinstance(config, dict) else config  # type: SimpleConfig
         blockchain.read_blockchains(self.config)
         self.logger.info(f"blockchains {list(map(lambda b: b.forkpoint, blockchain.blockchains.values()))}")
         self._blockchain_preferred_block = self.config.get('blockchain_preferred_block', None)  # type: Optional[Dict]
@@ -301,29 +293,14 @@ class Network(Logger):
 
         self._set_status('disconnected')
 
-        # lightning network
-        if self.config.get('lightning'):
-            from . import lnwatcher
-            from . import lnworker
-            from . import lnrouter
-            from . import channel_db
-            self.channel_db = channel_db.ChannelDB(self)
-            self.path_finder = lnrouter.LNPathFinder(self.channel_db)
-            self.lngossip = lnworker.LNGossip(self)
-            self.local_watchtower = lnwatcher.WatchTower(self) if self.config.get('local_watchtower', False) else None
-        else:
-            self.channel_db = None  # type: Optional[ChannelDB]
-            self.lngossip = None  # type: Optional[LNGossip]
-            self.local_watchtower = None  # type: Optional[WatchTower]
-
-    def run_from_another_thread(self, coro, *, timeout=None):
+    def run_from_another_thread(self, coro):
         assert self._loop_thread != threading.current_thread(), 'must not be called from network thread'
         fut = asyncio.run_coroutine_threadsafe(coro, self.asyncio_loop)
-        return fut.result(timeout)
+        return fut.result()
 
     @staticmethod
     def get_instance() -> Optional["Network"]:
-        return _INSTANCE
+        return INSTANCE
 
     def with_recent_servers_lock(func):
         def func_wrapper(self, *args, **kwargs):
@@ -572,27 +549,26 @@ class Network(Logger):
             return True
         def resolve_with_dnspython(host):
             addrs = []
-            expected_dnspython_errors = (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer)
             # try IPv6
             try:
                 answers = dns.resolver.query(host, dns.rdatatype.AAAA)
                 addrs += [str(answer) for answer in answers]
-            except expected_dnspython_errors as e:
+            except dns.exception.DNSException as e:
                 pass
             except BaseException as e:
-                _logger.info(f'dnspython failed to resolve dns (AAAA) for {repr(host)} with error: {repr(e)}')
+                _logger.info(f'dnspython failed to resolve dns (AAAA) with error: {e}')
             # try IPv4
             try:
                 answers = dns.resolver.query(host, dns.rdatatype.A)
                 addrs += [str(answer) for answer in answers]
-            except expected_dnspython_errors as e:
+            except dns.exception.DNSException as e:
                 # dns failed for some reason, e.g. dns.resolver.NXDOMAIN this is normal.
                 # Simply report back failure; except if we already have some results.
                 if not addrs:
                     raise socket.gaierror(11001, 'getaddrinfo failed') from e
             except BaseException as e:
-                # Possibly internal error in dnspython :( see #4483 and #5638
-                _logger.info(f'dnspython failed to resolve dns (A) for {repr(host)} with error: {repr(e)}')
+                # Possibly internal error in dnspython :( see #4483
+                _logger.info(f'dnspython failed to resolve dns (A) with error: {e}')
             if addrs:
                 return addrs
             # Fall back to original socket.getaddrinfo to resolve dns.
@@ -1076,11 +1052,6 @@ class Network(Logger):
             raise Exception(f"{repr(sh)} is not a scripthash")
         return await self.interface.session.send_request('blockchain.scripthash.get_balance', [sh])
 
-    @best_effort_reliable
-    async def get_txid_from_txpos(self, tx_height, tx_pos, merkle):
-        command = 'blockchain.transaction.id_from_pos'
-        return await self.interface.session.send_request(command, [tx_height, tx_pos, merkle])
-
     def blockchain(self) -> Blockchain:
         interface = self.interface
         if interface and interface.blockchain is not None:
@@ -1158,12 +1129,6 @@ class Network(Logger):
         self._set_oneserver(self.config.get('oneserver', False))
         self._start_interface(self.default_server)
 
-        if self.lngossip:
-            self.lngossip.start_network(self)
-        if self.local_watchtower:
-            self.local_watchtower.start_network(self)
-            await self.local_watchtower.start_watching()
-
         async def main():
             try:
                 await self._init_headers_file()
@@ -1172,8 +1137,8 @@ class Network(Logger):
                 async with main_taskgroup as group:
                     await group.spawn(self._maintain_sessions())
                     [await group.spawn(job) for job in self._jobs]
-            except BaseException as e:
-                self.logger.exception('main_taskgroup died.')
+            except Exception as e:
+                self.logger.exception('')
                 raise e
         asyncio.run_coroutine_threadsafe(main(), self.asyncio_loop)
 

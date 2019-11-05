@@ -23,11 +23,6 @@ Builder.load_string('''
             spacing: '10dp'
             QRCodeWidget:
                 id: qr
-                shaded: False
-                foreground_color: (0, 0, 0, 0.5) if self.shaded else (0, 0, 0, 0)
-                on_touch_down:
-                    touch = args[1]
-                    if self.collide_point(*touch.pos): self.shaded = not self.shaded
             TopLabel:
                 text: root.data if root.show_text else ''
             Widget:
@@ -38,14 +33,9 @@ Builder.load_string('''
                 Button:
                     size_hint: 1, None
                     height: '48dp'
-                    text: _('Copy')
+                    text: _('Copy to clipboard')
                     on_release:
                         root.copy_to_clipboard()
-                IconButton:
-                    icon: 'atlas://electrum/gui/kivy/theming/light/share'
-                    size_hint: 0.6, None
-                    height: '48dp'
-                    on_release: s.parent.do_share()
                 Button:
                     size_hint: 1, None
                     height: '48dp'

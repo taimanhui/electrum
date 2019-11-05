@@ -16,7 +16,7 @@ from electrum.gui.kivy.i18n import _
 from electrum.util import InvalidPassword
 from electrum.address_synchronizer import TX_HEIGHT_LOCAL
 from electrum.wallet import CannotBumpFee
-
+from electrum.transaction import TxOutput, Transaction, tx_from_str
 
 Builder.load_string('''
 
@@ -101,8 +101,8 @@ Builder.load_string('''
             Button:
                 size_hint: 0.5, None
                 height: '48dp'
-                text: _('Label')
-                on_release: root.label_dialog()
+                text: _('Submit')
+                on_release: root.submit() 
             Button:
                 size_hint: 0.5, None
                 height: '48dp'
@@ -116,14 +116,14 @@ class ActionButtonOption(NamedTuple):
     func: Callable
     enabled: bool
 
-
 class TxDialog(Factory.Popup):
 
-    def __init__(self, app, tx):
+    def __init__(self, app, tx, rid=0):
         Factory.Popup.__init__(self)
         self.app = app
         self.wallet = self.app.wallet
         self.tx = tx
+        self.rid = rid
         self._action_button_fn = lambda btn: None
 
     def on_open(self):
@@ -223,7 +223,8 @@ class TxDialog(Factory.Popup):
             return
         try:
             new_tx = self.wallet.bump_fee(tx=self.tx,
-                                          new_fee_rate=new_fee_rate)
+                                          new_fee_rate=new_fee_rate,
+                                          config=self.app.electrum_config)
         except CannotBumpFee as e:
             self.app.show_error(str(e))
             return
@@ -234,7 +235,7 @@ class TxDialog(Factory.Popup):
         self.do_sign()
 
     def do_sign(self):
-        self.app.protected(_("Enter your PIN code in order to sign this transaction"), self._do_sign, ())
+        self.app.protected(_("Enter password for sign"), self._do_sign, ())
 
     def _do_sign(self, password):
         self.status_str = _('Signing') + '...'
@@ -242,14 +243,42 @@ class TxDialog(Factory.Popup):
 
     def __do_sign(self, password):
         try:
-            self.app.wallet.sign_transaction(self.tx, password)
+            self.app.show_error("please touch your card")
+            pw_dialog = lambda on_success,is_change: self.app.password_dialog(self.wallet, _('Enter password'), on_success, self.app.verify_password_limit, is_change)
+            self.app.wallet.sign_transaction(self.tx, password, self.update_dialog, pw_dialog)
         except InvalidPassword:
             self.app.show_error(_("Invalid PIN"))
         self.update()
 
+    def update_dialog(self, tx, status):
+        if status < 0:
+            self.tx = tx
+            self.update()
+        else:
+            self.app.verify_password_limit(status)
+
     def do_broadcast(self):
         self.app.broadcast(self.tx)
 
+    def submit(self):
+        from electrum.bitcoin import base_encode, bfh
+        raw_tx = str(self.tx)
+        text = bfh(raw_tx)
+        text = base_encode(text, base=43)
+
+        import json
+        import requests
+        from electrum.constants import DB_SERVER_URL
+        addresses = self.wallet.get_receiving_addresses()
+        url = DB_SERVER_URL + "sign/" + addresses[0] 
+        data={}
+        try:
+            data['tx_hex'] = raw_tx
+            data['rid'] = self.rid
+            res =requests.post(url, json=json.dumps(data))
+        except Exception as e:
+            self.show_message(_(e))
+ 
     def show_qr(self):
         from electrum.bitcoin import base_encode, bfh
         raw_tx = str(self.tx)
@@ -274,15 +303,4 @@ class TxDialog(Factory.Popup):
                 self.app._trigger_update_wallet()  # FIXME private...
                 self.dismiss()
         d = Question(question, on_prompt)
-        d.open()
-
-    def label_dialog(self):
-        from .label_dialog import LabelDialog
-        key = self.tx.txid()
-        text = self.app.wallet.get_label(key)
-        def callback(text):
-            self.app.wallet.set_label(key, text)
-            self.update()
-            self.app.history_screen.update()
-        d = LabelDialog(_('Enter Transaction Label'), text, callback)
         d.open()

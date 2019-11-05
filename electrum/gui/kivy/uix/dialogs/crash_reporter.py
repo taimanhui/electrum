@@ -132,8 +132,8 @@ class CrashReporter(BaseCrashReporter, Factory.Popup):
         self.dismiss()
 
     def open_url(self, url):
-        if platform != 'android':
-            return
+        # if platform != 'android':
+        #     return
         from jnius import autoclass, cast
         String = autoclass("java.lang.String")
         url = String(url)

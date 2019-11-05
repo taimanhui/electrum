@@ -33,7 +33,7 @@ class ElectrumGui:
         if storage.is_encrypted():
             password = getpass.getpass('Password:', stream=None)
             storage.decrypt(password)
-        self.wallet = Wallet(storage, config=config)
+        self.wallet = Wallet(storage)
         self.wallet.start_network(self.network)
         self.contacts = self.wallet.contacts
 
@@ -117,9 +117,9 @@ class ElectrumGui:
 
         b = 0
         self.history = []
-        for hist_item in self.wallet.get_history():
-            if hist_item.tx_mined_status.conf:
-                timestamp = hist_item.tx_mined_status.timestamp
+        for tx_hash, tx_mined_status, value, balance in self.wallet.get_history():
+            if tx_mined_status.conf:
+                timestamp = tx_mined_status.timestamp
                 try:
                     time_str = datetime.datetime.fromtimestamp(timestamp).isoformat(' ')[:-3]
                 except Exception:
@@ -127,11 +127,10 @@ class ElectrumGui:
             else:
                 time_str = 'unconfirmed'
 
-            label = self.wallet.get_label(hist_item.txid)
+            label = self.wallet.get_label(tx_hash)
             if len(label) > 40:
                 label = label[0:37] + '...'
-            self.history.append(format_str % (time_str, label, format_satoshis(hist_item.value, whitespaces=True),
-                                              format_satoshis(hist_item.balance, whitespaces=True)))
+            self.history.append( format_str%( time_str, label, format_satoshis(value, whitespaces=True), format_satoshis(balance, whitespaces=True) ) )
 
 
     def print_balance(self):
@@ -312,7 +311,7 @@ class ElectrumGui:
         pass
 
     def main(self):
-
+        print("text gui in++++++++++++++")
         tty.setraw(sys.stdin)
         try:
             while self.tab != -1:
@@ -363,7 +362,7 @@ class ElectrumGui:
             tx = self.wallet.mktx([TxOutput(TYPE_ADDRESS, self.str_recipient, amount)],
                                   password, self.config, fee)
         except Exception as e:
-            self.show_message(repr(e))
+            self.show_message(str(e))
             return
 
         if self.str_description:

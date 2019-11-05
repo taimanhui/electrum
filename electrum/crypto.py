@@ -198,17 +198,15 @@ def sha256d(x: Union[bytes, str]) -> bytes:
 
 
 def hash_160(x: bytes) -> bytes:
-    return ripemd(sha256(x))
-
-def ripemd(x):
     try:
         md = hashlib.new('ripemd160')
-        md.update(x)
+        md.update(sha256(x))
         return md.digest()
     except BaseException:
         from . import ripemd
-        md = ripemd.new(x)
+        md = ripemd.new(sha256(x))
         return md.digest()
+
 
 def hmac_oneshot(key: bytes, msg: bytes, digest) -> bytes:
     if hasattr(hmac, 'digest'):

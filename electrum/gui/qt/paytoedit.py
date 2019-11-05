@@ -25,7 +25,6 @@
 
 import re
 from decimal import Decimal
-from typing import NamedTuple, Sequence
 
 from PyQt5.QtGui import QFontMetrics
 
@@ -34,7 +33,6 @@ from electrum.util import bfh
 from electrum.transaction import TxOutput, push_script
 from electrum.bitcoin import opcodes
 from electrum.logging import Logger
-from electrum.lnaddr import LnDecodeException
 
 from .qrtextedit import ScanQRTextEdit
 from .completion_text_edit import CompletionTextEdit
@@ -42,14 +40,8 @@ from . import util
 
 RE_ALIAS = r'(.*?)\s*\<([0-9A-Za-z]{1,})\>'
 
-frozen_style = "QWidget {border:none;}"
+frozen_style = "QWidget { background-color:none; border:none;}"
 normal_style = "QPlainTextEdit { }"
-
-
-class PayToLineError(NamedTuple):
-    idx: int  # index of line
-    line_content: str
-    exc: Exception
 
 
 class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
@@ -66,12 +58,13 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         self.c = None
         self.textChanged.connect(self.check_text)
         self.outputs = []
-        self.errors = []  # type: Sequence[PayToLineError]
+        self.errors = []
         self.is_pr = False
         self.is_alias = False
+        self.scan_f = win.pay_to_URI
         self.update_size()
         self.payto_address = None
-        self.lightning_invoice = None
+
         self.previous_payto = ''
 
     def setFrozen(self, b):
@@ -134,29 +127,16 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         outputs = []
         total = 0
         self.payto_address = None
-        self.lightning_invoice = None
         if len(lines) == 1:
             data = lines[0]
             if data.startswith("bitcoin:"):
-                self.win.pay_to_URI(data)
-                return
-            lower = data.lower()
-            if lower.startswith("lightning:ln"):
-                lower = lower[10:]
-            if lower.startswith("ln"):
-                try:
-                    self.win.parse_lightning_invoice(lower)
-                except LnDecodeException as e:
-                    self.errors.append(PayToLineError(idx=0, line_content=data, exc=e))
-                else:
-                    self.lightning_invoice = lower
+                self.scan_f(data)
                 return
             try:
                 self.payto_address = self.parse_output(data)
             except:
                 pass
             if self.payto_address:
-                self.win.set_onchain(True)
                 self.win.lock_amount(False)
                 return
 
@@ -164,16 +144,15 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         for i, line in enumerate(lines):
             try:
                 output = self.parse_address_and_amount(line)
-            except Exception as e:
-                self.errors.append(PayToLineError(idx=i, line_content=line.strip(), exc=e))
+            except:
+                self.errors.append((i, line.strip()))
                 continue
+
             outputs.append(output)
             if output.value == '!':
                 is_max = True
             else:
                 total += output.value
-        if outputs:
-            self.win.set_onchain(True)
 
         self.win.max_button.setChecked(is_max)
         self.outputs = outputs
@@ -185,7 +164,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
             self.amount_edit.setAmount(total if outputs else None)
             self.win.lock_amount(total or len(lines)>1)
 
-    def get_errors(self) -> Sequence[PayToLineError]:
+    def get_errors(self):
         return self.errors
 
     def get_recipient(self):
@@ -225,7 +204,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
     def qr_input(self):
         data = super(PayToEdit,self).qr_input()
         if data.startswith("bitcoin:"):
-            self.win.pay_to_URI(data)
+            self.scan_f(data)
             # TODO: update fee
 
     def resolve(self):

@@ -2,11 +2,11 @@ import dns
 
 from electrum import dnssec
 
-from . import ElectrumTestCase
+from . import SequentialTestCase
 from .test_bitcoin import needs_test_with_all_ecc_implementations
 
 
-class TestDnsSec(ElectrumTestCase):
+class TestDnsSec(SequentialTestCase):
 
     @needs_test_with_all_ecc_implementations
     def test_python_validate_rrsig_ecdsa(self):

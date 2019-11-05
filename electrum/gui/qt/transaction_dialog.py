@@ -73,7 +73,7 @@ def show_transaction(tx, parent, desc=None, prompt_if_unsaved=False):
 
 class TxDialog(QDialog, MessageBoxMixin):
 
-    def __init__(self, tx: Transaction, parent: 'ElectrumWindow', desc, prompt_if_unsaved):
+    def __init__(self, tx, parent, desc, prompt_if_unsaved):
         '''Transactions in the wallet will show their description.
         Pass desc to give a description for txs not yet in the wallet.
         '''
@@ -82,12 +82,12 @@ class TxDialog(QDialog, MessageBoxMixin):
         # Take a copy; it might get updated in the main window by
         # e.g. the FX plugin.  If this happens during or after a long
         # sign operation the signatures are lost.
-        self.tx = tx = copy.deepcopy(tx)
+        self.tx = tx = copy.deepcopy(tx)  # type: Transaction
         try:
             self.tx.deserialize()
         except BaseException as e:
             raise SerializationError(e)
-        self.main_window = parent
+        self.main_window = parent  # type: ElectrumWindow
         self.wallet = parent.wallet
         self.prompt_if_unsaved = prompt_if_unsaved
         self.saved = False
@@ -134,6 +134,9 @@ class TxDialog(QDialog, MessageBoxMixin):
         self.export_button = b = QPushButton(_("Export"))
         b.clicked.connect(self.export)
 
+        self.submit_button = b = QPushButton(_("Submit"))
+        b.clicked.connect(self.submit)
+
         self.cancel_button = b = QPushButton(_("Close"))
         b.clicked.connect(self.close)
         b.setDefault(True)
@@ -147,7 +150,7 @@ class TxDialog(QDialog, MessageBoxMixin):
         # Action buttons
         self.buttons = [self.sign_button, self.broadcast_button, self.cancel_button]
         # Transaction sharing buttons
-        self.sharing_buttons = [self.copy_button, self.qr_button, self.export_button, self.save_button]
+        self.sharing_buttons = [self.copy_button, self.qr_button, self.export_button, self.submit_button, self.save_button]
 
         run_hook('transaction_dialog', self)
 
@@ -191,7 +194,7 @@ class TxDialog(QDialog, MessageBoxMixin):
             self.show_error(_('Failed to display QR code.') + '\n' +
                             _('Transaction is too large in size.'))
         except Exception as e:
-            self.show_error(_('Failed to display QR code.') + '\n' + repr(e))
+            self.show_error(_('Failed to display QR code.') + '\n' + str(e))
 
     def sign(self):
         def sign_done(success):
@@ -224,6 +227,19 @@ class TxDialog(QDialog, MessageBoxMixin):
                 f.write(json.dumps(self.tx.as_dict(), indent=4) + '\n')
             self.show_message(_("Transaction exported successfully"))
             self.saved = True
+
+    def submit(self):
+        import requests
+        from electrum.constants import DB_SERVER_URL
+        url = DB_SERVER_URL + "add"
+        data = json.dumps(self.tx.as_dict(), indent=4)
+        try:
+            requests.post(url, json=data)
+        except Exception as e:
+            self.show_message(_(e))
+            return
+        self.show_message(_("Transaction exported successfully"))
+        self.saved = True
 
     def update(self):
         desc = self.desc

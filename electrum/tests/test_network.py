@@ -9,8 +9,6 @@ from electrum.interface import Interface
 from electrum.crypto import sha256
 from electrum.util import bh2u
 
-from . import ElectrumTestCase
-
 
 class MockTaskGroup:
     async def spawn(self, x): return
@@ -38,7 +36,7 @@ class MockInterface(Interface):
         assert assert_mode in item['mock'], (assert_mode, item)
         return item
 
-class TestNetwork(ElectrumTestCase):
+class TestNetwork(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -51,8 +49,7 @@ class TestNetwork(ElectrumTestCase):
         constants.set_mainnet()
 
     def setUp(self):
-        super().setUp()
-        self.config = SimpleConfig({'electrum_path': self.electrum_path})
+        self.config = SimpleConfig({'electrum_path': tempfile.mkdtemp(prefix="test_network")})
         self.interface = MockInterface(self.config)
 
     def test_fork_noconflict(self):

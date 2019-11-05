@@ -26,7 +26,7 @@
 
 from unicodedata import normalize
 import hashlib
-from typing import Tuple, TYPE_CHECKING, Union, Sequence
+from typing import Tuple
 
 from . import bitcoin, ecc, constants, bip32
 from .bitcoin import (deserialize_privkey, serialize_privkey,
@@ -41,9 +41,6 @@ from .util import (InvalidPassword, WalletFileException,
 from .mnemonic import Mnemonic, load_wordlist, seed_type, is_seed
 from .plugin import run_hook
 from .logging import Logger
-
-if TYPE_CHECKING:
-    from .transaction import Transaction
 
 
 class KeyStore(Logger):
@@ -89,27 +86,12 @@ class KeyStore(Logger):
         return keypairs
 
     def can_sign(self, tx):
-        if self.is_watching_only():
-            return False
+        # if self.is_watching_only():
+        #     return False
         return bool(self.get_tx_derivations(tx))
 
     def ready_to_sign(self):
         return not self.is_watching_only()
-
-    def dump(self) -> dict:
-        raise NotImplementedError()  # implemented by subclasses
-
-    def is_deterministic(self) -> bool:
-        raise NotImplementedError()  # implemented by subclasses
-
-    def sign_message(self, sequence, message, password) -> bytes:
-        raise NotImplementedError()  # implemented by subclasses
-
-    def decrypt_message(self, sequence, message, password) -> bytes:
-        raise NotImplementedError()  # implemented by subclasses
-
-    def sign_transaction(self, tx: 'Transaction', password) -> None:
-        raise NotImplementedError()  # implemented by subclasses
 
 
 class Software_KeyStore(KeyStore):
@@ -134,18 +116,18 @@ class Software_KeyStore(KeyStore):
         decrypted = ec.decrypt_message(message)
         return decrypted
 
-    def sign_transaction(self, tx, password):
-        if self.is_watching_only():
-            return
+    def sign_transaction(self, tx, password, callback=None, pw_dialog=None):
+        # if self.is_watching_only():
+        #     return
         # Raise if password is not correct.
-        self.check_password(password)
+        #self.check_password(password)
         # Add private keys
         keypairs = self.get_tx_derivations(tx)
-        for k, v in keypairs.items():
-            keypairs[k] = self.get_private_key(v, password)
-        # Sign
+        # for k, v in keypairs.items():
+        #     keypairs[k] = self.get_private_key(v, password)
+        # # Sign
         if keypairs:
-            tx.sign(keypairs)
+            tx.sign(keypairs, callback, password, pw_dialog)
 
     def update_password(self, old_password, new_password):
         raise NotImplementedError()  # implemented by subclasses
@@ -264,8 +246,6 @@ class Deterministic_KeyStore(Software_KeyStore):
         self.seed = self.format_seed(seed)
 
     def get_seed(self, password):
-        if not self.has_seed():
-            raise Exception("This wallet has no seed words")
         return pw_decode(self.seed, password, version=self.pw_hash_version)
 
     def get_passphrase(self, password):
@@ -319,6 +299,7 @@ class Xpub:
         # xpub:
         pk = pk[1:]
         xkey = bitcoin.EncodeBase58Check(pk[0:78])
+
         # derivation:
         dd = pk[78:]
         s = []
@@ -403,10 +384,7 @@ class BIP32_KeyStore(Deterministic_KeyStore, Xpub):
         pk = node.eckey.get_secret_bytes()
         return pk, True
 
-    def get_keypair(self, sequence, password):
-        k, _ = self.get_private_key(sequence, password)
-        cK = ecc.ECPrivkey(k).get_public_key_bytes()
-        return cK, k
+
 
 class Old_KeyStore(Deterministic_KeyStore):
 
@@ -714,7 +692,6 @@ def parse_xpubkey(x_pubkey):
     assert x_pubkey[0:2] == 'ff'
     return BIP32_KeyStore.parse_xpubkey(x_pubkey)
 
-
 def xpubkey_to_address(x_pubkey):
     if x_pubkey[0:2] == 'fd':
         address = bitcoin.script_to_address(x_pubkey[2:])
@@ -743,7 +720,7 @@ hw_keystores = {}
 def register_keystore(hw_type, constructor):
     hw_keystores[hw_type] = constructor
 
-def hardware_keystore(d) -> Hardware_KeyStore:
+def hardware_keystore(d):
     hw_type = d['hw_type']
     if hw_type in hw_keystores:
         constructor = hw_keystores[hw_type]
@@ -751,7 +728,7 @@ def hardware_keystore(d) -> Hardware_KeyStore:
     raise WalletFileException(f'unknown hardware type: {hw_type}. '
                               f'hw_keystores: {list(hw_keystores)}')
 
-def load_keystore(storage, name) -> KeyStore:
+def load_keystore(storage, name):
     d = storage.get(name, {})
     t = d.get('type')
     if not t:

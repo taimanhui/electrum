@@ -1,0 +1,56 @@
+ModalView:
+    id: activation
+    FloatLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Button:
+            pos_hint: {'x':.02, 'y':.92}
+            size_hint: None, None
+            size: 50, 30
+            on_release: root.dismiss()
+            background_normal: ''
+            background_color: [1, 1, 1, 1]
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/arrow_back'
+                y: self.parent.y
+                x: self.parent.x
+                size: 50, 30
+                allow_stretch: True
+        FloatLayout:
+            orientation: 'vertical'
+            pos_hint: {'x':.44, 'y':.62}
+            size_hint: None, None
+            size: 88, 88
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 1
+                BorderImage:
+                    source: 'atlas://electrum/gui/kivy/theming/light/close'
+                    size: self.width, self.height
+                    pos: self.pos
+        Label:
+            text: _("inactivated for bixin cold wallet")
+            pos_hint: {'x':.3, 'y':.52}
+            font_size: 18
+            halign: 'center'
+            size_hint: .4, .1
+            color:  [0, 0, 0, 1]
+        Button:
+            text:_("activation cold wallet")
+            pos_hint: {'x':.15, 'y':.07}
+            #font_name: 'Roboto-Bold.tty'
+            font_size: 20
+            size_hint: .7, .08
+            background_normal: ''
+            background_color: [0, 0, 0, .4] if self.state == 'down' else [0.254, 0.411, 1, .9]
+            background_normal: '../../theming/light/card_btn.png'
+            background_down: '../../theming/light/card_btn.png'
+            on_release:
+                Clock.schedule_once(lambda x: app.popup_dialog('nfcscan'))
+

@@ -37,7 +37,7 @@ from .bip32 import is_bip32_derivation, xpub_type, normalize_bip32_derivation
 from .keystore import bip44_derivation, purpose48_derivation
 from .wallet import (Imported_Wallet, Standard_Wallet, Multisig_Wallet,
                      wallet_types, Wallet, Abstract_Wallet)
-from .storage import (WalletStorage, StorageEncryptionVersion,
+from .storage import (WalletStorage, STO_EV_USER_PW, STO_EV_XPUB_PW,
                       get_derivation_used_for_hw_device_encryption)
 from .i18n import _
 from .util import UserCancelled, InvalidPassword, WalletFileException
@@ -67,13 +67,6 @@ class WizardStackItem(NamedTuple):
     storage_data: dict
 
 
-class WizardWalletPasswordSetting(NamedTuple):
-    password: Optional[str]
-    encrypt_storage: bool
-    storage_enc_version: StorageEncryptionVersion
-    encrypt_keystore: bool
-
-
 class BaseWizard(Logger):
 
     def __init__(self, config: SimpleConfig, plugins: Plugins):
@@ -82,12 +75,16 @@ class BaseWizard(Logger):
         self.config = config
         self.plugins = plugins
         self.data = {}
-        self.pw_args = None  # type: Optional[WizardWalletPasswordSetting]
+        self.pw_args = None
         self._stack = []  # type: List[WizardStackItem]
         self.plugin = None
         self.keystores = []
         self.is_kivy = config.get('gui') == 'kivy'
         self.seed_type = None
+        self._new_wallet_dialog = None
+
+    def get_keystore(self):
+        return self.keystores
 
     def set_icon(self, icon):
         pass
@@ -130,18 +127,34 @@ class BaseWizard(Logger):
         self._stack = []
 
     def new(self):
-        title = _("Create new wallet")
-        message = '\n'.join([
-            _("What kind of wallet do you want to create?")
-        ])
-        wallet_kinds = [
-            ('standard',  _("Standard wallet")),
-            ('2fa', _("Wallet with two-factor authentication")),
-            ('multisig',  _("Multi-signature wallet")),
-            ('imported',  _("Import Bitcoin addresses or private keys")),
-        ]
-        choices = [pair for pair in wallet_kinds if pair[0] in wallet_types]
-        self.choice_dialog(title=title, message=message, choices=choices, run_next=self.on_wallet_type)
+        #self.path = "/home/wls/.electrum/wallets/default_wallet"
+        self.main_app.popup_dialog('get_cosigner_info')
+        #self.main_app.popup_dialog('new_wallet')
+        # from electrum.gui.kivy.uix.dialogs.get_cosigner_info import GetCosignerDialogInfo
+        # d = GetCosignerDialogInfo(self)
+        # d.open()
+
+        # from electrum.gui.kivy.uix.dialogs.new_wallet import NewWalletDialog
+        # if self._new_wallet_dialog is None:
+        #     self._new_wallet_dialog = NewWalletDialog(self)
+        # # self._settings_dialog.update()
+        # #self._new_wallet_dialog.__init__(run_next=self.on_wallet_type)
+        # print("setting test...")
+        # self._new_wallet_dialog.open()
+
+
+        # title = _("Create new wallet")
+        # message = '\n'.join([
+        #     _("What kind of wallet do you want to create?")
+        # ])
+        # wallet_kinds = [
+        #     ('standard',  _("Standard wallet")),
+        #     ('2fa', _("Wallet with two-factor authentication")),
+        #     ('multisig',  _("Multi-signature wallet")),
+        #     ('imported',  _("Import Bitcoin addresses or private keys")),
+        # ]
+        # choices = [pair for pair in wallet_kinds if pair[0] in wallet_types]
+        # self.choice_dialog(title=title, message=message, choices=choices, run_next=self.on_wallet_type)
 
     def upgrade_storage(self, storage):
         exc = None
@@ -175,6 +188,14 @@ class BaseWizard(Logger):
         elif choice == 'imported':
             action = 'import_addresses_or_keys'
         self.run(action)
+
+    def set_wallet_info(self, m, n):
+        self.wallet_type = 'multisig'
+        multisig_type = "%dof%d" % (m, n)
+        self.data['wallet_type'] = multisig_type
+        self.n = n
+        self.m = m
+        print("set_wallet_info ok....")
 
     def choose_multisig(self):
         def on_multisig(m, n):
@@ -248,6 +269,15 @@ class BaseWizard(Logger):
         else:
             i = len(self.keystores) + 1
             self.add_cosigner_dialog(index=i, run_next=self.on_restore_from_key, is_valid=keystore.is_bip32_key)
+
+    def restore_from_xpub(self, xpub):
+        print("restore_from_xpub in....")
+        i = len(self.keystores) + 1
+        is_valid = keystore.is_bip32_key(xpub)
+        print("valid = %s" % is_valid)
+       # if is_valid:
+        print("valid is true....")
+        self.on_restore_from_key(xpub)
 
     def on_restore_from_key(self, text):
         k = keystore.from_master_key(text)
@@ -384,7 +414,7 @@ class BaseWizard(Logger):
 
     def derivation_and_script_type_dialog(self, f):
         message1 = _('Choose the type of addresses in your wallet.')
-        message2 = ' '.join([
+        message2 = '\n'.join([
             _('You can override the suggested derivation path.'),
             _('If you are not sure what this is, leave this field unchanged.')
         ])
@@ -495,7 +525,8 @@ class BaseWizard(Logger):
         if self.wallet_type == 'standard':
             if has_xpub and t1 not in ['standard', 'p2wpkh', 'p2wpkh-p2sh']:
                 self.show_error(_('Wrong key type') + ' %s'%t1)
-                self.run('choose_keystore')
+                self.new()
+                #self.run('choose_keystore')
                 return
             self.keystores.append(k)
             self.run('create_wallet')
@@ -503,25 +534,32 @@ class BaseWizard(Logger):
             assert has_xpub
             if t1 not in ['standard', 'p2wsh', 'p2wsh-p2sh']:
                 self.show_error(_('Wrong key type') + ' %s'%t1)
-                self.run('choose_keystore')
+                self.new()
+                #self.run('choose_keystore')
                 return
-            if k.xpub in map(lambda x: x.xpub, self.keystores):
-                self.show_error(_('Error: duplicate master public key'))
-                self.run('choose_keystore')
-                return
+            #if k.xpub in map(lambda x: x.xpub, self.keystores):
+            #    self.show_error(_('Error: duplicate master public key'))
+            #    self.new()
+                #self.run('choose_keystore')
+            #    return
             if len(self.keystores)>0:
                 t2 = xpub_type(self.keystores[0].xpub)
                 if t1 != t2:
                     self.show_error(_('Cannot add this cosigner:') + '\n' + "Their key type is '%s', we are '%s'"%(t1, t2))
-                    self.run('choose_keystore')
+                    self.new()
+                    #self.run('choose_keystore')
                     return
             self.keystores.append(k)
             if len(self.keystores) == 1:
                 xpub = k.get_master_public_key()
                 self.reset_stack()
-                self.run('show_xpub_and_add_cosigners', xpub)
+                #self.run('show_xpub_and_add_cosigners', xpub)
+                self.new()
             elif len(self.keystores) < self.n:
-                self.run('choose_keystore')
+            #elif len(self.keystores) < self.m:
+                print("m = %s n = %s...." %(self.m, self.n))
+                self.new()
+                #self.run('choose_keystore')
             else:
                 self.run('create_wallet')
 
@@ -548,23 +586,20 @@ class BaseWizard(Logger):
                 run_next=lambda encrypt_storage: self.on_password(
                     password,
                     encrypt_storage=encrypt_storage,
-                    storage_enc_version=StorageEncryptionVersion.XPUB_PASSWORD,
+                    storage_enc_version=STO_EV_XPUB_PW,
                     encrypt_keystore=False))
         else:
-            # reset stack to disable 'back' button in password dialog
-            self.reset_stack()
             # prompt the user to set an arbitrary password
             self.request_password(
                 run_next=lambda password, encrypt_storage: self.on_password(
                     password,
                     encrypt_storage=encrypt_storage,
-                    storage_enc_version=StorageEncryptionVersion.USER_PASSWORD,
+                    storage_enc_version=STO_EV_USER_PW,
                     encrypt_keystore=encrypt_keystore),
                 force_disable_encrypt_cb=not encrypt_keystore)
 
-    def on_password(self, password, *, encrypt_storage: bool,
-                    storage_enc_version=StorageEncryptionVersion.USER_PASSWORD,
-                    encrypt_keystore: bool):
+    def on_password(self, password, *, encrypt_storage,
+                    storage_enc_version=STO_EV_USER_PW, encrypt_keystore):
         for k in self.keystores:
             if k.may_have_password():
                 k.update_password(None, password)
@@ -581,23 +616,20 @@ class BaseWizard(Logger):
                 self.data['keystore'] = keys
         else:
             raise Exception('Unknown wallet type')
-        self.pw_args = WizardWalletPasswordSetting(password=password,
-                                                   encrypt_storage=encrypt_storage,
-                                                   storage_enc_version=storage_enc_version,
-                                                   encrypt_keystore=encrypt_keystore)
+        self.pw_args = password, encrypt_storage, storage_enc_version
         self.terminate()
 
     def create_storage(self, path):
+        print("path = %s" %path)
         if os.path.exists(path):
             raise Exception('file already exists at path')
         if not self.pw_args:
             return
-        pw_args = self.pw_args
-        self.pw_args = None  # clean-up so that it can get GC-ed
+        password, encrypt_storage, storage_enc_version = self.pw_args
         storage = WalletStorage(path)
-        storage.set_keystore_encryption(bool(pw_args.password) and pw_args.encrypt_keystore)
-        if pw_args.encrypt_storage:
-            storage.set_password(pw_args.password, enc_version=pw_args.storage_enc_version)
+        storage.set_keystore_encryption(bool(password))
+        if encrypt_storage:
+            storage.set_password(password, enc_version=storage_enc_version)
         for key, value in self.data.items():
             storage.put(key, value)
         storage.write()

@@ -23,35 +23,25 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
+from electrum.i18n import _
 
 from PyQt5.QtWidgets import QVBoxLayout, QLabel
-
-from electrum.i18n import _
 
 from .util import WindowModalDialog, ButtonsLineEdit, ColorScheme, Buttons, CloseButton
 from .history_list import HistoryList, HistoryModel
 from .qrtextedit import ShowQRTextEdit
 
-if TYPE_CHECKING:
-    from .main_window import ElectrumWindow
-
-
 class AddressHistoryModel(HistoryModel):
-    def __init__(self, parent: 'ElectrumWindow', address):
+    def __init__(self, parent, address):
         super().__init__(parent)
         self.address = address
 
     def get_domain(self):
         return [self.address]
 
-    def should_include_lightning_payments(self) -> bool:
-        return False
-
-
 class AddressDialog(WindowModalDialog):
 
-    def __init__(self, parent: 'ElectrumWindow', address: str):
+    def __init__(self, parent, address):
         WindowModalDialog.__init__(self, parent, _("Address"))
         self.address = address
         self.parent = parent
@@ -109,4 +99,4 @@ class AddressDialog(WindowModalDialog):
         try:
             self.parent.show_qrcode(text, 'Address', parent=self)
         except Exception as e:
-            self.show_message(repr(e))
+            self.show_message(str(e))

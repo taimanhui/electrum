@@ -10,14 +10,325 @@ from electrum.plugin import run_hook
 from electrum import coinchooser
 
 from .choice_dialog import ChoiceDialog
+from electrum.gui.kivy.nfc_scanner.scanner_android import ScannerAndroid, scan
+"""
+Builder.load_string('''
+#:import partial functools.partial
+#:import _ electrum.gui.kivy.i18n._
 
+<SettingsDialog@ModalView>
+    #:import VERSION electrum.version.ELECTRUM_VERSION
+
+    id: nd
+    font_cn: ''
+        
+    FloatLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        
+        FloatLayout:
+            orientation: 'vertical'
+            pos_hint: {'x':0, 'top':1}
+            size_hint: 1, None
+            height:'50dp'
+            canvas.before:
+                Color:
+                    rgb: 1, 0.98, 0.941
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Button:
+                pos_hint: {'x':0, 'top':1}
+                size_hint: .1, None
+                height:50
+                on_release: root.dismiss()
+                background_normal: ''
+                background_color: [1, 0.98, 0.941, 1]
+                Image:
+                    source: 'atlas://electrum/gui/kivy/theming/light/arrow_back'
+                    y: self.parent.y+dp(5)
+                    x: self.parent.x
+                    size: 50, 30
+                    allow_stretch: True
+            Label:
+                text: _('Setting')
+                font_size: '18sp'
+                pos_hint: {'center_x':.5, 'top':1}
+                size_hint: .9, 1
+                #height:'50dp'
+                text_size: self.width, self.height-sp(25)
+                color:  [0.098, 0.098, 0.439, 1]
+                background_normal: ''
+                background_color: 1, .585, .878, 0
+                halign: 'center'
+        
+        
+''')
+
+"""
+Builder.load_string('''
+#:import partial functools.partial
+#:import _ electrum.gui.kivy.i18n._
+
+<SettingsDialog@ModalView>
+    #:import VERSION electrum.version.ELECTRUM_VERSION
+
+    id: nd
+    font_cn: ''
+    FloatLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Button:
+            pos_hint: {'x':.02, 'y':.92}
+            size_hint: None, None
+            size: 50, 30
+            on_release: root.dismiss()
+            background_normal: ''
+            background_color: [1, 1, 1, 1]
+            Image:
+                source: 'atlas://electrum/gui/kivy/theming/light/arrow_back'
+                y: self.parent.y
+                x: self.parent.x
+                size: 50, 30
+                allow_stretch: True
+        Label:
+            text: _('Setting')
+            #bold: True
+            font_size: '38sp'
+            pos_hint: {'x':.02, 'y':.81}
+            size_hint: .8, .1
+            text_size: self.width - dp(40), self.height
+            color:  [0.098, 0.098, 0.439, 1]
+        Label:
+            text: _('SUGGESTED SCENES')
+            pos_hint: {'x':.02, 'y':.72}
+            size_hint: .8, .1
+            text_size: self.width - dp(50), self.height
+            color:  [.745, .745, .745, 1]
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'x':.02, 'y':.59}
+            size_hint: 1, None
+            height: '50dp'
+            padding: '30dp'
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: 30, 30
+                #height: '30dp'
+                canvas.before:
+                    Color:
+                        rgb: 0.098, 0.098, 0.439
+                    BorderImage:
+                        source: 'atlas://electrum/gui/kivy/theming/light/invalid_name'
+                        size: self.width, self.height
+                        pos: self.pos 
+            Label:
+                text_size: self.width-dp(20), self.height-dp(13 )
+                size_hint: .7, None
+                text: _("check/activation cold wallet")
+                color: [0.098, 0.098, 0.439, 1]
+                halign: 'left'
+            Button:
+                size_hint: None, None
+                size: 50, 30
+                background_normal: ''
+                background_color: [1, 1, 1, 1]
+                on_release:
+                    Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                Image:
+                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                    y: self.parent.y+dp(5)
+                    x: self.parent.x+dp(20)
+                    size: 11, 18
+                    allow_stretch: True
+        CardSeparatorLine:
+            pos_hint: {'x':.1, 'y':.58}
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'x':.02, 'y':.5}
+            size_hint: 1, None
+            height: '50dp'
+            padding: '30dp'
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: 30, 30
+                height: '30dp'
+                canvas.before:
+                    Color:
+                        rgb: 0.098, 0.098, 0.439
+                    BorderImage:
+                        source: 'atlas://electrum/gui/kivy/theming/light/invalid_name'
+                        size: self.width, self.height
+                        pos: self.pos 
+            Label:
+                text_size: self.width-dp(20), self.height-dp(13)
+                size_hint: .7, None
+                text: _("message manager")
+                color: [0.098, 0.098, 0.439, 1]
+                halign: 'left'
+            Button:
+                size_hint: None, None
+                size: 50, 30
+                background_normal: ''
+                background_color: [1, 1, 1, 1]
+                on_release:
+                    Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                Image:
+                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                    y: self.parent.y+dp(5)
+                    x: self.parent.x+dp(20)
+                    size: 11, 18
+                    allow_stretch: True
+        CardSeparatorLine:
+            pos_hint: {'x':.1, 'y':.49}
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'x':.02, 'y':.41}
+            size_hint: 1, None
+            height: '50dp'
+            padding: '30dp'
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: 30, 30
+                height: '30dp'
+                canvas.before:
+                    Color:
+                        rgb: 0.098, 0.098, 0.439
+                    BorderImage:
+                        source: 'atlas://electrum/gui/kivy/theming/light/invalid_name'
+                        size: self.width, self.height
+                        pos: self.pos 
+            Label:
+                text_size: self.width-dp(20), self.height-dp(13)
+                size_hint: .7, None
+                text: _("Language")
+                color: [0.098, 0.098, 0.439, 1]
+                halign: 'left'
+            Button:
+                size_hint: None, None
+                size: 50, 30
+                background_normal: ''
+                background_color: [1, 1, 1, 1]
+                on_release:
+                    Clock.schedule_once(partial(root.language_dialog, self))
+                Image:
+                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                    y: self.parent.y+dp(5)
+                    x: self.parent.x+dp(20)
+                    size: 11, 18
+                    allow_stretch: True
+        CardSeparatorLine:
+            pos_hint: {'x':.1, 'y':.4}
+        Label:
+            text: _('MORE')
+            pos_hint: {'x':.02, 'y':.37}
+            size_hint: 1, .1
+            text_size: self.width - dp(50), self.height
+            color:  [.745, .745, .745, 1] 
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'x':.02, 'y':.24}
+            size_hint: 1, None
+            height: '50dp'
+            padding: '30dp'
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: 30, 30
+                height: '30dp'
+                canvas.before:
+                    Color:
+                        rgb: 0.098, 0.098, 0.439
+                    BorderImage:
+                        source: 'atlas://electrum/gui/kivy/theming/light/invalid_name'
+                        size: self.width, self.height
+                        pos: self.pos 
+            Label:
+                text_size: self.width-dp(20), self.height-dp(13)
+                size_hint: .7, None
+                text: _("service online")
+                color: [0.098, 0.098, 0.439, 1]
+                halign: 'left'
+            Button:
+                size_hint: None, None
+                size: 50, 30
+                background_normal: ''
+                background_color: [1, 1, 1, 1]
+                on_release:
+                    Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                Image:
+                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                    y: self.parent.y+dp(5)
+                    x: self.parent.x+dp(20)
+                    size: 11, 18
+                    allow_stretch: True
+        CardSeparatorLine:
+            pos_hint: {'x':.1, 'y':.23}
+        BoxLayout:
+            orientation: 'horizontal'
+            pos_hint: {'x':.02, 'y':.15}
+            size_hint: 1, None
+            height: '40dp'
+            padding: '30dp'
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: 30, 30
+                height: '30dp'
+                canvas.before:
+                    Color:
+                        rgb: 0.098, 0.098, 0.439
+                    BorderImage:
+                        source: 'atlas://electrum/gui/kivy/theming/light/invalid_name'
+                        size: self.width, self.height
+                        pos: self.pos 
+            Label:
+                text_size: self.width-dp(20), self.height-dp(13)
+                size_hint: .7, None
+                text: _("About")
+                color: [0.098, 0.098, 0.439, 1]
+                halign: 'left'
+            Button:
+                size_hint: None, None
+                size: 50, 30
+                background_normal: ''
+                background_color: [1, 1, 1, 1]
+                on_release:
+                    Clock.schedule_once(lambda x: app.popup_dialog('activation'))
+                Image:
+                    source: 'atlas://electrum/gui/kivy/theming/light/gotowallet'
+                    y: self.parent.y+dp(5)
+                    x: self.parent.x+dp(20)
+                    size: 11, 18
+                    allow_stretch: True
+        CardSeparatorLine:
+            pos_hint: {'x':.1, 'y':.14}
+''')
+
+"""
 Builder.load_string('''
 #:import partial functools.partial
 #:import _ electrum.gui.kivy.i18n._
 
 <SettingsDialog@Popup>
     id: settings
-    title: _('Electrum Settings')
+    title: _('BiXin Settings')
     disable_pin: False
     use_encryption: False
     BoxLayout:
@@ -82,6 +393,16 @@ Builder.load_string('''
                     description: _("Send your change to separate addresses.")
                     message: _('Send excess coins to change addresses')
                     action: partial(root.boolean_dialog, 'use_change', _('Use change addresses'), self.message)
+                CardSeparator
+                SettingsItem:
+                    title: _("Reset Password")
+                    description: _("Reset password forsmart card")
+                    action: lambda x: app.popup_dialog('resetpin')
+                CardSeparator
+                SettingsItem:
+                    title: _("Unlock Password")
+                    description: _("Unlock password for smart card")
+                    action: lambda x: app.popup_dialog('unlockpin')
 
                 # disabled: there is currently only one coin selection policy
                 #CardSeparator
@@ -91,45 +412,57 @@ Builder.load_string('''
                 #    description: "Coin selection method"
                 #    action: partial(root.coinselect_dialog, self)
 ''')
+"""
 
 
-
-class SettingsDialog(Factory.Popup):
+class SettingsDialog(Factory.ModalView):
 
     def __init__(self, app):
         self.app = app
         self.plugins = self.app.plugins
         self.config = self.app.electrum_config
-        Factory.Popup.__init__(self)
-        layout = self.ids.scrollviewlayout
-        layout.bind(minimum_height=layout.setter('height'))
+        Factory.ModalView.__init__(self)
+        #self.font_cn = self.app.font_cn
+        #print("self.app.font_cn = %s..." % self.font_cn)
+        #layout = self.ids.setviewlayout
+        #layout.bind(minimum_height=layout.setter('height'))
         # cached dialogs
-        self._fx_dialog = None
-        self._proxy_dialog = None
+        # self._fx_dialog = None
+        # self._proxy_dialog = None
         self._language_dialog = None
-        self._unit_dialog = None
-        self._coinselect_dialog = None
+        # self._unit_dialog = None
+        # self._coinselect_dialog = None
 
-    def update(self):
-        self.wallet = self.app.wallet
-        self.disable_pin = self.wallet.is_watching_only() if self.wallet else True
-        self.use_encryption = self.wallet.has_password() if self.wallet else False
+    def language_dialog(self, item, dt):
+        print("language_dialog in....")
+        if self._language_dialog is None:
+            print("languate_dialog == None")
+            l = self.config.get('language', 'en_UK')
+
+            def cb(key):
+                print("key %s++++" %key)
+                self.config.set_key("language", key, True)
+                item.lang = self.get_language_name()
+                self.app.language = key
+
+            self._language_dialog = ChoiceDialog(_('Language'), languages, l, cb)
+        print("language test....")
+        self._language_dialog.open()
 
     def get_language_name(self):
         return languages.get(self.config.get('language', 'en_UK'), '')
+'''
+    def update(self):
+        #self.wallet = self.app.wallet
+        #self.disable_pin = self.wallet.is_watching_only() if self.wallet else True
+        #self.use_encryption = self.wallet.has_password() if self.wallet else False
+
+    
 
     def change_password(self, item, dt):
         self.app.change_password(self.update)
 
-    def language_dialog(self, item, dt):
-        if self._language_dialog is None:
-            l = self.config.get('language', 'en_UK')
-            def cb(key):
-                self.config.set_key("language", key, True)
-                item.lang = self.get_language_name()
-                self.app.language = key
-            self._language_dialog = ChoiceDialog(_('Language'), languages, l, cb)
-        self._language_dialog.open()
+    
 
     def unit_dialog(self, item, dt):
         if self._unit_dialog is None:
@@ -223,3 +556,40 @@ class SettingsDialog(Factory.Popup):
                 label.status = self.fx_status()
             self._fx_dialog = FxDialog(self.app, self.plugins, self.config, cb)
         self._fx_dialog.open()
+
+    def reset_cw_pw(self):
+        result = scan.reset_PIN(self.old_pin, self.new_pin)
+        if result[0] == 1:
+            self.app.show_error("reset successful")
+        else:
+            self.app.show_error("reset failed")
+        self.rt.dismiss()
+
+    def reset_pin(self, rt, old_pin, new_pin, comfirm_new_pin):
+        if comfirm_new_pin != new_pin:
+            self.app.show_error("Inconsistent password input")
+        else:
+            scan.nfc_init(self.reset_cw_pw)
+            scan.nfc_enable()
+            self.app.show_error("please touch your chard")
+            self.rt = rt
+            self.old_pin = old_pin
+            self.new_pin = new_pin
+
+    def unlock_cw_pw(self):
+        import binascii
+        result = scan.unlock_PIN(self.pin)
+        resultHex = binascii.hexlify(bytes(result))
+        if resultHex == b'9000':
+            self.app.show_error("unlock successful")
+        else:
+            self.app.show_error("unlock failed")
+        self.rt.dismiss()
+
+    def unlock_pin(self, rt, password):
+        scan.nfc_init(self.unlock_cw_pw)
+        scan.nfc_enable()
+        self.app.show_error("please touch your chard")
+        self.pin = password
+        self.rt = rt
+'''

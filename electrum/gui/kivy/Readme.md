@@ -42,11 +42,9 @@ folder.
 5. Build binaries
 
     ```
-    $ mkdir --parents $PWD/.buildozer/.gradle
     $ sudo docker run -it --rm \
         --name electrum-android-builder-cont \
         -v $PWD:/home/user/wspace/electrum \
-        -v $PWD/.buildozer/.gradle:/home/user/.gradle \
         -v ~/.keystore:/home/user/.keystore \
         --workdir /home/user/wspace/electrum \
         electrum-android-builder-img \
@@ -69,7 +67,7 @@ You probably need to clear the cache: `rm -rf .buildozer/android/platform/build/
 ### How do I deploy on connected phone for quick testing?
 Assuming `adb` is installed:
 ```
-$ adb -d install -r bin/Electrum-*-arm64-v8a-debug.apk
+$ adb -d install -r bin/Electrum-*-debug.apk
 $ adb shell monkey -p org.electrum.electrum 1
 ```
 
@@ -78,7 +76,6 @@ $ adb shell monkey -p org.electrum.electrum 1
 ```
 $ sudo docker run -it --rm \
     -v $PWD:/home/user/wspace/electrum \
-    -v $PWD/.buildozer/.gradle:/home/user/.gradle \
     --workdir /home/user/wspace/electrum \
     electrum-android-builder-img
 ```

@@ -6,7 +6,6 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 
 from electrum.util import base_units
-from electrum.storage import StorageReadWriteError
 
 from ...i18n import _
 from .label_dialog import LabelDialog
@@ -54,21 +53,16 @@ Builder.load_string('''
 
 class WalletDialog(Factory.Popup):
 
+    # def new_wallet(self, app, dirname):
+    #     def cb(text):
+    #         if text:
+    #             app.load_wallet_by_name(os.path.join(dirname, text))
+    #     d = LabelDialog(_('Enter wallet name'), '', cb)
+    #     d.open()
+
     def new_wallet(self, app, dirname):
-        def cb(filename):
-            if not filename:
-                return
-            # FIXME? "filename" might contain ".." (etc) and hence sketchy path traversals are possible
-            try:
-                app.load_wallet_by_name(os.path.join(dirname, filename))
-            except StorageReadWriteError:
-                app.show_error(_("R/W error accessing path"))
-        d = LabelDialog(_('Enter wallet name'), '', cb)
-        d.open()
+         app.popup_dialog('new_wallet')
 
     def open_wallet(self, app):
-        try:
-            app.load_wallet_by_name(self.ids.wallet_selector.selection[0])
-        except StorageReadWriteError:
-            app.show_error(_("R/W error accessing path"))
+        app.load_wallet_by_name(self.ids.wallet_selector.selection[0])
 

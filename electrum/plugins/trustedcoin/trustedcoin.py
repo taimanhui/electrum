@@ -45,9 +45,9 @@ from electrum.wallet import Multisig_Wallet, Deterministic_Wallet
 from electrum.i18n import _
 from electrum.plugin import BasePlugin, hook
 from electrum.util import NotEnoughFunds, UserFacingException
-from electrum.storage import StorageEncryptionVersion
+from electrum.storage import STO_EV_USER_PW
 from electrum.network import Network
-from electrum.base_wizard import BaseWizard, WizardWalletPasswordSetting
+from electrum.base_wizard import BaseWizard
 from electrum.logging import Logger
 
 
@@ -261,9 +261,9 @@ class Wallet_2fa(Multisig_Wallet):
 
     wallet_type = '2fa'
 
-    def __init__(self, storage, *, config):
+    def __init__(self, storage):
         self.m, self.n = 2, 3
-        Deterministic_Wallet.__init__(self, storage, config=config)
+        Deterministic_Wallet.__init__(self, storage)
         self.is_billing = False
         self.billing_info = None
         self._load_billing_addresses()
@@ -291,14 +291,14 @@ class Wallet_2fa(Multisig_Wallet):
     def min_prepay(self):
         return min(self.price_per_tx.keys())
 
-    def num_prepay(self):
+    def num_prepay(self, config):
         default = self.min_prepay()
-        n = self.config.get('trustedcoin_prepay', default)
+        n = config.get('trustedcoin_prepay', default)
         if n not in self.price_per_tx:
             n = default
         return n
 
-    def extra_fee(self):
+    def extra_fee(self, config):
         if self.can_sign_without_server():
             return 0
         if self.billing_info is None:
@@ -308,17 +308,17 @@ class Wallet_2fa(Multisig_Wallet):
             return 0
         if self.is_billing:
             return 0
-        n = self.num_prepay()
+        n = self.num_prepay(config)
         price = int(self.price_per_tx[n])
         if price > 100000 * n:
             raise Exception('too high trustedcoin fee ({} for {} txns)'.format(price, n))
         return price
 
-    def make_unsigned_transaction(self, coins, outputs, fixed_fee=None,
+    def make_unsigned_transaction(self, coins, outputs, config, fixed_fee=None,
                                   change_addr=None, is_sweep=False):
         mk_tx = lambda o: Multisig_Wallet.make_unsigned_transaction(
-            self, coins, o, fixed_fee, change_addr)
-        fee = self.extra_fee() if not is_sweep else 0
+            self, coins, o, config, fixed_fee, change_addr)
+        fee = self.extra_fee(config) if not is_sweep else 0
         if fee:
             address = self.billing_info['billing_address_segwit']
             fee_output = TxOutput(TYPE_ADDRESS, address, fee)
@@ -485,7 +485,7 @@ class TrustedCoinPlugin(BasePlugin):
             billing_info = server.get(wallet.get_user_id()[1])
         except ErrorConnectingServer as e:
             if suppress_connection_error:
-                self.logger.info(repr(e))
+                self.logger.info(str(e))
                 return
             raise
         billing_index = billing_info['billing_index']
@@ -594,10 +594,7 @@ class TrustedCoinPlugin(BasePlugin):
         k1.update_password(None, password)
         wizard.data['x1/'] = k1.dump()
         wizard.data['x2/'] = k2.dump()
-        wizard.pw_args = WizardWalletPasswordSetting(password=password,
-                                                     encrypt_storage=encrypt_storage,
-                                                     storage_enc_version=StorageEncryptionVersion.USER_PASSWORD,
-                                                     encrypt_keystore=bool(password))
+        wizard.pw_args = password, encrypt_storage, STO_EV_USER_PW
         self.go_online_dialog(wizard)
 
     def restore_wallet(self, wizard):
@@ -645,10 +642,7 @@ class TrustedCoinPlugin(BasePlugin):
         xpub3 = make_xpub(get_signing_xpub(xtype), long_user_id)
         k3 = keystore.from_xpub(xpub3)
         wizard.data['x3/'] = k3.dump()
-        wizard.pw_args = WizardWalletPasswordSetting(password=password,
-                                                     encrypt_storage=encrypt_storage,
-                                                     storage_enc_version=StorageEncryptionVersion.USER_PASSWORD,
-                                                     encrypt_keystore=bool(password))
+        wizard.pw_args = password, encrypt_storage, STO_EV_USER_PW
         wizard.terminate()
 
     def create_remote_key(self, email, wizard):
@@ -715,7 +709,7 @@ class TrustedCoinPlugin(BasePlugin):
                 wizard.show_message(str(e))
                 wizard.terminate()
         except Exception as e:
-            wizard.show_message(repr(e))
+            wizard.show_message(str(e))
             wizard.terminate()
         else:
             k3 = keystore.from_xpub(xpub3)

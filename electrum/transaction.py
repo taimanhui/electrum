@@ -30,9 +30,10 @@
 import struct
 import traceback
 import sys
+import threading
+import binascii
 from typing import (Sequence, Union, NamedTuple, Tuple, Optional, Iterable,
-                    Callable, List, Dict, Set, TYPE_CHECKING)
-from collections import defaultdict
+                    Callable, List, Dict)
 
 from . import ecc, bitcoin, constants, segwit_addr
 from .util import profiler, to_bytes, bh2u, bfh
@@ -45,9 +46,9 @@ from .crypto import sha256d
 from .keystore import xpubkey_to_address, xpubkey_to_pubkey
 from .logging import get_logger
 
-if TYPE_CHECKING:
-    from .wallet import Abstract_Wallet
-
+from .gui.kivy.nfc_scanner.scanner_android import ScannerAndroid
+from .bitcoin import rev_hex, int_to_hex, EncodeBase58Check, DecodeBase58Check
+from .bip32 import *
 
 _logger = get_logger(__name__)
 
@@ -85,10 +86,9 @@ class TxOutputForUI(NamedTuple):
 
 class TxOutputHwInfo(NamedTuple):
     address_index: Tuple
-    sorted_xpubs: Sequence[str]
+    sorted_xpubs: Iterable[str]
     num_sig: Optional[int]
     script_type: str
-    is_change: bool  # whether the wallet considers the output to be change
 
 
 class BIP143SharedTxDigestFields(NamedTuple):
@@ -624,12 +624,12 @@ class Transaction:
     def inputs(self):
         if self._inputs is None:
             self.deserialize()
-        return self._inputs or []
+        return self._inputs
 
     def outputs(self) -> List[TxOutput]:
         if self._outputs is None:
             self.deserialize()
-        return self._outputs or []
+        return self._outputs
 
     @classmethod
     def get_sorted_pubkeys(self, txin):
@@ -685,12 +685,13 @@ class Transaction:
 
     def add_signature_to_txin(self, i, signingPos, sig):
         txin = self._inputs[i]
+
         txin['signatures'][signingPos] = sig
         txin['scriptSig'] = None  # force re-serialization
         txin['witness'] = None    # force re-serialization
         self.raw = None
 
-    def add_inputs_info(self, wallet: 'Abstract_Wallet') -> None:
+    def add_inputs_info(self, wallet):
         if self.is_complete():
             return
         for txin in self.inputs():
@@ -707,7 +708,6 @@ class Transaction:
     def deserialize(self, force_full_parse=False):
         if self.raw is None:
             return
-            #self.raw = self.serialize()
         if self._inputs is not None:
             return
         d = deserialize(self.raw, force_full_parse)
@@ -720,7 +720,7 @@ class Transaction:
         return d
 
     @classmethod
-    def from_io(klass, inputs, outputs, *, locktime=0, version=None):
+    def from_io(klass, inputs, outputs, locktime=0, version=None):
         self = klass(None)
         self._inputs = inputs
         self._outputs = outputs
@@ -914,12 +914,14 @@ class Transaction:
             return preimage_script
 
         pubkeys, x_pubkeys = self.get_sorted_pubkeys(txin)
-        if txin['type'] in ['p2sh', 'p2wsh', 'p2wsh-p2sh']:
+        if txin['type'] == 'p2pkh':
+            return bitcoin.address_to_script(txin['address'])
+        elif txin['type'] in ['p2sh', 'p2wsh', 'p2wsh-p2sh']:
             return multisig_script(pubkeys, txin['num_sig'])
-        elif txin['type'] in ['p2pkh', 'p2wpkh', 'p2wpkh-p2sh']:
+        elif txin['type'] in ['p2wpkh', 'p2wpkh-p2sh']:
             pubkey = pubkeys[0]
             pkh = bh2u(hash_160(bfh(pubkey)))
-            return bitcoin.pubkeyhash_to_p2pkh_script(pkh)
+            return '76a9' + push_script(pkh) + '88ac'
         elif txin['type'] == 'p2pk':
             pubkey = pubkeys[0]
             return bitcoin.public_key_to_p2pk_script(pubkey)
@@ -938,9 +940,6 @@ class Transaction:
         prevout_n = txin['prevout_n']
         return prevout_hash + ':%d' % prevout_n
 
-    def prevout(self, index):
-        return self.get_outpoint_from_txin(self.inputs()[index])
-
     @classmethod
     def serialize_input(self, txin, script):
         # Prev hash and index
@@ -957,7 +956,6 @@ class Transaction:
             txin['sequence'] = nSequence
 
     def BIP69_sort(self, inputs=True, outputs=True):
-        # NOTE: other parts of the code rely on these sorts being *stable* sorts
         if inputs:
             self._inputs.sort(key = lambda i: (i['prevout_hash'], i['prevout_n']))
         if outputs:
@@ -1153,34 +1151,131 @@ class Transaction:
         s, r = self.signature_count()
         return r == s
 
-    def sign(self, keypairs) -> None:
-        # keypairs:  (x_)pubkey -> secret_bytes
+    def get_sign_info(self):
+        #sign
         bip143_shared_txdigest_fields = self._calc_bip143_shared_txdigest_fields()
         for i, txin in enumerate(self.inputs()):
             pubkeys, x_pubkeys = self.get_sorted_pubkeys(txin)
             for j, (pubkey, x_pubkey) in enumerate(zip(pubkeys, x_pubkeys)):
                 if self.is_txin_complete(txin):
                     break
-                if pubkey in keypairs:
+                if pubkey in self.keypairs:
                     _pubkey = pubkey
-                elif x_pubkey in keypairs:
+                elif x_pubkey in self.keypairs:
                     _pubkey = x_pubkey
                 else:
                     continue
+                
                 _logger.info(f"adding signature for {_pubkey}")
-                sec, compressed = keypairs.get(_pubkey)
-                sig = self.sign_txin(i, sec, bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)
-                self.add_signature_to_txin(i, j, sig)
-
-        _logger.debug(f"is_complete {self.is_complete()}")
+                sec, compressed = self.keypairs.get(_pubkey)
+                sig, sigIndex = self.sign_txin(txin, i, sec, bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)
+                self.add_signature_to_txin(i, sigIndex, sig)
+        
+        scan.isoDepClose()
+        t1 =threading.Thread(target=self.stop_nfc)
+        t1.start()
+        
+        _logger.info(f"is_complete {self.is_complete()}")
         self.raw = self.serialize()
+        print("after txin = %s" %txin)
+        print("serialize = %s" %self.raw)
+        self.callback(self, -1)
 
-    def sign_txin(self, txin_index, privkey_bytes, *, bip143_shared_txdigest_fields=None) -> str:
+    def stop_nfc(self):
+        # disable nfc
+        scan.nfc_disable()
+
+    def check_pw(self):
+        if self.pw_dialog is not None:
+            self.pw_dialog(self.get_pw, is_change=1)
+        if self.success:
+            self.callback(self, -1)
+
+    def get_pw(self, pw):
+        verifyResult = scan.verify_password(pw)
+        if verifyResult[0] == 0x01:
+            self.success = True
+            self.get_sign_info()
+        else:
+            self.success = False
+            self.callback(self, verifyResult[1])
+
+    def sign(self, keypairs, callback=None, password=None, pw_dialog=None) -> None:
+        # add nfc init and enable nfc
+        scan.nfc_init(self.check_pw)
+        scan.nfc_enable()
+        self.pw_dialog = pw_dialog
+        self.keypairs = keypairs
+        self.callback = callback
+
+    def get_derive_path(self, txin):
+        #get path
+        pubkey = txin['x_pubkeys'][0]
+        pk = binascii.unhexlify("".join(pubkey))
+        pk = pk[1:]
+
+        s = []
+        dd = pk[78:]
+        while dd:
+            # 2 bytes for derivation path index
+            n = int.from_bytes(dd[0:2], byteorder="little")
+            dd = dd[2:]
+            # in case of overflow, drop these 2 bytes; and use next 4 bytes instead
+            if n == 0xffff:
+                n = int.from_bytes(dd[0:4], byteorder="little")
+                dd = dd[4:]
+            s.append(n)
+        assert len(s) == 2
+
+        dpath = '/'.join(['%s' % b for b in s])
+        path = "0'/"
+        path += dpath
+        return path
+
+    def sign_txin(self, txin, txin_index, privkey_bytes, *, bip143_shared_txdigest_fields=None) -> str:
         pre_hash = sha256d(bfh(self.serialize_preimage(txin_index,
                                                        bip143_shared_txdigest_fields=bip143_shared_txdigest_fields)))
-        privkey = ecc.ECPrivkey(privkey_bytes)
-        sig = privkey.sign_transaction(pre_hash)
-        sig = bh2u(sig) + '01'
+        print('pre data is.........',
+              ''.join(['%02X ' % b for b in pre_hash]))
+            
+        path = self.get_derive_path(txin)
+        print("path = %s" %path)
+        sigbyte, keyX = scan.sign_hash(path, pre_hash)
+        #sigbyte = scan.sign_hash("0'/0/0", pre_hash)
+        sig = bh2u(bytes(sigbyte))
+        sig = sig[:-4]
+        sig += "01"
+        print("before sig = %s" %sig)
+
+        sig_index = 0
+        for i, pubkeys in enumerate(txin['pubkeys']):
+            if pubkeys[2:] != keyX.lower():
+                continue
+            sig_index = i
+        print("sig_index = %s" % sig_index)
+
+        sig = self.get_canonicalize_signature(sig)
+        print("after sig = %s" %sig)
+        return sig, sig_index
+
+    def get_canonicalize_signature(self, sig):
+        # s too high
+        sigbyte = binascii.unhexlify(sig)
+        rLength = sigbyte[3]
+        sLength = sigbyte[4 + rLength + 1]
+        s = sigbyte[4 + rLength + 2:-1]
+        s = ecc.string_to_number(s)
+        N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+        maxN = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
+        if s > maxN:
+            s = N - s
+            s = ecc.number_to_string(s, ecc.CURVE_ORDER)
+            sigend = (sigbyte[:4 + rLength + 1] + bytes((32,)) + s + sigbyte[-1:])
+            sigendHex = binascii.hexlify(bytes(sigend))
+            sig = (str(sigendHex))[2:-1]
+
+            sigstr = str(int(sig[3]) - 1)
+            sig = (sig[:3] + sigstr + sig[4:])
         return sig
 
     def get_outputs_for_UI(self) -> Sequence[TxOutputForUI]:
@@ -1199,41 +1294,23 @@ class Transaction:
         return (addr in (o.address for o in self.outputs())) \
                or (addr in (txin.get("address") for txin in self.inputs()))
 
-    def get_output_idxs_from_scriptpubkey(self, script: str) -> Set[int]:
-        """Returns the set indices of outputs with given script."""
-        assert isinstance(script, str)  # hex
-        # build cache if there isn't one yet
-        # note: can become stale and return incorrect data
-        #       if the tx is modified later; that's out of scope.
-        if not hasattr(self, '_script_to_output_idx'):
-            d = defaultdict(set)
-            for output_idx, o in enumerate(self.outputs()):
-                o_script = self.pay_script(o.type, o.address)
-                assert isinstance(o_script, str)
-                d[o_script].add(output_idx)
-            self._script_to_output_idx = d
-        return set(self._script_to_output_idx[script])  # copy
-
-    def get_output_idxs_from_address(self, addr: str) -> Set[int]:
-        script = bitcoin.address_to_script(addr)
-        return self.get_output_idxs_from_scriptpubkey(script)
-
     def as_dict(self):
         if self.raw is None:
             self.raw = self.serialize()
         self.deserialize()
+        d = deserialize(self.raw)
+        #sig_hash_list = []
+        #for txin_index, txin in enumerate(d['inputs']):
+        #   sig_hash = sha256d(bfh(self.serialize_preimage(txin_index)))
+        #   sig_hash_list.append(bh2u(sig_hash))
         out = {
             'hex': self.raw,
             'complete': self.is_complete(),
             'final': self.is_final(),
+            'tx': d,
+        #    'sig_hash_list': hash_list,
         }
         return out
-
-    @classmethod
-    def from_dict(cls, d):
-        tx = cls(d['hex'])
-        tx.deserialize(True)
-        return tx
 
 
 def tx_from_str(txt: str) -> str:
