@@ -1223,7 +1223,7 @@ class ElectrumWindow(App):
     def delete_wallet(self):
         from .uix.dialogs.question import Question
         basename = os.path.basename(self.wallet.storage.path)
-        d = Question(_('Delete wallet?') + '\n' + basename, self._delete_wallet)
+        d = Question(_('Delete wallet file?') + '\n' + basename, self._delete_wallet)
         d.open()
 
     def _delete_wallet(self, b):

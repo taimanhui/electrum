@@ -6,7 +6,7 @@
     <data>
         <variable
             name="model"
-            type="org.electrum.electrum3.ContactModel"/>
+            type="org.electrum.electrum.ContactModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

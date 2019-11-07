@@ -451,7 +451,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
                                         self.wallet.basename())
         extra = [self.wallet.storage.get('wallet_type', '?')]
         if self.wallet.is_watching_only():
-            extra.append(_('watching only'))
+            extra.append(_('watching-only'))
         title += '  [%s]'% ', '.join(extra)
         self.setWindowTitle(title)
         self.password_menu.setEnabled(self.wallet.may_have_password())

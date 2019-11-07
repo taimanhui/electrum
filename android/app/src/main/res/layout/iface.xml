@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="model" type="org.electrum.electrum3.IfaceModel"/>
+        <variable name="model" type="org.electrum.electrum.IfaceModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,4 +1,4 @@
-package org.electrum.electrum3
+package org.electrum.electrum
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -87,7 +87,7 @@ class TransactionModel(val txExport: Map<PyObject, PyObject>) {
         val confirmations = Integer.parseInt(get("confirmations"))
         return when {
             confirmations <= 0 -> ""
-            else -> app.resources.getQuantityString(R.plurals.confirmation,
+            else -> app.resources.getQuantityString(R.string.Transaction_not,
                                                     confirmations, confirmations)
         }
     }

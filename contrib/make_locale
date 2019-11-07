@@ -16,6 +16,7 @@ os.chdir('..')
 code_directories = [
     'android/app/src/main/python',
     'electrum/gui',
+    'ios',
                                           # copied by make_ios_project.sh.
     'electrum',
     'electrum/plugins',

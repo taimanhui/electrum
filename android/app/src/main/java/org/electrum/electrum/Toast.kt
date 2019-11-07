@@ -1,4 +1,4 @@
-package org.electrum.electrum3
+package org.electrum.electrum
 
 import android.os.Build
 import android.os.Handler

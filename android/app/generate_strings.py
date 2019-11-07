@@ -207,6 +207,8 @@ def make_ids_inner(ids_in, ids_out):
         counts = Counter(existing_ids)
         counts.update([id[:max_words] for id in ids_in.values()])
         if counts == prev_counts:
+            #for s, _ in ids_in.items():
+            #    del ids_in[s]
             raise DuplicateStringError()
 
         strings_done = []

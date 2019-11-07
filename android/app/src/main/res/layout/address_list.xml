@@ -5,10 +5,10 @@
 
     <data>
         <import type="android.view.View"/>
-        <import type="org.electrum.electrum3.UtilKt"/>
+        <import type="org.electrum.electrum.UtilKt"/>
         <variable
             name="model"
-            type="org.electrum.electrum3.AddressModel"/>
+            type="org.electrum.electrum.AddressModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

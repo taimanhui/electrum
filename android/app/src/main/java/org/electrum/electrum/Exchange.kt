@@ -1,4 +1,4 @@
-package org.electrum.electrum3
+package org.electrum.electrum
 
 import androidx.lifecycle.MediatorLiveData
 

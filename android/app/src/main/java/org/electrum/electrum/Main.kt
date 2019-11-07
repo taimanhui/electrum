@@ -1,4 +1,4 @@
-package org.electrum.electrum3
+package org.electrum.electrum
 
 import android.app.Activity
 import android.content.Intent
@@ -267,7 +267,7 @@ class MainActivity : AppCompatActivity(R.layout.main) {
             val uri = intent?.data
             if (uri != null) {
                 if (daemonModel.wallet == null) {
-                    toast(R.string.no_wallet_is_open_)
+                    toast(R.string.no_wallet)
                     openDrawer()
                 } else {
                     val dialog = findDialog(this, SendDialog::class)

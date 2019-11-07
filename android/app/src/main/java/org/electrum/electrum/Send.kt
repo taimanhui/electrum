@@ -1,4 +1,4 @@
-package org.electrum.electrum3
+package org.electrum.electrum
 
 import android.content.Intent
 import android.os.Bundle
@@ -39,7 +39,7 @@ class SendDialog : AlertDialogFragment() {
                    .asList().isEmpty()) {
             // At least one receiving address is needed to call wallet.dummy_address.
             throw ToastException(
-                R.string.electrum_is_generating_your_addresses__please_wait_)
+                R.string.electrum_is)
         }
     }
 
