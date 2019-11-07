@@ -1,4 +1,4 @@
-package org.electroncash.electroncash3
+package org.electrum.electrum3
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -43,7 +43,7 @@ abstract class AlertDialogFragment : DialogFragment() {
     //   * It allows Kotlin synthetic properties to be used directly on the fragment, rather
     //     than prefixing them all with `dialog.`.
     //   * It ensures cancelPendingInputEvents is called when the fragment is stopped (see
-    //     https://github.com/Electron-Cash/Electron-Cash/issues/1091#issuecomment-526951516
+    //     https://github.com/Electrum/Electrum/issues/1091#issuecomment-526951516
     //     and Fragment.initLifecycle.
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

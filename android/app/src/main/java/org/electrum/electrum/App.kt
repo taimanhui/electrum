@@ -1,4 +1,4 @@
-package org.electroncash.electroncash3
+package org.electrum.electrum3
 
 import android.app.Application
 import android.app.NotificationChannel
@@ -23,8 +23,8 @@ val py by lazy {
     Python.start(AndroidPlatform(app))
     Python.getInstance()
 }
-fun libMod(name: String) = py.getModule("electroncash.$name")!!
-fun guiMod(name: String) = py.getModule("electroncash_gui.android.$name")!!
+fun libMod(name: String) = py.getModule("electrum.$name")!!
+fun guiMod(name: String) = py.getModule("electrum_gui.android.$name")!!
 val libNetworks by lazy { libMod("networks") }
 
 

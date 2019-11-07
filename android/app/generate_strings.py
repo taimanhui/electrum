@@ -76,13 +76,13 @@ def main():
         log("Running make_locale")
         run([sys.executable, join(EC_ROOT, "contrib/make_locale")], check=True)
 
-    locale_dir = join(EC_ROOT, "lib/locale")
+    locale_dir = join(EC_ROOT, "electrum/locale")
     lang_strings = defaultdict(list)
     for lang_region in [name for name in os.listdir(locale_dir)
                         if isdir(join(locale_dir, name))]:
         lang, region = lang_region.split("_")
         catalog = read_catalog(join(locale_dir, lang_region, "LC_MESSAGES",
-                                    "electron-cash.mo"))
+                                    "electrum.mo"))
         lang_strings[lang].append((region, catalog))
 
     src_strings = read_catalog(join(locale_dir, "messages.pot"))

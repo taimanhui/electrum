@@ -1,4 +1,4 @@
-package org.electroncash.electroncash3
+package org.electrum.electrum3
 
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -22,8 +22,8 @@ fun initSettings() {
     settings = LivePreferences(sp)
     setDefaultValues(sp)
 
-    settings.getBoolean("cashaddr_format").observeForever {
-        clsAddress.callAttr("show_cashaddr", it)
+    settings.getBoolean("addr_format").observeForever {
+        clsAddress.callAttr("show_addr", it)
     }
     settings.getString("base_unit").observeForever {
         unitName = it!!
@@ -45,8 +45,8 @@ fun setDefaultValues(sp: SharedPreferences) {
                     libWallet.get("DEFAULT_CONFIRMED_ONLY")!!.toBoolean())
 
     // Appearance
-    setDefaultValue(sp, "cashaddr_format",
-                    clsAddress.get("FMT_UI") == clsAddress.get("FMT_CASHADDR"))
+    setDefaultValue(sp, "addr_format",
+                    clsAddress.get("FMT_UI") == clsAddress.get("FMT_ADDR"))
     setDefaultValue(sp, "block_explorer", libWeb.get("DEFAULT_EXPLORER")!!.toString())
 
     // Fiat

@@ -1,4 +1,4 @@
-package org.electroncash.electroncash3
+package org.electrum.electrum3
 
 import androidx.lifecycle.MutableLiveData
 import android.content.SharedPreferences

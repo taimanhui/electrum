@@ -1,4 +1,4 @@
-package org.electroncash.electroncash3
+package org.electrum.electrum3
 
 import android.os.Bundle
 import android.text.SpannableString
@@ -47,7 +47,7 @@ class AddressesFragment : Fragment(R.layout.addresses), MainFragment {
             addSource(daemonUpdate)
             addSource(model.filterType)
             addSource(model.filterStatus)
-            addSource(settings.getBoolean("cashaddr_format"))
+            addSource(settings.getBoolean("addr_format"))
             addSource(settings.getString("base_unit"))
         }.observe(viewLifecycleOwner, { refresh() })
     }

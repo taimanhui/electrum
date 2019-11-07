@@ -1,4 +1,4 @@
-package org.electroncash.electroncash3
+package org.electrum.electrum3
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,7 +23,7 @@ class ContactsFragment : Fragment(R.layout.contacts), MainFragment {
         rvContacts.adapter = ContactsAdapter(activity!!)
         TriggerLiveData().apply {
             addSource(daemonUpdate)
-            addSource(settings.getBoolean("cashaddr_format"))
+            addSource(settings.getBoolean("addr_format"))
         }.observe(viewLifecycleOwner, { refresh() })
 
         btnAdd.setOnClickListener { showDialog(activity!!, ContactDialog()) }

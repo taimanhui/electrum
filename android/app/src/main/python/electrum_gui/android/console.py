@@ -7,10 +7,10 @@ from os.path import exists, join
 import pkgutil
 import unittest
 
-from electroncash import commands, daemon, keystore, simple_config, storage, tests, util
-from electroncash.i18n import _
-from electroncash.storage import WalletStorage
-from electroncash.wallet import (ImportedAddressWallet, ImportedPrivkeyWallet, Standard_Wallet,
+from electrum import commands, daemon, keystore, simple_config, storage, tests, util
+from electrum.i18n import _
+from electrum.storage import WalletStorage
+from electrum.wallet import (ImportedAddressWallet, ImportedPrivkeyWallet, Standard_Wallet,
                                  Wallet)
 
 from android.preference import PreferenceManager
@@ -191,7 +191,7 @@ class AndroidCommands(commands.Commands):
 
     def _assert_daemon_running(self):
         if not self.daemon_running:
-            raise Exception("Daemon not running")  # Same wording as in electron-cash script.
+            raise Exception("Daemon not running")  # Same wording as in electrum script.
 
     # Log callbacks on stderr so they'll appear in the console activity.
     def _on_callback(self, *args):
@@ -223,7 +223,7 @@ SP_SET_METHODS = {
 
 # We store the config in the SharedPreferences because it's very easy to base an Android
 # settings UI on that. The reverse approach would be harder (using PreferenceDataStore to make
-# the settings UI access an Electron Cash config file).
+# the settings UI access an Electrum config file).
 class AndroidConfig(simple_config.SimpleConfig):
     def __init__(self, app):
         self.sp = PreferenceManager.getDefaultSharedPreferences(app)

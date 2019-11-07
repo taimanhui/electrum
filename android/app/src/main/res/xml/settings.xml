@@ -11,7 +11,7 @@
             android:key="auto_connect"
             android:title="@string/select_server_automatically"
             android:disableDependentsState="true"/>
-        <org.electroncash.electroncash3.ServerPreference
+        <org.electrum.electrum3.ServerPreference
             android:key="server"
             android:title="@string/server"
             android:dependency="auto_connect"/>
@@ -25,8 +25,8 @@
 
     <PreferenceCategory android:title="@string/appearance">
         <SwitchPreference
-            android:key="cashaddr_format"
-            android:title="@string/cashaddr_address"/>
+            android:key="addr_format"
+            android:title="@string/addr_address"/>
         <ListPreference
             android:key="base_unit"
             android:title="@string/base_unit"

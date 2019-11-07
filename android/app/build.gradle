@@ -15,7 +15,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId "org.electroncash.wallet"
+        applicationId "org.electrum.wallet"
         minSdkVersion 16
 
         // Before increasing this to 28, all layouts must be reviewed to see whether they need
@@ -63,8 +63,8 @@ android {
             python {
                 srcDir REPO_ROOT
                 include "electrum/**"                               // In ../.. (renamed below)
-                include("chaquopy/**", "electroncash_gui/**",  // In src/main/python
-                        "electroncash_plugins/**")             //
+                include("chaquopy/**", "electrum_gui/**",  // In src/main/python
+                        "electrum_plugins/**")             //
                 exclude "**/*.po", "**/*.pot"
             }
         }
@@ -106,7 +106,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "electroncash-${variant.versionName}.apk"
+            outputFileName = "electrum-${variant.versionName}.apk"
         }
     }
 }
@@ -129,7 +129,7 @@ afterEvaluate {
         def dstDir = task.destinationDir
         task.doLast {
             def src = "$dstDir/electrum"
-            def dst = "$dstDir/electroncash"
+            def dst = "$dstDir/electrum"
             if (! file(src).renameTo(dst)) {
                 throw new GradleException("Failed to rename $src to $dst")
             }

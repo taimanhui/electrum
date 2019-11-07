@@ -1,4 +1,4 @@
-package org.electroncash.electroncash3
+package org.electrum.electrum3
 
 import android.content.Context
 import android.view.View
@@ -44,7 +44,7 @@ class CrashhubDialog : CrashReportDialog() {
 
 class CrashhubSenderFactory : ReportSenderFactory {
     override fun create(context: Context, config: CoreConfiguration): ReportSender {
-        return CrashhubSender(config, "https://crashhub.electroncash.org/crash")
+        return CrashhubSender(config, "https://crashhub.electrum.org/crash")
     }
 }
 

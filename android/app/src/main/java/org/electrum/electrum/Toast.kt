@@ -1,4 +1,4 @@
-package org.electroncash.electroncash3
+package org.electrum.electrum3
 
 import android.os.Build
 import android.os.Handler
@@ -73,7 +73,7 @@ fun toast(resId: Int, duration: Int = TOAST_DEFAULT_DURATION,
 }
 
 
-// Workaround for Android 7.1 bug (Electron Cash issue #1528), based on
+// Workaround for Android 7.1 bug (Electrum issue #1528), based on
 // https://github.com/cat9/ToastCompat.
 private fun fixToastBug(toast: Toast) {
     try {
