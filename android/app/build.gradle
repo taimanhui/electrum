@@ -15,7 +15,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId "org.electrum.wallet"
+        applicationId "org.haobtc.wallet"
         minSdkVersion 16
 
         // Before increasing this to 28, all layouts must be reviewed to see whether they need
