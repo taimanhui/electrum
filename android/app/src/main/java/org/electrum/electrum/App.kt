@@ -19,6 +19,7 @@ lateinit var app: App
 lateinit var mainHandler: Handler
 
 
+
 val py by lazy {
     Python.start(AndroidPlatform(app))
     Python.getInstance()
@@ -27,6 +28,7 @@ fun libMod(name: String) = py.getModule("electrum.$name")!!
 fun guiMod(name: String) = py.getModule("electrum_gui.android.$name")!!
 val libNetworks by lazy { libMod("networks") }
 
+val testDeamo by lazy { guiMod("daemon") }
 
 // Not using reportFields: it doesn't noticably reduce response time.
 @AcraCore(reportSenderFactoryClasses = [CrashhubSenderFactory::class])
@@ -46,28 +48,32 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= 26) {
-            getSystemService(NotificationManager::class).createNotificationChannel(
-                NotificationChannel(DEFAULT_CHANNEL, "Default",
-                                    NotificationManager.IMPORTANCE_DEFAULT))
+        System.out.println("app.onCreate() in......====================")
+        testDeamo.callAttr("test")
+
+            if (Build.VERSION.SDK_INT >= 26) {
+                getSystemService(NotificationManager::class).createNotificationChannel(
+                        NotificationChannel(DEFAULT_CHANNEL, "Default",
+                                NotificationManager.IMPORTANCE_DEFAULT))
+            }
+
+            System.out.println("app.onCreate() in11111111......================")
+            // The rest of this method should run in the main process only.
+            if (ACRA.isACRASenderServiceProcess()) return
+
+            System.out.println("app.onCreate() in22222......================")
+            if (BuildConfig.testnet) {
+                libNetworks.callAttr("set_testnet")
+            }
+
+
+            System.out.println("app.onCreate() 4444.....================")
+//            initSettings()
+//            initDaemon()
+//            initNetwork()
+//            initExchange()
         }
-
-        // The rest of this method should run in the main process only.
-        if (ACRA.isACRASenderServiceProcess()) return
-
-        if (BuildConfig.testnet) {
-            libNetworks.callAttr("set_testnet")
-        }
-
-        initSettings()
-        initDaemon()
-        initNetwork()
-        initExchange()
-    }
-
 }
-
-
 fun runOnUiThread(r: () -> Unit) { runOnUiThread(Runnable { r() }) }
 
 fun runOnUiThread(r: Runnable) {

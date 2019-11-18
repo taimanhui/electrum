@@ -25,11 +25,8 @@
             android:name=".ECConsoleActivity"
             android:label="@string/console"
             android:launchMode="singleInstance"/>
-        
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.Splash"
-            android:launchMode="singleTask">
+
+        <activity android:name="org.electrum.electrum.EMActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -40,6 +37,35 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="bitcoin"/>
             </intent-filter>
+
+        </activity>
+        <activity android:name="com.chaquo.python.utils.AActivity">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--            </intent-filter>-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--                <data android:scheme="bitcoin"/>-->
+<!--            </intent-filter>-->
+
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.Splash"
+            android:launchMode="singleTask">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--            </intent-filter>-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--                <data android:scheme="bitcoin"/>-->
+<!--            </intent-filter>-->
         </activity>
 
         <!-- On some devices it forces landscape by default. -->
