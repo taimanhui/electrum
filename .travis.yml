@@ -44,6 +44,22 @@ jobs:
       language: python
       install: pip install flake8
       script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    - if: branch = reg-electrum
+      name: "Native Android build"
+      services:
+        - docker
+      install:
+        - sudo docker pull lightningcn/electrum_env:3dad842cb755be36a36176f64a798c7a02acd871
+      script:
+        - sudo chown -R 1000:1000 .
+        # Output something every minute or Travis kills the job
+        - while sleep 60; do echo "=====[ $SECONDS seconds still running ]====="; done &
+        - sudo docker run --rm -it -u 1000:1000 --name electrum-android-native-builder-cont --env CI=true -v $PWD:/data lightningcn/electrum_env:3dad842cb755be36a36176f64a798c7a02acd871 /data/android/gradlew app:assembleMainNetRelease
+        # kill background sleep loop
+        - kill %1
+        - ls -la android/app/build/outputs/apk/MainNet/release/
+        - if [ $(ls android/app/build/outputs/apk/MainNet/release/ | grep -c electrum-*) -eq 0 ]; then exit 1; fi
+      after_success: true 
     - stage: binary builds
       if: branch = master
       name: "Windows build"
