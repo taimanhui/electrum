@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/actionbar"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_add_cosigner"
+        android:name="com.example.myapplication1.ItemFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:layout_marginStart="@dimen/layout_margin"
+        android:layout_marginEnd="@dimen/layout_margin"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:itemCount="1"
+        tools:listitem="@layout/fragment_item_cosigner" />
+
+    <Button
+        android:id="@+id/bn_add_cosigner"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginStart="@dimen/layout_margin"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/layout_margin"
+        android:background="@drawable/add_bk"
+        android:drawableStart="@mipmap/add"
+        android:paddingStart="136dp"
+        android:paddingEnd="135dp"
+        android:text="@string/add"
+        android:textColor="@color/button_bk"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recycler_add_cosigner" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@android:color/white">
+        <Button
+            android:id="@+id/bn_complete_add_cosigner"
+            android:layout_width="343dp"
+            android:layout_height="40dp"
+            android:background="@drawable/button_bk"
+            android:text="@string/complete"
+            android:layout_centerInParent="true">
+
+        </Button>
+
+    </RelativeLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

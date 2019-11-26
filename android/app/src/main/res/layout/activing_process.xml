@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/actionbar"/>
+    <ImageView
+        android:layout_width="251dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="61dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/text_red"
+        android:contentDescription=""/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/touch_again"
+        android:textColor="@color/text"
+        android:textSize="18sp" />
+    <TextView
+        android:id="@+id/connect_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="135dp"
+        android:layout_marginTop="22dp"
+        android:drawableStart="@mipmap/chenggong"
+        android:drawablePadding="6dp"
+        android:text="@string/connect"
+        android:textColor="@color/text"
+        android:textSize="13sp" />
+        <TextView
+            android:id="@+id/pin_setting_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="135dp"
+            android:drawablePadding="6dp"
+            android:drawableStart="@mipmap/chenggong"
+            android:text="@string/set_pin_processinfo"
+            android:textColor="@color/text"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/activate_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="135dp"
+            android:layout_marginTop="12dp"
+            android:drawablePadding="6dp"
+            android:drawableStart="@mipmap/chenggong"
+            android:text="@string/activing_processinfo"
+            android:textColor="@color/text"
+            android:textSize="13sp" />
+
+</LinearLayout>

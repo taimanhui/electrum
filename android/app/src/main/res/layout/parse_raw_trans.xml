@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/actionbar"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        app:cardCornerRadius="6dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/signature"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/prompt_sig"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/textView29"
+                app:layout_constraintTop_toBottomOf="@id/textView29" />
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="77.5dp"
+                android:background="@color/separation_line"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <EditText
+                android:id="@+id/edit_raw"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13.5dp"
+                android:background="@null"
+                android:gravity="top"
+                android:layout_marginStart="16dp"
+                android:hint="@string/raw"
+                android:minHeight="157dp"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="@id/textView30"
+                app:layout_constraintTop_toBottomOf="@id/view3" />
+
+            <Button
+                android:id="@+id/import_file"
+                android:layout_width="100dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="19dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/paste_bk"
+                android:text="@string/import_file"
+                android:textColor="@color/button_bk"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/edit_raw" />
+
+            <Button
+                android:id="@+id/sweep_sig"
+                android:layout_width="100dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/paste_bk"
+                android:text="@string/sweep"
+                android:paddingStart="17.8dp"
+                android:paddingEnd="17dp"
+                android:drawableStart="@mipmap/saoyisao"
+                android:textColor="@color/button_bk"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/import_file"
+                app:layout_constraintTop_toBottomOf="@id/edit_raw" />
+
+            <Button
+                android:id="@+id/paste_sig"
+                android:layout_width="100dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/paste_bk"
+                android:text="@string/paste"
+                android:paddingStart="26.8dp"
+                android:paddingEnd="24dp"
+                android:drawableStart="@mipmap/zhantie"
+                android:textColor="@color/button_bk"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/sweep_sig"
+                app:layout_constraintTop_toBottomOf="@id/edit_raw" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/confirm_sig"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="37dp"
+        android:background="@drawable/button_bk"
+        android:text="@string/confirm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+    <include layout="@layout/actionbar"/>
+    <ImageView
+        android:layout_width="81dp"
+        android:layout_height="81dp"
+        android:layout_marginTop="112dp"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/active_prompt"
+        android:layout_marginTop="213dp"
+        android:layout_centerHorizontal="true"
+        />
+    <Button
+        android:id="@+id/button_activate"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="513dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/active"
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_bk"/>
+</RelativeLayout>

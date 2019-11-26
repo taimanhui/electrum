@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+    <include layout="@layout/actionbar"/>
+    <ImageView
+        android:layout_width="81dp"
+        android:layout_height="81dp"
+        android:layout_marginTop="122dp"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/touch_fail"
+        android:layout_marginTop="223dp"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:layout_width="323dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="477dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/touch_fail_text"
+        android:textSize="13sp"/>
+    <Button
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="567dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/retry"
+        android:background="@drawable/button_bk"
+        android:textColor="@android:color/white"/>
+</RelativeLayout>

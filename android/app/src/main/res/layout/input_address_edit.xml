@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/actionbar"/>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_gravity="center_horizontal"
+        app:cardCornerRadius="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/import_address"
+                android:textSize="18sp"
+                android:textColor="@color/text"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="16dp"
+                />
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="@color/separation_line"
+                android:layout_marginTop="19.5dp"/>
+
+            <EditText
+                android:id="@+id/edit_public_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="13.5dp"
+                android:background="@null"
+                android:textSize="15sp"
+                android:hint="@string/input_address" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="248dp"
+            android:layout_marginStart="139dp">
+            <Button
+                android:id="@+id/bn_sweep_create"
+                android:layout_width="100dp"
+                android:layout_height="36dp"
+                android:paddingStart="17.8dp"
+                android:paddingEnd="17dp"
+                android:drawableStart="@mipmap/saoyisao"
+                android:background="@color/paste_bk"
+                android:text="@string/sweep"
+                android:textColor="@color/button_bk"
+                android:textSize="16sp"/>
+
+            <Button
+                android:id="@+id/bn_paste_create"
+                android:layout_width="100dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="10dp"
+                android:paddingStart="26.8dp"
+                android:paddingEnd="24dp"
+                android:background="@color/paste_bk"
+                android:drawableStart="@mipmap/zhantie"
+                android:text="@string/paste"
+                android:textColor="@color/button_bk"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+    <Button
+        android:id="@+id/bn_confirm_create"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="@string/confirm"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="200dp"
+        android:background="@drawable/button_bk"/>
+
+</LinearLayout>

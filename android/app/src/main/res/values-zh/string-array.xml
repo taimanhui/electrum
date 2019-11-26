@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="type">
+        <item>发币</item>
+        <item>收币</item>
+    </string-array>
+    <string-array name="state">
+        <item>全部</item>
+        <item>待广播</item>
+        <item>待你签名</item>
+        <item>待确认</item>
+        <item>已确认</item>
+    </string-array>
+    <string name="trans_details">交易详情</string>
+    <string name="cosigner">联署人1</string>
+</resources>

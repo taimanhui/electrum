@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <include layout="@layout/actionbar"/>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="64dp"
+        app:cardCornerRadius="6dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="19dp"
+                android:singleLine="true"
+                android:ellipsize="middle"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="@string/to"
+                android:textSize="15sp"
+                android:textColor="@color/text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/bn_sweep_2many"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="93dp"
+                android:background="@color/paste_bk"
+                android:drawableStart="@mipmap/saoyisao"
+                android:paddingStart="13dp"
+                android:paddingEnd="10dp"
+                android:text="@string/sweep"
+                android:textColor="@color/button_bk"
+                android:textSize="13sp"
+                app:layout_constraintBaseline_toBaselineOf="@id/textView25"
+                app:layout_constraintStart_toEndOf="@id/textView25" />
+
+            <Button
+                android:id="@+id/bn_paste_2many"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp"
+                android:background="@color/paste_bk"
+                android:drawableStart="@mipmap/zhantie"
+                android:paddingStart="15dp"
+                android:paddingEnd="10dp"
+                android:text="@string/paste"
+                android:textColor="@color/button_bk"
+                android:textSize="13sp"
+                app:layout_constraintBaseline_toBaselineOf="@id/bn_sweep_2many"
+                app:layout_constraintStart_toEndOf="@id/bn_sweep_2many" />
+
+            <EditText
+                android:id="@+id/edit_address_2many"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="36dp"
+                android:hint="@string/input_address"
+                android:textSize="15sp"
+                android:background="@null"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView25" />
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="22.5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/separation_line"
+                app:layout_constraintTop_toBottomOf="@id/edit_address_2many"/>
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="18.5dp"
+                android:text="@string/amount"
+                android:textColor="@color/text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view2" />
+
+            <EditText
+                android:id="@+id/edit_amount_2many"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:background="@null"
+                android:gravity="end"
+                android:hint="@string/input_here"
+                android:singleLine="true"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toStartOf="@id/textView27"
+                app:layout_constraintTop_toTopOf="@id/textView26" />
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:text="@string/btc"
+                android:textColor="@color/text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/edit_amount_2many" />
+            <View
+                android:id="@+id/cardView3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="19.5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/separation_line"
+                app:layout_constraintTop_toBottomOf="@id/textView26"/>
+
+            <Button
+                android:id="@+id/bn_add_to"
+                android:layout_width="match_parent"
+                android:layout_height="59.5dp"
+                android:background="@drawable/add_bk"
+                android:drawableStart="@mipmap/add"
+                android:paddingStart="150dp"
+                android:paddingEnd="140dp"
+                android:text="@string/add"
+                android:textColor="@color/button_bk"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView3" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_add_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="314dp"
+        android:layout_marginEnd="10dp"
+        tools:listitem="@layout/vout_item"
+        tools:itemCount="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textColor="@color/button_bk"
+            android:textSize="22sp"
+            android:text="12.5">
+
+        </TextView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:textSize="13sp"
+            android:text="@string/btc"/>
+        <Button
+            android:id="@+id/bn_send2many_next"
+            android:layout_width="190dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="101.5dp"
+            android:background="@color/button_bk"
+            android:text="@string/next"/>
+
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#388CFF</color>
-
-    <!-- Used for top status bar -->
-    <color name="colorPrimaryDark">#3077D9</color>
-
-    <!-- Used for some widgets like RadioButton and EditText, and AlertDialog buttons. -->
-    <color name="colorAccent">@color/colorPrimary</color>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="separation_line">#EBEBEB</color>
+    <color name="text">#FF494949</color>
+    <color name="light_text">#FFB3B3B3</color>
+    <color name="button_bk">#FF6182F5</color>
+    <color name="card_bk">#FFF5F5F5</color>
+    <color name="text_red">#FFF26A3A</color>
+    <color name="paste_bk">#FFE9EEFF</color>
+    <color name="text_color1">#FF333333</color>
+    <color name="point">#FF30C28B</color>
+    <color name="button_bk_grey">#687488</color>
+    <color name="button_bk_small">#87A1FD</color>
+    <color name="t_white">#00000000</color>
+    <color name="bk_yellow">#FFFFB12B</color>
+    <color name="edit_text_bk">#FFF8F9FC</color>
+    <color name="button_bk_disable">#806182f5</color>
 </resources>

@@ -1,86 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:tools="http://schemas.android.com/tools"
-    package="org.electrum.electrum"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.bixin.coldwallet">
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.NFC_TRANSACTION_EVENT"/>
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
     <application
-        android:name=".App"
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:fullBackupContent="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        android:allowBackup="true">
 
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/settings"/>
-        <activity
-            android:name=".NetworkActivity"
-            android:label="@string/network"/>
-        <activity
-            android:name=".ECConsoleActivity"
-            android:label="@string/console"
-            android:launchMode="singleInstance"/>
+        <activity android:name=".activities.GuideActivity">
+        </activity>
 
-        <activity android:name="org.electrum.electrum.EMActivity">
+        <activity android:name=".activities.PinSettingActivity"
+            android:label=""
+            android:parentActivityName=".activities.TransactionDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.PinSettingActivity"/>
+
+        </activity>
+        <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="bitcoin"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
         </activity>
-        <activity android:name="com.chaquo.python.utils.AActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN"/>-->
-<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--            </intent-filter>-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
-<!--                <data android:scheme="bitcoin"/>-->
-<!--            </intent-filter>-->
+        <activity android:name=".activities.SettingActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity android:name=".activities.TransactionRecordsActivity"
+            android:label=""
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity android:name=".activities.HardwareInfoActivity"
+            android:parentActivityName=".activities.SettingActivity"
+            android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity"/>
+        </activity>
+        <activity android:name=".activities.MessageManagerActivity"
+            android:parentActivityName=".activities.SettingActivity"
+            android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity"/>
+        </activity>
+        <activity android:name=".activities.LanguageSettingActivity"
+            android:parentActivityName=".activities.SettingActivity"
+            android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity"/>
+        </activity>
+        <activity android:name=".activities.ServerSettingActivity"
+            android:parentActivityName=".activities.SettingActivity"
+            android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity"/>
+        </activity>
+        <activity android:name=".activities.TransactionsSettingActivity"
+            android:parentActivityName=".activities.SettingActivity"
+            android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity"/>
+        </activity>
+        <activity android:name=".activities.ServiceOnlineActivity"
+            android:parentActivityName=".activities.SettingActivity"
+            android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity"/>
+        </activity>
+        <activity android:name=".activities.AboutActivity"
+            android:parentActivityName=".activities.SettingActivity"
+            android:label="">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SettingActivity"/>
+        </activity>
+        <activity android:name=".activities.SendOne2OneMainPageActivity"
+            android:label=""
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity android:name=".activities.SignaturePageActivity"
+            android:label=""
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+
+        <activity android:name=".activities.ReceivedPageActivity"
+            android:label=""
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity android:name=".activities.Send2ManyActivity"
+            android:label=""
+            android:parentActivityName=".activities.SendOne2OneMainPageActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".activities.SendOne2OneMainPageActivity"/>
+        </activity>
+        <activity android:name=".activities.SendOne2ManyMainPageActivity"
+            android:label=""
+            android:parentActivityName=".activities.Send2ManyActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.Send2ManyActivity"/>
+        </activity>
+        <activity android:name=".activities.TransactionDetailsActivity"
+            android:label=""
+            android:parentActivityName=".activities.SignaturePageActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SignaturePageActivity"/>
+        </activity>
+        <activity android:name=".activities.TouchHardwareActivity"
+            android:label=""
+            android:parentActivityName=".activities.PinSettingActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.PinSettingActivity"/>
+        </activity>
+        <activity android:name=".activities.ConfirmOnHardware"
+            android:label=""
+            android:parentActivityName=".activities.TouchHardwareActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.TouchHardwareActivity"/>
+        </activity>
+        <activity android:name=".activities.CreateWalletActivity" />
+        <activity android:name=".activities.ImportWalletPageActivity"
+            android:label=""
+            android:parentActivityName=".activities.CreateWalletActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.CreateWalletActivity"/>
 
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.Splash"
-            android:launchMode="singleTask">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN"/>-->
-<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--            </intent-filter>-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
-<!--                <data android:scheme="bitcoin"/>-->
-<!--            </intent-filter>-->
+        <activity android:name=".activities.CreateWalletPageActivity"
+            android:parentActivityName=".activities.CreateWalletActivity"
+            android:label="">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.CreateWalletActivity"/>
         </activity>
-
-        <!-- On some devices it forces landscape by default. -->
-        <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="unspecified"
-            tools:replace="screenOrientation" />
-
-        <activity
-            android:name=".CrashhubDialog"
-            android:process=":acra"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".activities.PublicKeyInputEditActivity"
+            android:label=""
+            android:parentActivityName=".activities.ImportWalletPageActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.ImportWalletPageActivity"/>
+        </activity>
+        <activity android:name=".activities.SelectMultiSigWalletActivity"
+            android:label=""
+            android:parentActivityName=".activities.PublicKeyInputEditActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.PublicKeyInputEditActivity"/>
+        </activity>
+        <activity android:name=".activities.WalletUnActivatedActivity"
+            android:label=""/>
+        <activity android:name=".activities.ActivatedProcessing"
+            android:label=""/>
+        <activity android:name=".activities.ActivateSuccessActivity"
+            android:label=""/>
+        <activity android:name=".activities.CoSignerAddActivity"
+            android:label=""
+            android:parentActivityName=".activities.CreateWalletPageActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.CreateWalletPageActivity"/>
+        </activity>
+        <activity android:name=".activities.CreateWalletSuccessfulActivity"
+            android:label=""/>
     </application>
 
 </manifest>
