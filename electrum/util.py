@@ -26,6 +26,7 @@ from collections import defaultdict, OrderedDict
 from typing import NamedTuple, Union, TYPE_CHECKING, Tuple, Optional, Callable, Any
 from datetime import datetime
 import decimal
+from functools import lru_cache
 from decimal import Decimal
 import traceback
 import urllib
@@ -294,6 +295,7 @@ class DaemonThread(threading.Thread, Logger):
     def start(self):
         with self.running_lock:
             self.running = True
+        print("util.start in..............")
         return threading.Thread.start(self)
 
     def is_running(self):
@@ -355,12 +357,11 @@ def profiler(func):
         return o
     return lambda *args, **kw_args: do_profile(args, kw_args)
 
-
+@lru_cache()
 def android_data_dir():
-    import jnius
-    PythonActivity = jnius.autoclass('org.kivy.android.PythonActivity')
-    return PythonActivity.mActivity.getFilesDir().getPath() + '/data'
-
+    from com.chaquo.python import Python
+    context = Python.getPlatform().getApplication()
+    return context.getFilesDir().getPath() + '/data'
 
 def ensure_sparse_file(filename):
     # On modern Linux, no need to do anything.
@@ -471,7 +472,7 @@ def bh2u(x: bytes) -> str:
 def user_dir():
     if 'ANDROID_DATA' in os.environ:
         return android_data_dir()
-    elif os.name == 'posix':
+    if os.name == 'posix':
         return os.path.join(os.environ["HOME"], ".electrum")
     elif "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], "Electrum")

@@ -46,7 +46,6 @@ from .crypto import sha256d
 from .keystore import xpubkey_to_address, xpubkey_to_pubkey
 from .logging import get_logger
 
-from .gui.kivy.nfc_scanner.scanner_android import ScannerAndroid
 from .bitcoin import rev_hex, int_to_hex, EncodeBase58Check, DecodeBase58Check
 from .bip32 import *
 

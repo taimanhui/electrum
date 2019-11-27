@@ -10,6 +10,7 @@ import unittest
 from electrum.plugin import Plugins
 from electrum.transaction import Transaction, TxOutput
 from electrum import commands, daemon, keystore, simple_config, storage, tests, util
+from util import Fiat
 from electrum import MutiBase
 from electrum.i18n import _
 from electrum.storage import WalletStorage
@@ -17,7 +18,7 @@ from electrum.wallet import (ImportedAddressWallet, ImportedPrivkeyWallet, Stand
                                  Wallet)
 from electrum.bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
 
-from android.preference import PreferenceManager
+#from android.preference import PreferenceManager
 from electrum.commands import satoshis
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
 import trezorlib.btc
@@ -84,8 +85,10 @@ class Help:
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
-    def __init__(self, app):
-        super().__init__(AndroidConfig(app), wallet=None, network=None)
+    # def __init__(self, app):
+    #     super().__init__(AndroidConfig(app), wallet=None, network=None)
+    def __init__(self, config):
+        self.config = config
         fd, server = daemon.get_fd_or_server(self.config)
         if not fd:
             raise Exception("Daemon already running")  # Same wording as in daemon.py.
@@ -100,6 +103,7 @@ class AndroidCommands(commands.Commands):
         self.plugin = Plugins(self.config, 'cmdline')
         self.callbackIntent = None
         self.wallet = None
+        self.fiat_unit = self.fx.ccy if self.fx.is_enabled() else ''
 
         self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
         self.num_zeros = int(self.config.get('num_zeros', 0))
@@ -202,25 +206,24 @@ class AndroidCommands(commands.Commands):
         self.wizard = None
 
     ##create tx#########################
-    def mktx(self, outputs):
+    def mktx(self, outputs, message, fee):
+        self._assert_wallet_isvalid()
         print("console.mktx.outpus = %s======" %outputs)
-        # final_outputs = []
-        # outputs = list(outputs)
-        # for address, amount in outputs:
-        #    # address = self._resolver(address)
-        #     amount = satoshis(amount)
-        #     final_outputs.append(TxOutput(TYPE_ADDRESS, address, amount))
-        # outputs = (TxOutput(TYPE_ADDRESS, "tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m", satoshis(0.1)))
-        outputs = [TxOutput(TYPE_ADDRESS, 'tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m', satoshis(0.01))]
+        all_output_add = outputs.load()
+
+        for address, amount in all_output_add:
+            amount = satoshis(amount)
+            outputs.append([TxOutput(TYPE_ADDRESS, address, satoshis(amount))])
         print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
         coins = self.wallet.get_spendable_coins(None, self.config)
-        tx = self.wallet.make_unsigned_transaction(coins, outputs, self.config, fixed_fee=satoshis(0.001))
-        print("tx info = %s----------" % tx_details)
-
+        tx = self.wallet.make_unsigned_transaction(coins, outputs, self.config, fixed_fee=satoshis(fee))
+        self.wallet.set_label(tx.txid, message)
+        print("raw tx===========%s " % tx)
         tx_details = self.wallet.get_tx_info(tx)
         ret_data = {
             'amount':tx_details.amount,
             'fee':tx_details.fee,
+            'tx':str(tx)
         }
         json_str = json.dumps(ret_data)
         print("mktx info = %s---------" % ret_data)
@@ -263,9 +266,95 @@ class AndroidCommands(commands.Commands):
             text += ' (%s)'%x
         return text
 
-    ##get tx info
-    # def get_tx_info(self, raw_tx):
-        
+    ##qr api
+    def get_raw_tx_from_qr_data(self, data):
+        from electrum.util import bh2u
+        return bh2u(base_decode(data, None, base=43))
+
+    def set_qr_data_from_raw_tx(self, raw_tx):
+        from electrum.bitcoin import base_encode, bfh
+        text = bfh(raw_tx)
+        return base_encode(text, base=43)
+
+    ## get tx info from raw_tx
+    def get_tx_info_from_raw(self, raw_tx):
+        from electrum.transaction import Transaction
+        try:
+            tx = Transaction(raw_tx)
+            tx.deserialize()
+        except:
+            tx = None
+        return self.get_details_info(tx)
+
+    def get_details_info(self, tx):
+        self._assert_wallet_isvalid()
+        tx_details = self.wallet.get_tx_info(tx)
+        ret_data = {
+            'txid':tx_details.txid,
+            'can_broadcast':tx_details.can_broadcast,
+            'amount': tx_details.amount,
+            'fee': tx_details.fee,
+            'description':tx_details.label,
+            'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
+            'can_rbf':tx_details.can_rbf,
+            'output_addr':tx.get_outputs_for_UI(),
+            'input_addr':[txin.get("address") for txin in tx.inputs()],
+            'cosigner':self.wallet.get_keystores(),
+        }
+        json_data = json.dumps(ret_data)
+        return json_data
+
+    ##
+    def get_history_tx(self):
+        self._assert_wallet_isvalid()
+        history = reversed(self.wallet.get_history())
+        all_data = [self.get_card(*item) for item in history]
+        print("console:get_history_tx:data = %s==========" % all_data)
+
+    def get_tx_info(self, tx_hash):
+        tx = self.wallet.db.get_transaction(tx_hash)
+        if not tx:
+            return
+        data = self.get_details_info(tx)
+        print("console:get_tx_info:tx_details_data = %s..........." % data)
+
+    def get_card(self, tx_hash, tx_mined_status, value, balance):
+        status, status_str = self.wallet.get_tx_status(tx_hash, tx_mined_status)
+        label = self.wallet.get_label(tx_hash) if tx_hash else _('Pruned transaction outputs')
+        ri = {}
+        ri['tx_hash'] = tx_hash
+        ri['date'] = status_str
+        ri['message'] = label
+        ri['confirmations'] = tx_mined_status.conf
+        if value is not None:
+            ri['is_mine'] = value < 0
+            if value < 0: value = - value
+            ri['amount'] = self.format_amount_and_units(value)
+            if self.fiat_unit:
+                fx = self.daemon.fx
+                fiat_value = value / Decimal(bitcoin.COIN) * self.wallet.price_at_timestamp(tx_hash,
+                                                                                                fx.timestamp_rate)
+                fiat_value = Fiat(fiat_value, fx.ccy)
+                ri['quote_text'] = fiat_value.to_ui_string()
+        return ri
+
+    ##Analyze QR data
+    def parse_qr(self):
+        print("")
+
+    def broadcast_tx(self):
+        print("")
+
+    ## setting
+    def set_rbf(self, status_rbf):
+        print("")
+
+    def set_use_change(self, status_change):
+        print("")
+
+    def sign_tx(self, tx):
+        print("")
+
     ##connection with terzorlib#########################
     def get_xpub_from_hw(self):
         #import usb1
@@ -391,6 +480,11 @@ class AndroidCommands(commands.Commands):
             raise Exception("Wizard not running")
             # Log callbacks on stderr so they'll appear in the console activity.
 
+    def _assert_wallet_isvalid(self):
+        if self.wallet is None:
+            raise Exception("Wallet is None")
+            # Log callbacks on stderr so they'll appear in the console activity.
+
     def _on_callback(self, *args):
         util.print_stderr("[Callback] " + ", ".join(repr(x) for x in args))
 
@@ -418,35 +512,35 @@ SP_SET_METHODS = {
     str: "putString",
 }
 
-# We store the config in the SharedPreferences because it's very easy to base an Android
-# settings UI on that. The reverse approach would be harder (using PreferenceDataStore to make
-# the settings UI access an Electrum config file).
-class AndroidConfig(simple_config.SimpleConfig):
-    def __init__(self, app):
-        self.sp = PreferenceManager.getDefaultSharedPreferences(app)
-        super().__init__()
-
-    def get(self, key, default=None):
-        if self.sp.contains(key):
-            value = self.sp.getAll().get(key)
-            if value == "<json>":
-                json_value = self.sp.getString(key + ".json", None)
-                if json_value is not None:
-                    value = json.loads(json_value)
-            return value
-        else:
-            return default
-
-    def set_key(self, key, value, save=None):
-        spe = self.sp.edit()
-        if value is None:
-            spe.remove(key)
-            spe.remove(key + ".json")
-        else:
-            set_method = SP_SET_METHODS.get(type(value))
-            if set_method:
-                getattr(spe, set_method)(key, value)
-            else:
-                spe.putString(key, "<json>")
-                spe.putString(key + ".json", json.dumps(value))
-        spe.apply()
+# # We store the config in the SharedPreferences because it's very easy to base an Android
+# # settings UI on that. The reverse approach would be harder (using PreferenceDataStore to make
+# # the settings UI access an Electrum config file).
+# class AndroidConfig(simple_config.SimpleConfig):
+#     def __init__(self, app):
+#         self.sp = PreferenceManager.getDefaultSharedPreferences(app)
+#         super().__init__()
+#
+#     def get(self, key, default=None):
+#         if self.sp.contains(key):
+#             value = self.sp.getAll().get(key)
+#             if value == "<json>":
+#                 json_value = self.sp.getString(key + ".json", None)
+#                 if json_value is not None:
+#                     value = json.loads(json_value)
+#             return value
+#         else:
+#             return default
+#
+#     def set_key(self, key, value, save=None):
+#         spe = self.sp.edit()
+#         if value is None:
+#             spe.remove(key)
+#             spe.remove(key + ".json")
+#         else:
+#             set_method = SP_SET_METHODS.get(type(value))
+#             if set_method:
+#                 getattr(spe, set_method)(key, value)
+#             else:
+#                 spe.putString(key, "<json>")
+#                 spe.putString(key + ".json", json.dumps(value))
+#         spe.apply()
