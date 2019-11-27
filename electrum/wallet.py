@@ -61,13 +61,10 @@ from .address_synchronizer import (AddressSynchronizer, TX_HEIGHT_LOCAL,
 from .paymentrequest import (PR_PAID, PR_UNPAID, PR_UNKNOWN, PR_EXPIRED,
                              InvoiceStore)
 from .contacts import Contacts
-from .interface import RequestTimedOut
+from .interface import NetworkException
 from .ecc_fast import is_using_fast_ecc
 from .mnemonic import Mnemonic
 from .logging import get_logger
-
-from .bitcoin import rev_hex, int_to_hex, EncodeBase58Check, DecodeBase58Check
-from .keystore import *
 
 if TYPE_CHECKING:
     from .network import Network
@@ -218,7 +215,7 @@ class Abstract_Wallet(AddressSynchronizer):
         AddressSynchronizer.__init__(self, storage.db)
 
         # saved fields
-        self.use_change            = storage.get('use_change',True)
+        self.use_change            = storage.get('use_change', True)
         self.multiple_change       = storage.get('multiple_change', False)
         self.labels                = storage.get('labels', {})
         self.frozen_addresses      = set(storage.get('frozen_addresses', []))
@@ -781,8 +778,6 @@ class Abstract_Wallet(AddressSynchronizer):
                 txi = []
                 txo = []
                 old_change_addrs = []
-                #Fixed change address
-                #old_change_addrs = self.derive_address(False, 0)
             # change address. if empty, coin_chooser will set it
             change_addrs = self.get_change_addresses_for_new_transaction(change_addr or old_change_addrs)
             tx = coin_chooser.make_tx(coins, txi, outputs[:] + txo, change_addrs,
@@ -800,6 +795,7 @@ class Abstract_Wallet(AddressSynchronizer):
             tx = Transaction.from_io(coins, outputs[:])
             fee = fee_estimator(tx.estimated_size())
             amount = sendable - tx.output_value() - fee
+            print("amont(%s) = sendable(%s) - output_value(%s)-fee(%s)------------" % (amount, sendable, tx.output_value(), fee))
             if amount < 0:
                 raise NotEnoughFunds()
             outputs[i_max] = outputs[i_max]._replace(value=amount)
@@ -807,7 +803,6 @@ class Abstract_Wallet(AddressSynchronizer):
 
         # Timelock tx to current height.
         tx.locktime = get_locktime_for_new_transaction(self.network)
-        
         run_hook('make_unsigned_transaction', self, tx)
         return tx
 
@@ -1066,7 +1061,7 @@ class Abstract_Wallet(AddressSynchronizer):
                 return True
         return False
 
-    def get_input_tx(self, tx_hash, ignore_timeout=False):
+    def get_input_tx(self, tx_hash, *, ignore_network_issues=False):
         # First look up an input transaction in the wallet where it
         # will likely be.  If co-signing a transaction it may not have
         # all the input txs, in which case we ask the network.
@@ -1075,9 +1070,10 @@ class Abstract_Wallet(AddressSynchronizer):
             try:
                 raw_tx = self.network.run_from_another_thread(
                     self.network.get_transaction(tx_hash, timeout=10))
-            except RequestTimedOut as e:
-                self.logger.info(f'getting input txn from network timed out for {tx_hash}')
-                if not ignore_timeout:
+            except NetworkException as e:
+                self.logger.info(f'got network error getting input txn. err: {repr(e)}. txid: {tx_hash}. '
+                                 f'if you are intentionally offline, consider using the --offline flag')
+                if not ignore_network_issues:
                     raise e
             else:
                 tx = Transaction(raw_tx)
@@ -1088,8 +1084,8 @@ class Abstract_Wallet(AddressSynchronizer):
         for txin in tx.inputs():
             tx_hash = txin['prevout_hash']
             # segwit inputs might not be needed for some hw wallets
-            ignore_timeout = Transaction.is_segwit_input(txin)
-            txin['prev_tx'] = self.get_input_tx(tx_hash, ignore_timeout)
+            ignore_network_issues = Transaction.is_segwit_input(txin)
+            txin['prev_tx'] = self.get_input_tx(tx_hash, ignore_network_issues=ignore_network_issues)
         # add output info for hw wallets
         info = {}
         xpubs = self.get_master_public_keys()
@@ -1104,9 +1100,9 @@ class Abstract_Wallet(AddressSynchronizer):
                 info[addr] = TxOutputHwInfo(index, sorted_xpubs, num_sig, self.txin_type)
         tx.output_info = info
 
-    def sign_transaction(self, tx, password, callback=None, pw_dialog=None):
-        # if self.is_watching_only():
-        #     return
+    def sign_transaction(self, tx, password):
+        if self.is_watching_only():
+            return
         tx.add_inputs_info(self)
         # hardware wallets require extra info
         if any([(isinstance(k, Hardware_KeyStore) and k.can_sign(tx)) for k in self.get_keystores()]):
@@ -1115,7 +1111,7 @@ class Abstract_Wallet(AddressSynchronizer):
         for k in sorted(self.get_keystores(), key=lambda ks: ks.ready_to_sign(), reverse=True):
             try:
                 if k.can_sign(tx):
-                    k.sign_transaction(tx, password, callback, pw_dialog)
+                    k.sign_transaction(tx, password)
             except UserCancelled:
                 continue
         return tx
@@ -1676,6 +1672,249 @@ class Imported_Wallet(Simple_Wallet):
             if self.db.get_imported_address(addr)['pubkey'] == pubkey:
                 return addr
 
+class ImportedWalletBase(Simple_Wallet):
+
+    txin_type = 'p2pkh'
+
+    def get_txin_type(self, address):
+        return self.txin_type
+
+    def can_delete_address(self):
+        return True
+
+    def has_seed(self):
+        return False
+
+    def is_deterministic(self):
+        return False
+
+    def is_change(self, address):
+        return False
+
+    def get_master_public_keys(self):
+        return []
+
+    def is_beyond_limit(self, address, is_change):
+        return False
+
+    def get_fingerprint(self):
+        return ''
+
+    def get_receiving_addresses(self):
+        return self.get_addresses()
+
+    def delete_address(self, address):
+        assert isinstance(address, Address)
+        if address not in self.get_addresses():
+            return
+
+        transactions_to_remove = set()  # only referred to by this address
+        transactions_new = set()  # txs that are not only referred to by address
+        with self.lock:
+            for addr, details in self._history.items():
+                if addr == address:
+                    for tx_hash, height in details:
+                        transactions_to_remove.add(tx_hash)
+                        self.tx_addr_hist[tx_hash].discard(address)
+                        if not self.tx_addr_hist.get(tx_hash):
+                            self.tx_addr_hist.pop(tx_hash, None)
+                else:
+                    for tx_hash, height in details:
+                        transactions_new.add(tx_hash)
+            transactions_to_remove -= transactions_new
+            self._history.pop(address, None)
+
+            for tx_hash in transactions_to_remove:
+                self.remove_transaction(tx_hash)
+                self.tx_fees.pop(tx_hash, None)
+                self.verified_tx.pop(tx_hash, None)
+                self.unverified_tx.pop(tx_hash, None)
+                self.transactions.pop(tx_hash, None)
+                self._addr_bal_cache.pop(address, None)  # not strictly necessary, above calls also have this side-effect. but here to be safe. :)
+                if self.verifier:
+                    # TX is now gone. Toss its SPV proof in case we have it
+                    # in memory. This allows user to re-add PK again and it
+                    # will avoid the situation where the UI says "not verified"
+                    # erroneously!
+                    self.verifier.remove_spv_proof_for_tx(tx_hash)
+                # FIXME: what about pruned_txo?
+
+            self.storage.put('verified_tx3', self.verified_tx)
+
+        self.save_transactions()
+
+        self.set_label(address, None)
+        self.remove_payment_request(address, {})
+        self.set_frozen_state([address], False)
+
+        self.delete_address_derived(address)
+
+        self.cashacct.on_address_deletion(address)
+        self.cashacct.save()
+
+        self.save_addresses()
+
+        self.storage.write() # no-op if above already wrote
+
+class ImportedAddressWallet(ImportedWalletBase):
+    # Watch-only wallet of imported addresses
+
+    wallet_type = 'imported_addr'
+
+    def __init__(self, storage):
+        self._sorted = None
+        super().__init__(storage)
+
+    @classmethod
+    def from_text(cls, storage, text):
+        wallet = cls(storage)
+        for address in text.split():
+            wallet.import_address(Address.from_string(address))
+        return wallet
+
+    def is_watching_only(self):
+        return True
+
+    def get_keystores(self):
+        return []
+
+    def can_import_privkey(self):
+        return False
+
+    def load_keystore(self):
+        self.keystore = None
+
+    def save_keystore(self):
+        pass
+
+    def load_addresses(self):
+        addresses = self.storage.get('addresses', [])
+        self.addresses = [Address.from_string(addr) for addr in addresses]
+
+    def save_addresses(self):
+        self.storage.put('addresses', [addr.to_storage_string()
+                                       for addr in self.addresses])
+        self.storage.write()
+
+    def can_change_password(self):
+        return False
+
+    def can_import_address(self):
+        return True
+
+    def get_addresses(self, include_change=False):
+        if not self._sorted:
+            self._sorted = sorted(self.addresses,
+                                  key=lambda addr: addr.to_ui_string())
+        return self._sorted
+
+    def import_address(self, address):
+        assert isinstance(address, Address)
+        if address in self.addresses:
+            return False
+        self.addresses.append(address)
+        self.add_address(address)
+        self.cashacct.save()
+        self.save_addresses()
+        self.storage.write() # no-op if already wrote in previous call
+        self._sorted = None
+        return True
+
+    def delete_address_derived(self, address):
+        self.addresses.remove(address)
+        self._sorted.remove(address)
+
+    def add_input_sig_info(self, txin, address):
+        x_pubkey = 'fd' + address.to_script_hex()
+        txin['x_pubkeys'] = [x_pubkey]
+        txin['signatures'] = [None]
+
+
+class ImportedPrivkeyWallet(ImportedWalletBase):
+    # wallet made of imported private keys
+
+    wallet_type = 'imported_privkey'
+
+    def __init__(self, storage):
+        Abstract_Wallet.__init__(self, storage)
+
+    @classmethod
+    def from_text(cls, storage, text, password=None):
+        wallet = cls(storage)
+        storage.put('use_encryption', bool(password))
+        for privkey in text.split():
+            wallet.import_private_key(privkey, password)
+        return wallet
+
+    def is_watching_only(self):
+        return False
+
+    def get_keystores(self):
+        return [self.keystore]
+
+    def can_import_privkey(self):
+        return True
+
+    def load_keystore(self):
+        if self.storage.get('keystore'):
+            self.keystore = load_keystore(self.storage, 'keystore')
+        else:
+            self.keystore = Imported_KeyStore({})
+
+    def save_keystore(self):
+        self.storage.put('keystore', self.keystore.dump())
+
+    def load_addresses(self):
+        pass
+
+    def save_addresses(self):
+        pass
+
+    def can_change_password(self):
+        return True
+
+    def can_import_address(self):
+        return False
+
+    def get_addresses(self, include_change=False):
+        return self.keystore.get_addresses()
+
+    def delete_address_derived(self, address):
+        self.keystore.remove_address(address)
+        self.save_keystore()
+
+    def get_address_index(self, address):
+        return self.get_public_key(address)
+
+    def get_public_key(self, address):
+        return self.keystore.address_to_pubkey(address)
+
+    def import_private_key(self, sec, pw):
+        pubkey = self.keystore.import_privkey(sec, pw)
+        self.save_keystore()
+        self.add_address(pubkey.address)
+        self.cashacct.save()
+        self.save_addresses()
+        self.storage.write()  # no-op if above already wrote
+        return pubkey.address.to_ui_string()
+
+    def export_private_key(self, address, password):
+        '''Returned in WIF format.'''
+        pubkey = self.keystore.address_to_pubkey(address)
+        return self.keystore.export_private_key(pubkey, password)
+
+    def add_input_sig_info(self, txin, address):
+        assert txin['type'] == 'p2pkh'
+        pubkey = self.keystore.address_to_pubkey(address)
+        txin['num_sig'] = 1
+        txin['x_pubkeys'] = [pubkey.to_ui_string()]
+        txin['signatures'] = [None]
+
+    def pubkeys_to_address(self, pubkey):
+        pubkey = PublicKey.from_string(pubkey)
+        if pubkey in self.keystore.keypairs:
+            return pubkey.address
+
 class Deterministic_Wallet(Abstract_Wallet):
 
     def __init__(self, storage):
@@ -1906,7 +2145,6 @@ class Multisig_Wallet(Deterministic_Wallet):
     def load_keystore(self):
         self.keystores = {}
         for i in range(self.n):
-        #for i in range(self.m):
             name = 'x%d/'%(i+1)
             self.keystores[name] = load_keystore(self.storage, name)
         self.keystore = self.keystores['x1/']

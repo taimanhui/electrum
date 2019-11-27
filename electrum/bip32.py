@@ -11,7 +11,6 @@ from . import ecc
 from .crypto import hash_160, hmac_oneshot
 from .bitcoin import rev_hex, int_to_hex, EncodeBase58Check, DecodeBase58Check
 from .logging import get_logger
-from electrum.gui.kivy.nfc_scanner.scanner_android import *
 
 _logger = get_logger(__name__)
 BIP32_PRIME = 0x80000000

@@ -524,6 +524,7 @@ class SimpleConfig(Logger):
                 fee_rate = self.eta_to_fee(self.get_fee_level())
         else:
             fee_rate = self.get('fee_per_kb', FEERATE_FALLBACK_STATIC_FEE)
+        print("=================fee_rate = %s" %fee_rate)
         return fee_rate
 
     def fee_per_byte(self):
@@ -576,6 +577,7 @@ def read_user_config(path):
     if not path:
         return {}
     config_path = os.path.join(path, "config")
+    print("========================config path = %s" %config_path)
     if not os.path.exists(config_path):
         return {}
     try:

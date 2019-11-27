@@ -124,8 +124,7 @@ def get_rpc_credentials(config: SimpleConfig) -> Tuple[str, str]:
 
 class Daemon(DaemonThread):
 
-    @profiler
-    def __init__(self, config: SimpleConfig, fd=None, *, listen_jsonrpc=True):
+    def __init__(self, config: SimpleConfig, fd=None, listen_jsonrpc=True):
         DaemonThread.__init__(self)
         self.config = config
         if fd is None and listen_jsonrpc:
@@ -147,7 +146,7 @@ class Daemon(DaemonThread):
         self.server = None
         if listen_jsonrpc:
             self.init_server(config, fd)
-        self.start()
+        #self.start()
 
     def init_server(self, config: SimpleConfig, fd):
         host = config.get('rpchost', '127.0.0.1')

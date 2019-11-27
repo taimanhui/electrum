@@ -204,7 +204,7 @@ class Commands:
         return True
 
     @command('')
-    def make_seed(self, nbits=132, language=None, segwit=False):
+    def make_seed(self, nbits=132, language=None, segwit=True):
         """Create a seed"""
         from .mnemonic import Mnemonic
         t = 'segwit' if segwit else 'standard'

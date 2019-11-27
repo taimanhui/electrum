@@ -145,6 +145,7 @@ class TrezorPlugin(HW_PluginBase):
         try:
             call_bridge("enumerate")
         except Exception:
+            print("-----------------------------1111111111111111111111111-----------------------")
             devices = trezorlib.transport.enumerate_devices()
         else:
             devices = BridgeTransport.enumerate()
