@@ -22,7 +22,7 @@
                 android:layout_weight="1"
                 android:clickable="true"
                 android:gravity="center_vertical"
-                android:text="@string/use_bixin_s"
+                android:text="@string/use_haobtc_s"
                 android:textColor="@color/text"
                 android:focusable="true"
                 />

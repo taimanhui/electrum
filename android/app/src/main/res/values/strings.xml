@@ -18,7 +18,7 @@
     <string name="seq">Sequence Number</string>
     <string name="hardware_v">Hardware Version(Upgrade)</string>
     <string name="address">Address</string>
-    <string name="use_bixin_s">Use BIXin Server</string>
+    <string name="use_haobtc_s">Use BIXin Server</string>
     <string name="prompt">Use BiXin Server  can help cosigner sync transaction info</string>
     <string name="rbf">Use RBF(Replace By Fee)</string>
     <string name="use_unconfirmed">Use Unconfirmed Input</string>

@@ -19,7 +19,7 @@
     <string name="seq">序列号</string>
     <string name="hardware_v">固件版本(升级)</string>
     <string name="address">地址</string>
-    <string name="use_bixin_s">使用币信服务器</string>
+    <string name="use_haobtc_s">使用币信服务器</string>
     <string name="prompt">使用币信服务器，可在连署人之间同步交易信息</string>
     <string name="rbf">使用RBF(交易替换)</string>
     <string name="use_unconfirmed">花费未确认输入</string>

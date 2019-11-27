@@ -8,8 +8,8 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.bixin.coldwallet"
-        minSdkVersion 21
+        applicationId "com.haobtc.coldwallet"
+        minSdkVersion 21 // android 5.0
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -33,7 +33,6 @@ android {
         python {
             pip {
                 install "-r", "$REPO_ROOT/contrib/deterministic-build/requirements.txt"
-                //install "-r", "$REPO_ROOT/contrib/requirements/requirements.txt"
                 install "-r", "$REPO_ROOT/contrib/deterministic-build/requirements-android.txt"
             }
             pyc {
@@ -99,7 +98,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "bixin-${variant.versionName}.apk"
+            outputFileName = "haobtc-${variant.versionName}.apk"
         }
     }
 }
