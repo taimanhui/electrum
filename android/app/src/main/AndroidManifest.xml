@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.haobtc.coldwallet">
+    package="org.haobtc.wallet">
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -21,18 +21,18 @@
         tools:ignore="GoogleAppIndexingWarning"
         android:allowBackup="true">
 
-        <activity android:name=".activities.GuideActivity">
+        <activity android:name="org.haobtc.wallet.activities.GuideActivity">
         </activity>
 
-        <activity android:name=".activities.PinSettingActivity"
+        <activity android:name="org.haobtc.wallet.activities.PinSettingActivity"
             android:label=""
-            android:parentActivityName=".activities.TransactionDetailsActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.TransactionDetailsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.PinSettingActivity"/>
+                android:value="org.haobtc.wallet.activities.PinSettingActivity"/>
 
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name="org.haobtc.wallet.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,165 +40,165 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".activities.SettingActivity"
-            android:parentActivityName=".MainActivity"
+        <activity android:name="org.haobtc.wallet.activities.SettingActivity"
+            android:parentActivityName="org.haobtc.wallet.MainActivity"
             android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value="org.haobtc.wallet.MainActivity"/>
         </activity>
-        <activity android:name=".activities.TransactionRecordsActivity"
+        <activity android:name="org.haobtc.wallet.activities.TransactionRecordsActivity"
             android:label=""
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="org.haobtc.wallet.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value="org.haobtc.wallet.MainActivity"/>
         </activity>
-        <activity android:name=".activities.HardwareInfoActivity"
-            android:parentActivityName=".activities.SettingActivity"
+        <activity android:name="org.haobtc.wallet.activities.HardwareInfoActivity"
+            android:parentActivityName="org.haobtc.wallet.activities.SettingActivity"
             android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SettingActivity"/>
+                android:value="org.haobtc.wallet.activities.SettingActivity"/>
         </activity>
-        <activity android:name=".activities.MessageManagerActivity"
-            android:parentActivityName=".activities.SettingActivity"
+        <activity android:name="org.haobtc.wallet.activities.MessageManagerActivity"
+            android:parentActivityName="org.haobtc.wallet.activities.SettingActivity"
             android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SettingActivity"/>
+                android:value="org.haobtc.wallet.activities.SettingActivity"/>
         </activity>
-        <activity android:name=".activities.LanguageSettingActivity"
-            android:parentActivityName=".activities.SettingActivity"
+        <activity android:name="org.haobtc.wallet.activities.LanguageSettingActivity"
+            android:parentActivityName="org.haobtc.wallet.activities.SettingActivity"
             android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SettingActivity"/>
+                android:value="org.haobtc.wallet.activities.SettingActivity"/>
         </activity>
-        <activity android:name=".activities.ServerSettingActivity"
-            android:parentActivityName=".activities.SettingActivity"
+        <activity android:name="org.haobtc.wallet.activities.ServerSettingActivity"
+            android:parentActivityName="org.haobtc.wallet.activities.SettingActivity"
             android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SettingActivity"/>
+                android:value="org.haobtc.wallet.activities.SettingActivity"/>
         </activity>
-        <activity android:name=".activities.TransactionsSettingActivity"
-            android:parentActivityName=".activities.SettingActivity"
+        <activity android:name="org.haobtc.wallet.activities.TransactionsSettingActivity"
+            android:parentActivityName="org.haobtc.wallet.activities.SettingActivity"
             android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SettingActivity"/>
+                android:value="org.haobtc.wallet.activities.SettingActivity"/>
         </activity>
-        <activity android:name=".activities.ServiceOnlineActivity"
-            android:parentActivityName=".activities.SettingActivity"
+        <activity android:name="org.haobtc.wallet.activities.ServiceOnlineActivity"
+            android:parentActivityName="org.haobtc.wallet.activities.SettingActivity"
             android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SettingActivity"/>
+                android:value="org.haobtc.wallet.activities.SettingActivity"/>
         </activity>
-        <activity android:name=".activities.AboutActivity"
-            android:parentActivityName=".activities.SettingActivity"
+        <activity android:name="org.haobtc.wallet.activities.AboutActivity"
+            android:parentActivityName="org.haobtc.wallet.activities.SettingActivity"
             android:label="">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SettingActivity"/>
+                android:value="org.haobtc.wallet.activities.SettingActivity"/>
         </activity>
-        <activity android:name=".activities.SendOne2OneMainPageActivity"
+        <activity android:name="org.haobtc.wallet.activities.SendOne2OneMainPageActivity"
             android:label=""
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="org.haobtc.wallet.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value="org.haobtc.wallet.MainActivity"/>
         </activity>
-        <activity android:name=".activities.SignaturePageActivity"
+        <activity android:name="org.haobtc.wallet.activities.SignaturePageActivity"
             android:label=""
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="org.haobtc.wallet.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value="org.haobtc.wallet.MainActivity"/>
         </activity>
 
-        <activity android:name=".activities.ReceivedPageActivity"
+        <activity android:name="org.haobtc.wallet.activities.ReceivedPageActivity"
             android:label=""
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="org.haobtc.wallet.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value="org.haobtc.wallet.MainActivity"/>
         </activity>
-        <activity android:name=".activities.Send2ManyActivity"
+        <activity android:name="org.haobtc.wallet.activities.Send2ManyActivity"
             android:label=""
-            android:parentActivityName=".activities.SendOne2OneMainPageActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.SendOne2OneMainPageActivity">
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value=".activities.SendOne2OneMainPageActivity"/>
+            android:value="org.haobtc.wallet.activities.SendOne2OneMainPageActivity"/>
         </activity>
-        <activity android:name=".activities.SendOne2ManyMainPageActivity"
+        <activity android:name="org.haobtc.wallet.activities.SendOne2ManyMainPageActivity"
             android:label=""
-            android:parentActivityName=".activities.Send2ManyActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.Send2ManyActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.Send2ManyActivity"/>
+                android:value="org.haobtc.wallet.activities.Send2ManyActivity"/>
         </activity>
-        <activity android:name=".activities.TransactionDetailsActivity"
+        <activity android:name="org.haobtc.wallet.activities.TransactionDetailsActivity"
             android:label=""
-            android:parentActivityName=".activities.SignaturePageActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.SignaturePageActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SignaturePageActivity"/>
+                android:value="org.haobtc.wallet.activities.SignaturePageActivity"/>
         </activity>
-        <activity android:name=".activities.TouchHardwareActivity"
+        <activity android:name="org.haobtc.wallet.activities.TouchHardwareActivity"
             android:label=""
-            android:parentActivityName=".activities.PinSettingActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.PinSettingActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.PinSettingActivity"/>
+                android:value="org.haobtc.wallet.activities.PinSettingActivity"/>
         </activity>
-        <activity android:name=".activities.ConfirmOnHardware"
+        <activity android:name="org.haobtc.wallet.activities.ConfirmOnHardware"
             android:label=""
-            android:parentActivityName=".activities.TouchHardwareActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.TouchHardwareActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.TouchHardwareActivity"/>
+                android:value="org.haobtc.wallet.activities.TouchHardwareActivity"/>
         </activity>
-        <activity android:name=".activities.CreateWalletActivity" />
-        <activity android:name=".activities.ImportWalletPageActivity"
+        <activity android:name="org.haobtc.wallet.activities.CreateWalletActivity" />
+        <activity android:name="org.haobtc.wallet.activities.ImportWalletPageActivity"
             android:label=""
-            android:parentActivityName=".activities.CreateWalletActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.CreateWalletActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.CreateWalletActivity"/>
+                android:value="org.haobtc.wallet.activities.CreateWalletActivity"/>
 
         </activity>
-        <activity android:name=".activities.CreateWalletPageActivity"
-            android:parentActivityName=".activities.CreateWalletActivity"
+        <activity android:name="org.haobtc.wallet.activities.CreateWalletPageActivity"
+            android:parentActivityName="org.haobtc.wallet.activities.CreateWalletActivity"
             android:label="">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.CreateWalletActivity"/>
+                android:value="org.haobtc.wallet.activities.CreateWalletActivity"/>
         </activity>
-        <activity android:name=".activities.PublicKeyInputEditActivity"
+        <activity android:name="org.haobtc.wallet.activities.PublicKeyInputEditActivity"
             android:label=""
-            android:parentActivityName=".activities.ImportWalletPageActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.ImportWalletPageActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.ImportWalletPageActivity"/>
+                android:value="org.haobtc.wallet.activities.ImportWalletPageActivity"/>
         </activity>
-        <activity android:name=".activities.SelectMultiSigWalletActivity"
+        <activity android:name="org.haobtc.wallet.activities.SelectMultiSigWalletActivity"
             android:label=""
-            android:parentActivityName=".activities.PublicKeyInputEditActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.PublicKeyInputEditActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.PublicKeyInputEditActivity"/>
+                android:value="org.haobtc.wallet.activities.PublicKeyInputEditActivity"/>
         </activity>
-        <activity android:name=".activities.WalletUnActivatedActivity"
+        <activity android:name="org.haobtc.wallet.activities.WalletUnActivatedActivity"
             android:label=""/>
-        <activity android:name=".activities.ActivatedProcessing"
+        <activity android:name="org.haobtc.wallet.activities.ActivatedProcessing"
             android:label=""/>
-        <activity android:name=".activities.ActivateSuccessActivity"
+        <activity android:name="org.haobtc.wallet.activities.ActivateSuccessActivity"
             android:label=""/>
-        <activity android:name=".activities.CoSignerAddActivity"
+        <activity android:name="org.haobtc.wallet.activities.CoSignerAddActivity"
             android:label=""
-            android:parentActivityName=".activities.CreateWalletPageActivity">
+            android:parentActivityName="org.haobtc.wallet.activities.CreateWalletPageActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.CreateWalletPageActivity"/>
+                android:value="org.haobtc.wallet.activities.CreateWalletPageActivity"/>
         </activity>
-        <activity android:name=".activities.CreateWalletSuccessfulActivity"
+        <activity android:name="org.haobtc.wallet.activities.CreateWalletSuccessfulActivity"
             android:label=""/>
     </application>
 
