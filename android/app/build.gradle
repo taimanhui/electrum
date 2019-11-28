@@ -8,7 +8,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.haobtc.coldwallet"
+        applicationId "org.haobtc.wallet"
         minSdkVersion 21 // android 5.0
         targetSdkVersion 29
         versionCode 1
@@ -79,8 +79,8 @@ android {
     // 静态代码检测
     lintOptions {
 /*
-        abortOnError false
-*/
+        abortOnError false*/
+
         disable "MissingTranslation"
     }
     def keystore = file("../keystore.jks")
