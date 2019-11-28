@@ -12,7 +12,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.utils.CommonUtils;
 
 public class ImportWalletPageActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String TAG = "org.haobtc.coldwallet.activities.ImportWalletPageActivity";
+    public static final String TAG = "org.haobtc.wallet.activities.ImportWalletPageActivity";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -30,9 +30,9 @@ public class CreateWalletPageActivity extends AppCompatActivity implements View.
     private View rootView;
     private TextView textViewCancel, textViewConfirm;
     private NumberPicker numberPicker;
-    public static final String WALLET_NAME = "org.haobtc.coldwallet.activities.walletName";
-    public static final String COSIGNER_NUM = "org.haobtc.coldwallet.activities.cosignerNum";
-    public static final String SIGNUM_REQUIRE = "org.haobtc.coldwallet.activities.sigNumRequire";
+    public static final String WALLET_NAME = "org.haobtc.wallet.activities.walletName";
+    public static final String COSIGNER_NUM = "org.haobtc.wallet.activities.cosignerNum";
+    public static final String SIGNUM_REQUIRE = "org.haobtc.wallet.activities.sigNumRequire";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

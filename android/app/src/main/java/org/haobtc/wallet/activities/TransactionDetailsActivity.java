@@ -14,7 +14,7 @@ import org.haobtc.wallet.fragment.ItemFragmentTransaction;
 
 public class TransactionDetailsActivity extends AppCompatActivity {
     private Button buttonSignature;
-    public static final String TAG = "org.haobtc.coldwallet.activities.TransactionDetailsActivity";
+    public static final String TAG = "org.haobtc.wallet.activities.TransactionDetailsActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

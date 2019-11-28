@@ -11,7 +11,7 @@ import org.haobtc.wallet.R;
 
 public class WalletUnActivatedActivity extends AppCompatActivity {
     Button buttonActivate;
-    public static final String TAG = "org.haobtc.coldwallet.activities.WalletUnActivatedActivity";
+    public static final String TAG = "org.haobtc.wallet.activities.WalletUnActivatedActivity";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

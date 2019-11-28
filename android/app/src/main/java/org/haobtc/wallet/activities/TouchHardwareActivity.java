@@ -10,7 +10,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.utils.CommonUtils;
 
 public class TouchHardwareActivity extends AppCompatActivity {
-    public final static String FROM = "org.haobtc.coldwallet.from";
+    public final static String FROM = "org.haobtc.wallet.from";
     private String tag;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

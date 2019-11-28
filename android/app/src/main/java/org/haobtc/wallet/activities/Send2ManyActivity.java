@@ -14,8 +14,8 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.utils.CommonUtils;
 
 public class Send2ManyActivity extends AppCompatActivity {
-    public static final String TOTAL_AMOUNT = "org.haobtc.coldwallet.activities.Send2ManyActivity.TOTAL";
-    public static final String ADDRESS = "org.haobtc.coldwallet.activities.Send2ManyActivity.ADDRESS";
+    public static final String TOTAL_AMOUNT = "org.haobtc.wallet.activities.Send2ManyActivity.TOTAL";
+    public static final String ADDRESS = "org.haobtc.wallet.activities.Send2ManyActivity.ADDRESS";
     private Button buttonSweep, buttonPaste, buttonAdd, buttonNext;
     private EditText editTextAddress, editTextAmount;
     private TextView textViewTotal;
