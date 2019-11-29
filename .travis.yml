@@ -43,5 +43,5 @@ jobs:
         # kill background sleep loop
         - kill %1
         - ls -la android/app/build/outputs/apk/MainNet/release/
-        - if [ $(ls android/app/build/outputs/apk/MainNet/release/ | grep -c electrum-*) -eq 0 ]; then exit 1; fi
+        - if [ $(ls android/app/build/outputs/apk/MainNet/release/ | grep -c bixin-*) -eq 0 ]; then exit 1; fi
       after_success: true 

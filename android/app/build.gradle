@@ -96,7 +96,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "haobtc-${variant.versionName}.apk"
+            outputFileName = "bixin-${variant.versionName}.apk"
         }
     }
 }
