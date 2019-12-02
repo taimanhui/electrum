@@ -10,7 +10,7 @@ import unittest
 from electrum.plugin import Plugins
 from electrum.transaction import Transaction, TxOutput
 from electrum import commands, daemon, keystore, simple_config, storage, tests, util
-from util import Fiat
+from electrum.util import Fiat
 from electrum import MutiBase
 from electrum.i18n import _
 from electrum.storage import WalletStorage
@@ -18,14 +18,21 @@ from electrum.wallet import (ImportedAddressWallet, ImportedPrivkeyWallet, Stand
                                  Wallet)
 from electrum.bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
 
-from android.preference import PreferenceManager
+#from android.preference import PreferenceManager
 from electrum.commands import satoshis
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
+from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 import trezorlib.btc
 from electrum import ecc
 
 CALLBACKS = ["banner", "blockchain_updated", "fee", "interfaces", "new_transaction",
              "on_history", "on_quotes", "servers", "status", "verified2", "wallet_updated"]
+
+from enum import Enum
+class Status(Enum):
+    net = 1
+    broadcast = 2
+    sign = 3
 
 
 class AndroidConsole(InteractiveConsole):
@@ -79,16 +86,16 @@ class Help:
                 cmd = all_commands[name_or_wrapper]
             return f"{cmd}\n{cmd.description}"
 
-# def __init__(self, config):
-#     self.config = config
-
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
-    def __init__(self, app):
-        super().__init__(AndroidConfig(app), wallet=None, network=None)
-    # def __init__(self, config):
-    #     self.config = config
+    # def __init__(self, app):
+    #     super().__init__(AndroidConfig(app), wallet=None, network=None)
+    def __init__(self, config):
+        self.config = config
+    #     config_options = {}
+    #     config_options['auto_connect'] = True
+    #     self.config = simple_config.SimpleConfig(config_options)
         fd, server = daemon.get_fd_or_server(self.config)
         if not fd:
             raise Exception("Daemon already running")  # Same wording as in daemon.py.
@@ -103,7 +110,7 @@ class AndroidCommands(commands.Commands):
         self.plugin = Plugins(self.config, 'cmdline')
         self.callbackIntent = None
         self.wallet = None
-        self.fiat_unit = self.fx.ccy if self.fx.is_enabled() else ''
+        self.fiat_unit = self.daemon.fx.ccy if self.daemon.fx.is_enabled() else ''
 
         self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
         self.num_zeros = int(self.config.get('num_zeros', 0))
@@ -209,16 +216,16 @@ class AndroidCommands(commands.Commands):
     def mktx(self, outputs, message, fee):
         self._assert_wallet_isvalid()
         print("console.mktx.outpus = %s======" %outputs)
-        all_output_add = outputs.load()
-
+        all_output_add = json.loads(outputs)
+        outputs_addrs = []
         for address, amount in all_output_add:
-            amount = satoshis(amount)
-            outputs.append([TxOutput(TYPE_ADDRESS, address, satoshis(amount))])
+            outputs_addrs.append(TxOutput(TYPE_ADDRESS, address, satoshis(amount)))
+        #outputs_addrs = [(TxOutput(TYPE_ADDRESS, "tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m", satoshis(0.01)))]
         print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
         coins = self.wallet.get_spendable_coins(None, self.config)
-        tx = self.wallet.make_unsigned_transaction(coins, outputs, self.config, fixed_fee=satoshis(fee))
+        tx = self.wallet.make_unsigned_transaction(coins, outputs_addrs, self.config, fixed_fee=satoshis(fee))
+        print("console:mkun:tx====%s" %tx)
         self.wallet.set_label(tx.txid, message)
-        print("raw tx===========%s " % tx)
         tx_details = self.wallet.get_tx_info(tx)
         ret_data = {
             'amount':tx_details.amount,
@@ -226,9 +233,11 @@ class AndroidCommands(commands.Commands):
             'tx':str(tx)
         }
         json_str = json.dumps(ret_data)
-        print("mktx info = %s---------" % ret_data)
-
         return json_str
+
+    def deserialize(self, raw_tx):
+        tx = Transaction(raw_tx)
+        tx.deserialize()
 
     def get_wallets_list_info(self):
         wallets = self.list_wallets()
@@ -271,7 +280,7 @@ class AndroidCommands(commands.Commands):
         from electrum.util import bh2u
         return bh2u(base_decode(data, None, base=43))
 
-    def set_qr_data_from_raw_tx(self, raw_tx):
+    def get_qr_data_from_raw_tx(self, raw_tx):
         from electrum.bitcoin import base_encode, bfh
         text = bfh(raw_tx)
         return base_encode(text, base=43)
@@ -281,7 +290,8 @@ class AndroidCommands(commands.Commands):
         from electrum.transaction import Transaction
         try:
             tx = Transaction(raw_tx)
-            tx.deserialize()
+            print("console:get_tx_info_from_raw:tx===%s" %tx)
+            #tx.deserialize()
         except:
             tx = None
         return self.get_details_info(tx)
@@ -289,6 +299,7 @@ class AndroidCommands(commands.Commands):
     def get_details_info(self, tx):
         self._assert_wallet_isvalid()
         tx_details = self.wallet.get_tx_info(tx)
+        s, r = tx.signature_count()
         ret_data = {
             'txid':tx_details.txid,
             'can_broadcast':tx_details.can_broadcast,
@@ -296,15 +307,15 @@ class AndroidCommands(commands.Commands):
             'fee': tx_details.fee,
             'description':tx_details.label,
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
-            'can_rbf':tx_details.can_rbf,
+            'sign_status':[s,r],
             'output_addr':tx.get_outputs_for_UI(),
             'input_addr':[txin.get("address") for txin in tx.inputs()],
-            'cosigner':self.wallet.get_keystores(),
+            'cosigner':[x.xpub for x in self.wallet.get_keystores()],
         }
         json_data = json.dumps(ret_data)
         return json_data
 
-    ##
+    ##history
     def get_history_tx(self):
         self._assert_wallet_isvalid()
         history = reversed(self.wallet.get_history())
@@ -338,25 +349,73 @@ class AndroidCommands(commands.Commands):
                 ri['quote_text'] = fiat_value.to_ui_string()
         return ri
 
+    def get_wallet_address_show_UI(self):#TODO:需要按照electrum方式封装二维码数据?
+        return self.wallet.get_addresses()[0]
+
     ##Analyze QR data
-    def parse_qr(self):
-        print("")
+    def parse_qr(self, data):
+        from electrum.bitcoin import base_decode, is_address
+        data = data.strip()
+        ret_data = {}
+        if is_address(data):
+            ret_data['status'] = 1
+            ret_data['data'] = ''
+            return json.dumps(ret_data)
+
+        ret_data['status'] = 2
+        # try to decode transaction
+        from electrum.transaction import Transaction
+        from electrum.util import bh2u
+        try:
+            text = bh2u(base_decode(data, None, base=43))
+            tx = Transaction(text)
+            #tx.deserialize()
+        except:
+            tx = None
+        if tx:
+            data = self.get_details_info(tx)
+            ret_data['data'] = data
+            return json.dumps(ret_data)
 
     def broadcast_tx(self):
-        print("")
+        if self.network and self.network.is_connected():
+            status = False
+            try:
+                self.network.run_from_another_thread(self.network.broadcast_transaction(tx))
+            except TxBroadcastError as e:
+                msg = e.get_message_for_gui()
+            except BestEffortRequestFailed as e:
+                msg = repr(e)
+            else:
+                status, msg = True, tx.txid()
+                self.callbackIntent(Status.broadcast, msg)
+        else:
+            message = ('Cannot broadcast transaction') + ':\n' + ('Not connected')
+            self.callbackIntent(Status.broadcast, message)
 
     ## setting
     def set_rbf(self, status_rbf):
-        print("")
+        use_rbf = config.get('use_rbf', True)
+        if use_rbf == status_rbf :
+            return
+        self.electrum_config.set_key('use_rbf', status_rbf, True)
 
     def set_use_change(self, status_change):
-        print("")
+        use_change = config.get('use_change')
+        if use_change == status_change :
+            return
+        self.config.set_key('use_change', status_change, True)
 
     def sign_tx(self, tx):
-        print("")
+        tx = Transaction(tx)
+        #tx.deserialize()
+        self.wallet.sign_transaction(tx, None)
 
     ##connection with terzorlib#########################
     def get_xpub_from_hw(self):
+        plugin = self.plugin.get_plugin("trezor")
+        xpub = plugin.get_xpub('', '', 'standard', plugin.handler)
+
         #import usb1
         devices = self.get_connected_hw_devices(self.plugin)
         print("console:get_xpub_from_hw:devices=%s=====" % devices)
@@ -450,7 +509,6 @@ class AndroidCommands(commands.Commands):
 
     def list_wallets(self):
         """List available wallets"""
-        print("console.list_wallet in....")
         name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
         print("console.list_wallets is %s................" %name_wallets)
         return name_wallets
@@ -512,35 +570,35 @@ SP_SET_METHODS = {
     str: "putString",
 }
 
-# We store the config in the SharedPreferences because it's very easy to base an Android
-# settings UI on that. The reverse approach would be harder (using PreferenceDataStore to make
-# the settings UI access an Electrum config file).
-class AndroidConfig(simple_config.SimpleConfig):
-    def __init__(self, app):
-        self.sp = PreferenceManager.getDefaultSharedPreferences(app)
-        super().__init__()
-
-    def get(self, key, default=None):
-        if self.sp.contains(key):
-            value = self.sp.getAll().get(key)
-            if value == "<json>":
-                json_value = self.sp.getString(key + ".json", None)
-                if json_value is not None:
-                    value = json.loads(json_value)
-            return value
-        else:
-            return default
-
-    def set_key(self, key, value, save=None):
-        spe = self.sp.edit()
-        if value is None:
-            spe.remove(key)
-            spe.remove(key + ".json")
-        else:
-            set_method = SP_SET_METHODS.get(type(value))
-            if set_method:
-                getattr(spe, set_method)(key, value)
-            else:
-                spe.putString(key, "<json>")
-                spe.putString(key + ".json", json.dumps(value))
-        spe.apply()
+# # We store the config in the SharedPreferences because it's very easy to base an Android
+# # settings UI on that. The reverse approach would be harder (using PreferenceDataStore to make
+# # the settings UI access an Electrum config file).
+# class AndroidConfig(simple_config.SimpleConfig):
+#     def __init__(self, app):
+#         self.sp = PreferenceManager.getDefaultSharedPreferences(app)
+#         super().__init__()
+#
+#     def get(self, key, default=None):
+#         if self.sp.contains(key):
+#             value = self.sp.getAll().get(key)
+#             if value == "<json>":
+#                 json_value = self.sp.getString(key + ".json", None)
+#                 if json_value is not None:
+#                     value = json.loads(json_value)
+#             return value
+#         else:
+#             return default
+#
+#     def set_key(self, key, value, save=None):
+#         spe = self.sp.edit()
+#         if value is None:
+#             spe.remove(key)
+#             spe.remove(key + ".json")
+#         else:
+#             set_method = SP_SET_METHODS.get(type(value))
+#             if set_method:
+#                 getattr(spe, set_method)(key, value)
+#             else:
+#                 spe.putString(key, "<json>")
+#                 spe.putString(key + ".json", json.dumps(value))
+#         spe.apply()

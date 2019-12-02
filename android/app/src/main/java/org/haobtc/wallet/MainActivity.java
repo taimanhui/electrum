@@ -1,9 +1,12 @@
 package org.haobtc.wallet;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -24,9 +27,16 @@ import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.SignaturePageActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.adapter.MyItemRecyclerViewAdapterTransaction;
+import com.chaquo.python.PyObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.String;
+
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+import org.haobtc.wallet.utils.Global;
+import org.haobtc.wallet.utils.Daemon;
 
 public class MainActivity extends AppCompatActivity {
     private ImageView imageViewSweep, imageViewSetting;
@@ -39,10 +49,55 @@ public class MainActivity extends AppCompatActivity {
     private Button button_send, button_receive, button_signature;
     private final String FIRST_RUN = "is_first_run";
     SharedPreferences sharedPreferences;
+    private static Daemon daemonModel;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("state", Context.MODE_PRIVATE);
         super.onCreate(savedInstanceState);
+
+        //test python code
+        Global.app = this.getApplication();
+        Python.start(new AndroidPlatform(Global.app));
+        Global.py = Python.getInstance();
+        Global.py.getModule("electrum.constants").callAttr("set_testnet");
+
+        Global.mHandler = null;
+        if (Global.mHandler == null) {
+            Global.mHandler = new Handler(Looper.getMainLooper());
+        }
+
+        Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
+        Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
+        initDaemon();
+
+        {
+            String name = "hahahahhahh222";
+            String password = "111111";
+            int m = 2;
+            int n = 2;
+            String xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm";
+            String xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg";
+
+//            //create wallet
+//            //daemonModel.commands.callAttr("delete_wallet", name);
+//            daemonModel.commands.callAttr("set_multi_wallet_info", name, m, n);
+//            daemonModel.commands.callAttr("add_xpub", xpub1);
+//            daemonModel.commands.callAttr("add_xpub", xpub2);
+//            List<PyObject> info= daemonModel.commands.callAttr("get_keystores_info").asList();
+//            System.out.println("main.kt onCreate keystors .....========" + info.toString());
+//            daemonModel.commands.callAttr("create_multi_wallet", name);
+            //daemonModel.commands.callAttr("get_xpub_from_hw")
+
+            //load_wallet
+            daemonModel.commands.callAttr("load_wallet", name, password);
+            daemonModel.commands.callAttr("select_wallet", name);
+
+            String wallet_str = daemonModel.commands.callAttr("get_wallets_list_info").toString();
+            System.out.println("main.kt onCreate wallet info is  .....======================" + wallet_str);
+
+            daemonModel.commands.callAttr("mktx", "", "", "0.001");
+        }
+
         // main page
         /*if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
             setContentView(R.layout.main_activity);
@@ -52,6 +107,11 @@ public class MainActivity extends AppCompatActivity {
             initGuide();
        /* }*/
 
+    }
+
+    private static void initDaemon(){
+        Global.guiDaemon.callAttr("set_excepthook", Global.mHandler);
+        daemonModel = new Daemon();
     }
 
     private void initGuide() {
