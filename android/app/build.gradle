@@ -67,7 +67,6 @@ android {
         }
     }
     flavorDimensions "version"
-    // 多渠道配置
     productFlavors {
         MainNet {
             buildConfigField "boolean", "testnet", "false"
@@ -76,10 +75,9 @@ android {
             buildConfigField "boolean", "testnet", "true"
         }
     }
-    // 静态代码检测
     lintOptions {
-/*
-        abortOnError false*/
+
+        abortOnError false
 
         disable "MissingTranslation"
     }
@@ -98,7 +96,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "haobtc-${variant.versionName}.apk"
+            outputFileName = "bixin-${variant.versionName}.apk"
         }
     }
 }
