@@ -25,14 +25,16 @@ from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 import trezorlib.btc
 from electrum import ecc
 
-CALLBACKS = ["banner", "blockchain_updated", "fee", "interfaces", "new_transaction",
-             "on_history", "on_quotes", "servers", "status", "verified2", "wallet_updated"]
-
 from enum import Enum
 class Status(Enum):
     net = 1
     broadcast = 2
     sign = 3
+    update_wallet = 4
+    update_status = 5
+    update_history = 6
+    update_interfaces = 7
+
 
 
 class AndroidConsole(InteractiveConsole):
@@ -91,11 +93,14 @@ class Help:
 class AndroidCommands(commands.Commands):
     # def __init__(self, app):
     #     super().__init__(AndroidConfig(app), wallet=None, network=None)
-    def __init__(self, config):
-        self.config = config
-    #     config_options = {}
-    #     config_options['auto_connect'] = True
-    #     self.config = simple_config.SimpleConfig(config_options)
+    def __init__(self):
+        config_options = {}
+        # config_options['cmdname'] = 'daemon'
+        # config_options['testnet'] = True
+        # config_options['cwd'] = os.getcwd()
+        config_options['auto_connect'] = True
+        self.config = simple_config.SimpleConfig(config_options)
+
         fd, server = daemon.get_fd_or_server(self.config)
         if not fd:
             raise Exception("Daemon already running")  # Same wording as in daemon.py.
@@ -104,7 +109,7 @@ class AndroidCommands(commands.Commands):
         # its callback before the daemon threads start.
         self.daemon = daemon.Daemon(self.config, fd, False)
         self.network = self.daemon.network
-        self.network.register_callback(self._on_callback, CALLBACKS)
+        #self.network.register_callback(self._on_callback, CALLBACKS)
         self.daemon_running = False
         self.wizard = None
         self.plugin = Plugins(self.config, 'cmdline')
@@ -114,7 +119,111 @@ class AndroidCommands(commands.Commands):
 
         self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
         self.num_zeros = int(self.config.get('num_zeros', 0))
+
+        if self.network:
+            interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
+                         'status', 'new_transaction', 'verified']
+            self.network.register_callback(self.on_network_event, interests)
+            self.network.register_callback(self.on_fee, ['fee'])
+            self.network.register_callback(self.on_fee_histogram, ['fee_histogram'])
+            self.network.register_callback(self.on_quotes, ['on_quotes'])
+            self.network.register_callback(self.on_history, ['on_history'])
+
     # BEGIN commands from the argparse interface.
+
+    def on_fee(self, event, *arg):
+        self.fee_status = self.config.get_fee_status()
+
+    def on_fee_histogram(self, *args):
+        self.update_history()
+
+    def on_quotes(self, d):
+        self.update_status()
+        self.update_history()
+
+    def on_history(self, d):
+        if self.wallet:
+            self.wallet.clear_coin_price_cache()
+        self.update_history()
+
+    def update_status(self):
+        if not self.wallet:
+            return
+        if self.network is None or not self.network.is_connected():
+            status = _("Offline")
+        elif self.network.is_connected():
+            self.num_blocks = self.network.get_local_height()
+            server_height = self.network.get_server_height()
+            server_lag = self.num_blocks - server_height
+            if not self.wallet.up_to_date or server_height == 0:
+                num_sent, num_answered = self.wallet.get_history_sync_state_details()
+                status = ("{} [size=18dp]({}/{})[/size]"
+                          .format(_("Synchronizing..."), num_answered, num_sent))
+            elif server_lag > 1:
+                status = _("Server is lagging ({} blocks)").format(server_lag)
+            else:
+                status = ''
+        else:
+            status = _("Disconnected")
+        if status:
+            self.balance = status
+            self.fiat_balance = status
+        else:
+            c, u, x = self.wallet.get_balance()
+            text = self.format_amount(c+x+u)
+            self.balance = str(text.strip()) + ' [size=22dp]%s[/size]'% self.base_unit
+            self.fiat_balance = self.daemon.fx.format_amount(c+u+x) + ' [size=22dp]%s[/size]'% self.daemon.fx.ccy
+        self.callbackIntent("update_status")
+
+    def get_wallet_info(self):
+        wallet_info = {}
+        wallet_info['balance'] = self.balance
+        wallet_info['fiat_balance'] = self.fiat_balance
+        wallet_info['name'] = self.wallet.basename()
+        return json.dumps(wallet_info)
+
+    def update_interfaces(self):
+        net_params = self.network.get_parameters()
+        self.num_nodes = len(self.network.get_interfaces())
+        self.num_chains = len(self.network.get_blockchains())
+        chain = self.network.blockchain()
+        self.blockchain_forkpoint = chain.get_max_forkpoint()
+        self.blockchain_name = chain.get_name()
+        interface = self.network.interface
+        if interface:
+            self.server_host = interface.host
+        else:
+            self.server_host = str(net_params.host) + ' (connecting...)'
+        self.proxy_config = net_params.proxy or {}
+        mode = self.proxy_config.get('mode')
+        host = self.proxy_config.get('host')
+        port = self.proxy_config.get('port')
+        self.proxy_str = (host + ':' + port) if mode else _('None')
+        self.callbackIntent("update_interfaces")
+
+    def update_wallet(self):
+        self.update_status()
+        self.callbackIntent("update_wallet")
+
+    def update_history(self):
+        self.callbackIntent("update_history")
+
+    def on_network_event(self, event, *args):
+        if event == 'network_updated':
+            self.update_interfaces()
+            self.update_status()
+        elif event == 'wallet_updated':
+            self.update_status()
+            self.update_wallet()
+        elif event == 'blockchain_updated':
+            # to update number of confirmations in history
+            self.update_wallet()
+        elif event == 'status':
+            self.update_status()
+        elif event == 'new_transaction':
+            self.update_wallet()
+        elif event == 'verified':
+            self.update_wallet()
 
     def start(self):
         """Start the daemon"""
@@ -503,7 +612,7 @@ class AndroidCommands(commands.Commands):
 
         print("console.select_wallet[%s]=%s" %(name, self.wallet))
         c, u, x = self.wallet.get_balance()
-        print("select_wallet:get_balance %s %s %s==============" %(c, u, x))
+        print("console.select_wallet %s %s %s==============" %(c, u, x))
         print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
         self.network.trigger_callback("wallet_updated", self.wallet)
 
@@ -570,35 +679,3 @@ SP_SET_METHODS = {
     str: "putString",
 }
 
-# # We store the config in the SharedPreferences because it's very easy to base an Android
-# # settings UI on that. The reverse approach would be harder (using PreferenceDataStore to make
-# # the settings UI access an Electrum config file).
-# class AndroidConfig(simple_config.SimpleConfig):
-#     def __init__(self, app):
-#         self.sp = PreferenceManager.getDefaultSharedPreferences(app)
-#         super().__init__()
-#
-#     def get(self, key, default=None):
-#         if self.sp.contains(key):
-#             value = self.sp.getAll().get(key)
-#             if value == "<json>":
-#                 json_value = self.sp.getString(key + ".json", None)
-#                 if json_value is not None:
-#                     value = json.loads(json_value)
-#             return value
-#         else:
-#             return default
-#
-#     def set_key(self, key, value, save=None):
-#         spe = self.sp.edit()
-#         if value is None:
-#             spe.remove(key)
-#             spe.remove(key + ".json")
-#         else:
-#             set_method = SP_SET_METHODS.get(type(value))
-#             if set_method:
-#                 getattr(spe, set_method)(key, value)
-#             else:
-#                 spe.putString(key, "<json>")
-#                 spe.putString(key + ".json", json.dumps(value))
-#         spe.apply()

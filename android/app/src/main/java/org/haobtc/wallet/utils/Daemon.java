@@ -7,9 +7,11 @@ public class Daemon {
     public static PyObject commands = null;
     public static PyObject network = null;
     public Daemon() {
-        commands = Global.guiConsole.callAttr("AndroidCommands", Global.app);
-        network = commands.get("network");
-        network.callAttr("register_callback", Global.guiDaemon.callAttr("make_callback", this), Global.guiConsole.get("CALLBACKS"));
+        commands = Global.guiConsole.callAttr("AndroidCommands");
         commands.callAttr("start");
+        commands.callAttr("set_callback_fun", this);
+    }
+    public static void onCallback(String event) {
+        System.out.println("DaemonModel.kt onCallback in.....========================================================================="+event);
     }
 }

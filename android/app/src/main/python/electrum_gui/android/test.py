@@ -23,41 +23,28 @@ from console import AndroidCommands
 
 util.setup_thread_excepthook()
 
-config_options = {}
-config_options['cmdname'] = 'daemon'
-config_options['testnet'] = True
-config_options['cwd'] = os.getcwd()
-config_options['auto_connect'] = True
+# config_options = {}
+# config_options['cmdname'] = 'daemon'
+# config_options['testnet'] = True
+# config_options['cwd'] = os.getcwd()
+# config_options['auto_connect'] = True
 
-# is_bundle = getattr(sys, 'frozen', False)
-# # fixme: this can probably be achieved with a runtime hook (pyinstaller)
-# if is_bundle and os.path.exists(os.path.join(sys._MEIPASS, 'is_portable')):
-#     config_options['portable'] = True
-#
-# # if config_options.get('portable'):
-#     config_options['electrum_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum_data')
-#
-# if not config_options.get('verbosity'):
-#     warnings.simplefilter('ignore', DeprecationWarning)
-# if not config_options.get('verbosity'):
-#     warnings.simplefilter('ignore', DeprecationWarning)
-#
 # check uri
-uri = config_options.get('url')
-if uri:
-    if not uri.startswith('bitcoin:'):
-        print_stderr('unknown command:', uri)
-        sys.exit(1)
-    config_options['url'] = uri
-
-# todo: defer this to gui
-config = SimpleConfig(config_options)
-cmdname = config.get('cmd')
-print("cmdname = %s++++" %cmdname)
+# uri = config_options.get('url')
+# if uri:
+#     if not uri.startswith('bitcoin:'):
+#         print_stderr('unknown command:', uri)
+#         sys.exit(1)
+#     config_options['url'] = uri
+#
+# # todo: defer this to gui
+# config = SimpleConfig(config_options)
+# cmdname = config.get('cmd')
+# print("cmdname = %s++++" %cmdname)
 
 constants.set_testnet()
 
-testcommond = AndroidCommands(config)
+testcommond = AndroidCommands()
 testcommond.start()
 
 name = 'hahahahhahh222'
@@ -75,7 +62,7 @@ password = '111111'
 # testcommond.add_xpub(xpub2)
 # testcommond.create_multi_wallet(name)
 
-testcommond.get_xpub_from_hw()
+#testcommond.get_xpub_from_hw()
 
 #load_wallet
 testcommond.load_wallet(name, password)
@@ -101,7 +88,7 @@ tx_info = json.loads(tx_info_str)
 print("tx info = %s=========" % tx_info)
 
 #parse_qr
-qr_data = testcommond.set_qr_data_from_raw_tx(ret_list['tx'])
+qr_data = testcommond.get_qr_data_from_raw_tx(ret_list['tx'])
 print("qr_data on ui = %s........" % qr_data)
 tx_data = testcommond.parse_qr(qr_data)
 print("tx_data = %s---------" % json.loads(tx_data))
