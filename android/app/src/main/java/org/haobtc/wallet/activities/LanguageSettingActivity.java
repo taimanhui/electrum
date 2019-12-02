@@ -1,21 +1,21 @@
 package org.haobtc.wallet.activities;
 
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.CommonUtils;
 
-public class LanguageSettingActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.language_setting);
-        initView();
+public class LanguageSettingActivity extends BaseActivity {
+
+    public int getLayoutId() {
+        return R.layout.language_setting;
     }
-    private void initView() {
+
+    public void initView() {
         CommonUtils.enableToolBar(this, R.string.language);
+    }
+
+    @Override
+    public void initData() {
+
     }
 }

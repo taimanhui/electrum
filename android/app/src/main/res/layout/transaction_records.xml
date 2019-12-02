@@ -2,34 +2,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/actionbar"/>
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <include layout="@layout/actionbar" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="54dp"
-        android:gravity="center_vertical"
-        android:elevation="4dp"
-        android:background="@android:color/white">
+        android:layout_height="@dimen/dp_54"
+        android:layout_marginTop="@dimen/dp_1"
+        android:background="@android:color/white"
+        android:elevation="@dimen/dp_4"
+        android:gravity="center_vertical">
 
         <androidx.appcompat.widget.AppCompatSpinner
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:elevation="10dp"
-            android:layout_marginStart="53dp"
-            android:dropDownWidth="wrap_content"
+            android:id="@+id/spi_BTC"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_54"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_weight="1"
+            android:dropDownWidth="@dimen/dp130"
+            android:dropDownHorizontalOffset="@dimen/dp_70"
+            android:dropDownVerticalOffset="@dimen/dp_54"
+            android:elevation="@dimen/layout_margin"
             android:entries="@array/type"
             android:gravity="center"
-            android:spinnerMode="dropdown">
-        </androidx.appcompat.widget.AppCompatSpinner>
+            android:spinnerMode="dropdown"/>
 
         <androidx.appcompat.widget.AppCompatSpinner
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:dropDownWidth="wrap_content"
-            android:layout_marginStart="100dp"
-            android:layout_marginEnd="73dp"
+            android:id="@+id/spi_ZT"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_54"
+            android:layout_marginEnd="@dimen/sp_16"
+            android:layout_weight="1"
+            android:dropDownWidth="@dimen/dp130"
+            android:dropDownHorizontalOffset="@dimen/dp_70"
+            android:dropDownVerticalOffset="@dimen/dp_54"
             android:entries="@array/state"
             android:gravity="center_vertical"
             android:spinnerMode="dropdown">
@@ -41,14 +53,15 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:elevation="4dp"
-        app:cardCornerRadius="6dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp">
+        android:layout_marginStart="@dimen/layout_margin"
+        android:layout_marginTop="@dimen/layout_margin"
+        android:layout_marginEnd="@dimen/layout_margin"
+        android:layout_marginBottom="@dimen/layout_margin"
+        android:elevation="@dimen/dp_4"
+        app:cardCornerRadius="@dimen/corner_radius">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list"
+            android:id="@+id/recy_jylist"
             android:name="com.example.myapplication1.ItemFragment2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

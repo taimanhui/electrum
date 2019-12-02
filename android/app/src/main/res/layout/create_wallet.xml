@@ -2,58 +2,64 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     android:layout_marginStart="37.5dp"
     android:layout_marginEnd="37.5dp">
-        
     <ImageView
         android:layout_width="100.7dp"
         android:layout_height="129.9dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="172.9dp"
-        android:src="@drawable/ic_launcher_background"
-        android:layout_centerHorizontal="true"/>
+        android:contentDescription="@string/picture"
+        android:src="@drawable/ic_launcher_background" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:orientation="vertical"
-        android:layout_marginTop="458dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"
         android:gravity="center_horizontal">
         <Button
             android:id="@+id/bn_create_wallet"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:background="@drawable/button_bk"
             android:text="@string/create"
-            android:background="@drawable/button_bk">
-        </Button>
+            android:textColor="@android:color/white"/>
 
         <Button
             android:id="@+id/bn_import_wallet"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/dp_20"
+            android:background="@drawable/button_bk_grey"
             android:text="@string/import_w"
-            android:background="@drawable/button_bk_grey">
-        </Button>
+            android:textColor="@android:color/white"/>
     </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginTop="615dp"
-            android:layout_centerHorizontal="true">
-            <RadioGroup
-                android:id="@+id/radio_group_button_ag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
 
-            </RadioGroup>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:textColor="@color/light_text"
-                android:text="@string/boot_message"/>
-        </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_20"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp">
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/radio_group_button_ag"
+            android:layout_width="wrap_content"
+            android:checked="true"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tet_Agreement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/boot_message"
+            android:textColor="@color/light_text" />
+
+
+    </LinearLayout>
 </RelativeLayout>

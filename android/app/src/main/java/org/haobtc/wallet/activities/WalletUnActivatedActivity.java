@@ -1,30 +1,32 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.widget.Button;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+
 
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
 
-public class WalletUnActivatedActivity extends AppCompatActivity {
+public class WalletUnActivatedActivity extends BaseActivity {
     Button buttonActivate;
     public static final String TAG = "org.haobtc.wallet.activities.WalletUnActivatedActivity";
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activate);
-        initView();
+    public int getLayoutId() {
+        return R.layout.activate;
     }
 
-    private void initView() {
+    public void initView() {
         buttonActivate = findViewById(R.id.button_activate);
         buttonActivate.setOnClickListener(v -> {
             Intent intent = new Intent(this, TouchHardwareActivity.class);
             intent.putExtra(TouchHardwareActivity.FROM, TAG);
             startActivity(intent);
         });
+    }
+
+    @Override
+    public void initData() {
+
     }
 }

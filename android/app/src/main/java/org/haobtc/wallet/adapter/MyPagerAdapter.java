@@ -8,7 +8,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import java.util.List;
 
 
-public class MyPagerAdapter extends PagerAdapter{
+public class MyPagerAdapter extends PagerAdapter {
 
 	private List<View> viewList;
 
@@ -30,10 +30,10 @@ public class MyPagerAdapter extends PagerAdapter{
 		container.addView(viewList.get(position));
 		return viewList.get(position);
 	}
-	@Override
+/*	@Override
 	public float getPageWidth(int position) {
-		return 0.85f;
-	}
+		return 1f;
+	}*/
 
 	@Override
 	public boolean isViewFromObject(View view, Object object) {

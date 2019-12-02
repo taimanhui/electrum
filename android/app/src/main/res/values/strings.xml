@@ -18,7 +18,7 @@
     <string name="seq">Sequence Number</string>
     <string name="hardware_v">Hardware Version(Upgrade)</string>
     <string name="address">Address</string>
-    <string name="use_haobtc_s">Use BIXin Server</string>
+    <string name="use_bixin_s">Use BIXin Server</string>
     <string name="prompt">Use BiXin Server  can help cosigner sync transaction info</string>
     <string name="rbf">Use RBF(Replace By Fee)</string>
     <string name="use_unconfirmed">Use Unconfirmed Input</string>
@@ -27,7 +27,7 @@
     <string name="create">Create Wallet</string>
     <string name="import_w">Import Wallet</string>
     <string name="introduce">The Introduce Of The BiXin Wallet</string>
-    <string name="introduce_detials">1.币信冷钱包为BTC硬件钱包，私钥永不触网 \\\\n 2.币信冷钱包为开源钱包 \\\\n 3.币信冷钱包自带屏幕，付款时进行双向确认，资产更为安全 4.币信冷钱包工卡片式设计符合人体工学，使用和保存更方便 5.币信冷钱包使用军工级芯片 6.币信冷钱包不提供私钥导出功能，若您不需要多人签名，您可设置1 of 2的多签钱包，当其中一个冷钱包丢失时，您可使用备份冷钱包进行交易或进行资产转移 7.建议您购买>2个冷钱包 购买地</string>
+    <string name="introduce_detials">1.币信冷钱包为BTC硬件钱包，私钥永不触网 \n 2.币信冷钱包为开源钱包 \n 3.币信冷钱包自带屏幕，付款时进行双向确认，资产更为安全 \n4.币信冷钱包工卡片式设计符合人体工学，使用和保存更方便 \n5.币信冷钱包使用军工级芯片 \n6.币信冷钱包不提供私钥导出功能，若您不需要多人签名，您可设置1 of 2的多签钱包，当其中一个冷钱包丢失时，您可使用备份冷钱包进行交易或进行资产转移 \n7.建议您购买>2个冷钱包 购买地</string>
     <string name="app_name">BiXin Cold Wallet</string>
     <string name="active">Active Cold Wallet</string>
     <string name="active_prompt">Unactived BiXin Cold Wallet</string>
@@ -56,7 +56,7 @@
     <string name="paste">Paste</string>
     <string name="confirm">Confirm</string>
     <string name="select_mutisig">Select Multisig Wallet</string>
-    <string name="wallet_name" />
+    <string name="wallet_name" >Multi signature Wallet</string>
     <string name="multi_type" translatable="false">2-3</string>
     <string name="create_multisig">Create MultiSig Wallet</string>
     <string name="select">Please Select</string>
@@ -82,7 +82,7 @@
     <string name="share">Share</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="main">Main Page</string>
+    <string name="main">Home Page</string>
     <string name="more">More</string>
     <string name="cancle">Cancle</string>
     <string name="comments">Comment</string>
@@ -94,10 +94,10 @@
     <string name="to">To</string>
     <string name="from">From</string>
     <string name="multi_sig">MultiSig</string>
-    <string name="to_num" />
+    <string name="to_num" >2个地址</string>
     <string name="amount">Amount</string>
     <string name="need_more">Need More ?</string>
-    <string name="import_file">文件导入</string>
+    <string name="import_file">File Import</string>
     <string name="prompt_sig">输入交易报文可获取已有交易信息</string>
     <string name="raw">请输入交易报文</string>
     <string name="signature_trans">签名该交易</string>
@@ -107,5 +107,42 @@
     <string name="pin_input">请输入PIN码</string>
     <string name="active_successful">激活成功</string>
     <string name="clear">Clear</string>
+    <string name="strguidefirst">Hardware wallet, private key never touch the net</string>
+    <string name="strguidesecond">Multiple signatures make assets more secure</string>
+    <string name="dowbke_to_exit">再按一次退出程序</string>
+    <string name="dongt_isnull">Wallet name, number of CO signers and number of signatures required cannot be empty</string>
+    <string name="format_iswrong">The name format is wrong, the number of signatures required cannot be greater than the number of CO signers</string>
+    <string name="bixinmoney">BiXin Cold Wallet Introduce</string>
+    <string name="use_hardware">Use Hardware</string>
     <string name="copy_self">Copy</string>
+    <string name="address_qr">qrcode for address</string>
+    <string name="boot_page_dot">dot</string>
+    <string name="picture">this is a picture</string>
+    <string name="wallet_create_successful">Wallet Create Sucessful</string>
+    <string name="balance">Balance</string>
+    <string name="close">Close</string>
+    <string name="wallet_list">Wallet List</string>
+    <string name="add_">Add</string>
+    <string name="no_records">No Records</string>
+    <string name="attention">注意：该地址仅需要BTC收款，转入其他比重将无法找回</string>
+    <string name="cosigner_num_select">设置连署人数量</string>
+    <string name="pin_input_again">输入不正确，请再次输入</string>
+    <string name="prompt_create">钱包创建成功，您的收款地址如图</string>
+    <string name="prompt_message">请在冷钱包硬件上确认以下信息后，点击”OK”按钮</string>
+    <string name="signature_status">签名状态</string>
+    <string name="slip_select_fee">滑动选择矿工费</string>
+    <string name="tips">TIPS：联署人是所有管理人</string>
+    <string name="watting_broadcast">待广播</string>
+    <string name="transaction_status">交易状态</string>
+    <string name="transaction_waitting">待签名</string>
+    <string name="dontbig">The number of signatures cannot be greater than the number of joint signers</string>
+    <string name="dontsmall">The number of joint signers cannot be less than the number of signers</string>
+    <string name="inoutnum">Please enter the transfer quantity</string>
+    <string name="moreinput_text">You can input up to 20 words</string>
+    <string name="photopersion">Camera permission denied, unable to scan QR code</string>
+    <string name="transaction_hash">Transaction Hash</string>
+    <string name="time">Time</string>
+    <string name="confirm_on_chain">Confirm On Chain</string>
+    <string name="cosigner_sign">CoSigner Signature</string>
+
 </resources>

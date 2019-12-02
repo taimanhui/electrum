@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/dp_20"
         android:layout_marginStart="30dp"
         android:orientation="vertical">
 
@@ -24,9 +24,9 @@
             android:layout_height="wrap_content"
             android:text="@string/confirm_pin"
             android:visibility="invisible"
-            android:paddingTop="6dp"
+            android:paddingTop="@dimen/corner_radius"
             android:textColor="@color/light_text"
-            android:textSize="12sp"/>
+            android:textSize="@dimen/sp_12"/>
     </LinearLayout>
 
 
@@ -38,7 +38,7 @@
 
         <EditText
             android:id="@+id/pin_edit"
-            android:layout_width="1dp"
+            android:layout_width="@dimen/dp_1"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@android:color/white"
@@ -62,7 +62,7 @@
                 style="@style/code_text_style"/>
 
             <View
-                android:layout_width="10dp"
+                android:layout_width="@dimen/layout_margin"
                 android:layout_height="0dp"
                 android:background="@android:color/white"/>
             <TextView
@@ -70,7 +70,7 @@
                 style="@style/code_text_style"/>
 
             <View
-                android:layout_width="10dp"
+                android:layout_width="@dimen/layout_margin"
                 android:layout_height="0dp"
                 android:background="@android:color/white"/>
             <TextView
@@ -78,7 +78,7 @@
                 style="@style/code_text_style"/>
 
             <View
-                android:layout_width="10dp"
+                android:layout_width="@dimen/layout_margin"
                 android:layout_height="0dp"
                 android:background="@android:color/white"/>
             <TextView
@@ -86,7 +86,7 @@
                 style="@style/code_text_style"/>
 
             <View
-                android:layout_width="10dp"
+                android:layout_width="@dimen/layout_margin"
                 android:layout_height="0dp"
                 android:background="@android:color/white"/>
             <TextView
@@ -94,7 +94,7 @@
                 style="@style/code_text_style"/>
 
             <View
-                android:layout_width="10dp"
+                android:layout_width="@dimen/layout_margin"
                 android:layout_height="0dp"
                 android:background="@android:color/white"/>
             <TextView

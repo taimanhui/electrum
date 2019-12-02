@@ -1,93 +1,103 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/actionbar"/>
-    <androidx.cardview.widget.CardView
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true">
+
+    <include layout="@layout/actionbar" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="70dp"
-        app:cardCornerRadius="6dp">
-        <LinearLayout
+        android:layout_height="match_parent"
+        android:background="@color/bk_page">
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp">
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:text="@string/zh_simple"
-                    android:textColor="@color/text"
-                    android:drawableEnd="@mipmap/jiantou">
-                </RadioButton>
-                <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/separation_line">
-            </View>
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:text="@string/zh_traditional"
-                    android:textColor="@color/text"
-                    android:drawableEnd="@mipmap/jiantou">
-                </RadioButton>
-                <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/separation_line">
-                </View>
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:text="@string/en"
-                    android:textColor="@color/text"
-                    android:drawableEnd="@mipmap/jiantou">
-                </RadioButton>
-                <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/separation_line">
-                </View>
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:text="@string/korean"
-                    android:textColor="@color/text"
-                    android:drawableEnd="@mipmap/jiantou">
-                </RadioButton>
-                <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/separation_line">
-                </View>
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:button="@null"
-                    android:text="@string/japanese"
-                    android:textColor="@color/text"
-                    android:layout_weight="1"
-                    android:drawableEnd="@mipmap/jiantou">
-                </RadioButton>
+            android:layout_height="300dp"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="70dp"
+            android:layout_marginEnd="@dimen/layout_margin"
+            app:cardCornerRadius="@dimen/corner_radius">
 
-            </RadioGroup>
-        </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:text="@string/zh_simple"
+                        android:textColor="@color/text" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:text="@string/zh_traditional"
+                        android:textColor="@color/text" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:text="@string/en"
+                        android:textColor="@color/text" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:text="@string/korean"
+                        android:textColor="@color/text" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:text="@string/japanese"
+                        android:textColor="@color/text" />
+
+                </RadioGroup>
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
 </RelativeLayout>
