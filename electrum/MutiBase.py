@@ -64,22 +64,6 @@ class MutiBase(Logger):
                 self.keystores.pop()
                 break
 
-    # def upgrade_storage(self, storage):
-    #     exc = None
-    #     def on_finished():
-    #         if exc is None:
-    #             self.terminate(storage=storage)
-    #         else:
-    #             raise exc
-    #     def do_upgrade():
-    #         nonlocal exc
-    #         try:
-    #             storage.upgrade()
-    #         except Exception as e:
-    #             exc = e
-    #     self.waiting_dialog(do_upgrade, _('Upgrading wallet format...'), on_finished=on_finished)
-
-
     def set_multi_wallet_info(self, path, m, n):
         self.wallet_type = 'multisig'
         multisig_type = "%dof%d" % (m, n)
@@ -114,11 +98,11 @@ class MutiBase(Logger):
     def restore_from_xpub(self, xpub):
         print("restore_from_xpub in....")
         is_valid = keystore.is_bip32_key(xpub)
-        print("valid = %s" % is_valid)
+        return msg("invaild type of xpub")
         if is_valid:
             print("valid is true....")
             k = keystore.from_master_key(xpub)
-            self.on_keystore(k)
+            return self.on_keystore(k)
 
     def on_restore_seed(self, seed, is_bip39, is_ext):
         self.seed_type = 'bip39' if is_bip39 else mnemonic.seed_type(seed)
@@ -144,7 +128,7 @@ class MutiBase(Logger):
 
     def create_keystore(self, seed, passphrase):
         k = keystore.from_seed(seed, passphrase, self.wallet_type == 'multisig')
-        self.on_keystore(k)
+        return self.on_keystore(k)
 
     def on_bip43(self, seed, passphrase, derivation, script_type):
         k = keystore.from_bip39_seed(seed, passphrase, derivation, xtype=script_type)
@@ -163,18 +147,18 @@ class MutiBase(Logger):
         elif self.wallet_type == 'multisig':
             assert has_xpub
             if t1 not in ['standard', 'p2wsh', 'p2wsh-p2sh']:
-                self.show_error(_('Wrong key type') + ' %s'%t1)
-                return
+                return msg.format(('Wrong key type') + ' %s'%t1)
             if k.xpub in map(lambda x: x.xpub, self.keystores):
-                self.show_error(_('Error: duplicate master public key'))
-                return
-            if len(self.keystores)>0:
+                return msg('Error: duplicate master public key')
+            if len(self.keystores)<self.n:
                 t2 = xpub_type(self.keystores[0].xpub)
                 if t1 != t2:
-                    self.show_error(_('Cannot add this cosigner:') + '\n' + "Their key type is '%s', we are '%s'"%(t1, t2))
-                    return
-            self.keystores.append(k)
-            print("=================add_keystore xpub = %s...." % k.xpub)
+                    msg.format("Cannot add this cosigner:"+'\n'+"Their key type is '%s', we are '%s'"%(t1, t2))
+                    return msg
+                self.keystores.append(k)
+                return msg("success")
+            else:
+                return msg("len(xpub) > n")
 
     def get_cosigner_num(self):
         return self.m,self.n

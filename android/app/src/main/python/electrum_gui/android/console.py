@@ -34,6 +34,7 @@ class Status(Enum):
     update_status = 5
     update_history = 6
     update_interfaces = 7
+    create_wallet_error = 8
 
 
 
@@ -173,7 +174,7 @@ class AndroidCommands(commands.Commands):
             text = self.format_amount(c+x+u)
             self.balance = str(text.strip()) + ' [size=22dp]%s[/size]'% self.base_unit
             self.fiat_balance = self.daemon.fx.format_amount(c+u+x) + ' [size=22dp]%s[/size]'% self.daemon.fx.ccy
-        self.callbackIntent("update_status")
+       # self.callbackIntent("update_status")
 
     def get_wallet_info(self):
         wallet_info = {}
@@ -199,14 +200,15 @@ class AndroidCommands(commands.Commands):
         host = self.proxy_config.get('host')
         port = self.proxy_config.get('port')
         self.proxy_str = (host + ':' + port) if mode else _('None')
-        self.callbackIntent("update_interfaces")
+        #self.callbackIntent("update_interfaces")
 
     def update_wallet(self):
         self.update_status()
-        self.callbackIntent("update_wallet")
+        #self.callbackIntent("update_wallet")
 
     def update_history(self):
-        self.callbackIntent("update_history")
+        print("")
+        #self.callbackIntent("update_history")
 
     def on_network_event(self, event, *args):
         if event == 'network_updated':
@@ -286,7 +288,9 @@ class AndroidCommands(commands.Commands):
     def add_xpub(self, xpub):
         self._assert_daemon_running()
         self._assert_wizard_isvalid()
-        self.wizard.restore_from_xpub(xpub)
+        ret = self.wizard.restore_from_xpub(xpub)
+        if ret != "success":
+            self.callbackIntent(Status.create_wallet_error, msg)
 
     def delete_xpub(self, xpub):
         self._assert_daemon_running()
@@ -333,6 +337,8 @@ class AndroidCommands(commands.Commands):
         print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
         coins = self.wallet.get_spendable_coins(None, self.config)
         tx = self.wallet.make_unsigned_transaction(coins, outputs_addrs, self.config, fixed_fee=satoshis(fee))
+        if self.rbf:
+            tx.set_rbf(True)
         print("console:mkun:tx====%s" %tx)
         self.wallet.set_label(tx.txid, message)
         tx_details = self.wallet.get_tx_info(tx)
@@ -459,17 +465,21 @@ class AndroidCommands(commands.Commands):
         return ri
 
     def get_wallet_address_show_UI(self):#TODO:需要按照electrum方式封装二维码数据?
-        return self.wallet.get_addresses()[0]
+        return util.create_bip21_uri(self.wallet.get_addresses()[0], "0.1", "0.1")
 
     ##Analyze QR data
     def parse_qr(self, data):
         from electrum.bitcoin import base_decode, is_address
         data = data.strip()
         ret_data = {}
-        if is_address(data):
-            ret_data['status'] = 1
-            ret_data['data'] = ''
-            return json.dumps(ret_data)
+        npos = data.find("bitcoin:")
+        if npos != -1:
+            npos1 = data.find("?", 1)
+            if is_address(data[npos+len("bitcoin:"):npos1]):
+                ret_data['status'] = 1
+                uri = util.parse_URI(data)
+                ret_data['data'] = uri['address']
+                return json.dumps(ret_data)
 
         ret_data['status'] = 2
         # try to decode transaction
@@ -508,12 +518,14 @@ class AndroidCommands(commands.Commands):
         if use_rbf == status_rbf :
             return
         self.electrum_config.set_key('use_rbf', status_rbf, True)
+        self.rbf = status_rbf
 
     def set_use_change(self, status_change):
         use_change = config.get('use_change')
         if use_change == status_change :
             return
         self.config.set_key('use_change', status_change, True)
+        self.wallet.use_change = status_change
 
     def sign_tx(self, tx):
         tx = Transaction(tx)

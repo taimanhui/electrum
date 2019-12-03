@@ -17,31 +17,9 @@ from electrum import daemon
 from electrum import keystore
 
 _logger = get_logger(__name__)
-
-
 from console import AndroidCommands
 
 util.setup_thread_excepthook()
-
-# config_options = {}
-# config_options['cmdname'] = 'daemon'
-# config_options['testnet'] = True
-# config_options['cwd'] = os.getcwd()
-# config_options['auto_connect'] = True
-
-# check uri
-# uri = config_options.get('url')
-# if uri:
-#     if not uri.startswith('bitcoin:'):
-#         print_stderr('unknown command:', uri)
-#         sys.exit(1)
-#     config_options['url'] = uri
-#
-# # todo: defer this to gui
-# config = SimpleConfig(config_options)
-# cmdname = config.get('cmd')
-# print("cmdname = %s++++" %cmdname)
-
 constants.set_testnet()
 
 testcommond = AndroidCommands()
@@ -87,12 +65,18 @@ tx_info_str = testcommond.get_tx_info_from_raw(ret_list['tx'])
 tx_info = json.loads(tx_info_str)
 print("tx info = %s=========" % tx_info)
 
-#parse_qr
+#parse_qr tx
 qr_data = testcommond.get_qr_data_from_raw_tx(ret_list['tx'])
 print("qr_data on ui = %s........" % qr_data)
 tx_data = testcommond.parse_qr(qr_data)
 print("tx_data = %s---------" % json.loads(tx_data))
 
+#parse_qr_addr
+qr_addr = testcommond.get_wallet_address_show_UI()
+print("qr_addr = %s------------" % qr_addr)
+
+add = testcommond.parse_qr(qr_addr)
+print("addr = %s--------" %add)
 #get_history_tx
 
 #get_tx_info
