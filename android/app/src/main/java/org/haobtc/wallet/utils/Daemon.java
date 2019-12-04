@@ -11,7 +11,8 @@ public class Daemon {
         commands.callAttr("start");
         commands.callAttr("set_callback_fun", this);
     }
-    public static void onCallback(int event, String msg) {
-        System.out.println("DaemonModel.kt onCallback in.....========================================================================="+event);
+
+    public void onCallback(int event, String msg) {
+        System.out.println("DaemonModel.kt onCallback in.....========================================================================="+event + msg);
     }
 }

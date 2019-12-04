@@ -92,8 +92,6 @@ class Help:
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
-    # def __init__(self, app):
-    #     super().__init__(AndroidConfig(app), wallet=None, network=None)
     def __init__(self):
         config_options = {}
         # config_options['cmdname'] = 'daemon'
@@ -117,9 +115,9 @@ class AndroidCommands(commands.Commands):
         self.callbackIntent = None
         self.wallet = None
         self.fiat_unit = self.daemon.fx.ccy if self.daemon.fx.is_enabled() else ''
-
         self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
         self.num_zeros = int(self.config.get('num_zeros', 0))
+        self.rbf = self.config.get("use_rbf", True)
 
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
@@ -174,7 +172,7 @@ class AndroidCommands(commands.Commands):
             text = self.format_amount(c+x+u)
             self.balance = str(text.strip()) + ' [size=22dp]%s[/size]'% self.base_unit
             self.fiat_balance = self.daemon.fx.format_amount(c+u+x) + ' [size=22dp]%s[/size]'% self.daemon.fx.ccy
-       # self.callbackIntent("update_status")
+        #self.callbackIntent.onCallback("update_status")
 
     def get_wallet_info(self):
         wallet_info = {}
@@ -200,15 +198,15 @@ class AndroidCommands(commands.Commands):
         host = self.proxy_config.get('host')
         port = self.proxy_config.get('port')
         self.proxy_str = (host + ':' + port) if mode else _('None')
-        #self.callbackIntent("update_interfaces")
+        #self.callbackIntent.onCallback("update_interfaces")
 
     def update_wallet(self):
         self.update_status()
-        #self.callbackIntent("update_wallet")
+        #self.callbackIntent.onCallback("update_wallet")
 
     def update_history(self):
         print("")
-        #self.callbackIntent("update_history")
+        #self.callbackIntent.onCallback("update_history")
 
     def on_network_event(self, event, *args):
         if event == 'network_updated':
@@ -234,12 +232,18 @@ class AndroidCommands(commands.Commands):
 
     def status(self):
         """Get daemon status"""
-        self._assert_daemon_running()
+        try:
+            self._assert_daemon_running()
+        except Exception as e:
+            raise e
         return self.daemon.run_daemon({"subcommand": "status"})
 
     def stop(self):
         """Stop the daemon"""
-        self._assert_daemon_running()
+        try:
+            self._assert_daemon_running()
+        except Exception as e:
+            raise e
         self.daemon.stop()
         self.daemon.join()
         self.daemon_running = False
@@ -248,36 +252,44 @@ class AndroidCommands(commands.Commands):
     def load_wallet(self, name, password=None):
         """Load a wallet"""
         print("console.load_wallet_by_name in....")
-        self._assert_daemon_running()
+        try:
+            self._assert_daemon_running()
+        except Exception as e:
+            raise e
         path = self._wallet_path(name)
         wallet = self.daemon.get_wallet(path)
         if not wallet:
             storage = WalletStorage(path)
             if not storage.file_exists():
-                raise FileNotFoundError(path)
+                raise Exception("not find file %s" %path)
             if storage.is_encrypted():
                 if not password:
                     raise util.InvalidPassword()
                 storage.decrypt(password)
 
             wallet = Wallet(storage)
-            # wallet.start_threads(self.network)
             wallet.start_network(self.network)
             self.daemon.add_wallet(wallet)
 
     def close_wallet(self, name=None):
         """Close a wallet"""
-        self._assert_daemon_running()
+        try:
+            self._assert_daemon_running()
+        except Exception as e:
+            raise e
         self.daemon.stop_wallet(self._wallet_path(name))
 
     ##set callback##############################
     def set_callback_fun(self, callbackIntent):
+        print("self.callbackIntent =%s" %callbackIntent)
         self.callbackIntent = callbackIntent
 
     #craete multi wallet##############################
     def set_multi_wallet_info(self, name, m, n):
-#        self.callbackIntent.onCallbackTest("testetetet")
-        self._assert_daemon_running()
+        try:
+            self._assert_daemon_running()
+        except Exception as e:
+            raise e
         if self.wizard is not None:
             self.wizard = None
         self.wizard = MutiBase.MutiBase(self.config)
@@ -286,33 +298,47 @@ class AndroidCommands(commands.Commands):
         self.wizard.set_multi_wallet_info(path, m, n)
 
     def add_xpub(self, xpub):
-        self._assert_daemon_running()
-        self._assert_wizard_isvalid()
-        ret = self.wizard.restore_from_xpub(xpub)
-        if ret != "success":
-            self.callbackIntent(Status.create_wallet_error, msg)
+        try:
+            self._assert_daemon_running()
+            self._assert_wizard_isvalid()
+            self.wizard.restore_from_xpub(xpub)
+        except Exception as e:
+            raise e
 
     def delete_xpub(self, xpub):
-        self._assert_daemon_running()
-        self._assert_wizard_isvalid()
-        self.wizard.delete_xpub(xpub)
+        try:
+            self._assert_daemon_running()
+            self._assert_wizard_isvalid()
+            self.wizard.delete_xpub(xpub)
+        except Exception as e:
+            raise e
 
     def get_keystores_info(self):
-        self._assert_daemon_running()
-        self._assert_wizard_isvalid()
-        return self.wizard.get_keystores_info()
+        try:
+            self._assert_daemon_running()
+            self._assert_wizard_isvalid()
+            ret = self.wizard.get_keystores_info()
+        except Exception as e:
+            raise e
+        return ret
 
     def get_cosigner_num(self):
-        self._assert_daemon_running()
-        self._assert_wizard_isvalid()
+        try:
+            self._assert_daemon_running()
+            self._assert_wizard_isvalid()
+        except Exception as e:
+            raise e
         return self.wizard.get_cosigner_num()
 
     def create_multi_wallet(self, name):
-        self._assert_daemon_running()
-        self._assert_wizard_isvalid()
-        path = self._wallet_path(name)
-        print("console:create_multi_wallet:path = %s---------" % path)
-        storage = self.wizard.create_storage(path=path, password = '')
+        try:
+            self._assert_daemon_running()
+            self._assert_wizard_isvalid()
+            path = self._wallet_path(name)
+            print("console:create_multi_wallet:path = %s---------" % path)
+            storage = self.wizard.create_storage(path=path, password = '')
+        except Exception as e:
+            raise e
         if storage:
             wallet = Wallet(storage)
             wallet.start_network(self.daemon.network)
@@ -327,7 +353,10 @@ class AndroidCommands(commands.Commands):
 
     ##create tx#########################
     def mktx(self, outputs, message, fee):
-        self._assert_wallet_isvalid()
+        try:
+            self._assert_wallet_isvalid()
+        except Exception as e:
+            raise e
         print("console.mktx.outpus = %s======" %outputs)
         all_output_add = json.loads(outputs)
         outputs_addrs = []
@@ -336,9 +365,11 @@ class AndroidCommands(commands.Commands):
         #outputs_addrs = [(TxOutput(TYPE_ADDRESS, "tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m", satoshis(0.01)))]
         print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
         coins = self.wallet.get_spendable_coins(None, self.config)
-        tx = self.wallet.make_unsigned_transaction(coins, outputs_addrs, self.config, fixed_fee=satoshis(fee))
-        if self.rbf:
-            tx.set_rbf(True)
+        try:
+            tx = self.wallet.make_unsigned_transaction(coins, outputs_addrs, self.config, fixed_fee=satoshis(fee))
+        except Exception as e:
+            raise e
+        tx.set_rbf(self.rbf)
         print("console:mkun:tx====%s" %tx)
         self.wallet.set_label(tx.txid, message)
         tx_details = self.wallet.get_tx_info(tx)
@@ -351,10 +382,17 @@ class AndroidCommands(commands.Commands):
         return json_str
 
     def deserialize(self, raw_tx):
-        tx = Transaction(raw_tx)
-        tx.deserialize()
+        try:
+            tx = Transaction(raw_tx)
+            tx.deserialize()
+        except Exception as e:
+            raise e
 
     def get_wallets_list_info(self):
+        try:
+            self._assert_daemon_running()
+        except Exception as e:
+            raise e
         wallets = self.list_wallets()
         wallet_info = []
         for i in wallets:
@@ -363,10 +401,12 @@ class AndroidCommands(commands.Commands):
             if not wallet:
                 storage = WalletStorage(path)
                 if not storage.file_exists():
-                    raise FileNotFoundError(path)
+                    raise Exception("not find file %s" %path)
 
-                wallet = Wallet(storage)
-
+                try:
+                    wallet = Wallet(storage)
+                except Exception as e:
+                    raise e
             c, u, x = wallet.get_balance()
             info = {
                 "wallet_type" : wallet.wallet_type,
@@ -384,6 +424,10 @@ class AndroidCommands(commands.Commands):
         return util.decimal_point_to_base_unit_name(self.decimal_point)
 
     def format_amount_and_units(self, amount):
+        try:
+            self._assert_daemon_running()
+        except Exception as e:
+            raise e
         text = self.format_amount(amount) + ' '+ self.base_unit()
         x = self.daemon.fx.format_amount_and_units(amount) if self.daemon.fx else None
         if text and x:
@@ -407,12 +451,16 @@ class AndroidCommands(commands.Commands):
             tx = Transaction(raw_tx)
             print("console:get_tx_info_from_raw:tx===%s" %tx)
             #tx.deserialize()
-        except:
+        except Exception as e:
             tx = None
+            raise e
         return self.get_details_info(tx)
 
     def get_details_info(self, tx):
-        self._assert_wallet_isvalid()
+        try:
+            self._assert_wallet_isvalid()
+        except Exception as e:
+            raise e
         tx_details = self.wallet.get_tx_info(tx)
         s, r = tx.signature_count()
         ret_data = {
@@ -432,19 +480,31 @@ class AndroidCommands(commands.Commands):
 
     ##history
     def get_history_tx(self):
-        self._assert_wallet_isvalid()
+        try:
+            self._assert_wallet_isvalid()
+        except Exception as e:
+            raise e
         history = reversed(self.wallet.get_history())
         all_data = [self.get_card(*item) for item in history]
         print("console:get_history_tx:data = %s==========" % all_data)
 
     def get_tx_info(self, tx_hash):
+        try:
+            self._assert_wallet_isvalid()
+        except Exception as e:
+            raise e
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
-            return
+            raise Exception('get transaction info failed')
         data = self.get_details_info(tx)
         print("console:get_tx_info:tx_details_data = %s..........." % data)
 
     def get_card(self, tx_hash, tx_mined_status, value, balance):
+        try:
+            self._assert_wallet_isvalid()
+            self._assert_daemon_running()
+        except Exception as e:
+            raise e
         status, status_str = self.wallet.get_tx_status(tx_hash, tx_mined_status)
         label = self.wallet.get_label(tx_hash) if tx_hash else _('Pruned transaction outputs')
         ri = {}
@@ -465,7 +525,12 @@ class AndroidCommands(commands.Commands):
         return ri
 
     def get_wallet_address_show_UI(self):#TODO:需要按照electrum方式封装二维码数据?
-        return util.create_bip21_uri(self.wallet.get_addresses()[0], "0.1", "0.1")
+        try:
+            self._assert_wallet_isvalid()
+            data = util.create_bip21_uri(self.wallet.get_addresses()[0], "", "")
+        except Exception as e:
+            raise e
+        return data
 
     ##Analyze QR data
     def parse_qr(self, data):
@@ -475,9 +540,15 @@ class AndroidCommands(commands.Commands):
         npos = data.find("bitcoin:")
         if npos != -1:
             npos1 = data.find("?", 1)
+            if npos1 == -1:
+                npos1 = len(data)
+            add = data[npos+len("bitcoin:"):npos1]
             if is_address(data[npos+len("bitcoin:"):npos1]):
                 ret_data['status'] = 1
-                uri = util.parse_URI(data)
+                try:
+                    uri = util.parse_URI(data)
+                except Exception as e:
+                    raise e
                 ret_data['data'] = uri['address']
                 return json.dumps(ret_data)
 
@@ -489,8 +560,9 @@ class AndroidCommands(commands.Commands):
             text = bh2u(base_decode(data, None, base=43))
             tx = Transaction(text)
             #tx.deserialize()
-        except:
+        except Exception as e:
             tx = None
+            raise e
         if tx:
             data = self.get_details_info(tx)
             ret_data['data'] = data
@@ -507,31 +579,37 @@ class AndroidCommands(commands.Commands):
                 msg = repr(e)
             else:
                 status, msg = True, tx.txid()
-                self.callbackIntent(Status.broadcast, msg)
+                self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
-            message = ('Cannot broadcast transaction') + ':\n' + ('Not connected')
-            self.callbackIntent(Status.broadcast, message)
+            raise Exception(('Cannot broadcast transaction') + ':\n' + ('Not connected'))
 
     ## setting
     def set_rbf(self, status_rbf):
-        use_rbf = config.get('use_rbf', True)
+        use_rbf = self.config.get('use_rbf', True)
         if use_rbf == status_rbf :
             return
-        self.electrum_config.set_key('use_rbf', status_rbf, True)
+        self.config.set_key('use_rbf', status_rbf, True)
         self.rbf = status_rbf
 
     def set_use_change(self, status_change):
-        use_change = config.get('use_change')
+        try:
+            self._assert_wallet_isvalid()
+        except Exception as e:
+            raise e
+        use_change = self.config.get('use_change')
         if use_change == status_change :
             return
         self.config.set_key('use_change', status_change, True)
         self.wallet.use_change = status_change
 
     def sign_tx(self, tx):
-        tx = Transaction(tx)
-        #tx.deserialize()
-        self.wallet.sign_transaction(tx, None)
-
+        try:
+            self._assert_wallet_isvalid()
+            tx = Transaction(tx)
+            #tx.deserialize()
+            self.wallet.sign_transaction(tx, None)
+        except Exception as e:
+            raise e
     ##connection with terzorlib#########################
     def get_xpub_from_hw(self):
         plugin = self.plugin.get_plugin("trezor")
@@ -636,7 +714,10 @@ class AndroidCommands(commands.Commands):
 
     def delete_wallet(self, name=None):
         """Delete a wallet"""
-        os.remove(self._wallet_path(name))
+        try:
+            os.remove(self._wallet_path(name))
+        except Exception as e:
+            raise e
 
     def unit_test(self):
         """Run all unit tests. Expect failures with functionality not present on Android,
