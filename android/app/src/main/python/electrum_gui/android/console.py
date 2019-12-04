@@ -414,8 +414,10 @@ class AndroidCommands(commands.Commands):
                 "name" : i
             }
             wallet_info.append(info)
-        print("wallet_info = %s ............" % wallet_info)
-        return json.dumps(wallet_info)
+            wallet_info_map = {}
+            wallet_info_map['wallets'] = wallet_info
+        print("wallet_info = %s ............" % wallet_info_map)
+        return json.dumps(wallet_info_map)
 
     def format_amount(self, x, is_diff=False, whitespaces=False):
         return util.format_satoshis(x, self.num_zeros, self.decimal_point, is_diff=is_diff, whitespaces=whitespaces)
