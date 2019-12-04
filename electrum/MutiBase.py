@@ -59,26 +59,14 @@ class MutiBase(Logger):
         return self.keystores
 
     def delete_xpub(self, xpub):
+        find = False
         for pub in map(lambda x: x.xpub, self.keystores):
             if pub == xpub:
+                find = True
                 self.keystores.pop()
                 break
-
-    # def upgrade_storage(self, storage):
-    #     exc = None
-    #     def on_finished():
-    #         if exc is None:
-    #             self.terminate(storage=storage)
-    #         else:
-    #             raise exc
-    #     def do_upgrade():
-    #         nonlocal exc
-    #         try:
-    #             storage.upgrade()
-    #         except Exception as e:
-    #             exc = e
-    #     self.waiting_dialog(do_upgrade, _('Upgrading wallet format...'), on_finished=on_finished)
-
+        if not find:
+            raise Exception("the xpub to be delete not in keystore")
 
     def set_multi_wallet_info(self, path, m, n):
         self.wallet_type = 'multisig'
@@ -89,36 +77,18 @@ class MutiBase(Logger):
         self.path = path
         print("=================set_multi_wallet_info ok....")
 
-
-    # def on_import(self, text):
-    #     # text is already sanitized by is_address_list and is_private_keys_list
-    #     if keystore.is_address_list(text):
-    #         self.data['addresses'] = {}
-    #         for addr in text.split():
-    #             assert bitcoin.is_address(addr)
-    #             self.data['addresses'][addr] = {}
-    #     elif keystore.is_private_key_list(text):
-    #         self.data['addresses'] = {}
-    #         k = keystore.Imported_KeyStore({})
-    #         keys = keystore.get_private_keys(text)
-    #         for pk in keys:
-    #             assert bitcoin.is_private_key(pk)
-    #             txin_type, pubkey = k.import_privkey(pk, None)
-    #             addr = bitcoin.pubkey_to_address(txin_type, pubkey)
-    #             self.data['addresses'][addr] = {'type':txin_type, 'pubkey':pubkey, 'redeem_script':None}
-    #         self.keystores.append(k)
-    #     else:
-    #         return self.terminate()
-    #     return self.run('create_wallet')
-
     def restore_from_xpub(self, xpub):
         print("restore_from_xpub in....")
         is_valid = keystore.is_bip32_key(xpub)
-        print("valid = %s" % is_valid)
         if is_valid:
             print("valid is true....")
             k = keystore.from_master_key(xpub)
-            self.on_keystore(k)
+            try:
+                self.on_keystore(k)
+            except Exception as e:
+                raise e
+        else:
+            raise Exception("invaild type of xpub")
 
     def on_restore_seed(self, seed, is_bip39, is_ext):
         self.seed_type = 'bip39' if is_bip39 else mnemonic.seed_type(seed)
@@ -144,7 +114,7 @@ class MutiBase(Logger):
 
     def create_keystore(self, seed, passphrase):
         k = keystore.from_seed(seed, passphrase, self.wallet_type == 'multisig')
-        self.on_keystore(k)
+        return self.on_keystore(k)
 
     def on_bip43(self, seed, passphrase, derivation, script_type):
         k = keystore.from_bip39_seed(seed, passphrase, derivation, xtype=script_type)
@@ -156,25 +126,25 @@ class MutiBase(Logger):
             t1 = xpub_type(k.xpub)
         if self.wallet_type == 'standard':
             if has_xpub and t1 not in ['standard', 'p2wpkh', 'p2wpkh-p2sh']:
-                self.show_error(_('Wrong key type') + ' %s'%t1)
+                raise (_('Wrong key type') + ' %s'%t1)
                 return
             self.keystores.append(k)
-            self.run('create_wallet')
+            #self.run('create_wallet')
         elif self.wallet_type == 'multisig':
             assert has_xpub
             if t1 not in ['standard', 'p2wsh', 'p2wsh-p2sh']:
-                self.show_error(_('Wrong key type') + ' %s'%t1)
-                return
+                raise (('Wrong key type') + ' %s' % t1)
+                return msg
             if k.xpub in map(lambda x: x.xpub, self.keystores):
-                self.show_error(_('Error: duplicate master public key'))
-                return
-            if len(self.keystores)>0:
-                t2 = xpub_type(self.keystores[0].xpub)
-                if t1 != t2:
-                    self.show_error(_('Cannot add this cosigner:') + '\n' + "Their key type is '%s', we are '%s'"%(t1, t2))
-                    return
-            self.keystores.append(k)
-            print("=================add_keystore xpub = %s...." % k.xpub)
+                raise 'Error: duplicate master public key'
+            if len(self.keystores)<self.n:
+                # t2 = xpub_type(self.keystores[0].xpub)
+                # if t1 != t2:
+                #     msg.format("Cannot add this cosigner:"+'\n'+"Their key type is '%s', we are '%s'"%(t1, t2))
+                #     return msg
+                self.keystores.append(k)
+            else:
+                raise "len(xpub) > n"
 
     def get_cosigner_num(self):
         return self.m,self.n
@@ -206,7 +176,7 @@ class MutiBase(Logger):
         if len(self.keystores) == 0:
             raise Exception('keystores is empty')
         if not self.pw_args:
-            return
+            raise Exception("args wrong")
 
         storage = WalletStorage(self.path)
         storage.set_keystore_encryption(bool(password))

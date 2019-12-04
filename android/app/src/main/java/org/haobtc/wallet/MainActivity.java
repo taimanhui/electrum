@@ -78,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
             String xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm";
             String xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg";
 
-//            //create wallet
-//            //daemonModel.commands.callAttr("delete_wallet", name);
+            //create wallet
+            //daemonModel.commands.callAttr("delete_wallet", name);
 //            daemonModel.commands.callAttr("set_multi_wallet_info", name, m, n);
 //            daemonModel.commands.callAttr("add_xpub", xpub1);
 //            daemonModel.commands.callAttr("add_xpub", xpub2);
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             String wallet_str = daemonModel.commands.callAttr("get_wallets_list_info").toString();
             System.out.println("main.kt onCreate wallet info is  .....======================" + wallet_str);
 
-            daemonModel.commands.callAttr("mktx", "", "", "0.001");
+          //  daemonModel.commands.callAttr("mktx", "", "", "0.001");
         }
 
         // main page
