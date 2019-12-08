@@ -488,6 +488,7 @@ class AndroidCommands(commands.Commands):
             raise e
         history = reversed(self.wallet.get_history())
         all_data = [self.get_card(*item) for item in history]
+        return json.dumps(all_data)
         print("console:get_history_tx:data = %s==========" % all_data)
 
     def get_tx_info(self, tx_hash):
@@ -608,7 +609,10 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_wallet_isvalid()
             tx = Transaction(tx)
-            #tx.deserialize()
+            tx.deserialize()
+            # plugin = self.plugin.get_plugin("trezor")
+            # plugin.sign_transaction(tx)
+
             self.wallet.sign_transaction(tx, None)
         except Exception as e:
             raise e
