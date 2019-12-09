@@ -533,7 +533,10 @@ class AndroidCommands(commands.Commands):
             data = util.create_bip21_uri(self.wallet.get_addresses()[0], "", "")
         except Exception as e:
             raise e
-        return data
+        data_json = {}
+        data_json['qr_data'] = data
+        data_json['addr'] = self.wallet.get_addresses()[0]
+        return data_json
 
     ##Analyze QR data
     def parse_qr(self, data):
