@@ -536,7 +536,7 @@ class AndroidCommands(commands.Commands):
         data_json = {}
         data_json['qr_data'] = data
         data_json['addr'] = self.wallet.get_addresses()[0]
-        return data_json
+        return json.dumps(data_json)
 
     ##Analyze QR data
     def parse_qr(self, data):
