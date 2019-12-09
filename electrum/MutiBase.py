@@ -78,12 +78,21 @@ class MutiBase(Logger):
         print("=================set_multi_wallet_info ok....")
 
     def restore_from_xpub(self, xpub):
+        from .keystore import hardware_keystore
         print("restore_from_xpub in....")
         is_valid = keystore.is_bip32_key(xpub)
         if is_valid:
             print("valid is true....")
-            k = keystore.from_master_key(xpub)
+            #k = keystore.from_master_key(xpub)
             try:
+                d = {
+                    'type': 'hardware',
+                    'hw_type': 'trezor',
+                    'derivation': '',
+                    'xpub': xpub,
+                    'label': 'device_info.label',
+                }
+                k = hardware_keystore(d)
                 self.on_keystore(k)
             except Exception as e:
                 raise e
