@@ -496,7 +496,7 @@ class AndroidCommands(commands.Commands):
             tx_dict = json.loads(tx_json)
             tx_data['tx_hash'] = tx_dict['txid']
             tx_data['data'] = 'unknown'
-            tx_data['amount'] = tx_dict['amount']
+            tx_data['amount'] = self.format_amount_and_units(tx_dict['amount'])
             tx_data['message'] = tx_dict['description']
             tx_data['is_mine'] = True
             tx_data['type'] = 'tx'
