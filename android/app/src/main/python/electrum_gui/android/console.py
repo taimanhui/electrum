@@ -465,6 +465,13 @@ class AndroidCommands(commands.Commands):
             raise e
         tx_details = self.wallet.get_tx_info(tx)
         s, r = tx.signature_count()
+        out_list = []
+        for address, value in tx.get_outputs_for_UI():
+            out_info = {}
+            out_info['addr'] = address
+            out_info['amount'] = value
+            out_list.append(out_info)
+
         ret_data = {
             'txid':tx_details.txid,
             'can_broadcast':tx_details.can_broadcast,
@@ -473,7 +480,7 @@ class AndroidCommands(commands.Commands):
             'description':tx_details.label,
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
             'sign_status':[s,r],
-            'output_addr':tx.get_outputs_for_UI(),
+            'output_addr':out_list,
             'input_addr':[txin.get("address") for txin in tx.inputs()],
             'cosigner':[x.xpub for x in self.wallet.get_keystores()],
         }
