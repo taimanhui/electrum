@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -12,21 +13,26 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.gyf.immersionbar.ImmersionBar;
 
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.CommonUtils;
 
 
-public class PinSettingActivity extends AppCompatActivity {
+public class PinSettingActivity extends BaseActivity {
     EditText editText;
     TextView tvCode1, tvCode2, tvCode3, tvCode4, tvCode5, tvCode6, tvPromptLarge, tvPromptSmall, tvMistakePrompt;
     private String tag;
     private String password = "";
 
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.pin_input);
+    public int getLayoutId() {
+        return R.layout.pin_input;
+    }
+
+    public void initView() {
         tag = getIntent().getStringExtra(TouchHardwareActivity.FROM);
         tvPromptLarge = findViewById(R.id.pin_prompt_large);
         tvPromptSmall = findViewById(R.id.pin_prompt_small);
@@ -51,31 +57,38 @@ public class PinSettingActivity extends AppCompatActivity {
         tvCode5 = findViewById(R.id.tv5);
         tvCode6 = findViewById(R.id.tv6);
         editText.addTextChangedListener(edtCodeChange);
+    }
+
+    @Override
+    public void initData() {
 
     }
 
     private void startNewPage(String tags) {
-        switch (tags) {
-            case WalletUnActivatedActivity.TAG:
-                Intent intent = new Intent(this, ActivatedProcessing.class);
-                startActivity(intent);
-                break;
-            case ImportWalletPageActivity.TAG:
-                Intent intent1 = new Intent(this, SelectMultiSigWalletActivity.class);
-                startActivity(intent1);
-                break;
-            case TransactionDetailsActivity.TAG:
-                Intent intent2 = new Intent(this, ConfirmOnHardware.class);
-                startActivity(intent2);
-                break;
-            default:
+        if (!TextUtils.isEmpty(tags)){
+            switch (tags) {
+                case WalletUnActivatedActivity.TAG:
+                    Intent intent = new Intent(this, ActivatedProcessing.class);
+                    startActivity(intent);
+                    break;
+                case ImportWalletPageActivity.TAG:
+                    Intent intent1 = new Intent(this, SelectMultiSigWalletActivity.class);
+                    startActivity(intent1);
+                    break;
+                case TransactionDetailsActivity.TAG:
+                    Intent intent2 = new Intent(this, ConfirmOnHardware.class);
+                    startActivity(intent2);
+                    break;
+                default:
 
+            }
         }
+
 
     }
 
     /**
-     * 输入内容监听，投射到5个空格上
+     * Input content monitoring, projecting to 5 spaces
      */
     TextWatcher edtCodeChange = new TextWatcher() {
 
@@ -118,7 +131,7 @@ public class PinSettingActivity extends AppCompatActivity {
             if (WalletUnActivatedActivity.TAG.equals(tag)) {
                 tvMistakePrompt.setVisibility(View.INVISIBLE);
             }
-            // 输入完5个验证码 自动请求验证
+            // Input 5 verification codes to automatically request verification
             if (s.length() == 6) {
                 if (WalletUnActivatedActivity.TAG.equals(tag)) {
                     if ("".equals(password)) {

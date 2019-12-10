@@ -17,5 +17,9 @@
     <color name="t_white">#00000000</color>
     <color name="bk_yellow">#FFFFB12B</color>
     <color name="edit_text_bk">#FFF8F9FC</color>
-    <color name="button_bk_disable">#806182f5</color>
+    <color name="button_bk_disable">#806182F5</color>
+    <color name="button_bk_disableok">#FF6182F5</color>
+    <color name="button_bk_ddake">#FFFFFFFF</color>
+    <color name="troke_gray">#E6E6E6</color>
+    <color name="bk_page">#FFF8F9FC</color>
 </resources>

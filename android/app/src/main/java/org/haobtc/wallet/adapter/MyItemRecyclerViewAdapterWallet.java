@@ -8,22 +8,17 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.fragment.ItemFragmentWallet.OnListFragmentInteractionListener;
-import org.haobtc.wallet.entries.DummyContent.DummyItem;
+import org.haobtc.wallet.entries.DummyContent;
+import org.haobtc.wallet.fragment.ItemFragmentWallet;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class MyItemRecyclerViewAdapterWallet extends RecyclerView.Adapter<MyItemRecyclerViewAdapterWallet.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final List<DummyContent.DummyItem> mValues;
+    private final ItemFragmentWallet.OnListFragmentInteractionListener mListener;
 
-    public MyItemRecyclerViewAdapterWallet(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyItemRecyclerViewAdapterWallet(List<DummyContent.DummyItem> items, ItemFragmentWallet.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -37,7 +32,7 @@ public class MyItemRecyclerViewAdapterWallet extends RecyclerView.Adapter<MyItem
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
+//        holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
 
@@ -62,7 +57,7 @@ public class MyItemRecyclerViewAdapterWallet extends RecyclerView.Adapter<MyItem
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public DummyContent.DummyItem mItem;
 
         public ViewHolder(View view) {
             super(view);

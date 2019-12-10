@@ -7,7 +7,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="440dp"
-        app:cardCornerRadius="6dp"
+        app:cardCornerRadius="@dimen/corner_radius"
         android:layout_marginStart="@dimen/layout_margin"
         android:layout_marginEnd="@dimen/layout_margin"
         android:layout_marginBottom="@dimen/layout_margin">
@@ -18,7 +18,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="@dimen/dp_14"
                 android:text="签名异常"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -28,16 +28,16 @@
                 android:id="@+id/cancel_sign_exception"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:layout_marginEnd="16dp"
-                android:src="@mipmap/close_big_black"
+                android:layout_marginTop="@dimen/dp_14"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:src="@drawable/close_big_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 android:id="@+id/view7"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="@dimen/dp_1"
                 android:layout_marginTop="50dp"
                 android:background="@color/separation_line"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -59,7 +59,7 @@
                 android:layout_marginTop="24dp"
                 android:text="该硬件无权签名该交易"
                 android:textColor="@color/button_bk"
-                android:textSize="18sp"
+                android:textSize="@dimen/big_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView9" />
@@ -67,9 +67,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="@dimen/corner_radius"
                 android:text="请确认使用正确的硬件钱包进行签名"
-                android:textSize="13sp"
+                android:textSize="@dimen/smaller_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView36" />

@@ -1,65 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-    <include layout="@layout/actionbar"/>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true">
+
+    <include layout="@layout/actionbar" />
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/bk_page">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="223dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginStart="@dimen/layout_margin"
                 android:layout_marginTop="64dp"
-                app:cardCornerRadius="6dp">
+                android:layout_marginEnd="@dimen/layout_margin"
+                app:cardCornerRadius="@dimen/corner_radius">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
+
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@mipmap/caozuoyanshi"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="23dp"/>
+                        android:layout_marginTop="23dp"
+                        android:contentDescription="@string/copy_self"
+                        android:src="@drawable/caozuoyanshi" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
                         android:layout_marginTop="23dp"
-                        android:textColor="@color/text"
-                        android:text="请在冷钱包硬件上确认以下信息后，点击”OK”按钮"/>
+                        android:gravity="center_horizontal"
+                        android:text="@string/prompt_message"
+                        android:textColor="@color/text" />
                 </LinearLayout>
 
 
-
             </androidx.cardview.widget.CardView>
+
             <FrameLayout
                 android:id="@+id/fragment_trans_in_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="293dp"/>
+                android:layout_marginTop="293dp" />
 
         </RelativeLayout>
 
     </ScrollView>
 
 
-
     <Button
         android:id="@+id/confirm_on_hardware"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="@dimen/dp_40"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/text_margin"
         android:layout_marginEnd="@dimen/text_margin"
         android:layout_marginBottom="@dimen/layout_margin"
         android:background="@drawable/button_bk"
-        android:textColor="@android:color/white"
         android:text="@string/confirm_on_hardware"
-        android:layout_alignParentBottom="true"/>
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>

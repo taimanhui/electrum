@@ -27,8 +27,7 @@ android {
         def BUILD_NUM = 0
         versionName "$ecVersion-$BUILD_NUM"
         def verParsed = ecVersion.split(/\./).collect { Integer.parseInt(it) }
-        versionCode((verParsed[0] * 1000000) + (verParsed[1] * 10000) + (verParsed[2] * 100) +
-                BUILD_NUM)
+        versionCode = (verParsed[0] * 1000000) + (verParsed[1] * 10000) + (verParsed[2] * 100) + BUILD_NUM
 
         python {
             pip {
@@ -61,7 +60,7 @@ android {
                 srcDir REPO_ROOT
                 include "electrum/**"                               // In ../.. (renamed below)
                 include("chaquopy/**", "electrum_gui/**",  // In src/main/python
-                        "electrum_plugins/**")             //
+                        "electrum_plugins/**", "python/**")             //
                 exclude "**/*.po", "**/*.pot"
             }
         }
@@ -120,7 +119,7 @@ afterEvaluate {
         task.doLast {
             def src = "$dstDir/electrum"
             def dst = "$dstDir/electrum"
-            if (! file(src).renameTo(dst)) {
+            if (!file(src).renameTo(dst)) {
                 throw new GradleException("Failed to rename $src to $dst")
             }
         }
@@ -156,6 +155,29 @@ dependencies {
     implementation "ch.acra:acra-http:$acraVersion"
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+    implementation 'com.jakewharton:butterknife:10.1.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    //immersionbar
+    implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
+    //adpter
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
+    //OKhttp
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.zhy:okhttputils:2.0.0'
+    implementation 'org.xutils:xutils:3.5.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    //autosize
+    implementation 'me.jessyan:autosize:0.9.1'
+    //gson
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    //Eventbus
+    implementation 'org.greenrobot:eventbus:3.0.0'
+
+    //wheel_viewpager
+    implementation 'com.github.ThirdGoddess:GoddessTNT:v1.3'
 }
 repositories {
     mavenCentral()

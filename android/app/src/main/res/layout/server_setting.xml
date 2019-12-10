@@ -1,58 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-    <include layout="@layout/actionbar"/>
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="108dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="70dp"
-        app:cardCornerRadius="6dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="59.5dp"
-            android:orientation="horizontal"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:gravity="center_vertical"
-                android:text="@string/use_haobtc_s"
-                android:textColor="@color/text"
-                android:focusable="true"
-                />
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:thumb="@drawable/switch_custom_thumb_selector"
-                android:track="@drawable/switch_custom_track_selector"/>
-        </LinearLayout>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true">
 
-        <LinearLayout
+    <include layout="@layout/actionbar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bk_page">
+
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_marginTop="60.5dp"
-            android:layout_height="48.5dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="vertical">
-            <View
+            android:layout_height="108dp"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="70dp"
+            android:layout_marginEnd="@dimen/layout_margin"
+            app:cardCornerRadius="@dimen/corner_radius">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/separation_line">
-            </View>
-            <TextView
+                android:layout_height="59.5dp"
+                android:layout_marginStart="@dimen/text_margin"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/use_bixin_s"
+                    android:textColor="@color/text" />
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:thumb="@drawable/switch_custom_thumb_selector"
+                    android:track="@drawable/switch_custom_track_selector" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="47.5dp"
-                android:text="@string/prompt"
-                android:textColor="@color/light_text"
-                android:gravity="center|start">
-            </TextView>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+                android:layout_height="48.5dp"
+                android:layout_marginStart="@dimen/text_margin"
+                android:layout_marginTop="60.5dp"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:background="@color/separation_line"></View>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="47.5dp"
+                    android:gravity="center|start"
+                    android:text="@string/prompt"
+                    android:textColor="@color/light_text"></TextView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
 </RelativeLayout>

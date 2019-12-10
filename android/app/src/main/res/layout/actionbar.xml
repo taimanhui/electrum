@@ -6,12 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary"
-    android:elevation="4dp"
+    android:elevation="@dimen/dp_4"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:title=""
-    app:navigationIcon="@mipmap/back"
-    android:navigationIcon="@mipmap/back">
+    app:navigationIcon="@drawable/back">
 
         <TextView
             android:id="@+id/title_template"
@@ -19,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text=""
-            android:textSize="@dimen/title_size"
+            android:textSize="@dimen/text_size"
             android:textColor="@color/text"/>
     </androidx.appcompat.widget.Toolbar>
 

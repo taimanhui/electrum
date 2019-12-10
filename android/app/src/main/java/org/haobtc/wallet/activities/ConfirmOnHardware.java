@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,28 +11,23 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.fragment.ItemFragmentTransaction;
 import org.haobtc.wallet.utils.CommonUtils;
-public class ConfirmOnHardware extends AppCompatActivity implements View.OnClickListener {
+
+public class ConfirmOnHardware extends BaseActivity implements View.OnClickListener {
     private Button button_confirm;
     private PopupWindow popupWindow;
     private View view, rootView;
     private ImageView imageViewCancle, imageViewConnect, imageViewPin, imageViewSigning;
 
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.confirm_on_hardware);
-        initView();
-
+    public int getLayoutId() {
+        return R.layout.confirm_on_hardware;
     }
-
-    private void initView() {
+    @Override
+    public void initView() {
         CommonUtils.enableToolBar(this, R.string.confirm_trans_d);
         ItemFragmentTransaction fragmentTransaction = new ItemFragmentTransaction();
         fragmentTransaction.setArguments(getIntent().getExtras());
@@ -46,6 +40,12 @@ public class ConfirmOnHardware extends AppCompatActivity implements View.OnClick
 
         });
     }
+
+    @Override
+    public void initData() {
+
+    }
+
     private void showPopupSignProcessing() {
         view = LayoutInflater.from(this).inflate(R.layout.touch_process_popupwindow, null);
         imageViewCancle = view.findViewById(R.id.cancel_touch);
@@ -138,7 +138,7 @@ public class ConfirmOnHardware extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
 
             case R.id.sign_again:
-                // todo:超时重新签名逻辑
+                // todo:
 
             default:
                 popupWindow.dismiss();

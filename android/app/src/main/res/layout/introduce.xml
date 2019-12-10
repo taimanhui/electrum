@@ -3,35 +3,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     android:layout_height="match_parent">
     <include layout="@layout/actionbar"/>
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginTop="@dimen/text_margin"
+        android:layout_marginStart="@dimen/layout_margin"
+        android:layout_marginEnd="@dimen/layout_margin"
         android:layout_marginBottom="133.4dp"
-        app:cardCornerRadius="6dp">
+        app:cardCornerRadius="@dimen/corner_radius">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="64.5dp"
-            android:paddingStart="16dp"
+            android:paddingStart="@dimen/text_margin"
+            android:textColor="#494949"
+            android:textSize="@dimen/big_text_size"
             android:paddingEnd="0dp"
             android:text="@string/introduce"
             android:gravity="start|center_vertical"/>
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/dp_1"
             android:layout_marginTop="64.5dp"
             android:background="@color/separation_line"
             android:textColor="@color/text"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_marginTop="65.5dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="16dp"
+            android:paddingStart="@dimen/text_margin"
+            android:paddingEnd="@dimen/text_margin"
+            android:paddingTop="@dimen/text_margin"
             android:layout_height="match_parent"
             android:singleLine="false"
             android:text="@string/introduce_detials"/>

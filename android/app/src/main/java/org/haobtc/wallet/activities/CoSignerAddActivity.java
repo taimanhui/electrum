@@ -8,9 +8,9 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,24 +19,30 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.haobtc.wallet.R;
-import org.haobtc.wallet.utils.CommonUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.haobtc.wallet.R;
+import org.haobtc.wallet.adapter.CosignerAdapter;
+import org.haobtc.wallet.utils.CommonUtils;
+import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.utils.Daemon;
+
+import java.util.ArrayList;
 import java.util.Locale;
 
-public class CoSignerAddActivity extends AppCompatActivity implements View.OnClickListener {
+public class CoSignerAddActivity extends BaseActivity implements View.OnClickListener {
     private static final int REQUEST_CODE = 0;
-    private Button buttonAdd, buttonComplete, buttonSweep, buttonPaste;
+    private Button buttonComplete, buttonSweep, buttonPaste;
+    private LinearLayout buttonAdd;
     private RecyclerView recyclerView;
     private PopupWindow popupWindow;
     private View rootView;
@@ -44,20 +50,28 @@ public class CoSignerAddActivity extends AppCompatActivity implements View.OnCli
     private Intent intent;
     private int addNum = 0;
     private RxPermissions rxPermissions;
+    private int cosignerNum;
+    private ArrayList<String> listData;
+    private ArrayList<Integer> nameNums;
+    private String strContent;
+    private CosignerAdapter cosignerAdapter;
+    public static final String WALLET_NAME = "org.haobtc.wallet.activities.walletName";
+    private String nameExtra;
+
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.add_cosigner);
-        intent = getIntent();
-        initView();
+    public int getLayoutId() {
+        return R.layout.add_cosigner;
     }
 
-    private void initView() {
+    @Override
+    public void initView() {
+        intent = getIntent();
         CommonUtils.enableToolBar(this, R.string.add_cosigner);
         buttonAdd = findViewById(R.id.bn_add_cosigner);
         buttonComplete = findViewById(R.id.bn_complete_add_cosigner);
-        int cosignerNum = intent.getIntExtra(CreateWalletPageActivity.COSIGNER_NUM, 1);
+        cosignerNum = intent.getIntExtra(CreateWalletPageActivity.COSIGNER_NUM, 1);
+        nameExtra = intent.getStringExtra(WALLET_NAME);
         buttonComplete.setText(String.format(Locale.CHINA, "完成（%d-%d)", addNum, cosignerNum));
         buttonComplete.setEnabled(false);
         buttonComplete.setBackgroundColor(getResources().getColor(R.color.button_bk_disable));
@@ -67,8 +81,14 @@ public class CoSignerAddActivity extends AppCompatActivity implements View.OnCli
         rxPermissions = new RxPermissions(this);
     }
 
+    @Override
+    public void initData() {
+        nameNums = new ArrayList<>();
+        listData = new ArrayList<>();
+    }
+
     private void showPopupAddCosigner() {
-        Button buttonUseHardware;
+        TextView buttonUseHardware;
         ImageView imageViewCancel;
         View view = LayoutInflater.from(this).inflate(R.layout.add_cosiger_popwindow, null);
         buttonUseHardware = view.findViewById(R.id.bn_use_hardware_add_cosigner_popup);
@@ -105,7 +125,7 @@ public class CoSignerAddActivity extends AppCompatActivity implements View.OnCli
                 } else {
                     buttonSweep.setText(R.string.sweep);
                     buttonSweep.setTextColor(getResources().getColor(R.color.button_bk));
-                    Drawable sweepIcon = getResources().getDrawable(R.mipmap.saoyisao);
+                    Drawable sweepIcon = getResources().getDrawable(R.drawable.saoyisao);
                     sweepIcon.setBounds(0, 0, sweepIcon.getMinimumWidth(), sweepIcon.getMinimumHeight());
                     buttonSweep.setCompoundDrawables(sweepIcon, null, null, null);
                     buttonSweep.setBackground(new ColorDrawable(getResources().getColor(R.color.paste_bk)));
@@ -113,7 +133,7 @@ public class CoSignerAddActivity extends AppCompatActivity implements View.OnCli
 
                     buttonPaste.setText(R.string.paste);
                     buttonPaste.setTextColor(getResources().getColor(R.color.button_bk));
-                    Drawable pasteIcon = getResources().getDrawable(R.mipmap.zhantie);
+                    Drawable pasteIcon = getResources().getDrawable(R.drawable.zhantie);
                     pasteIcon.setBounds(0, 0, pasteIcon.getMinimumWidth(), pasteIcon.getMinimumHeight());
                     buttonPaste.setCompoundDrawables(pasteIcon, null, null, null);
                     buttonPaste.setBackground(new ColorDrawable(getResources().getColor(R.color.paste_bk)));
@@ -131,7 +151,6 @@ public class CoSignerAddActivity extends AppCompatActivity implements View.OnCli
         popupWindow.setOutsideTouchable(true);
         popupWindow.setFocusable(true);
         popupWindow.setOnDismissListener(() -> {
-            // Toast.makeText(CoSignerAddActivity.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
             setBackgroundAlpha(1f);
         });
         popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
@@ -159,9 +178,17 @@ public class CoSignerAddActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.bn_complete_add_cosigner:
+
+                try {
+                    Daemon.commands.callAttr("create_multi_wallet", nameExtra);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.i("JXM", "onClick: " + e.getMessage());
+                }
                 Intent intent = new Intent(this, CreateWalletSuccessfulActivity.class);
                 // intent.putExtra();
                 startActivity(intent);
+
                 break;
             case R.id.bn_use_hardware_add_cosigner_popup:
                 Intent intent1 = new Intent(this, TouchHardwareActivity.class);
@@ -188,11 +215,41 @@ public class CoSignerAddActivity extends AppCompatActivity implements View.OnCli
             case R.id.paste_cosigner_popup:
                 String bnText1 = buttonPaste.getText().toString();
                 if ("Confirm".equals(bnText1) || "确定".equals(bnText1)) {
-                    Toast.makeText(this, "您点击了确定", Toast.LENGTH_SHORT).show();
+                    strContent = editTextPublicKey.getText().toString();
+                    //add
+                    Daemon.commands.callAttr("add_xpub", strContent);
+                    addNum = addNum + 1;
+                    nameNums.add(addNum);//联署人
+                    listData.add(strContent);//输入内容集合
+                    cosignerAdapter = new CosignerAdapter(CoSignerAddActivity.this, listData, nameNums);
+                    recyclerView.setAdapter(cosignerAdapter);
+                    buttonComplete.setText(String.format(Locale.CHINA, "完成（%d-%d)", addNum, cosignerNum));
+                    if (addNum == cosignerNum) {//数量足够即可点击跳转并不可继续添加
+                        buttonComplete.setEnabled(true);
+                        buttonComplete.setBackgroundColor(getResources().getColor(R.color.button_bk_disableok));
+                        buttonAdd.setVisibility(View.GONE);
+                    }
+                    //delete
+                    cosignerAdapter.setOnItemDeteleLisoner(new CosignerAdapter.onItemDeteleLisoner() {
+                        @Override
+                        public void onClick(int pos) {
+                            Daemon.commands.callAttr("delete_xpub", strContent);
+                            nameNums.remove(pos);
+                            listData.remove(pos);
+                            cosignerAdapter.notifyDataSetChanged();
+                            addNum = addNum - 1;
+                            buttonAdd.setVisibility(View.VISIBLE);
+                            buttonComplete.setText(String.format(Locale.CHINA, "完成（%d-%d)", addNum, cosignerNum));
+                            buttonComplete.setBackgroundColor(getResources().getColor(R.color.button_bk_disable));
+                            buttonComplete.setEnabled(false);
+                        }
+                    });
+
+
                     //todo:
                     popupWindow.dismiss();
                 } else {
-                    //获取剪贴版 TODO：单例模式提取到util
+                    //get Shear plate TODO：
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     if (clipboard != null) {
                         ClipData data = clipboard.getPrimaryClip();
@@ -214,7 +271,7 @@ public class CoSignerAddActivity extends AppCompatActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // 扫描二维码/条码回传
+        // Scan QR code / barcode return
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);

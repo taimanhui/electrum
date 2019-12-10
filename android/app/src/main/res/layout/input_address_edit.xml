@@ -1,91 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true">
 
-    <include layout="@layout/actionbar"/>
-    <androidx.cardview.widget.CardView
+    <include layout="@layout/actionbar" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_gravity="center_horizontal"
-        app:cardCornerRadius="6dp">
+        android:layout_height="match_parent"
+        android:background="@color/bk_page">
 
-        <LinearLayout
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/import_address"
-                android:textSize="18sp"
-                android:textColor="@color/text"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="16dp"
-                />
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="1dp"
-                android:background="@color/separation_line"
-                android:layout_marginTop="19.5dp"/>
+            android:layout_height="300dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="80dp"
+            android:layout_marginEnd="@dimen/layout_margin"
+            app:cardCornerRadius="@dimen/corner_radius">
 
-            <EditText
-                android:id="@+id/edit_public_key"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="13.5dp"
-                android:background="@null"
-                android:textSize="15sp"
-                android:hint="@string/input_address" />
+                android:orientation="vertical">
 
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="248dp"
-            android:layout_marginStart="139dp">
-            <Button
-                android:id="@+id/bn_sweep_create"
-                android:layout_width="100dp"
-                android:layout_height="36dp"
-                android:paddingStart="17.8dp"
-                android:paddingEnd="17dp"
-                android:drawableStart="@mipmap/saoyisao"
-                android:background="@color/paste_bk"
-                android:text="@string/sweep"
-                android:textColor="@color/button_bk"
-                android:textSize="16sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/import_address"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/big_text_size" />
 
-            <Button
-                android:id="@+id/bn_paste_create"
-                android:layout_width="100dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="10dp"
-                android:paddingStart="26.8dp"
-                android:paddingEnd="24dp"
-                android:background="@color/paste_bk"
-                android:drawableStart="@mipmap/zhantie"
-                android:text="@string/paste"
-                android:textColor="@color/button_bk"
-                android:textSize="16sp" />
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginTop="19.5dp"
+                    android:background="@color/separation_line" />
 
-        </LinearLayout>
+                <EditText
+                    android:id="@+id/edit_public_key"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    android:hint="@string/input_address"
+                    android:inputType="textMultiLine"
+                    android:paddingStart="@dimen/text_margin"
+                    android:paddingTop="13.5dp"
+                    android:paddingEnd="@dimen/text_margin"
+                    android:paddingBottom="100dp"
+                    android:textSize="@dimen/text_size" />
 
-    </androidx.cardview.widget.CardView>
-    <Button
-        android:id="@+id/bn_confirm_create"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:text="@string/confirm"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="200dp"
-        android:background="@drawable/button_bk"/>
+            </LinearLayout>
 
-</LinearLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="248dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bn_sweep_create"
+                    android:layout_width="100dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="@dimen/layout_margin"
+                    android:layout_toStartOf="@+id/bn_paste_create"
+                    android:background="@color/paste_bk"
+                    android:drawableStart="@drawable/saoyisao"
+                    android:paddingStart="17.8dp"
+                    android:paddingEnd="17dp"
+                    android:text="@string/sweep"
+                    android:textColor="@color/button_bk"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/bn_paste_create"
+                    android:layout_width="100dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="15dp"
+                    android:background="@color/paste_bk"
+                    android:drawableStart="@drawable/zhantie"
+                    android:paddingStart="26.8dp"
+                    android:paddingEnd="24dp"
+                    android:text="@string/paste"
+                    android:textColor="@color/button_bk"
+                    android:textSize="16sp" />
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/bn_confirm_create"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="37dp"
+            android:background="@drawable/button_bk"
+            android:text="@string/confirm"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -9,23 +8,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.CommonUtils;
 
-public class PublicKeyInputEditActivity extends AppCompatActivity implements View.OnClickListener {
+public class PublicKeyInputEditActivity extends BaseActivity implements View.OnClickListener {
     private EditText editTextPublicKey;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.input_address_edit);
-        initView();
+
+    public int getLayoutId() {
+        return R.layout.input_address_edit;
     }
 
-    private void initView() {
+    public void initView() {
         Button buttonSweep, buttonPaste, buttonConfirm;
         CommonUtils.enableToolBar(this, R.string.import_mutiSig);
         buttonSweep = findViewById(R.id.bn_sweep_create);
@@ -41,7 +36,7 @@ public class PublicKeyInputEditActivity extends AppCompatActivity implements Vie
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO：恢复按钮
+                // TODO：
                 Toast.makeText(PublicKeyInputEditActivity.this,"按钮状态恢复", Toast.LENGTH_SHORT).show();
 
             }
@@ -54,6 +49,11 @@ public class PublicKeyInputEditActivity extends AppCompatActivity implements Vie
         buttonSweep.setOnClickListener(this);
         buttonPaste.setOnClickListener(this);
         buttonConfirm.setOnClickListener(this);
+    }
+
+    @Override
+    public void initData() {
+
     }
 
     @Override
@@ -70,7 +70,7 @@ public class PublicKeyInputEditActivity extends AppCompatActivity implements Vie
                     Intent intent = new Intent(this, SelectMultiSigWalletActivity.class);
                     startActivity(intent);
                 } else {
-                    // todo:改变button的状态
+                    // todo:
                     Toast.makeText(PublicKeyInputEditActivity.this,"输入有误,按钮状态改变", Toast.LENGTH_SHORT).show();
                 }
                 break;

@@ -1,166 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
-    <include layout="@layout/actionbar"/>
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
+    <include layout="@layout/actionbar" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="245dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="70dp"
-        app:cardCornerRadius="6dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="@color/bk_page">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="245dp"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="70dp"
+            android:layout_marginEnd="@dimen/layout_margin"
+            app:cardCornerRadius="@dimen/corner_radius"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="64.5dp"
+                android:layout_marginStart="@dimen/text_margin"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:text="@string/create_multisig"
+                android:textColor="@color/text"
+                android:textSize="@dimen/big_text_size" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:layout_marginTop="64.5dp"
+                android:background="@color/separation_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="179.5dp"
+                android:layout_marginTop="65.5dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/set_wallet_name"
+                        android:textSize="@dimen/smaller_text_size" />
+
+                    <EditText
+                        android:id="@+id/wallet_name_setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="@dimen/text_margin"
+                        android:background="@null"
+                        android:gravity="end|center_vertical"
+                        android:hint="@string/input_here"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:maxLength="7"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/text_size" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:background="@color/separation_line" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/select_cosigner"
+                        android:textSize="@dimen/smaller_text_size" />
+
+                    <TextView
+                        android:id="@+id/cosigner_setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="@dimen/text_margin"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:drawablePadding="@dimen/layout_margin"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical|end"
+                        android:text="@string/select"
+                        android:textSize="@dimen/text_size" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:background="@color/separation_line" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:text="@string/select_sig_num"
+                        android:textSize="@dimen/smaller_text_size" />
+
+                    <TextView
+                        android:id="@+id/sig_num_setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="@dimen/text_margin"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:drawablePadding="@dimen/layout_margin"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical|end"
+                        android:text="@string/select"
+                        android:textSize="@dimen/text_size" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="64.5dp"
-            android:layout_marginStart="16dp"
-            android:background="@null"
-            android:gravity="center_vertical"
-            android:text="@string/create_multisig"
-            android:textColor="@color/text"
-            android:textSize="18sp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="105dp"
+            android:text="@string/tips"
+            android:textColor="@color/light_text"
+            android:textSize="@dimen/sp_12" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="64.5dp"
-            android:background="@color/separation_line" />
+        <Button
+            android:id="@+id/bn_create_multi_next"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="252dp"
+            android:layout_marginBottom="@dimen/dp_40"
+            android:background="@drawable/button_bk"
+            android:text="@string/next"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardView" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="179.5dp"
-            android:layout_marginTop="65.5dp"
-            android:orientation="vertical">
+    </RelativeLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/set_wallet_name"
-                    android:textSize="13sp"/>
-
-                <EditText
-                    android:id="@+id/wallet_name_setting"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    android:singleLine="true"
-                    android:inputType="text"
-                    android:gravity="end|center_vertical"
-                    android:hint="@string/input_here"
-                    android:textColor="@color/light_text"
-                    android:textSize="15sp"/>
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/separation_line" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/select_cosigner"
-                    android:textSize="13sp"/>
-
-                <TextView
-                    android:id="@+id/cosigner_setting"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="16dp"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:drawableEnd="@mipmap/jiantou"
-                    android:drawablePadding="10dp"
-                    android:textSize="15sp"
-                    android:gravity="center_vertical|end"
-                    android:text="@string/select" />
-
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/separation_line" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:textSize="13sp"
-                    android:text="@string/select_sig_num" />
-
-                <TextView
-                    android:id="@+id/sig_num_setting"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="16dp"
-                    android:drawableEnd="@mipmap/jiantou"
-                    android:drawablePadding="10dp"
-                    android:focusableInTouchMode="true"
-                    android:focusable="true"
-                    android:textSize="15sp"
-                    android:gravity="center_vertical|end"
-                    android:text="@string/select" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="TIPS：联署人是所有管理人"
-        android:textSize="12sp"
-        android:textColor="@color/light_text"
-        app:layout_constraintBottom_toTopOf="@id/bn_create_multi_next"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/bn_create_multi_next"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="252dp"
-        android:layout_marginBottom="40dp"
-        android:background="@drawable/button_bk"
-        android:text="@string/next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardView" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

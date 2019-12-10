@@ -10,13 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFF6E5"
-        android:paddingStart="16dp"
+        android:paddingStart="@dimen/text_margin"
         android:paddingTop="12dp"
-        android:paddingEnd="16dp"
+        android:paddingEnd="@dimen/text_margin"
         android:paddingBottom="12dp"
         android:text="你已打开自动同步交易，其他联署人可通过币信HD获取交易或使用以下方式将交易转发给其他联署人进行签名"
         android:textColor="#FFFFB12B"
-        android:textSize="13sp"
+        android:textSize="@dimen/smaller_text_size"
         android:layout_marginTop="54dp"/>
     <ScrollView
         android:layout_width="match_parent"
@@ -36,10 +36,10 @@
                     android:id="@+id/card1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    app:cardCornerRadius="6dp"
+                    android:layout_marginStart="@dimen/layout_margin"
+                    android:layout_marginEnd="@dimen/layout_margin"
+                    android:layout_marginTop="@dimen/layout_margin"
+                    app:cardCornerRadius="@dimen/corner_radius"
                     app:layout_constraintTop_toBottomOf="@+id/textView24">
 
                     <LinearLayout
@@ -50,37 +50,37 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/dp_20"
                             android:text="转发转账"
                             android:textColor="@color/text"
-                            android:textSize="18sp" />
+                            android:textSize="@dimen/big_text_size" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/corner_radius"
                             android:text="截图转发二维码。或复制问内容发送给其他联署人完成签名"
                             android:textColor="@color/light_text"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/sp_12" />
 
                         <ImageView
                             android:layout_width="248.3dp"
                             android:layout_height="248.3dp"
                             android:layout_gravity="center"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="@dimen/dp_20"
                             android:background="@drawable/ic_launcher_background" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="@dimen/dp_20"
                             android:text="保存二维码"
                             android:layout_marginBottom="30dp"
                             android:textColor="#FF6182F5"
-                            android:textSize="15sp" />
+                            android:textSize="@dimen/text_size" />
 
                     </LinearLayout>
 
@@ -90,10 +90,10 @@
                     android:id="@+id/card2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    app:cardCornerRadius="6dp"
+                    android:layout_marginStart="@dimen/layout_margin"
+                    android:layout_marginTop="@dimen/layout_margin"
+                    android:layout_marginEnd="@dimen/layout_margin"
+                    app:cardCornerRadius="@dimen/corner_radius"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/card1">
 
@@ -105,16 +105,16 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/dp_20"
                             android:text="交易报文" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
+                            android:layout_marginStart="@dimen/dp_20"
                             android:layout_marginTop="9dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_marginEnd="@dimen/dp_20"
                             android:ellipsize="end"
                             android:maxLines="3"
                             android:text="11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"/>
@@ -124,11 +124,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginBottom="20dp"
-                            android:text="复制"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:layout_marginBottom="@dimen/dp_20"
+                            android:text="@string/copy_self"
                             android:textColor="#FF6182F5"
-                            android:textSize="15sp" />
+                            android:textSize="@dimen/text_size" />
 
                     </LinearLayout>
 
@@ -137,11 +137,11 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="@dimen/layout_margin"
+                    android:layout_marginStart="@dimen/layout_margin"
                     android:layout_marginBottom="50dp"
-                    app:cardCornerRadius="6dp"
-                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="@dimen/corner_radius"
+                    android:layout_marginEnd="@dimen/layout_margin"
                     app:layout_constraintTop_toBottomOf="@id/card2">
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -150,16 +150,16 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/dp_20"
                             android:text="交易文件"/>
                         <Button
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="@dimen/dp_20"
                             android:layout_width="300dp"
                             android:layout_gravity="center"
                             android:text="下载"
-                            android:drawableStart="@mipmap/shiyong"
-                            android:drawablePadding="6dp"
+                            android:drawableStart="@drawable/shiyong"
+                            android:drawablePadding="@dimen/corner_radius"
                             android:paddingStart="123dp"
                             android:paddingEnd="120dp"
                             android:background="@drawable/button_bk"

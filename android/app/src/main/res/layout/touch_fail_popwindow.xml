@@ -9,10 +9,10 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="6dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp">
+        app:cardCornerRadius="@dimen/corner_radius"
+        android:layout_marginStart="@dimen/layout_margin"
+        android:layout_marginEnd="@dimen/layout_margin"
+        android:layout_marginBottom="@dimen/layout_margin">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -21,7 +21,7 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="48.5dp"
-                android:drawableEnd="@mipmap/close_big_black"
+                android:drawableEnd="@drawable/close_big_black"
                 android:gravity="center"
                 android:paddingStart="32.4dp"
                 android:paddingEnd="16.2dp"
@@ -34,7 +34,7 @@
             <View
                 android:id="@+id/ln"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="@dimen/dp_1"
                 app:layout_constraintTop_toBottomOf="@id/textView"
                 android:background="@color/separation_line"/>
 
@@ -46,7 +46,8 @@
                 android:src="@drawable/ic_launcher_background"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ln" />
+                app:layout_constraintTop_toBottomOf="@id/ln"
+                android:contentDescription="@string/picture" />
 
             <TextView
                 android:id="@+id/textView11"
@@ -54,12 +55,12 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="23dp"
-                android:textSize="15sp"
+                android:textSize="@dimen/text_size"
                 android:textColor="@color/button_bk"
                 android:text="@string/touch_fail"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+                app:layout_constraintTop_toBottomOf="@id/imageView3" />
 
             <TextView
                 android:id="@+id/textView10"
@@ -68,7 +69,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="46dp"
                 android:text="@string/touch_fail_text"
-                android:textSize="13sp"
+                android:textSize="@dimen/smaller_text_size"
                 android:textColor="@color/text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -78,13 +79,13 @@
                 android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/dp_20"
                 android:background="@drawable/button_bk"
                 android:text="@string/retry"
                 android:textColor="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView10" />
+                app:layout_constraintTop_toBottomOf="@id/textView10" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
