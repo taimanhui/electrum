@@ -487,6 +487,43 @@ class AndroidCommands(commands.Commands):
         json_data = json.dumps(ret_data)
         return json_data
 
+    ##get history+tx info
+    def get_all_tx_list(self, raw_tx, tx_status=None, history_status=None):
+        tx_data = {}
+        history_data = []
+        if tx_status is None or tx_status == 'send' or history_status == 'tobesign' or history_status == 'tobeboradcast':
+            tx_json = self.get_tx_info_from_raw(raw_tx)
+            tx_dict = json.loads(tx_json)
+            tx_data['tx_hash'] = tx_dict['txid']
+            tx_data['data'] = 'unknown'
+            tx_data['amount'] = tx_dict['amount']
+            tx_data['message'] = tx_dict['description']
+            tx_data['is_mine'] = True
+            tx_data['type'] = 'tx'
+        if history_status is None:
+            history_data_json = self.get_history_tx()
+            history_data = json.loads(history_data_json)
+        elif history_status == 'tobeconfirmed':
+            print("")
+            history_info = self.get_history_tx()
+            history_dict = json.loads(history_info)
+            for info in history_dict:
+                if info['confirmations'] <= 0:
+                    history_data.append(info)
+        elif history_status == 'confirmed':
+            print("")
+            history_info = self.get_history_tx()
+            history_dict = json.loads(history_info)
+            for info in history_dict:
+                if info['confirmations'] > 0:
+                    history_data.append(info)
+        all_data = []
+        all_data.append(tx_data)
+        for i in history_data:
+            i['type'] = 'history'
+            all_data.append(i)
+        return json.dumps(all_data)
+
     ##history
     def get_history_tx(self):
         try:
@@ -495,8 +532,9 @@ class AndroidCommands(commands.Commands):
             raise e
         history = reversed(self.wallet.get_history())
         all_data = [self.get_card(*item) for item in history]
+       # print("console:get_history_tx:data = %s==========" % all_data)
         return json.dumps(all_data)
-        print("console:get_history_tx:data = %s==========" % all_data)
+
 
     def get_tx_info(self, tx_hash):
         try:
