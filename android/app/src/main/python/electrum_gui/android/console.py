@@ -491,7 +491,7 @@ class AndroidCommands(commands.Commands):
     def get_all_tx_list(self, raw_tx, tx_status=None, history_status=None):#tobe optimization
         tx_data = {}
         history_data = []
-        if tx_status is None or tx_status == 'send' or history_status == 'tobesign' or history_status == 'tobebroadcast':
+        if raw_tx != "" and (tx_status is None or tx_status == 'send' or history_status == 'tobesign' or history_status == 'tobebroadcast'):
             tx_json = self.get_tx_info_from_raw(raw_tx)
             tx_dict = json.loads(tx_json)
             tx_data['tx_hash'] = tx_dict['txid']
@@ -562,7 +562,8 @@ class AndroidCommands(commands.Commands):
                     if not info['is_mine'] and info['confirmations'] > 0:
                         history_data.append(info)
         all_data = []
-        all_data.append(tx_data)
+        if len(tx_data) != 0:
+            all_data.append(tx_data)
         for i in history_data:
             i['type'] = 'history'
             all_data.append(i)
