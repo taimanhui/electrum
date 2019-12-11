@@ -25,7 +25,7 @@ constants.set_testnet()
 testcommond = AndroidCommands()
 testcommond.start()
 
-name = 'hahahahhahh222'
+name = 'hahahahhahh111'
 password = '111111'
 
 #create_wallet
@@ -72,13 +72,34 @@ tx_data = testcommond.parse_qr(qr_data)
 print("tx_data = %s---------" % json.loads(tx_data))
 
 #parse_qr_addr
-qr_addr = testcommond.get_wallet_address_show_UI()
-print("qr_addr = %s------------" % qr_addr)
+data = testcommond.get_wallet_address_show_UI()
+qr_data = json.loads(data)
+print("qr_addr = %s------------" % qr_data['qr_data'])
 
-add = testcommond.parse_qr(qr_addr)
+add = testcommond.parse_qr(qr_data['qr_data'])
 print("addr = %s--------" %add)
 #get_history_tx
-
+data = testcommond.get_tx_info('9cea009f2a2ab9aa45c02760b5b44f2813b28cabdc880b46ef3a31f7997cdb6f')
+print("get_tx_info = %s-===========" % data)
+##get_all_tx_list
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, None)
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'tobeconfirm')
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'confirmed')
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'send', None)
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'receive', None)
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'send', 'tobeconfirm')
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'send', 'confirmed')
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'receive', 'tobeconfirm')
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'receive', 'confirmed')
+# print("testinfo = %s------------" %testinfo)
 #get_tx_info
 
 #sign_tx

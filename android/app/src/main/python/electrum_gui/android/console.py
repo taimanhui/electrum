@@ -488,10 +488,10 @@ class AndroidCommands(commands.Commands):
         return json_data
 
     ##get history+tx info
-    def get_all_tx_list(self, raw_tx, tx_status=None, history_status=None):
+    def get_all_tx_list(self, raw_tx, tx_status=None, history_status=None):#tobe optimization
         tx_data = {}
         history_data = []
-        if tx_status is None or tx_status == 'send' or history_status == 'tobesign' or history_status == 'tobeboradcast':
+        if tx_status is None or tx_status == 'send' or history_status == 'tobesign' or history_status == 'tobebroadcast':
             tx_json = self.get_tx_info_from_raw(raw_tx)
             tx_dict = json.loads(tx_json)
             tx_data['tx_hash'] = tx_dict['txid']
@@ -500,23 +500,67 @@ class AndroidCommands(commands.Commands):
             tx_data['message'] = tx_dict['description']
             tx_data['is_mine'] = True
             tx_data['type'] = 'tx'
-        if history_status is None:
+
+        if history_status is None and tx_status is None:
             history_data_json = self.get_history_tx()
             history_data = json.loads(history_data_json)
-        elif history_status == 'tobeconfirmed':
-            print("")
-            history_info = self.get_history_tx()
-            history_dict = json.loads(history_info)
-            for info in history_dict:
-                if info['confirmations'] <= 0:
-                    history_data.append(info)
-        elif history_status == 'confirmed':
-            print("")
-            history_info = self.get_history_tx()
-            history_dict = json.loads(history_info)
-            for info in history_dict:
-                if info['confirmations'] > 0:
-                    history_data.append(info)
+        elif tx_status is None and history_status is not None:
+            if history_status == 'tobeconfirm':
+                print("")
+                history_info = self.get_history_tx()
+                history_dict = json.loads(history_info)
+                for info in history_dict:
+                    con_num = info['confirmations']
+                    if info['confirmations'] <= 0:
+                        history_data.append(info)
+            elif history_status == 'confirmed':
+                print("")
+                history_info = self.get_history_tx()
+                history_dict = json.loads(history_info)
+                for info in history_dict:
+                    if info['confirmations'] > 0:
+                        history_data.append(info)
+        elif history_status is None and tx_status is not None:
+            if tx_status == 'send':
+                print("")
+                history_info = self.get_history_tx()
+                history_dict = json.loads(history_info)
+                for info in history_dict:
+                    if info['is_mine']:
+                        history_data.append(info)
+            elif tx_status == 'receive':
+                print("")
+                history_info = self.get_history_tx()
+                history_dict = json.loads(history_info)
+                for info in history_dict:
+                    if not info['is_mine']:
+                        history_data.append(info)
+        elif tx_status == 'send':
+            if history_status == 'tobeconfirm':
+                history_info = self.get_history_tx()
+                history_dict = json.loads(history_info)
+                for info in history_dict:
+                    if info['is_mine'] and info['confirmations'] <= 0:
+                        history_data.append(info)
+            elif history_status == 'confirmed':
+                history_info = self.get_history_tx()
+                history_dict = json.loads(history_info)
+                for info in history_dict:
+                    if info['is_mine'] and info['confirmations'] > 0:
+                        history_data.append(info)
+        elif tx_status == 'receive':
+            if history_status == 'tobeconfirm':
+                history_info = self.get_history_tx()
+                history_dict = json.loads(history_info)
+                for info in history_dict:
+                    if not info['is_mine'] and info['confirmations'] <= 0:
+                        history_data.append(info)
+            elif history_status == 'confirmed':
+                history_info = self.get_history_tx()
+                history_dict = json.loads(history_info)
+                for info in history_dict:
+                    if not info['is_mine'] and info['confirmations'] > 0:
+                        history_data.append(info)
         all_data = []
         all_data.append(tx_data)
         for i in history_data:
@@ -544,8 +588,7 @@ class AndroidCommands(commands.Commands):
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
             raise Exception('get transaction info failed')
-        data = self.get_details_info(tx)
-        print("console:get_tx_info:tx_details_data = %s..........." % data)
+        return self.get_details_info(tx)
 
     def get_card(self, tx_hash, tx_mined_status, value, balance):
         try:
