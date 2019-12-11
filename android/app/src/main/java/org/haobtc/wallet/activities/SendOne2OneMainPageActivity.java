@@ -1,225 +1,400 @@
 package org.haobtc.wallet.activities;
 
+import android.Manifest;
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
 import android.text.Editable;
-import android.text.Selection;
+import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.LayoutRes;
 import androidx.appcompat.widget.AppCompatSeekBar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
+import org.haobtc.wallet.bean.AddressEvent;
+import org.haobtc.wallet.bean.GetAddressBean;
+import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.utils.CommonUtils;
+import org.haobtc.wallet.utils.Daemon;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class SendOne2OneMainPageActivity extends AppCompatActivity implements View.OnClickListener {
+
+public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener {
     private LinearLayout selectSend, selectSigNum;
     private PopupWindow popupWindow;
     private View rootView;
     private EditText editTextComments, editAddress;
     private TextView bytesCount;
     private Button buttonCreate, buttonSweep, buttonPaste;
-
+    private Dialog dialogBtom;
+    private String strContent = "";
+    private TextView tetMoneye;
+    private RxPermissions rxPermissions;
+    private static final int REQUEST_CODE = 0;
+    private EditText tetamount;
+    private RecyclerView recyPayaddress;
+    private List<AddressEvent> dataListName;
+    private ChoosePayAddressAdapetr choosePayAddressAdapetr;
+    private String walletName;
+    private String straddress;
+    private String strAmount;
+    private TextView tetWalletname;
+    private String wallet_name;
+    private TextView textView;
+    private double pro;
+    private Gson gson;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.send_one2one_main_page);
-        initView();
-
+    public int getLayoutId() {
+        return R.layout.send_one2one_main_page;
     }
 
-    private void initView() {
-
+    public void initView() {
         CommonUtils.enableToolBar(this, R.string.send);
         selectSend = findViewById(R.id.llt_select_wallet);
-        selectSend.setOnClickListener(v -> {
-            showPopupSelectWallet();
-            setBackgroundAlpha(0.5f);
-
-        });
+        tetMoneye = findViewById(R.id.tet_Money);
+        tetamount = findViewById(R.id.amount);
         selectSigNum = findViewById(R.id.fee_select);
-        selectSigNum.setOnClickListener(v -> {
-            showPopupSelectFee();
-            setBackgroundAlpha(0.5f);
-        });
-        TextView textView = findViewById(R.id.tv_send2many);
-        textView.setOnClickListener(v -> {
-            Intent intent = new Intent(this, Send2ManyActivity.class);
-            startActivity(intent);
-        });
-        rootView = LayoutInflater.from(this).inflate(R.layout.send_one2one_main_page, null);//父布局
+        tetWalletname = findViewById(R.id.tet_WalletName);
+        textView = findViewById(R.id.tv_send2many);
         editTextComments = findViewById(R.id.comment_edit);
-        editTextComments.addTextChangedListener(new MyTextWatcher(this, editTextComments, 20));
         editAddress = findViewById(R.id.edit_address_one2one);
         bytesCount = findViewById(R.id.byte_count);
         buttonCreate = findViewById(R.id.create_trans_one2one);
         buttonSweep = findViewById(R.id.bn_sweep_one2noe);
         buttonPaste = findViewById(R.id.bn_paste_one2one);
-        buttonCreate.setOnClickListener(v -> {
-            // todo: 创建交易，页面跳转
-        });
-        buttonSweep.setOnClickListener(v -> {
-            // todo 扫描
-        });
-        buttonPaste.setOnClickListener(v -> {
-            // todo:将粘贴板的数据粘贴到editText  editAddress.setText();
+        init();
+    }
 
-        });
+    private void init() {
+        Intent intent = getIntent();
+        wallet_name = intent.getStringExtra("wallet_name");
+        tetWalletname.setText(wallet_name);
+        rxPermissions = new RxPermissions(this);
+        selectSend.setOnClickListener(this);
+        selectSigNum.setOnClickListener(this);
+        textView.setOnClickListener(this);
+        rootView = LayoutInflater.from(this).inflate(R.layout.send_one2one_main_page, null);//父布局
+        //InputMaxTextNum
+        setEditTextComments();
+        buttonCreate.setOnClickListener(this);
+        buttonSweep.setOnClickListener(this);
+        buttonPaste.setOnClickListener(this);
+//        InputFilter[] filters = {new CashierInputFilter()};
+//        tetamount.setFilters(filters);
+        dataListName = new ArrayList<>();
+        payAddressMore();
+    }
+
+    @Override
+    public void initData() {
 
     }
-    private class MyTextWatcher implements TextWatcher {
-        private Context context;
 
-        private EditText editText;
+    private void setEditTextComments() {
+        editTextComments.addTextChangedListener(new TextWatcher() {
+            CharSequence input;
 
-        private int len; //允许输入的字节长度(一个中文占3个字节)
-
-        MyTextWatcher(Context context, EditText editText, int len) {
-            this.context = context;
-            this.editText = editText;
-            this.len = len;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-
-            String inputStr = editable.toString().trim();
-            byte[] bytes = inputStr.getBytes();
-            if (bytes.length < len) {
-                bytesCount.setTextColor(getResources().getColor(R.color.text_color1));
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                input = s;
             }
-            bytesCount.setText(String.format(Locale.CHINA,"%d/20", bytes.length));
-            if (bytes.length > len) {
-                bytesCount.setTextColor(getResources().getColor(R.color.text_red));
-                Toast.makeText(context, "超过规定字符数", Toast.LENGTH_SHORT).show();
-                //取前20个字节
-                byte[] newBytes = new byte[len];
-                for (int i = 0; i < len; i++) {
-                    newBytes[i] = bytes[i];  // todo:输入中文时有bug
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                bytesCount.setText(String.format("%d/20", input.length()));
+                if (input.length() > 19) {
+                    Toast.makeText(SendOne2OneMainPageActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
                 }
-                String newStr = new String(newBytes);
-                editText.setText(newStr);
-                //将光标定位到最后
-               Selection.setSelection(editText.getEditableText(), newStr.length());
             }
 
-        }
-    }
-    public void setBackgroundAlpha(float bgAlpha) {
-        WindowManager.LayoutParams lp =  getWindow()
-                .getAttributes();
-        lp.alpha = bgAlpha;
-        getWindow().setAttributes(lp);
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void showPopupSelectFee() {
-        Button button;
-        ImageView imageView;
-        AppCompatSeekBar seekBar;
-        View view = LayoutInflater.from(this).inflate(R.layout.select_fee_popwindow, null);//PopupWindow对象
-        button = view.findViewById(R.id.bn_fee);
-        imageView = view.findViewById(R.id.cancel_select_fee);
-        seekBar = view.findViewById(R.id.seek_bar_fee);
-        TextView textViewFee;
-        textViewFee = view.findViewById(R.id.fee);
-        seekBar.setOnSeekBarChangeListener(new AppCompatSeekBar.OnSeekBarChangeListener(){
+        //Miner money
+        showSelectFeeDialogs(SendOne2OneMainPageActivity.this, R.layout.select_fee_popwindow);
+
+    }
+
+    private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        dialogBtom = new Dialog(context, R.style.dialog);
+        //Here you can set properties for each control as required
+        AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar_fee);
+        TextView textViewFee = view.findViewById(R.id.fee);
+        //SelectFee
+        seekBar.setOnSeekBarChangeListener(new AppCompatSeekBar.OnSeekBarChangeListener() {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                   textViewFee.setText(String.valueOf(progress));
+                pro = (double) (progress / 100);
+                strContent = String.valueOf(pro);
+                textViewFee.setText(strContent);
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                Toast.makeText(SendOne2OneMainPageActivity.this, "触碰SeekBar", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(SendOne2OneMainPageActivity.this, "触碰SeekBar", Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Toast.makeText(SendOne2OneMainPageActivity.this, "放开SeekBar", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(SendOne2OneMainPageActivity.this, "放开SeekBar", Toast.LENGTH_SHORT).show();
 
             }
         });
-        popupWindow = new PopupWindow(this);//初始化PopupWindow对象
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null,"")); // 必须写在showAtLocation前面
-        popupWindow.setContentView(view);//设置PopupWindow布局文件
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);//设置PopupWindow宽
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);//设置PopupWindow高
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
-        popupWindow.setOutsideTouchable(true);
-        button.setOnClickListener(this);//注册点击监听
-        imageView.setOnClickListener(this);//注册点击监听
-        popupWindow.setOnDismissListener(() ->
-                {
-                Toast.makeText(SendOne2OneMainPageActivity.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                setBackgroundAlpha(1f);
-                }
-        );
+        //cancle dialog
+        view.findViewById(R.id.cancel_select_fee).setOnClickListener(v -> {
+            dialogBtom.cancel();
+        });
+        view.findViewById(R.id.bn_fee).setOnClickListener(v -> {
+            double strPro = pro / 1000;
+            tetMoneye.setText(String.valueOf(strPro));
+            dialogBtom.cancel();
+        });
+
+        dialogBtom.setContentView(view);
+        Window window = dialogBtom.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtom.show();
     }
+
     private void showPopupSelectWallet() {
-        Button button;
-        ImageView imageView;
-        View view = LayoutInflater.from(this).inflate(R.layout.select_send_wallet_popwindow, null);//PopupWindow对象
-        button = view.findViewById(R.id.bn_select_wallet);
-        imageView = view.findViewById(R.id.cancel_select_wallet);
-        popupWindow = new PopupWindow(this);//初始化PopupWindow对象
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null,"")); // 必须写在showAtLocation前面
-        popupWindow.setContentView(view);//设置PopupWindow布局文件
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);//设置PopupWindow宽
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);//设置PopupWindow高
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
-        popupWindow.setOutsideTouchable(true);
-        button.setOnClickListener(this);//注册点击监听
-        imageView.setOnClickListener(this);//注册点击监听
-        popupWindow.setOnDismissListener(() ->
-                {
-                Toast.makeText(SendOne2OneMainPageActivity.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                setBackgroundAlpha(1f);
-                }
-        );
+        //check address
+        showDialogs(SendOne2OneMainPageActivity.this, R.layout.select_send_wallet_popwindow);
+
     }
+
+    private void showDialogs(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        dialogBtom = new Dialog(context, R.style.dialog);
+        //cancle dialog
+        view.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
+            dialogBtom.cancel();
+        });
+        view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
+            Daemon.commands.callAttr("load_wallet", walletName);
+            Daemon.commands.callAttr("select_wallet", walletName);
+
+            tetWalletname.setText(walletName);
+            dialogBtom.cancel();
+        });
+        recyPayaddress = view.findViewById(R.id.recy_payAdress);
+
+        recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2OneMainPageActivity.this));
+        choosePayAddressAdapetr = new ChoosePayAddressAdapetr(SendOne2OneMainPageActivity.this, dataListName);
+        recyPayaddress.setAdapter(choosePayAddressAdapetr);
+
+        recyclerviewOnclick();
+
+        dialogBtom.setContentView(view);
+        Window window = dialogBtom.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtom.show();
+    }
+
+    //getMorepayAddress
+    private void payAddressMore() {
+        PyObject get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
+        String toString = get_wallets_list_info.toString();
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(toString);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String wallet_type = jsonObject.getString("wallet_type");
+                String name = jsonObject.getString("name");
+                AddressEvent addressEvent = new AddressEvent();
+                addressEvent.setName(name);
+                addressEvent.setType(wallet_type);
+                dataListName.add(addressEvent);
+
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void recyclerviewOnclick() {
+        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapetr.OnItemClickListener() {
+            @Override
+
+            public void onItemClick(int position) {
+                Daemon.commands.callAttr("load_wallet", walletName);
+                Daemon.commands.callAttr("select_wallet", walletName);
+
+            }
+        });
+    }
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.bn_select_wallet:
-                popupWindow.dismiss();
-                finish();//调用Activity的finish方法退出应用程序
+            case R.id.llt_select_wallet:
+                //check address
+                showPopupSelectWallet();
                 break;
-            case R.id.bn_fee:
-                popupWindow.dismiss();//关闭PopupWindow
+            case R.id.fee_select:
+                //Miner money
+                showPopupSelectFee();
+                break;
+            case R.id.tv_send2many:
+                Intent intent = new Intent(this, Send2ManyActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.create_trans_one2one:
+                straddress = editAddress.getText().toString();
+                strAmount = tetamount.getText().toString();
+
+                if (TextUtils.isEmpty(straddress)) {
+                    Toast.makeText(this, R.string.input_address, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(strAmount)) {
+                    Toast.makeText(this, R.string.inoutnum, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                //creatTrnsaction
+                mCreatTransaction();
+
+                break;
+            case R.id.bn_sweep_one2noe:
+                rxPermissions
+                        .request(Manifest.permission.CAMERA)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                //如果已经授权就直接跳转到二维码扫面界面
+                                Intent intent2 = new Intent(this, CaptureActivity.class);
+                                startActivityForResult(intent2, REQUEST_CODE);
+                            } else { // Oups permission denied
+                                Toast.makeText(this, "相机权限被拒绝，无法扫描二维码", Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
+                break;
+            case R.id.bn_paste_one2one:
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboard != null) {
+                    ClipData data = clipboard.getPrimaryClip();
+                    if (data != null && data.getItemCount() > 0) {
+                        editAddress.setText(data.getItemAt(0).getText());
+                    }
+                }
+                break;
             default:
                 popupWindow.dismiss();
         }
     }
+
+    //creat transaction
+    private void mCreatTransaction() {
+        straddress = editAddress.getText().toString();
+        strAmount = tetamount.getText().toString();
+
+        Map<String, String> pramas = new HashMap<>();
+        pramas.put(straddress, strAmount);
+        String strMinerFee = tetMoneye.getText().toString();
+        String strComment = editTextComments.getText().toString();
+        String strPramas = new Gson().toJson(pramas);
+
+
+        try {
+            PyObject mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
+            String jsonObj = mktx.toString();
+            gson = new Gson();
+            GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
+            String beanTx = getAddressBean.getTx();
+            //get trsaction list content
+            PyObject def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", beanTx);
+            String jsondef_get = def_get_tx_info_from_raw.toString();
+            Log.i("jsondef_get", "mCreat--: "+jsondef_get);
+            if (jsondef_get!=null){
+                Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
+                intent.putExtra("jsondef_get",jsondef_get);
+                startActivity(intent);
+            }
+
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Scan QR code / barcode return
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+                Log.i("content", "on------: "+content);
+                if (!TextUtils.isEmpty(content)){
+                    if (content.contains("bitcoin:")) {
+                        String replace = content.replaceAll("bitcoin:", "");
+                        editAddress.setText(replace);
+                    }else{
+                        editAddress.setText(content);
+                    }
+                }
+            }
+        }
+    }
+
 }

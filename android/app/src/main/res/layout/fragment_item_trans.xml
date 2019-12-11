@@ -1,88 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/text_margin"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginStart="25dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView22"
+                android:id="@+id/tet_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="发币"
-                android:textSize="15sp"
+                android:layout_marginTop="@dimen/text_margin"
+                android:text="@string/send"
                 android:textColor="@color/text"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textSize="@dimen/text_size" />
 
             <TextView
-                android:id="@+id/textView23"
+                android:id="@+id/tet_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="235dp"
-                android:layout_marginTop="20dp"
-                android:text="待广播"
-                android:background="@android:color/darker_gray"
-                app:layout_constraintStart_toEndOf="@+id/textView22"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView21"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="12222222222222222222222222222222222"
+                android:layout_marginTop="@dimen/corner_radius"
+                android:ellipsize="middle"
                 android:maxWidth="171dp"
                 android:singleLine="true"
-                android:ellipsize="middle"
-                android:textSize="12sp"
+                android:text="12222222222222222222222222222222222"
                 android:textColor="@color/text"
-                app:layout_constraintStart_toStartOf="@+id/textView22"
-                app:layout_constraintTop_toBottomOf="@+id/textView22" />
-
+                android:textSize="@dimen/sp_12" />
 
             <TextView
+                android:id="@+id/tet_Time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="249dp"
-                android:layout_marginTop="12dp"
-                android:text="-0.3322 BTC"
-                android:textColor="@color/text"
-                android:textSize="15sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView23" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="@dimen/dp_7"
                 android:text="2019-09-13 11:33:23"
                 android:textColor="@color/light_text"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@+id/textView21"
-                app:layout_constraintTop_toBottomOf="@+id/textView21" />
+                android:textSize="@dimen/sp_12" />
 
-            <ImageView
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_5"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tet_zt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="11dp"
-                android:src="@mipmap/jiantou"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/dp_20"
+                android:background="@drawable/gray_tuocircle"
+                android:paddingLeft="@dimen/corner_radius"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingRight="@dimen/corner_radius"
+                android:paddingBottom="@dimen/dp_2"
+                android:text="@string/watting_broadcast"
+                android:textSize="@dimen/sp_12" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/tet_BTC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tet_zt"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/dp_5"
+                android:text="-0.3322 BTC"
+                android:textColor="@color/text"
+                android:textSize="@dimen/text_size" />
+
+        </RelativeLayout>
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/arrows"
+            android:padding="11dp"
+            android:src="@drawable/jiantou" />
+
+    </LinearLayout>
+
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/separation_line"/>
+        android:layout_height="@dimen/dp_1"
+        android:background="@color/separation_line" />
 
 </LinearLayout>

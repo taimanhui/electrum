@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">币信冷钱包</string>
-    <string name="settings" >设置</string>
+    <string name="settings">设置</string>
     <string name="check">查看/激活冷钱包</string>
     <string name="message_manager">消息管理</string>
     <string name="language">语言</string>
@@ -19,7 +19,7 @@
     <string name="seq">序列号</string>
     <string name="hardware_v">固件版本(升级)</string>
     <string name="address">地址</string>
-    <string name="use_haobtc_s">使用币信服务器</string>
+    <string name="use_bixin_s">使用币信服务器</string>
     <string name="prompt">使用币信服务器，可在连署人之间同步交易信息</string>
     <string name="rbf">使用RBF(交易替换)</string>
     <string name="use_unconfirmed">花费未确认输入</string>
@@ -28,7 +28,7 @@
     <string name="create">创建钱包</string>
     <string name="import_w">导入钱包</string>
     <string name="introduce">币信冷钱包介绍</string>
-    <string name="introduce_detials">1.币信冷钱包为BTC硬件钱包，私钥永不触网 \n 2.币信冷钱包为开源钱包 \n 3.币信冷钱包自带屏幕，付款时进行双向确认，资产更为安全 4.币信冷钱包工卡片式设计符合人体工学，使用和保存更方便 5.币信冷钱包使用军工级芯片 6.币信冷钱包不提供私钥导出功能，若您不需要多人签名，您可设置1 of 2的多签钱包，当其中一个冷钱包丢失时，您可使用备份冷钱包进行交易或进行资产转移 7.建议您购买>2个冷钱包 购买地址</string>
+    <string name="introduce_detials">1.币信冷钱包为BTC硬件钱包，私钥永不触网 \n 2.币信冷钱包为开源钱包 \n 3.币信冷钱包自带屏幕，付款时进行双向确认，资产更为安全 \n4.币信冷钱包工卡片式设计符合人体工学，使用和保存更方便\n 5.币信冷钱包使用军工级芯片 \n6.币信冷钱包不提供私钥导出功能，若您不需要多人签名，您可设置1 of 2的多签钱包，当其中一个冷钱包丢失时，您可使用备份冷钱包进行交易或进行资产转移 \n7.建议您购买>2个冷钱包 购买地址</string>
     <string name="active">激活冷钱包</string>
     <string name="active_prompt">币信冷钱包未激活</string>
     <string name="prompt_touch">请将钱包硬件与手机贴合</string>
@@ -49,7 +49,7 @@
     <string name="method_one_prompt">使用冷钱包硬件和手机贴合</string>
     <string name="recommend">推荐</string>
     <string name="import_by_address">使用地址来导入钱包</string>
-    <string name="method_two">输入公钥地址</string>
+    <string name="method_two">方式二：输入公钥地址</string>
     <string name="import_address">输入公钥地址</string>
     <string name="input_address">请输入地址</string>
     <string name="sweep">扫一扫</string>
@@ -77,7 +77,7 @@
     <string name="confirm_trans_d">确认发币信息</string>
     <string name="receive">收币</string>
     <string name="share">分享</string>
-    <string name="main">主页</string>
+    <string name="main">首页</string>
     <string name="more">更多</string>
     <string name="cancle">取消</string>
     <string name="comments">备注</string>
@@ -101,7 +101,42 @@
     <string name="sign_again">重新签名</string>
     <string name="pin_input">请输入PIN码</string>
     <string name="active_successful">激活成功</string>
-    <string name="copy_self">复制</string>
     <string name="clear">清除</string>
+    <string name="strguidefirst">硬件钱包，私钥永不触网</string>
+    <string name="strguidesecond">多重签名，资产更安全</string>
+    <string name="use_hardware">使用硬件设备</string>
+    <string name="format_iswrong">名字格式错误、所需签名数量不能大于联署人数量</string>
+    <string name="dowbke_to_exit">再按一次退出程序</string>
+    <string name="dongt_isnull">钱包名称、联署人数量、所需签名数量均不能为空</string>
+    <string name="bixinmoney">币信冷钱包介绍</string>
+    <string name="copy_self">复制</string>
+    <string name="address_qr">地址二维码</string>
+    <string name="attention">注意：该地址仅需要BTC收款，转入其他比重将无法找回</string>
+    <string name="prompt_message">请在冷钱包硬件上确认以下信息后，点击”OK”按钮</string>
+    <string name="picture">this is a picture</string>
+    <string name="wallet_create_successful">钱包创建成功</string>
+    <string name="balance">账户余额</string>
+    <string name="close">关闭</string>
+    <string name="wallet_list">钱包列表</string>
+    <string name="add_">添加</string>
+    <string name="no_records">暂无记录</string>
+    <string name="tips">TIPS：联署人是所有管理人</string>
+    <string name="prompt_create">钱包创建成功，您的收款地址如图</string>
+    <string name="watting_broadcast">待广播</string>
+    <string name="signature_status">签名状态</string>
+    <string name="transaction_status">交易状态</string>
+    <string name="transaction_waitting">待签名</string>
+    <string name="pin_input_again">输入不正确，请再次输入</string>
+    <string name="slip_select_fee">滑动选择矿工费</string>
+    <string name="boot_page_dot">dot</string>
+    <string name="dontbig">签名人数不能大于联署人数</string>
+    <string name="dontsmall">联署人数不能小于签名人数</string>
+    <string name="inoutnum">请输入转账数量</string>
+    <string name="moreinput_text">您最多能输入20个字</string>
+    <string name="photopersion">相机权限被拒绝，无法扫描二维码</string>
+    <string name="cosigner_sign">联署人签名</string>
+    <string name="confirm_on_chain">链上确认</string>
+    <string name="time">时间</string>
+    <string name="transaction_hash">交易hash</string>
 
 </resources>

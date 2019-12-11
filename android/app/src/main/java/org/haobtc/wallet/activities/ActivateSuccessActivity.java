@@ -1,16 +1,21 @@
 package org.haobtc.wallet.activities;
 
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
 
-public class ActivateSuccessActivity extends AppCompatActivity {
+public class ActivateSuccessActivity extends BaseActivity {
+
+    public int getLayoutId() {
+        return R.layout.activated_successful;
+    }
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activated_successful);
+    public void initView() {
+
+    }
+
+    @Override
+    public void initData() {
+
     }
 }

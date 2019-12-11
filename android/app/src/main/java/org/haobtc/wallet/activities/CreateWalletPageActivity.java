@@ -1,48 +1,64 @@
 package org.haobtc.wallet.activities;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.annotation.LayoutRes;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.CommonUtils;
+import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.MyDialog;
 
-public class CreateWalletPageActivity extends AppCompatActivity implements View.OnClickListener {
+public class CreateWalletPageActivity extends BaseActivity implements View.OnClickListener {
     private EditText editTextWalletName;
     private TextView textViewCosigner, textViewSigNum;
-    private PopupWindow popupWindow;
     private View rootView;
     private TextView textViewCancel, textViewConfirm;
     private NumberPicker numberPicker;
     public static final String WALLET_NAME = "org.haobtc.wallet.activities.walletName";
     public static final String COSIGNER_NUM = "org.haobtc.wallet.activities.cosignerNum";
     public static final String SIGNUM_REQUIRE = "org.haobtc.wallet.activities.sigNumRequire";
+    private Dialog dialogBtom;
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    break;
+                case 2:
 
+                    break;
+            }
+        }
+    };
+    private MyDialog myDialog;
+    private int consigerValue = 0;
+    private int signumValue = 0;
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_wallet_page);
-        initView();
+    public int getLayoutId() {
+        return R.layout.create_wallet_page;
     }
 
-    private void initView() {
+    @Override
+    public void initView() {
+        myDialog = MyDialog.showDialog(CreateWalletPageActivity.this);
         CommonUtils.enableToolBar(this, R.string.create);
         editTextWalletName = findViewById(R.id.wallet_name_setting);
         textViewCosigner = findViewById(R.id.cosigner_setting);
@@ -52,20 +68,19 @@ public class CreateWalletPageActivity extends AppCompatActivity implements View.
         textViewCosigner.setOnClickListener(this);
         textViewSigNum.setOnClickListener(this);
         buttonNext.setOnClickListener(this);
-
     }
-    // close qwer if present
-    private void closeSoftInputFrom() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-        }
+
+
+    @Override
+    public void initData() {
 
     }
 
-    private void showPopupCoSigner() {
+    private void showPopupCoSigner(Context context, @LayoutRes int resource) {
+        //set view
+        View view = View.inflate(context, resource, null);
+        dialogBtom = new Dialog(context, R.style.dialog);
 
-        View view = LayoutInflater.from(this).inflate(R.layout.select_cosigner_num_popwindow, null);//PopupWindow对象
         numberPicker = view.findViewById(R.id.np_cosigner);
         CommonUtils.setNumberPickerDividerColor(this, numberPicker);
         numberPicker.setMinValue(1);
@@ -74,30 +89,46 @@ public class CreateWalletPageActivity extends AppCompatActivity implements View.
                 (np, i, i1) -> {
            /* Toast.makeText(CreateWalletPageActivity.this,
                         "selected number " + np.getValue(), Toast.LENGTH_SHORT).show();*/
-        };
+                };
         numberPicker.setOnValueChangedListener(onValueChangeListener);
         textViewCancel = view.findViewById(R.id.cancel_cosigner);
         textViewConfirm = view.findViewById(R.id.confirm_cosigner);
         textViewCancel.setOnClickListener(this);
         textViewConfirm.setOnClickListener(this);
-        popupWindow = new PopupWindow(this);//初始化PopupWindow对象
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null,"")); // 必须写在showAtLocation前面
-        popupWindow.setContentView(view);//设置PopupWindow布局文件
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);//设置PopupWindow宽
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);//设置PopupWindow高
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(() ->
-                {
-                   // Toast.makeText(CreateWalletPageActivity.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                    setBackgroundAlpha(1f);
+        view.findViewById(R.id.cancel_cosigner).setOnClickListener(v -> {
+            dialogBtom.cancel();
+        });
+        view.findViewById(R.id.confirm_cosigner).setOnClickListener(v -> {
+            consigerValue = numberPicker.getValue();
+            if (signumValue != 0) {
+                if (signumValue > consigerValue) {
+                    Toast.makeText(this, R.string.dontsmall, Toast.LENGTH_SHORT).show();
+                } else {
+                    textViewCosigner.setText(String.valueOf(consigerValue));
+                    dialogBtom.cancel();
                 }
-        );
+            } else {
+                textViewCosigner.setText(String.valueOf(consigerValue));
+                dialogBtom.cancel();
+            }
+        });
+
+        dialogBtom.setContentView(view);
+        Window window = dialogBtom.getWindow();
+        //Set pop-up size
+        window.setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtom.show();
+
     }
-    private void showPopupSigNum() {
 
-
-        View view = LayoutInflater.from(this).inflate(R.layout.addsig_num_popwindow, null);//PopupWindow对象
+    private void showPopupSigNum(Context context, @LayoutRes int resource) {
+        //set view
+        View view = View.inflate(context, resource, null);
+        dialogBtom = new Dialog(context, R.style.dialog);
         numberPicker = view.findViewById(R.id.np_sig_num);
         CommonUtils.setNumberPickerDividerColor(this, numberPicker);
         numberPicker.setMinValue(1);
@@ -106,27 +137,23 @@ public class CreateWalletPageActivity extends AppCompatActivity implements View.
                 (np, i, i1) -> {
                        /* Toast.makeText(CreateWalletPageActivity.this,
                             "selected number "+np.getValue(), Toast.LENGTH_SHORT).show();*/
-                     //   numberPicker.setValue(i1);
+                    //   numberPicker.setValue(i1);
                 };
         numberPicker.setOnValueChangedListener(onValueChangeListener);
         textViewCancel = view.findViewById(R.id.cancel_sig_num);
         textViewConfirm = view.findViewById(R.id.confirm_sig_num);
         textViewCancel.setOnClickListener(this);
         textViewConfirm.setOnClickListener(this);
-        popupWindow = new PopupWindow(this);//初始化PopupWindow对象
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null,"")); // 必须写在showAtLocation前面
-        popupWindow.setContentView(view);//设置PopupWindow布局文件
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);//设置PopupWindow宽
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);//设置PopupWindow高
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(() ->
-                {
-                   // Toast.makeText(CreateWalletPageActivity.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                    setBackgroundAlpha(1f);
+        dialogBtom.setContentView(view);
+        Window window = dialogBtom.getWindow();
+        //Set pop-up size
+        window.setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtom.show();
 
-                }
-        );
     }
 
     @Override
@@ -134,51 +161,64 @@ public class CreateWalletPageActivity extends AppCompatActivity implements View.
         switch (v.getId()) {
             case R.id.bn_create_multi_next:
                 String name = editTextWalletName.getText().toString();
-                int cosinerNum;
-                int sigNum;
-                try {
-                    cosinerNum = Integer.valueOf(textViewCosigner.getText().toString());
-                    sigNum = Integer.valueOf(textViewSigNum.getText().toString());
-                }   catch (NumberFormatException e) {
-                    Toast.makeText(CreateWalletPageActivity.this, "联署人数量、所需签名数量均不能为空", Toast.LENGTH_SHORT).show();
-                    break;
-                }
-                if (name.length() > 0 && name.length() < 6 && (sigNum <= cosinerNum)) {
-                    Intent intent = new Intent(this, CoSignerAddActivity.class);
-                    intent.putExtra(WALLET_NAME, name);
-                    intent.putExtra(COSIGNER_NUM, cosinerNum);
-                    intent.putExtra(SIGNUM_REQUIRE, sigNum);
-                    startActivity(intent);
+                String tetCosinger = textViewCosigner.getText().toString();
+                String tetSingnum = textViewSigNum.getText().toString();
+
+                if (TextUtils.isEmpty(name) || TextUtils.isEmpty(tetCosinger) || TextUtils.isEmpty(tetSingnum) || tetCosinger.equals("请选择") || tetSingnum.equals("请选择")) {
+                    Toast.makeText(this, R.string.dongt_isnull, Toast.LENGTH_SHORT).show();
+
                 } else {
-                    Toast.makeText(CreateWalletPageActivity.this, "名字不能为空、所需签名数量不能大于联署人数量", Toast.LENGTH_SHORT).show();
+                    int cosinerNum = Integer.valueOf(tetCosinger);
+                    int sigNum = Integer.valueOf(tetSingnum);
+                    if (sigNum < 2 || cosinerNum < 2) {
+                        Toast.makeText(this, "联署人数、签名人数均不可小于2", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if ((sigNum <= cosinerNum)) {
+                            creatWalletjson(name, cosinerNum, sigNum);
+
+                        } else {
+                            Toast.makeText(CreateWalletPageActivity.this, R.string.format_iswrong, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
                 }
+
                 break;
             case R.id.cosigner_setting:
-                closeSoftInputFrom();
-                showPopupCoSigner();
-                setBackgroundAlpha(0.5f);
+                showPopupCoSigner(CreateWalletPageActivity.this, R.layout.select_cosigner_num_popwindow);
                 break;
             case R.id.sig_num_setting:
-                closeSoftInputFrom();
-                showPopupSigNum();
-                setBackgroundAlpha(0.5f);
+                showPopupSigNum(CreateWalletPageActivity.this, R.layout.addsig_num_popwindow);
                 break;
-            case R.id.confirm_cosigner:
-                textViewCosigner.setText(String.valueOf(numberPicker.getValue()));
-                popupWindow.dismiss();
-                break;
+            case R.id.cancel_sig_num:
+                dialogBtom.cancel();
             case R.id.confirm_sig_num:
-                textViewSigNum.setText(String.valueOf(numberPicker.getValue()));
-                popupWindow.dismiss();
-            default:
-                popupWindow.dismiss();
-
+                signumValue = numberPicker.getValue();
+                if (consigerValue != 0) {
+                    if (signumValue > consigerValue) {
+                        Toast.makeText(this, R.string.dontbig, Toast.LENGTH_SHORT).show();
+                    } else {
+                        textViewSigNum.setText(String.valueOf(signumValue));
+                        dialogBtom.cancel();
+                    }
+                } else {
+                    textViewSigNum.setText(String.valueOf(signumValue));
+                    dialogBtom.cancel();
+                }
         }
     }
-    public void setBackgroundAlpha(float bgAlpha) {
-        WindowManager.LayoutParams lp =  getWindow()
-                .getAttributes();
-        lp.alpha = bgAlpha;
-        getWindow().setAttributes(lp);
+
+    //creatwallet
+    private void creatWalletjson(String name, int cosinerNum, int sigNum) {
+        myDialog.show();
+        Daemon.commands.callAttr("set_multi_wallet_info", name, cosinerNum, sigNum);
+        myDialog.dismiss();
+        Intent intent = new Intent(this, CoSignerAddActivity.class);
+        intent.putExtra(WALLET_NAME, name);
+        intent.putExtra(COSIGNER_NUM, cosinerNum);
+        intent.putExtra(SIGNUM_REQUIRE, sigNum);
+        startActivity(intent);
     }
+
+
 }

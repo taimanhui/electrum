@@ -2,129 +2,145 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/actionbar"/>
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView5"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <include layout="@layout/actionbar" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        app:cardCornerRadius="6dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="match_parent"
+        android:background="@color/bk_page">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView5"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="@dimen/layout_margin"
+            app:cardCornerRadius="@dimen/corner_radius"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/textView29"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
-                android:text="@string/signature"
-                android:textSize="18sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView30"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/prompt_sig"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@id/textView29"
-                app:layout_constraintTop_toBottomOf="@id/textView29" />
-
-            <View
-                android:id="@+id/view3"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="77.5dp"
-                android:background="@color/separation_line"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="0dp" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/edit_raw"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="13.5dp"
-                android:background="@null"
-                android:gravity="top"
-                android:layout_marginStart="16dp"
-                android:hint="@string/raw"
-                android:minHeight="157dp"
-                android:textSize="15sp"
-                app:layout_constraintStart_toStartOf="@id/textView30"
-                app:layout_constraintTop_toBottomOf="@id/view3" />
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:text="@string/signature"
+                    android:textSize="@dimen/big_text_size"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/import_file"
-                android:layout_width="100dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="19dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/paste_bk"
-                android:text="@string/import_file"
-                android:textColor="@color/button_bk"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_raw" />
+                <TextView
+                    android:id="@+id/textView30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/sp_16"
+                    android:layout_marginTop="@dimen/corner_radius"
+                    android:text="@string/prompt_sig"
+                    android:textSize="@dimen/sp_12" />
 
-            <Button
-                android:id="@+id/sweep_sig"
-                android:layout_width="100dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/paste_bk"
-                android:text="@string/sweep"
-                android:paddingStart="17.8dp"
-                android:paddingEnd="17dp"
-                android:drawableStart="@mipmap/saoyisao"
-                android:textColor="@color/button_bk"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/import_file"
-                app:layout_constraintTop_toBottomOf="@id/edit_raw" />
+                <View
+                    android:id="@+id/view3"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginTop="@dimen/text_margin"
+                    android:background="@color/separation_line"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:layout_editor_absoluteX="0dp" />
 
-            <Button
-                android:id="@+id/paste_sig"
-                android:layout_width="100dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/paste_bk"
-                android:text="@string/paste"
-                android:paddingStart="26.8dp"
-                android:paddingEnd="24dp"
-                android:drawableStart="@mipmap/zhantie"
-                android:textColor="@color/button_bk"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/sweep_sig"
-                app:layout_constraintTop_toBottomOf="@id/edit_raw" />
+                <EditText
+                    android:id="@+id/edit_raw"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="13.5dp"
+                    android:layout_marginBottom="@dimen/sp_16"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/raw"
+                    android:minHeight="157dp"
+                    android:paddingStart="@dimen/sp_16"
+                    android:paddingEnd="@dimen/sp_16"
+                    android:textSize="@dimen/text_size"
+                    app:layout_constraintStart_toStartOf="@id/textView30"
+                    app:layout_constraintTop_toBottomOf="@id/view3" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_marginBottom="@dimen/sp_16"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/import_file"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_weight="1"
+                        android:background="@color/paste_bk"
+                        android:text="@string/import_file"
+                        android:textColor="@color/button_bk" />
+
+                    <Button
+                        android:id="@+id/sweep_sig"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_weight="1"
+                        android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/saoyisao"
+                        android:paddingStart="13dp"
+                        android:paddingEnd="13dp"
+                        android:text="@string/sweep"
+                        android:textColor="@color/button_bk" />
+
+                    <Button
+                        android:id="@+id/paste_sig"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:layout_weight="1"
+                        android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/zhantie"
+                        android:paddingStart="@dimen/dp_20"
+                        android:paddingEnd="@dimen/dp_20"
+                        android:text="@string/paste"
+                        android:textColor="@color/button_bk" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
+
+            </LinearLayout>
 
 
-    </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-    <Button
-        android:id="@+id/confirm_sig"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="37dp"
-        android:background="@drawable/button_bk"
-        android:text="@string/confirm"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/confirm_sig"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="37dp"
+            android:background="@drawable/button_bk"
+            android:text="@string/confirm"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,7 +8,8 @@
         android:layout_height="81dp"
         android:layout_marginTop="122dp"
         android:src="@drawable/ic_launcher_background"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/picture" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
         android:layout_marginTop="477dp"
         android:layout_centerHorizontal="true"
         android:text="@string/touch_fail_text"
-        android:textSize="13sp"/>
+        android:textSize="@dimen/smaller_text_size"/>
     <Button
         android:layout_width="300dp"
         android:layout_height="50dp"

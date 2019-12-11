@@ -1,196 +1,338 @@
 package org.haobtc.wallet;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import org.haobtc.wallet.entries.DummyContent;
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+
+import com.gyf.immersionbar.ImmersionBar;
+import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.wallet.activities.CreateWalletActivity;
+import org.haobtc.wallet.activities.CreateWalletPageActivity;
 import org.haobtc.wallet.activities.GuideActivity;
-import org.haobtc.wallet.adapter.MyPagerAdapter;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.SignaturePageActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
-import org.haobtc.wallet.adapter.MyItemRecyclerViewAdapterTransaction;
-import com.chaquo.python.PyObject;
+import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
+import org.haobtc.wallet.adapter.MyPagerAdapter;
+import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
+import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
+import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.MyDialog;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.String;
 
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
 import org.haobtc.wallet.utils.Global;
-import org.haobtc.wallet.utils.Daemon;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
+
     private ImageView imageViewSweep, imageViewSetting;
     private TextView textView;
-    private RecyclerView recyclerView;
-    private List<DummyContent.DummyItem> dummyItems = new ArrayList<>();
+
     private List<View> viewList = new ArrayList<>();//ViewPager数据源
     private MyPagerAdapter myPagerAdapter;//适配器
-    private ViewPager viewPager;
     private Button button_send, button_receive, button_signature;
+    private ViewPager viewPager;
     private final String FIRST_RUN = "is_first_run";
     SharedPreferences sharedPreferences;
     private static Daemon daemonModel;
+    static final String TAG = "PythonOnAndroid";
+    public static Python py;
+    private RecyclerView recy_data;
+    private TextView btnAddmoney;
+    //remeber first back time
+    private long firstTime = 0;
+    private MyDialog myDialog;
+    private ArrayList<String> dataListName;
+    private int mCurrentPosition = 0;
+    private TextView tetNone;
+    private PyObject get_history_tx;
 
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        sharedPreferences = getSharedPreferences("state", Context.MODE_PRIVATE);
-        super.onCreate(savedInstanceState);
+    @Override
+    public int getLayoutId() {
+        return R.layout.main_activity;
+    }
 
-        //test python code
-        Global.app = this.getApplication();
-        Python.start(new AndroidPlatform(Global.app));
-        Global.py = Python.getInstance();
-        Global.py.getModule("electrum.constants").callAttr("set_testnet");
 
-        Global.mHandler = null;
-        if (Global.mHandler == null) {
-            Global.mHandler = new Handler(Looper.getMainLooper());
+    @Override
+    public void initView() {
+        sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        //Eventbus register
+        EventBus.getDefault().register(this);
+        if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
+            init();
+
+        } else {
+            boolean jumpOr = sharedPreferences.getBoolean("JumpOr", true);
+            if (jumpOr) {
+                //splash
+                initGuide();
+            } else {
+                //CreatWallet
+                initCreatWallet();
+            }
+
         }
-
-        Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
-        Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
-        initDaemon();
-
-        {
-            String name = "hahahahhahh222";
-            String password = "111111";
-            int m = 2;
-            int n = 2;
-            String xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm";
-            String xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg";
-
-            //create wallet
-            //daemonModel.commands.callAttr("delete_wallet", name);
-//            daemonModel.commands.callAttr("set_multi_wallet_info", name, m, n);
-//            daemonModel.commands.callAttr("add_xpub", xpub1);
-//            daemonModel.commands.callAttr("add_xpub", xpub2);
-//            List<PyObject> info= daemonModel.commands.callAttr("get_keystores_info").asList();
-//            System.out.println("main.kt onCreate keystors .....========" + info.toString());
-//            daemonModel.commands.callAttr("create_multi_wallet", name);
-            //daemonModel.commands.callAttr("get_xpub_from_hw")
-
-            //load_wallet
-            daemonModel.commands.callAttr("load_wallet", name, password);
-            daemonModel.commands.callAttr("select_wallet", name);
-
-            String wallet_str = daemonModel.commands.callAttr("get_wallets_list_info").toString();
-            System.out.println("main.kt onCreate wallet info is  .....======================" + wallet_str);
-
-          //  daemonModel.commands.callAttr("mktx", "", "", "0.001");
-        }
-
-        // main page
-        /*if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
-            setContentView(R.layout.main_activity);
-            initView();
-        } else {*/
-        // guide page
-            initGuide();
-       /* }*/
 
     }
 
-    private static void initDaemon(){
-        Global.guiDaemon.callAttr("set_excepthook", Global.mHandler);
-        daemonModel = new Daemon();
+    private void init() {
+        myDialog = MyDialog.showDialog(MainActivity.this);
+        imageViewSweep = findViewById(R.id.img_sweep);
+        viewPager = findViewById(R.id.viewPager);
+        btnAddmoney = findViewById(R.id.tet_Addmoney);
+        recy_data = findViewById(R.id.recy_data);
+        imageViewSetting = findViewById(R.id.img_setting);
+        textView = findViewById(R.id.textView_more);
+        tetNone = findViewById(R.id.tet_None);
+        imageViewSweep.setOnClickListener(this);
+        imageViewSetting.setOnClickListener(this);
+        textView.setOnClickListener(this);
+        btnAddmoney.setOnClickListener(this);
+
+        dataListName = new ArrayList<>();
+        //Rolling Wallet
+        mWheelplanting();
+        //Lower list data
+        mTransactionrecord();
+    }
+
+    private void initCreatWallet() {
+        Intent intent = new Intent(this, CreateWalletActivity.class);
+        startActivity(intent);
     }
 
     private void initGuide() {
         Intent intent = new Intent(this, GuideActivity.class);
         startActivity(intent);
-        sharedPreferences.edit().putBoolean(FIRST_RUN, true).apply();
     }
 
-    private void initView() {
+    @Override
+    public void initData() {
 
-        imageViewSweep = findViewById(R.id.sweep);
-        imageViewSetting = findViewById(R.id.setting);
-        textView = findViewById(R.id.textView_more);
-        imageViewSweep.setOnClickListener(v -> {
 
-            // todo;扫码
-        });
-        imageViewSetting.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SettingActivity.class);
-            startActivity(intent);
-        });
-        textView.setOnClickListener(v -> {
-            Intent intent = new Intent(this, TransactionRecordsActivity.class);
-            startActivity(intent);
-        });
-
-        RecyclerView.Adapter adapter = new MyItemRecyclerViewAdapterTransaction(dummyItems, item -> {
-
-        });
-        recyclerView = findViewById(R.id.recycler);
-        recyclerView.setAdapter(adapter);
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View view = inflater.inflate(R.layout.wallet_card, null);
-        button_send = view.findViewById(R.id.wallet_card_bn1);
-        button_receive = view.findViewById(R.id.wallet_card_bn2);
-        button_signature = view.findViewById(R.id.wallet_card_bn3);
-        button_send.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SendOne2OneMainPageActivity.class);
-            startActivity(intent);
-        });
-        button_receive.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ReceivedPageActivity.class);
-            startActivity(intent);
-        });
-        button_signature.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SignaturePageActivity.class);
-            startActivity(intent);
-        });
-        View view1 = inflater.inflate(R.layout.wallet_card_add,null);
-        List<View> viewList = new ArrayList<>();
-        viewList.add(view);
-        viewList.add(view1);
-        myPagerAdapter = new MyPagerAdapter(viewList);
-        viewPager = findViewById(R.id.wallet_card_vp);
-        viewPager.setAdapter(myPagerAdapter);
-        int sizeInPixel = this.getResources().getDimensionPixelSize(R.dimen.layout_margin);
-        viewPager.setPageMargin(sizeInPixel);
     }
+
+    private void mTransactionrecord() {
+        ArrayList<String> dataList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            dataList.add("ahiedjlmk32lk2n42nk44" + i);
+        }
+        MaindowndatalistAdapetr myItemRecyclerViewAdapterTransaction = new MaindowndatalistAdapetr(dataList);
+        recy_data.setAdapter(myItemRecyclerViewAdapterTransaction);
+
+    }
+
+    private void mWheelplanting() {
+        List<Fragment> fragmentList = new ArrayList<>();
+        myDialog.show();
+        PyObject get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
+        String toString = get_wallets_list_info.toString();
+        Log.i("javaBean", "mjavaBean----: " + toString + "----lenth----" + toString.length());
+        if (!TextUtils.isEmpty(toString)) {
+            try {
+                JSONArray jsonArray = new JSONArray(toString);
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String wallet_type = jsonObject.getString("wallet_type");
+                    String balance = jsonObject.getString("balance");
+                    String name = jsonObject.getString("name");
+                    dataListName.add(name);
+                    String streplace = wallet_type.replaceAll("of", "/");
+                    fragmentList.add(new WheelViewpagerFragment(name, streplace, balance));
+
+                }
+                dataListName.add("");
+                fragmentList.add(new AddViewFragment());
+                viewPager.setOffscreenPageLimit(3);
+                viewPager.setPageMargin(40);
+                viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+                //choose wallet
+                Daemon.commands.callAttr("load_wallet", dataListName.get(0));
+                Daemon.commands.callAttr("select_wallet", dataListName.get(0));
+                //get transaction json
+                get_history_tx = Daemon.commands.callAttr("get_history_tx");
+                //get transaction list
+                if (get_history_tx != null) {
+                    tetNone.setVisibility(View.GONE);
+                    recy_data.setVisibility(View.VISIBLE);
+                    if (!get_history_tx.isEmpty()) {
+                        String strHistory = get_history_tx.toString();
+                        Log.i("strHistory", "onPage----: " + strHistory);
+                    } else {
+                        Toast.makeText(MainActivity.this, "get_history_tx.isEmpty()", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    tetNone.setVisibility(View.VISIBLE);
+                    recy_data.setVisibility(View.GONE);
+                }
+
+                myDialog.dismiss();
+
+                //scroll
+                viewPagerScroll();
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    //viewPagerScroll
+    private void viewPagerScroll() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (mCurrentPosition != position) {
+                    String strNames = dataListName.get(position);
+                    if (!TextUtils.isEmpty(strNames)) {
+                        Daemon.commands.callAttr("load_wallet", strNames);
+                        Daemon.commands.callAttr("select_wallet", strNames);
+                        get_history_tx = Daemon.commands.callAttr("get_history_tx");
+                        if (get_history_tx != null) {
+                            tetNone.setVisibility(View.GONE);
+                            recy_data.setVisibility(View.VISIBLE);
+                            if (!get_history_tx.isEmpty()) {
+                                String strHistory = get_history_tx.toString();
+                                Log.i("strHistory", "onPage----: " + strHistory);
+                            } else {
+                                Toast.makeText(MainActivity.this, "get_history_tx.isEmpty()", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            tetNone.setVisibility(View.VISIBLE);
+                            recy_data.setVisibility(View.GONE);
+                        }
+
+                    }
+
+                }
+                mCurrentPosition = position;
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
     /**
-     *该方法封装了添加页面的代码逻辑实现，参数text为要展示的数据
+     * set white background and black text
      */
-    public void addPage(String text){
-        LayoutInflater inflater = LayoutInflater.from(this);//获取LayoutInflater的实例
-        View view = inflater.inflate(R.layout.wallet_card, null);//调用LayoutInflater实例的inflate()方法来加载页面的布局
+    public void mInitState() {
+        ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0.2f).navigationBarColor(R.color.button_bk_ddake).init();
 
-        TextView textView = view.findViewById(R.id.wallet_card);//获取该View对象的TextView实例
-        textView.setText(text);//展示数据
-
-        viewList.add(view);//为数据源添加一项数据
-        myPagerAdapter.notifyDataSetChanged();//通知UI更新
     }
-    /**
-     * 删除当前页面
-     */
-    public void delPage(){
-        int position = viewPager.getCurrentItem();//获取当前页面位置
-        viewList.remove(position);//删除一项数据源中的数据
-        myPagerAdapter.notifyDataSetChanged();//通知UI更新
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.img_sweep:
+
+                break;
+            case R.id.img_setting:
+                Intent intent1 = new Intent(this, SettingActivity.class);
+                startActivity(intent1);
+                break;
+            case R.id.textView_more:
+                Intent intent2 = new Intent(this, TransactionRecordsActivity.class);
+                startActivity(intent2);
+                break;
+            case R.id.wallet_card_bn1:
+                Intent intent3 = new Intent(this, SendOne2OneMainPageActivity.class);
+                startActivity(intent3);
+                break;
+            case R.id.wallet_card_bn2:
+                Intent intent4 = new Intent(this, ReceivedPageActivity.class);
+                startActivity(intent4);
+                break;
+            case R.id.wallet_card_bn3:
+                Intent intent5 = new Intent(this, SignaturePageActivity.class);
+                startActivity(intent5);
+                break;
+            case R.id.tet_Addmoney:
+                Intent intent6 = new Intent(MainActivity.this, CreateWalletPageActivity.class);
+                startActivity(intent6);
+
+                break;
+
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(FirstEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if (msgVote.equals("11")) {
+
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    /**
+     * onclick dowble exit
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            long secondTime = System.currentTimeMillis();
+            if (secondTime - firstTime > 2000) {
+                Toast.makeText(MainActivity.this, R.string.dowbke_to_exit, Toast.LENGTH_SHORT).show();
+                firstTime = secondTime;
+                return true;
+            } else {
+                System.exit(0);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }
