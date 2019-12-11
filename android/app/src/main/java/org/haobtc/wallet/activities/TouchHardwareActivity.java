@@ -10,10 +10,9 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.util.Log;
-import android.widget.Toast;
 import android.view.View;
 import android.widget.ImageView;
-
+import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 
@@ -21,12 +20,11 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.Global;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import java.io.IOException;
-import java.util.Objects;
 
 public class TouchHardwareActivity extends BaseActivity {
     private NfcAdapter nfcAdapter; // NFC manager
@@ -103,9 +101,9 @@ public class TouchHardwareActivity extends BaseActivity {
     }
 
     private void startNewPage() {//TODO:
-//        Intent intent = new Intent(this, PinSettingActivity.class);
-//        intent.putExtra(FROM, tag);
-//        startActivity(intent);
+        Intent intent = new Intent(this, PinSettingActivity.class);
+        intent.putExtra(FROM, tag);
+        startActivity(intent);
     }
 
     @Override
@@ -117,7 +115,7 @@ public class TouchHardwareActivity extends BaseActivity {
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             // get the i/o handle from the intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            PyObject nfc = Global.py.getModule("python.src.trezorlibs.transport.nfc");
+            PyObject nfc = Global.py.getModule("python-trezor.src.trezorlib.transport.nfc");
             PyObject nfcHandler = nfc.get("NFCHandle");
             nfcHandler.put("device", tag);
             Log.i("tag", "tag in nfc");
@@ -127,11 +125,7 @@ public class TouchHardwareActivity extends BaseActivity {
             Log.i("assert", tag1.equals(tag) + "");
             IsoDep isoDep = IsoDep.get(tag);
             System.out.println(isoDep);
-            try {
-                isoDep.connect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            instance.callAttr("open");
             System.out.println(isoDep.getMaxTransceiveLength());
             startNewPage();
         }
