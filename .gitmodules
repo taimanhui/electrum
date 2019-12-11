@@ -7,3 +7,6 @@
 [submodule "electrum/www"]
 	path = electrum/www
 	url = https://github.com/spesmilo/electrum-http.git
+[submodule "android/app/src/main/python/python-trezor"]
+	path = android/app/src/main/python/python-trezor
+	url = https://github.com/haobtc/python-trezor.git
