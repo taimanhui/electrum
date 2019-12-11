@@ -32,7 +32,8 @@ password = '111111'
 
 # m = 2
 # n = 2
-# xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# # xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# xpub1 = 'Vpub5dEvVGKn7251znFdWdjnyKjLN525eAmRpVmmZ7chqn8y4Rz9fhKxeeUqJ18mb6kHazADprqMnNyPwG6Y3nGQ2AuchC6VD9ATvn7TLrEXqJz'
 # xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
 # #testcommond.delete_wallet(name)
 # testcommond.set_multi_wallet_info(name,m,n)
@@ -73,12 +74,14 @@ print("tx_data = %s---------" % json.loads(tx_data))
 
 #parse_qr_addr
 data = testcommond.get_wallet_address_show_UI()
+
 qr_data = json.loads(data)
 print("qr_addr = %s------------" % qr_data['qr_data'])
 
 add = testcommond.parse_qr(qr_data['qr_data'])
 print("addr = %s--------" %add)
 #get_history_tx
+
 data = testcommond.get_tx_info('9cea009f2a2ab9aa45c02760b5b44f2813b28cabdc880b46ef3a31f7997cdb6f')
 print("get_tx_info = %s-===========" % data)
 ##get_all_tx_list
@@ -102,7 +105,18 @@ print("testinfo = %s------------" %testinfo)
 # print("testinfo = %s------------" %testinfo)
 # testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'receive', 'confirmed')
 # print("testinfo = %s------------" %testinfo)
+
 #get_tx_info
 
+info = testcommond.get_all_tx_list(ret_list['tx'])
+print("info== %s" % info)
+info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send', history_status='tobeconfirmed')
+print("info== %s" % info)
+info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
+print("info== %s" % info)
+info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send', history_status='tobeconfirmed')
+print("info== %s" % info)
+info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
+print("info== %s" % info)
 #sign_tx
-#testcommond.sign_tx(ret_list['tx'])
+testcommond.sign_tx(ret_list['tx'])
