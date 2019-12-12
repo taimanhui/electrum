@@ -360,7 +360,7 @@ class AndroidCommands(commands.Commands):
         print("console.mktx.outpus = %s======" %outputs)
         all_output_add = json.loads(outputs)
         outputs_addrs = []
-        for address, amount in all_output_add:
+        for address, amount in all_output_add.items():
             outputs_addrs.append(TxOutput(TYPE_ADDRESS, address, satoshis(amount)))
         #outputs_addrs = [(TxOutput(TYPE_ADDRESS, "tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m", satoshis(0.01)))]
         print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
