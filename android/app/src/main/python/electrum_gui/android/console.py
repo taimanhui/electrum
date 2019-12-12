@@ -18,14 +18,13 @@ from electrum.wallet import (ImportedAddressWallet, ImportedPrivkeyWallet, Stand
                                  Wallet)
 from electrum.bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
 
-from android.preference import PreferenceManager
+#from android.preference import PreferenceManager
 from electrum.commands import satoshis
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
 from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 import trezorlib.btc
 from electrum import ecc
-CALLBACKS = ["banner", "blockchain_updated", "fee", "interfaces", "new_transaction",
-             "on_history", "on_quotes", "servers", "status", "verified2", "wallet_updated"]
+
 from enum import Enum
 class Status(Enum):
     net = 1
@@ -93,9 +92,13 @@ class Help:
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
-
-    def __init__(self, app):
-        super().__init__(AndroidConfig(app), wallet=None, network=None)
+    def __init__(self):
+        config_options = {}
+        # config_options['cmdname'] = 'daemon'
+        # config_options['testnet'] = True
+        # config_options['cwd'] = os.getcwd()
+        config_options['auto_connect'] = True
+        self.config = simple_config.SimpleConfig(config_options)
 
         fd, server = daemon.get_fd_or_server(self.config)
         if not fd:
@@ -105,7 +108,7 @@ class AndroidCommands(commands.Commands):
         # its callback before the daemon threads start.
         self.daemon = daemon.Daemon(self.config, fd, False)
         self.network = self.daemon.network
-        self.network.register_callback(self._on_callback, CALLBACKS)
+        #self.network.register_callback(self._on_callback, CALLBACKS)
         self.daemon_running = False
         self.wizard = None
         self.plugin = Plugins(self.config, 'cmdline')
@@ -356,9 +359,8 @@ class AndroidCommands(commands.Commands):
             raise e
         print("console.mktx.outpus = %s======" %outputs)
         all_output_add = json.loads(outputs)
-        print(all_output_add)
         outputs_addrs = []
-        for address, amount in all_output_add.items():
+        for address, amount in all_output_add:
             outputs_addrs.append(TxOutput(TYPE_ADDRESS, address, satoshis(amount)))
         #outputs_addrs = [(TxOutput(TYPE_ADDRESS, "tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m", satoshis(0.01)))]
         print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
@@ -869,35 +871,3 @@ SP_SET_METHODS = {
     str: "putString",
 }
 
-# We store the config in the SharedPreferences because it's very easy to base an Android
-# settings UI on that. The reverse approach would be harder (using PreferenceDataStore to make
-# the settings UI access an Electrum config file).
-class AndroidConfig(simple_config.SimpleConfig):
-    def __init__(self, app):
-        self.sp = PreferenceManager.getDefaultSharedPreferences(app)
-        super().__init__()
-
-    def get(self, key, default=None):
-        if self.sp.contains(key):
-            value = self.sp.getAll().get(key)
-            if value == "<json>":
-                json_value = self.sp.getString(key + ".json", None)
-                if json_value is not None:
-                    value = json.loads(json_value)
-            return value
-        else:
-            return default
-
-    def set_key(self, key, value, save=None):
-        spe = self.sp.edit()
-        if value is None:
-            spe.remove(key)
-            spe.remove(key + ".json")
-        else:
-            set_method = SP_SET_METHODS.get(type(value))
-            if set_method:
-                getattr(spe, set_method)(key, value)
-            else:
-                spe.putString(key, "<json>")
-                spe.putString(key + ".json", json.dumps(value))
-        spe.apply()
