@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -10,10 +9,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import com.gyf.immersionbar.ImmersionBar;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -24,6 +19,7 @@ public class PinSettingActivity extends BaseActivity {
     EditText editText;
     TextView tvCode1, tvCode2, tvCode3, tvCode4, tvCode5, tvCode6, tvPromptLarge, tvPromptSmall, tvMistakePrompt;
     private String tag;
+    public final String PIN = "Pin";
     private String password = "";
 
 
@@ -65,10 +61,12 @@ public class PinSettingActivity extends BaseActivity {
     }
 
     private void startNewPage(String tags) {
-        if (!TextUtils.isEmpty(tags)){
+        if (!TextUtils.isEmpty(tags)) {
             switch (tags) {
                 case WalletUnActivatedActivity.TAG:
                     Intent intent = new Intent(this, ActivatedProcessing.class);
+                    intent.putExtra(PIN, password);
+                    password = "";
                     startActivity(intent);
                     break;
                 case ImportWalletPageActivity.TAG:
@@ -80,11 +78,8 @@ public class PinSettingActivity extends BaseActivity {
                     startActivity(intent2);
                     break;
                 default:
-
             }
         }
-
-
     }
 
     /**
@@ -104,7 +99,7 @@ public class PinSettingActivity extends BaseActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-
+            tvMistakePrompt.setVisibility(View.INVISIBLE);
             tvCode1.setText("");
             tvCode2.setText("");
             tvCode3.setText("");
@@ -128,13 +123,10 @@ public class PinSettingActivity extends BaseActivity {
                 default:
                     break;
             }
-            if (WalletUnActivatedActivity.TAG.equals(tag)) {
-                tvMistakePrompt.setVisibility(View.INVISIBLE);
-            }
             // Input 5 verification codes to automatically request verification
             if (s.length() == 6) {
                 if (WalletUnActivatedActivity.TAG.equals(tag)) {
-                    if ("".equals(password)) {
+                    if ("".equals(password)) { // pin set
                         password = editText.getText().toString();
                         tvPromptSmall.setText(R.string.confirm_pin);
                         tvCode1.setText("");
@@ -143,21 +135,22 @@ public class PinSettingActivity extends BaseActivity {
                         tvCode4.setText("");
                         tvCode5.setText("");
                         tvCode6.setText("");
-                    } else {
-                        if (password.equals(editText.getText().toString())) {
+                        s.clear();
+                    } else { // pin confirm
+                        if (password.equals(editText.getText().toString())) { // the pin is correct
+                            // todo: set pin
                             startNewPage(tag);
-                            password = "";
                         } else {
+                            // the pin input twice not the same
                             tvMistakePrompt.setVisibility(View.VISIBLE);
                         }
                     }
-
                 } else {
+                    // input pin
+                    // todo: verify pin
                     startNewPage(tag);
                 }
             }
         }
-
-
     };
 }

@@ -50,8 +50,7 @@
             android:cursorVisible="false"
             android:inputType="numberPassword"
             android:maxLength="6"
-            android:textColor="@android:color/white"
-            android:visibility="invisible"/>
+            android:textColor="@android:color/white"/>
 
         <LinearLayout
             android:id="@+id/ll"
