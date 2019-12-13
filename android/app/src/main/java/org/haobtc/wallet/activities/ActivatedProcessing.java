@@ -32,7 +32,7 @@ public class ActivatedProcessing extends BaseActivity {
     }
     @Override
     public void initData() {
-        NfcUtils.Nfc(this);
+        NfcUtils.nfc(this);
 
     }
     @Override
@@ -73,7 +73,7 @@ public class ActivatedProcessing extends BaseActivity {
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             // get the i/o handle from the intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            PyObject nfc = Global.py.getModule("python-trezor.src.trezorlib.transport.nfc");
+            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
             PyObject nfcHandler = nfc.get("NFCHandle");
             nfcHandler.put("device", tag);
 /*            Log.i("tag", "tag in nfc");

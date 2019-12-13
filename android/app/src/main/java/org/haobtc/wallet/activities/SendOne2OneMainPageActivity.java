@@ -52,6 +52,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -138,7 +139,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                bytesCount.setText(String.format("%d/20", input.length()));
+                bytesCount.setText(String.format(Locale.CHINA,"%d/20", input.length()));
                 if (input.length() > 19) {
                     Toast.makeText(SendOne2OneMainPageActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
                 }

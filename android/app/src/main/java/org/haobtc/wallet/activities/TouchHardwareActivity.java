@@ -89,9 +89,11 @@ public class TouchHardwareActivity extends BaseActivity {
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             // get the i/o handle from the intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            PyObject nfc = Global.py.getModule("python-trezor.src.trezorlib.transport.nfc");
+            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
             PyObject nfcHandler = nfc.get("NFCHandle");
             nfcHandler.put("device", tag);
+            PyObject trezor = Global.py.getModule("trezorlib.client");
+            trezor.callAttr("ping1","nfc");
 /*            Log.i("tag", "tag in nfc");
             PyObject instance = nfcHandler.call();
             PyObject tagInPy = instance.get("device");
