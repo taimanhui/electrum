@@ -7,9 +7,10 @@ from os.path import exists, join
 import pkgutil
 import unittest
 
+from electrum.bitcoin import base_decode, is_address
 from electrum.plugin import Plugins
 from electrum.transaction import Transaction, TxOutput
-from electrum import commands, daemon, keystore, simple_config, storage, tests, util
+from electrum import commands, daemon, keystore, simple_config, storage, util
 from electrum.util import Fiat
 from electrum import MutiBase
 from electrum.i18n import _
@@ -360,7 +361,7 @@ class AndroidCommands(commands.Commands):
         print("console.mktx.outpus = %s======" %outputs)
         all_output_add = json.loads(outputs)
         outputs_addrs = []
-        for address, amount in all_output_add.items():
+        for address, amount in all_output_add:
             outputs_addrs.append(TxOutput(TYPE_ADDRESS, address, satoshis(amount)))
         #outputs_addrs = [(TxOutput(TYPE_ADDRESS, "tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m", satoshis(0.01)))]
         print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
@@ -593,6 +594,7 @@ class AndroidCommands(commands.Commands):
         return self.get_details_info(tx)
 
     def get_card(self, tx_hash, tx_mined_status, value, balance):
+        import decimal
         try:
             self._assert_wallet_isvalid()
             self._assert_daemon_running()
@@ -630,7 +632,6 @@ class AndroidCommands(commands.Commands):
 
     ##Analyze QR data
     def parse_qr(self, data):
-        from electrum.bitcoin import base_decode, is_address
         data = data.strip()
         ret_data = {}
         npos = data.find("bitcoin:")
@@ -664,7 +665,7 @@ class AndroidCommands(commands.Commands):
             ret_data['data'] = data
             return json.dumps(ret_data)
 
-    def broadcast_tx(self):
+    def broadcast_tx(self, tx):
         if self.network and self.network.is_connected():
             status = False
             try:
@@ -710,26 +711,26 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise e
     ##connection with terzorlib#########################
-    def get_xpub_from_hw(self):
+    def get_feature(self):
         plugin = self.plugin.get_plugin("trezor")
-        xpub = plugin.get_xpub('', '', 'standard', plugin.handler)
 
+    def get_xpub_from_hw(self):
         #import usb1
-        devices = self.get_connected_hw_devices(self.plugin)
-        print("console:get_xpub_from_hw:devices=%s=====" % devices)
-        if len(devices) == 0:
-            print("Error: No connected hw device found. Cannot decrypt this wallet.")
-            import sys
-            sys.exit(1)
-        elif len(devices) > 1:
-            print("Warning: multiple hardware devices detected. "
-                      "The first one will be used to decrypt the wallet.")
-        # FIXME we use the "first" device, in case of multiple ones
-        name, device_info = devices[0]
+        # devices = self.get_connected_hw_devices(self.plugin)
+        # print("console:get_xpub_from_hw:devices=%s=====" % devices)
+        # if len(devices) == 0:
+        #     print("Error: No connected hw device found. Cannot decrypt this wallet.")
+        #     import sys
+        #     sys.exit(1)
+        # elif len(devices) > 1:
+        #     print("Warning: multiple hardware devices detected. "
+        #               "The first one will be used to decrypt the wallet.")
+        # # FIXME we use the "first" device, in case of multiple ones
+        # name, device_info = devices[0]
         plugin = self.plugin.get_plugin("trezor")
-        print("console:get_xpub_from_hw:plugin=%s=====" % plugin)
-        from electrum.storage import get_derivation_used_for_hw_device_encryption
-        derivation = get_derivation_used_for_hw_device_encryption()
+        # print("console:get_xpub_from_hw:plugin=%s=====" % plugin)
+        # from electrum.storage import get_derivation_used_for_hw_device_encryption
+        # derivation = get_derivation_used_for_hw_device_encryption()
         print("console:get_xpub_from_hw:derivation=%s=====" % derivation)
         xpub = plugin.get_xpub(device_info.device.id_, derivation, 'standard', plugin.handler)
         print("console:get_xpub_from_hw:xpub=%s=====" % xpub)
@@ -818,15 +819,15 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise e
 
-    def unit_test(self):
-        """Run all unit tests. Expect failures with functionality not present on Android,
-        such as Trezor.
-        """
-        suite = unittest.defaultTestLoader.loadTestsFromNames(
-            tests.__name__ + "." + info.name
-            for info in pkgutil.iter_modules(tests.__path__)
-            if info.name.startswith("test_"))
-        unittest.TextTestRunner(verbosity=2).run(suite)
+    # def unit_test(self):
+    #     """Run all unit tests. Expect failures with functionality not present on Android,
+    #     such as Trezor.
+    #     """
+    #     suite = unittest.defaultTestLoader.loadTestsFromNames(
+    #         tests.__name__ + "." + info.name
+    #         for info in pkgutil.iter_modules(tests.__path__)
+    #         if info.name.startswith("test_"))
+    #     unittest.TextTestRunner(verbosity=2).run(suite)
 
     # END commands which only exist here.
 
