@@ -72,6 +72,58 @@ base_units_list = ['BTC', 'mBTC', 'bits', 'sat']  # list(dict) does not guarante
 
 DECIMAL_POINT_DEFAULT = 5  # mBTC
 
+# types of payment requests
+PR_TYPE_ONCHAIN = 0
+PR_TYPE_LN = 2
+
+# status of payment requests
+PR_UNPAID   = 0
+PR_EXPIRED  = 1
+PR_UNKNOWN  = 2     # sent but not propagated
+PR_PAID     = 3     # send and propagated
+PR_INFLIGHT = 4     # unconfirmed
+PR_FAILED   = 5
+
+pr_color = {
+    PR_UNPAID:   (.7, .7, .7, 1),
+    PR_PAID:     (.2, .9, .2, 1),
+    PR_UNKNOWN:  (.7, .7, .7, 1),
+    PR_EXPIRED:  (.9, .2, .2, 1),
+    PR_INFLIGHT: (.9, .6, .3, 1),
+    PR_FAILED:   (.9, .2, .2, 1),
+}
+
+pr_tooltips = {
+    PR_UNPAID:_('Pending'),
+    PR_PAID:_('Paid'),
+    PR_UNKNOWN:_('Unknown'),
+    PR_EXPIRED:_('Expired'),
+    PR_INFLIGHT:_('In progress'),
+    PR_FAILED:_('Failed'),
+}
+
+pr_expiration_values = {
+    0: _('Never'),
+    10*60: _('10 minutes'),
+    60*60: _('1 hour'),
+    24*60*60: _('1 day'),
+    7*24*60*60: _('1 week')
+}
+
+def get_request_status(req):
+    status = req['status']
+    exp = req.get('exp', 0)
+    if req['status'] == PR_UNPAID and exp > 0 and req['time'] + req['exp'] < time.time():
+        status = PR_EXPIRED
+    status_str = pr_tooltips[status]
+    if status == PR_UNPAID:
+        if exp > 0:
+            expiration = exp + req['time']
+            status_str = _('Expires') + ' ' + age(expiration, include_seconds=True)
+        else:
+            status_str = _('Pending')
+    return status, status_str
+
 
 class UnknownBaseUnit(Exception): pass
 
@@ -131,6 +183,8 @@ class BitcoinException(Exception): pass
 
 class UserFacingException(Exception):
     """Exception that contains information intended to be shown to the user."""
+
+class InvoiceError(UserFacingException): pass
 
 
 # Throw this exception to unwind the stack like when an error occurs.
@@ -204,9 +258,11 @@ class Fiat(object):
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         # note: this does not get called for namedtuples :(  https://bugs.python.org/issue30343
-        from .transaction import Transaction
+        from .transaction import Transaction, TxOutput
         if isinstance(obj, Transaction):
-            return obj.as_dict()
+            return obj.serialize()
+        if isinstance(obj, TxOutput):
+            return obj.to_legacy_tuple()
         if isinstance(obj, Satoshis):
             return str(obj)
         if isinstance(obj, Fiat):
@@ -529,9 +585,11 @@ def chunks(items, size: int):
         yield items[i: i + size]
 
 
-def format_satoshis_plain(x, decimal_point = 8):
+def format_satoshis_plain(x, decimal_point = 8) -> str:
     """Display a satoshi amount scaled.  Always uses a '.' as a decimal
     point and has no thousands separator"""
+    if x == '!':
+        return 'max'
     scale_factor = pow(10, decimal_point)
     return "{:.8f}".format(Decimal(x) / scale_factor).rstrip('0').rstrip('.')
 
@@ -578,7 +636,7 @@ def format_fee_satoshis(fee, *, num_zeros=0, precision=None):
     return format_satoshis(fee, num_zeros=num_zeros, decimal_point=0, precision=precision)
 
 
-def quantize_feerate(fee):
+def quantize_feerate(fee) -> Union[None, Decimal, int]:
     """Strip sat/byte fee rate of excess precision."""
     if fee is None:
         return None
@@ -791,7 +849,7 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
             raise InvalidBitcoinURI(f"failed to parse 'exp' field: {repr(e)}") from e
     if 'sig' in out:
         try:
-            out['sig'] = bh2u(bitcoin.base_decode(out['sig'], None, base=58))
+            out['sig'] = bh2u(bitcoin.base_decode(out['sig'], base=58))
         except Exception as e:
             raise InvalidBitcoinURI(f"failed to parse 'sig' field: {repr(e)}") from e
 
@@ -834,6 +892,15 @@ def create_bip21_uri(addr, amount_sat: Optional[int], message: Optional[str],
         query.append(f"{k}={v}")
     p = urllib.parse.ParseResult(scheme='bitcoin', netloc='', path=addr, params='', query='&'.join(query), fragment='')
     return str(urllib.parse.urlunparse(p))
+
+
+def maybe_extract_bolt11_invoice(data: str) -> Optional[str]:
+    lower = data.lower()
+    if lower.startswith('lightning:ln'):
+        lower = lower[10:]
+    if lower.startswith('ln'):
+        return lower
+    return None
 
 
 # Python bug (http://bugs.python.org/issue1927) causes raw_input
@@ -951,14 +1018,17 @@ def ignore_exceptions(func):
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
-        except BaseException as e:
+        except asyncio.CancelledError:
+            # note: with python 3.8, CancelledError no longer inherits Exception, so this catch is redundant
+            raise
+        except Exception as e:
             pass
     return wrapper
 
 
 class TxMinedInfo(NamedTuple):
     height: int                        # height of block that mined tx
-    conf: Optional[int] = None         # number of confirmations (None means unknown)
+    conf: Optional[int] = None         # number of confirmations, SPV verified (None means unknown)
     timestamp: Optional[int] = None    # timestamp of block that mined tx
     txpos: Optional[int] = None        # position of tx in serialized block
     header_hash: Optional[str] = None  # hash of block that mined tx
