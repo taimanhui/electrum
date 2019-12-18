@@ -186,7 +186,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
             }
         });
-        //cancle dialog
+        //cancel dialog
         view.findViewById(R.id.cancel_select_fee).setOnClickListener(v -> {
             dialogBtom.cancel();
         });
@@ -217,7 +217,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         //set see view
         View view = View.inflate(context, resource, null);
         dialogBtom = new Dialog(context, R.style.dialog);
-        //cancle dialog
+        //cancel dialog
         view.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
             dialogBtom.cancel();
         });

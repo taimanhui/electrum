@@ -67,7 +67,7 @@
     <string name="input_here">Input Here</string>
     <string name="add_cosigner">Add Cosigner</string>
     <string name="add">Add</string>
-    <string name="complete">Complete(0-5)</string>
+    <string name="complete">Complete(0–5)</string>
     <string name="create_successful">Created Successful</string>
     <string name="enter_wallet">Enter Wallet</string>
     <string name="transaction_records">TransRecords</string>
@@ -84,7 +84,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="main">Home Page</string>
     <string name="more">More</string>
-    <string name="cancle">Cancle</string>
+    <string name="cancel">Cancel</string>
     <string name="comments">Comment</string>
     <string name="limit">0/20</string>
     <string name="btc">BTC</string>
@@ -118,7 +118,7 @@
     <string name="address_qr">qrcode for address</string>
     <string name="boot_page_dot">dot</string>
     <string name="picture">this is a picture</string>
-    <string name="wallet_create_successful">Wallet Create Sucessful</string>
+    <string name="wallet_create_successful">Wallet Create Successful</string>
     <string name="balance">Balance</string>
     <string name="close">Close</string>
     <string name="wallet_list">Wallet List</string>
