@@ -23,10 +23,9 @@
 import binascii
 import os, sys, re, json
 from collections import defaultdict, OrderedDict
-from typing import NamedTuple, Union, TYPE_CHECKING, Tuple, Optional, Callable, Any
+from typing import NamedTuple, Union, TYPE_CHECKING, Tuple, Optional, Callable, Any, Sequence
 from datetime import datetime
 import decimal
-from functools import lru_cache
 from decimal import Decimal
 import traceback
 import urllib
@@ -41,11 +40,13 @@ import json
 import time
 from typing import NamedTuple, Optional
 import ssl
+import ipaddress
 
 import aiohttp
 from aiohttp_socks import SocksConnector, SocksVer
 from aiorpcx import TaskGroup
 import certifi
+import dns.resolver
 
 from .i18n import _
 from .logging import get_logger, Logger
@@ -184,6 +185,7 @@ class BitcoinException(Exception): pass
 class UserFacingException(Exception):
     """Exception that contains information intended to be shown to the user."""
 
+
 class InvoiceError(UserFacingException): pass
 
 
@@ -273,7 +275,9 @@ class MyEncoder(json.JSONEncoder):
             return obj.isoformat(' ')[:-3]
         if isinstance(obj, set):
             return list(obj)
-        return super().default(obj)
+        if hasattr(obj, 'to_json') and callable(obj.to_json):
+            return obj.to_json()
+        return super(MyEncoder, self).default(obj)
 
 
 class ThreadJob(Logger):
@@ -351,7 +355,6 @@ class DaemonThread(threading.Thread, Logger):
     def start(self):
         with self.running_lock:
             self.running = True
-        print("a.start in..............")
         return threading.Thread.start(self)
 
     def is_running(self):
@@ -413,11 +416,12 @@ def profiler(func):
         return o
     return lambda *args, **kw_args: do_profile(args, kw_args)
 
-@lru_cache()
+
 def android_data_dir():
-    from com.chaquo.python import Python
-    context = Python.getPlatform().getApplication()
-    return context.getFilesDir().getPath() + '/data'
+    import jnius
+    PythonActivity = jnius.autoclass('org.kivy.android.PythonActivity')
+    return PythonActivity.mActivity.getFilesDir().getPath() + '/data'
+
 
 def ensure_sparse_file(filename):
     # On modern Linux, no need to do anything.
@@ -525,10 +529,16 @@ def bh2u(x: bytes) -> str:
     return x.hex()
 
 
+def xor_bytes(a: bytes, b: bytes) -> bytes:
+    size = min(len(a), len(b))
+    return ((int.from_bytes(a[:size], "big") ^ int.from_bytes(b[:size], "big"))
+            .to_bytes(size, "big"))
+
+
 def user_dir():
     if 'ANDROID_DATA' in os.environ:
         return android_data_dir()
-    if os.name == 'posix':
+    elif os.name == 'posix':
         return os.path.join(os.environ["HOME"], ".electrum")
     elif "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], "Electrum")
@@ -594,12 +604,14 @@ def format_satoshis_plain(x, decimal_point = 8) -> str:
     return "{:.8f}".format(Decimal(x) / scale_factor).rstrip('0').rstrip('.')
 
 
-DECIMAL_POINT = localeconv()['decimal_point']
+DECIMAL_POINT = localeconv()['decimal_point']  # type: str
 
 
-def format_satoshis(x, num_zeros=0, decimal_point=8, precision=None, is_diff=False, whitespaces=False):
+def format_satoshis(x, num_zeros=0, decimal_point=8, precision=None, is_diff=False, whitespaces=False) -> str:
     if x is None:
         return 'unknown'
+    if x == '!':
+        return 'max'
     if precision is None:
         precision = decimal_point
     # format string
@@ -671,22 +683,11 @@ def time_difference(distance_in_time, include_seconds):
     distance_in_seconds = int(round(abs(distance_in_time.days * 86400 + distance_in_time.seconds)))
     distance_in_minutes = int(round(distance_in_seconds/60))
 
-    if distance_in_minutes <= 1:
+    if distance_in_minutes == 0:
         if include_seconds:
-            for remainder in [5, 10, 20]:
-                if distance_in_seconds < remainder:
-                    return "less than %s seconds" % remainder
-            if distance_in_seconds < 40:
-                return "half a minute"
-            elif distance_in_seconds < 60:
-                return "less than a minute"
-            else:
-                return "1 minute"
+            return "%s seconds" % distance_in_seconds
         else:
-            if distance_in_minutes == 0:
-                return "less than a minute"
-            else:
-                return "1 minute"
+            return "less than a minute"
     elif distance_in_minutes < 45:
         return "%s minutes" % distance_in_minutes
     elif distance_in_minutes < 90:
@@ -1218,3 +1219,34 @@ def multisig_type(wallet_type):
     if match:
         match = [int(x) for x in match.group(1, 2)]
     return match
+
+
+def is_ip_address(x: Union[str, bytes]) -> bool:
+    if isinstance(x, bytes):
+        x = x.decode("utf-8")
+    try:
+        ipaddress.ip_address(x)
+        return True
+    except ValueError:
+        return False
+
+
+def list_enabled_bits(x: int) -> Sequence[int]:
+    """e.g. 77 (0b1001101) --> (0, 2, 3, 6)"""
+    binary = bin(x)[2:]
+    rev_bin = reversed(binary)
+    return tuple(i for i, b in enumerate(rev_bin) if b == '1')
+
+
+def resolve_dns_srv(host: str):
+    srv_records = dns.resolver.query(host, 'SRV')
+    # priority: prefer lower
+    # weight: tie breaker; prefer higher
+    srv_records = sorted(srv_records, key=lambda x: (x.priority, -x.weight))
+
+    def dict_from_srv_record(srv):
+        return {
+            'host': str(srv.target),
+            'port': srv.port,
+        }
+    return [dict_from_srv_record(srv) for srv in srv_records]

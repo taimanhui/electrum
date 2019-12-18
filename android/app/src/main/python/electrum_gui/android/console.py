@@ -8,13 +8,13 @@ import pkgutil
 import unittest
 
 from electrum.plugin import Plugins
-from electrum.transaction import Transaction, TxOutput
-from electrum import commands, daemon, keystore, simple_config, storage, tests, util
+from electrum.transaction import Transaction, TxOutput, PartialTxOutput, tx_from_any
+from electrum import commands, daemon, keystore, simple_config, storage, util
 from electrum.util import Fiat
 from electrum import MutiBase
 from electrum.i18n import _
 from electrum.storage import WalletStorage
-from electrum.wallet import (ImportedAddressWallet, ImportedPrivkeyWallet, Standard_Wallet,
+from electrum.wallet import (Standard_Wallet,
                                  Wallet)
 from electrum.bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
 
@@ -100,13 +100,13 @@ class AndroidCommands(commands.Commands):
         config_options['auto_connect'] = True
         self.config = simple_config.SimpleConfig(config_options)
 
-        fd, server = daemon.get_fd_or_server(self.config)
+        fd = daemon.get_file_descriptor(self.config)
         if not fd:
             raise Exception("Daemon already running")  # Same wording as in daemon.py.
 
         # Initialize here rather than in start() so the DaemonModel has a chance to register
         # its callback before the daemon threads start.
-        self.daemon = daemon.Daemon(self.config, fd, False)
+        self.daemon = daemon.Daemon(self.config, fd)
         self.network = self.daemon.network
         #self.network.register_callback(self._on_callback, CALLBACKS)
         self.daemon_running = False
@@ -227,7 +227,7 @@ class AndroidCommands(commands.Commands):
 
     def start(self):
         """Start the daemon"""
-        self.daemon.start()
+        self.daemon.run_daemon()
         self.daemon_running = True                      
 
     def status(self):
@@ -267,7 +267,7 @@ class AndroidCommands(commands.Commands):
                     raise util.InvalidPassword()
                 storage.decrypt(password)
 
-            wallet = Wallet(storage)
+            wallet = Wallet(storage, config = self.config)
             wallet.start_network(self.network)
             self.daemon.add_wallet(wallet)
 
@@ -340,7 +340,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise e
         if storage:
-            wallet = Wallet(storage)
+            wallet = Wallet(storage, config=self.config)
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
             if self.wallet:
@@ -357,27 +357,32 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
         except Exception as e:
             raise e
+
         print("console.mktx.outpus = %s======" %outputs)
         all_output_add = json.loads(outputs)
         outputs_addrs = []
-        for address, amount in all_output_add.items():
-            outputs_addrs.append(TxOutput(TYPE_ADDRESS, address, satoshis(amount)))
+        for address, amount in all_output_add:
+            outputs_addrs.append(PartialTxOutput.from_address_and_value(address, satoshis(amount)))
         #outputs_addrs = [(TxOutput(TYPE_ADDRESS, "tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m", satoshis(0.01)))]
         print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
-        coins = self.wallet.get_spendable_coins(None, self.config)
+        coins = self.wallet.get_spendable_coins(domain = None)
         try:
-            tx = self.wallet.make_unsigned_transaction(coins, outputs_addrs, self.config, fixed_fee=satoshis(fee))
+            tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=satoshis(fee))
+            tx.set_rbf(self.rbf)
+            self.wallet.set_label(tx.txid, message)
+            #raw_tx = tx.serialize()
+            partial_tx = tx.serialize_as_bytes().hex()
+            print("console:mkun:tx====%s" % partial_tx)
+           # tx = tx_from_any(partial_tx)
+            tx_details = self.wallet.get_tx_info(tx)
+            ret_data = {
+                'amount': tx_details.amount,
+                'fee': tx_details.fee,
+                'tx': str(partial_tx)
+            }
         except Exception as e:
             raise e
-        tx.set_rbf(self.rbf)
-        print("console:mkun:tx====%s" %tx)
-        self.wallet.set_label(tx.txid, message)
-        tx_details = self.wallet.get_tx_info(tx)
-        ret_data = {
-            'amount':tx_details.amount,
-            'fee':tx_details.fee,
-            'tx':str(tx)
-        }
+
         json_str = json.dumps(ret_data)
         return json_str
 
@@ -404,7 +409,7 @@ class AndroidCommands(commands.Commands):
                     raise Exception("not find file %s" %path)
 
                 try:
-                    wallet = Wallet(storage)
+                    wallet = Wallet(storage, config=self.config)
                 except Exception as e:
                     raise e
             c, u, x = wallet.get_balance()
@@ -450,9 +455,9 @@ class AndroidCommands(commands.Commands):
     def get_tx_info_from_raw(self, raw_tx):
         from electrum.transaction import Transaction
         try:
-            tx = Transaction(raw_tx)
-            print("console:get_tx_info_from_raw:tx===%s" %tx)
-            #tx.deserialize()
+            tx = tx_from_any(bytes.fromhex(raw_tx))
+           # tx = tx_from_any(raw_tx)
+            print("console:get_tx_info_from_raw:tx===%s" %raw_tx)
         except Exception as e:
             tx = None
             raise e
@@ -466,7 +471,8 @@ class AndroidCommands(commands.Commands):
         tx_details = self.wallet.get_tx_info(tx)
         s, r = tx.signature_count()
         out_list = []
-        for address, value in tx.get_outputs_for_UI():
+        for o in tx.outputs():
+            address, value = o.address, o.value
             out_info = {}
             out_info['addr'] = address
             out_info['amount'] = value
@@ -481,7 +487,7 @@ class AndroidCommands(commands.Commands):
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
             'sign_status':[s,r],
             'output_addr':out_list,
-            'input_addr':[txin.get("address") for txin in tx.inputs()],
+            'input_addr':[txin.address for txin in tx.inputs()],
             'cosigner':[x.xpub for x in self.wallet.get_keystores()],
         }
         json_data = json.dumps(ret_data)
@@ -588,11 +594,14 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise e
         tx = self.wallet.db.get_transaction(tx_hash)
+
+        tx = tx_from_any(bytes.fromhex(tx.serialize()))
+        print("get_tx_info:tx=%s" %tx)
         if not tx:
             raise Exception('get transaction info failed')
         return self.get_details_info(tx)
 
-    def get_card(self, tx_hash, tx_mined_status, value, balance):
+    def get_card(self, tx_hash, tx_mined_status, delta, fee, balance):
         try:
             self._assert_wallet_isvalid()
             self._assert_daemon_running()
@@ -605,13 +614,13 @@ class AndroidCommands(commands.Commands):
         ri['date'] = status_str
         ri['message'] = label
         ri['confirmations'] = tx_mined_status.conf
-        if value is not None:
-            ri['is_mine'] = value < 0
-            if value < 0: value = - value
-            ri['amount'] = self.format_amount_and_units(value)
+        if delta is not None:
+            ri['is_mine'] = delta < 0
+            if delta < 0: delta = - delta
+            ri['amount'] = self.format_amount_and_units(delta)
             if self.fiat_unit:
                 fx = self.daemon.fx
-                fiat_value = value / Decimal(bitcoin.COIN) * self.wallet.price_at_timestamp(tx_hash,
+                fiat_value = delta / Decimal(bitcoin.COIN) * self.wallet.price_at_timestamp(tx_hash,
                                                                                                 fx.timestamp_rate)
                 fiat_value = Fiat(fiat_value, fx.ccy)
                 ri['quote_text'] = fiat_value.to_ui_string()
@@ -653,9 +662,8 @@ class AndroidCommands(commands.Commands):
         from electrum.transaction import Transaction
         from electrum.util import bh2u
         try:
-            text = bh2u(base_decode(data, None, base=43))
-            tx = Transaction(text)
-            #tx.deserialize()
+            text = bh2u(base_decode(data, base=43))
+            tx = tx_from_any(bytes.fromhex(text))
         except Exception as e:
             tx = None
             raise e
@@ -710,28 +718,39 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise e
     ##connection with terzorlib#########################
+    def set_pin(self):
+        plugin = self.plugin.get_plugin("trezor")
+
+    def get_feature(self):
+        plugin = self.plugin.get_plugin("trezor")
+        client = plugin.create_client(None, None)
+        info = client.features()
+        return info
+    
     def get_xpub_from_hw(self):
         plugin = self.plugin.get_plugin("trezor")
-        xpub = plugin.get_xpub('', '', 'standard', plugin.handler)
-
-        #import usb1
-        devices = self.get_connected_hw_devices(self.plugin)
-        print("console:get_xpub_from_hw:devices=%s=====" % devices)
-        if len(devices) == 0:
-            print("Error: No connected hw device found. Cannot decrypt this wallet.")
-            import sys
-            sys.exit(1)
-        elif len(devices) > 1:
-            print("Warning: multiple hardware devices detected. "
-                      "The first one will be used to decrypt the wallet.")
-        # FIXME we use the "first" device, in case of multiple ones
-        name, device_info = devices[0]
-        plugin = self.plugin.get_plugin("trezor")
-        print("console:get_xpub_from_hw:plugin=%s=====" % plugin)
-        from electrum.storage import get_derivation_used_for_hw_device_encryption
-        derivation = get_derivation_used_for_hw_device_encryption()
-        print("console:get_xpub_from_hw:derivation=%s=====" % derivation)
-        xpub = plugin.get_xpub(device_info.device.id_, derivation, 'standard', plugin.handler)
+        client = plugin.create_client(None, None)
+        xpub = client.get_xpub(derivation, xtype)
+        # xpub = plugin.get_xpub('', '', 'standard', plugin.handler)
+        # 
+        # #import usb1
+        # devices = self.get_connected_hw_devices(self.plugin)
+        # print("console:get_xpub_from_hw:devices=%s=====" % devices)
+        # if len(devices) == 0:
+        #     print("Error: No connected hw device found. Cannot decrypt this wallet.")
+        #     import sys
+        #     sys.exit(1)
+        # elif len(devices) > 1:
+        #     print("Warning: multiple hardware devices detected. "
+        #               "The first one will be used to decrypt the wallet.")
+        # # FIXME we use the "first" device, in case of multiple ones
+        # name, device_info = devices[0]
+        # plugin = self.plugin.get_plugin("trezor")
+        # print("console:get_xpub_from_hw:plugin=%s=====" % plugin)
+        # from electrum.storage import get_derivation_used_for_hw_device_encryption
+        # derivation = get_derivation_used_for_hw_device_encryption()
+        # print("console:get_xpub_from_hw:derivation=%s=====" % derivation)
+        #xpub = plugin.get_xpub(device_info.device.id_, derivation, 'standard', plugin.handler)
         print("console:get_xpub_from_hw:xpub=%s=====" % xpub)
         return xpub
 
@@ -770,9 +789,11 @@ class AndroidCommands(commands.Commands):
         storage = WalletStorage(path)
 
         if addresses is not None:
-            wallet = ImportedAddressWallet.from_text(storage, addresses)
+            print("")
+           # wallet = ImportedAddressWallet.from_text(storage, addresses)
         elif privkeys is not None:
-            wallet = ImportedPrivkeyWallet.from_text(storage, privkeys)
+            print("")
+            #wallet = ImportedPrivkeyWallet.from_text(storage, privkeys)
         else:
             if bip39_derivation is not None:
                 ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
@@ -797,7 +818,7 @@ class AndroidCommands(commands.Commands):
         if name is None:
             self.wallet = None
         else:
-            self.wallet = self.daemon.wallets[self._wallet_path(name)]
+            self.wallet = self.daemon._wallets[self._wallet_path(name)]
 
         print("console.select_wallet[%s]=%s" %(name, self.wallet))
         c, u, x = self.wallet.get_balance()

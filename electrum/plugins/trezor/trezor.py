@@ -135,7 +135,6 @@ class TrezorPlugin(HW_PluginBase):
         try:
             call_bridge("enumerate")
         except Exception:
-            print("-----------------------------1111111111111111111111111-----------------------")
             devices = trezorlib.transport.enumerate_devices()
         else:
             devices = BridgeTransport.enumerate()
@@ -149,8 +148,8 @@ class TrezorPlugin(HW_PluginBase):
 
     def create_client(self, device, handler):
         try:
-            self.logger.info(f"connecting to device at {device.path}")
-            transport = trezorlib.transport.get_transport(device.path)
+            #self.logger.info(f"connecting to device at {device.path}")
+            transport = trezorlib.transport.get_transport('nfc')
         except BaseException as e:
             self.logger.info(f"cannot connect at {device.path} {e}")
             return None
@@ -206,7 +205,7 @@ class TrezorPlugin(HW_PluginBase):
             exit_code = 1
         except BaseException as e:
             self.logger.exception('')
-            handler.show_error(str(e))
+            handler.show_error(repr(e))
             exit_code = 1
         finally:
             wizard.loop.exit(exit_code)
@@ -397,11 +396,7 @@ class TrezorPlugin(HW_PluginBase):
             signatures=[b''] * len(pubkeys),
             m=m)
 
-<<<<<<< HEAD
-    def tx_outputs(self, derivation, tx):
-=======
     def tx_outputs(self, tx: PartialTransaction, *, keystore: 'TrezorKeyStore'):
->>>>>>> master
 
         def create_output_by_derivation():
             script_type = self.get_trezor_output_script_type(txout.script_type)
@@ -438,23 +433,12 @@ class TrezorPlugin(HW_PluginBase):
             address = txout.address
             use_create_by_derivation = False
 
-<<<<<<< HEAD
-            info = tx.output_info.get(address)
-            if info is not None and not has_change:
-                index, xpubs, m = info.address_index, info.sorted_xpubs, info.num_sig
-                on_change_branch = index[0] == 1
-=======
             if txout.is_mine and not has_change:
->>>>>>> master
                 # prioritise hiding outputs on the 'change' branch from user
                 # because no more than one change address allowed
                 # note: ^ restriction can be removed once we require fw
                 # that has https://github.com/trezor/trezor-mcu/pull/306
-<<<<<<< HEAD
-                if on_change_branch == any_output_on_change_branch:
-=======
                 if txout.is_change == any_output_on_change_branch:
->>>>>>> master
                     use_create_by_derivation = True
                     has_change = True
 
