@@ -7,6 +7,7 @@ from os.path import exists, join
 import pkgutil
 import unittest
 
+from electrum.bitcoin import base_decode, is_address
 from electrum.plugin import Plugins
 from electrum.transaction import Transaction, TxOutput, PartialTxOutput, tx_from_any
 from electrum import commands, daemon, keystore, simple_config, storage, util
@@ -456,7 +457,6 @@ class AndroidCommands(commands.Commands):
         from electrum.transaction import Transaction
         try:
             tx = tx_from_any(bytes.fromhex(raw_tx))
-           # tx = tx_from_any(raw_tx)
             print("console:get_tx_info_from_raw:tx===%s" %raw_tx)
         except Exception as e:
             tx = None
@@ -639,7 +639,6 @@ class AndroidCommands(commands.Commands):
 
     ##Analyze QR data
     def parse_qr(self, data):
-        from electrum.bitcoin import base_decode, is_address
         data = data.strip()
         ret_data = {}
         npos = data.find("bitcoin:")
@@ -672,7 +671,7 @@ class AndroidCommands(commands.Commands):
             ret_data['data'] = data
             return json.dumps(ret_data)
 
-    def broadcast_tx(self):
+    def broadcast_tx(self, tx):
         if self.network and self.network.is_connected():
             status = False
             try:
@@ -839,15 +838,15 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise e
 
-    def unit_test(self):
-        """Run all unit tests. Expect failures with functionality not present on Android,
-        such as Trezor.
-        """
-        suite = unittest.defaultTestLoader.loadTestsFromNames(
-            tests.__name__ + "." + info.name
-            for info in pkgutil.iter_modules(tests.__path__)
-            if info.name.startswith("test_"))
-        unittest.TextTestRunner(verbosity=2).run(suite)
+    # def unit_test(self):
+    #     """Run all unit tests. Expect failures with functionality not present on Android,
+    #     such as Trezor.
+    #     """
+    #     suite = unittest.defaultTestLoader.loadTestsFromNames(
+    #         tests.__name__ + "." + info.name
+    #         for info in pkgutil.iter_modules(tests.__path__)
+    #         if info.name.startswith("test_"))
+    #     unittest.TextTestRunner(verbosity=2).run(suite)
 
     # END commands which only exist here.
 

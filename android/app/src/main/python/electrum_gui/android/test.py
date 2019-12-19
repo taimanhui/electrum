@@ -29,6 +29,9 @@ testcommond.start()
 name = 'hahahahhahh111'
 password = '111111'
 
+#test hardware
+#testcommond.get_xpub_from_hw()
+
 #create_wallet
 
 # m = 2
@@ -42,8 +45,10 @@ password = '111111'
 # testcommond.add_xpub(xpub2)
 # testcommond.create_multi_wallet(name)
 
-testcommond.get_feature()
+
+#testcommond.get_feature()
 #testcommond.get_xpub_from_hw()
+
 
 #load_wallet
 testcommond.load_wallet(name, password)
@@ -95,8 +100,8 @@ print("addr = %s--------" %add)
 #print("testinfo = %s------------" %testinfo)
 # testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'tobeconfirm')
 # print("testinfo = %s------------" %testinfo)
-testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'confirmed')
-print("testinfo = %s------------" %testinfo)
+#testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'confirmed')
+#print("testinfo = %s------------" %testinfo)
 # testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'send', None)
 # print("testinfo = %s------------" %testinfo)
 # testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'receive', None)
@@ -112,16 +117,16 @@ print("testinfo = %s------------" %testinfo)
 
 #get_tx_info
 
-info = testcommond.get_all_tx_list(ret_list['tx'])
-print("info== %s" % info)
-info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send', history_status='tobeconfirmed')
-print("info== %s" % info)
-info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
-print("info== %s" % info)
-info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send', history_status='tobeconfirmed')
-print("info== %s" % info)
-info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
-print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'])
+# print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send', history_status='tobeconfirmed')
+# print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
+# print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send', history_status='tobeconfirmed')
+# print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
+# print("info== %s" % info)
 #sign_tx
 #testcommond.sign_tx(ret_list['tx'])
 
