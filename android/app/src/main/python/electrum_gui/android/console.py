@@ -395,6 +395,7 @@ class AndroidCommands(commands.Commands):
             raise e
 
     def get_wallets_list_info(self):
+        wallet_info_map = {}
         try:
             self._assert_daemon_running()
         except Exception as e:

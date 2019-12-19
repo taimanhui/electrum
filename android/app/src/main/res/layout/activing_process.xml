@@ -30,7 +30,7 @@
         android:layout_marginTop="22dp"
         android:drawablePadding="@dimen/corner_radius"
         android:text="@string/connect"
-        android:drawableStart="@drawable/chenggong"
+        android:drawableStart="@drawable/jinxingzhong"
         android:textColor="@color/text"
         android:textSize="@dimen/smaller_text_size"/>
 
@@ -41,7 +41,7 @@
         android:layout_marginTop="12dp"
         android:layout_marginStart="135dp"
         android:text="@string/set_pin_processinfo"
-        android:drawableStart="@drawable/chenggong"
+        android:drawableStart="@drawable/jinxingzhong"
         android:drawablePadding="@dimen/corner_radius"
         android:textColor="@color/text"
         android:textSize="@dimen/smaller_text_size"/>

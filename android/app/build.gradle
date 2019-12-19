@@ -60,8 +60,11 @@ android {
                 srcDir REPO_ROOT
                 include "electrum/**"                               // In ../.. (renamed below)
                 include("chaquopy/**", "electrum_gui/**",  // In src/main/python
-                        "electrum_plugins/**", "python-trezor/**")             //
+                        "electrum_plugins/**")
                 exclude "**/*.po", "**/*.pot"
+
+                srcDir "src/main/trezor/python-trezor/src"
+                include "trezorlib/**"
             }
         }
     }
