@@ -46,8 +46,13 @@ class ScanQRTextEdit(ButtonsTextEdit, MessageBoxMixin):
         if not fileName:
             return
         try:
-            with open(fileName, "r") as f:
-                data = f.read()
+            try:
+                with open(fileName, "r") as f:
+                    data = f.read()
+            except UnicodeError as e:
+                with open(fileName, "rb") as f:
+                    data = f.read()
+                data = data.hex()
         except BaseException as e:
             self.show_error(_('Error opening file') + ':\n' + str(e))
         else:

@@ -33,7 +33,7 @@ from .bip32 import is_bip32_derivation, xpub_type, normalize_bip32_derivation
 from .keystore import bip44_derivation, purpose48_derivation
 from .wallet import (Imported_Wallet, Standard_Wallet, Multisig_Wallet,
                      wallet_types, Wallet, Abstract_Wallet)
-from .storage import (WalletStorage, STO_EV_USER_PW, STO_EV_XPUB_PW,
+from .storage import (WalletStorage,
                       get_derivation_used_for_hw_device_encryption)
 from .i18n import _
 from .util import UserCancelled, InvalidPassword, WalletFileException
