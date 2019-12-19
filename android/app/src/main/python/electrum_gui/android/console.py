@@ -398,6 +398,7 @@ class AndroidCommands(commands.Commands):
             self._assert_daemon_running()
         except Exception as e:
             raise e
+        wallet_info_map = {}
         wallets = self.list_wallets()
         wallet_info = []
         for i in wallets:
@@ -419,9 +420,8 @@ class AndroidCommands(commands.Commands):
                 "name" : i
             }
             wallet_info.append(info)
-            wallet_info_map = {}
             wallet_info_map['wallets'] = wallet_info
-        print("wallet_info = %s ............" % wallet_info_map)
+            print("wallet_info = %s ............" % wallet_info_map)
         return json.dumps(wallet_info_map)
 
     def format_amount(self, x, is_diff=False, whitespaces=False):
