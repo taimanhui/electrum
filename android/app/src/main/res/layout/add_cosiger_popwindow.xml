@@ -59,7 +59,21 @@
                 android:text="@string/method_one"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_5"
+                android:layout_marginTop="15dp"
+                android:layout_below="@+id/ln"
+                android:background="@color/text_red"
+                android:layout_toEndOf="@+id/textView8"
+                android:paddingLeft="3dp"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingRight="3dp"
+                android:paddingBottom="@dimen/dp_2"
+                android:text="@string/recommend"
+                android:textColor="@android:color/white"
+                android:textSize="10sp" />
 
             <RelativeLayout
                 android:id="@+id/lin_Useset"

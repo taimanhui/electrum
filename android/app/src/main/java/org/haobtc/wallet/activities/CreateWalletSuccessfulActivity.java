@@ -14,11 +14,15 @@ import android.widget.Toast;
 
 
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.bean.GetCodeAddressBean;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -65,10 +69,13 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
 
     private void mGeneratecode() {
         PyObject walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-        strCode = walletAddressShowUi.toJava(String.class);
-        textPublicKey.setText(strCode);
-
-        Bitmap bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
+        strCode = walletAddressShowUi.toString();
+        Gson gson = new Gson();
+        GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+        String qr_data = getCodeAddressBean.getQr_data();
+        String addr = getCodeAddressBean.getAddr();
+        textPublicKey.setText(addr);
+        Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
         imgCodePublicKey.setImageBitmap(bitmap);
 
     }
@@ -77,15 +84,15 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.copy_public_key:
-                Log.i("JXM", "onViewClicked: ");
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
                 cm.setText(textPublicKey.getText());
-                Toast.makeText(CreateWalletSuccessfulActivity.this, "复制成功!", Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateWalletSuccessfulActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_enter_wallet:
                 edit.putBoolean(FIRST_RUN, true);
                 edit.apply();
+                EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
 

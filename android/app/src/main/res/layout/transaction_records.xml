@@ -13,7 +13,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_54"
+        android:layout_height="54dp"
         android:layout_marginTop="@dimen/dp_1"
         android:background="@android:color/white"
         android:elevation="@dimen/dp_4"
@@ -22,12 +22,12 @@
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spi_BTC"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_54"
+            android:layout_height="54dp"
             android:layout_marginStart="@dimen/text_margin"
             android:layout_weight="1"
-            android:dropDownWidth="@dimen/dp130"
-            android:dropDownHorizontalOffset="@dimen/dp_70"
-            android:dropDownVerticalOffset="@dimen/dp_54"
+            android:dropDownWidth="130dp"
+            android:dropDownHorizontalOffset="70dp"
+            android:dropDownVerticalOffset="54dp"
             android:elevation="@dimen/layout_margin"
             android:entries="@array/type"
             android:gravity="center"
@@ -36,12 +36,12 @@
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spi_ZT"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_54"
+            android:layout_height="54dp"
             android:layout_marginEnd="@dimen/sp_16"
             android:layout_weight="1"
-            android:dropDownWidth="@dimen/dp130"
-            android:dropDownHorizontalOffset="@dimen/dp_70"
-            android:dropDownVerticalOffset="@dimen/dp_54"
+            android:dropDownWidth="130dp"
+            android:dropDownHorizontalOffset="70dp"
+            android:dropDownVerticalOffset="54dp"
             android:entries="@array/state"
             android:gravity="center_vertical"
             android:spinnerMode="dropdown">
@@ -68,6 +68,19 @@
             app:layoutManager="LinearLayoutManager"
             tools:itemCount="4"
             tools:listitem="@layout/fragment_item_trans" />
+
+        <TextView
+            android:id="@+id/tet_None"
+            android:textColor="@color/light_text"
+            android:layout_marginTop="50.5dp"
+            android:textSize="@dimen/text_size"
+            android:visibility="gone"
+            android:text="@string/no_records"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_200"/>
+
+
     </androidx.cardview.widget.CardView>
 
 

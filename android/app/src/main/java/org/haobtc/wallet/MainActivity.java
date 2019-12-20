@@ -1,5 +1,6 @@
 package org.haobtc.wallet;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -17,16 +19,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
-
+import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
 import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
 
@@ -40,10 +42,13 @@ import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.SignaturePageActivity;
+import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.adapter.MyPagerAdapter;
+import org.haobtc.wallet.bean.MainWheelBean;
+import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
@@ -57,7 +62,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.haobtc.wallet.utils.Global;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
@@ -82,6 +86,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int mCurrentPosition = 0;
     private TextView tetNone;
     private PyObject get_history_tx;
+    private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
+    private String rowTrsation = "";
+    private String tx_hash;
+    private String date;
+    private String amount;
+    private boolean is_mine;
+    private String confirmations;
+    private JSONArray jsonArray;
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+
+                    break;
+            }
+        }
+    };
+    private List<Fragment> fragmentList;
 
     @Override
     public int getLayoutId() {
@@ -91,7 +116,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void initView() {
-        sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        rowTrsation = sharedPreferences.getString("rowTrsation", "");
         //Eventbus register
         EventBus.getDefault().register(this);
         if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
@@ -125,11 +151,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         textView.setOnClickListener(this);
         btnAddmoney.setOnClickListener(this);
 
-        dataListName = new ArrayList<>();
-        //Rolling Wallet
-        mWheelplanting();
-        //Lower list data
-        mTransactionrecord();
+
     }
 
     private void initCreatWallet() {
@@ -144,75 +166,59 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void initData() {
-
-
+        maintrsactionlistEvents = new ArrayList<>();
+        dataListName = new ArrayList<>();
+        //Rolling Wallet
+        mWheelplanting();
     }
 
-    private void mTransactionrecord() {
-        ArrayList<String> dataList = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            dataList.add("ahiedjlmk32lk2n42nk44" + i);
-        }
-        MaindowndatalistAdapetr myItemRecyclerViewAdapterTransaction = new MaindowndatalistAdapetr(dataList);
-        recy_data.setAdapter(myItemRecyclerViewAdapterTransaction);
-
-    }
 
     private void mWheelplanting() {
-        List<Fragment> fragmentList = new ArrayList<>();
-        myDialog.show();
+        fragmentList = new ArrayList<>();
+
         PyObject get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
         String toString = get_wallets_list_info.toString();
         Log.i("javaBean", "mjavaBean----: " + toString + "----lenth----" + toString.length());
         if (!TextUtils.isEmpty(toString)) {
-            try {
-                JSONArray jsonArray = new JSONArray(toString);
+            Gson gson = new Gson();
+            MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
+            List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
+            for (int i = 0; i < wallets.size(); i++) {
+                String wallet_type = wallets.get(i).getWallet_type();
+                String balance = wallets.get(i).getBalance();
+                String name = wallets.get(i).getName();
+                dataListName.add(name);
+                String streplace = wallet_type.replaceAll("of", "/");
+                fragmentList.add(new WheelViewpagerFragment(name, streplace, balance));
 
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String wallet_type = jsonObject.getString("wallet_type");
-                    String balance = jsonObject.getString("balance");
-                    String name = jsonObject.getString("name");
-                    dataListName.add(name);
-                    String streplace = wallet_type.replaceAll("of", "/");
-                    fragmentList.add(new WheelViewpagerFragment(name, streplace, balance));
-
-                }
-                dataListName.add("");
-                fragmentList.add(new AddViewFragment());
-                viewPager.setOffscreenPageLimit(3);
-                viewPager.setPageMargin(40);
-                viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-                //choose wallet
-                Daemon.commands.callAttr("load_wallet", dataListName.get(0));
-                Daemon.commands.callAttr("select_wallet", dataListName.get(0));
-                //get transaction json
-                get_history_tx = Daemon.commands.callAttr("get_history_tx");
-                //get transaction list
-                if (get_history_tx != null) {
-                    tetNone.setVisibility(View.GONE);
-                    recy_data.setVisibility(View.VISIBLE);
-                    if (!get_history_tx.isEmpty()) {
-                        String strHistory = get_history_tx.toString();
-                        Log.i("strHistory", "onPage----: " + strHistory);
-                    } else {
-                        Toast.makeText(MainActivity.this, "get_history_tx.isEmpty()", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    tetNone.setVisibility(View.VISIBLE);
-                    recy_data.setVisibility(View.GONE);
-                }
-
-                myDialog.dismiss();
-
-                //scroll
-                viewPagerScroll();
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+
+            dataListName.add("");
+            fragmentList.add(new AddViewFragment());
+            viewPager.setOffscreenPageLimit(4);
+            viewPager.setPageMargin(40);
+            viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+            //choose wallet
+            Daemon.commands.callAttr("load_wallet", dataListName.get(0));
+            Daemon.commands.callAttr("select_wallet", dataListName.get(0));
+            //get transaction json
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
+            //get transaction list
+            if (!get_history_tx.isEmpty()) {
+                tetNone.setVisibility(View.GONE);
+                recy_data.setVisibility(View.VISIBLE);
+                String strHistory = get_history_tx.toString();
+                Log.i("strHistory", "onPage----: " + strHistory);
+                //show trsaction ist
+                showTrsactionlist(strHistory);
+            } else {
+                tetNone.setVisibility(View.VISIBLE);
+                recy_data.setVisibility(View.GONE);
+            }
+
         }
+        //scroll
+        viewPagerScroll();
 
     }
 
@@ -226,30 +232,40 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onPageSelected(int position) {
-                if (mCurrentPosition != position) {
-                    String strNames = dataListName.get(position);
-                    if (!TextUtils.isEmpty(strNames)) {
-                        Daemon.commands.callAttr("load_wallet", strNames);
-                        Daemon.commands.callAttr("select_wallet", strNames);
-                        get_history_tx = Daemon.commands.callAttr("get_history_tx");
-                        if (get_history_tx != null) {
-                            tetNone.setVisibility(View.GONE);
-                            recy_data.setVisibility(View.VISIBLE);
-                            if (!get_history_tx.isEmpty()) {
-                                String strHistory = get_history_tx.toString();
-                                Log.i("strHistory", "onPage----: " + strHistory);
-                            } else {
-                                Toast.makeText(MainActivity.this, "get_history_tx.isEmpty()", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            tetNone.setVisibility(View.VISIBLE);
-                            recy_data.setVisibility(View.GONE);
-                        }
-
-                    }
-
+                if (position != (fragmentList.size() - 1)) {
+                    myDialog.show();
                 }
-                mCurrentPosition = position;
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        maintrsactionlistEvents.clear();
+                        if (mCurrentPosition != position) {
+                            String strNames = dataListName.get(position);
+                            if (!TextUtils.isEmpty(strNames)) {
+                                Daemon.commands.callAttr("load_wallet", strNames);
+                                Daemon.commands.callAttr("select_wallet", strNames);
+                                get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
+                                if (!get_history_tx.isEmpty()) {
+                                    tetNone.setVisibility(View.GONE);
+                                    recy_data.setVisibility(View.VISIBLE);
+                                    String strHistory = get_history_tx.toString();
+                                    Log.i("strHistory", "onPage----: " + strHistory);
+                                    //show trsaction list
+                                    showTrsactionlist(strHistory);
+
+                                } else {
+                                    tetNone.setVisibility(View.VISIBLE);
+                                    recy_data.setVisibility(View.GONE);
+                                }
+
+                            }
+
+                        }
+                        mCurrentPosition = position;
+                    }
+                }, 350);
 
             }
 
@@ -258,6 +274,73 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             }
         });
+    }
+
+    //show trsaction list
+    private void showTrsactionlist(String strHistory) {
+        try {
+            jsonArray = new JSONArray(strHistory);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
+                String type = jsonObject.getString("type");
+                tx_hash = jsonObject.getString("tx_hash");
+                amount = jsonObject.getString("amount");
+                is_mine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
+                if (type.equals("history")) {
+                    date = jsonObject.getString("date");
+                    confirmations = jsonObject.getString("confirmations");
+
+                    //add attribute
+                    maintrsactionlistEvent.setTx_hash(tx_hash);
+                    maintrsactionlistEvent.setDate(date);
+                    maintrsactionlistEvent.setAmount(amount);
+                    maintrsactionlistEvent.setIs_mine(is_mine);
+                    maintrsactionlistEvent.setConfirmations(confirmations);
+                    maintrsactionlistEvent.setType(type);
+                    maintrsactionlistEvents.add(maintrsactionlistEvent);
+                } else {
+
+                    String tx_status = jsonObject.getString("tx_status");
+                    //add attribute
+                    maintrsactionlistEvent.setTx_hash(tx_hash);
+//                    maintrsactionlistEvent.setDate(date);
+                    maintrsactionlistEvent.setAmount(amount);
+                    maintrsactionlistEvent.setIs_mine(is_mine);
+                    maintrsactionlistEvent.setType(type);
+                    maintrsactionlistEvent.setTx_status(tx_status);
+                    maintrsactionlistEvents.add(maintrsactionlistEvent);
+                }
+
+                //Binder Adapter
+                recy_data.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                MaindowndatalistAdapetr trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
+                recy_data.setAdapter(trsactionlistAdapter);
+                myDialog.dismiss();
+                trsactionlistAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        try {
+                            JSONObject jsonObject = jsonArray.getJSONObject(position);
+                            String type1 = jsonObject.getString("type");
+                            String tx_hash1 = jsonObject.getString("tx_hash");
+                            Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
+                            intent.putExtra("tx_hash", tx_hash1);
+                            intent.putExtra("keyValue", "B");
+                            intent.putExtra("listType", type1);
+                            startActivity(intent);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -307,7 +390,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void event(FirstEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if (msgVote.equals("11")) {
-
+            Log.i("threadMode", "event: " + msgVote);
+            //Rolling Wallet
+            mWheelplanting();
         }
     }
 

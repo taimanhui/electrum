@@ -10,7 +10,9 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 
 public class WalletUnActivatedActivity extends BaseActivity {
     Button buttonActivate;
-    public static final String TAG = "org.haobtc.wallet.activities.WalletUnActivatedActivity";
+    public static final String TAG = "org.wallet.activities.WalletUnActivatedActivity";
+
+
     @Override
     public int getLayoutId() {
         return R.layout.activate;

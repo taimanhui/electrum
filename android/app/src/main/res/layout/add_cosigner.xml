@@ -62,7 +62,7 @@
                 android:layout_width="343dp"
                 android:layout_height="@dimen/dp_40"
                 android:layout_centerInParent="true"
-                android:background="@drawable/button_bk"
+                android:background="@drawable/little_radio_qian"
                 android:text="@string/complete"
                 android:textColor="@android:color/white">
 

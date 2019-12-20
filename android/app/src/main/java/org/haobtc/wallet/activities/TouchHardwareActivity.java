@@ -10,9 +10,10 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.util.Log;
+import android.widget.Toast;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+
 
 import com.chaquo.python.PyObject;
 
@@ -21,11 +22,12 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
-import java.util.Objects;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import java.io.IOException;
+import java.util.Objects;
 
 public class TouchHardwareActivity extends BaseActivity {
     public final static String FROM = "org.haobtc.wallet.from";
@@ -46,6 +48,7 @@ public class TouchHardwareActivity extends BaseActivity {
 
     @Override
     public void initData() {
+
         NfcUtils.nfc(this);
 
     }

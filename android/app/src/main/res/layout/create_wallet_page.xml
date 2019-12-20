@@ -8,9 +8,33 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <include layout="@layout/actionbar" />
+    <RelativeLayout
+        android:id="@+id/reckidshjkjsn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_44">
+
+        <ImageView
+            android:id="@+id/img_backCreat"
+            android:src="@drawable/back"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_8"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:text="@string/create_trans"
+            android:textSize="@dimen/text_size"
+            android:textColor="@color/text"/>
+
+    </RelativeLayout>
 
     <RelativeLayout
+        android:layout_below="@+id/reckidshjkjsn"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bk_page">
@@ -20,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="245dp"
             android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="@dimen/dp_16"
             android:layout_marginEnd="@dimen/layout_margin"
             app:cardCornerRadius="@dimen/corner_radius"
             app:layout_constraintEnd_toEndOf="parent"

@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/layout_margin"
                 android:layout_marginBottom="@dimen/dp_5"
-                android:text="@string/cosigner"
+                android:text="@string/co_signer"
                 app:layout_constraintBottom_toTopOf="@id/textView3"
                 app:layout_constraintStart_toEndOf="@id/imageView"
                 app:layout_constraintTop_toTopOf="@id/imageView" />

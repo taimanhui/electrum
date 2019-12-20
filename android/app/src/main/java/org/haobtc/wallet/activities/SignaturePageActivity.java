@@ -67,7 +67,7 @@ public class SignaturePageActivity extends BaseActivity implements View.OnClickL
                         .request(Manifest.permission.CAMERA)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                //如果已经授权就直接跳转到二维码扫面界面
+                                //If you have already authorized it, you can directly jump to the QR code scanning interface
                                 Intent intent2 = new Intent(this, CaptureActivity.class);
                                 startActivityForResult(intent2, REQUEST_CODE);
                             } else { // Oups permission denied

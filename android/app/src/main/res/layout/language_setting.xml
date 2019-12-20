@@ -22,22 +22,22 @@
             app:cardCornerRadius="@dimen/corner_radius">
 
 
-
                 <RadioGroup
+                    android:id="@+id/radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
                     android:orientation="vertical">
 
                     <RadioButton
+                        android:id="@+id/radio_chineseasy"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
                         android:button="@null"
-                        android:drawableEnd="@drawable/jiantou"
                         android:text="@string/zh_simple"
-                        android:textColor="@color/text" />
+                        android:textColor="@drawable/radiotext_color" />
 
                     <View
                         android:layout_width="match_parent"
@@ -45,13 +45,15 @@
                         android:background="@color/separation_line" />
 
                     <RadioButton
+                        android:id="@+id/radio_character"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
                         android:layout_weight="1"
                         android:button="@null"
-                        android:drawableEnd="@drawable/jiantou"
                         android:text="@string/zh_traditional"
-                        android:textColor="@color/text" />
+                        android:textColor="@drawable/radiotext_color" />
 
                     <View
                         android:layout_width="match_parent"
@@ -59,13 +61,15 @@
                         android:background="@color/separation_line" />
 
                     <RadioButton
+                        android:id="@+id/radio_english"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
                         android:button="@null"
-                        android:drawableEnd="@drawable/jiantou"
                         android:text="@string/en"
-                        android:textColor="@color/text" />
+                        android:textColor="@drawable/radiotext_color" />
 
                     <View
                         android:layout_width="match_parent"
@@ -73,13 +77,15 @@
                         android:background="@color/separation_line" />
 
                     <RadioButton
+                        android:id="@+id/radio_Korean"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
                         android:button="@null"
-                        android:drawableEnd="@drawable/jiantou"
                         android:text="@string/korean"
-                        android:textColor="@color/text" />
+                        android:textColor="@drawable/radiotext_color" />
 
                     <View
                         android:layout_width="match_parent"
@@ -87,13 +93,15 @@
                         android:background="@color/separation_line" />
 
                     <RadioButton
+                        android:id="@+id/radio_Japanese"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
                         android:layout_weight="1"
                         android:button="@null"
-                        android:drawableEnd="@drawable/jiantou"
                         android:text="@string/japanese"
-                        android:textColor="@color/text" />
+                        android:textColor="@drawable/radiotext_color" />
 
                 </RadioGroup>
 

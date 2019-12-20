@@ -1,27 +1,35 @@
 package org.haobtc.wallet.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.utils.CommonUtils;
+import org.haobtc.wallet.utils.NumKeyboardUtil;
+import org.haobtc.wallet.utils.PasswordInputView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PinSettingActivity extends BaseActivity {
-    EditText editText;
-    TextView tvCode1, tvCode2, tvCode3, tvCode4, tvCode5, tvCode6, tvPromptLarge, tvPromptSmall, tvMistakePrompt;
-    private String tag;
-    public final String PIN = "Pin";
-    private String password = "";
-
+    @BindView(R.id.trader_pwd_set_pwd_edittext)
+    PasswordInputView edtPwd;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
+    @BindView(R.id.bn_create_wallet)
+    Button bnCreateWallet;
+    private NumKeyboardUtil keyboardUtil;
 
     @Override
     public int getLayoutId() {
@@ -29,30 +37,13 @@ public class PinSettingActivity extends BaseActivity {
     }
 
     public void initView() {
-        tag = getIntent().getStringExtra(TouchHardwareActivity.FROM);
-        tvPromptLarge = findViewById(R.id.pin_prompt_large);
-        tvPromptSmall = findViewById(R.id.pin_prompt_small);
-        tvMistakePrompt = findViewById(R.id.mistake_prompt);
-        if (WalletUnActivatedActivity.TAG.equals(tag)) {
-            tvPromptLarge.setText(R.string.pin_setting);
-            tvPromptSmall.setVisibility(View.VISIBLE);
-        }
-        editText = findViewById(R.id.pin_edit);
-        LinearLayout linearLayout = findViewById(R.id.ll);
-        linearLayout.setOnClickListener(v -> {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            assert inputMethodManager != null;
-            inputMethodManager.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-            editText.requestFocus();
-        });
-        CommonUtils.enableToolBar(this, 0);
-        tvCode1 = findViewById(R.id.tv1);
-        tvCode2 = findViewById(R.id.tv2);
-        tvCode3 = findViewById(R.id.tv3);
-        tvCode4 = findViewById(R.id.tv4);
-        tvCode5 = findViewById(R.id.tv5);
-        tvCode6 = findViewById(R.id.tv6);
-        editText.addTextChangedListener(edtCodeChange);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+        edtPwd.setInputType(InputType.TYPE_NULL);
+        keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
+
+        init();
+
     }
 
     @Override
@@ -60,13 +51,62 @@ public class PinSettingActivity extends BaseActivity {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private void init() {
+        edtPwd.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                keyboardUtil.showKeyboard();
+                return false;
+            }
+        });
+
+        edtPwd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // If the system keyboard is in pop-up state, hide it first
+                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(getCurrentFocus()
+                                            .getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);
+                    keyboardUtil.showKeyboard();
+                } else {
+                    keyboardUtil.hideKeyboard();
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (getCurrentFocus() != null && getCurrentFocus().getWindowToken() != null) {
+                keyboardUtil.hideKeyboard();
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+
+    @OnClick({R.id.img_back, R.id.bn_create_wallet})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+            case R.id.bn_create_wallet:
+
+                break;
+        }
+    }
+
     private void startNewPage(String tags) {
         if (!TextUtils.isEmpty(tags)) {
             switch (tags) {
                 case WalletUnActivatedActivity.TAG:
                     Intent intent = new Intent(this, ActivatedProcessing.class);
-                    intent.putExtra(PIN, password);
-                    password = "";
                     startActivity(intent);
                     break;
                 case ImportWalletPageActivity.TAG:
@@ -81,76 +121,4 @@ public class PinSettingActivity extends BaseActivity {
             }
         }
     }
-
-    /**
-     * Input content monitoring, projecting to 5 spaces
-     */
-    TextWatcher edtCodeChange = new TextWatcher() {
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            tvMistakePrompt.setVisibility(View.INVISIBLE);
-            tvCode1.setText("");
-            tvCode2.setText("");
-            tvCode3.setText("");
-            tvCode4.setText("");
-            tvCode5.setText("");
-            tvCode6.setText("");
-
-            switch (s.length()) {
-                case 6:
-                    tvCode6.setText("●");
-                case 5:
-                    tvCode5.setText("●");
-                case 4:
-                    tvCode4.setText("●");
-                case 3:
-                    tvCode3.setText("●");
-                case 2:
-                    tvCode2.setText("●");
-                case 1:
-                    tvCode1.setText("●");
-                default:
-                    break;
-            }
-            // Input 5 verification codes to automatically request verification
-            if (s.length() == 6) {
-                if (WalletUnActivatedActivity.TAG.equals(tag)) {
-                    if ("".equals(password)) { // pin set
-                        password = editText.getText().toString();
-                        tvPromptSmall.setText(R.string.confirm_pin);
-                        tvCode1.setText("");
-                        tvCode2.setText("");
-                        tvCode3.setText("");
-                        tvCode4.setText("");
-                        tvCode5.setText("");
-                        tvCode6.setText("");
-                        s.clear();
-                    } else { // pin confirm
-                        if (password.equals(editText.getText().toString())) { // the pin is correct
-                            // todo: set pin
-                            startNewPage(tag);
-                        } else {
-                            // the pin input twice not the same
-                            tvMistakePrompt.setVisibility(View.VISIBLE);
-                        }
-                    }
-                } else {
-                    // input pin
-                    // todo: verify pin
-                    startNewPage(tag);
-                }
-            }
-        }
-    };
 }

@@ -134,6 +134,7 @@
                     android:textColor="#494949"
                     android:gravity="center_vertical"
                     android:text="@string/transaction_records"
+
                     android:textSize="@dimen/text_size" />
 
                 <TextView

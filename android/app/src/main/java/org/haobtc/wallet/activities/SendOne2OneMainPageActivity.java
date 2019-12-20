@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
@@ -32,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
@@ -43,6 +45,7 @@ import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.wallet.bean.MainWheelBean;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
@@ -72,7 +75,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private RecyclerView recyPayaddress;
     private List<AddressEvent> dataListName;
     private ChoosePayAddressAdapetr choosePayAddressAdapetr;
-    private String walletName;
     private String straddress;
     private String strAmount;
     private TextView tetWalletname;
@@ -80,6 +82,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private TextView textView;
     private double pro;
     private Gson gson;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
@@ -88,6 +92,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     public void initView() {
         CommonUtils.enableToolBar(this, R.string.send);
+        preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        edit = preferences.edit();
         selectSend = findViewById(R.id.llt_select_wallet);
         tetMoneye = findViewById(R.id.tet_Money);
         tetamount = findViewById(R.id.amount);
@@ -111,7 +117,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         selectSend.setOnClickListener(this);
         selectSigNum.setOnClickListener(this);
         textView.setOnClickListener(this);
-        rootView = LayoutInflater.from(this).inflate(R.layout.send_one2one_main_page, null);//父布局
+        rootView = LayoutInflater.from(this).inflate(R.layout.send_one2one_main_page, null);
         //InputMaxTextNum
         setEditTextComments();
         buttonCreate.setOnClickListener(this);
@@ -133,7 +139,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             CharSequence input;
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s , int start, int count, int after) {
                 input = s;
             }
 
@@ -169,7 +175,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                pro = (double) (progress / 100);
+                pro = (double) progress / 10000;
                 strContent = String.valueOf(pro);
                 textViewFee.setText(strContent);
             }
@@ -191,8 +197,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             dialogBtom.cancel();
         });
         view.findViewById(R.id.bn_fee).setOnClickListener(v -> {
-            double strPro = pro / 1000;
-            tetMoneye.setText(String.valueOf(strPro));
+            tetMoneye.setText(String.valueOf(pro));
             dialogBtom.cancel();
         });
 
@@ -222,10 +227,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             dialogBtom.cancel();
         });
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-            Daemon.commands.callAttr("load_wallet", walletName);
-            Daemon.commands.callAttr("select_wallet", walletName);
+            Daemon.commands.callAttr("load_wallet", wallet_name);
+            Daemon.commands.callAttr("select_wallet", wallet_name);
 
-            tetWalletname.setText(walletName);
+            tetWalletname.setText(wallet_name);
             dialogBtom.cancel();
         });
         recyPayaddress = view.findViewById(R.id.recy_payAdress);
@@ -233,8 +238,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2OneMainPageActivity.this));
         choosePayAddressAdapetr = new ChoosePayAddressAdapetr(SendOne2OneMainPageActivity.this, dataListName);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
-
         recyclerviewOnclick();
+
 
         dialogBtom.setContentView(view);
         Window window = dialogBtom.getWindow();
@@ -251,38 +256,29 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private void payAddressMore() {
         PyObject get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
         String toString = get_wallets_list_info.toString();
-        JSONArray jsonArray = null;
-        try {
-            jsonArray = new JSONArray(toString);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String wallet_type = jsonObject.getString("wallet_type");
-                String name = jsonObject.getString("name");
-                AddressEvent addressEvent = new AddressEvent();
-                addressEvent.setName(name);
-                addressEvent.setType(wallet_type);
-                dataListName.add(addressEvent);
-
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        Log.i("payAddressMore", "pay---: " + toString);
+        Gson gson = new Gson();
+        MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
+        List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
+        for (int i = 0; i < wallets.size(); i++) {
+            String wallet_type = wallets.get(i).getWallet_type();
+            String name = wallets.get(i).getName();
+            AddressEvent addressEvent = new AddressEvent();
+            addressEvent.setName(name);
+            addressEvent.setType(wallet_type);
+            dataListName.add(addressEvent);
         }
-
     }
 
     private void recyclerviewOnclick() {
         choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapetr.OnItemClickListener() {
             @Override
-
             public void onItemClick(int position) {
-                Daemon.commands.callAttr("load_wallet", walletName);
-                Daemon.commands.callAttr("select_wallet", walletName);
+                wallet_name = dataListName.get(position).getName();
 
             }
         });
     }
-
 
     @Override
     public void onClick(View v) {
@@ -320,11 +316,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         .request(Manifest.permission.CAMERA)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                //如果已经授权就直接跳转到二维码扫面界面
+                                //If you have already authorized it, you can directly jump to the QR code scanning interface
                                 Intent intent2 = new Intent(this, CaptureActivity.class);
                                 startActivityForResult(intent2, REQUEST_CODE);
                             } else { // Oups permission denied
-                                Toast.makeText(this, "相机权限被拒绝，无法扫描二维码", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                             }
                         }).dispose();
                 break;
@@ -353,6 +349,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         String strComment = editTextComments.getText().toString();
         String strPramas = new Gson().toJson(pramas);
 
+        Log.i("mktx", "strPramas: "+strPramas+"   strComment -: "+strComment + "  strMinerFee -- : "+strMinerFee);
 
         try {
             PyObject mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
@@ -360,13 +357,14 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             String beanTx = getAddressBean.getTx();
-            //get trsaction list content
-            PyObject def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", beanTx);
-            String jsondef_get = def_get_tx_info_from_raw.toString();
-            Log.i("jsondef_get", "mCreat--: "+jsondef_get);
-            if (jsondef_get!=null){
+
+            Log.i("jsondef_get", "mCreat--: " + beanTx);
+            if (beanTx != null) {
+                edit.putString("rowTrsation",beanTx);
+                edit.apply();
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
-                intent.putExtra("jsondef_get",jsondef_get);
+                intent.putExtra("tx_hash", beanTx);
+                intent.putExtra("keyValue","A");
                 startActivity(intent);
             }
 
@@ -377,7 +375,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -385,12 +382,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("content", "on------: "+content);
-                if (!TextUtils.isEmpty(content)){
+                Log.i("content", "on------: " + content);
+                if (!TextUtils.isEmpty(content)) {
                     if (content.contains("bitcoin:")) {
                         String replace = content.replaceAll("bitcoin:", "");
                         editAddress.setText(replace);
-                    }else{
+                    } else {
                         editAddress.setText(content);
                     }
                 }

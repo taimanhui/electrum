@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -72,9 +73,9 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
         buttonComplete = findViewById(R.id.bn_complete_add_cosigner);
         cosignerNum = intent.getIntExtra(CreateWalletPageActivity.COSIGNER_NUM, 1);
         nameExtra = intent.getStringExtra(WALLET_NAME);
-        buttonComplete.setText(String.format(Locale.CHINA, "完成（%d-%d)", addNum, cosignerNum));
+        buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
         buttonComplete.setEnabled(false);
-        buttonComplete.setBackgroundColor(getResources().getColor(R.color.button_bk_disable));
+        buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
         buttonAdd.setOnClickListener(this);
         buttonComplete.setOnClickListener(this);
         recyclerView = findViewById(R.id.recycler_add_cosigner);
@@ -159,7 +160,6 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
         buttonPaste.setOnClickListener(this);
         imageViewCancel.setOnClickListener(this);
 
-
     }
 
     public void setBackgroundAlpha(float bgAlpha) {
@@ -196,58 +196,63 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                 break;
             case R.id.sweep_cosigner_popup:
                 String bnText = buttonSweep.getText().toString();
-                if ("Clear".equals(bnText) || "清除".equals(bnText)) {
+                if ("Clear".equals(bnText) || bnText.equals(getResources().getString(R.string.clear))) {
                     editTextPublicKey.setText("");
                 } else {
                     rxPermissions
                             .request(Manifest.permission.CAMERA)
                             .subscribe(granted -> {
                                 if (granted) { // Always true pre-M
-                                    //如果已经授权就直接跳转到二维码扫面界面
+                                    //If you have already authorized it, you can directly jump to the QR code scanning interface
                                     Intent intent2 = new Intent(this, CaptureActivity.class);
                                     startActivityForResult(intent2, REQUEST_CODE);
                                 } else { // Oups permission denied
-                                    Toast.makeText(this, "相机权限被拒绝，无法扫描二维码", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                                 }
                             }).dispose();
                 }
                 break;
             case R.id.paste_cosigner_popup:
                 String bnText1 = buttonPaste.getText().toString();
-                if ("Confirm".equals(bnText1) || "确定".equals(bnText1)) {
+                if ("Confirm".equals(bnText1) || bnText1.equals(getResources().getString(R.string.confirm))) {
                     strContent = editTextPublicKey.getText().toString();
-                    //add
-                    Daemon.commands.callAttr("add_xpub", strContent);
-                    addNum = addNum + 1;
-                    nameNums.add(addNum);//联署人
-                    listData.add(strContent);//输入内容集合
-                    cosignerAdapter = new CosignerAdapter(CoSignerAddActivity.this, listData, nameNums);
-                    recyclerView.setAdapter(cosignerAdapter);
-                    buttonComplete.setText(String.format(Locale.CHINA, "完成（%d-%d)", addNum, cosignerNum));
-                    if (addNum == cosignerNum) {//数量足够即可点击跳转并不可继续添加
-                        buttonComplete.setEnabled(true);
-                        buttonComplete.setBackgroundColor(getResources().getColor(R.color.button_bk_disableok));
-                        buttonAdd.setVisibility(View.GONE);
-                    }
-                    //delete
-                    cosignerAdapter.setOnItemDeteleLisoner(new CosignerAdapter.onItemDeteleLisoner() {
-                        @Override
-                        public void onClick(int pos) {
-                            Daemon.commands.callAttr("delete_xpub", strContent);
-                            nameNums.remove(pos);
-                            listData.remove(pos);
-                            cosignerAdapter.notifyDataSetChanged();
-                            addNum = addNum - 1;
-                            buttonAdd.setVisibility(View.VISIBLE);
-                            buttonComplete.setText(String.format(Locale.CHINA, "完成（%d-%d)", addNum, cosignerNum));
-                            buttonComplete.setBackgroundColor(getResources().getColor(R.color.button_bk_disable));
-                            buttonComplete.setEnabled(false);
+
+                    try {
+                        //add
+                        Daemon.commands.callAttr("add_xpub", strContent);
+                        addNum = addNum + 1;
+                        nameNums.add(addNum);
+                        listData.add(strContent);
+                        cosignerAdapter = new CosignerAdapter(CoSignerAddActivity.this, listData, nameNums);
+                        recyclerView.setAdapter(cosignerAdapter);
+                        buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
+                        if (addNum == cosignerNum) {
+                            buttonComplete.setEnabled(true);
+                            buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_blue));
+                            buttonAdd.setVisibility(View.GONE);
                         }
-                    });
+                        //delete
+                        cosignerAdapter.setOnItemDeteleLisoner(new CosignerAdapter.onItemDeteleLisoner() {
+                            @Override
+                            public void onClick(int pos) {
+                                Daemon.commands.callAttr("delete_xpub", strContent);
+                                nameNums.remove(pos);
+                                listData.remove(pos);
+                                cosignerAdapter.notifyDataSetChanged();
+                                addNum = addNum - 1;
+                                buttonAdd.setVisibility(View.VISIBLE);
+                                buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
+                                buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
+                                buttonComplete.setEnabled(false);
+                            }
+                        });
 
-
-                    //todo:
-                    popupWindow.dismiss();
+                        //todo:
+                        popupWindow.dismiss();
+                    } catch (Resources.NotFoundException e) {
+                        Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
                 } else {
                     //get Shear plate TODO：
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

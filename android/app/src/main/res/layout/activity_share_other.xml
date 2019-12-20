@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".activities.ShareOtherActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_44">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/send"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bk_page">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/textView24"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFFFF6E5"
+                    android:paddingStart="@dimen/text_margin"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingEnd="@dimen/text_margin"
+                    android:paddingBottom="@dimen/dp_12"
+                    android:text="@string/be_carefl"
+                    android:textColor="#FFFFB12B"
+                    android:textSize="@dimen/smaller_text_size" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/layout_margin"
+                    android:layout_marginTop="@dimen/layout_margin"
+                    android:layout_marginEnd="@dimen/layout_margin"
+                    app:cardCornerRadius="@dimen/corner_radius"
+                    app:layout_constraintTop_toBottomOf="@+id/textView24">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:text="@string/forword_transfer"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/big_text_size" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/corner_radius"
+                            android:text="@string/screenshot"
+                            android:textColor="@color/light_text"
+                            android:textSize="@dimen/sp_12" />
+
+                        <ImageView
+                            android:id="@+id/img_Orcode"
+                            android:layout_width="248.3dp"
+                            android:layout_height="248.3dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:background="@drawable/ic_launcher_background" />
+
+                        <TextView
+                            android:id="@+id/tet_Preservation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:layout_marginBottom="@dimen/dp_30"
+                            android:text="@string/preservation"
+                            android:textColor="@color/button_bk_disableok"
+                            android:textSize="@dimen/text_size" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/layout_margin"
+                    android:layout_marginTop="@dimen/layout_margin"
+                    android:layout_marginEnd="@dimen/layout_margin"
+                    app:cardCornerRadius="@dimen/corner_radius"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/card1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:text="@string/transaction_message" />
+
+                        <TextView
+                            android:id="@+id/tet_TrsactionText"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp_55"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="9dp"
+                            android:layout_marginEnd="@dimen/dp_20"
+                            android:ellipsize="end"
+                            android:text="JGHAJHBDKASJDBAJBSDJAHHKHKHKHKHJJGHAJHBDKASJDBAJBSDJAHHKHKHKHKHJIUYIUGEIDKJNCSBDASBKJDKAJNDKANSKNKJNAKNAKJNKJSNKJNAKJN"
+                            android:textColor="@color/text_page"
+                            android:textSize="@dimen/sp_13" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp_20"
+                            android:layout_marginEnd="@dimen/layout_margin">
+
+                            <TextView
+                                android:id="@+id/tet_open"
+                                android:layout_width="@dimen/dp_40"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentRight="true"
+                                android:gravity="center"
+                                android:text="@string/spin_open"
+                                android:textSize="@dimen/sp_12" />
+
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/tet_Copy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:layout_marginBottom="@dimen/dp_20"
+                            android:text="@string/copy_self"
+                            android:textColor="@color/button_bk_disableok"
+                            android:textSize="@dimen/text_size" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/layout_margin"
+                    android:layout_marginTop="@dimen/layout_margin"
+                    android:layout_marginEnd="@dimen/layout_margin"
+                    android:layout_marginBottom="@dimen/dp_50"
+                    app:cardCornerRadius="@dimen/corner_radius"
+                    app:layout_constraintTop_toBottomOf="@id/card2">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:text="@string/trsaction_file" />
+
+                        <LinearLayout
+                            android:id="@+id/lin_downLoad"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:layout_marginStart="@dimen/dp_28"
+                            android:layout_marginBottom="@dimen/dp_30"
+                            android:layout_marginEnd="@dimen/dp_28"
+                            android:background="@drawable/button_bk"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp_45">
+                            <ImageView
+                                android:src="@drawable/shiyong"
+                                android:layout_width="@dimen/dp_16"
+                                android:layout_height="@dimen/dp_18"/>
+                            <TextView
+                                android:layout_marginStart="@dimen/corner_radius"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/download"
+                                android:textColor="@color/button_bk_ddake" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

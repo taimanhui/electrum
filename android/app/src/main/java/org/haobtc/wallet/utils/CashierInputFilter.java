@@ -10,9 +10,8 @@ import java.util.regex.Pattern;
 public class CashierInputFilter implements InputFilter {
     Pattern mPattern;
 
-    //输入的最大金额    
     private static final int MAX_VALUE = Integer.MAX_VALUE;
-    //小数点后的位数    
+
     private static final int POINTER_LENGTH = 2;
 
     private static final String POINTER = ".";
@@ -23,37 +22,28 @@ public class CashierInputFilter implements InputFilter {
         mPattern = Pattern.compile("([0-9]|\\.)*");
     }
 
-    /**
-     * @param source    新输入的字符串  
-     * @param start     新输入的字符串起始下标，一般为0  
-     * @param end       新输入的字符串终点下标，一般为source长度-1  
-     * @param dest      输入之前文本框内容  
-     * @param dstart    原内容起始坐标，一般为0  
-     * @param dend      原内容终点坐标，一般为dest长度-1  
-     * @return          输入内容
-     */
     @Override
     public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
         String sourceText = source.toString();
         String destText = dest.toString();
 
-        //验证删除等按键    
+        //Verify delete etc
         if (TextUtils.isEmpty(sourceText)) {
             return "";
         }
 
         Matcher matcher = mPattern.matcher(source);
-        //已经输入小数点的情况下，只能输入数字    
+        //Only numbers can be entered when decimal point has been entered
         if(destText.contains(POINTER)) {
             if (!matcher.matches()) {
                 return "";
             } else {
-                if (POINTER.equals(source.toString())) {  //只能输入一个小数点  
+                if (POINTER.equals(source.toString())) {  //Only one decimal point can be entered
                     return "";
                 }
             }
 
-            //验证小数点精度，保证小数点后只能输入两位    
+            //Verify the precision of decimal point to ensure that only two digits can be entered after the decimal point
             int index = destText.indexOf(POINTER);
             int length = dend - index;
 
@@ -62,22 +52,22 @@ public class CashierInputFilter implements InputFilter {
             }
         } else {
             /**
-             * 没有输入小数点的情况下，只能输入小数点和数字 
-             * 1. 首位不能输入小数点 
-             * 2. 如果首位输入0，则接下来只能输入小数点了 
+             * If no decimal point is entered, only decimal point and number can be entered
+             * 1. Decimal point cannot be entered in the first place
+             * 2. If you enter 0 in the first place, you can only enter the decimal point next
              */
             if (!matcher.matches()) {
                 return "";
             } else {
-                if ((POINTER.equals(source.toString())) && TextUtils.isEmpty(destText)) {  //首位不能输入小数点  
+                if ((POINTER.equals(source.toString())) && TextUtils.isEmpty(destText)) {  //The first decimal point cannot be entered
                     return "";
-                } else if (!POINTER.equals(source.toString()) && ZERO.equals(destText)) { //如果首位输入0，接下来只能输入小数点  
+                } else if (!POINTER.equals(source.toString()) && ZERO.equals(destText)) { //If you enter 0 in the first place, you can only enter the decimal point next
                     return "";
                 }
             }
         }
 
-        //验证输入金额的大小  
+        //Verify the size of the input amount
         double sumText = Double.parseDouble(destText + sourceText);
         if (sumText > MAX_VALUE) {
             return dest.subSequence(dstart, dend);

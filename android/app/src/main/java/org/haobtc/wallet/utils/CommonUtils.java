@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 
 public class CommonUtils {
 
-    public static  void enableToolBar(AppCompatActivity appCompatActivity,  int resid) {
+    public static void enableToolBar(AppCompatActivity appCompatActivity, int resid) {
         TextView textView = appCompatActivity.findViewById(R.id.title_template);
         if (resid == 0) {
             textView.setText("");
@@ -38,7 +38,6 @@ public class CommonUtils {
             if (pf.getName().equals("mSelectionDivider")) {
                 pf.setAccessible(true);
                 try {
-                    //设置分割线的颜色值 透明
                     pf.set(numberPicker, new ColorDrawable(appCompatActivity.getResources().getColor(R.color.separation_line)));
                 } catch (IllegalArgumentException | Resources.NotFoundException | IllegalAccessException e) {
                     e.printStackTrace();
@@ -46,7 +45,6 @@ public class CommonUtils {
                 break;
             }
         }
-        // 分割线高度
         for (Field pf2 : pickerFields) {
             if (pf2.getName().equals("mSelectionDividerHeight")) {
                 pf2.setAccessible(true);

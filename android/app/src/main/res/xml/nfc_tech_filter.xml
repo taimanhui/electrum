@@ -1,5 +1,5 @@
 <resources>
-    <!-- 可以处理所有Android支持的NFC类型 -->
+    <!-- Can handle all NFC types supported by Android -->
     <tech-list>
         <tech>android.nfc.tech.NfcA</tech>
         <tech>android.nfc.tech.NfcB</tech>

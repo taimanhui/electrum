@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:id="@+id/rel_background"
-    android:layout_height="@dimen/dp_60">
+    android:layout_height="60dp">
 
     <TextView
         android:id="@+id/tet_WalletName"
@@ -18,14 +18,14 @@
     <TextView
         android:id="@+id/tet_WalletType"
         android:text="2/2"
-        android:textColor="@color/button_bk"
+        android:textColor="#6182F5"
         android:gravity="center_vertical"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:textSize="15sp"
         android:layout_marginEnd="@dimen/sp_16"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_60"/>
+        android:layout_height="60dp"/>
 
     <View
         android:id="@+id/view_line"
@@ -34,6 +34,6 @@
         android:layout_marginStart="@dimen/sp_16"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"/>
+        android:layout_height="1dp"/>
 
 </RelativeLayout>

@@ -5,8 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.cardview.widget.CardView
         android:id="@+id/wallet_card_add"
-        android:layout_width="@dimen/dp_300"
-        android:layout_height="@dimen/dp_180"
+        android:layout_width="300dp"
+        android:layout_height="180dp"
         android:elevation="@dimen/dp_4"
         app:cardCornerRadius="@dimen/dp_20">
     <ImageView

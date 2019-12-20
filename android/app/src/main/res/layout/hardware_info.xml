@@ -31,12 +31,11 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tet_Serial"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:clickable="true"
                     android:drawableEnd="@drawable/jiantou"
-                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:text="@string/seq"
                     android:textColor="@color/text" />
@@ -47,12 +46,11 @@
                     android:background="@color/separation_line" />
 
                 <TextView
+                    android:id="@+id/tet_versonUp"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:clickable="true"
                     android:drawableEnd="@drawable/jiantou"
-                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:text="@string/hardware_v"
                     android:textColor="@color/text" />
@@ -67,9 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:clickable="true"
                     android:drawableEnd="@drawable/jiantou"
-                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:text="@string/address"
                     android:textColor="@color/text" />

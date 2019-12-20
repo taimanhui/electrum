@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
@@ -44,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_7"
-                android:text="2019-09-13 11:33:23"
+                tools:text="2019-09-13 11:33:23"
                 android:textColor="@color/light_text"
                 android:textSize="@dimen/sp_12" />
 
@@ -62,13 +63,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:singleLine="true"
                 android:layout_marginTop="@dimen/dp_20"
                 android:background="@drawable/gray_tuocircle"
                 android:paddingLeft="@dimen/corner_radius"
                 android:paddingTop="@dimen/dp_2"
                 android:paddingRight="@dimen/corner_radius"
                 android:paddingBottom="@dimen/dp_2"
-                android:text="@string/watting_broadcast"
+                android:text="@string/transaction_waitting"
                 android:textSize="@dimen/sp_12" />
 
 

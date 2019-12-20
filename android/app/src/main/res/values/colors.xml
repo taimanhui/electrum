@@ -22,4 +22,6 @@
     <color name="button_bk_ddake">#FFFFFFFF</color>
     <color name="troke_gray">#E6E6E6</color>
     <color name="bk_page">#FFF8F9FC</color>
+    <color name="text_page">#292A45</color>
+    <color name="text_color">#494949</color>
 </resources>

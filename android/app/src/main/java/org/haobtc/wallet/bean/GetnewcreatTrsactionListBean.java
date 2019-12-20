@@ -4,15 +4,16 @@ import java.util.List;
 
 public class GetnewcreatTrsactionListBean {
 
+
     /**
-     * txid : 2626c5e96fbbb7994bbc6709f720ced95febbca081211c284d3af72b37db8f3d
+     * txid : 7e7d38c1a75c9e9322cb7cb5900270d480e860bfca607509ad8b78294170a300
      * can_broadcast : false
      * amount : 0
-     * fee : 100000
+     * fee : 10000
      * description :
      * tx_status : Unsigned
      * sign_status : [0,2]
-     * output_addr : [["tb1qd6d098z55znz65wmk7rqmcgfxy6vtxc602kny400x6pal232x9ys3ed9ry",100000],["tb1qng4x9xgz4ffxhgp38jh5adp7ssu6jd7jkplq5zh3wdw66mzadr7sycfssq",800000]]
+     * output_addr : [{"addr":"tb1qd6d098z55znz65wmk7rqmcgfxy6vtxc602kny400x6pal232x9ys3ed9ry","amount":100000},{"addr":"tb1qng4x9xgz4ffxhgp38jh5adp7ssu6jd7jkplq5zh3wdw66mzadr7sycfssq","amount":890000}]
      * input_addr : ["tb1q48kq864pz6g3tr2zzj4ugufhy4nrncuaz9w2v4c57n62ascramhqgfmknr"]
      * cosigner : ["Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg","Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"]
      */
@@ -24,7 +25,7 @@ public class GetnewcreatTrsactionListBean {
     private String description;
     private String tx_status;
     private List<Integer> sign_status;
-    private List<List<String>> output_addr;
+    private List<OutputAddrBean> output_addr;
     private List<String> input_addr;
     private List<String> cosigner;
 
@@ -84,11 +85,11 @@ public class GetnewcreatTrsactionListBean {
         this.sign_status = sign_status;
     }
 
-    public List<List<String>> getOutput_addr() {
+    public List<OutputAddrBean> getOutput_addr() {
         return output_addr;
     }
 
-    public void setOutput_addr(List<List<String>> output_addr) {
+    public void setOutput_addr(List<OutputAddrBean> output_addr) {
         this.output_addr = output_addr;
     }
 
@@ -106,5 +107,31 @@ public class GetnewcreatTrsactionListBean {
 
     public void setCosigner(List<String> cosigner) {
         this.cosigner = cosigner;
+    }
+
+    public static class OutputAddrBean {
+        /**
+         * addr : tb1qd6d098z55znz65wmk7rqmcgfxy6vtxc602kny400x6pal232x9ys3ed9ry
+         * amount : 100000
+         */
+
+        private String addr;
+        private int amount;
+
+        public String getAddr() {
+            return addr;
+        }
+
+        public void setAddr(String addr) {
+            this.addr = addr;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        public void setAmount(int amount) {
+            this.amount = amount;
+        }
     }
 }

@@ -14,6 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,9 @@ public class CreateWalletPageActivity extends BaseActivity implements View.OnCli
     private MyDialog myDialog;
     private int consigerValue = 0;
     private int signumValue = 0;
+    private ImageView imgBack;
+    private Button buttonNext;
+
     @Override
     public int getLayoutId() {
         return R.layout.create_wallet_page;
@@ -59,15 +63,16 @@ public class CreateWalletPageActivity extends BaseActivity implements View.OnCli
     @Override
     public void initView() {
         myDialog = MyDialog.showDialog(CreateWalletPageActivity.this);
-        CommonUtils.enableToolBar(this, R.string.create);
         editTextWalletName = findViewById(R.id.wallet_name_setting);
         textViewCosigner = findViewById(R.id.cosigner_setting);
         textViewSigNum = findViewById(R.id.sig_num_setting);
-        Button buttonNext = findViewById(R.id.bn_create_multi_next);
+        imgBack = findViewById(R.id.img_backCreat);
+        buttonNext = findViewById(R.id.bn_create_multi_next);
         rootView = LayoutInflater.from(this).inflate(R.layout.create_wallet_page, null);
         textViewCosigner.setOnClickListener(this);
         textViewSigNum.setOnClickListener(this);
         buttonNext.setOnClickListener(this);
+        imgBack.setOnClickListener(this);
     }
 
 
@@ -184,6 +189,9 @@ public class CreateWalletPageActivity extends BaseActivity implements View.OnCli
                 }
 
                 break;
+            case R.id.img_backCreat:
+                finish();
+                break;
             case R.id.cosigner_setting:
                 showPopupCoSigner(CreateWalletPageActivity.this, R.layout.select_cosigner_num_popwindow);
                 break;
@@ -205,6 +213,7 @@ public class CreateWalletPageActivity extends BaseActivity implements View.OnCli
                     textViewSigNum.setText(String.valueOf(signumValue));
                     dialogBtom.cancel();
                 }
+
         }
     }
 
