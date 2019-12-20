@@ -6,12 +6,12 @@ import os
 from os.path import exists, join
 import pkgutil
 import unittest
-
+import threading
 from electrum.bitcoin import base_decode, is_address
 from electrum.plugin import Plugins
-from electrum.transaction import Transaction, TxOutput, PartialTxOutput, tx_from_any
+from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, PartialTxInput
 from electrum import commands, daemon, keystore, simple_config, storage, util
-from electrum.util import Fiat
+from electrum.util import Fiat, create_and_start_event_loop
 from electrum import MutiBase
 from electrum.i18n import _
 from electrum.storage import WalletStorage
@@ -94,12 +94,17 @@ class Help:
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
     def __init__(self):
+        t_loop = threading.Thread(self.run_loop())
+        t_loop.setDaemon(True)
+        t_loop.start()
+
         config_options = {}
         # config_options['cmdname'] = 'daemon'
         # config_options['testnet'] = True
         # config_options['cwd'] = os.getcwd()
         config_options['auto_connect'] = True
         self.config = simple_config.SimpleConfig(config_options)
+
 
         fd = daemon.get_file_descriptor(self.config)
         if not fd:
@@ -109,17 +114,11 @@ class AndroidCommands(commands.Commands):
         # its callback before the daemon threads start.
         self.daemon = daemon.Daemon(self.config, fd)
         self.network = self.daemon.network
-        #self.network.register_callback(self._on_callback, CALLBACKS)
         self.daemon_running = False
         self.wizard = None
         self.plugin = Plugins(self.config, 'cmdline')
         self.callbackIntent = None
         self.wallet = None
-        self.fiat_unit = self.daemon.fx.ccy if self.daemon.fx.is_enabled() else ''
-        self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
-        self.num_zeros = int(self.config.get('num_zeros', 0))
-        self.rbf = self.config.get("use_rbf", True)
-
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
                          'status', 'new_transaction', 'verified']
@@ -128,6 +127,17 @@ class AndroidCommands(commands.Commands):
             self.network.register_callback(self.on_fee_histogram, ['fee_histogram'])
             self.network.register_callback(self.on_quotes, ['on_quotes'])
             self.network.register_callback(self.on_history, ['on_history'])
+        self.fiat_unit = self.daemon.fx.ccy if self.daemon.fx.is_enabled() else ''
+        self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
+        self.num_zeros = int(self.config.get('num_zeros', 0))
+        self.rbf = self.config.get("use_rbf", True)
+
+        from threading import Timer
+        t = Timer(5.0, self.timer_action)
+        t.start()
+
+    def run_loop(self):
+        loop, stop_loop, loop_thread = create_and_start_event_loop()
 
     # BEGIN commands from the argparse interface.
 
@@ -190,6 +200,7 @@ class AndroidCommands(commands.Commands):
         self.blockchain_forkpoint = chain.get_max_forkpoint()
         self.blockchain_name = chain.get_name()
         interface = self.network.interface
+        print("interface = %s" %interface)
         if interface:
             self.server_host = interface.host
         else:
@@ -226,10 +237,22 @@ class AndroidCommands(commands.Commands):
         elif event == 'verified':
             self.update_wallet()
 
-    def start(self):
-        """Start the daemon"""
+    def timer_action(self):
+        self.update_wallet()
+        self.update_interfaces()
+
+    def daemon_action(self):
+        print("test.....................")
+        self.daemon_running = True
         self.daemon.run_daemon()
-        self.daemon_running = True                      
+
+    def start(self):
+        t1 = threading.Thread(target=self.daemon_action)
+        t1.setDaemon(True)
+        t1.start()
+        import time
+        time.sleep(1.0)
+        print("parent thread")
 
     def status(self):
         """Get daemon status"""
@@ -462,7 +485,14 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             tx = None
             raise e
-        return self.get_details_info(tx)
+        data = {}
+        if isinstance(tx,PartialTransaction):
+            data = self.get_details_info(tx)
+        else:
+            print("")
+            #TODO:
+            #data = ;
+        return data
 
     def get_details_info(self, tx):
         try:
@@ -595,9 +625,8 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise e
         tx = self.wallet.db.get_transaction(tx_hash)
-
-        tx = tx_from_any(bytes.fromhex(tx.serialize()))
-        print("get_tx_info:tx=%s" %tx)
+        print("get_tx_info:tx=%s" % tx)
+        #tx = tx_from_any(bytes.fromhex(tx.serialize()))
         if not tx:
             raise Exception('get transaction info failed')
         return self.get_details_info(tx)
@@ -668,7 +697,11 @@ class AndroidCommands(commands.Commands):
             tx = None
             raise e
         if tx:
-            data = self.get_details_info(tx)
+            if isinstance(tx, PartialTransaction):
+                data = self.get_details_info(tx)
+            else:
+                print("")
+                #TODO:
             ret_data['data'] = data
             return json.dumps(ret_data)
 
@@ -821,6 +854,9 @@ class AndroidCommands(commands.Commands):
             self.wallet = self.daemon._wallets[self._wallet_path(name)]
 
         print("console.select_wallet[%s]=%s" %(name, self.wallet))
+        self.update_wallet()
+        self.update_interfaces()
+
         c, u, x = self.wallet.get_balance()
         print("console.select_wallet %s %s %s==============" %(c, u, x))
         print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))

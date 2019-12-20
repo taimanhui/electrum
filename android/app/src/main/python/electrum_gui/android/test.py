@@ -21,12 +21,11 @@ from console import AndroidCommands
 
 util.setup_thread_excepthook()
 constants.set_testnet()
-loop, stop_loop, loop_thread = create_and_start_event_loop()
 
 testcommond = AndroidCommands()
 testcommond.start()
 
-name = 'hahahahhahh111'
+name = 'hahahahhahh777'
 password = '111111'
 
 #test hardware
@@ -36,10 +35,10 @@ password = '111111'
 
 # m = 2
 # n = 2
-# # xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
-# xpub1 = 'Vpub5dEvVGKn7251znFdWdjnyKjLN525eAmRpVmmZ7chqn8y4Rz9fhKxeeUqJ18mb6kHazADprqMnNyPwG6Y3nGQ2AuchC6VD9ATvn7TLrEXqJz'
+# xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# #xpub1 = 'Vpub5dEvVGKn7251znFdWdjnyKjLN525eAmRpVmmZ7chqn8y4Rz9fhKxeeUqJ18mb6kHazADprqMnNyPwG6Y3nGQ2AuchC6VD9ATvn7TLrEXqJz'
 # xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-# testcommond.delete_wallet(name)
+# #testcommond.delete_wallet(name)
 # testcommond.set_multi_wallet_info(name,m,n)
 # testcommond.add_xpub(xpub1)
 # testcommond.add_xpub(xpub2)
@@ -91,13 +90,13 @@ add = testcommond.parse_qr(qr_data['qr_data'])
 print("addr = %s--------" %add)
 #get_history_tx
 
-#data = testcommond.get_tx_info('95475728831745e450572fd52df0684c626c3338173b60139d1490cdf1398ac1')
-#print("get_tx_info = %s-===========" % data)
+data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
+print("get_tx_info = %s-===========" % data)
 ##get_all_tx_list
 #testinfo = testcommond.get_all_tx_list('', None, None)
 #print("testinfo = %s------------" %testinfo)
-#testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, None)
-#print("testinfo = %s------------" %testinfo)
+testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, None)
+print("testinfo = %s------------" %testinfo)
 # testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'tobeconfirm')
 # print("testinfo = %s------------" %testinfo)
 #testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'confirmed')

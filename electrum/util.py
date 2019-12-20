@@ -26,6 +26,7 @@ from collections import defaultdict, OrderedDict
 from typing import NamedTuple, Union, TYPE_CHECKING, Tuple, Optional, Callable, Any, Sequence
 from datetime import datetime
 import decimal
+from functools import lru_cache
 from decimal import Decimal
 import traceback
 import urllib
@@ -416,12 +417,11 @@ def profiler(func):
         return o
     return lambda *args, **kw_args: do_profile(args, kw_args)
 
-
+@lru_cache()
 def android_data_dir():
-    import jnius
-    PythonActivity = jnius.autoclass('org.kivy.android.PythonActivity')
-    return PythonActivity.mActivity.getFilesDir().getPath() + '/data'
-
+    from com.chaquo.python import Python
+    context = Python.getPlatform().getApplication()
+    return context.getFilesDir().getPath() + '/data'
 
 def ensure_sparse_file(filename):
     # On modern Linux, no need to do anything.
