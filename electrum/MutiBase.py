@@ -136,14 +136,12 @@ class MutiBase(Logger):
         if self.wallet_type == 'standard':
             if has_xpub and t1 not in ['standard', 'p2wpkh', 'p2wpkh-p2sh']:
                 raise (_('Wrong key type') + ' %s'%t1)
-                return
             self.keystores.append(k)
             #self.run('create_wallet')
         elif self.wallet_type == 'multisig':
             assert has_xpub
             if t1 not in ['standard', 'p2wsh', 'p2wsh-p2sh']:
                 raise (('Wrong key type') + ' %s' % t1)
-                return msg
             if k.xpub in map(lambda x: x.xpub, self.keystores):
                 raise 'Error: duplicate master public key'
             if len(self.keystores)<self.n:

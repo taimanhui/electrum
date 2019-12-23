@@ -79,7 +79,7 @@ def is_debug_build() -> bool:
 def get_fn_and_ext(fileName: str) -> tuple:
     *p1, ext = fileName.split('.')
     fn=''
-    if len(p1) is 0:
+    if len(p1) == 0:
         fn = ext
         ext = None
     else:
