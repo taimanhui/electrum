@@ -261,7 +261,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
         List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
         for (int i = 0; i < wallets.size(); i++) {
-            String wallet_type = wallets.get(i).getWallet_type();
+            String wallet_type = wallets.get(i).getWalletType();
             String name = wallets.get(i).getName();
             AddressEvent addressEvent = new AddressEvent();
             addressEvent.setName(name);
@@ -293,6 +293,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 break;
             case R.id.tv_send2many:
                 Intent intent = new Intent(this, Send2ManyActivity.class);
+                intent.putExtra("wallet_name",wallet_name);
                 startActivity(intent);
                 break;
             case R.id.create_trans_one2one:
@@ -309,7 +310,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 }
                 //creatTrnsaction
                 mCreatTransaction();
-
                 break;
             case R.id.bn_sweep_one2noe:
                 rxPermissions
@@ -352,7 +352,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         Log.i("mktx", "strPramas: "+strPramas+"   strComment -: "+strComment + "  strMinerFee -- : "+strMinerFee);
 
         try {
-            PyObject mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
+            PyObject  mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
             String jsonObj = mktx.toString();
             gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
@@ -367,11 +367,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 intent.putExtra("keyValue","A");
                 startActivity(intent);
             }
-
-        } catch (JsonSyntaxException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
 
     }
 

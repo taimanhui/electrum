@@ -5,7 +5,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -24,19 +23,15 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
-
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.adapter.CosignerAdapter;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.Daemon;
-
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -220,39 +215,50 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                     try {
                         //add
                         Daemon.commands.callAttr("add_xpub", strContent);
-                        addNum = addNum + 1;
-                        nameNums.add(addNum);
-                        listData.add(strContent);
-                        cosignerAdapter = new CosignerAdapter(CoSignerAddActivity.this, listData, nameNums);
-                        recyclerView.setAdapter(cosignerAdapter);
-                        buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
-                        if (addNum == cosignerNum) {
-                            buttonComplete.setEnabled(true);
-                            buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_blue));
-                            buttonAdd.setVisibility(View.GONE);
-                        }
-                        //delete
-                        cosignerAdapter.setOnItemDeteleLisoner(new CosignerAdapter.onItemDeteleLisoner() {
-                            @Override
-                            public void onClick(int pos) {
-                                Daemon.commands.callAttr("delete_xpub", strContent);
-                                nameNums.remove(pos);
-                                listData.remove(pos);
-                                cosignerAdapter.notifyDataSetChanged();
-                                addNum = addNum - 1;
-                                buttonAdd.setVisibility(View.VISIBLE);
-                                buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
-                                buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
-                                buttonComplete.setEnabled(false);
-                            }
-                        });
 
-                        //todo:
-                        popupWindow.dismiss();
-                    } catch (Resources.NotFoundException e) {
+                    } catch (Exception e){
                         Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
+                        break;
                     }
+
+                    addNum = addNum + 1;
+                    nameNums.add(addNum);
+                    listData.add(strContent);
+                    cosignerAdapter = new CosignerAdapter(CoSignerAddActivity.this, listData, nameNums);
+                    recyclerView.setAdapter(cosignerAdapter);
+                    buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
+                    if (addNum == cosignerNum) {
+                        buttonComplete.setEnabled(true);
+                        buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_blue));
+                        buttonAdd.setVisibility(View.GONE);
+                    }
+
+                    //delete
+                    cosignerAdapter.setOnItemDeteleLisoner(new CosignerAdapter.onItemDeteleLisoner() {
+                        @Override
+                        public void onClick(int pos) {
+                            try {
+                                Daemon.commands.callAttr("delete_xpub", strContent);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            nameNums.remove(pos);
+                            listData.remove(pos);
+                            cosignerAdapter.notifyDataSetChanged();
+                            addNum = addNum - 1;
+                            buttonAdd.setVisibility(View.VISIBLE);
+                            buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
+                            buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
+                            buttonComplete.setEnabled(false);
+
+                        }
+                    });
+
+                    //todo:
+                    popupWindow.dismiss();
+
                 } else {
                     //get Shear plate TODO：
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

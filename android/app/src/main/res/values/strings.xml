@@ -8,8 +8,8 @@
     <string name="transaction_setting">Transaction Setting</string>
     <string name="service_online">Service Online</string>
     <string name="about">About（Provisions Of The Agreement）</string>
-    <string name="zh_simple">Chinese Simple</string>
-    <string name="zh_traditional">Chinese Traditional</string>
+    <string name="zh_simple">中文简体</string>
+    <string name="zh_traditional">中文繁体</string>
     <string name="en">English</string>
     <string name="korean">Korean</string>
     <string name="japanese">Japanese</string>
@@ -94,7 +94,7 @@
     <string name="to">Receipt address</string>
     <string name="from">Payment address</string>
     <string name="multi_sig">MultiSig</string>
-    <string name="to_num">2 addresses</string>
+    <string name="to_num">addresses</string>
     <string name="amount">Amount</string>
     <string name="need_more">Need More ?</string>
     <string name="import_file">File Import</string>
@@ -182,5 +182,9 @@
     <string name="set_NFC">Please enable NFC function in system settings first!</string>
     <string name="enable">Enable NFC sensing for this app</string>
     <string name="set_PIN">Please set the pin code according to the display of bixinkey</string>
+    <string name="please_input_address">Please enter the address</string>
+    <string name="please_input_amount">Please enter the transfer quantity</string>
+    <string name="pleas_add_outputAdrs">Please add collection address</string>
+
 
 </resources>

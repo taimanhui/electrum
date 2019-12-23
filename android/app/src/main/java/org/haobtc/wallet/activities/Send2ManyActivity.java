@@ -27,6 +27,7 @@ import com.yzq.zxinglibrary.common.Constant;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.SendmoreAddressAdapter;
+import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.CommonUtils;
 
 import java.util.ArrayList;
@@ -41,7 +42,11 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     private RecyclerView recyclerView;
     private static final int REQUEST_CODE = 0;
     private RxPermissions rxPermissions;
-    private ArrayList<String> dataList;
+    private String straddress;
+    private String strSmount;
+    private ArrayList<SendMoreAddressEvent> sendMoreAddressList;
+    private String wallet_name;
+    private int totalAmount = 0;
 
     public int getLayoutId() {
         return R.layout.send_to_many;
@@ -62,29 +67,26 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         buttonSweep.setOnClickListener(this);
         buttonPaste.setOnClickListener(this);
         buttonNext.setOnClickListener(this);
+        init();
         // recyclerView.setAdapter();
+    }
+
+    private void init() {
+        Intent intent = getIntent();
+        wallet_name = intent.getStringExtra("wallet_name");
     }
 
     @Override
     public void initData() {
-        dataList = new ArrayList<>();
-        addressList();
-
-    }
-
-    private void addressList() {
-        for (int i = 0; i < 5; i++) {
-            dataList.add("11236734893294922"+i);
-        }
-        SendmoreAddressAdapter sendmoreAddressAdapter = new SendmoreAddressAdapter(dataList);
-        recyclerView.setAdapter(sendmoreAddressAdapter);
+        sendMoreAddressList = new ArrayList<>();
 
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.lin_add_to:
+                addressList();
 
                 break;
             case R.id.bn_sweep_2many:
@@ -110,13 +112,23 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                 }
                 break;
             case R.id.bn_send2many_next:
-                Intent intent = new Intent(this, SendOne2ManyMainPageActivity.class);
-                intent.putExtra(TOTAL_AMOUNT, textViewTotal.getText().toString());
-                intent.putExtra(ADDRESS, "");
-                startActivity(intent);
+                int size = sendMoreAddressList.size();
+                if (size == 0) {
+                    mToast(getResources().getString(R.string.pleas_add_outputAdrs));
+                }else{
+                    Intent intent = new Intent(this, SendOne2ManyMainPageActivity.class);
+                    intent.putExtra(TOTAL_AMOUNT, textViewTotal.getText().toString());
+                    intent.putExtra(ADDRESS, "");
+                    intent.putExtra("wallet_name", wallet_name);
+                    intent.putExtra("addressNum",size);
+                    intent.putExtra("totalAmount",totalAmount);
+                    startActivity(intent);
+                }
+
                 break;
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -135,5 +147,31 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                 }
             }
         }
+    }
+
+    private void addressList() {
+        straddress = editTextAddress.getText().toString();
+        strSmount = editTextAmount.getText().toString();
+        if (TextUtils.isEmpty(straddress)) {
+            mToast(getResources().getString(R.string.please_input_address));
+            return;
+        }
+        if (TextUtils.isEmpty(strSmount)) {
+            mToast(getResources().getString(R.string.please_input_amount));
+            return;
+        }
+        int sAmount = Integer.parseInt(strSmount);
+        //Total transfer quantity
+        totalAmount = totalAmount + sAmount;
+
+        SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
+        sendMoreAddressEvent.setInputAddress(straddress);
+        sendMoreAddressEvent.setInputAmount(strSmount);
+        sendMoreAddressList.add(sendMoreAddressEvent);
+        editTextAddress.setText("");
+        editTextAmount.setText("");
+        SendmoreAddressAdapter sendmoreAddressAdapter = new SendmoreAddressAdapter(sendMoreAddressList);
+        recyclerView.setAdapter(sendmoreAddressAdapter);
+
     }
 }

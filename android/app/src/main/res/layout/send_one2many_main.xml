@@ -27,6 +27,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
+                android:id="@+id/lin_chooseAddress"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -102,8 +103,10 @@
 
                     <TextView
                         android:id="@+id/address_count"
-                        android:layout_width="80dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="30dp"
+                        android:paddingStart="@dimen/dp_10"
+                        android:paddingEnd="@dimen/dp_10"
                         android:background="@color/button_bk"
                         android:gravity="center"
                         android:text="@string/to_num"
@@ -200,7 +203,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="11dp"
-                        android:text="2000" />
+                        android:text="0" />
 
                     <ImageView
                         android:layout_width="15dp"
@@ -232,6 +235,7 @@
                         android:text="@string/comments" />
 
                     <EditText
+                        android:id="@+id/edit_Remarks"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/layout_margin"
@@ -242,6 +246,7 @@
                         android:singleLine="true" />
 
                     <TextView
+                        android:id="@+id/tet_textNum"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/layout_margin"

@@ -15,7 +15,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="70dp"
             android:layout_marginEnd="@dimen/layout_margin"
@@ -25,14 +25,13 @@
                 <RadioGroup
                     android:id="@+id/radio_group"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <RadioButton
                         android:id="@+id/radio_chineseasy"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="60dp"
                         android:paddingStart="@dimen/text_margin"
                         android:paddingEnd="@dimen/text_margin"
                         android:button="@null"
@@ -47,10 +46,10 @@
                     <RadioButton
                         android:id="@+id/radio_character"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
+                        android:layout_height="60dp"
+                        android:visibility="gone"
                         android:paddingStart="@dimen/text_margin"
                         android:paddingEnd="@dimen/text_margin"
-                        android:layout_weight="1"
                         android:button="@null"
                         android:text="@string/zh_traditional"
                         android:textColor="@drawable/radiotext_color" />
@@ -63,8 +62,7 @@
                     <RadioButton
                         android:id="@+id/radio_english"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="60dp"
                         android:paddingStart="@dimen/text_margin"
                         android:paddingEnd="@dimen/text_margin"
                         android:button="@null"
@@ -74,20 +72,22 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_1"
+                        android:visibility="invisible"
                         android:background="@color/separation_line" />
 
                     <RadioButton
                         android:id="@+id/radio_Korean"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
                         android:paddingStart="@dimen/text_margin"
                         android:paddingEnd="@dimen/text_margin"
+                        android:visibility="invisible"
                         android:button="@null"
                         android:text="@string/korean"
                         android:textColor="@drawable/radiotext_color" />
 
                     <View
+                        android:visibility="invisible"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_1"
                         android:background="@color/separation_line" />
@@ -96,9 +96,9 @@
                         android:id="@+id/radio_Japanese"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+                        android:visibility="invisible"
                         android:paddingStart="@dimen/text_margin"
                         android:paddingEnd="@dimen/text_margin"
-                        android:layout_weight="1"
                         android:button="@null"
                         android:text="@string/japanese"
                         android:textColor="@drawable/radiotext_color" />

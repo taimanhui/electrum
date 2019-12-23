@@ -165,10 +165,17 @@ public class TransactionDetailsActivity extends BaseActivity {
     //trsaction detail
     private void trsactionDetail() {
         if (!TextUtils.isEmpty(tx_hash)) {
-            PyObject get_tx_info = Daemon.commands.callAttr("get_tx_info", tx_hash);
-            jsondef_get = get_tx_info.toString();
-            Log.i("trsactionDetail", "trsac----: " + get_tx_info);
-            jsonDetailData(jsondef_get);
+
+            PyObject get_tx_info = null;
+            try {
+                get_tx_info = Daemon.commands.callAttr("get_tx_info", tx_hash);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (get_tx_info != null) {
+                jsondef_get = get_tx_info.toString();
+                jsonDetailData(jsondef_get);
+            }
 
         }
     }
@@ -177,7 +184,13 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void mCreataSuccsesCheck() {
         //get trsaction list content
         if (!TextUtils.isEmpty(tx_hash)) {
-            PyObject def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowTrsation);
+
+            PyObject def_get_tx_info_from_raw = null;
+            try {
+                def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowTrsation);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             jsondef_get = def_get_tx_info_from_raw.toString();
             Log.i("jsondef_get", "mCreata---: " + jsondef_get);
             jsonDetailData(jsondef_get);
@@ -208,7 +221,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetGetMoneyaddress.setText(addr);
         }
 
-        if (input_addr!=null){
+        if (input_addr != null) {
             //input_address
             String strInputAddr = input_addr.get(0);
             tetPayAddress.setText(strInputAddr);

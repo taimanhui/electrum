@@ -64,7 +64,7 @@
                     android:layout_height="248.3dp"
                     android:layout_marginTop="89.7dp"
                     android:contentDescription="@string/address_qr"
-                    android:src="@drawable/ic_launcher_background"
+                    android:background="@color/bk_page"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

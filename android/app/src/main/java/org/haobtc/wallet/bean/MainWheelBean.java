@@ -1,9 +1,13 @@
 package org.haobtc.wallet.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class MainWheelBean {
 
+
+    @SerializedName("wallets")
     private List<WalletsBean> wallets;
 
     public List<WalletsBean> getWallets() {
@@ -18,19 +22,22 @@ public class MainWheelBean {
         /**
          * wallet_type : 2of2
          * balance : 110. mBTC
-         * name : ghhh
+         * name : 哦呃呃呃
          */
 
-        private String wallet_type;
+        @SerializedName("wallet_type")
+        private String walletType;
+        @SerializedName("balance")
         private String balance;
+        @SerializedName("name")
         private String name;
 
-        public String getWallet_type() {
-            return wallet_type;
+        public String getWalletType() {
+            return walletType;
         }
 
-        public void setWallet_type(String wallet_type) {
-            this.wallet_type = wallet_type;
+        public void setWalletType(String walletType) {
+            this.walletType = walletType;
         }
 
         public String getBalance() {

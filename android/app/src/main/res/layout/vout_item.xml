@@ -30,14 +30,11 @@
                 android:id="@+id/address_to"
                 android:layout_width="211dp"
                 android:layout_height="@dimen/dp_20"
-                android:layout_marginStart="52dp"
-                android:layout_marginEnd="@dimen/text_margin"
+                android:layout_marginEnd="@dimen/dp_40"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="122222222222222222222222222"
+                android:text="12222222222222222222222222233333333333333"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.347"
-                app:layout_constraintStart_toEndOf="@+id/to_name"
                 app:layout_constraintTop_toTopOf="@+id/to_name" />
 
             <View

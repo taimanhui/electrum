@@ -107,6 +107,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     };
     private List<Fragment> fragmentList;
+    private boolean jumpOr;
 
     @Override
     public int getLayoutId() {
@@ -120,11 +121,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         rowTrsation = sharedPreferences.getString("rowTrsation", "");
         //Eventbus register
         EventBus.getDefault().register(this);
+        jumpOr = sharedPreferences.getBoolean("JumpOr", true);
         if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
             init();
 
         } else {
-            boolean jumpOr = sharedPreferences.getBoolean("JumpOr", true);
             if (jumpOr) {
                 //splash
                 initGuide();
@@ -140,7 +141,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void init() {
         myDialog = MyDialog.showDialog(MainActivity.this);
         imageViewSweep = findViewById(R.id.img_sweep);
-        viewPager = findViewById(R.id.viewPager);
         btnAddmoney = findViewById(R.id.tet_Addmoney);
         recy_data = findViewById(R.id.recy_data);
         imageViewSetting = findViewById(R.id.img_setting);
@@ -166,10 +166,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void initData() {
+        viewPager = findViewById(R.id.viewPager);
         maintrsactionlistEvents = new ArrayList<>();
         dataListName = new ArrayList<>();
-        //Rolling Wallet
-        mWheelplanting();
+        if (!jumpOr){
+            //Rolling Wallet
+            mWheelplanting();
+        }
+
     }
 
 
@@ -183,14 +187,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Gson gson = new Gson();
             MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
             List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
-            for (int i = 0; i < wallets.size(); i++) {
-                String wallet_type = wallets.get(i).getWallet_type();
-                String balance = wallets.get(i).getBalance();
-                String name = wallets.get(i).getName();
-                dataListName.add(name);
-                String streplace = wallet_type.replaceAll("of", "/");
-                fragmentList.add(new WheelViewpagerFragment(name, streplace, balance));
+            if (wallets!=null){
+                for (int i = 0; i < wallets.size(); i++) {
+                    String walletType = wallets.get(i).getWalletType();
+                    String balance = wallets.get(i).getBalance();
+                    String name = wallets.get(i).getName();
+                    dataListName.add(name);
+                    String streplace = walletType.replaceAll("of", "/");
+                    fragmentList.add(new WheelViewpagerFragment(name, streplace, balance));
 
+                }
             }
 
             dataListName.add("");
@@ -208,9 +214,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 tetNone.setVisibility(View.GONE);
                 recy_data.setVisibility(View.VISIBLE);
                 String strHistory = get_history_tx.toString();
-                Log.i("strHistory", "onPage----: " + strHistory);
-                //show trsaction ist
-                showTrsactionlist(strHistory);
+                Log.i("strHistory", "onPage----: " + strHistory + "   size:  "+strHistory.length());
+
+                if (strHistory.length() == 2){
+                    myDialog.dismiss();
+                }else{
+                    //show trsaction list
+                    showTrsactionlist(strHistory);
+                }
+
             } else {
                 tetNone.setVisibility(View.VISIBLE);
                 recy_data.setVisibility(View.GONE);
@@ -244,16 +256,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         if (mCurrentPosition != position) {
                             String strNames = dataListName.get(position);
                             if (!TextUtils.isEmpty(strNames)) {
-                                Daemon.commands.callAttr("load_wallet", strNames);
-                                Daemon.commands.callAttr("select_wallet", strNames);
+                                try {
+                                    Daemon.commands.callAttr("load_wallet", strNames);
+                                    Daemon.commands.callAttr("select_wallet", strNames);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
                                 if (!get_history_tx.isEmpty()) {
                                     tetNone.setVisibility(View.GONE);
                                     recy_data.setVisibility(View.VISIBLE);
                                     String strHistory = get_history_tx.toString();
                                     Log.i("strHistory", "onPage----: " + strHistory);
-                                    //show trsaction list
-                                    showTrsactionlist(strHistory);
+                                    if (strHistory.length() == 2){
+                                        myDialog.dismiss();
+                                    }else{
+                                        //show trsaction list
+                                        showTrsactionlist(strHistory);
+                                    }
+
 
                                 } else {
                                     tetNone.setVisibility(View.VISIBLE);
