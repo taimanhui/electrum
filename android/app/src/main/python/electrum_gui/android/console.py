@@ -131,6 +131,8 @@ class AndroidCommands(commands.Commands):
         t.start()
 
     # BEGIN commands from the argparse interface.
+    def is_valiad_xpub(self, xpub):
+        return keystore.is_bip32_key(xpub)
 
     def on_fee(self, event, *arg):
         self.fee_status = self.config.get_fee_status()
@@ -388,7 +390,9 @@ class AndroidCommands(commands.Commands):
             partial_tx = tx.serialize_as_bytes().hex()
             print("console:mkun:tx====%s" % partial_tx)
            # tx = tx_from_any(partial_tx)
+            print("tx1========= %s" % tx)
             tx_details = self.wallet.get_tx_info(tx)
+            print("tx_details 1111111 = %s" % json.dumps(tx_details))
             ret_data = {
                 'amount': tx_details.amount,
                 'fee': tx_details.fee,
@@ -486,8 +490,15 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
         except BaseException as e:
             raise e
+
+        # partial_tx = tx.serialize_as_bytes().hex()
+        # tx = tx_from_any(bytes.fromhex(partial_tx))
+        print("tx2========= %s" % tx)
+        tx.deserialize()
         tx_details = self.wallet.get_tx_info(tx)
+        print("tx_details 22222222 = %s" % json.dumps(tx_details))
         s, r = tx.signature_count()
+        type = self.wallet.wallet_type
         out_list = []
         for o in tx.outputs():
             address, value = o.address, o.value
@@ -653,6 +664,40 @@ class AndroidCommands(commands.Commands):
         data_json['addr'] = self.wallet.get_addresses()[0]
         return json.dumps(data_json)
 
+    ##save tx to file
+    def save_tx_to_file(self, path, tx):
+        print("FILE==:save_tx_to_file in..... %s" % path)
+        try:
+            if tx is None:
+                raise BaseException("tx is empty")
+            tx = tx_from_any(tx)
+            if isinstance(tx, PartialTransaction):
+                tx.finalize_psbt()
+            print("FILE==:path = %s" % path)
+            if tx.is_complete():  # network tx hex
+                with open(path, "w+") as f:
+                    network_tx_hex = tx.serialize_to_network()
+                    print("FILE==:TXN")
+                    f.write(network_tx_hex + '\n')
+            else:  # if partial: PSBT bytes
+                assert isinstance(tx, PartialTransaction)
+                with open(path, "wb+") as f:
+                    print("FILE==:PSBT")
+                    f.write(tx.serialize_as_bytes())
+        except BaseException as e:
+            raise e
+
+    def read_tx_from_file(self, path):
+        try:
+            with open(path, "rb") as f:
+                file_content = f.read()
+        except (ValueError, IOError, os.error) as reason:
+            raise ("Electrum was unable to open your transaction file")
+            return
+        print("FILE== file info = %s" % file_content)
+        tx = tx_from_any(file_content)
+        return tx.serialize_as_bytes()
+
     ##Analyze QR data
     def parse_qr(self, data):
         data = data.strip()
@@ -729,9 +774,6 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
             tx = Transaction(tx)
             tx.deserialize()
-            # plugin = self.plugin.get_plugin("trezor")
-            # plugin.sign_transaction(tx)
-
             self.wallet.sign_transaction(tx, None)
         except BaseException as e:
             raise e
