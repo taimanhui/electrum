@@ -61,7 +61,7 @@ info = testcommond.get_wallets_list_info()
 
 #create_tx
 all_output = []
-output_info = ['tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe', '0.005']
+output_info = ['tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe', '0.05']
 all_output.append(output_info)
 output_str = json.dumps(all_output)
 fee = 0.001

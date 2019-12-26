@@ -178,11 +178,6 @@ class AndroidCommands(commands.Commands):
             self.fiat_balance = self.daemon.fx.format_amount(c+u+x) + ' [size=22dp]%s[/size]'% self.daemon.fx.ccy
         #self.callbackIntent.onCallback("update_status")
 
-    def save_tx_to_file(self, path, tx):
-        print("save_tx_to_file in.....")
-        with open(path, 'w') as f:
-            f.write(tx)
-
     def get_wallet_info(self):
         wallet_info = {}
         wallet_info['balance'] = self.balance
@@ -198,7 +193,6 @@ class AndroidCommands(commands.Commands):
         self.blockchain_forkpoint = chain.get_max_forkpoint()
         self.blockchain_name = chain.get_name()
         interface = self.network.interface
-        print("interface = %s" %interface)
         if interface:
             self.server_host = interface.host
         else:
@@ -391,16 +385,13 @@ class AndroidCommands(commands.Commands):
             tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=satoshis(fee))
             tx.set_rbf(self.rbf)
             self.wallet.set_label(tx.txid, message)
-            #raw_tx = tx.serialize()
             partial_tx = tx.serialize_as_bytes().hex()
             print("console:mkun:tx====%s" % partial_tx)
-           # tx = tx_from_any(partial_tx)
-            print("tx1========= %s" % tx)
             tx_details = self.wallet.get_tx_info(tx)
             print("tx_details 1111111 = %s" % json.dumps(tx_details))
             ret_data = {
-                'amount': tx_details.amount,
-                'fee': tx_details.fee,
+                'amount': self.format_amount_and_units(tx_details.amount),
+                'fee': self.format_amount_and_units(tx_details.fee),
                 'tx': str(partial_tx)
             }
         except BaseException as e:
@@ -477,7 +468,6 @@ class AndroidCommands(commands.Commands):
 
     ## get tx info from raw_tx
     def get_tx_info_from_raw(self, raw_tx):
-        from electrum.transaction import Transaction
         try:
             tx = tx_from_any(bytes.fromhex(raw_tx))
             print("console:get_tx_info_from_raw:tx===%s" %raw_tx)
@@ -495,13 +485,9 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
         except BaseException as e:
             raise e
-
-        # partial_tx = tx.serialize_as_bytes().hex()
-        # tx = tx_from_any(bytes.fromhex(partial_tx))
-        print("tx2========= %s" % tx)
         tx.deserialize()
         tx_details = self.wallet.get_tx_info(tx)
-        print("tx_details 22222222 = %s" % json.dumps(tx_details))
+        #print("tx_details 22222222 = %s" % json.dumps(tx_details))
         s, r = tx.signature_count()
         type = self.wallet.wallet_type
         out_list = []
@@ -509,14 +495,14 @@ class AndroidCommands(commands.Commands):
             address, value = o.address, o.value
             out_info = {}
             out_info['addr'] = address
-            out_info['amount'] = value
+            out_info['amount'] = self.format_amount_and_units(value)
             out_list.append(out_info)
 
         ret_data = {
             'txid':tx_details.txid,
             'can_broadcast':tx_details.can_broadcast,
-            'amount': tx_details.amount,
-            'fee': tx_details.fee,
+            'amount': self.format_amount_and_units(tx_details.amount),
+            'fee': self.format_amount_and_units(tx_details.fee),
             'description':tx_details.label,
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
             'sign_status':[s,r],
@@ -536,7 +522,7 @@ class AndroidCommands(commands.Commands):
             tx_dict = json.loads(tx_json)
             tx_data['tx_hash'] = tx_dict['txid']
             tx_data['date'] = 'unknown'
-            tx_data['amount'] = self.format_amount_and_units(tx_dict['amount'])
+            tx_data['amount'] = tx_dict['amount']
             tx_data['message'] = tx_dict['description']
             tx_data['is_mine'] = True
             tx_data['tx_status'] = tx_dict["tx_status"]
@@ -618,7 +604,6 @@ class AndroidCommands(commands.Commands):
             raise e
         history = reversed(self.wallet.get_history())
         all_data = [self.get_card(*item) for item in history]
-       # print("console:get_history_tx:data = %s==========" % all_data)
         return json.dumps(all_data)
 
     def get_tx_info(self, tx_hash):
