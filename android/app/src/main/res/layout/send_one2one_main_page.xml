@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_weight="1"
-                    android:text="@string/from"
+                    android:text="@string/pay_wallet"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size" />
 
@@ -168,7 +168,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18.5dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="@dimen/dp_20">
 
                     <TextView
@@ -176,17 +176,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/sp_16"
+                        android:layout_centerVertical="true"
                         android:text="@string/amount"
                         android:textColor="@color/text" />
 
                     <EditText
                         android:id="@+id/amount"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/dp_30"
                         android:layout_marginEnd="@dimen/corner_radius"
                         android:layout_toLeftOf="@+id/textView27"
                         android:background="@null"
-                        android:gravity="end"
+                        android:gravity="center_vertical|end"
                         android:hint="@string/input_here"
                         android:inputType="numberDecimal"
                         android:singleLine="true"
@@ -198,6 +199,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_marginEnd="@dimen/text_margin"
+                        android:layout_centerVertical="true"
                         android:text="@string/btc"
                         android:textColor="@color/text"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -315,8 +317,9 @@
                     <EditText
                         android:id="@+id/comment_edit"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/layout_margin"
+                        android:layout_height="match_parent"
+                        android:paddingStart="@dimen/layout_margin"
+                        android:paddingEnd="@dimen/dp_10"
                         android:layout_weight="1"
                         android:background="@null"
                         android:gravity="center_vertical|end"
@@ -329,7 +332,6 @@
                         android:id="@+id/byte_count"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/layout_margin"
                         android:singleLine="true"
                         android:text="@string/limit" />
                 </LinearLayout>

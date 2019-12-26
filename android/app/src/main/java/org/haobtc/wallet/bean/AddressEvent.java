@@ -3,6 +3,15 @@ package org.haobtc.wallet.bean;
 public class AddressEvent {
     private String name;
     private String type;
+    private String amount;
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
 
     public String getName() {
         return name;

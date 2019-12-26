@@ -109,6 +109,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     LinearLayout linGetMoreaddress;
     @BindView(R.id.tet_addressNum)
     TextView tetAddressNum;
+    @BindView(R.id.tet_confirm)
+    TextView tetConfirm;
     private String keyValue;
     private String tx_hash;
     private ArrayList<InputOutputAddressEvent> strSinalist;
@@ -165,12 +167,12 @@ public class TransactionDetailsActivity extends BaseActivity {
     //trsaction detail
     private void trsactionDetail() {
         if (!TextUtils.isEmpty(tx_hash)) {
-
             PyObject get_tx_info = null;
             try {
                 get_tx_info = Daemon.commands.callAttr("get_tx_info", tx_hash);
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.i("printStackTrace", "tr----- " + e.getMessage());
             }
             if (get_tx_info != null) {
                 jsondef_get = get_tx_info.toString();
@@ -199,6 +201,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     }
 
     private void jsonDetailData(String jsondef_get) {
+        Log.i("jsonDetailData", "jsonDetail==== " + jsondef_get);
         Gson gson = new Gson();
         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
         int amount = getnewcreatTrsactionListBean.getAmount();
@@ -257,7 +260,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //judge state
     private void judgeState(Integer inFront, Integer inBehind, String tx_status) {
         //trsaction state
-        if (tx_status.equals("Unconfirmed")) {//未确认
+        if (tx_status.equals("Unconfirmed")) {//Unconfirmed
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
@@ -270,13 +273,14 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             //trsaction hash and time
             cardTrantime.setVisibility(View.VISIBLE);
-        } else if (tx_status.contains("confirmations")) {//已确认
+        } else if (tx_status.contains("confirmations")) {//Confirmed
             tetState.setText(R.string.completed);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
             imgProgresstwo.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
+            tetConfirm.setVisibility(View.VISIBLE);
             //text color
             tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));

@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
@@ -59,7 +60,7 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener {
+public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     private LinearLayout selectSend, selectSigNum;
     private PopupWindow popupWindow;
     private View rootView;
@@ -84,6 +85,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private Gson gson;
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
+    private String wallet_amount;
 
     @Override
     public int getLayoutId() {
@@ -106,12 +108,15 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         buttonCreate = findViewById(R.id.create_trans_one2one);
         buttonSweep = findViewById(R.id.bn_sweep_one2noe);
         buttonPaste = findViewById(R.id.bn_paste_one2one);
+        tetamount.addTextChangedListener(this);
         init();
     }
 
     private void init() {
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
+        String sendAdress = intent.getStringExtra("sendAdress");
+        editAddress.setText(sendAdress);
         tetWalletname.setText(wallet_name);
         rxPermissions = new RxPermissions(this);
         selectSend.setOnClickListener(this);
@@ -139,13 +144,13 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             CharSequence input;
 
             @Override
-            public void beforeTextChanged(CharSequence s , int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 input = s;
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                bytesCount.setText(String.format(Locale.CHINA,"%d/20", input.length()));
+                bytesCount.setText(String.format(Locale.CHINA, "%d/20", input.length()));
                 if (input.length() > 19) {
                     Toast.makeText(SendOne2OneMainPageActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
                 }
@@ -263,9 +268,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         for (int i = 0; i < wallets.size(); i++) {
             String wallet_type = wallets.get(i).getWalletType();
             String name = wallets.get(i).getName();
+            String balance = wallets.get(i).getBalance();
             AddressEvent addressEvent = new AddressEvent();
             addressEvent.setName(name);
             addressEvent.setType(wallet_type);
+            addressEvent.setAmount(balance);
             dataListName.add(addressEvent);
         }
     }
@@ -275,6 +282,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             @Override
             public void onItemClick(int position) {
                 wallet_name = dataListName.get(position).getName();
+                wallet_amount = dataListName.get(position).getAmount();
 
             }
         });
@@ -293,7 +301,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 break;
             case R.id.tv_send2many:
                 Intent intent = new Intent(this, Send2ManyActivity.class);
-                intent.putExtra("wallet_name",wallet_name);
+                intent.putExtra("wallet_name", wallet_name);
                 startActivity(intent);
                 break;
             case R.id.create_trans_one2one:
@@ -349,10 +357,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         String strComment = editTextComments.getText().toString();
         String strPramas = new Gson().toJson(pramas);
 
-        Log.i("mktx", "strPramas: "+strPramas+"   strComment -: "+strComment + "  strMinerFee -- : "+strMinerFee);
+        Log.i("mktx", "strPramas: " + strPramas + "   strComment -: " + strComment + "  strMinerFee -- : " + strMinerFee);
 
         try {
-            PyObject  mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
+            PyObject mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
             String jsonObj = mktx.toString();
             gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
@@ -360,11 +368,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
             Log.i("jsondef_get", "mCreat--: " + beanTx);
             if (beanTx != null) {
-                edit.putString("rowTrsation",beanTx);
+                edit.putString("rowTrsation", beanTx);
                 edit.apply();
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
-                intent.putExtra("keyValue","A");
+                intent.putExtra("keyValue", "A");
                 startActivity(intent);
             }
         } catch (Exception e) {
@@ -392,5 +400,36 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             }
         }
     }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                float intAmount = Float.parseFloat(strAmount);
+//                strAmount = tetamount.getText().toString();
+//                String strTotal = wallet_amount.substring(0, wallet_amount.indexOf("."));
+//                int intwalletstrTotal = Integer.parseInt(strTotal);
+//                float mbtc = intwalletstrTotal / 1000;
+//
+//                if (intAmount > mbtc) {
+//                    mToast(getResources().getString(R.string.wallet_insufficient));
+//                }
+//
+//            }
+//        }, 300);
+    }
+
 
 }

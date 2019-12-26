@@ -23,15 +23,19 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.adapter.CosignerAdapter;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.Daemon;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -53,6 +57,7 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
     private CosignerAdapter cosignerAdapter;
     public static final String WALLET_NAME = "org.haobtc.wallet.activities.walletName";
     private String nameExtra;
+    private ImageView imgBack;
 
 
     @Override
@@ -63,9 +68,9 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void initView() {
         intent = getIntent();
-        CommonUtils.enableToolBar(this, R.string.add_cosigner);
         buttonAdd = findViewById(R.id.bn_add_cosigner);
         buttonComplete = findViewById(R.id.bn_complete_add_cosigner);
+        imgBack = findViewById(R.id.img_back);
         cosignerNum = intent.getIntExtra(CreateWalletPageActivity.COSIGNER_NUM, 1);
         nameExtra = intent.getStringExtra(WALLET_NAME);
         buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
@@ -73,6 +78,7 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
         buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
         buttonAdd.setOnClickListener(this);
         buttonComplete.setOnClickListener(this);
+        imgBack.setOnClickListener(this);
         recyclerView = findViewById(R.id.recycler_add_cosigner);
         rxPermissions = new RxPermissions(this);
     }
@@ -216,7 +222,7 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                         //add
                         Daemon.commands.callAttr("add_xpub", strContent);
 
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                         break;
@@ -271,6 +277,11 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                 }
                 break;
             case R.id.cancel_cosigner_add_popup:
+
+                break;
+            case R.id.img_back:
+                finish();
+                break;
 
             default:
                 popupWindow.dismiss();

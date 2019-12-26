@@ -16,7 +16,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="240dp"
             android:layout_marginLeft="@dimen/layout_margin"
             android:layout_marginTop="70dp"
             android:layout_marginRight="@dimen/layout_margin"
@@ -45,12 +45,14 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp_1"
+                    android:visibility="gone"
                     android:background="@color/separation_line" />
 
                 <TextView
                     android:id="@+id/tet_s2"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:visibility="gone"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:drawableEnd="@drawable/jiantou"
@@ -124,7 +126,7 @@
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:layout_marginLeft="@dimen/layout_margin"
-            android:layout_marginTop="380dp"
+            android:layout_marginTop="320dp"
             android:layout_marginRight="@dimen/layout_margin"
             app:cardCornerRadius="@dimen/corner_radius">
 

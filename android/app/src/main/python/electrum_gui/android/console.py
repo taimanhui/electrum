@@ -178,6 +178,11 @@ class AndroidCommands(commands.Commands):
             self.fiat_balance = self.daemon.fx.format_amount(c+u+x) + ' [size=22dp]%s[/size]'% self.daemon.fx.ccy
         #self.callbackIntent.onCallback("update_status")
 
+    def save_tx_to_file(self, path, tx):
+        print("save_tx_to_file in.....")
+        with open(path, 'w') as f:
+            f.write(tx)
+
     def get_wallet_info(self):
         wallet_info = {}
         wallet_info['balance'] = self.balance

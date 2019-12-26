@@ -137,6 +137,7 @@
     <string name="inoutnum">请输入转账数量</string>
     <string name="moreinput_text">您最多能输入20个字</string>
     <string name="photopersion">相机权限被拒绝，无法扫描二维码</string>
+    <string name="reservatpion_photo">读写权限被拒绝，无法保存</string>
     <string name="copysuccess">复制成功!</string>
     <string name="changeaddress">请更换地址！</string>
     <string name="waitchoose">待确认</string>
@@ -183,5 +184,8 @@
     <string name="please_input_address">请输入地址</string>
     <string name="please_input_amount">请输入转账数量</string>
     <string name="pleas_add_outputAdrs">请添加收款地址</string>
+    <string name="pay_wallet">付款钱包</string>
+    <string name="confirmnum">确认数>2</string>
+    <string name="wallet_insufficient">钱包余额不足</string>
 
 </resources>

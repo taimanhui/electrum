@@ -106,6 +106,7 @@
     <string name="sign_again">Re sign</string>
     <string name="pin_input">Please enter the pin code</string>
     <string name="active_successful">Successful activation</string>
+    <string name="reservatpion_photo">Read / write permission denied, unable to save</string>
     <string name="clear">Clear</string>
     <string name="strguidefirst">Hardware wallet, private key never touch the net</string>
     <string name="strguidesecond">Multiple signatures make assets more secure</string>
@@ -185,6 +186,8 @@
     <string name="please_input_address">Please enter the address</string>
     <string name="please_input_amount">Please enter the transfer quantity</string>
     <string name="pleas_add_outputAdrs">Please add collection address</string>
-
+    <string name="pay_wallet">Payment Wallet</string>
+    <string name="confirmnum">Confirmation number >2</string>
+    <string name="wallet_insufficient">Insufficient wallet balance</string>
 
 </resources>

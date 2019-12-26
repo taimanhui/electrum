@@ -1,5 +1,6 @@
 package org.haobtc.wallet;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +31,10 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -47,6 +51,7 @@ import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.adapter.MyPagerAdapter;
+import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MainWheelBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.FirstEvent;
@@ -94,6 +99,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private boolean is_mine;
     private String confirmations;
     private JSONArray jsonArray;
+    private RxPermissions rxPermissions;
+    private static final int REQUEST_CODE = 0;
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @Override
@@ -108,6 +115,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     };
     private List<Fragment> fragmentList;
     private boolean jumpOr;
+    private PyObject parse_qr;
 
     @Override
     public int getLayoutId() {
@@ -140,6 +148,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void init() {
         myDialog = MyDialog.showDialog(MainActivity.this);
+        rxPermissions = new RxPermissions(this);
         imageViewSweep = findViewById(R.id.img_sweep);
         btnAddmoney = findViewById(R.id.tet_Addmoney);
         recy_data = findViewById(R.id.recy_data);
@@ -157,11 +166,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void initCreatWallet() {
         Intent intent = new Intent(this, CreateWalletActivity.class);
         startActivity(intent);
+        finish();
+
     }
 
     private void initGuide() {
         Intent intent = new Intent(this, GuideActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override
@@ -169,7 +181,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         viewPager = findViewById(R.id.viewPager);
         maintrsactionlistEvents = new ArrayList<>();
         dataListName = new ArrayList<>();
-        if (!jumpOr){
+        if (!jumpOr) {
             //Rolling Wallet
             mWheelplanting();
         }
@@ -187,7 +199,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Gson gson = new Gson();
             MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
             List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
-            if (wallets!=null){
+            if (wallets != null) {
                 for (int i = 0; i < wallets.size(); i++) {
                     String walletType = wallets.get(i).getWalletType();
                     String balance = wallets.get(i).getBalance();
@@ -197,35 +209,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     fragmentList.add(new WheelViewpagerFragment(name, streplace, balance));
 
                 }
-            }
 
-            dataListName.add("");
-            fragmentList.add(new AddViewFragment());
-            viewPager.setOffscreenPageLimit(4);
-            viewPager.setPageMargin(40);
-            viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-            //choose wallet
-            Daemon.commands.callAttr("load_wallet", dataListName.get(0));
-            Daemon.commands.callAttr("select_wallet", dataListName.get(0));
-            //get transaction json
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
-            //get transaction list
-            if (!get_history_tx.isEmpty()) {
-                tetNone.setVisibility(View.GONE);
-                recy_data.setVisibility(View.VISIBLE);
-                String strHistory = get_history_tx.toString();
-                Log.i("strHistory", "onPage----: " + strHistory + "   size:  "+strHistory.length());
+                dataListName.add("");
+                fragmentList.add(new AddViewFragment());
+                viewPager.setOffscreenPageLimit(4);
+                viewPager.setPageMargin(40);
+                viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+                //choose wallet
+                Daemon.commands.callAttr("load_wallet", dataListName.get(0));
+                Daemon.commands.callAttr("select_wallet", dataListName.get(0));
+                //get transaction json
+                get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
+                //get transaction list
+                if (!get_history_tx.isEmpty()) {
+                    tetNone.setVisibility(View.GONE);
+                    recy_data.setVisibility(View.VISIBLE);
+                    String strHistory = get_history_tx.toString();
+                    Log.i("strHistory", "onPage----: " + strHistory + "   size:  " + strHistory.length());
 
-                if (strHistory.length() == 2){
-                    myDialog.dismiss();
-                }else{
-                    //show trsaction list
-                    showTrsactionlist(strHistory);
+                    if (strHistory.length() == 2) {
+                        myDialog.dismiss();
+                        tetNone.setVisibility(View.VISIBLE);
+                        recy_data.setVisibility(View.GONE);
+                    } else {
+                        //show trsaction list
+                        showTrsactionlist(strHistory);
+                    }
+
+                } else {
+                    tetNone.setVisibility(View.VISIBLE);
+                    recy_data.setVisibility(View.GONE);
                 }
-
-            } else {
-                tetNone.setVisibility(View.VISIBLE);
-                recy_data.setVisibility(View.GONE);
             }
 
         }
@@ -268,9 +282,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                     recy_data.setVisibility(View.VISIBLE);
                                     String strHistory = get_history_tx.toString();
                                     Log.i("strHistory", "onPage----: " + strHistory);
-                                    if (strHistory.length() == 2){
+                                    if (strHistory.length() == 2) {
                                         myDialog.dismiss();
-                                    }else{
+                                    } else {
                                         //show trsaction list
                                         showTrsactionlist(strHistory);
                                     }
@@ -376,7 +390,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_sweep:
-
+                rxPermissions
+                        .request(Manifest.permission.CAMERA)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                //If you have already authorized it, you can directly jump to the QR code scanning interface
+                                Intent intent2 = new Intent(this, CaptureActivity.class);
+                                startActivityForResult(intent2, REQUEST_CODE);
+                            } else { // Oups permission denied
+                                Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
                 break;
             case R.id.img_setting:
                 Intent intent1 = new Intent(this, SettingActivity.class);
@@ -421,6 +445,50 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Scan QR code / barcode return
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+                if (!TextUtils.isEmpty(content)) {
+                    try {
+                        parse_qr = Daemon.commands.callAttr("parse_qr", content);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        mToast(getResources().getString(R.string.changeaddress));
+                    }
+                    if (parse_qr!=null){
+                        String strParse = parse_qr.toString();
+                        Log.i("PyObject", "onActivityResult:  " + strParse);
+                        Gson gson = new Gson();
+                        MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
+                        int status = mainSweepcodeBean.getStatus();
+                        String data1 = mainSweepcodeBean.getData();
+                        if (status == 1){
+                            //address  -->  intent  send  activity
+                            Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
+                            intent.putExtra("sendAdress",data1);
+                            startActivity(intent);
+
+                        }else if (status == 2){
+                            //trsaction -->  trsactiondetail
+                            Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
+                            intent.putExtra("tx_hash",data1);
+                            intent.putExtra("keyValue", "B");
+                            intent.putExtra("listType", "history");
+                            startActivity(intent);
+
+                        }
+
+                    }
+
+                }
+            }
+        }
     }
 
     /**

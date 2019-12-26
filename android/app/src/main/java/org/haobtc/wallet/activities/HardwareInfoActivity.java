@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
@@ -43,12 +42,13 @@ public class HardwareInfoActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_Serial:
-                mIntent(PinSettingActivity.class);
+
                 break;
             case R.id.tet_versonUp:
                 mIntent(VersionUpgradeActivity.class);
                 break;
             case R.id.id_2:
+                
                 break;
         }
     }

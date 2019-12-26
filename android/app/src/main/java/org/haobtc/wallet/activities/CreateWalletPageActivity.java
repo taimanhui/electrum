@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +23,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
+
+import java.util.ArrayList;
 
 public class CreateWalletPageActivity extends BaseActivity implements View.OnClickListener {
     private EditText editTextWalletName;
@@ -228,6 +234,5 @@ public class CreateWalletPageActivity extends BaseActivity implements View.OnCli
         intent.putExtra(SIGNUM_REQUIRE, sigNum);
         startActivity(intent);
     }
-
 
 }

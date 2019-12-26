@@ -67,16 +67,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="13.5dp"
+                    android:paddingBottom="80dp"
                     android:layout_marginBottom="@dimen/sp_16"
                     android:background="@null"
                     android:gravity="top"
                     android:hint="@string/raw"
-                    android:minHeight="157dp"
                     android:paddingStart="@dimen/sp_16"
                     android:paddingEnd="@dimen/sp_16"
                     android:textSize="@dimen/text_size"
                     app:layout_constraintStart_toStartOf="@id/textView30"
                     app:layout_constraintTop_toBottomOf="@id/view3" />
+
+                <TextView
+                    android:id="@+id/tet_Error"
+                    android:layout_width="wrap_content"
+                    android:visibility="invisible"
+                    android:textColor="#F26A3A"
+                    android:layout_height="@dimen/dp_50"
+                    android:layout_marginStart="@dimen/sp_16"
+                    android:text="@string/pin_input_again"
+                    android:textSize="@dimen/sp_12" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -134,7 +144,7 @@
             android:layout_width="300dp"
             android:layout_height="50dp"
             android:layout_marginBottom="37dp"
-            android:background="@drawable/button_bk"
+            android:background="@drawable/button_bk_grey"
             android:text="@string/confirm"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"

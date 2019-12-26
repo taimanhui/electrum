@@ -24,4 +24,5 @@
     <color name="bk_page">#FFF8F9FC</color>
     <color name="text_page">#292A45</color>
     <color name="text_color">#494949</color>
+    <color name="graytext_color">#b3b3b3</color>
 </resources>

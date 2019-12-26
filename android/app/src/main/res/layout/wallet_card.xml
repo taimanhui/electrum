@@ -4,18 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
+    <RelativeLayout
         android:id="@+id/wallet_card"
-        android:layout_marginEnd="@dimen/dp_10"
         android:layout_width="300dp"
-        android:layout_height="180dp"
-        android:elevation="@dimen/dp_4"
-        app:cardCornerRadius="@dimen/dp_20">
+        android:background="@drawable/home_bg"
+        android:layout_height="180dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/button_bk">
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/wallet_card_tv1"
@@ -109,6 +106,6 @@
                 app:layout_constraintStart_toEndOf="@id/wallet_card_bn2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </RelativeLayout>
 
 </LinearLayout>

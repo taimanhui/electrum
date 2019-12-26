@@ -27,7 +27,7 @@
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:text="@string/create_trans"
+            android:text="@string/create"
             android:textSize="@dimen/text_size"
             android:textColor="@color/text"/>
 

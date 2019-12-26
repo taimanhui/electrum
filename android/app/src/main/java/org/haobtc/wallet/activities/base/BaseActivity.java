@@ -9,8 +9,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 import com.gyf.immersionbar.ImmersionBar;
@@ -183,15 +185,15 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Set transparent immersion bar : white backgrand black text
      */
     public void mBinitState() {
-        ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0f).navigationBarColor(R.color.button_bk_ddake).init();
+//        ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0f).navigationBarColor(R.color.button_bk_ddake).init();
 
 
         //other one write
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//            getWindow().setStatusBarColor(Color.WHITE);
-//            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(Color.WHITE);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
 
     }
 

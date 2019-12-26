@@ -7,19 +7,19 @@
     android:layout_marginStart="37.5dp"
     android:layout_marginEnd="37.5dp">
     <ImageView
-        android:layout_width="100.7dp"
-        android:layout_height="129.9dp"
+        android:layout_width="155dp"
+        android:layout_height="155dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="172.9dp"
         android:contentDescription="@string/picture"
-        android:src="@drawable/ic_launcher_background" />
+        android:src="@drawable/qidong_logo" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="89dp"
         android:gravity="center_horizontal">
         <Button
             android:id="@+id/bn_create_wallet"
@@ -32,6 +32,7 @@
         <Button
             android:id="@+id/bn_import_wallet"
             android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="50dp"
             android:layout_marginTop="@dimen/dp_20"
             android:background="@drawable/button_bk_grey"

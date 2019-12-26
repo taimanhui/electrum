@@ -10,6 +10,6 @@
         <item>Waiting Broadcast</item>
         <item>Waiting Your Signature</item>
         <item>Confirming</item>
-        <item>Confirmed</item>
+        <item>Completed</item>
     </string-array>
 </resources>

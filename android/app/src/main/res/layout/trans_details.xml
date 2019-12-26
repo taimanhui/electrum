@@ -296,7 +296,7 @@
                             android:layout_marginEnd="@dimen/text_margin"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:text="xxxxxxxxxxxxxxx" />
+                            tools:text="xxxxxxxxxxxxxxx" />
 
                     </LinearLayout>
 
@@ -340,7 +340,7 @@
                             android:layout_marginEnd="@dimen/dp_10"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:text="xxxxxxxxxxxxxxxxxxxx" />
+                            tools:text="xxxxxxxxxxxxxxxxxxxx" />
 
 
                         <View
@@ -353,7 +353,7 @@
                         <TextView
                             android:id="@+id/tet_addressNum"
                             android:textColor="@color/light_text"
-                            android:text="@string/waitmoredres"
+                            tools:text="@string/waitmoredres"
                             android:layout_marginEnd="@dimen/dp_5"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
@@ -402,7 +402,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
-                            android:text="1.33333"
+                            tools:text="1.33333"
                             app:layout_constraintStart_toEndOf="@id/textView12"
                             app:layout_constraintTop_toTopOf="@id/textView12" />
 
@@ -430,7 +430,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
-                            android:text="1.33333"
+                            tools:text="1.33333"
                             app:layout_constraintStart_toEndOf="@id/textView13"
                             app:layout_constraintTop_toTopOf="@id/textView13" />
 
@@ -459,7 +459,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
-                            android:text="hello"
+                            tools:text="hello"
                             app:layout_constraintStart_toEndOf="@id/textView16"
                             app:layout_constraintTop_toTopOf="@id/textView16" />
 
@@ -490,9 +490,21 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
-                            android:text="@string/transaction_waitting"
+                            tools:text="@string/transaction_waitting"
                             app:layout_constraintStart_toEndOf="@id/textView18"
                             app:layout_constraintTop_toTopOf="@id/textView18" />
+
+                        <TextView
+                            android:id="@+id/tet_confirm"
+                            android:visibility="gone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/sp_13"
+                            android:layout_marginStart="@dimen/dp_5"
+                            android:text="@string/confirmnum"
+                            android:textColor="@color/graytext_color"
+                            app:layout_constraintStart_toEndOf="@id/tet_state"
+                            app:layout_constraintBottom_toBottomOf="@id/textView18" />
 
                         <View
                             android:id="@+id/view1"
@@ -522,7 +534,7 @@
                             android:background="@color/button_bk"
                             android:paddingStart="3dp"
                             android:paddingEnd="3dp"
-                            android:text="5/5"
+                            android:text="0/0"
                             android:textColor="@android:color/white"
                             android:textSize="@dimen/smaller_text_size"
                             app:layout_constraintStart_toEndOf="@+id/textView19"
