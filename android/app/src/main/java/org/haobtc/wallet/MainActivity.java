@@ -116,7 +116,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<Fragment> fragmentList;
     private boolean jumpOr;
     private PyObject parse_qr;
-
     @Override
     public int getLayoutId() {
         return R.layout.main_activity;
@@ -129,6 +128,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         rowTrsation = sharedPreferences.getString("rowTrsation", "");
         //Eventbus register
         EventBus.getDefault().register(this);
+//        init();
         jumpOr = sharedPreferences.getBoolean("JumpOr", true);
         if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
             init();
@@ -209,7 +209,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     fragmentList.add(new WheelViewpagerFragment(name, streplace, balance));
 
                 }
-
                 dataListName.add("");
                 fragmentList.add(new AddViewFragment());
                 viewPager.setOffscreenPageLimit(4);
@@ -240,6 +239,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     tetNone.setVisibility(View.VISIBLE);
                     recy_data.setVisibility(View.GONE);
                 }
+
             }
 
         }
@@ -284,7 +284,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                     Log.i("strHistory", "onPage----: " + strHistory);
                                     if (strHistory.length() == 2) {
                                         myDialog.dismiss();
+                                        tetNone.setVisibility(View.VISIBLE);
+                                        recy_data.setVisibility(View.GONE);
                                     } else {
+
                                         //show trsaction list
                                         showTrsactionlist(strHistory);
                                     }
@@ -454,6 +457,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
+                //bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
+                Log.i("contentPyObject", "onActivityResult:  " + content);
                 if (!TextUtils.isEmpty(content)) {
                     try {
                         parse_qr = Daemon.commands.callAttr("parse_qr", content);

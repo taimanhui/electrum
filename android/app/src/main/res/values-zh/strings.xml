@@ -23,8 +23,8 @@
     <string name="use_bixin_s">使用币信服务器</string>
     <string name="prompt">使用币信服务器，可在连署人之间同步交易信息</string>
     <string name="rbf">使用RBF(交易替换)</string>
-    <string name="use_unconfirmed">花费未确认输入</string>
-    <string name="use_change">使用新地址找零</string>
+    <string name="use_unconfirmed">花费未确认的输入</string>
+    <string name="use_change">使用找零地址</string>
     <string name="boot_message">我以阅读并同意（协议）</string>
     <string name="create">创建钱包</string>
     <string name="import_w">导入钱包</string>
@@ -55,7 +55,7 @@
     <string name="input_address">请输入地址</string>
     <string name="sweep">扫一扫</string>
     <string name="paste">粘贴</string>
-    <string name="confirm">确定</string>
+    <string name="confirm">确认</string>
     <string name="cosigner_num_select">设置联署人</string>
     <string name="select_mutisig">选择多签钱包</string>
     <string name="wallet_name">多签钱包1</string>
@@ -153,13 +153,14 @@
     <string name="completed">已完成</string>
     <string name="be_carefl">你已打开自动同步交易，其他联署人可通过币信HD获取交易或使用以下方式将交易转发给其他联署人进行签名</string>
     <string name="forword_transfer">转发转账</string>
-    <string name="screenshot">截图转发二维码。或复制问内容发送给其他联署人完成签名</string>
+    <string name="screenshot">截图转发二维码。或复制内容发送给其他联署人完成签名</string>
     <string name="preservation">保存二维码</string>
     <string name="transaction_message">交易报文</string>
     <string name="trsaction_file">交易文件</string>
     <string name="download">下载</string>
     <string name="signed">已签名</string>
     <string name="partsigned">部分签名</string>
+    <string name="finish">完成</string>
     <string name="preservationbitmappic">保存成功</string>
     <string name="preservationfail">保存失败</string>
     <string name="spin_all">全部</string>
@@ -171,8 +172,7 @@
     <string name="chain_confirmation">链上确认</string>
     <string name="time">时间</string>
     <string name="trsactionhash">交易hash</string>
-    <string name="finish">完成</string>
-    <string name="choose_payaddress">选择付款地址</string>
+    <string name="choose_payaddress">选择付款钱包</string>
     <string name="feenum">数量</string>
     <string name="waitmoredres">等15个</string>
     <string name="now_verson">当前固件版本</string>
@@ -187,5 +187,10 @@
     <string name="pay_wallet">付款钱包</string>
     <string name="confirmnum">确认数>2</string>
     <string name="wallet_insufficient">钱包余额不足</string>
+    <string name="filename">请填写文件名</string>
+    <string name="alredycopy">已复制</string>
+    <string name="filestyle_wrong">文件格式错误</string>
+    <string name="sharetrsaction">转发交易</string>
+
 
 </resources>

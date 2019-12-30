@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities.base;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -15,8 +14,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-import com.gyf.immersionbar.ImmersionBar;
-import org.haobtc.wallet.R;
 import org.haobtc.wallet.utils.MyDialog;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -43,7 +40,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         mBinitState();
         initView();
         initData();
-
 
     }
 

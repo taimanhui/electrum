@@ -8,14 +8,9 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.NFC" />
-
-
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<!--    <uses-permission-->
-<!--        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"-->
-<!--        tools:ignore="ProtectedPermissions" />-->
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- <uses-permission -->
+    <!-- android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" -->
+    <!-- tools:ignore="ProtectedPermissions" /> -->
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
@@ -32,7 +27,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".entries.FsActivity">
 
+        </activity>
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
         <activity
             android:name=".MainActivity"
@@ -43,13 +40,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.set.VersionUpgradeActivity"
+        <activity
+            android:name=".activities.set.VersionUpgradeActivity"
             android:label=""
             android:parentActivityName=".activities.HardwareInfoActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.haobtc.wallet.activities.HardwareInfoActivity" />
-
         </activity>
         <activity
             android:name=".activities.SettingActivity"
@@ -239,6 +236,7 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
@@ -276,12 +274,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.haobtc.wallet.activities.TransactionDetailsActivity" />
         </activity>
-        <activity
-            android:name=".activities.base.LunchActivity"
-            android:theme="@style/LunchTheme" />
+<!--        <activity-->
+<!--            android:name=".activities.base.LunchActivity"-->
+<!--            android:theme="@style/LunchTheme" >-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
         <activity android:name=".activities.GuideActivity" />
-        <activity
-            android:name=".activities.PinSettingActivity">
+        <activity android:name=".activities.PinSettingActivity">
+
         </activity>
         <activity
             android:name=".activities.CreateWalletSuccessfulActivity"

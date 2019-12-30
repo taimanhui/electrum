@@ -125,6 +125,7 @@
             android:id="@+id/sec_view"
             android:layout_width="match_parent"
             android:layout_height="120dp"
+            android:visibility="gone"
             android:layout_marginLeft="@dimen/layout_margin"
             android:layout_marginTop="320dp"
             android:layout_marginRight="@dimen/layout_margin"

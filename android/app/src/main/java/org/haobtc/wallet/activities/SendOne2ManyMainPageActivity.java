@@ -12,16 +12,17 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
-import org.acra.data.StringFormat;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
@@ -58,11 +59,14 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     TextView tetTextNum;
     @BindView(R.id.create_trans_one2many)
     Button createTransOne2many;
+    @BindView(R.id.tv_fee)
+    TextView tvFee;
     private ArrayList<AddressEvent> dataListName;
     private Dialog dialogBtom;
     private RecyclerView recyPayaddress;
     private ChoosePayAddressAdapetr choosePayAddressAdapetr;
     private String wallet_name;
+    private double pro;
 
     public int getLayoutId() {
         return R.layout.send_one2many_main;
@@ -77,8 +81,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         int addressNum = intent.getIntExtra("addressNum", 0);
         int totalAmount = intent.getIntExtra("totalAmount", 0);
         walletName.setText(wallet_name);
-        addressCount.setText(String.valueOf(addressNum)+getResources().getString(R.string.to_num));
-        tvAmount.setText(String.format("%d BTC",totalAmount));
+        addressCount.setText(String.valueOf(addressNum) + getResources().getString(R.string.to_num));
+        tvAmount.setText(String.format("%d BTC", totalAmount));
 
     }
 
@@ -119,8 +123,57 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             case R.id.linearLayout10:
                 break;
             case R.id.fee_select:
+                //Miner money
+                showSelectFeeDialogs(SendOne2ManyMainPageActivity.this, R.layout.select_fee_popwindow);
                 break;
         }
+    }
+
+    private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        dialogBtom = new Dialog(context, R.style.dialog);
+        //Here you can set properties for each control as required
+        AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar_fee);
+        TextView textViewFee = view.findViewById(R.id.fee);
+        //SelectFee
+        seekBar.setOnSeekBarChangeListener(new AppCompatSeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                pro = (double) progress / 10000;
+                String strContent = String.valueOf(pro);
+                textViewFee.setText(strContent);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        //cancel dialog
+        view.findViewById(R.id.cancel_select_fee).setOnClickListener(v -> {
+            dialogBtom.cancel();
+        });
+        view.findViewById(R.id.bn_fee).setOnClickListener(v -> {
+            tvFee.setText(String.valueOf(pro));
+            dialogBtom.cancel();
+        });
+
+        dialogBtom.setContentView(view);
+        Window window = dialogBtom.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtom.show();
     }
 
     private void showDialogs(Context context, @LayoutRes int resource) {
@@ -167,4 +220,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     }
 
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }

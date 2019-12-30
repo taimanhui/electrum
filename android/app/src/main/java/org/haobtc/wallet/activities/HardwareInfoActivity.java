@@ -42,7 +42,6 @@ public class HardwareInfoActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_Serial:
-
                 break;
             case R.id.tet_versonUp:
                 mIntent(VersionUpgradeActivity.class);

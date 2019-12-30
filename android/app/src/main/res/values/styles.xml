@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <!--导航栏颜色-->
         <item name="colorPrimary">@android:color/white</item>
-        <!--状态栏颜色（页面最顶层显示时间的地方）--> <!--TODO: 修改状态栏文字颜色，改为白底黑字-->
+        <!--状态栏颜色（页面最顶层显示时间的地方）-->
         <item name="colorPrimaryDark">@null</item>
         <!--全局的获取焦点后的光标颜色(控件主题颜色)-->
         <item name="colorAccent">@color/button_bk</item>
@@ -60,4 +60,5 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
+
 </resources>

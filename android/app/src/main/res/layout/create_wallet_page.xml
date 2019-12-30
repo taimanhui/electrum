@@ -4,9 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:id="@+id/rel_hideKey"
+    android:clickable="true"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable="true">
 
     <RelativeLayout
         android:id="@+id/reckidshjkjsn"
@@ -96,7 +99,6 @@
                         android:hint="@string/input_here"
                         android:importantForAutofill="no"
                         android:inputType="text"
-                        android:maxLength="7"
                         android:textColor="@color/light_text"
                         android:textSize="@dimen/text_size" />
                 </LinearLayout>
@@ -107,6 +109,7 @@
                     android:background="@color/separation_line" />
 
                 <LinearLayout
+                    android:id="@+id/lin_Cosinger"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginStart="@dimen/text_margin"
@@ -141,6 +144,7 @@
                     android:background="@color/separation_line" />
 
                 <LinearLayout
+                    android:id="@+id/lin_sigNumseting"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginStart="@dimen/text_margin"

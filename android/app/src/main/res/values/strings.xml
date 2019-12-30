@@ -22,8 +22,8 @@
     <string name="use_bixin_s">Use BIXin Server</string>
     <string name="prompt">Use BiXin Server  can help cosigner sync transaction info</string>
     <string name="rbf">Use RBF(Replace By Fee)</string>
-    <string name="use_unconfirmed">Use Unconfirmed Input</string>
-    <string name="use_change">Use New Address as change</string>
+    <string name="use_unconfirmed">Spend unconfirmed input</string>
+    <string name="use_change">Use change address</string>
     <string name="boot_message">I have read and aggred(Agreement)</string>
     <string name="create">Create Wallet</string>
     <string name="import_w">Import Wallet</string>
@@ -174,7 +174,7 @@
     <string name="time">time</string>
     <string name="trsactionhash">Transaction hash</string>
     <string name="finish">complete</string>
-    <string name="choose_payaddress">Select payment address</string>
+    <string name="choose_payaddress">Select payment wallet</string>
     <string name="feenum">Number</string>
     <string name="waitmoredres">Wait 15</string>
     <string name="now_verson">Current firmware version</string>
@@ -189,5 +189,9 @@
     <string name="pay_wallet">Payment Wallet</string>
     <string name="confirmnum">Confirmation number >2</string>
     <string name="wallet_insufficient">Insufficient wallet balance</string>
+    <string name="filename">Please fill in the file name</string>
+    <string name="alredycopy">Already copied</string>
+    <string name="filestyle_wrong">File format error</string>
+    <string name="sharetrsaction">Forward transaction</string>
 
 </resources>

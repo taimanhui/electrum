@@ -1,9 +1,11 @@
 package org.haobtc.wallet.activities;
 
+import android.Manifest;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
@@ -20,6 +23,10 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,6 +42,8 @@ public class ReceivedPageActivity extends BaseActivity {
     TextView textView6;
     @BindView(R.id.button)
     Button button;
+    private Bitmap bitmap;
+    private RxPermissions rxPermissions;
 
     @Override
     public int getLayoutId() {
@@ -46,6 +55,7 @@ public class ReceivedPageActivity extends BaseActivity {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
         CommonUtils.enableToolBar(this, R.string.receive);
+        rxPermissions = new RxPermissions(this);
     }
 
     @Override
@@ -65,7 +75,7 @@ public class ReceivedPageActivity extends BaseActivity {
         String qr_data = getCodeAddressBean.getQr_data();
         String addr = getCodeAddressBean.getAddr();
         textView5.setText(addr);
-        Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+        bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
         imageView2.setImageBitmap(bitmap);
     }
 
@@ -82,8 +92,45 @@ public class ReceivedPageActivity extends BaseActivity {
 
                 break;
             case R.id.button:
+                rxPermissions
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                boolean toGallery = saveBitmap(bitmap);
+                                if (toGallery) {
+                                    mToast(getResources().getString(R.string.preservationbitmappic));
+                                } else {
+                                    Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
+                                }
+
+
+                            } else { // Oups permission denied
+                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
+
+
                 break;
         }
     }
+
+    public boolean saveBitmap(Bitmap bitmap) {
+        try {
+            File filePic = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + System.currentTimeMillis() + ".jpg");
+            if (!filePic.exists()) {
+                filePic.getParentFile().mkdirs();
+                filePic.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(filePic);
+            boolean success =  bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+            return success;
+
+        } catch (IOException ignored) {
+            return false;
+        }
+    }
+
 }
 

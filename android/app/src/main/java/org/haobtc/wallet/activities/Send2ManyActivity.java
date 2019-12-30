@@ -69,6 +69,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         buttonNext.setOnClickListener(this);
         buttonNext.setEnabled(false);
         buttonNext.setBackground(getResources().getDrawable(R.color.button_bk_grey));
+
         init();
         // recyclerView.setAdapter();
     }
@@ -165,6 +166,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         int sAmount = Integer.parseInt(strSmount);
         //Total transfer quantity
         totalAmount = totalAmount + sAmount;
+
         textViewTotal.setText(String.format("%d",totalAmount));
         SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
         sendMoreAddressEvent.setInputAddress(straddress);

@@ -182,6 +182,7 @@ dependencies {
 
     //wheel_viewpager
     implementation 'com.github.ThirdGoddess:GoddessTNT:v1.5'
+    implementation project(path: ':dRlibfileselector')
 
 }
 repositories {

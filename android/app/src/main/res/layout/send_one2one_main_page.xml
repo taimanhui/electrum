@@ -322,7 +322,7 @@
                         android:paddingEnd="@dimen/dp_10"
                         android:layout_weight="1"
                         android:background="@null"
-                        android:gravity="center_vertical|end"
+                        android:gravity="center_vertical"
                         android:maxWidth="240dp"
                         android:maxLength="20"
                         android:singleLine="true"

@@ -62,8 +62,6 @@ import java.util.Map;
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     private LinearLayout selectSend, selectSigNum;
-    private PopupWindow popupWindow;
-    private View rootView;
     private EditText editTextComments, editAddress;
     private TextView bytesCount;
     private Button buttonCreate, buttonSweep, buttonPaste;
@@ -122,14 +120,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         selectSend.setOnClickListener(this);
         selectSigNum.setOnClickListener(this);
         textView.setOnClickListener(this);
-        rootView = LayoutInflater.from(this).inflate(R.layout.send_one2one_main_page, null);
         //InputMaxTextNum
         setEditTextComments();
         buttonCreate.setOnClickListener(this);
         buttonSweep.setOnClickListener(this);
         buttonPaste.setOnClickListener(this);
-//        InputFilter[] filters = {new CashierInputFilter()};
-//        tetamount.setFilters(filters);
         dataListName = new ArrayList<>();
         payAddressMore();
     }
@@ -341,8 +336,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     }
                 }
                 break;
-            default:
-                popupWindow.dismiss();
         }
     }
 
@@ -377,6 +370,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Log.i("CreatTransaction", "mCrea-----  "+e.getMessage());
+            Toast.makeText(this, getResources().getString(R.string.changeaddress), Toast.LENGTH_SHORT).show();
         }
 
     }

@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -24,20 +23,34 @@ import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import dr.android.fileselector.FileSelectConstant;
 
 
-public class SignaturePageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
+public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     @BindView(R.id.tet_Error)
     TextView tetError;
-    private Button buttonImport, buttonSweep, buttonPaste, buttonConfirm;
-    private EditText editTextRaw;
+    @BindView(R.id.edit_raw)
+    EditText editTextRaw;
+    @BindView(R.id.import_file)
+    Button buttonImport;
+    @BindView(R.id.sweep_sig)
+    Button buttonSweep;
+    @BindView(R.id.paste_sig)
+    Button buttonPaste;
+    @BindView(R.id.confirm_sig)
+    Button buttonConfirm;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
+    private PyObject is_valiad_xpub;
 
     @Override
     public int getLayoutId() {
@@ -50,15 +63,6 @@ public class SignaturePageActivity extends BaseActivity implements View.OnClickL
         ButterKnife.bind(this);
         CommonUtils.enableToolBar(this, R.string.signature);
         rxPermissions = new RxPermissions(this);
-        buttonConfirm = findViewById(R.id.confirm_sig);
-        buttonImport = findViewById(R.id.import_file);
-        buttonSweep = findViewById(R.id.sweep_sig);
-        buttonPaste = findViewById(R.id.paste_sig);
-        editTextRaw = findViewById(R.id.edit_raw);
-        buttonConfirm.setOnClickListener(this);
-        buttonImport.setOnClickListener(this);
-        buttonSweep.setOnClickListener(this);
-        buttonPaste.setOnClickListener(this);
         buttonConfirm.setEnabled(false);
         buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
         editTextRaw.addTextChangedListener(this);
@@ -71,16 +75,21 @@ public class SignaturePageActivity extends BaseActivity implements View.OnClickL
 
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
+
+    @OnClick({R.id.import_file, R.id.sweep_sig, R.id.paste_sig, R.id.confirm_sig})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.import_file:
+                Intent intent1 = new Intent();
+                intent1.setClass(getApplicationContext(), FsActivity.class);
+                intent1.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FILE);
+                startActivityForResult(intent1, 1);
+
+                break;
             case R.id.confirm_sig:
                 String raw = editTextRaw.getText().toString();
                 Intent intent = new Intent(this, TransactionDetailsActivity.class);
                 startActivity(intent);
-                break;
-            case R.id.import_file:
-
                 break;
             case R.id.sweep_sig:
                 rxPermissions
@@ -107,6 +116,7 @@ public class SignaturePageActivity extends BaseActivity implements View.OnClickL
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -116,6 +126,25 @@ public class SignaturePageActivity extends BaseActivity implements View.OnClickL
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 editTextRaw.setText(content);
             }
+        }else if (requestCode == 1 && resultCode == RESULT_OK){
+            ArrayList<String> listExtra = data.getStringArrayListExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS);
+            String str = listExtra.toString();
+            String substring = str.substring(1);
+            String strPath = substring.substring(0, substring.length() - 1);
+            Log.i("listExtra", "listExtra--: "+listExtra + "   strPath ---  "+strPath);
+            try {
+                //read file
+                PyObject read_tx_from_file = Daemon.commands.callAttr("read_tx_from_file", strPath);
+                if (read_tx_from_file!=null){
+                    String readFile = read_tx_from_file.toString();
+                    Log.i("readFile", "onActivityResult: "+readFile);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, getResources().getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
@@ -126,50 +155,41 @@ public class SignaturePageActivity extends BaseActivity implements View.OnClickL
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+        String strRaw = editTextRaw.getText().toString();
+        if (!TextUtils.isEmpty(strRaw)) {
+            try {
+                is_valiad_xpub = Daemon.commands.callAttr("is_valiad_xpub", strRaw);
+                if (is_valiad_xpub != null) {
+                    String strValiad = is_valiad_xpub.toString();
+                    if (strValiad.equals("False")) {
+                        tetError.setVisibility(View.VISIBLE);
+                        buttonConfirm.setEnabled(false);
+                        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    } else {
+                        tetError.setVisibility(View.INVISIBLE);
+                        buttonConfirm.setEnabled(true);
+                        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                    }
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                tetError.setVisibility(View.VISIBLE);
+                buttonConfirm.setEnabled(false);
+                buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+
+            }
+
+        } else {
+            tetError.setVisibility(View.INVISIBLE);
+            buttonConfirm.setEnabled(false);
+            buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+        }
 
     }
 
     @Override
     public void afterTextChanged(Editable s) {
-        String strRaw = editTextRaw.getText().toString();
-        if (!TextUtils.isEmpty(strRaw)) {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-
-                private PyObject is_valiad_xpub;
-
-                @Override
-                public void run() {
-                    try {
-                        is_valiad_xpub = Daemon.commands.callAttr("is_valiad_xpub", strRaw);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("printStackTrace", "run:=====  " + e.getMessage());
-                        tetError.setVisibility(View.VISIBLE);
-                        buttonConfirm.setEnabled(false);
-                        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
-
-                    }
-                    if (is_valiad_xpub != null) {
-                        tetError.setVisibility(View.INVISIBLE);
-                        buttonConfirm.setEnabled(true);
-                        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
-                        String strValiad = is_valiad_xpub.toString();
-                        Log.e("printStackTrace", "run-----  " + strValiad);
-
-                    }
-
-                }
-            }, 300);
-
-
-            buttonConfirm.setEnabled(true);
-            buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
-        } else {
-            buttonConfirm.setEnabled(false);
-            buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
-        }
 
     }
 
