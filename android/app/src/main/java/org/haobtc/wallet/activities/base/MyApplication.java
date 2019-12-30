@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
-
+import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 public class MyApplication extends Application {
@@ -25,8 +25,15 @@ public class MyApplication extends Application {
         Python.start(new AndroidPlatform(Global.app));
         Global.py = Python.getInstance();
         Log.i("JXM", "onCreate++++++: ");
-        Global.py.getModule("electrum.constants").callAttr("set_testnet");
+        Log.i("JXM", "hhh: " + BuildConfig.net_type);
 
+        if (BuildConfig.net_type.equals( "TestNet")) {
+            Global.py.getModule("electrum.constants").callAttr("set_testnet");
+            Log.i("JXM", "TESTNET++++++: ");
+        }else if(BuildConfig.net_type.equals("RegTest")){
+            Global.py.getModule("electrum.constants").callAttr("set_regtest");
+            Log.i("JXM", "REGTEST++++++: ");
+        }
         Global.mHandler = null;
         if (Global.mHandler == null) {
             Global.mHandler = new Handler(Looper.getMainLooper());

@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
+import copy
 from code import InteractiveConsole
 import json
 import os
@@ -97,7 +98,6 @@ class AndroidCommands(commands.Commands):
     def __init__(self):
         loop, stop_loop, loop_thread = create_and_start_event_loop()#TODO:close loop
         config_options = {}
-        # config_options['testnet'] = True#TODO:api for set chain
         config_options['auto_connect'] = True
         self.config = simple_config.SimpleConfig(config_options)
         fd = daemon.get_file_descriptor(self.config)
@@ -254,16 +254,16 @@ class AndroidCommands(commands.Commands):
         """Get daemon status"""
         try:
             self._assert_daemon_running()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         return self.daemon.run_daemon({"subcommand": "status"})
 
     def stop(self):
         """Stop the daemon"""
         try:
             self._assert_daemon_running()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         self.daemon.stop()
         self.daemon.join()
         self.daemon_running = False
@@ -274,8 +274,8 @@ class AndroidCommands(commands.Commands):
         print("console.load_wallet_by_name in....")
         try:
             self._assert_daemon_running()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         path = self._wallet_path(name)
         wallet = self.daemon.get_wallet(path)
         if not wallet:
@@ -284,7 +284,7 @@ class AndroidCommands(commands.Commands):
                 raise BaseException("not find file %s" %path)
             if storage.is_encrypted():
                 if not password:
-                    raise util.InvalidPassword()
+                    raise BaseException(util.InvalidPassword())
                 storage.decrypt(password)
 
             wallet = Wallet(storage, config = self.config)
@@ -295,8 +295,8 @@ class AndroidCommands(commands.Commands):
         """Close a wallet"""
         try:
             self._assert_daemon_running()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         self.daemon.stop_wallet(self._wallet_path(name))
 
     ##set callback##############################
@@ -308,8 +308,8 @@ class AndroidCommands(commands.Commands):
     def set_multi_wallet_info(self, name, m, n):
         try:
             self._assert_daemon_running()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         if self.wizard is not None:
             self.wizard = None
         self.wizard = MutiBase.MutiBase(self.config)
@@ -322,32 +322,32 @@ class AndroidCommands(commands.Commands):
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             self.wizard.restore_from_xpub(xpub)
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
 
     def delete_xpub(self, xpub):
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             self.wizard.delete_xpub(xpub)
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
 
     def get_keystores_info(self):
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             ret = self.wizard.get_keystores_info()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         return ret
 
     def get_cosigner_num(self):
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         return self.wizard.get_cosigner_num()
 
     def create_multi_wallet(self, name):
@@ -357,8 +357,8 @@ class AndroidCommands(commands.Commands):
             path = self._wallet_path(name)
             print("console:create_multi_wallet:path = %s---------" % path)
             storage = self.wizard.create_storage(path=path, password = '')
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         if storage:
             wallet = Wallet(storage, config=self.config)
             wallet.start_network(self.daemon.network)
@@ -375,16 +375,17 @@ class AndroidCommands(commands.Commands):
     def mktx(self, outputs, message, fee):
         try:
             self._assert_wallet_isvalid()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
 
         print("console.mktx.outpus = %s======" %outputs)
+
         all_output_add = json.loads(outputs)
         outputs_addrs = []
-        for address, amount in all_output_add:
-            outputs_addrs.append(PartialTxOutput.from_address_and_value(address, satoshis(amount)))
-        #outputs_addrs = [(TxOutput(TYPE_ADDRESS, "tb1qwz3zcty8txqw077mckv5wycf2tj697ncnjwp9m", satoshis(0.01)))]
-        print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
+        for key in all_output_add:
+            for address, amount in key.items():
+                outputs_addrs.append(PartialTxOutput.from_address_and_value(address, satoshis(amount)))
+                print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
         coins = self.wallet.get_spendable_coins(domain = None)
         try:
             tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=satoshis(fee))
@@ -399,8 +400,9 @@ class AndroidCommands(commands.Commands):
                 'fee': self.format_amount_and_units(tx_details.fee),
                 'tx': str(partial_tx)
             }
-        except BaseException as e:
-            raise e
+
+        except Exception as e:
+            raise BaseException(e)
 
         json_str = json.dumps(ret_data)
         return json_str
@@ -409,15 +411,15 @@ class AndroidCommands(commands.Commands):
         try:
             tx = Transaction(raw_tx)
             tx.deserialize()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
 
     def get_wallets_list_info(self):
         wallet_info_map = {}
         try:
             self._assert_daemon_running()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         wallet_info_map = {}
         wallets = self.list_wallets()
         wallet_info = []
@@ -431,8 +433,8 @@ class AndroidCommands(commands.Commands):
 
                 try:
                     wallet = Wallet(storage, config=self.config)
-                except BaseException as e:
-                    raise e
+                except Exception as e:
+                    raise BaseException(e)
             c, u, x = wallet.get_balance()
             info = {
                 "wallet_type" : wallet.wallet_type,
@@ -453,8 +455,8 @@ class AndroidCommands(commands.Commands):
     def format_amount_and_units(self, amount):
         try:
             self._assert_daemon_running()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         text = self.format_amount(amount) + ' '+ self.base_unit()
         x = self.daemon.fx.format_amount_and_units(amount) if self.daemon.fx else None
         if text and x:
@@ -471,14 +473,21 @@ class AndroidCommands(commands.Commands):
         text = bfh(raw_tx)
         return base_encode(text, base=43)
 
+    def recover_tx_info(self, tx):
+        tx = tx_from_any(bytes.fromhex(tx))
+        temp_tx = copy.deepcopy(tx)
+        temp_tx.deserialize()
+        temp_tx.add_info_from_wallet(self.wallet)
+        return temp_tx
+
     ## get tx info from raw_tx
     def get_tx_info_from_raw(self, raw_tx):
         try:
-            tx = tx_from_any(bytes.fromhex(raw_tx))
+            tx = self.recover_tx_info(raw_tx)
             print("console:get_tx_info_from_raw:tx===%s" %raw_tx)
-        except BaseException as e:
+        except Exception as e:
             tx = None
-            raise e
+            raise BaseException(e)
         data = {}
         if not isinstance(tx, PartialTransaction):
             tx = PartialTransaction.from_tx(tx)
@@ -488,9 +497,8 @@ class AndroidCommands(commands.Commands):
     def get_details_info(self, tx):
         try:
             self._assert_wallet_isvalid()
-        except BaseException as e:
-            raise e
-        tx.deserialize()
+        except Exception as e:
+            raise BaseException(e)
         tx_details = self.wallet.get_tx_info(tx)
         #print("tx_details 22222222 = %s" % json.dumps(tx_details))
         s, r = tx.signature_count()
@@ -502,7 +510,7 @@ class AndroidCommands(commands.Commands):
             out_info['addr'] = address
             out_info['amount'] = self.format_amount_and_units(value)
             out_list.append(out_info)
-
+        print("===============tx:%s" %tx.serialize_as_bytes().hex())
         ret_data = {
             'txid':tx_details.txid,
             'can_broadcast':tx_details.can_broadcast,
@@ -514,6 +522,7 @@ class AndroidCommands(commands.Commands):
             'output_addr':out_list,
             'input_addr':[txin.address for txin in tx.inputs()],
             'cosigner':[x.xpub for x in self.wallet.get_keystores()],
+            'tx':tx.serialize_as_bytes().hex()
         }
         json_data = json.dumps(ret_data)
         return json_data
@@ -605,8 +614,8 @@ class AndroidCommands(commands.Commands):
     def get_history_tx(self):
         try:
             self._assert_wallet_isvalid()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         history = reversed(self.wallet.get_history())
         all_data = [self.get_card(*item) for item in history]
         return json.dumps(all_data)
@@ -614,21 +623,21 @@ class AndroidCommands(commands.Commands):
     def get_tx_info(self, tx_hash):
         try:
             self._assert_wallet_isvalid()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         tx = self.wallet.db.get_transaction(tx_hash)
         print("get_tx_info:tx=%s" % tx)
         if not tx:
             raise BaseException('get transaction info failed')
-        psbt_tx = PartialTransaction.from_tx(tx)
+        psbt_tx = PartialTransaction.from_tx(tx)#TODO:NEED RETURN HISTORY INFO
         return self.get_details_info(psbt_tx)
 
     def get_card(self, tx_hash, tx_mined_status, delta, fee, balance):
         try:
             self._assert_wallet_isvalid()
             self._assert_daemon_running()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         status, status_str = self.wallet.get_tx_status(tx_hash, tx_mined_status)
         label = self.wallet.get_label(tx_hash) if tx_hash else _('Pruned transaction outputs')
         ri = {}
@@ -652,8 +661,8 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_wallet_isvalid()
             data = util.create_bip21_uri(self.wallet.get_addresses()[0], "", "")
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         data_json = {}
         data_json['qr_data'] = data
         data_json['addr'] = self.wallet.get_addresses()[0]
@@ -679,15 +688,15 @@ class AndroidCommands(commands.Commands):
                 with open(path, "wb+") as f:
                     print("FILE==:PSBT")
                     f.write(tx.serialize_as_bytes())
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
 
     def read_tx_from_file(self, path):
         try:
             with open(path, "rb") as f:
                 file_content = f.read()
         except (ValueError, IOError, os.error) as reason:
-            raise ("Electrum was unable to open your transaction file")
+            raise BaseException("Electrum was unable to open your transaction file")
             return
         print("FILE== file info = %s" % file_content)
         tx = tx_from_any(file_content)
@@ -707,8 +716,8 @@ class AndroidCommands(commands.Commands):
                 ret_data['status'] = 1
                 try:
                     uri = util.parse_URI(data)
-                except BaseException as e:
-                    raise e
+                except Exception as e:
+                    raise BaseException(e)
                 ret_data['data'] = uri['address']
                 return json.dumps(ret_data)
 
@@ -718,10 +727,11 @@ class AndroidCommands(commands.Commands):
         from electrum.util import bh2u
         try:
             text = bh2u(base_decode(data, base=43))
-            tx = tx_from_any(bytes.fromhex(text))
-        except BaseException as e:
+            tx = self.recover_tx_info(text)
+            #tx = tx_from_any(bytes.fromhex(text))
+        except Exception as e:
             tx = None
-            raise e
+            raise BaseException(e)
         if tx:
             if not isinstance(tx, PartialTransaction):
                 tx = PartialTransaction.from_tx(tx)
@@ -756,8 +766,8 @@ class AndroidCommands(commands.Commands):
     def set_use_change(self, status_change):
         try:
             self._assert_wallet_isvalid()
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
         use_change = self.config.get('use_change')
         if use_change == status_change :
             return
@@ -770,8 +780,8 @@ class AndroidCommands(commands.Commands):
             tx = Transaction(tx)
             tx.deserialize()
             self.wallet.sign_transaction(tx, None)
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
     ##connection with terzorlib#########################
     def set_pin(self):
         print("support for liyan")
@@ -781,27 +791,6 @@ class AndroidCommands(commands.Commands):
     def get_xpub_from_hw(self):
         print("support for liyan")
 
-    def get_connected_hw_devices(self, plugins):
-        print("console.get_connected_hw_devices:plugins=%s------" % plugins)
-        supported_plugins = plugins.get_hardware_support()
-        # scan devices
-        devices = []
-        devmgr = plugins.device_manager
-        for splugin in supported_plugins:
-            name, plugin = splugin.name, splugin.plugin
-            print("console:get_connected_hw_devices:name=%s plugin=%s" %(name, plugin))
-            if not plugin:
-                e = splugin.exception
-                print("error during plugin init: error = %s======="%e)
-                continue
-            try:
-                u = devmgr.unpaired_device_infos(None, plugin)
-            except BaseException as e:
-                print("error getting device infos error=%s===========" % e)
-                #_logger.error(f'error getting device infos for {name}: {repr(e)}')
-                continue
-            devices += list(map(lambda x: (name, x), u))
-        return devices
     ####################################################
     def create(self, name, password, seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
@@ -848,6 +837,8 @@ class AndroidCommands(commands.Commands):
             self.wallet = self.daemon._wallets[self._wallet_path(name)]
 
         print("console.select_wallet[%s]=%s" %(name, self.wallet))
+        import time
+        time.sleep(0.5)
         self.update_wallet()
         self.update_interfaces()
 
@@ -866,8 +857,8 @@ class AndroidCommands(commands.Commands):
         """Delete a wallet"""
         try:
             os.remove(self._wallet_path(name))
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
 
     # def unit_test(self):
     #     """Run all unit tests. Expect failures with functionality not present on Android,

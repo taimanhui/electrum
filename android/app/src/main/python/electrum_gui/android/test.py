@@ -20,7 +20,6 @@ _logger = get_logger(__name__)
 from console import AndroidCommands
 
 util.setup_thread_excepthook()
-constants.set_testnet()
 
 testcommond = AndroidCommands()
 testcommond.start()
@@ -31,14 +30,14 @@ password = '111111'
 #test hardware
 #testcommond.get_xpub_from_hw()
 
-#create_wallet
-
+# #create_wallet
+#
 # m = 2
 # n = 2
 # xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
 # #xpub1 = 'Vpub5dEvVGKn7251znFdWdjnyKjLN525eAmRpVmmZ7chqn8y4Rz9fhKxeeUqJ18mb6kHazADprqMnNyPwG6Y3nGQ2AuchC6VD9ATvn7TLrEXqJz'
 # xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-# #testcommond.delete_wallet(name)
+# testcommond.delete_wallet(name)
 # testcommond.set_multi_wallet_info(name,m,n)
 # testcommond.add_xpub(xpub1)
 # testcommond.add_xpub(xpub2)
@@ -61,11 +60,16 @@ info = testcommond.get_wallets_list_info()
 
 #create_tx
 all_output = []
-output_info = ['tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe', '0.05']
+#output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+#output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.05'}
+
 all_output.append(output_info)
+#all_output.append(output_info1)
 output_str = json.dumps(all_output)
-fee = 0.001
+fee = 0.00001
 message = 'test'
+print("--------------all_output= %s" %output_str)
 ret_str = testcommond.mktx(output_str, message, fee)
 ret_list = json.loads(ret_str)
 print("tx================%s" % ret_list['tx'])
@@ -91,8 +95,6 @@ add = testcommond.parse_qr(qr_data['qr_data'])
 print("addr = %s--------" %add)
 #get_history_tx
 
-data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
-print("get_tx_info = %s-===========" % data)
 ##get_all_tx_list
 #testinfo = testcommond.get_all_tx_list('', None, None)
 #print("testinfo = %s------------" %testinfo)
@@ -130,4 +132,5 @@ print("testinfo = %s------------" %testinfo)
 #sign_tx
 #testcommond.sign_tx(ret_list['tx'])
 
-
+#data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
+#print("get_tx_info = %s-===========" % data)
