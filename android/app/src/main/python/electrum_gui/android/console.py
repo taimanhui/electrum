@@ -372,6 +372,9 @@ class AndroidCommands(commands.Commands):
         self.wizard = None
 
     ##create tx#########################
+    def get_default_fee_status(self):
+        return self.config.get_fee_status()
+
     def mktx(self, outputs, message, fee):
         try:
             self._assert_wallet_isvalid()
@@ -526,6 +529,16 @@ class AndroidCommands(commands.Commands):
         }
         json_data = json.dumps(ret_data)
         return json_data
+    #invoices
+
+    def get_invoices(self):
+        return self.wallet.get_invoices()
+
+    def do_save(self, outputs, message):
+        invoice = self.wallet.create_invoice(outputs, message, None, None)
+        if not invoice:
+            return
+        self.wallet.save_invoice(invoice)
 
     ##get history+tx info
     def get_all_tx_list(self, raw_tx, tx_status=None, history_status=None):#tobe optimization
@@ -700,7 +713,7 @@ class AndroidCommands(commands.Commands):
             return
         print("FILE== file info = %s" % file_content)
         tx = tx_from_any(file_content)
-        return tx.serialize_as_bytes()
+        return tx.serialize_as_bytes().hex()
 
     ##Analyze QR data
     def parse_qr(self, data):

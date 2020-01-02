@@ -20,7 +20,7 @@ _logger = get_logger(__name__)
 from console import AndroidCommands
 
 util.setup_thread_excepthook()
-
+constants.set_regtest()
 testcommond = AndroidCommands()
 testcommond.start()
 
@@ -37,16 +37,16 @@ password = '111111'
 # xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
 # #xpub1 = 'Vpub5dEvVGKn7251znFdWdjnyKjLN525eAmRpVmmZ7chqn8y4Rz9fhKxeeUqJ18mb6kHazADprqMnNyPwG6Y3nGQ2AuchC6VD9ATvn7TLrEXqJz'
 # xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-# testcommond.delete_wallet(name)
+# #testcommond.delete_wallet(name)
 # testcommond.set_multi_wallet_info(name,m,n)
 # testcommond.add_xpub(xpub1)
 # testcommond.add_xpub(xpub2)
 # testcommond.create_multi_wallet(name)
 
-ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
-print("=======ret1 = %s" %ret)
-ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41v1111111111111111")
-print("=======ret2 = %s" %ret)
+# ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
+# print("=======ret1 = %s" %ret)
+# ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41v1111111111111111")
+# print("=======ret2 = %s" %ret)
 #testcommond.get_feature()
 #testcommond.get_xpub_from_hw()
 
@@ -58,6 +58,8 @@ testcommond.load_wallet(name, password)
 testcommond.select_wallet(name)
 info = testcommond.get_wallets_list_info()
 
+status = testcommond.get_default_fee_status()
+print("status = %s" %status)
 #create_tx
 all_output = []
 #output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
