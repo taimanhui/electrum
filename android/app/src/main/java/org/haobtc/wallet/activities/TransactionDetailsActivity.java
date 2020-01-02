@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -76,8 +77,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     TextView textView13;
     @BindView(R.id.textView15)
     TextView textView15;
-    @BindView(R.id.textView17)
-    TextView textView17;
     @BindView(R.id.textView16)
     TextView textView16;
     @BindView(R.id.view)
@@ -117,6 +116,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String listType;
     private String rowTrsation;
     private String jsondef_get;
+    private GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
+    private String rowtx;
 
 
     @Override
@@ -173,6 +174,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.i("printStackTrace", "tr----- " + e.getMessage());
+                return;
             }
             if (get_tx_info != null) {
                 jsondef_get = get_tx_info.toString();
@@ -186,7 +188,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void mCreataSuccsesCheck() {
         //get trsaction list content
         if (!TextUtils.isEmpty(tx_hash)) {
-
             PyObject def_get_tx_info_from_raw = null;
             try {
                 def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowTrsation);
@@ -194,7 +195,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                 e.printStackTrace();
             }
             jsondef_get = def_get_tx_info_from_raw.toString();
-            Log.i("jsondef_get", "mCreata---: " + jsondef_get);
             jsonDetailData(jsondef_get);
         }
 
@@ -202,17 +202,25 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     private void jsonDetailData(String jsondef_get) {
         Log.i("jsonDetailData", "jsonDetail==== " + jsondef_get);
-        Gson gson = new Gson();
-        GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
-        int amount = getnewcreatTrsactionListBean.getAmount();
-        int fee = getnewcreatTrsactionListBean.getFee();
+        try {
+            Gson gson = new Gson();
+            getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
+
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String amount = getnewcreatTrsactionListBean.getAmount();
+        String fee = getnewcreatTrsactionListBean.getFee();
         String description = getnewcreatTrsactionListBean.getDescription();
-        String tx_status = getnewcreatTrsactionListBean.getTx_status();
-        List<Integer> sign_status = getnewcreatTrsactionListBean.getSign_status();
-        List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutput_addr();
-        List<String> input_addr = getnewcreatTrsactionListBean.getInput_addr();
+        String tx_status = getnewcreatTrsactionListBean.getTxStatus();
+        List<Integer> sign_status = getnewcreatTrsactionListBean.getSignStatus();
+        List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutputAddr();
+        List<String> input_addr = getnewcreatTrsactionListBean.getInputAddr();
         List<String> cosigner = getnewcreatTrsactionListBean.getCosigner();
         String txid = getnewcreatTrsactionListBean.getTxid();
+        rowtx = getnewcreatTrsactionListBean.getTx();
         //trsaction hash
         tetTrsactionHash.setText(txid);
         //input address num
@@ -231,9 +239,9 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
 
         //Transfer accounts num
-        textView14.setText(String.valueOf(amount));
+        textView14.setText(amount);
         //Miner's fee
-        textView15.setText(String.valueOf(fee));
+        textView15.setText(fee);
         //Remarks
         tetContent.setText(description);
 
@@ -252,13 +260,12 @@ public class TransactionDetailsActivity extends BaseActivity {
         recySignatory.setAdapter(sinatrayPersonAdapetr);
 
         //judge state
-        judgeState(inFront, inBehind, tx_status);
-
+        judgeState(tx_status);
 
     }
 
     //judge state
-    private void judgeState(Integer inFront, Integer inBehind, String tx_status) {
+    private void judgeState(String tx_status) {
         //trsaction state
         if (tx_status.equals("Unconfirmed")) {//Unconfirmed
             tetState.setText(R.string.waitchoose);
@@ -287,40 +294,32 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             ////trsaction hash and time
             cardTrantime.setVisibility(View.VISIBLE);
-        } else {
-            if (inFront == 0) {
-                //unsigned
-                tetState.setText(R.string.unsigned);
-                sigTrans.setText(R.string.signature_trans);
+        } else if (tx_status.contains("Unsigned")) {//unsigned
+            tetState.setText(R.string.unsigned);
+            sigTrans.setText(R.string.signature_trans);
+        } else if (tx_status.contains("Signed")) {//signed
+            tetState.setText(R.string.wait_broadcast);
+            sigTrans.setText(R.string.broadcast);
+            //progress
+            imgProgressone.setVisibility(View.GONE);
+            imgProgresstwo.setVisibility(View.GONE);
+            imgProgressthree.setVisibility(View.VISIBLE);
+            imgProgressfour.setVisibility(View.GONE);
+            //text color
+            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+            tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
 
-            } else if (inFront == inBehind) {
-                //signed
-                tetState.setText(R.string.wait_broadcast);
-                sigTrans.setText(R.string.broadcast);
-                //progress
-                imgProgressone.setVisibility(View.GONE);
-                imgProgresstwo.setVisibility(View.GONE);
-                imgProgressthree.setVisibility(View.VISIBLE);
-                imgProgressfour.setVisibility(View.GONE);
-                //text color
-                tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-                tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-
-            } else {
-                //you are signer
-                tetState.setText(R.string.you_are_signed);
-                sigTrans.setText(R.string.forWord_orther);
-                //progress
-                imgProgressone.setVisibility(View.GONE);
-                imgProgresstwo.setVisibility(View.VISIBLE);
-                imgProgressthree.setVisibility(View.GONE);
-                imgProgressfour.setVisibility(View.GONE);
-                //text color
-                tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-
-            }
+        } else if (tx_status.contains("Partially signed")) {//you are signer
+            tetState.setText(R.string.you_are_signed);
+            sigTrans.setText(R.string.forWord_orther);
+            //progress
+            imgProgressone.setVisibility(View.GONE);
+            imgProgresstwo.setVisibility(View.VISIBLE);
+            imgProgressthree.setVisibility(View.GONE);
+            imgProgressfour.setVisibility(View.GONE);
+            //text color
+            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
         }
-
 
     }
 
@@ -333,7 +332,9 @@ public class TransactionDetailsActivity extends BaseActivity {
                 break;
             case R.id.img_share:
                 Intent intent = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
+                intent.putExtra("keys", keyValue);//adopt tx length fix textview length
                 intent.putExtra("rowTrsaction", tx_hash);
+                intent.putExtra("rowTx", rowtx);
                 startActivity(intent);
                 break;
             case R.id.sig_trans:
@@ -342,7 +343,9 @@ public class TransactionDetailsActivity extends BaseActivity {
 
                 } else if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
+                    intent1.putExtra("keys", keyValue);//adopt tx length fix textview length
                     intent1.putExtra("rowTrsaction", tx_hash);
+                    intent1.putExtra("rowTx", rowtx);
                     startActivity(intent1);
 
                 } else if (strBtncontent.equals(getResources().getString(R.string.broadcast))) {
@@ -360,11 +363,5 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }
 

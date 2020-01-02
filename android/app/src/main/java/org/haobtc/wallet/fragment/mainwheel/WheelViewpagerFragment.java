@@ -75,6 +75,7 @@ public class WheelViewpagerFragment extends Fragment {
         btnLeft.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
             intent.putExtra("wallet_name",name);
+            intent.putExtra("wallet_balance",balance);
             getActivity().startActivity(intent);
         });
         btncenetr.setOnClickListener(v -> {

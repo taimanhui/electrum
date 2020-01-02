@@ -8,12 +8,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
@@ -23,7 +26,9 @@ import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -210,33 +215,64 @@ public class TransactionRecordsActivity extends BaseActivity {
 
     //all data
     private void mTransactionrecordAll() {
-        //get transaction json
-        PyObject get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
-        //get transaction list
-        getHistroyIntry(get_history_tx);
+        PyObject get_history_tx = null;
+        try {
+            //get transaction json
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (get_history_tx != null) {
+            //get transaction list
+            getHistroyIntry(get_history_tx);
+        }
+
     }
 
     private void mTransactionrecordSend(String sends) {
         //get transaction json
-        PyObject get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("tx_status", sends));
-        getHistroyIntry(get_history_tx);
-
+        PyObject get_history_tx = null;
+        try {
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("tx_status", sends));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (get_history_tx != null) {
+            getHistroyIntry(get_history_tx);
+        }
 
     }
 
     private void mTransactionrecordSate(String states) {
-
         //get transaction json
-        PyObject get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("history_status", states));
-        getHistroyIntry(get_history_tx);
+        PyObject get_history_tx = null;
+        try {
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("history_status", states));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (get_history_tx != null) {
+            getHistroyIntry(get_history_tx);
+        }
 
     }
 
     private void mTransactionrecordSendTwo(String sends, String state) {
         //get transaction json
-        PyObject get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("tx_status", sends), new Kwarg("history_status", state));
-        //get transaction list
-        getHistroyIntry(get_history_tx);
+        PyObject get_history_tx = null;
+        try {
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("tx_status", sends), new Kwarg("history_status", state));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (get_history_tx != null) {
+            //get transaction list
+            getHistroyIntry(get_history_tx);
+        }
     }
 
     private void getHistroyIntry(PyObject get_history_tx) {

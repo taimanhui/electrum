@@ -67,16 +67,25 @@ public class ReceivedPageActivity extends BaseActivity {
     }
 
     private void mGeneratecode() {
-        PyObject walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-        String strCode = walletAddressShowUi.toString();
-        Log.i("strCode", "mGenerate--: " + strCode);
-        Gson gson = new Gson();
-        GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-        String qr_data = getCodeAddressBean.getQr_data();
-        String addr = getCodeAddressBean.getAddr();
-        textView5.setText(addr);
-        bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
-        imageView2.setImageBitmap(bitmap);
+        PyObject walletAddressShowUi = null;
+        try {
+            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (walletAddressShowUi!=null){
+            String strCode = walletAddressShowUi.toString();
+            Log.i("strCode", "mGenerate--: " + strCode);
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            String qr_data = getCodeAddressBean.getQr_data();
+            String addr = getCodeAddressBean.getAddr();
+            textView5.setText(addr);
+            bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            imageView2.setImageBitmap(bitmap);
+        }
+
     }
 
 

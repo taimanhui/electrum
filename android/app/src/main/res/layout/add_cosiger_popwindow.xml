@@ -33,11 +33,10 @@
 
             <ImageView
                 android:id="@+id/cancel_cosigner_add_popup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="48.5dp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="@dimen/dp_14"
-                android:layout_marginEnd="@dimen/text_margin"
+                android:padding="@dimen/dp_14"
                 android:contentDescription="@string/use_hardware"
                 android:src="@drawable/close_big_black"
                 app:layout_constraintTop_toTopOf="parent" />

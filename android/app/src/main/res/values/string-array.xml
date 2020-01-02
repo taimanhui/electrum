@@ -8,7 +8,7 @@
     <string-array name="state">
         <item>All</item>
         <item>Waiting Broadcast</item>
-        <item>Waiting Your Signature</item>
+        <item>Waiting Signature</item>
         <item>Confirming</item>
         <item>Completed</item>
     </string-array>

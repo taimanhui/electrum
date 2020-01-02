@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
@@ -53,6 +55,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,13 +64,14 @@ import java.util.Map;
 
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
-    private LinearLayout selectSend, selectSigNum;
+    private LinearLayout selectSend;
+    private ImageView selectSigNum;
     private EditText editTextComments, editAddress;
     private TextView bytesCount;
     private Button buttonCreate, buttonSweep, buttonPaste;
     private Dialog dialogBtom;
     private String strContent = "";
-    private TextView tetMoneye;
+    private EditText tetMoneye;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private EditText tetamount;
@@ -84,6 +88,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private String wallet_amount;
+    private PyObject get_wallets_list_info;
+    private PyObject mktx;
+    private ImageView imgBack;
+    private int walletmoney = 0;
 
     @Override
     public int getLayoutId() {
@@ -91,7 +99,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     }
 
     public void initView() {
-        CommonUtils.enableToolBar(this, R.string.send);
         preferences = getSharedPreferences("preferences", MODE_PRIVATE);
         edit = preferences.edit();
         selectSend = findViewById(R.id.llt_select_wallet);
@@ -106,13 +113,17 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         buttonCreate = findViewById(R.id.create_trans_one2one);
         buttonSweep = findViewById(R.id.bn_sweep_one2noe);
         buttonPaste = findViewById(R.id.bn_paste_one2one);
+        imgBack = findViewById(R.id.img_back);
+        imgBack.setOnClickListener(this);
         tetamount.addTextChangedListener(this);
+
         init();
     }
 
     private void init() {
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
+        wallet_amount = intent.getStringExtra("wallet_balance");
         String sendAdress = intent.getStringExtra("sendAdress");
         editAddress.setText(sendAdress);
         tetWalletname.setText(wallet_name);
@@ -120,17 +131,62 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         selectSend.setOnClickListener(this);
         selectSigNum.setOnClickListener(this);
         textView.setOnClickListener(this);
-        //InputMaxTextNum
-        setEditTextComments();
         buttonCreate.setOnClickListener(this);
         buttonSweep.setOnClickListener(this);
         buttonPaste.setOnClickListener(this);
         dataListName = new ArrayList<>();
+        tetMoneychange();
+        //InputMaxTextNum
+        setEditTextComments();
         payAddressMore();
+    }
+
+    private void tetMoneychange() {
+        tetMoneye.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().contains(".")) {
+                    if (s.length() - 1 - s.toString().indexOf(".") > 7) {
+                        s = s.toString().subSequence(0,
+                                s.toString().indexOf(".") + 8);
+                        tetMoneye.setText(s);
+                        tetMoneye.setSelection(s.length());
+                    }
+                }
+                if (s.toString().trim().substring(0).equals(".")) {
+                    s = "0" + s;
+                    tetMoneye.setText(s);
+                    tetMoneye.setSelection(2);
+                }
+                if (s.toString().startsWith("0")
+                        && s.toString().trim().length() > 1) {
+                    if (!s.toString().substring(1, 2).equals(".")) {
+                        tetMoneye.setText(s.subSequence(0, 1));
+                        tetMoneye.setSelection(1);
+                        return;
+                    }
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String strMoney = tetMoneye.getText().toString();
+                if (TextUtils.isEmpty(strMoney)){
+                    tetMoneye.setText("0");
+                }
+            }
+        });
     }
 
     @Override
     public void initData() {
+
 
     }
 
@@ -227,9 +283,13 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             dialogBtom.cancel();
         });
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-            Daemon.commands.callAttr("load_wallet", wallet_name);
-            Daemon.commands.callAttr("select_wallet", wallet_name);
 
+            try {
+                Daemon.commands.callAttr("load_wallet", wallet_name);
+                Daemon.commands.callAttr("select_wallet", wallet_name);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             tetWalletname.setText(wallet_name);
             dialogBtom.cancel();
         });
@@ -254,22 +314,30 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     //getMorepayAddress
     private void payAddressMore() {
-        PyObject get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
-        String toString = get_wallets_list_info.toString();
-        Log.i("payAddressMore", "pay---: " + toString);
-        Gson gson = new Gson();
-        MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
-        List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
-        for (int i = 0; i < wallets.size(); i++) {
-            String wallet_type = wallets.get(i).getWalletType();
-            String name = wallets.get(i).getName();
-            String balance = wallets.get(i).getBalance();
-            AddressEvent addressEvent = new AddressEvent();
-            addressEvent.setName(name);
-            addressEvent.setType(wallet_type);
-            addressEvent.setAmount(balance);
-            dataListName.add(addressEvent);
+        try {
+            get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
         }
+        if (get_wallets_list_info != null) {
+            String toString = get_wallets_list_info.toString();
+            Log.i("payAddressMore", "pay---: " + toString);
+            Gson gson = new Gson();
+            MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
+            List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
+            for (int i = 0; i < wallets.size(); i++) {
+                String wallet_type = wallets.get(i).getWalletType();
+                String name = wallets.get(i).getName();
+                String balance = wallets.get(i).getBalance();
+                AddressEvent addressEvent = new AddressEvent();
+                addressEvent.setName(name);
+                addressEvent.setType(wallet_type);
+                addressEvent.setAmount(balance);
+                dataListName.add(addressEvent);
+            }
+        }
+
     }
 
     private void recyclerviewOnclick() {
@@ -311,6 +379,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     Toast.makeText(this, R.string.inoutnum, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (walletmoney == 1){
+                    mToast(getResources().getString(R.string.wallet_insufficient));
+                    return;
+                }
                 //creatTrnsaction
                 mCreatTransaction();
                 break;
@@ -336,6 +408,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     }
                 }
                 break;
+            case R.id.img_back:
+                finish();
+                break;
         }
     }
 
@@ -343,23 +418,31 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private void mCreatTransaction() {
         straddress = editAddress.getText().toString();
         strAmount = tetamount.getText().toString();
-
+        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
         Map<String, String> pramas = new HashMap<>();
         pramas.put(straddress, strAmount);
+        arrayList.add(pramas);
         String strMinerFee = tetMoneye.getText().toString();
         String strComment = editTextComments.getText().toString();
-        String strPramas = new Gson().toJson(pramas);
+        String strPramas = new Gson().toJson(arrayList);
 
-        Log.i("mktx", "strPramas: " + strPramas + "   strComment -: " + strComment + "  strMinerFee -- : " + strMinerFee);
+        Log.i("CreatTransaction", "strPramas: " + strPramas);
 
         try {
-            PyObject mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
+            mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("CreatTransaction", "mCrea-----  " + e.getMessage());
+            mToast(getResources().getString(R.string.changeaddress));
+            return;
+        }
+        Log.i("CreatTransaction", "mCreatTransaction: " + mktx);
+        if (mktx != null) {
             String jsonObj = mktx.toString();
             gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             String beanTx = getAddressBean.getTx();
-
-            Log.i("jsondef_get", "mCreat--: " + beanTx);
             if (beanTx != null) {
                 edit.putString("rowTrsation", beanTx);
                 edit.apply();
@@ -368,10 +451,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 intent.putExtra("keyValue", "A");
                 startActivity(intent);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i("CreatTransaction", "mCrea-----  "+e.getMessage());
-            Toast.makeText(this, getResources().getString(R.string.changeaddress), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -403,28 +482,51 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (s.toString().contains(".")) {
+            if (s.length() - 1 - s.toString().indexOf(".") > 7) {
+                s = s.toString().subSequence(0,
+                        s.toString().indexOf(".") + 8);
+                tetamount.setText(s);
+                tetamount.setSelection(s.length());
+            }
+        }
+        if (s.toString().trim().substring(0).equals(".")) {
+            s = "0" + s;
+            tetamount.setText(s);
+            tetamount.setSelection(2);
+        }
+        if (s.toString().startsWith("0")
+                && s.toString().trim().length() > 1) {
+            if (!s.toString().substring(1, 2).equals(".")) {
+                tetamount.setText(s.subSequence(0, 1));
+                tetamount.setSelection(1);
+                return;
+            }
+        }
 
     }
 
     @Override
     public void afterTextChanged(Editable s) {
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                float intAmount = Float.parseFloat(strAmount);
-//                strAmount = tetamount.getText().toString();
-//                String strTotal = wallet_amount.substring(0, wallet_amount.indexOf("."));
-//                int intwalletstrTotal = Integer.parseInt(strTotal);
-//                float mbtc = intwalletstrTotal / 1000;
-//
-//                if (intAmount > mbtc) {
-//                    mToast(getResources().getString(R.string.wallet_insufficient));
-//                }
-//
-//            }
-//        }, 300);
+        strAmount = tetamount.getText().toString();
+        if (!TextUtils.isEmpty(strAmount)) {
+            //compare
+            BigDecimal bignum1 = new BigDecimal(strAmount);
+            String strBtc = wallet_amount.substring(0, wallet_amount.length() - 5);
+            BigDecimal bignum2 = new BigDecimal(strBtc);
+            int math = bignum1.compareTo(bignum2);
+            //if math = 1 -> bignum2
+            if (math == 1) {
+                mToast(getResources().getString(R.string.wallet_insufficient));
+                //walletmoney == 1  ->  Sorry, your credit is running low
+                walletmoney = 1;
+            } else if (math == -1 || math == 0) {
+                walletmoney = 0;
+            }
+        }
+
     }
-
-
 }
+
+
+

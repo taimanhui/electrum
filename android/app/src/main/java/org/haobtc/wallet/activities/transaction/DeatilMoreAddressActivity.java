@@ -1,23 +1,17 @@
 package org.haobtc.wallet.activities.transaction;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.gson.Gson;
-
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MoreAddressAdapter;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
-
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,7 +43,7 @@ public class DeatilMoreAddressActivity extends BaseActivity {
         if (!TextUtils.isEmpty(jsondef_get)){
             Gson gson = new Gson();
             GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
-            List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutput_addr();
+            List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutputAddr();
             MoreAddressAdapter moreAddressAdapter = new MoreAddressAdapter(output_addr);
             recyMoreAddress.setAdapter(moreAddressAdapter);
 

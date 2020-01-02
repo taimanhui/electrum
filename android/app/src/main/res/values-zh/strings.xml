@@ -23,7 +23,7 @@
     <string name="use_bixin_s">使用币信服务器</string>
     <string name="prompt">使用币信服务器，可在连署人之间同步交易信息</string>
     <string name="rbf">使用RBF(交易替换)</string>
-    <string name="use_unconfirmed">花费未确认的输入</string>
+    <string name="use_unconfirmed">花费未确认的收入</string>
     <string name="use_change">使用找零地址</string>
     <string name="boot_message">我以阅读并同意（协议）</string>
     <string name="create">创建钱包</string>
@@ -113,7 +113,7 @@
     <string name="bixinmoney">币信冷钱包介绍</string>
     <string name="copy_self">复制</string>
     <string name="address_qr">地址二维码</string>
-    <string name="attention">注意：该地址仅需要BTC收款，转入其他币种将无法找回</string>
+    <string name="attention">注意：该地址仅支持BTC收款，转入其他币种将无法找回</string>
     <string name="prompt_message">请在冷钱包硬件上确认以下信息后，点击”OK”按钮</string>
     <string name="picture">this is a picture</string>
     <string name="wallet_create_successful">钱包创建成功</string>
@@ -137,7 +137,7 @@
     <string name="inoutnum">请输入转账数量</string>
     <string name="moreinput_text">您最多能输入20个字</string>
     <string name="photopersion">相机权限被拒绝，无法扫描二维码</string>
-    <string name="reservatpion_photo">读写权限被拒绝，无法保存</string>
+    <string name="reservatpion_photo">权限被拒绝，无法执行</string>
     <string name="copysuccess">复制成功!</string>
     <string name="changeaddress">请更换地址！</string>
     <string name="waitchoose">待确认</string>
@@ -191,6 +191,10 @@
     <string name="alredycopy">已复制</string>
     <string name="filestyle_wrong">文件格式错误</string>
     <string name="sharetrsaction">转发交易</string>
-
+    <string name="no_serialnumber">暂无序列号</string>
+    <string name="no_address">暂无地址</string>
+    <string name="downloadfail">下载成功</string>
+    <string name="downloadsuccse">下载失败</string>
+    <string name="message_big">交易信息过大，无法使用二维码进行分享</string>
 
 </resources>

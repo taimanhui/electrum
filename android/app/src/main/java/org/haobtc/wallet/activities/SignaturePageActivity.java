@@ -80,10 +80,21 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.import_file:
-                Intent intent1 = new Intent();
-                intent1.setClass(getApplicationContext(), FsActivity.class);
-                intent1.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FILE);
-                startActivityForResult(intent1, 1);
+                rxPermissions
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                Intent intent1 = new Intent();
+                                intent1.setClass(getApplicationContext(), FsActivity.class);
+                                intent1.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FILE);
+                                intent1.putExtra("keyFile", "1");
+                                startActivityForResult(intent1, 1);
+
+                            } else { // Oups permission denied
+                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
+
 
                 break;
             case R.id.confirm_sig:
@@ -126,23 +137,26 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 editTextRaw.setText(content);
             }
-        }else if (requestCode == 1 && resultCode == RESULT_OK){
+        } else if (requestCode == 1 && resultCode == RESULT_OK) {
             ArrayList<String> listExtra = data.getStringArrayListExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS);
             String str = listExtra.toString();
             String substring = str.substring(1);
             String strPath = substring.substring(0, substring.length() - 1);
-            Log.i("listExtra", "listExtra--: "+listExtra + "   strPath ---  "+strPath);
+            Log.i("listExtra", "listExtra--: " + listExtra + "   strPath ---  " + strPath);
             try {
                 //read file
                 PyObject read_tx_from_file = Daemon.commands.callAttr("read_tx_from_file", strPath);
-                if (read_tx_from_file!=null){
+                if (read_tx_from_file != null) {
                     String readFile = read_tx_from_file.toString();
-                    Log.i("readFile", "onActivityResult: "+readFile);
+                    Log.i("readFile", "tx-------: " + readFile);
+                    editTextRaw.setText(readFile);
+
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(this, getResources().getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
+                return;
             }
 
         }
@@ -158,7 +172,12 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
         String strRaw = editTextRaw.getText().toString();
         if (!TextUtils.isEmpty(strRaw)) {
             try {
-                is_valiad_xpub = Daemon.commands.callAttr("is_valiad_xpub", strRaw);
+                try {
+                    is_valiad_xpub = Daemon.commands.callAttr("is_valiad_xpub", strRaw);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
                 if (is_valiad_xpub != null) {
                     String strValiad = is_valiad_xpub.toString();
                     if (strValiad.equals("False")) {

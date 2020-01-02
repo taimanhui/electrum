@@ -116,6 +116,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<Fragment> fragmentList;
     private boolean jumpOr;
     private PyObject parse_qr;
+
     @Override
     public int getLayoutId() {
         return R.layout.main_activity;
@@ -192,10 +193,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void mWheelplanting() {
         fragmentList = new ArrayList<>();
 
-        PyObject get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
-        String toString = get_wallets_list_info.toString();
-        Log.i("javaBean", "mjavaBean----: " + toString + "----lenth----" + toString.length());
-        if (!TextUtils.isEmpty(toString)) {
+        PyObject get_wallets_list_info = null;
+        try {
+            get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        if (get_wallets_list_info != null) {
+            String toString = get_wallets_list_info.toString();
+            Log.i("javaBean", "mjavaBean----: " + toString + "----lenth----" + toString.length());
             Gson gson = new Gson();
             MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
             List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
@@ -215,10 +223,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 viewPager.setPageMargin(40);
                 viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
                 //choose wallet
-                Daemon.commands.callAttr("load_wallet", dataListName.get(0));
-                Daemon.commands.callAttr("select_wallet", dataListName.get(0));
-                //get transaction json
-                get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
+                try {
+                    Daemon.commands.callAttr("load_wallet", dataListName.get(0));
+                    Daemon.commands.callAttr("select_wallet", dataListName.get(0));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    //get transaction json
+                    get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
                 //get transaction list
                 if (!get_history_tx.isEmpty()) {
                     tetNone.setVisibility(View.GONE);
@@ -258,52 +275,61 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onPageSelected(int position) {
-                if (position != (fragmentList.size() - 1)) {
+                Log.i("onPageSelected", "pos__ " + position);
+                if (position == (fragmentList.size() - 1)) {
+                    Log.i("onPageSelected", "名字为空");
+                    mCurrentPosition = position;
+                } else {
                     myDialog.show();
-                }
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            maintrsactionlistEvents.clear();
+                            Log.i("onPageSelected", "mCurrentPosition-----" + mCurrentPosition);
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        maintrsactionlistEvents.clear();
-                        if (mCurrentPosition != position) {
-                            String strNames = dataListName.get(position);
-                            if (!TextUtils.isEmpty(strNames)) {
-                                try {
-                                    Daemon.commands.callAttr("load_wallet", strNames);
-                                    Daemon.commands.callAttr("select_wallet", strNames);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
-                                if (!get_history_tx.isEmpty()) {
-                                    tetNone.setVisibility(View.GONE);
-                                    recy_data.setVisibility(View.VISIBLE);
-                                    String strHistory = get_history_tx.toString();
-                                    Log.i("strHistory", "onPage----: " + strHistory);
-                                    if (strHistory.length() == 2) {
-                                        myDialog.dismiss();
+                            if (mCurrentPosition != position) {
+                                String strNames = dataListName.get(position);
+                                Log.i("onPageSelected", "strNames-----" + strNames);
+                                if (!TextUtils.isEmpty(strNames)) {
+                                    try {
+                                        Daemon.commands.callAttr("load_wallet", strNames);
+                                        Daemon.commands.callAttr("select_wallet", strNames);
+                                        get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        Log.i("onPageSelected", "try-----" + e.getMessage());
+                                        return;
+                                    }
+                                    if (!get_history_tx.isEmpty()) {
+                                        tetNone.setVisibility(View.GONE);
+                                        recy_data.setVisibility(View.VISIBLE);
+                                        String strHistory = get_history_tx.toString();
+                                        Log.i("strHistory", "onPage----: " + strHistory);
+                                        if (strHistory.length() == 2) {
+                                            myDialog.dismiss();
+                                            tetNone.setVisibility(View.VISIBLE);
+                                            recy_data.setVisibility(View.GONE);
+                                        } else {
+                                            //show trsaction list
+                                            showTrsactionlist(strHistory);
+                                        }
+
+
+                                    } else {
                                         tetNone.setVisibility(View.VISIBLE);
                                         recy_data.setVisibility(View.GONE);
-                                    } else {
-
-                                        //show trsaction list
-                                        showTrsactionlist(strHistory);
                                     }
 
-
-                                } else {
-                                    tetNone.setVisibility(View.VISIBLE);
-                                    recy_data.setVisibility(View.GONE);
                                 }
 
                             }
-
+                            mCurrentPosition = position;
                         }
-                        mCurrentPosition = position;
-                    }
-                }, 350);
+                    }, 350);
+
+                }
 
             }
 
@@ -325,10 +351,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 tx_hash = jsonObject.getString("tx_hash");
                 amount = jsonObject.getString("amount");
                 is_mine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
+                date = jsonObject.getString("date");
                 if (type.equals("history")) {
-                    date = jsonObject.getString("date");
                     confirmations = jsonObject.getString("confirmations");
-
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
                     maintrsactionlistEvent.setDate(date);
@@ -338,11 +363,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     maintrsactionlistEvent.setType(type);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
-
                     String tx_status = jsonObject.getString("tx_status");
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
-//                    maintrsactionlistEvent.setDate(date);
+                    maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
                     maintrsactionlistEvent.setIs_mine(is_mine);
                     maintrsactionlistEvent.setType(type);
@@ -465,24 +489,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     } catch (Exception e) {
                         e.printStackTrace();
                         mToast(getResources().getString(R.string.changeaddress));
+                        return;
                     }
-                    if (parse_qr!=null){
+                    if (parse_qr != null) {
                         String strParse = parse_qr.toString();
                         Log.i("PyObject", "onActivityResult:  " + strParse);
                         Gson gson = new Gson();
                         MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
                         int status = mainSweepcodeBean.getStatus();
                         String data1 = mainSweepcodeBean.getData();
-                        if (status == 1){
+                        if (status == 1) {
                             //address  -->  intent  send  activity
                             Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
-                            intent.putExtra("sendAdress",data1);
+                            intent.putExtra("sendAdress", data1);
                             startActivity(intent);
 
-                        }else if (status == 2){
+                        } else if (status == 2) {
                             //trsaction -->  trsactiondetail
                             Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
-                            intent.putExtra("tx_hash",data1);
+                            intent.putExtra("tx_hash", data1);
                             intent.putExtra("keyValue", "B");
                             intent.putExtra("listType", "history");
                             startActivity(intent);
