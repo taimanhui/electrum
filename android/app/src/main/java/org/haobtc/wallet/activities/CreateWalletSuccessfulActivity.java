@@ -44,6 +44,7 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
     private final String FIRST_RUN = "is_first_run";
     private SharedPreferences.Editor edit;
     private String strCode;
+    private PyObject walletAddressShowUi;
 
     @Override
     public int getLayoutId() {
@@ -67,16 +68,22 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
     }
 
     private void mGeneratecode() {
-        PyObject walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-        strCode = walletAddressShowUi.toString();
-        Gson gson = new Gson();
-        GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-        String qr_data = getCodeAddressBean.getQr_data();
-        String addr = getCodeAddressBean.getAddr();
-        textPublicKey.setText(addr);
-        Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
-        imgCodePublicKey.setImageBitmap(bitmap);
+        try {
+            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (walletAddressShowUi!=null){
+            strCode = walletAddressShowUi.toString();
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            String qr_data = getCodeAddressBean.getQr_data();
+            String addr = getCodeAddressBean.getAddr();
+            textPublicKey.setText(addr);
+            Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            imgCodePublicKey.setImageBitmap(bitmap);
+        }
     }
 
     @OnClick({R.id.copy_public_key, R.id.btn_enter_wallet,R.id.img_back})
@@ -89,7 +96,7 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
                 Toast.makeText(CreateWalletSuccessfulActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_enter_wallet:
-                edit.putBoolean(     FIRST_RUN, true);
+                edit.putBoolean(FIRST_RUN, true);
                 edit.apply();
                 EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(this, MainActivity.class);

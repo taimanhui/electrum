@@ -1,32 +1,47 @@
 package org.haobtc.wallet.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class GetnewcreatTrsactionListBean {
 
 
     /**
-     * txid : 7e7d38c1a75c9e9322cb7cb5900270d480e860bfca607509ad8b78294170a300
-     * can_broadcast : false
-     * amount : 0
-     * fee : 10000
+     * txid : eef1c62c12ebe4470fa052b7746019146725f491fef20f38b82b190f92b9d218
+     * can_broadcast : true
+     * amount : 0. mBTC
+     * fee : unknown mBTC
      * description :
-     * tx_status : Unsigned
-     * sign_status : [0,2]
-     * output_addr : [{"addr":"tb1qd6d098z55znz65wmk7rqmcgfxy6vtxc602kny400x6pal232x9ys3ed9ry","amount":100000},{"addr":"tb1qng4x9xgz4ffxhgp38jh5adp7ssu6jd7jkplq5zh3wdw66mzadr7sycfssq","amount":890000}]
-     * input_addr : ["tb1q48kq864pz6g3tr2zzj4ugufhy4nrncuaz9w2v4c57n62ascramhqgfmknr"]
-     * cosigner : ["Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg","Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"]
+     * tx_status : Signed
+     * sign_status : [0,0]
+     * output_addr : [{"addr":"bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r","amount":"0. mBTC"},{"addr":"","amount":"0. mBTC"}]
+     * input_addr : ["",""]
+     * cosigner : ["Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm","Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"]
+     * tx : 02000000010000000000000000000000000000000000000000000000000000000000000000ffffffff00ffffffff0200000000000000002200209f2f1060a8d7ddf0019b4fae87d022ff257e74b9db40d592a29ca0b1d0e7d07a0000000000000000266a24aa21a9ede2f61c3f71d1defd3fa999dfa36953755c690689799962b48bebd836974e8cf900000000
      */
 
+    @SerializedName("txid")
     private String txid;
-    private boolean can_broadcast;
-    private int amount;
-    private int fee;
+    @SerializedName("can_broadcast")
+    private boolean canBroadcast;
+    @SerializedName("amount")
+    private String amount;
+    @SerializedName("fee")
+    private String fee;
+    @SerializedName("description")
     private String description;
-    private String tx_status;
-    private List<Integer> sign_status;
-    private List<OutputAddrBean> output_addr;
-    private List<String> input_addr;
+    @SerializedName("tx_status")
+    private String txStatus;
+    @SerializedName("tx")
+    private String tx;
+    @SerializedName("sign_status")
+    private List<Integer> signStatus;
+    @SerializedName("output_addr")
+    private List<OutputAddrBean> outputAddr;
+    @SerializedName("input_addr")
+    private List<String> inputAddr;
+    @SerializedName("cosigner")
     private List<String> cosigner;
 
     public String getTxid() {
@@ -37,27 +52,27 @@ public class GetnewcreatTrsactionListBean {
         this.txid = txid;
     }
 
-    public boolean isCan_broadcast() {
-        return can_broadcast;
+    public boolean isCanBroadcast() {
+        return canBroadcast;
     }
 
-    public void setCan_broadcast(boolean can_broadcast) {
-        this.can_broadcast = can_broadcast;
+    public void setCanBroadcast(boolean canBroadcast) {
+        this.canBroadcast = canBroadcast;
     }
 
-    public int getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 
-    public int getFee() {
+    public String getFee() {
         return fee;
     }
 
-    public void setFee(int fee) {
+    public void setFee(String fee) {
         this.fee = fee;
     }
 
@@ -69,36 +84,44 @@ public class GetnewcreatTrsactionListBean {
         this.description = description;
     }
 
-    public String getTx_status() {
-        return tx_status;
+    public String getTxStatus() {
+        return txStatus;
     }
 
-    public void setTx_status(String tx_status) {
-        this.tx_status = tx_status;
+    public void setTxStatus(String txStatus) {
+        this.txStatus = txStatus;
     }
 
-    public List<Integer> getSign_status() {
-        return sign_status;
+    public String getTx() {
+        return tx;
     }
 
-    public void setSign_status(List<Integer> sign_status) {
-        this.sign_status = sign_status;
+    public void setTx(String tx) {
+        this.tx = tx;
     }
 
-    public List<OutputAddrBean> getOutput_addr() {
-        return output_addr;
+    public List<Integer> getSignStatus() {
+        return signStatus;
     }
 
-    public void setOutput_addr(List<OutputAddrBean> output_addr) {
-        this.output_addr = output_addr;
+    public void setSignStatus(List<Integer> signStatus) {
+        this.signStatus = signStatus;
     }
 
-    public List<String> getInput_addr() {
-        return input_addr;
+    public List<OutputAddrBean> getOutputAddr() {
+        return outputAddr;
     }
 
-    public void setInput_addr(List<String> input_addr) {
-        this.input_addr = input_addr;
+    public void setOutputAddr(List<OutputAddrBean> outputAddr) {
+        this.outputAddr = outputAddr;
+    }
+
+    public List<String> getInputAddr() {
+        return inputAddr;
+    }
+
+    public void setInputAddr(List<String> inputAddr) {
+        this.inputAddr = inputAddr;
     }
 
     public List<String> getCosigner() {
@@ -111,12 +134,14 @@ public class GetnewcreatTrsactionListBean {
 
     public static class OutputAddrBean {
         /**
-         * addr : tb1qd6d098z55znz65wmk7rqmcgfxy6vtxc602kny400x6pal232x9ys3ed9ry
-         * amount : 100000
+         * addr : bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r
+         * amount : 0. mBTC
          */
 
+        @SerializedName("addr")
         private String addr;
-        private int amount;
+        @SerializedName("amount")
+        private String amount;
 
         public String getAddr() {
             return addr;
@@ -126,11 +151,11 @@ public class GetnewcreatTrsactionListBean {
             this.addr = addr;
         }
 
-        public int getAmount() {
+        public String getAmount() {
             return amount;
         }
 
-        public void setAmount(int amount) {
+        public void setAmount(String amount) {
             this.amount = amount;
         }
     }

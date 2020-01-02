@@ -22,7 +22,7 @@
     <string name="use_bixin_s">Use BIXin Server</string>
     <string name="prompt">Use BiXin Server  can help cosigner sync transaction info</string>
     <string name="rbf">Use RBF(Replace By Fee)</string>
-    <string name="use_unconfirmed">Spend unconfirmed input</string>
+    <string name="use_unconfirmed">Spend unrecognized revenue</string>
     <string name="use_change">Use change address</string>
     <string name="boot_message">I have read and aggred(Agreement)</string>
     <string name="create">Create Wallet</string>
@@ -125,7 +125,7 @@
     <string name="wallet_list">Wallet List</string>
     <string name="add_">Add</string>
     <string name="no_records">No Records</string>
-    <string name="attention">Note: this address only needs BTC collection, and other proportion transferred in will not be recovered</string>
+    <string name="attention">Note: this address only supports BTC collection and cannot be retrieved if transferred to other currencies</string>
     <string name="cosigner_num_select">Set number of joint signers</string>
     <string name="pin_input_again">Incorrect input, please input again</string>
     <string name="prompt_create">The wallet was created successfully. Your collection address is as shown in the figure below</string>
@@ -193,5 +193,10 @@
     <string name="alredycopy">Already copied</string>
     <string name="filestyle_wrong">File format error</string>
     <string name="sharetrsaction">Forward transaction</string>
+    <string name="no_serialnumber">No serial number</string>
+    <string name="no_address">No address at all</string>
+    <string name="downloadfail">Download successful</string>
+    <string name="downloadsuccse">Download failed</string>
+    <string name="message_big">Transaction information is too large to share with QR code</string>
 
 </resources>

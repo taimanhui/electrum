@@ -98,8 +98,8 @@ public class CreateWalletPageActivity extends BaseActivity {
         dialogBtom = new Dialog(context, R.style.dialog);
         numberPicker = view.findViewById(R.id.np_cosigner);
         CommonUtils.setNumberPickerDividerColor(this, numberPicker);
-        numberPicker.setMinValue(1);
-        numberPicker.setMaxValue(20);
+        numberPicker.setMinValue(2);
+        numberPicker.setMaxValue(15);
         NumberPicker.OnValueChangeListener onValueChangeListener =
                 (np, i, i1) -> {
            /* Toast.makeText(CreateWalletPageActivity.this,
@@ -142,7 +142,7 @@ public class CreateWalletPageActivity extends BaseActivity {
         dialogBtom = new Dialog(context, R.style.dialog);
         numberPicker = view.findViewById(R.id.np_sig_num);
         CommonUtils.setNumberPickerDividerColor(this, numberPicker);
-        numberPicker.setMinValue(1);
+        numberPicker.setMinValue(2);
         numberPicker.setMaxValue(15);
         NumberPicker.OnValueChangeListener onValueChangeListener =
                 (np, i, i1) -> {
@@ -184,7 +184,11 @@ public class CreateWalletPageActivity extends BaseActivity {
     //creatwallet
     private void creatWalletjson(String name, int cosinerNum, int sigNum) {
         myDialog.show();
-        Daemon.commands.callAttr("set_multi_wallet_info", name, cosinerNum, sigNum);
+        try {
+            Daemon.commands.callAttr("set_multi_wallet_info", name, cosinerNum, sigNum);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         myDialog.dismiss();
         Intent intent = new Intent(this, CoSignerAddActivity.class);
         intent.putExtra(WALLET_NAME, name);

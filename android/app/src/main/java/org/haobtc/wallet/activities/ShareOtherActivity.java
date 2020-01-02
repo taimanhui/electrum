@@ -1,21 +1,13 @@
 package org.haobtc.wallet.activities;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,48 +16,33 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.chaquo.python.PyObject;
 import com.tbruyelle.rxpermissions2.RxPermissions;
-import com.thirdgoddess.tnt.image.ImageUtils;
-import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.base.MyApplication;
 import org.haobtc.wallet.entries.FsActivity;
-import org.haobtc.wallet.utils.CallbackBundle;
-import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.OpenFileDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
 
-import static dr.android.fileselector.FileSelectConstant.SELECTOR_MODE_FOLDER;
 import static org.haobtc.wallet.utils.Daemon.commands;
 
 public class ShareOtherActivity extends BaseActivity {
@@ -84,6 +61,8 @@ public class ShareOtherActivity extends BaseActivity {
     ImageView imgBack;
     @BindView(R.id.tet_open)
     TextView tetOpen;
+    @BindView(R.id.tet_bigMessage)
+    TextView tetBigMessage;
     private RxPermissions rxPermissions;
     private String rowTrsaction;
     static private int openfileDialogId = 0;
@@ -94,6 +73,9 @@ public class ShareOtherActivity extends BaseActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private boolean toGallery;
     private Dialog dialogBtom;
+    private String rowTx;
+    private String keys;
+    private int lenth;
 
     @Override
     public int getLayoutId() {
@@ -107,6 +89,9 @@ public class ShareOtherActivity extends BaseActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         rowTrsaction = intent.getStringExtra("rowTrsaction");
+        //adopt tx length fix textview length
+        keys = intent.getStringExtra("keys");
+        rowTx = intent.getStringExtra("rowTx");
         Log.i("rowTrsaction", "init----: " + rowTrsaction);
         rxPermissions = new RxPermissions(this);
 
@@ -117,18 +102,31 @@ public class ShareOtherActivity extends BaseActivity {
     public void initData() {
         //or code
         if (!TextUtils.isEmpty(rowTrsaction)) {
-            PyObject get_qr_data_from_raw_tx = commands.callAttr("get_qr_data_from_raw_tx", rowTrsaction);
+
+            PyObject get_qr_data_from_raw_tx = null;
+            try {
+                get_qr_data_from_raw_tx = Daemon.commands.callAttr("get_qr_data_from_raw_tx", rowTrsaction);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
             if (get_qr_data_from_raw_tx != null) {
                 String strCode = get_qr_data_from_raw_tx.toString();
                 Log.i("strCode", "onView: " + strCode);
                 if (!TextUtils.isEmpty(strCode)) {
-                    bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
-                    imgOrcode.setImageBitmap(bitmap);
+                    if (strCode.length() >= 150) {
+                        tetBigMessage.setVisibility(View.VISIBLE);
+                        imgOrcode.setVisibility(View.GONE);
+                    } else {
+                        bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
+                        imgOrcode.setImageBitmap(bitmap);
+                    }
+
                 }
             }
         }
 
-        tetTrsactionText.setText(rowTrsaction);
+        tetTrsactionText.setText(rowTx);
 
     }
 
@@ -166,12 +164,31 @@ public class ShareOtherActivity extends BaseActivity {
                 Intent intent = new Intent();
                 intent.setClass(getApplicationContext(), FsActivity.class);
                 intent.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FOLDER);
+                intent.putExtra("keyFile", "2");
                 startActivityForResult(intent, 1);
                 break;
             case R.id.img_back:
                 finish();
                 break;
             case R.id.tet_open:
+                String strOpen = tetOpen.getText().toString();
+                if (strOpen.equals(getResources().getString(R.string.spin_open))) {
+                    if (keys.equals("A")) {
+                        lenth = 10000;
+                    } else {
+                        lenth = 380;
+                    }
+                    LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
+                    linearParams1.height = lenth;
+                    tetTrsactionText.setLayoutParams(linearParams1);
+                    tetOpen.setText(getResources().getString(R.string.retract));
+
+                } else {
+                    LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
+                    linearParams1.height = 170;
+                    tetTrsactionText.setLayoutParams(linearParams1);
+                    tetOpen.setText(getResources().getString(R.string.spin_open));
+                }
 
                 break;
         }
@@ -203,12 +220,12 @@ public class ShareOtherActivity extends BaseActivity {
             String str = listExtra.toString();
             String substring = str.substring(1);
             String strPath = substring.substring(0, substring.length() - 1);
-            showPopupFilename(ShareOtherActivity.this, R.layout.dialog_view,strPath);
+            showPopupFilename(ShareOtherActivity.this, R.layout.dialog_view, strPath);
 
         }
     }
 
-    private void showPopupFilename(Context context, @LayoutRes int resource,String stPath) {
+    private void showPopupFilename(Context context, @LayoutRes int resource, String stPath) {
         //set view
         View inflate = View.inflate(context, resource, null);
         dialogBtom = new Dialog(context, R.style.dialog);
@@ -220,17 +237,15 @@ public class ShareOtherActivity extends BaseActivity {
         });
         teConfirm.setOnClickListener(v -> {
             String strFilename = edtFilename.getText().toString();
-            String fullFilename = stPath+"/"+strFilename+".psbt";
+            String fullFilename = stPath + "/" + strFilename + ".psbt";
 
             try {
-                PyObject save_tx_to_file = commands.callAttr("save_tx_to_file", fullFilename, rowTrsaction);
-                //TODO: no trsaction --> creat trsaction
-                if (save_tx_to_file!=null){
-                    String s = save_tx_to_file.toString();
-                    Log.i("showPopupFilename", "showPopupFilename: "+s);
-                }
+                commands.callAttr("save_tx_to_file", fullFilename, rowTx);
+                mToast(getResources().getString(R.string.downloadsuccse));
+
             } catch (Exception e) {
                 e.printStackTrace();
+                mToast(getResources().getString(R.string.downloadfail));
             }
 
             dialogBtom.cancel();
@@ -265,5 +280,11 @@ public class ShareOtherActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }
 

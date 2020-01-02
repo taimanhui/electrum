@@ -3,6 +3,7 @@ package org.haobtc.wallet.adapter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableContainer;
+import android.text.TextUtils;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -32,6 +33,13 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
         helper.setText(R.id.tet_address, item.getTx_hash())
                 .setText(R.id.tet_BTC, item.getAmount());
 
+        String date = item.getDate();
+        if (date.equals("unknown")|| TextUtils.isEmpty(date)){
+            helper.setText(R.id.tet_Time, "");
+        }else{
+            helper.setText(R.id.tet_Time, item.getDate());
+        }
+
         //judge type
         String type = item.getType();
         if (type.equals("history")) {
@@ -47,7 +55,6 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 helper.setText(R.id.tet_zt, R.string.waitchoose);
             }
 
-            helper.setText(R.id.tet_Time, item.getDate());
         } else {
             String tx_status = item.getTx_status();
             if (tx_status.equals("Signed")) {

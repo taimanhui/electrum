@@ -35,6 +35,7 @@ import org.haobtc.wallet.adapter.CosignerAdapter;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -58,6 +59,7 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
     public static final String WALLET_NAME = "org.haobtc.wallet.activities.walletName";
     private String nameExtra;
     private ImageView imgBack;
+    private MyDialog myDialog;
 
 
     @Override
@@ -85,6 +87,7 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void initData() {
+        myDialog = MyDialog.showDialog(CoSignerAddActivity.this);
         nameNums = new ArrayList<>();
         listData = new ArrayList<>();
     }
@@ -179,13 +182,15 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                 break;
 
             case R.id.bn_complete_add_cosigner:
-
+                myDialog.show();
                 try {
                     Daemon.commands.callAttr("create_multi_wallet", nameExtra);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.i("JXM", "onClick: " + e.getMessage());
+                    return;
                 }
+                myDialog.dismiss();
                 Intent intent = new Intent(this, CreateWalletSuccessfulActivity.class);
                 // intent.putExtra();
                 startActivity(intent);
@@ -277,7 +282,7 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                 }
                 break;
             case R.id.cancel_cosigner_add_popup:
-
+                popupWindow.dismiss();
                 break;
             case R.id.img_back:
                 finish();

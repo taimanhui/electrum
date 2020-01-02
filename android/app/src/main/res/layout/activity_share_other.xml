@@ -100,10 +100,22 @@
                         <ImageView
                             android:id="@+id/img_Orcode"
                             android:layout_width="248.3dp"
+                            android:visibility="visible"
                             android:layout_height="248.3dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="@dimen/dp_20"
-                            android:background="@drawable/ic_launcher_background" />
+                            android:background="@color/separation_line" />
+                        <TextView
+                            android:id="@+id/tet_bigMessage"
+                            android:textSize="@dimen/sp_12"
+                            android:text="@string/message_big"
+                            android:visibility="gone"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:layout_marginEnd="@dimen/dp_20"
+                            android:gravity="center"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:layout_width="match_parent"
+                            android:layout_height="248.3dp"/>
 
                         <TextView
                             android:id="@+id/tet_Preservation"
@@ -150,8 +162,7 @@
                             android:layout_marginStart="@dimen/dp_20"
                             android:layout_marginTop="9dp"
                             android:layout_marginEnd="@dimen/dp_20"
-                            android:ellipsize="end"
-                            android:text="JGHAJHBDKASJDBAJBSDJAHHKHKHKHKHJJGHAJHBDKASJDBAJBSDJAHHKHKHKHKHJIUYIUGEIDKJNCSBDASBKJDKAJNDKANSKNKJNAKNAKJNKJSNKJNAKJN"
+                            tools:text="JGHAJHBDKASJDBAJBSDJAHHKHKHKHKHJJGHAJHBDKASJDBAJBSDJAHHKHKHKHKHJIUYIUGEIDKJNCSBDASBKJDKAJNDKANSKNKJNAKNAKJNKJSNKJNAKJN"
                             android:textColor="@color/text_page"
                             android:textSize="@dimen/sp_13" />
 
@@ -162,6 +173,7 @@
 
                             <TextView
                                 android:id="@+id/tet_open"
+                                android:textColor="#7F8AAE"
                                 android:layout_width="@dimen/dp_40"
                                 android:layout_height="match_parent"
                                 android:layout_alignParentRight="true"

@@ -28,6 +28,7 @@ import dr.android.utils.FileUtil;
 import dr.android.utils.SdCardUtil;
 
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,6 +73,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
      * all path
      **/
     private List<String> rootPaths;
+    private TextView btnPrevation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +84,9 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
             getWindow().setStatusBarColor(Color.WHITE);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
-
+        initView();
         initIntent();
         initParams();
-        initView();
         initData();
         initEvent();
     }
@@ -95,6 +96,12 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
         // Get the file request code. The default is to select File 100
         mSelectorMode = getIntent().getIntExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY,
                 FileSelectConstant.SELECTOR_MODE_FILE);
+        String keyFile = getIntent().getStringExtra("keyFile");
+        if (keyFile.equals("1")){
+            btnPrevation.setText(getResources().getString(R.string.comfirm));
+        }else{
+            btnPrevation.setText(getResources().getString(R.string.preservation));
+        }
 
         mSelectorIsMultiple = getIntent().getBooleanExtra(FileSelectConstant.SELECTOR_IS_MULTIPLE, false);
     }
@@ -112,10 +119,12 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
     }
 
     private void initView() {
-        TextView btnPrevation = findViewById(R.id.btn_Preservation);
+        btnPrevation = findViewById(R.id.btn_Preservation);
         btnPrevation.setOnClickListener(this);
         mFolderPath_tv = (TextView) findViewById(R.id.id_fileselect_folderpath);
         mFileSelectListView = (ListView) findViewById(R.id.id_fileselect_listview);
+        ImageView imgback = findViewById(R.id.img_back);
+        imgback.setOnClickListener(this);
     }
 
     private void initData() {
@@ -474,6 +483,8 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
     public void onClick(View v) {
         if (v.getId() == R.id.btn_Preservation) {
             onClickOkBtn();
+        }else if (v.getId() == R.id.img_back){
+            finish();
         }
     }
 }
