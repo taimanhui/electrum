@@ -465,6 +465,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Log.i("threadMode", "event: " + msgVote);
             //Rolling Wallet
             mWheelplanting();
+
         }
     }
 

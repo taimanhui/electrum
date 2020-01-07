@@ -107,11 +107,9 @@ public class ChoosePayAddressAdapetr extends RecyclerView.Adapter<ChoosePayAddre
 
     }
 
-    //7、定义点击事件回调接口
     public interface OnItemClickListener{
         void onItemClick(int position);
     }
-    //2、定义监听并设set方法
     private OnItemClickListener mOnItemClickListener;
 
     public void setmOnItemClickListener(OnItemClickListener mOnItemClickListener) {

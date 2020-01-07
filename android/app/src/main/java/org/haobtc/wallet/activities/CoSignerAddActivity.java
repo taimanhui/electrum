@@ -187,7 +187,12 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                     Daemon.commands.callAttr("create_multi_wallet", nameExtra);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.i("JXM", "onClick: " + e.getMessage());
+                    myDialog.dismiss();
+                    Log.e("jxmException", "Exception: "+e.getMessage());
+                    String message = e.getMessage();
+                    if ("BaseException: file already exists at path".equals(message)){
+                        mToast(getResources().getString(R.string.changewalletname));
+                    }
                     return;
                 }
                 myDialog.dismiss();

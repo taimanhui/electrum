@@ -31,12 +31,15 @@ import com.google.gson.Gson;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
 import org.haobtc.wallet.bean.MainWheelBean;
+import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -79,6 +82,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private String strmapBtc;
     private PyObject mktx;
     private SharedPreferences.Editor edit;
+    private List addressList;
 
     public int getLayoutId() {
         return R.layout.send_one2many_main;
@@ -91,6 +95,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
         edit = preferences.edit();
         Intent intent = getIntent();
+        addressList = (List) getIntent().getSerializableExtra("listdetail");
         wallet_name = intent.getStringExtra("wallet_name");
         int addressNum = intent.getIntExtra("addressNum", 0);
         String totalAmount = intent.getStringExtra("totalAmount");
@@ -110,6 +115,27 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         dataListName = new ArrayList<>();
         //getMorepayAddress
         payAddressMore();
+        //fee
+        getFeeamont();
+
+    }
+
+    private void getFeeamont() {
+        PyObject get_default_fee_status = null;
+        try {
+            get_default_fee_status = Daemon.commands.callAttr("get_default_fee_status");
+        } catch (Exception e) {
+            e.printStackTrace();
+            mToast(e.getMessage());
+            return;
+        }
+        if (get_default_fee_status != null) {
+            String strFee = get_default_fee_status.toString();
+            Log.i("get_default_fee", "strFee:   " + strFee);
+            String strFeeamont = strFee.substring(0, strFee.indexOf(". sat/byte"));
+            tvFee.setText(strFeeamont);
+
+        }
 
     }
 
@@ -145,7 +171,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             e.printStackTrace();
             return;
         }
-        if (get_wallets_list_info != null){
+        if (get_wallets_list_info != null) {
             String toString = get_wallets_list_info.toString();
             Log.i("payAddressMore", "pay---: " + toString);
             Gson gson = new Gson();
@@ -164,7 +190,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.lin_chooseAddress, R.id.linearLayout10, R.id.img_feeSelect, R.id.img_back,R.id.create_trans_one2many})
+    @OnClick({R.id.lin_chooseAddress, R.id.linearLayout10, R.id.img_feeSelect, R.id.img_back, R.id.create_trans_one2many})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.lin_chooseAddress:
@@ -172,6 +198,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 showDialogs(SendOne2ManyMainPageActivity.this, R.layout.select_send_wallet_popwindow);
                 break;
             case R.id.linearLayout10:
+                Intent intent1 = new Intent(SendOne2ManyMainPageActivity.this, DeatilMoreAddressActivity.class);
+                intent1.putExtra("listdetail", (Serializable) addressList);
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent1);
                 break;
             case R.id.img_feeSelect:
                 //Miner money

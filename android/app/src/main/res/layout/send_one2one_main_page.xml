@@ -210,6 +210,7 @@
                         android:layout_marginEnd="@dimen/corner_radius"
                         android:layout_toLeftOf="@+id/textView27"
                         android:background="@null"
+                        android:maxLength="8"
                         android:gravity="center_vertical|end"
                         android:hint="@string/input_here"
                         android:inputType="numberDecimal"
@@ -287,7 +288,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/text_margin"
                         android:layout_weight="1"
-                        android:text="@string/fee" />
+                        android:text="@string/rate" />
 
                     <TextView
                         android:layout_width="wrap_content"

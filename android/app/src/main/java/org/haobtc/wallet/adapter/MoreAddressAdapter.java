@@ -18,7 +18,7 @@ public class MoreAddressAdapter extends BaseQuickAdapter<GetnewcreatTrsactionLis
 
     @Override
     protected void convert(BaseViewHolder helper, GetnewcreatTrsactionListBean.OutputAddrBean item) {
-        helper.setText(R.id.tet_moreaddress,item.getAddr()).setText(R.id.tet_payNum,item.getAmount()+" BTC");
+        helper.setText(R.id.tet_moreaddress,item.getAddr()).setText(R.id.tet_payNum,item.getAmount());
 
     }
 }

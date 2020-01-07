@@ -198,5 +198,9 @@
     <string name="downloadfail">Download successful</string>
     <string name="downloadsuccse">Download failed</string>
     <string name="message_big">Transaction information is too large to share with QR code</string>
+    <string name="rate">rate（sat/byte）</string>
+    <string name="sendMore">The maximum transfer quantity is 21000000BTC</string>
+    <string name="insufficient">Insufficient funds</string>
+    <string name="changewalletname">The wallet name already exists, please change it</string>
 
 </resources>

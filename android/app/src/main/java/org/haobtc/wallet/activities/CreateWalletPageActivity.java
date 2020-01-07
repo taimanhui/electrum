@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -34,7 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CreateWalletPageActivity extends BaseActivity {
+public class CreateWalletPageActivity extends BaseActivity implements TextWatcher {
     @BindView(R.id.lin_Cosinger)
     LinearLayout linCosinger;
     @BindView(R.id.lin_sigNumseting)
@@ -72,6 +75,9 @@ public class CreateWalletPageActivity extends BaseActivity {
     private MyDialog myDialog;
     private int consigerValue = 0;
     private int signumValue = 0;
+    private String strEalletname;
+    private String strConsiger;
+    private String strSignum;
 
     @Override
     public int getLayoutId() {
@@ -83,6 +89,9 @@ public class CreateWalletPageActivity extends BaseActivity {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
         myDialog = MyDialog.showDialog(CreateWalletPageActivity.this);
+        bnCreateMultiNext.setEnabled(false);
+        bnCreateMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+        editTextWalletName.addTextChangedListener(this);
 
     }
 
@@ -117,6 +126,17 @@ public class CreateWalletPageActivity extends BaseActivity {
                 } else {
                     textViewCosigner.setText(String.valueOf(consigerValue));
                     dialogBtom.cancel();
+                    strEalletname = editTextWalletName.getText().toString();
+                    strConsiger = textViewCosigner.getText().toString();
+                    strSignum = textViewSigNum.getText().toString();
+                    if(!TextUtils.isEmpty(strEalletname)&&!strConsiger.equals(getResources().getString(R.string.select))&&!strSignum.equals((getResources().getString(R.string.select)))){
+                        bnCreateMultiNext.setEnabled(true);
+                        bnCreateMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                    }else{
+                        bnCreateMultiNext.setEnabled(false);
+                        bnCreateMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    }
+
                 }
             } else {
                 textViewCosigner.setText(String.valueOf(consigerValue));
@@ -162,6 +182,17 @@ public class CreateWalletPageActivity extends BaseActivity {
                 } else {
                     textViewSigNum.setText(String.valueOf(signumValue));
                     dialogBtom.cancel();
+                    strEalletname = editTextWalletName.getText().toString();
+                    strConsiger = textViewCosigner.getText().toString();
+                    strSignum = textViewSigNum.getText().toString();
+                    if(!TextUtils.isEmpty(strEalletname)&&!strConsiger.equals(getResources().getString(R.string.select))&&!strSignum.equals((getResources().getString(R.string.select)))){
+                        bnCreateMultiNext.setEnabled(true);
+                        bnCreateMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                    }else{
+                        bnCreateMultiNext.setEnabled(false);
+                        bnCreateMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    }
+
                 }
             } else {
                 textViewSigNum.setText(String.valueOf(signumValue));
@@ -188,6 +219,7 @@ public class CreateWalletPageActivity extends BaseActivity {
             Daemon.commands.callAttr("set_multi_wallet_info", name, cosinerNum, sigNum);
         } catch (Exception e) {
             e.printStackTrace();
+
         }
         myDialog.dismiss();
         Intent intent = new Intent(this, CoSignerAddActivity.class);
@@ -247,4 +279,28 @@ public class CreateWalletPageActivity extends BaseActivity {
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        strEalletname = editTextWalletName.getText().toString();
+        strConsiger = textViewCosigner.getText().toString();
+        strSignum = textViewSigNum.getText().toString();
+        if(!TextUtils.isEmpty(strEalletname)&&!strConsiger.equals(getResources().getString(R.string.select))&&!strSignum.equals((getResources().getString(R.string.select)))){
+            bnCreateMultiNext.setEnabled(true);
+            bnCreateMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk));
+        }else{
+            bnCreateMultiNext.setEnabled(false);
+            bnCreateMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+        }
+
+    }
 }

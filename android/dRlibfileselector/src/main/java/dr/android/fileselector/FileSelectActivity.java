@@ -171,7 +171,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
     public List<Map<String, Object>> getDataByFolderPath(String parentFolderPath) {
         List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
 
-        // 根目录
+        // root directory
         if (parentFolderPath.equals(mSelectorRootPathName)) {
 
             for (Storage storage : SdCardUtil.getStorages()) {
@@ -198,7 +198,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                         }
                     }
                 }
-                // 排序
+                // sort
                 FileUtil.sortByName(fileList);
 
                 childNum = "共 " + fileList.size() + " 项";
@@ -216,7 +216,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
 
         } else {
 
-            List<File> fileList = new ArrayList<File>();// 只有文件夹
+            List<File> fileList = new ArrayList<File>();
 
             parentFolderPath = SdCardUtil.replaceLocalNameWithAbsPath(parentFolderPath);
             File folderPath = new File(parentFolderPath);
@@ -233,7 +233,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                     }
                 }
             }
-            // 排序
+            // sort
             FileUtil.sortByName(fileList);
 
             for (int i = 0; i < fileList.size(); i++) {
@@ -259,7 +259,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                     childNum = FileUtil.convertFileSize(file.length());
                 }
 
-                // 根据其他file添加记录
+                // Add records according to other files
                 Map<String, Object> map = new HashMap<String, Object>();
                 int iconId = file.isFile() ? mSelectorFileIcon : mSelectorFolderIcon;
                 map.put(mFrom[0], iconId);
@@ -285,7 +285,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
     }
 
     /**
-     * actionbar 返回键和完成键的操作
+     * actionbar Return key and finish key operations
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -307,11 +307,9 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
         File file = (File) mData.get(position).get("file");
         if (file.isFile()) {
             if (!isFileOnClickShowOk) {
-                // 当点击file的时候直接返回结果
+
             } else {
-                // 当点击file的时候出现“完成”按钮
-                // 选中状态
-                // onItemSelected(parent, view, position, id);
+
             }
         } else if (file.isDirectory()) {
             String parentPath = file.getAbsolutePath();
@@ -328,7 +326,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
     }
 
     /**
-     * 点击"完成"按钮后的操作
+     * Operation after clicking the "finish" button
      */
     public void onClickOkBtn() {
         if (mSelectorMode == FileSelectConstant.SELECTOR_MODE_FILE) {
@@ -372,17 +370,11 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
         }
     }
 
-    /**
-     * 返回键的操作（到根节点的时候finish，其他返回到上一级）
-     */
     @Override
     public void onBackPressed() {
         backOrExit();
     }
 
-    /**
-     * 返回上一级或者退出当前activity
-     */
     public void backOrExit() {
         String folderPath = mFolderPath_tv.getText().toString();// 当前节点
         if (folderPath.equals(mSelectorRootPathName)) {
