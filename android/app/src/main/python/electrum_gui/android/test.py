@@ -32,16 +32,16 @@ password = '111111'
 
 # #create_wallet
 #
-m = 2
-n = 2
-xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
-#xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
-xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-#testcommond.delete_wallet(name)
-testcommond.set_multi_wallet_info(name,m,n)
-testcommond.add_xpub(xpub1)
-testcommond.add_xpub(xpub2)
-testcommond.create_multi_wallet(name)
+# m = 2
+# n = 2
+# xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
+# xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# #testcommond.delete_wallet(name)
+# testcommond.set_multi_wallet_info(name,m,n)
+# testcommond.add_xpub(xpub1)
+# testcommond.add_xpub(xpub2)
+# testcommond.create_multi_wallet(name)
 
 # ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 # print("=======ret1 = %s" %ret)
@@ -61,7 +61,7 @@ info = testcommond.get_wallets_list_info()
 testcommond.set_base_uint("mBTC")
 status = testcommond.get_default_fee_status()
 print("status = %s" %status)
-testcommond.clear_invoices()
+#testcommond.clear_invoices()
 #create_tx
 all_output = []
 #output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.01'}
@@ -143,7 +143,7 @@ print("testinfo = %s------------" %testinfo)
 # info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
 # print("info== %s" % info)
 #sign_tx
-#testcommond.sign_tx(ret_list['tx'])
+testcommond.sign_tx(ret_list['tx'])
 
-data = testcommond.get_tx_info('90f90c78fea9349a86f4333be64c0e3464e185330193f1cf3c8430abf29b3d25')
+data = testcommond.get_tx_info('73e6a9cd5a2785f4ced54c302221cf7ecf8bb2407938506e5008ab6e025b5426')
 print("get_tx_info = %s-===========" % data)

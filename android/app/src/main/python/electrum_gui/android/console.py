@@ -579,6 +579,8 @@ class AndroidCommands(commands.Commands):
                 temp_tx_data['message'] = tx_dict['description']
                 temp_tx_data['is_mine'] = True
                 temp_tx_data['tx_status'] = tx_dict["tx_status"]
+                temp_tx_data['invoice_id'] = invoice['id']
+                temp_tx_data['tx'] = invoice['tx']
                 tx_data.append(temp_tx_data)
 
         if history_status is None and tx_status is None:

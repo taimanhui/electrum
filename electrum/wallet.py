@@ -1434,7 +1434,9 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             try:
                 if k.can_sign(tmp_tx):
                     k.sign_transaction(tmp_tx, password)
-            except UserCancelled:
+            except Exception as e:
+                print(f"{e}............")
+                #raise BaseException(e)
                 continue
         # remove sensitive info; then copy back details from temporary tx
         tmp_tx.remove_xpubs_and_bip32_paths()
@@ -1444,7 +1446,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
 
     def try_detecting_internal_addresses_corruption(self) -> None:
         pass
-
+    
     def check_address(self, addr: str) -> None:
         pass
 
