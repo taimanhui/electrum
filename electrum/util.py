@@ -662,7 +662,7 @@ def timestamp_to_datetime(timestamp):
 
 def format_time(timestamp):
     date = timestamp_to_datetime(timestamp)
-    return date.isoformat(' ')[:-3] if date else _("Unknown")
+    return date.isoformat(' ') if date else _("Unknown")
 
 
 # Takes a timestamp and returns a string with the approximation of the age

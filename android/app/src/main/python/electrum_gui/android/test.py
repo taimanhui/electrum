@@ -32,16 +32,16 @@ password = '111111'
 
 # #create_wallet
 #
-# m = 2
-# n = 2
-# xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
-# #xpub1 = 'Vpub5dEvVGKn7251znFdWdjnyKjLN525eAmRpVmmZ7chqn8y4Rz9fhKxeeUqJ18mb6kHazADprqMnNyPwG6Y3nGQ2AuchC6VD9ATvn7TLrEXqJz'
-# xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-# #testcommond.delete_wallet(name)
-# testcommond.set_multi_wallet_info(name,m,n)
-# testcommond.add_xpub(xpub1)
-# testcommond.add_xpub(xpub2)
-# testcommond.create_multi_wallet(name)
+m = 2
+n = 2
+xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+#xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
+xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+#testcommond.delete_wallet(name)
+testcommond.set_multi_wallet_info(name,m,n)
+testcommond.add_xpub(xpub1)
+testcommond.add_xpub(xpub2)
+testcommond.create_multi_wallet(name)
 
 # ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 # print("=======ret1 = %s" %ret)
@@ -58,49 +58,60 @@ testcommond.load_wallet(name, password)
 testcommond.select_wallet(name)
 info = testcommond.get_wallets_list_info()
 
+testcommond.set_base_uint("mBTC")
 status = testcommond.get_default_fee_status()
 print("status = %s" %status)
+testcommond.clear_invoices()
 #create_tx
 all_output = []
-#output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+#output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.01'}
 #output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
-output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.05'}
-
+#output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.05'}
+output_info = {'bcrt1q9a4kk79hacd2s838xhdvxmhxrs6tskfp744t7v9pj7f9flayjy0s4d3ttm':'5'}
 all_output.append(output_info)
 #all_output.append(output_info1)
 output_str = json.dumps(all_output)
-fee = 0.00001
+fee = 0.01
 message = 'test'
 print("--------------all_output= %s" %output_str)
 ret_str = testcommond.mktx(output_str, message, fee)
 ret_list = json.loads(ret_str)
-print("tx================%s" % ret_list['tx'])
+print("mktx================%s" % ret_list)
 
-#get_tx_by_raw
+# ivoices = testcommond.get_invoices()
+# print("invoices = %s" %ivoices)
+# testcommond.clear_invoices()
+# ivoices = testcommond.get_invoices()
+# print("clear after invoices = %s" %ivoices)
+
+#
+# #get_tx_by_raw
 tx_info_str = testcommond.get_tx_info_from_raw(ret_list['tx'])
 tx_info = json.loads(tx_info_str)
 print("tx info = %s=========" % tx_info)
-
-#parse_qr tx
+#sign_tx
+#testcommond.sign_tx(ret_list['tx'])
+#
+# #parse_qr tx
 qr_data = testcommond.get_qr_data_from_raw_tx(ret_list['tx'])
 print("qr_data on ui = %s........" % qr_data)
-tx_data = testcommond.parse_qr(qr_data)
-print("tx_data = %s---------" % json.loads(tx_data))
-
-#parse_qr_addr
-data = testcommond.get_wallet_address_show_UI()
-
-qr_data = json.loads(data)
-print("qr_addr = %s------------" % qr_data['qr_data'])
-
-add = testcommond.parse_qr(qr_data['qr_data'])
-print("addr = %s--------" %add)
-#get_history_tx
-
-##get_all_tx_list
+# tx_data = testcommond.parse_qr(qr_data)
+# print("tx_data = %s---------" % json.loads(tx_data))
+#
+# #parse_qr_addr
+# data = testcommond.get_wallet_address_show_UI()
+#
+# qr_data = json.loads(data)
+# print("qr_addr = %s------------" % qr_data['qr_data'])
+#
+# add = testcommond.parse_qr(qr_data['qr_data'])
+# print("addr = %s--------" %add)
+# #get_history_tx
+#
+# ##get_all_tx_list
 #testinfo = testcommond.get_all_tx_list('', None, None)
 #print("testinfo = %s------------" %testinfo)
-testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, None)
+testinfo = testcommond.get_all_tx_list(None, None)
 print("testinfo = %s------------" %testinfo)
 # testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'tobeconfirm')
 # print("testinfo = %s------------" %testinfo)
@@ -134,5 +145,5 @@ print("testinfo = %s------------" %testinfo)
 #sign_tx
 #testcommond.sign_tx(ret_list['tx'])
 
-#data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
-#print("get_tx_info = %s-===========" % data)
+data = testcommond.get_tx_info('90f90c78fea9349a86f4333be64c0e3464e185330193f1cf3c8430abf29b3d25')
+print("get_tx_info = %s-===========" % data)

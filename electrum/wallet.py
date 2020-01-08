@@ -583,7 +583,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 'txpos_in_block': hist_item.tx_mined_status.txpos,
             }
 
-    def create_invoice(self, outputs: List[PartialTxOutput], message, pr, URI):
+    def create_invoice(self, outputs: List[PartialTxOutput], message, pr, URI, tx=None):
         if '!' in (x.value for x in outputs):
             amount = '!'
         else:
@@ -593,6 +593,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             'message': message,
             'outputs': outputs,
             'amount': amount,
+            'tx':tx,
         }
         if pr:
             invoice['bip70'] = pr.raw.hex()

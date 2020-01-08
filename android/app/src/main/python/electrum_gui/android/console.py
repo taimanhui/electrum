@@ -13,7 +13,7 @@ from electrum.bitcoin import base_decode, is_address
 from electrum.plugin import Plugins
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, PartialTxInput
 from electrum import commands, daemon, keystore, simple_config, storage, util, bitcoin
-from electrum.util import Fiat, create_and_start_event_loop
+from electrum.util import Fiat, create_and_start_event_loop, decimal_point_to_base_unit_name
 from electrum import MutiBase
 from electrum.i18n import _
 from electrum.storage import WalletStorage
@@ -123,6 +123,10 @@ class AndroidCommands(commands.Commands):
             self.network.register_callback(self.on_history, ['on_history'])
         self.fiat_unit = self.daemon.fx.ccy if self.daemon.fx.is_enabled() else ''
         self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
+        for k, v in util.base_units_inverse.items():
+            if k == self.decimal_point:
+                self.base_unit = v
+
         self.num_zeros = int(self.config.get('num_zeros', 0))
         self.rbf = self.config.get("use_rbf", True)
 
@@ -375,35 +379,44 @@ class AndroidCommands(commands.Commands):
     def get_default_fee_status(self):
         return self.config.get_fee_status()
 
+    def get_amount(self, amount):
+        try:
+            x = Decimal(str(amount))
+        except:
+            return None
+        # scale it to max allowed precision, make it an int
+        power = pow(10, self.decimal_point)
+        max_prec_amount = int(power * x)
+        return max_prec_amount
+
+
     def mktx(self, outputs, message, fee):
         try:
             self._assert_wallet_isvalid()
         except Exception as e:
             raise BaseException(e)
-
-        print("console.mktx.outpus = %s======" %outputs)
-
         all_output_add = json.loads(outputs)
         outputs_addrs = []
         for key in all_output_add:
             for address, amount in key.items():
-                outputs_addrs.append(PartialTxOutput.from_address_and_value(address, satoshis(amount)))
+                outputs_addrs.append(PartialTxOutput.from_address_and_value(address, self.get_amount(amount)))
                 print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
         coins = self.wallet.get_spendable_coins(domain = None)
         try:
-            tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=satoshis(fee))
+            tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee))
             tx.set_rbf(self.rbf)
-            self.wallet.set_label(tx.txid, message)
+            self.wallet.set_label(tx.txid(), message)
             partial_tx = tx.serialize_as_bytes().hex()
             print("console:mkun:tx====%s" % partial_tx)
             tx_details = self.wallet.get_tx_info(tx)
             print("tx_details 1111111 = %s" % json.dumps(tx_details))
+
             ret_data = {
-                'amount': self.format_amount_and_units(tx_details.amount),
-                'fee': self.format_amount_and_units(tx_details.fee),
+                'amount': tx_details.amount,
+                'fee': tx_details.fee,
                 'tx': str(partial_tx)
             }
-
+            self.do_save(outputs_addrs, message, partial_tx)
         except Exception as e:
             raise BaseException(e)
 
@@ -455,12 +468,18 @@ class AndroidCommands(commands.Commands):
     def base_unit(self):
         return util.decimal_point_to_base_unit_name(self.decimal_point)
 
+    #set base unit for(BTC/mBTC/bits/sat)
+    def set_base_uint(self, base_unit):
+        self.base_unit = base_unit
+        self.decimal_point = util.base_unit_name_to_decimal_point(self.base_unit)
+        self.config.set_key('decimal_point', self.decimal_point, True)
+
     def format_amount_and_units(self, amount):
         try:
             self._assert_daemon_running()
         except Exception as e:
             raise BaseException(e)
-        text = self.format_amount(amount) + ' '+ self.base_unit()
+        text = self.format_amount(amount) + ' '+ self.base_unit
         x = self.daemon.fx.format_amount_and_units(amount) if self.daemon.fx else None
         if text and x:
             text += ' (%s)'%x
@@ -503,8 +522,9 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         tx_details = self.wallet.get_tx_info(tx)
-        #print("tx_details 22222222 = %s" % json.dumps(tx_details))
-        s, r = tx.signature_count()
+        s, r = 0,0
+        if isinstance(tx, PartialTransaction):
+            s, r = tx.signature_count()
         type = self.wallet.wallet_type
         out_list = []
         for o in tx.outputs():
@@ -519,11 +539,11 @@ class AndroidCommands(commands.Commands):
             'can_broadcast':tx_details.can_broadcast,
             'amount': self.format_amount_and_units(tx_details.amount),
             'fee': self.format_amount_and_units(tx_details.fee),
-            'description':tx_details.label,
+            'description':self.wallet.get_label(tx_details.txid),
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
-            'sign_status':[s,r],
+            #'sign_status':[s,r],
             'output_addr':out_list,
-            'input_addr':[txin.address for txin in tx.inputs()],
+            #'input_addr':[txin.address for txin in tx.inputs()],
             'cosigner':[x.xpub for x in self.wallet.get_keystores()],
             'tx':tx.serialize_as_bytes().hex()
         }
@@ -534,26 +554,32 @@ class AndroidCommands(commands.Commands):
     def get_invoices(self):
         return self.wallet.get_invoices()
 
-    def do_save(self, outputs, message):
-        invoice = self.wallet.create_invoice(outputs, message, None, None)
+    def do_save(self, outputs, message, tx):
+        invoice = self.wallet.create_invoice(outputs, message, None, None, tx=tx)
         if not invoice:
             return
         self.wallet.save_invoice(invoice)
 
+    def clear_invoices(self):
+        self.wallet.clear_invoices()
+
     ##get history+tx info
-    def get_all_tx_list(self, raw_tx, tx_status=None, history_status=None):#tobe optimization
-        tx_data = {}
+    def get_all_tx_list(self, tx_status=None, history_status=None):#tobe optimization
+        tx_data = []
         history_data = []
-        if raw_tx != "" and (tx_status is None or tx_status == 'send') and (history_status == None or history_status == 'tobesign' or history_status == 'tobebroadcast'):
-            tx_json = self.get_tx_info_from_raw(raw_tx)
-            tx_dict = json.loads(tx_json)
-            tx_data['tx_hash'] = tx_dict['txid']
-            tx_data['date'] = 'unknown'
-            tx_data['amount'] = tx_dict['amount']
-            tx_data['message'] = tx_dict['description']
-            tx_data['is_mine'] = True
-            tx_data['tx_status'] = tx_dict["tx_status"]
-            tx_data['type'] = 'tx'
+        if (tx_status is None or tx_status == 'send') and (history_status == None or history_status == 'tobesign' or history_status == 'tobebroadcast'):
+            invoices = self.wallet.get_invoices()
+            for invoice in invoices:
+                tx_json = self.get_tx_info_from_raw(invoice['tx'])
+                tx_dict = json.loads(tx_json)
+                temp_tx_data = {}
+                temp_tx_data['tx_hash'] = tx_dict['txid']
+                temp_tx_data['date'] = util.format_time(invoice['time']) if invoice['time'] else _("unknown")
+                temp_tx_data['amount'] = tx_dict['amount']
+                temp_tx_data['message'] = tx_dict['description']
+                temp_tx_data['is_mine'] = True
+                temp_tx_data['tx_status'] = tx_dict["tx_status"]
+                tx_data.append(temp_tx_data)
 
         if history_status is None and tx_status is None:
             history_data_json = self.get_history_tx()
@@ -616,8 +642,9 @@ class AndroidCommands(commands.Commands):
                     if not info['is_mine'] and info['confirmations'] > 0:
                         history_data.append(info)
         all_data = []
-        if len(tx_data) != 0:
-            all_data.append(tx_data)
+        for tx in tx_data:
+            tx['type'] = 'tx'
+            all_data.append(tx)
         for i in history_data:
             i['type'] = 'history'
             all_data.append(i)
@@ -642,8 +669,13 @@ class AndroidCommands(commands.Commands):
         print("get_tx_info:tx=%s" % tx)
         if not tx:
             raise BaseException('get transaction info failed')
-        psbt_tx = PartialTransaction.from_tx(tx)#TODO:NEED RETURN HISTORY INFO
-        return self.get_details_info(psbt_tx)
+        tx = copy.deepcopy(tx)
+        try:
+            tx.deserialize()
+        except Exception as e:
+            raise BaseException(e)
+        tx.add_info_from_wallet(self.wallet)
+        return self.get_details_info(tx)
 
     def get_card(self, tx_hash, tx_mined_status, delta, fee, balance):
         try:
@@ -790,7 +822,7 @@ class AndroidCommands(commands.Commands):
     def sign_tx(self, tx):
         try:
             self._assert_wallet_isvalid()
-            tx = Transaction(tx)
+            tx = tx_from_any(tx)
             tx.deserialize()
             self.wallet.sign_transaction(tx, None)
         except Exception as e:
