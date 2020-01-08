@@ -102,7 +102,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "bixin-${variant.versionName}.apk"
+            outputFileName = "bixin-${variant.versionName}-${variant.productFlavors[0].name}-${variant.variantData.variantConfiguration.buildType.name}.apk"
         }
     }
 }
