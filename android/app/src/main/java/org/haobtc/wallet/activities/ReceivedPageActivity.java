@@ -1,11 +1,15 @@
 package org.haobtc.wallet.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,10 +28,11 @@ import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -44,6 +49,7 @@ public class ReceivedPageActivity extends BaseActivity {
     Button button;
     private Bitmap bitmap;
     private RxPermissions rxPermissions;
+    private long mMillis;
 
     @Override
     public int getLayoutId() {
@@ -74,7 +80,7 @@ public class ReceivedPageActivity extends BaseActivity {
             e.printStackTrace();
             return;
         }
-        if (walletAddressShowUi!=null){
+        if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
             Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
@@ -102,15 +108,15 @@ public class ReceivedPageActivity extends BaseActivity {
                 break;
             case R.id.button:
                 rxPermissions
-                        .request(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                boolean toGallery = saveBitmap(bitmap);
-                                if (toGallery) {
-                                    mToast(getResources().getString(R.string.preservationbitmappic));
-                                } else {
-                                    Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
-                                }
+                                File file = saveImageToGallery(this,bitmap);
+                                String path = insertImageToSystem(this, file.getPath());
+                                Intent imageIntent = new Intent(Intent.ACTION_SEND);
+                                imageIntent.setType("image/jpeg");
+                                imageIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+                                startActivity(Intent.createChooser(imageIntent, getResources().getString(R.string.share)));
 
 
                             } else { // Oups permission denied
@@ -118,27 +124,56 @@ public class ReceivedPageActivity extends BaseActivity {
                             }
                         }).dispose();
 
-
                 break;
         }
     }
 
-    public boolean saveBitmap(Bitmap bitmap) {
+    private File saveImageToGallery(Context context, Bitmap bmp) {
+        // 首先保存图片
+        String storePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "rapidpay";
+        File appDir = new File(storePath);
+        if (!appDir.exists()) {
+            appDir.mkdir();
+        }
+        String fileName = System.currentTimeMillis() + ".png";
+        File file = new File(appDir, fileName);
         try {
-            File filePic = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + System.currentTimeMillis() + ".jpg");
-            if (!filePic.exists()) {
-                filePic.getParentFile().mkdirs();
-                filePic.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            //通过io流的方式来压缩保存图片
+            boolean isSuccess = false;
+            if (bmp != null) {
+                isSuccess = bmp.compress(Bitmap.CompressFormat.PNG, 60, fos);
             }
-            FileOutputStream fos = new FileOutputStream(filePic);
-            boolean success =  bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
-            return success;
 
-        } catch (IOException ignored) {
-            return false;
+            //把文件插入到系统图库
+            MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
+
+            //保存图片后发送广播通知更新数据库
+            Uri uri = Uri.fromFile(file);
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+            if (isSuccess) {
+//                Toast.makeText(context, "成功", Toast.LENGTH_SHORT).show();
+                return file;
+            } else {
+                Toast.makeText(context, "失败", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return null;
+    }
+
+    private static String insertImageToSystem(Context context, String imagePath) {
+        String url = "";
+        try {
+            url = MediaStore.Images.Media.insertImage(context.getContentResolver(), imagePath, "yup", "");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return url;
     }
 
 }

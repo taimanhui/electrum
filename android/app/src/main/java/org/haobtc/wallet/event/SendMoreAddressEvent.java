@@ -1,6 +1,8 @@
 package org.haobtc.wallet.event;
 
-public class SendMoreAddressEvent {
+import java.io.Serializable;
+
+public class SendMoreAddressEvent implements Serializable {
     private String inputAddress;
     private String inputAmount;
 

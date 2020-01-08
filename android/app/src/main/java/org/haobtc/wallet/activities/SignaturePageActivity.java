@@ -5,7 +5,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import com.chaquo.python.PyObject;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -27,6 +31,7 @@ import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -84,9 +89,11 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                Intent intent1 = new Intent();
+                                Intent intent1 = new Intent(Intent.ACTION_GET_CONTENT);
                                 intent1.setClass(getApplicationContext(), FsActivity.class);
                                 intent1.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FILE);
+//                                intent1.addCategory(Intent.CATEGORY_DEFAULT);
+                                intent1.addCategory(Intent.CATEGORY_OPENABLE);
                                 intent1.putExtra("keyFile", "1");
                                 startActivityForResult(intent1, 1);
 
@@ -170,6 +177,7 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         String strRaw = editTextRaw.getText().toString();
+        Log.i("CharSequence", "------------ "+strRaw);
         if (!TextUtils.isEmpty(strRaw)) {
             try {
                 try {

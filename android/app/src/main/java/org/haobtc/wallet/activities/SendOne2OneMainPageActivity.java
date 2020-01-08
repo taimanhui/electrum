@@ -7,15 +7,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,45 +19,34 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
-import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.MainWheelBean;
-import org.haobtc.wallet.utils.CommonUtils;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     private LinearLayout selectSend;
@@ -136,9 +121,30 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         buttonPaste.setOnClickListener(this);
         dataListName = new ArrayList<>();
         tetMoneychange();
+        //fee
+        getFeeamont();
         //InputMaxTextNum
         setEditTextComments();
         payAddressMore();
+    }
+
+    private void getFeeamont() {
+        PyObject get_default_fee_status = null;
+        try {
+            get_default_fee_status = Daemon.commands.callAttr("get_default_fee_status");
+        } catch (Exception e) {
+            e.printStackTrace();
+            mToast(e.getMessage());
+            return;
+        }
+        if (get_default_fee_status != null) {
+            String strFee = get_default_fee_status.toString();
+            Log.i("get_default_fee", "strFee:   " + strFee);
+            String strFeeamont = strFee.substring(0, strFee.indexOf(". sat/byte"));
+            tetMoneye.setText(strFeeamont);
+
+        }
+
     }
 
     private void tetMoneychange() {
@@ -177,7 +183,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             @Override
             public void afterTextChanged(Editable s) {
                 String strMoney = tetMoneye.getText().toString();
-                if (TextUtils.isEmpty(strMoney)){
+                if (TextUtils.isEmpty(strMoney)) {
                     tetMoneye.setText("0");
                 }
             }
@@ -379,7 +385,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     Toast.makeText(this, R.string.inoutnum, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (walletmoney == 1){
+                if (walletmoney == 1) {
                     mToast(getResources().getString(R.string.wallet_insufficient));
                     return;
                 }
@@ -434,7 +440,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         } catch (Exception e) {
             e.printStackTrace();
             Log.i("CreatTransaction", "mCrea-----  " + e.getMessage());
-            mToast(getResources().getString(R.string.changeaddress));
+            if (e.getMessage().contains("Insufficient funds")){
+                mToast(getResources().getString(R.string.insufficient));
+            }else if (e.getMessage().contains("invalid bitcoin address")){
+                mToast(getResources().getString(R.string.changeaddress));
+            }
+
             return;
         }
         Log.i("CreatTransaction", "mCreatTransaction: " + mktx);
@@ -446,6 +457,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             if (beanTx != null) {
                 edit.putString("rowTrsation", beanTx);
                 edit.apply();
+                EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
                 intent.putExtra("keyValue", "A");
@@ -516,13 +528,20 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             BigDecimal bignum2 = new BigDecimal(strBtc);
             int math = bignum1.compareTo(bignum2);
             //if math = 1 -> bignum2
-            if (math == 1) {
-                mToast(getResources().getString(R.string.wallet_insufficient));
-                //walletmoney == 1  ->  Sorry, your credit is running low
-                walletmoney = 1;
-            } else if (math == -1 || math == 0) {
-                walletmoney = 0;
+            BigDecimal bigDecimal = new BigDecimal(21000000);
+            int mathMax = bignum1.compareTo(bigDecimal);
+            if (mathMax == 1) {
+                mToast(getResources().getString(R.string.sendMore));
+            } else {
+                if (math == 1) {
+                    mToast(getResources().getString(R.string.wallet_insufficient));
+                    //walletmoney == 1  ->  Sorry, your credit is running low
+                    walletmoney = 1;
+                } else if (math == -1 || math == 0) {
+                    walletmoney = 0;
+                }
             }
+
         }
 
     }

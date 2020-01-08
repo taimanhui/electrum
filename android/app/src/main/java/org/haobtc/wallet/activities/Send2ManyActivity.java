@@ -36,9 +36,11 @@ import org.haobtc.wallet.adapter.SendmoreAddressAdapter;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.CommonUtils;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Send2ManyActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
@@ -53,7 +55,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     private RxPermissions rxPermissions;
     private String straddress;
     private String strSmount;
-    private ArrayList<SendMoreAddressEvent> sendMoreAddressList;
+    private List<SendMoreAddressEvent> sendMoreAddressList;
     private String wallet_name;
     private BigDecimal totalAmount;
     private ImageView imgBack;
@@ -139,6 +141,8 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                     mToast(getResources().getString(R.string.pleas_add_outputAdrs));
                 } else {
                     Intent intent = new Intent(this, SendOne2ManyMainPageActivity.class);
+                    intent.putExtra("listdetail", (Serializable) sendMoreAddressList);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra(TOTAL_AMOUNT, textViewTotal.getText().toString());
                     intent.putExtra(ADDRESS, "");
                     intent.putExtra("wallet_name", wallet_name);
@@ -187,20 +191,22 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
             mToast(getResources().getString(R.string.please_input_amount));
             return;
         }
-//        int sAmount = Float(strSmount);
-        BigDecimal bignum1 = new BigDecimal(strSmount);
-        Log.i("bignum1", "add------: " + bignum1);
-        //Total transfer quantity
-        totalAmount = totalAmount.add(bignum1);
-
-        textViewTotal.setText(String.format("%s",totalAmount));
-
         SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
         sendMoreAddressEvent.setInputAddress(straddress);
         sendMoreAddressEvent.setInputAmount(strSmount);
         sendMoreAddressList.add(sendMoreAddressEvent);
+        totalAmount = new BigDecimal("0");
+        for (int i = 0; i < sendMoreAddressList.size(); i++) {
+            BigDecimal bignum1 = new BigDecimal(sendMoreAddressList.get(i).getInputAmount());
+            Log.i("bignum1", "add------: " + bignum1);
+            //Total transfer quantity
+            totalAmount = totalAmount.add(bignum1);
+        }
+        textViewTotal.setText(String.format("%s", totalAmount));
+
         //hashmap
         pramasBtc.put(straddress, strSmount);
+        mapsBtc.clear();
         mapsBtc.add(pramasBtc);
         strmapBtc = new Gson().toJson(mapsBtc);//intent to sendone2manypage
         Log.i("mapsBtc", "mapsBtc-----: " + strmapBtc);
@@ -210,9 +216,39 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         editTextAmount.setText("");
         buttonNext.setEnabled(true);
         buttonNext.setBackground(getResources().getDrawable(R.color.button_bk));
-        SendmoreAddressAdapter sendmoreAddressAdapter = new SendmoreAddressAdapter(sendMoreAddressList);
+        SendmoreAddressAdapter sendmoreAddressAdapter = new SendmoreAddressAdapter(Send2ManyActivity.this, sendMoreAddressList);
         recyclerView.setAdapter(sendmoreAddressAdapter);
-        mapsBtc.clear();
+        sendmoreAddressAdapter.setmOnDeleteItemClickListener(new SendmoreAddressAdapter.OnItemDeleteClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                //change string
+                pramasBtc.remove(sendMoreAddressList.get(position).getInputAddress());
+                mapsBtc.clear();
+                mapsBtc.add(pramasBtc);
+                strmapBtc = new Gson().toJson(mapsBtc);//intent to sendone2manypage
+                Log.i("mapsBtc", "mapsBtc-----: " + strmapBtc);
+
+                //change view
+                sendMoreAddressList.remove(position);
+                sendmoreAddressAdapter.notifyDataSetChanged();
+
+                if (sendMoreAddressList.size() == 0) {
+                    textViewTotal.setText(String.format("%d", 0));
+                    buttonNext.setEnabled(false);
+                    buttonNext.setBackground(getResources().getDrawable(R.color.button_bk_grey));
+                }else{
+                    totalAmount = new BigDecimal("0");
+                    for (int i = 0; i < sendMoreAddressList.size(); i++) {
+                        BigDecimal bignum1 = new BigDecimal(sendMoreAddressList.get(i).getInputAmount());
+                        Log.i("bignum1", "add------: " + bignum1);
+                        //Total transfer quantity
+                        totalAmount = totalAmount.add(bignum1);
+                    }
+                    textViewTotal.setText(String.format("%s", totalAmount));
+                }
+
+            }
+        });
     }
 
     @Override
@@ -248,6 +284,15 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     public void afterTextChanged(Editable s) {
+        String strAmount = editTextAmount.getText().toString();
+        if (!TextUtils.isEmpty(strAmount)) {
+            BigDecimal bignum1 = new BigDecimal(strAmount);
+            BigDecimal bigDecimal = new BigDecimal(21000000);
+            int mathMax = bignum1.compareTo(bigDecimal);
+            if (mathMax == 1) {
+                mToast(getResources().getString(R.string.sendMore));
+            }
+        }
 
     }
 }

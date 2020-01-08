@@ -34,7 +34,8 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 .setText(R.id.tet_BTC, item.getAmount());
 
         String date = item.getDate();
-        if (date.equals("unknown")|| TextUtils.isEmpty(date)){
+
+        if ("unknown".equals(date)|| TextUtils.isEmpty(date)){
             helper.setText(R.id.tet_Time, "");
         }else{
             helper.setText(R.id.tet_Time, item.getDate());
@@ -42,7 +43,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
 
         //judge type
         String type = item.getType();
-        if (type.equals("history")) {
+        if ("history".equals(type)) {
             //history
             String confirmations = item.getConfirmations();
             int anInt = Integer.parseInt(confirmations);
@@ -57,18 +58,18 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
 
         } else {
             String tx_status = item.getTx_status();
-            if (tx_status.equals("Signed")) {
+            if ("Signed".equals(tx_status)) {
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.wait_broadcast);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF838383"));
-            } else if (tx_status.equals("Unsigned")) {
+            } else if ("Unsigned".equals(tx_status)) {
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.transaction_waitting);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FFF26A3A"));
                 tetview.setBackground(mContext.getResources().getDrawable(R.drawable.orange_circle));
-            }else if (tx_status.contains("Partially signed")){
+            }else if ("Partially signed".contains(tx_status)){
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.partsigned);
                 TextView tetview = helper.getView(R.id.tet_zt);
