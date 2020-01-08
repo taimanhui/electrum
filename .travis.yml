@@ -50,8 +50,7 @@ before_deploy:
   - git tag -f "travis-build"
 deploy:
   provider: releases
-  api_key:
-    secure: $GITHUB_KEY
+  api_key: $GITHUB_API_KEY
   file_glob: true
   file: 
     - "android/app/build/outputs/apk/MainNet/debug/*.apk"
@@ -66,4 +65,4 @@ deploy:
   target_commitsh: $TRAVIS_COMMIT
   on:
     branch: bixin_dev
-    tags: true
+    tags: false
