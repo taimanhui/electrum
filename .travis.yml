@@ -39,11 +39,11 @@ jobs:
       script:
         # Output something every minute or Travis kills the job
         - while sleep 60; do echo "=====[ $SECONDS seconds still running ]====="; done &
-        - sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data --workdir=/data/android lightningcn/electrum_env:latest /bin/bash -c "cp ~/android/local.properties local.properties && /data/android/gradlew app:assembleRegTest"
+        - sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data --workdir=/data/android lightningcn/electrum_env:latest /bin/bash -c "cp ~/android/local.properties local.properties && /data/android/gradlew app:assembleRegTestDebug"
         # kill background sleep loop
         - kill %1
-        - ls -la android/app/build/outputs/apk/MainNet/release/
-        - if [ $(ls android/app/build/outputs/apk/MainNet/release/ | grep -c bixin-*) -eq 0 ]; then exit 1; fi
+        - ls -la android/app/build/outputs/apk/RegTest/debug
+        - if [ $(ls android/app/build/outputs/apk/RegTest/debug/ | grep -c bixin-*) -eq 0 ]; then exit 1; fi
       after_success: true 
 
 before_deploy:
