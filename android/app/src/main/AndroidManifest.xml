@@ -34,6 +34,10 @@
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
         <activity
             android:name=".MainActivity"
+            >
+
+        </activity>
+        <activity android:name=".activities.base.LunchActivity"
             android:theme="@style/LunchTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -153,9 +157,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.haobtc.wallet.activities.SendOne2OneMainPageActivity" />
         </activity>
-        <activity
-            android:name=".activities.SendOne2ManyMainPageActivity">
-        </activity>
+        <activity android:name=".activities.SendOne2ManyMainPageActivity"></activity>
         <activity
             android:name=".activities.TransactionDetailsActivity"
             android:label=""
@@ -262,18 +264,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.haobtc.wallet.activities.CreateWalletActivity" />
         </activity>
-        <activity
-            android:name=".activities.ShareOtherActivity">
-        </activity>
-<!--        <activity-->
-<!--            android:name=".activities.base.LunchActivity"-->
-<!--            android:theme="@style/LunchTheme" >-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+        <activity android:name=".activities.ShareOtherActivity"></activity>
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
         <activity android:name=".activities.GuideActivity" />
         <activity android:name=".activities.PinSettingActivity">
 

@@ -2,7 +2,7 @@ package org.haobtc.wallet.activities.base;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
+import android.text.TextUtils;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
@@ -24,12 +24,20 @@ public class LunchActivity extends BaseActivity {
 
     private void init() {
         SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        String language = preferences.getString("language", "");
+        judgeLanguage(language);
 
         boolean jumpOr = preferences.getBoolean("JumpOr", true);
         if (preferences.getBoolean(FIRST_RUN, false)) {
-            Intent intent = new Intent(this, MainActivity.class);
+//            Handler handler = new Handler();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+            Intent intent = new Intent(LunchActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
+//                }
+//            }, 1500);
 
         } else {
             if (jumpOr) {
@@ -43,21 +51,42 @@ public class LunchActivity extends BaseActivity {
         }
     }
 
+    //switch language
+    private void judgeLanguage(String language) {
+        if (!TextUtils.isEmpty(language)) {
+            if (language.equals("Chinese")) {
+                mTextChinese();
+            } else if (language.equals("English")) {
+                mTextEnglish();
+            }
+        }
+
+    }
+
     private void initGuide() {
-        Intent intent = new Intent(this, GuideActivity.class);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+        Intent intent = new Intent(LunchActivity.this, GuideActivity.class);
         startActivity(intent);
         finish();
+//            }
+//        }, 1500);
+
     }
 
     private void initCreatWallet() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(LunchActivity.this, CreateWalletActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        },1500);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+        Intent intent = new Intent(LunchActivity.this, CreateWalletActivity.class);
+        startActivity(intent);
+        finish();
+
+//            }
+//        }, 1500);
 
     }
 

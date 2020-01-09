@@ -1,5 +1,8 @@
 package org.haobtc.wallet.adapter;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -18,7 +21,20 @@ public class MoreAddressAdapter extends BaseQuickAdapter<GetnewcreatTrsactionLis
 
     @Override
     protected void convert(BaseViewHolder helper, GetnewcreatTrsactionListBean.OutputAddrBean item) {
-        helper.setText(R.id.tet_moreaddress,item.getAddr()).setText(R.id.tet_payNum,item.getAmount());
+        helper.setText(R.id.tet_moreaddress, item.getAddr());
+
+        String amount = item.getAmount();
+        Log.i("amountamount", "convert: "+amount);
+        if (!TextUtils.isEmpty(amount)) {
+            if (amount.contains("BTC")){
+                String mbtc = amount.replaceAll(". mBTC", " mBTC");
+                helper.setText(R.id.tet_payNum, mbtc);
+            }else{
+                helper.setText(R.id.tet_payNum, amount+" BTC");
+            }
+
+        }
 
     }
 }
+

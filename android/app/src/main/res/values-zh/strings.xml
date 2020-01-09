@@ -193,12 +193,14 @@
     <string name="sharetrsaction">转发交易</string>
     <string name="no_serialnumber">暂无序列号</string>
     <string name="no_address">暂无地址</string>
-    <string name="downloadfail">下载成功</string>
-    <string name="downloadsuccse">下载失败</string>
+    <string name="downloadfail">下载失败</string>
+    <string name="downloadsuccse">下载成功</string>
     <string name="message_big">交易信息过大，无法使用二维码进行分享</string>
     <string name="rate">费率（sat/byte）</string>
     <string name="sendMore">转账数量最多为21000000BTC</string>
     <string name="insufficient">资金不足</string>
     <string name="changewalletname">该钱包名已存在，请更换</string>
+    <string name="choosepath">选择路径</string>
+    <string name="preservations">保存</string>
 
 </resources>

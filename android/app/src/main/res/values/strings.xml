@@ -202,5 +202,7 @@
     <string name="sendMore">The maximum transfer quantity is 21000000BTC</string>
     <string name="insufficient">Insufficient funds</string>
     <string name="changewalletname">The wallet name already exists, please change it</string>
+    <string name="choosepath">Selection path</string>
+    <string name="preservations">preservation</string>
 
 </resources>

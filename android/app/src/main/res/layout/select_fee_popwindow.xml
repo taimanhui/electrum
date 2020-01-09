@@ -84,6 +84,7 @@
                 android:id="@+id/bn_fee"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
+                android:textAllCaps="false"
                 android:layout_marginBottom="@dimen/dp_20"
                 android:background="@drawable/button_bk"
                 android:text="@string/confirm"

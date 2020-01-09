@@ -74,6 +74,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
      **/
     private List<String> rootPaths;
     private TextView btnPrevation;
+    private String parentPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +101,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
         if (keyFile.equals("1")){
             btnPrevation.setText(getResources().getString(R.string.comfirm));
         }else{
-            btnPrevation.setText(getResources().getString(R.string.preservation));
+            btnPrevation.setText(getResources().getString(R.string.preservations));
         }
 
         mSelectorIsMultiple = getIntent().getBooleanExtra(FileSelectConstant.SELECTOR_IS_MULTIPLE, false);
@@ -149,7 +150,21 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
 
         mData = getDataByFolderPath(mSelectorRootPathName);
 
-        mAdapter = new FileSelectAdapter(this, mData, R.layout.adapter_fileselect_item, mFrom, mTo);
+        File file = (File) mData.get(0).get("file");
+        if (file.isFile()) {
+            if (!isFileOnClickShowOk) {
+
+            } else {
+
+            }
+        } else if (file.isDirectory()) {
+            parentPath = file.getAbsolutePath();
+            parentPath = SdCardUtil.replaceAbsPathWithLocalName(parentPath);
+            mFolderPath_tv.setText(parentPath);
+//            refreshByParentPath(parentPath);
+        }
+
+        mAdapter = new FileSelectAdapter(this, getDataByFolderPath(parentPath), R.layout.adapter_fileselect_item, mFrom, mTo);
         mAdapter.setSelectorMode(mSelectorMode);
         mAdapter.setSelectorIsMultiple(mSelectorIsMultiple);
 

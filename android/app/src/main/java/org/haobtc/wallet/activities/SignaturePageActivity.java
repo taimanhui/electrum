@@ -89,10 +89,9 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                Intent intent1 = new Intent(Intent.ACTION_GET_CONTENT);
+                                Intent intent1 = new Intent();
                                 intent1.setClass(getApplicationContext(), FsActivity.class);
                                 intent1.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FILE);
-//                                intent1.addCategory(Intent.CATEGORY_DEFAULT);
                                 intent1.addCategory(Intent.CATEGORY_OPENABLE);
                                 intent1.putExtra("keyFile", "1");
                                 startActivityForResult(intent1, 1);

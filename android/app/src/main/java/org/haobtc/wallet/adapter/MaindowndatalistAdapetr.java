@@ -30,8 +30,14 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
         } else {
             helper.setText(R.id.tet_name, R.string.receive);
         }
-        helper.setText(R.id.tet_address, item.getTx_hash())
-                .setText(R.id.tet_BTC, item.getAmount());
+        helper.setText(R.id.tet_address, item.getTx_hash());
+
+        String amount = item.getAmount();
+        if (!TextUtils.isEmpty(amount)){
+            String mbtc = amount.replaceAll(". mBTC", " mBTC");
+            helper.setText(R.id.tet_BTC, mbtc);
+        }
+
 
         String date = item.getDate();
 

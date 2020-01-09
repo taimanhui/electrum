@@ -9,7 +9,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "org.haobtc.wallet"
-        minSdkVersion 21 // android 5.0
+        minSdkVersion 23 // android 6.0
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"

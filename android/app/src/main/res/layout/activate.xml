@@ -32,6 +32,7 @@
         <Button
             android:id="@+id/button_activate"
             android:layout_width="300dp"
+            android:textAllCaps="false"
             android:layout_height="50dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="513dp"

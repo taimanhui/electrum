@@ -315,22 +315,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                             //show trsaction list
                                             showTrsactionlist(strHistory);
                                         }
-
-
                                     } else {
                                         tetNone.setVisibility(View.VISIBLE);
                                         recy_data.setVisibility(View.GONE);
                                     }
-
                                 }
-
                             }
                             mCurrentPosition = position;
                         }
                     }, 350);
-
                 }
-
             }
 
             @Override

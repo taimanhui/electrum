@@ -162,6 +162,7 @@
                     android:layout_width="100dp"
                     android:layout_height="36dp"
                     android:background="@color/paste_bk"
+                    android:textAllCaps="false"
                     android:drawableStart="@drawable/saoyisao"
                     android:gravity="center"
                     android:paddingStart="17.8dp"
@@ -173,6 +174,7 @@
                 <Button
                     android:id="@+id/paste_cosigner_popup"
                     style="?android:attr/buttonBarButtonStyle"
+                    android:textAllCaps="false"
                     android:layout_width="100dp"
                     android:layout_height="36dp"
                     android:layout_marginStart="@dimen/layout_margin"
