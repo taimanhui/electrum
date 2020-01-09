@@ -103,7 +103,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         //To many people Coin making
         strmapBtc = intent.getStringExtra("strmapBtc");
         walletName.setText(wallet_name);
-        addressCount.setText(String.format("%s%s", String.valueOf(addressNum), getResources().getString(R.string.to_num)));
+        addressCount.setText(String.format("%s %s", String.valueOf(addressNum), getResources().getString(R.string.to_num)));
         tvAmount.setText(String.format("%s BTC", totalAmount));
         //InputMaxTextNum
         setEditTextComments();

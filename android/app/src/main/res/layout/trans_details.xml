@@ -553,6 +553,7 @@
                 android:id="@+id/sig_trans"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_40"
+                android:textAllCaps="false"
                 android:layout_marginStart="@dimen/text_margin"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"

@@ -54,6 +54,7 @@
                 android:id="@+id/bn_select_wallet"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
+                android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:background="@drawable/button_bk"
                 android:text="@string/confirm"

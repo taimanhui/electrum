@@ -161,11 +161,21 @@ public class ShareOtherActivity extends BaseActivity {
                 Toast.makeText(this, R.string.alredycopy, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.lin_downLoad:
-                Intent intent = new Intent();
-                intent.setClass(getApplicationContext(), FsActivity.class);
-                intent.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FOLDER);
-                intent.putExtra("keyFile", "2");
-                startActivityForResult(intent, 1);
+                rxPermissions
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                Intent intent = new Intent();
+                                intent.setClass(getApplicationContext(), FsActivity.class);
+                                intent.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FOLDER);
+                                intent.putExtra("keyFile", "2");
+                                startActivityForResult(intent, 1);
+
+                            } else { // Oups permission denied
+                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
+
                 break;
             case R.id.img_back:
                 finish();
@@ -245,6 +255,7 @@ public class ShareOtherActivity extends BaseActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.i("printException", "show---"+e.getMessage());
                 mToast(getResources().getString(R.string.downloadfail));
             }
 

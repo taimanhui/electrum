@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="50dp"
+            android:layout_width="wrap_content"
             android:textColor="@color/light_text"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/text_margin"
@@ -24,6 +24,7 @@
         <TextView
             android:id="@+id/tet_moreaddress"
             android:layout_width="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_16"
             android:ellipsize="end"
@@ -47,7 +48,7 @@
         android:layout_marginTop="@dimen/dp_18">
 
         <TextView
-            android:layout_width="50dp"
+            android:layout_width="wrap_content"
             android:textColor="@color/light_text"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/text_margin"
@@ -56,6 +57,7 @@
 
         <TextView
             android:id="@+id/tet_payNum"
+            android:layout_marginStart="@dimen/dp_10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/button_bk_disableok"

@@ -26,6 +26,7 @@
     <Button
         android:layout_width="300dp"
         android:layout_height="50dp"
+        android:textAllCaps="false"
         android:layout_marginTop="567dp"
         android:layout_centerHorizontal="true"
         android:text="@string/retry"

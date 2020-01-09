@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.RadioButton;
@@ -30,6 +31,8 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
     RadioButton radioJapanese;
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor edit;
 
     public int getLayoutId() {
         return R.layout.language_setting;
@@ -38,6 +41,8 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
+        preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        edit = preferences.edit();
         CommonUtils.enableToolBar(this, R.string.language);
         radioGroup.setOnCheckedChangeListener(this);
 
@@ -52,24 +57,19 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         switch (checkedId) {
             case R.id.radio_chineseasy:
-                Locale.setDefault(Locale.CHINESE);
-                Configuration config = getBaseContext().getResources().getConfiguration();
-                config.locale = Locale.CHINESE;
-                getBaseContext().getResources().updateConfiguration(config
-                        , getBaseContext().getResources().getDisplayMetrics());
+                mTextChinese();
                 refreshSelf();
+                edit.putString("language","Chinese");
+                edit.apply();
                 break;
             case R.id.radio_character:
 
                 break;
             case R.id.radio_english:
-                Locale.setDefault(Locale.ENGLISH);
-                Configuration config1 = getBaseContext().getResources().getConfiguration();
-                config1.locale = Locale.ENGLISH;
-                getBaseContext().getResources().updateConfiguration(config1
-                        , getBaseContext().getResources().getDisplayMetrics());
+                mTextEnglish();
                 refreshSelf();
-
+                edit.putString("language","English");
+                edit.apply();
                 break;
             case R.id.radio_Korean:
 

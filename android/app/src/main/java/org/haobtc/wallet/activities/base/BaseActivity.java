@@ -1,11 +1,13 @@
 package org.haobtc.wallet.activities.base;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,7 +16,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 import org.haobtc.wallet.utils.MyDialog;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -66,6 +70,24 @@ public abstract class BaseActivity extends AppCompatActivity {
         Toast.makeText(this, str, Toast.LENGTH_LONG).show();
     }
 
+    //switch Chinese
+    public void mTextChinese() {
+        Locale.setDefault(Locale.CHINESE);
+        Configuration config = getBaseContext().getResources().getConfiguration();
+        config.locale = Locale.CHINESE;
+        getBaseContext().getResources().updateConfiguration(config
+                , getBaseContext().getResources().getDisplayMetrics());
+    }
+
+    //switch English
+    public void mTextEnglish() {
+        Locale.setDefault(Locale.ENGLISH);
+        Configuration config1 = getBaseContext().getResources().getConfiguration();
+        config1.locale = Locale.ENGLISH;
+        getBaseContext().getResources().updateConfiguration(config1
+                , getBaseContext().getResources().getDisplayMetrics());
+    }
+
     //UTF-8 to text
     public String mUTFTtoText(String str) {
         try {
@@ -96,6 +118,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         nowTime = formatter.format(curDate);
         return nowTime;
     }
+
     //judge mobile is wrong or right
     public boolean isMobileNO(String mobiles) {
         Pattern p = Pattern
@@ -138,7 +161,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return versionName;
     }
 
-    //图片压缩
+    //Picture compression
     public Bitmap mPicYasuo(String imgPath) {
         /**
          * 压缩图片

@@ -194,6 +194,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="252dp"
             android:layout_marginBottom="@dimen/dp_40"
+            android:textAllCaps="false"
             android:background="@drawable/button_bk"
             android:text="@string/next"
             android:textColor="@android:color/white"

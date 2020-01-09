@@ -5,16 +5,14 @@
     android:layout_height="match_parent"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     android:background="@android:color/white"
     android:id="@+id/lin_Splash"
     tools:context=".activities.base.LunchActivity">
 
     <ImageView
-        android:src="@drawable/splash"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/multi_sig"
-        android:layout_marginBottom="@dimen/dp_30"/>
+        android:src="@drawable/kaiping"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

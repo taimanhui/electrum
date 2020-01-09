@@ -194,8 +194,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            jsondef_get = def_get_tx_info_from_raw.toString();
-            jsonDetailData(jsondef_get);
+            if (def_get_tx_info_from_raw!=null){
+                jsondef_get = def_get_tx_info_from_raw.toString();
+                jsonDetailData(jsondef_get);
+            }
+
         }
 
     }
@@ -237,11 +240,18 @@ public class TransactionDetailsActivity extends BaseActivity {
             String strInputAddr = input_addr.get(0);
             tetPayAddress.setText(strInputAddr);
         }
-
         //Transfer accounts num
-        textView14.setText(amount);
+        if (!TextUtils.isEmpty(amount)) {
+            String mbtc = amount.replaceAll(". mBTC", " mBTC");
+            textView14.setText(mbtc);
+        }
+
         //Miner's fee
-        textView15.setText(fee);
+        if (!TextUtils.isEmpty(fee)) {
+            String mbtcfee = fee.replaceAll(". mBTC", " mBTC");
+            textView15.setText(mbtcfee);
+        }
+
         //Remarks
         tetContent.setText(description);
 
