@@ -8,6 +8,15 @@ public class MaintrsactionlistEvent {
     private String confirmations;
     private String type;
     private String tx_status;
+    private String invoice_id;
+
+    public String getInvoice_id() {
+        return invoice_id;
+    }
+
+    public void setInvoice_id(String invoice_id) {
+        this.invoice_id = invoice_id;
+    }
 
     public String getTx_status() {
         return tx_status;

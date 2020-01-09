@@ -634,6 +634,8 @@ def format_satoshis(x, num_zeros=0, decimal_point=8, precision=None, is_diff=Fal
     if whitespaces:
         result += " " * (decimal_point - len(fract_part))
         result = " " * (15 - len(result)) + result
+    if result[-1] == '.':
+        result = result[0:-1]
     return result
 
 

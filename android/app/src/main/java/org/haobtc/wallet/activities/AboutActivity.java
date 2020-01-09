@@ -1,6 +1,8 @@
 package org.haobtc.wallet.activities;
 
-import android.widget.TextView;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -8,11 +10,12 @@ import org.haobtc.wallet.utils.CommonUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class AboutActivity extends BaseActivity {
 
-    @BindView(R.id.title_template)
-    TextView titleTemplate;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
 
     @Override
     public int getLayoutId() {
@@ -23,7 +26,6 @@ public class AboutActivity extends BaseActivity {
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        CommonUtils.enableToolBar(this, R.string.about);
     }
 
     @Override
@@ -31,4 +33,13 @@ public class AboutActivity extends BaseActivity {
 
     }
 
+
+    @OnClick({R.id.img_back})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+        }
+    }
 }

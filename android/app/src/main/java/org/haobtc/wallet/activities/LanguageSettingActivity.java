@@ -2,20 +2,19 @@ package org.haobtc.wallet.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.utils.CommonUtils;
-
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class LanguageSettingActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -31,6 +30,8 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
     RadioButton radioJapanese;
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
 
@@ -43,7 +44,6 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
         ButterKnife.bind(this);
         preferences = getSharedPreferences("preferences", MODE_PRIVATE);
         edit = preferences.edit();
-        CommonUtils.enableToolBar(this, R.string.language);
         radioGroup.setOnCheckedChangeListener(this);
 
     }
@@ -59,7 +59,7 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
             case R.id.radio_chineseasy:
                 mTextChinese();
                 refreshSelf();
-                edit.putString("language","Chinese");
+                edit.putString("language", "Chinese");
                 edit.apply();
                 break;
             case R.id.radio_character:
@@ -68,7 +68,7 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
             case R.id.radio_english:
                 mTextEnglish();
                 refreshSelf();
-                edit.putString("language","English");
+                edit.putString("language", "English");
                 edit.apply();
                 break;
             case R.id.radio_Korean:
@@ -84,5 +84,15 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+
+    @OnClick(R.id.img_back)
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+        }
     }
 }

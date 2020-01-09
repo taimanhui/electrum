@@ -2,11 +2,13 @@ package org.haobtc.wallet.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatSpinner;
@@ -21,7 +23,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
-import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class TransactionRecordsActivity extends BaseActivity {
     @BindView(R.id.recy_jylist)
@@ -41,9 +43,10 @@ public class TransactionRecordsActivity extends BaseActivity {
     AppCompatSpinner spiZT;
     @BindView(R.id.tet_None)
     TextView tetNone;
+    @BindView(R.id.img_backTrsa)
+    ImageView imgBackTrsa;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private SharedPreferences preferences;
-    private String rowTrsation = "";
     private int haveSelectBTC = 0;
     private int haveSelectState = 0;
     private String strChoose;
@@ -53,6 +56,7 @@ public class TransactionRecordsActivity extends BaseActivity {
     private String amount;
     private boolean is_mine;
     private String confirmations;
+    private String txCreatTrsaction;
 
     public int getLayoutId() {
         return R.layout.transaction_records;
@@ -60,9 +64,7 @@ public class TransactionRecordsActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(this);
-        CommonUtils.enableToolBar(this, R.string.transaction_records);
         preferences = getSharedPreferences("preferences", MODE_PRIVATE);
-        rowTrsation = preferences.getString("rowTrsation", "");
 
     }
 
@@ -218,7 +220,7 @@ public class TransactionRecordsActivity extends BaseActivity {
         PyObject get_history_tx = null;
         try {
             //get transaction json
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -234,7 +236,7 @@ public class TransactionRecordsActivity extends BaseActivity {
         //get transaction json
         PyObject get_history_tx = null;
         try {
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("tx_status", sends));
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", new Kwarg("tx_status", sends));
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -249,7 +251,7 @@ public class TransactionRecordsActivity extends BaseActivity {
         //get transaction json
         PyObject get_history_tx = null;
         try {
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("history_status", states));
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", new Kwarg("history_status", states));
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -264,7 +266,7 @@ public class TransactionRecordsActivity extends BaseActivity {
         //get transaction json
         PyObject get_history_tx = null;
         try {
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation, new Kwarg("tx_status", sends), new Kwarg("history_status", state));
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", new Kwarg("tx_status", sends), new Kwarg("history_status", state));
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -311,7 +313,6 @@ public class TransactionRecordsActivity extends BaseActivity {
                 if (type.equals("history")) {
                     date = jsonObject.getString("date");
                     confirmations = jsonObject.getString("confirmations");
-
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
                     maintrsactionlistEvent.setDate(date);
@@ -321,8 +322,9 @@ public class TransactionRecordsActivity extends BaseActivity {
                     maintrsactionlistEvent.setType(type);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
-
                     String tx_status = jsonObject.getString("tx_status");
+                    txCreatTrsaction = jsonObject.getString("tx");
+                    String invoice_id = jsonObject.getString("invoice_id");//delete use
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
 //                    maintrsactionlistEvent.setDate(date);
@@ -330,6 +332,7 @@ public class TransactionRecordsActivity extends BaseActivity {
                     maintrsactionlistEvent.setIs_mine(is_mine);
                     maintrsactionlistEvent.setType(type);
                     maintrsactionlistEvent.setTx_status(tx_status);
+                    maintrsactionlistEvent.setInvoice_id(invoice_id);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
 
@@ -349,6 +352,7 @@ public class TransactionRecordsActivity extends BaseActivity {
                             intent.putExtra("tx_hash", tx_hash1);
                             intent.putExtra("keyValue", "B");
                             intent.putExtra("listType", type1);
+                            intent.putExtra("txCreatTrsaction", txCreatTrsaction);
                             startActivity(intent);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -364,4 +368,12 @@ public class TransactionRecordsActivity extends BaseActivity {
 
     }
 
+    @OnClick({R.id.img_backTrsa})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_backTrsa:
+                finish();
+                break;
+        }
+    }
 }

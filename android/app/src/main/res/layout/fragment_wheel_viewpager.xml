@@ -17,7 +17,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/button_bk">
+            android:background="@drawable/home_bg">
 
             <TextView
                 android:id="@+id/wallet_card_name"

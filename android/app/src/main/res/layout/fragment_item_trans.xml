@@ -88,12 +88,24 @@
         </RelativeLayout>
 
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/arrows"
-            android:padding="11dp"
-            android:src="@drawable/jiantou" />
+        <RelativeLayout
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/img_delete"
+                android:layout_width="@dimen/dp_30"
+                android:layout_height="@dimen/dp_30"
+                android:padding="11dp"
+                android:src="@drawable/close_big_black" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:padding="11dp"
+                android:src="@drawable/jiantou" />
+        </RelativeLayout>
+
 
     </LinearLayout>
 

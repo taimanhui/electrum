@@ -1,12 +1,26 @@
 package org.haobtc.wallet.activities.base;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+
+import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.GuideActivity;
+import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.Global;
 
 public class LunchActivity extends BaseActivity {
     private final String FIRST_RUN = "is_first_run";
@@ -18,8 +32,38 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        init();
+//
+    }
 
+    @SuppressLint("HandlerLeak")
+    private Handler nHandler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            long t = System.currentTimeMillis();
+            Global.app = MyApplication.getInstance();
+            Python.start(new AndroidPlatform(Global.app));
+            Global.py = Python.getInstance();
+            if (BuildConfig.net_type.equals("TestNet")) {
+                Global.py.getModule("electrum.constants").callAttr("set_testnet");
+            } else if (BuildConfig.net_type.equals("RegTest")) {
+                Global.py.getModule("electrum.constants").callAttr("set_regtest");
+            }
+            Log.i("JXM", "t4 = " + (System.currentTimeMillis() - t));
+            Global.mHandler = null;
+            if (Global.mHandler == null) {
+                Global.mHandler = new Handler(Looper.getMainLooper());
+            }
+            Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
+            Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
+            new Daemon();
+            init();
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        nHandler.sendEmptyMessageDelayed(0, 100);
     }
 
     private void init() {
@@ -29,15 +73,9 @@ public class LunchActivity extends BaseActivity {
 
         boolean jumpOr = preferences.getBoolean("JumpOr", true);
         if (preferences.getBoolean(FIRST_RUN, false)) {
-//            Handler handler = new Handler();
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
             Intent intent = new Intent(LunchActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
-//                }
-//            }, 1500);
 
         } else {
             if (jumpOr) {
@@ -64,29 +102,16 @@ public class LunchActivity extends BaseActivity {
     }
 
     private void initGuide() {
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
         Intent intent = new Intent(LunchActivity.this, GuideActivity.class);
         startActivity(intent);
         finish();
-//            }
-//        }, 1500);
 
     }
 
     private void initCreatWallet() {
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
         Intent intent = new Intent(LunchActivity.this, CreateWalletActivity.class);
         startActivity(intent);
         finish();
-
-//            }
-//        }, 1500);
 
     }
 

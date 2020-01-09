@@ -393,16 +393,13 @@ class AndroidCommands(commands.Commands):
     def mktx(self, outputs, message, fee):
         try:
             self._assert_wallet_isvalid()
-        except Exception as e:
-            raise BaseException(e)
-        all_output_add = json.loads(outputs)
-        outputs_addrs = []
-        for key in all_output_add:
-            for address, amount in key.items():
-                outputs_addrs.append(PartialTxOutput.from_address_and_value(address, self.get_amount(amount)))
-                print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
-        coins = self.wallet.get_spendable_coins(domain = None)
-        try:
+            all_output_add = json.loads(outputs)
+            outputs_addrs = []
+            for key in all_output_add:
+                for address, amount in key.items():
+                    outputs_addrs.append(PartialTxOutput.from_address_and_value(address, self.get_amount(amount)))
+                    print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
+            coins = self.wallet.get_spendable_coins(domain = None)
             tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee))
             tx.set_rbf(self.rbf)
             self.wallet.set_label(tx.txid(), message)
@@ -522,9 +519,16 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         tx_details = self.wallet.get_tx_info(tx)
-        s, r = 0,0
-        if isinstance(tx, PartialTransaction):
-            s, r = tx.signature_count()
+        if 'Partially signed' in tx_details.status:
+            r = len(self.wallet.get_keystores())
+            temp_s, temp_r = tx.signature_count()
+            s, r = temp_s/r, temp_r/r
+        elif 'Unsigned' in tx_details.status:
+            s = 0
+            r = len(self.wallet.get_keystores())
+        else:
+            s = r = len(self.wallet.get_keystores())
+
         type = self.wallet.wallet_type
         out_list = []
         for o in tx.outputs():
@@ -541,7 +545,7 @@ class AndroidCommands(commands.Commands):
             'fee': self.format_amount_and_units(tx_details.fee),
             'description':self.wallet.get_label(tx_details.txid),
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
-            #'sign_status':[s,r],
+            'sign_status':[s,r],
             'output_addr':out_list,
             #'input_addr':[txin.address for txin in tx.inputs()],
             'cosigner':[x.xpub for x in self.wallet.get_keystores()],
@@ -550,18 +554,35 @@ class AndroidCommands(commands.Commands):
         json_data = json.dumps(ret_data)
         return json_data
     #invoices
+    def delete_invoice(self, key):
+        try:
+            self._assert_wallet_isvalid()
+            self.wallet.delete_invoice(key)
+        except Exception as e:
+            raise BaseException(e)
 
     def get_invoices(self):
-        return self.wallet.get_invoices()
+        try:
+            self._assert_wallet_isvalid()
+            return self.wallet.get_invoices()
+        except Exception as e:
+            raise BaseException(e)
 
     def do_save(self, outputs, message, tx):
-        invoice = self.wallet.create_invoice(outputs, message, None, None, tx=tx)
-        if not invoice:
-            return
-        self.wallet.save_invoice(invoice)
+        try:
+            invoice = self.wallet.create_invoice(outputs, message, None, None, tx=tx)
+            if not invoice:
+                return
+            self.wallet.save_invoice(invoice)
+        except Exception as e:
+            raise BaseException(e)
 
     def clear_invoices(self):
-        self.wallet.clear_invoices()
+        try:
+            self._assert_wallet_isvalid()
+            self.wallet.clear_invoices()
+        except Exception as e:
+            raise BaseException(e)
 
     ##get history+tx info
     def get_all_tx_list(self, tx_status=None, history_status=None):#tobe optimization
@@ -750,42 +771,31 @@ class AndroidCommands(commands.Commands):
         return tx.serialize_as_bytes().hex()
 
     ##Analyze QR data
-    def parse_qr(self, data):
+    def parse_address(self, data):
         data = data.strip()
-        ret_data = {}
-        npos = data.find("bitcoin:")
-        if npos != -1:
-            npos1 = data.find("?", 1)
-            if npos1 == -1:
-                npos1 = len(data)
-            add = data[npos+len("bitcoin:"):npos1]
-            if is_address(data[npos+len("bitcoin:"):npos1]):
-                ret_data['status'] = 1
-                try:
-                    uri = util.parse_URI(data)
-                except Exception as e:
-                    raise BaseException(e)
-                ret_data['data'] = uri['address']
-                return json.dumps(ret_data)
+        try:
+            uri = util.parse_URI(data)
+            return json.dumps(uri)
+        except Exception as e:
+            raise BaseException(e)
 
-        ret_data['status'] = 2
+    def parse_tx(self, data):
+        ret_data = {}
         # try to decode transaction
         from electrum.transaction import Transaction
         from electrum.util import bh2u
         try:
             text = bh2u(base_decode(data, base=43))
             tx = self.recover_tx_info(text)
-            #tx = tx_from_any(bytes.fromhex(text))
         except Exception as e:
             tx = None
             raise BaseException(e)
-        if tx:
-            if not isinstance(tx, PartialTransaction):
-                tx = PartialTransaction.from_tx(tx)
+        # if tx:
+        #     if not isinstance(tx, PartialTransaction):
+        #         tx = PartialTransaction.from_tx(tx)
 
-            data = self.get_details_info(tx)
-            ret_data['data'] = data
-            return json.dumps(ret_data)
+        data = self.get_details_info(tx)
+        return json.dumps(data)
 
     def broadcast_tx(self, tx):
         if self.network and self.network.is_connected():
@@ -798,7 +808,7 @@ class AndroidCommands(commands.Commands):
                 msg = repr(e)
             else:
                 status, msg = True, tx.txid()
-                self.callbackIntent.onCallback(Status.broadcast, msg)
+      #          self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
             raise BaseException(('Cannot broadcast transaction') + ':\n' + ('Not connected'))
 
@@ -826,7 +836,8 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
             tx = tx_from_any(tx)
             tx.deserialize()
-            self.wallet.sign_transaction(tx, None)
+            sign_tx = self.wallet.sign_transaction(tx, None)
+            return sign_tx
         except Exception as e:
             raise BaseException(e)
     ##connection with terzorlib#########################

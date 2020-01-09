@@ -25,4 +25,6 @@
     <color name="text_page">#292A45</color>
     <color name="text_color">#494949</color>
     <color name="graytext_color">#b3b3b3</color>
+    <color name="gray_little">#e5e9f1</color>
+
 </resources>

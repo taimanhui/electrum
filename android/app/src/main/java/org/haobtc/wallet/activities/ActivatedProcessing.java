@@ -3,6 +3,9 @@ package org.haobtc.wallet.activities;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chaquo.python.PyObject;
@@ -14,14 +17,23 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class ActivatedProcessing extends BaseActivity {
+    @BindView(R.id.img_back)
+    ImageView imgBack;
     private TextView textViewConnect, textViewPIN, textViewProcess;
 
     public int getLayoutId() {
         return R.layout.activing_process;
     }
+
     @Override
     public void initView() {
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
         textViewConnect = findViewById(R.id.connect_state);
         textViewPIN = findViewById(R.id.pin_setting_state);
         textViewProcess = findViewById(R.id.activate_state);
@@ -30,11 +42,13 @@ public class ActivatedProcessing extends BaseActivity {
     private void processingState() {
 
     }
+
     @Override
     public void initData() {
         NfcUtils.nfc(this);
 
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -54,6 +68,7 @@ public class ActivatedProcessing extends BaseActivity {
             System.out.println("禁用本App的NFC感应");
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -90,4 +105,13 @@ public class ActivatedProcessing extends BaseActivity {
         }
     }
 
+
+    @OnClick({R.id.img_back})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+        }
+    }
 }

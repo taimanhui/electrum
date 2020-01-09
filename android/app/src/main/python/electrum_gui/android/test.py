@@ -19,8 +19,12 @@ from electrum import keystore
 _logger = get_logger(__name__)
 from console import AndroidCommands
 
+import time
 util.setup_thread_excepthook()
+print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 constants.set_regtest()
+print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+
 testcommond = AndroidCommands()
 testcommond.start()
 
@@ -32,16 +36,17 @@ password = '111111'
 
 # #create_wallet
 #
-# m = 2
-# n = 2
-# xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
-# #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
-# xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-# #testcommond.delete_wallet(name)
-# testcommond.set_multi_wallet_info(name,m,n)
-# testcommond.add_xpub(xpub1)
-# testcommond.add_xpub(xpub2)
-# testcommond.create_multi_wallet(name)
+m = 2
+n = 2
+xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+#xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
+#xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+testcommond.delete_wallet(name)
+testcommond.set_multi_wallet_info(name,m,n)
+testcommond.add_xpub(xpub1)
+testcommond.add_xpub(xpub2)
+testcommond.create_multi_wallet(name)
 
 # ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 # print("=======ret1 = %s" %ret)
@@ -61,6 +66,12 @@ info = testcommond.get_wallets_list_info()
 testcommond.set_base_uint("mBTC")
 status = testcommond.get_default_fee_status()
 print("status = %s" %status)
+
+#testcommond.broadcast_tx("02000000000103f9f512c210a473a6f8ae3d9cd1d70a6ca9017456d96a9be5bbb33f4b91bb31340100000000fdffffffad421a234543b89ac2a87408e441037a83fb1eb4a4824e0517d0fd88d293437b0000000000fdffffff7cd7e75c4ca82a2738f4ef8f1d47b1e70f2b03eb178cf2ec313418f02d4c51f20000000000fdffffff02809698000000000022002068a7f776a614653c7ac21226b44014abb28fc6f70105666c7661c6719a2579df34144e050000000022002042cf432cef83c2eaade6063f06a2cf6dde5852219db394e17d70b146eab8c3550400483045022100b04ceb1427db17589427489bdf2b9bdcf6c9c8bd4f70692fe2110e9e5b0d82bc02203359df024dd2cdf146b45c5480b06cfe02445ebfbf430d82ae86695aad97b69501483045022100daee1421ffa2c9014e7cc90cbaba7944c1ec932d608df8b349a1c4546021e57c022000ede4580495457556b8d85483aaafffb3a9f14101c278d4959bb166e2cdcc9d01475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae04004830450221009a047cc4cd813fde862f7ea21aec12227944b00f8b2e535bd7eeaaa633a9c04e0220186667a639731c60ed4ffbde8e97ecbb7c4d29c76cb4d7ee21755924cddb3ede01483045022100cd8dac67a7e3ac8ed44436c7982ebe95022791cd884ba27ffac47296af599d230220077d86b5e50c0390c4846c16521aec427c4f78f471e5c20a5a1a27ebe6ec001f01475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae0400483045022100feaf26314f422bb470fe17cd40836e914ea4ba622b6623807992f43b444cda6602200738996c3729288071250b5ded009349233e183ff49a72f94bd8bed134a8a59b014830450221009ed0caff042fc4d668b162648546aa0b20235b71fbf4457fe2cf37bff85ef5cd022016dc5dd6ae2516077faf77523ecf5fb85fc904e83026a0f05e626403e3d535df01475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae53310000")
+#sign_tx
+# sign_tx = testcommond.sign_tx("70736274ff0100db0200000003f9f512c210a473a6f8ae3d9cd1d70a6ca9017456d96a9be5bbb33f4b91bb31340100000000fdffffffad421a234543b89ac2a87408e441037a83fb1eb4a4824e0517d0fd88d293437b0000000000fdffffff7cd7e75c4ca82a2738f4ef8f1d47b1e70f2b03eb178cf2ec313418f02d4c51f20000000000fdffffff02809698000000000022002068a7f776a614653c7ac21226b44014abb28fc6f70105666c7661c6719a2579df34144e050000000022002042cf432cef83c2eaade6063f06a2cf6dde5852219db394e17d70b146eab8c355533100000001012b00e1f50500000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b5483045022100b04ceb1427db17589427489bdf2b9bdcf6c9c8bd4f70692fe2110e9e5b0d82bc02203359df024dd2cdf146b45c5480b06cfe02445ebfbf430d82ae86695aad97b695010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000001012bf40b000000000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b54830450221009a047cc4cd813fde862f7ea21aec12227944b00f8b2e535bd7eeaaa633a9c04e0220186667a639731c60ed4ffbde8e97ecbb7c4d29c76cb4d7ee21755924cddb3ede010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000001012b0000000000000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b5483045022100feaf26314f422bb470fe17cd40836e914ea4ba622b6623807992f43b444cda6602200738996c3729288071250b5ded009349233e183ff49a72f94bd8bed134a8a59b010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000000010147522102236c138f904245163fecae96b5b7f72bedebbd0be24cdf34979ea8339b281d452102edb35b9566f0a9b51c24a60f602a1cc8e780e10280fc2976e312b5c2471005a752ae220202236c138f904245163fecae96b5b7f72bedebbd0be24cdf34979ea8339b281d450cf131eba80100000000000000220202edb35b9566f0a9b51c24a60f602a1cc8e780e10280fc2976e312b5c2471005a70cf8025b60010000000000000000")
+# print("sign_tx = %s" %sign_tx)
+# testcommond.broadcast_tx(sign_tx)
 #testcommond.clear_invoices()
 #create_tx
 all_output = []
@@ -89,22 +100,22 @@ print("mktx================%s" % ret_list)
 tx_info_str = testcommond.get_tx_info_from_raw(ret_list['tx'])
 tx_info = json.loads(tx_info_str)
 print("tx info = %s=========" % tx_info)
-#sign_tx
-#testcommond.sign_tx(ret_list['tx'])
-#
-# #parse_qr tx
-qr_data = testcommond.get_qr_data_from_raw_tx(ret_list['tx'])
-print("qr_data on ui = %s........" % qr_data)
+# #sign_tx
+# #testcommond.sign_tx(ret_list['tx'])
+# #
+# # #parse_qr tx
+# qr_data = testcommond.get_qr_data_from_raw_tx(ret_list['tx'])
+# print("qr_data on ui = %s........" % qr_data)
 # tx_data = testcommond.parse_qr(qr_data)
 # print("tx_data = %s---------" % json.loads(tx_data))
-#
+
 # #parse_qr_addr
 # data = testcommond.get_wallet_address_show_UI()
 #
 # qr_data = json.loads(data)
 # print("qr_addr = %s------------" % qr_data['qr_data'])
 #
-# add = testcommond.parse_qr(qr_data['qr_data'])
+# add = testcommond.parse_address("bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r")
 # print("addr = %s--------" %add)
 # #get_history_tx
 #
@@ -142,8 +153,7 @@ print("testinfo = %s------------" %testinfo)
 # print("info== %s" % info)
 # info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
 # print("info== %s" % info)
-#sign_tx
-testcommond.sign_tx(ret_list['tx'])
 
-data = testcommond.get_tx_info('73e6a9cd5a2785f4ced54c302221cf7ecf8bb2407938506e5008ab6e025b5426')
+
+data = testcommond.get_tx_info('d8c325244f1c68b7983b55e45c8c1b4d61b82c3749deb35883eb71687f1f478b')
 print("get_tx_info = %s-===========" % data)

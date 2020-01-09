@@ -5,9 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,10 +13,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.core.content.FileProvider;
 
 import com.chaquo.python.PyObject;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -28,10 +25,8 @@ import com.yzq.zxinglibrary.common.Constant;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.entries.FsActivity;
-import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -53,6 +48,8 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     Button buttonPaste;
     @BindView(R.id.confirm_sig)
     Button buttonConfirm;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private PyObject is_valiad_xpub;
@@ -66,7 +63,6 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        CommonUtils.enableToolBar(this, R.string.signature);
         rxPermissions = new RxPermissions(this);
         buttonConfirm.setEnabled(false);
         buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
@@ -81,7 +77,7 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     }
 
 
-    @OnClick({R.id.import_file, R.id.sweep_sig, R.id.paste_sig, R.id.confirm_sig})
+    @OnClick({R.id.import_file, R.id.sweep_sig, R.id.paste_sig, R.id.confirm_sig,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.import_file:
@@ -130,6 +126,9 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
                     }
                 }
                 break;
+            case R.id.img_back:
+                finish();
+                break;
         }
     }
 
@@ -176,7 +175,7 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         String strRaw = editTextRaw.getText().toString();
-        Log.i("CharSequence", "------------ "+strRaw);
+        Log.i("CharSequence", "------------ " + strRaw);
         if (!TextUtils.isEmpty(strRaw)) {
             try {
                 try {

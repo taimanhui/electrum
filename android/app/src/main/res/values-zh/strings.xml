@@ -202,5 +202,6 @@
     <string name="changewalletname">该钱包名已存在，请更换</string>
     <string name="choosepath">选择路径</string>
     <string name="preservations">保存</string>
+    <string name="add_wallet">暂无钱包 点击添加</string>
 
 </resources>

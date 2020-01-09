@@ -92,7 +92,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView tetNone;
     private PyObject get_history_tx;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
-    private String rowTrsation = "";
     private String tx_hash;
     private String date;
     private String amount;
@@ -116,6 +115,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<Fragment> fragmentList;
     private boolean jumpOr;
     private PyObject parse_qr;
+    private String txCreatTrsaction;
 
     @Override
     public int getLayoutId() {
@@ -126,7 +126,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public void initView() {
         sharedPreferences = getSharedPreferences("preferences", MODE_PRIVATE);
-        rowTrsation = sharedPreferences.getString("rowTrsation", "");
         //Eventbus register
         EventBus.getDefault().register(this);
 //        init();
@@ -229,33 +228,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                try {
-                    //get transaction json
-                    get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
-                //get transaction list
-                if (!get_history_tx.isEmpty()) {
-                    tetNone.setVisibility(View.GONE);
-                    recy_data.setVisibility(View.VISIBLE);
-                    String strHistory = get_history_tx.toString();
-                    Log.i("strHistory", "onPage----: " + strHistory + "   size:  " + strHistory.length());
-
-                    if (strHistory.length() == 2) {
-                        myDialog.dismiss();
-                        tetNone.setVisibility(View.VISIBLE);
-                        recy_data.setVisibility(View.GONE);
-                    } else {
-                        //show trsaction list
-                        showTrsactionlist(strHistory);
-                    }
-
-                } else {
-                    tetNone.setVisibility(View.VISIBLE);
-                    recy_data.setVisibility(View.GONE);
-                }
+                //trsaction list data
+                downMainListdata();
 
             }
 
@@ -264,6 +238,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         viewPagerScroll();
 
     }
+
 
     //viewPagerScroll
     private void viewPagerScroll() {
@@ -295,30 +270,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                     try {
                                         Daemon.commands.callAttr("load_wallet", strNames);
                                         Daemon.commands.callAttr("select_wallet", strNames);
-                                        get_history_tx = Daemon.commands.callAttr("get_all_tx_list", rowTrsation);
 
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         Log.i("onPageSelected", "try-----" + e.getMessage());
                                         return;
                                     }
-                                    if (!get_history_tx.isEmpty()) {
-                                        tetNone.setVisibility(View.GONE);
-                                        recy_data.setVisibility(View.VISIBLE);
-                                        String strHistory = get_history_tx.toString();
-                                        Log.i("strHistory", "onPage----: " + strHistory);
-                                        if (strHistory.length() == 2) {
-                                            myDialog.dismiss();
-                                            tetNone.setVisibility(View.VISIBLE);
-                                            recy_data.setVisibility(View.GONE);
-                                        } else {
-                                            //show trsaction list
-                                            showTrsactionlist(strHistory);
-                                        }
-                                    } else {
-                                        tetNone.setVisibility(View.VISIBLE);
-                                        recy_data.setVisibility(View.GONE);
-                                    }
+                                    //trsaction list data
+                                    downMainListdata();
                                 }
                             }
                             mCurrentPosition = position;
@@ -332,6 +291,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             }
         });
+    }
+
+    private void downMainListdata() {
+        try {
+            //get transaction json
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        //get transaction list
+        if (!get_history_tx.isEmpty()) {
+            tetNone.setVisibility(View.GONE);
+            recy_data.setVisibility(View.VISIBLE);
+            String strHistory = get_history_tx.toString();
+            Log.i("strHistory", "onPage----: " + strHistory + "   size:  " + strHistory.length());
+
+            if (strHistory.length() == 2) {
+                myDialog.dismiss();
+                tetNone.setVisibility(View.VISIBLE);
+                recy_data.setVisibility(View.GONE);
+            } else {
+                //show trsaction list
+                showTrsactionlist(strHistory);
+            }
+
+        } else {
+            tetNone.setVisibility(View.VISIBLE);
+            recy_data.setVisibility(View.GONE);
+        }
+
     }
 
     //show trsaction list
@@ -358,6 +348,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
                     String tx_status = jsonObject.getString("tx_status");
+                    txCreatTrsaction = jsonObject.getString("tx");
+                    String invoice_id = jsonObject.getString("invoice_id");//delete use
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
                     maintrsactionlistEvent.setDate(date);
@@ -365,6 +357,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     maintrsactionlistEvent.setIs_mine(is_mine);
                     maintrsactionlistEvent.setType(type);
                     maintrsactionlistEvent.setTx_status(tx_status);
+                    maintrsactionlistEvent.setInvoice_id(invoice_id);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
 
@@ -384,10 +377,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             intent.putExtra("tx_hash", tx_hash1);
                             intent.putExtra("keyValue", "B");
                             intent.putExtra("listType", type1);
+                            intent.putExtra("txCreatTrsaction",txCreatTrsaction);
                             startActivity(intent);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                    }
+                });
+
+                trsactionlistAdapter.setOnItemonDeleteClicklisoner(new MaindowndatalistAdapetr.onItemonDeleteClicklisoner() {
+                    @Override
+                    public void onOnCLick(String incoisId) {
+
                     }
                 });
 
@@ -459,6 +460,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Log.i("threadMode", "event: " + msgVote);
             //Rolling Wallet
             mWheelplanting();
+            //trsaction list data
+            downMainListdata();
 
         }
     }

@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities;
 
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,13 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.fragment.ItemFragmentTransaction;
 import org.haobtc.wallet.utils.CommonUtils;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class ConfirmOnHardware extends BaseActivity implements View.OnClickListener {
+    @BindView(R.id.img_back)
+    ImageView imgBack;
     private Button button_confirm;
     private PopupWindow popupWindow;
     private View view, rootView;
@@ -26,9 +33,11 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     public int getLayoutId() {
         return R.layout.confirm_on_hardware;
     }
+
     @Override
     public void initView() {
-        CommonUtils.enableToolBar(this, R.string.confirm_trans_d);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
         ItemFragmentTransaction fragmentTransaction = new ItemFragmentTransaction();
         fragmentTransaction.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_trans_in_confirm, fragmentTransaction).commit();
@@ -60,11 +69,11 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setOnDismissListener(() ->
-                    {
-                        Toast.makeText(ConfirmOnHardware.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                        setBackgroundAlpha(1f);
-                    }
-            );
+                {
+                    Toast.makeText(ConfirmOnHardware.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
+                    setBackgroundAlpha(1f);
+                }
+        );
         imageViewCancle.setOnClickListener(this);
     }
 
@@ -86,6 +95,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         );
         imageViewCancle.setOnClickListener(this);
     }
+
     private void showPopupSignTimeout() {
         Button button = findViewById(R.id.sign_again);
         view = LayoutInflater.from(this).inflate(R.layout.signature_timeout_popupwindow, null);
@@ -127,7 +137,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     }
 
     public void setBackgroundAlpha(float bgAlpha) {
-        WindowManager.LayoutParams lp =  getWindow()
+        WindowManager.LayoutParams lp = getWindow()
                 .getAttributes();
         lp.alpha = bgAlpha;
         getWindow().setAttributes(lp);
@@ -145,5 +155,15 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 finish();
         }
 
+    }
+
+
+    @OnClick({R.id.img_back})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+        }
     }
 }

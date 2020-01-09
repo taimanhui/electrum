@@ -228,11 +228,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                     String beanTx = getAddressBean.getTx();
 
                     if (beanTx != null) {
-                        edit.putString("rowTrsation", beanTx);
-                        edit.apply();
                         Intent intent = new Intent(SendOne2ManyMainPageActivity.this, TransactionDetailsActivity.class);
                         intent.putExtra("tx_hash", beanTx);
                         intent.putExtra("keyValue", "A");
+                        intent.putExtra("txCreatTrsaction",beanTx);
                         startActivity(intent);
                     }
                 }

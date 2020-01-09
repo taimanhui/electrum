@@ -455,12 +455,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             String beanTx = getAddressBean.getTx();
             if (beanTx != null) {
-                edit.putString("rowTrsation", beanTx);
-                edit.apply();
                 EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
                 intent.putExtra("keyValue", "A");
+                intent.putExtra("txCreatTrsaction",beanTx);
                 startActivity(intent);
             }
         }
