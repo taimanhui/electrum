@@ -1,19 +1,30 @@
 package org.haobtc.wallet.activities;
 
 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.utils.CommonUtils;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MessageManagerActivity extends BaseActivity {
 
+
+    @BindView(R.id.img_back)
+    ImageView imgBack;
 
     public int getLayoutId() {
         return R.layout.layout;
     }
 
     public void initView() {
-        CommonUtils.enableToolBar(this, R.string.message_manager);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
 
     }
 
@@ -22,4 +33,13 @@ public class MessageManagerActivity extends BaseActivity {
 
     }
 
+
+    @OnClick(R.id.img_back)
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+        }
+    }
 }

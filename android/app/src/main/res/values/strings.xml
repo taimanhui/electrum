@@ -204,5 +204,6 @@
     <string name="changewalletname">The wallet name already exists, please change it</string>
     <string name="choosepath">Selection path</string>
     <string name="preservations">preservation</string>
+    <string name="add_wallet">No wallet Click to add</string>
 
 </resources>

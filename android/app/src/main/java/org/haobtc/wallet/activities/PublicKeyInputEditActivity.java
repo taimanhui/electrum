@@ -5,11 +5,13 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -18,7 +20,6 @@ import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.utils.CommonUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +34,8 @@ public class PublicKeyInputEditActivity extends BaseActivity {
     Button bnPasteCreate;
     @BindView(R.id.bn_confirm_create)
     Button bnConfirmCreate;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
 
@@ -44,7 +47,6 @@ public class PublicKeyInputEditActivity extends BaseActivity {
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        CommonUtils.enableToolBar(this, R.string.import_mutiSig);
         rxPermissions = new RxPermissions(this);
 
     }
@@ -54,7 +56,7 @@ public class PublicKeyInputEditActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.bn_sweep_create, R.id.bn_paste_create, R.id.bn_confirm_create})
+    @OnClick({R.id.bn_sweep_create, R.id.bn_paste_create, R.id.bn_confirm_create,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bn_sweep_create:
@@ -87,6 +89,9 @@ public class PublicKeyInputEditActivity extends BaseActivity {
                     // TODO:
 
                 }
+                break;
+            case R.id.img_back:
+                finish();
                 break;
         }
     }

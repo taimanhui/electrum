@@ -1,10 +1,20 @@
 package org.haobtc.wallet.activities.set;
 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.utils.CommonUtils;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class AgreementActivity extends BaseActivity {
+
+    @BindView(R.id.img_back)
+    ImageView imgBack;
 
     @Override
     public int getLayoutId() {
@@ -13,13 +23,28 @@ public class AgreementActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        CommonUtils.enableToolBar(this, R.string.bixinmoney);
-
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
 
     }
 
     @Override
     public void initData() {
 
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @OnClick({R.id.img_back})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+        }
     }
 }

@@ -10,15 +10,35 @@
         android:id="@+id/wallet_card_add"
         android:layout_width="300dp"
         android:layout_height="180dp"
-        android:elevation="4dp"
-        app:cardCornerRadius="20dp">
-        <ImageView
-            android:id="@+id/img_Addmoney"
-            android:layout_gravity="center"
+        android:elevation="@dimen/dp_4"
+        app:cardCornerRadius="@dimen/dp_20">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:src="@drawable/add"
-            android:background="@android:color/darker_gray"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:background="@color/gray_little">
+
+            <ImageView
+                android:id="@+id/img_Addmoney"
+                android:layout_width="50dp"
+                android:layout_height="@dimen/dp_50"
+                android:layout_marginTop="48dp"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/add"
+                android:src="@drawable/tianjiakapian" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/img_Addmoney"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_16"
+                android:text="@string/add_wallet"
+                android:textColor="#b1b7c5"
+                android:textSize="13sp" />
+
+        </RelativeLayout>
+
 
     </androidx.cardview.widget.CardView>
 

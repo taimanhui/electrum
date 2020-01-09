@@ -184,9 +184,9 @@ public class ShareOtherActivity extends BaseActivity {
                 String strOpen = tetOpen.getText().toString();
                 if (strOpen.equals(getResources().getString(R.string.spin_open))) {
                     if (keys.equals("A")) {
-                        lenth = 10000;
+                        lenth = 6000;
                     } else {
-                        lenth = 380;
+                        lenth = 400;
                     }
                     LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
                     linearParams1.height = lenth;
@@ -291,11 +291,5 @@ public class ShareOtherActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }
 

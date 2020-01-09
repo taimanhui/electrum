@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +18,16 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /***
  * splash
  * */
 public class GuideActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
+    @BindView(R.id.img_back)
+    ImageView imgBack;
     private ViewPager viewPager;
     private List<View> viewList = new ArrayList<>();
     private ImageView[] dots;
@@ -33,6 +40,8 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
 
     @Override
     public void initView() {
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
         viewPager = findViewById(R.id.vp);
         LayoutInflater inflater = LayoutInflater.from(this);
         viewList.add(inflater.inflate(R.layout.boot_page_item1, null));
@@ -114,5 +123,14 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    @OnClick({R.id.img_back})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+        }
     }
 }

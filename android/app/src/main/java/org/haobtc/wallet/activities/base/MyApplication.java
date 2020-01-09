@@ -19,28 +19,13 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+            }
+        }.start();
         mInstance = this;
-
-        Global.app = MyApplication.getInstance();
-        Python.start(new AndroidPlatform(Global.app));
-        Global.py = Python.getInstance();
-        Log.i("JXM", "onCreate++++++: ");
-        Log.i("JXM", "hhh: " + BuildConfig.net_type);
-
-        if (BuildConfig.net_type.equals( "TestNet")) {
-            Global.py.getModule("electrum.constants").callAttr("set_testnet");
-            Log.i("JXM", "TESTNET++++++: ");
-        }else if(BuildConfig.net_type.equals("RegTest")){
-            Global.py.getModule("electrum.constants").callAttr("set_regtest");
-            Log.i("JXM", "REGTEST++++++: ");
-        }
-        Global.mHandler = null;
-        if (Global.mHandler == null) {
-            Global.mHandler = new Handler(Looper.getMainLooper());
-        }
-        Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
-        Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
-        new Daemon();
 
     }
     public static MyApplication getInstance() {

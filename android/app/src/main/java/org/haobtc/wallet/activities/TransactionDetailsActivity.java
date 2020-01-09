@@ -130,8 +130,8 @@ public class TransactionDetailsActivity extends BaseActivity {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
-        rowTrsation = preferences.getString("rowTrsation", "");
         Intent intent = getIntent();
+        rowTrsation = intent.getStringExtra("txCreatTrsaction");
         keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
         tx_hash = intent.getStringExtra("tx_hash");
         listType = intent.getStringExtra("listType");
@@ -187,7 +187,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //creat succses check
     private void mCreataSuccsesCheck() {
         //get trsaction list content
-        if (!TextUtils.isEmpty(tx_hash)) {
+        if (!TextUtils.isEmpty(rowTrsation)) {
             PyObject def_get_tx_info_from_raw = null;
             try {
                 def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowTrsation);
@@ -218,9 +218,8 @@ public class TransactionDetailsActivity extends BaseActivity {
         String fee = getnewcreatTrsactionListBean.getFee();
         String description = getnewcreatTrsactionListBean.getDescription();
         String tx_status = getnewcreatTrsactionListBean.getTxStatus();
-        List<Integer> sign_status = getnewcreatTrsactionListBean.getSignStatus();
         List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutputAddr();
-        List<String> input_addr = getnewcreatTrsactionListBean.getInputAddr();
+//        List<String> input_addr = getnewcreatTrsactionListBean.getInputAddr();
         List<String> cosigner = getnewcreatTrsactionListBean.getCosigner();
         String txid = getnewcreatTrsactionListBean.getTxid();
         rowtx = getnewcreatTrsactionListBean.getTx();
@@ -235,11 +234,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetGetMoneyaddress.setText(addr);
         }
 
-        if (input_addr != null) {
-            //input_address
-            String strInputAddr = input_addr.get(0);
-            tetPayAddress.setText(strInputAddr);
-        }
+//        if (input_addr != null) {
+//            //input_address
+//            String strInputAddr = input_addr.get(0);
+//            tetPayAddress.setText(strInputAddr);
+//        }
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
             String mbtc = amount.replaceAll(". mBTC", " mBTC");
@@ -255,10 +254,6 @@ public class TransactionDetailsActivity extends BaseActivity {
         //Remarks
         tetContent.setText(description);
 
-        //autograph state
-        Integer inFront = sign_status.get(0);
-        Integer inBehind = sign_status.get(1);
-        textView20.setText(inFront + "/" + inBehind);
         //cosigner
         for (int i = 0; i < cosigner.size(); i++) {
             InputOutputAddressEvent inputOutputAddressEvent = new InputOutputAddressEvent();

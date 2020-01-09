@@ -37,8 +37,7 @@
             >
 
         </activity>
-        <activity android:name=".activities.base.LunchActivity"
-            android:theme="@style/LunchTheme">
+        <activity android:name=".activities.base.LunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

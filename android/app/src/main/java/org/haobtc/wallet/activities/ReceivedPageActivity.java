@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -25,14 +24,13 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
-import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.utils.Daemon;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -47,6 +45,8 @@ public class ReceivedPageActivity extends BaseActivity {
     TextView textView6;
     @BindView(R.id.button)
     Button button;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
     private Bitmap bitmap;
     private RxPermissions rxPermissions;
     private long mMillis;
@@ -60,7 +60,6 @@ public class ReceivedPageActivity extends BaseActivity {
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        CommonUtils.enableToolBar(this, R.string.receive);
         rxPermissions = new RxPermissions(this);
     }
 
@@ -95,7 +94,7 @@ public class ReceivedPageActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.textView6, R.id.button})
+    @OnClick({R.id.textView6, R.id.button,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.textView6:
@@ -111,7 +110,7 @@ public class ReceivedPageActivity extends BaseActivity {
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                File file = saveImageToGallery(this,bitmap);
+                                File file = saveImageToGallery(this, bitmap);
                                 String path = insertImageToSystem(this, file.getPath());
                                 Intent imageIntent = new Intent(Intent.ACTION_SEND);
                                 imageIntent.setType("image/jpeg");
@@ -124,6 +123,9 @@ public class ReceivedPageActivity extends BaseActivity {
                             }
                         }).dispose();
 
+                break;
+            case R.id.img_back:
+                finish();
                 break;
         }
     }

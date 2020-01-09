@@ -1,12 +1,13 @@
 package org.haobtc.wallet.activities;
 
+import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.set.VersionUpgradeActivity;
-import org.haobtc.wallet.utils.CommonUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,6 +20,8 @@ public class HardwareInfoActivity extends BaseActivity {
     TextView tetVersonUp;
     @BindView(R.id.id_2)
     TextView tetAddress;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
 
     @Override
     public int getLayoutId() {
@@ -29,7 +32,6 @@ public class HardwareInfoActivity extends BaseActivity {
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        CommonUtils.enableToolBar(this, R.string.hardware_i);
 
     }
 
@@ -38,7 +40,7 @@ public class HardwareInfoActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.tet_Serial, R.id.tet_versonUp, R.id.id_2})
+    @OnClick({R.id.tet_Serial, R.id.tet_versonUp, R.id.id_2,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_Serial:
@@ -50,6 +52,10 @@ public class HardwareInfoActivity extends BaseActivity {
             case R.id.id_2:
                 mToast(getResources().getString(R.string.no_address));
                 break;
+            case R.id.img_back:
+                finish();
+                break;
         }
     }
+
 }

@@ -18,7 +18,6 @@ public class SelectMultiSigWalletActivity extends BaseActivity {
     }
 
     public void initView() {
-        CommonUtils.enableToolBar(this, R.string.select_mutisig);
 
 
     }

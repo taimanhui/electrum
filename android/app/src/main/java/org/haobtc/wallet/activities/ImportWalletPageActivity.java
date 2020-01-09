@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,11 +25,12 @@ public class ImportWalletPageActivity extends BaseActivity implements View.OnCli
 
     public void initView() {
         CardView cardViewImport, cardViewPublicKey;
-        CommonUtils.enableToolBar(this, R.string.import_mutiSig);
         cardViewImport = findViewById(R.id.use_hardware);
         cardViewPublicKey = findViewById(R.id.public_key);
+        ImageView imgback = findViewById(R.id.img_back);
         cardViewImport.setOnClickListener(this);
         cardViewPublicKey.setOnClickListener(this);
+        imgback.setOnClickListener(this);
 
     }
 
@@ -48,6 +50,9 @@ public class ImportWalletPageActivity extends BaseActivity implements View.OnCli
             case R.id.public_key:
                 Intent intent1 = new Intent(this, PublicKeyInputEditActivity.class);
                 startActivity(intent1);
+            case R.id.img_back:
+                finish();
+                break;
         }
 
     }

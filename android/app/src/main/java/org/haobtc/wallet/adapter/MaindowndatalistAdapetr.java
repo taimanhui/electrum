@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableContainer;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -49,7 +51,9 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
 
         //judge type
         String type = item.getType();
+        ImageView imgDelete = helper.getView(R.id.img_delete);
         if ("history".equals(type)) {
+            imgDelete.setVisibility(View.GONE);
             //history
             String confirmations = item.getConfirmations();
             int anInt = Integer.parseInt(confirmations);
@@ -63,6 +67,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
             }
 
         } else {
+            imgDelete.setVisibility(View.GONE);
             String tx_status = item.getTx_status();
             if ("Signed".equals(tx_status)) {
                 //new creat trsaction
@@ -83,7 +88,22 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 tetview.setBackground(mContext.getResources().getDrawable(R.drawable.orange_circle));
             }
 
+            imgDelete.setOnClickListener(v -> {
+                if (onItemonDeleteClicklisoner!=null){
+                    onItemonDeleteClicklisoner.onOnCLick(item.getInvoice_id());
+                }
+            });
+
         }
 
+    }
+    public interface onItemonDeleteClicklisoner{
+        void onOnCLick(String incoisId);
+    }
+
+    private onItemonDeleteClicklisoner onItemonDeleteClicklisoner;
+
+    public void setOnItemonDeleteClicklisoner(MaindowndatalistAdapetr.onItemonDeleteClicklisoner onItemonDeleteClicklisoner) {
+        this.onItemonDeleteClicklisoner = onItemonDeleteClicklisoner;
     }
 }

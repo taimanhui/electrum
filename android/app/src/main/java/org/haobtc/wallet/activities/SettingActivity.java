@@ -3,15 +3,11 @@ package org.haobtc.wallet.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-
-import com.gyf.immersionbar.ImmersionBar;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.utils.CommonUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +29,8 @@ public class SettingActivity extends BaseActivity {
     TextView tetS6;
     @BindView(R.id.tet_s7)
     TextView tetS7;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
 
     @Override
     public int getLayoutId() {
@@ -41,7 +39,6 @@ public class SettingActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(this);
-        CommonUtils.enableToolBar(this, R.string.settings);
     }
 
     @Override
@@ -49,7 +46,7 @@ public class SettingActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.tet_s1, R.id.tet_s2, R.id.tet_s3, R.id.tet_s4, R.id.tet_s5, R.id.tet_s6, R.id.tet_s7})
+    @OnClick({R.id.tet_s1, R.id.tet_s2, R.id.tet_s3, R.id.tet_s4, R.id.tet_s5, R.id.tet_s6, R.id.tet_s7,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_s1:
@@ -73,13 +70,17 @@ public class SettingActivity extends BaseActivity {
                 startActivity(intent5);
                 break;
             case R.id.tet_s6:
-                    Intent intent6 = new Intent(this, ServiceOnlineActivity.class);
-                    startActivity(intent6);
+                Intent intent6 = new Intent(this, ServiceOnlineActivity.class);
+                startActivity(intent6);
                 break;
             case R.id.tet_s7:
                 Intent intent7 = new Intent(this, AboutActivity.class);
                 startActivity(intent7);
                 break;
+            case R.id.img_back:
+                finish();
+                break;
         }
     }
+
 }

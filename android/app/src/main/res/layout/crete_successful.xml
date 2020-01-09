@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:orientation="vertical"
     android:clipToPadding="true"
@@ -96,7 +96,7 @@
                         android:layout_height="248.3dp"
                         android:layout_marginTop="89.7dp"
                         android:contentDescription="@string/address_qr"
-                        android:src="@drawable/ic_launcher_background"
+                        android:src="@color/bk_page"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -108,7 +108,7 @@
                         android:layout_marginStart="@dimen/dp_20"
                         android:layout_marginTop="@dimen/dp_20"
                         android:layout_marginEnd="@dimen/dp_20"
-                        android:text="lnbcdfd4fdsk4j5gb5...h6jd0sjsadrrfgg55678hhhddddejekejkejkejek3ddkddd"
+                        tools:text="lnbcdfd4fdsk4j5gb5...h6jd0sjsadrrfgg55678hhhddddejekejkejkejek3ddkddd"
                         android:textColor="@color/text"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
