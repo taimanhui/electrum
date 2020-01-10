@@ -22,7 +22,7 @@ from console import AndroidCommands
 import time
 util.setup_thread_excepthook()
 print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
-constants.set_regtest()
+constants.set_testnet()
 print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
 testcommond = AndroidCommands()
@@ -36,17 +36,17 @@ password = '111111'
 
 # #create_wallet
 #
-m = 2
-n = 2
-xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
-#xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
-#xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
-xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-testcommond.delete_wallet(name)
-testcommond.set_multi_wallet_info(name,m,n)
-testcommond.add_xpub(xpub1)
-testcommond.add_xpub(xpub2)
-testcommond.create_multi_wallet(name)
+# m = 2
+# n = 2
+# xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
+# #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+# xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# testcommond.delete_wallet(name)
+# testcommond.set_multi_wallet_info(name,m,n)
+# testcommond.add_xpub(xpub1)
+# testcommond.add_xpub(xpub2)
+# testcommond.create_multi_wallet(name)
 
 # ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 # print("=======ret1 = %s" %ret)
@@ -60,7 +60,8 @@ testcommond.create_multi_wallet(name)
 
 #load_wallet
 testcommond.load_wallet(name, password)
-testcommond.select_wallet(name)
+data = testcommond.select_wallet(name)
+print("select data ============%s" %data)
 info = testcommond.get_wallets_list_info()
 
 testcommond.set_base_uint("mBTC")
@@ -75,10 +76,10 @@ print("status = %s" %status)
 #testcommond.clear_invoices()
 #create_tx
 all_output = []
-#output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.01'}
+output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.01'}
 #output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
 #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.05'}
-output_info = {'bcrt1q9a4kk79hacd2s838xhdvxmhxrs6tskfp744t7v9pj7f9flayjy0s4d3ttm':'5'}
+#output_info = {'bcrt1q9a4kk79hacd2s838xhdvxmhxrs6tskfp744t7v9pj7f9flayjy0s4d3ttm':'5'}
 all_output.append(output_info)
 #all_output.append(output_info1)
 output_str = json.dumps(all_output)
@@ -97,16 +98,17 @@ print("mktx================%s" % ret_list)
 
 #
 # #get_tx_by_raw
-tx_info_str = testcommond.get_tx_info_from_raw(ret_list['tx'])
-tx_info = json.loads(tx_info_str)
-print("tx info = %s=========" % tx_info)
-# #sign_tx
-# #testcommond.sign_tx(ret_list['tx'])
-# #
-# # #parse_qr tx
-# qr_data = testcommond.get_qr_data_from_raw_tx(ret_list['tx'])
+
+# tx_info_str = testcommond.get_tx_info_from_raw(ret_list['tx'])
+# tx_info = json.loads(tx_info_str)
+# print("tx info = %s=========" % tx_info)
+# # #sign_tx
+# # #testcommond.sign_tx(ret_list['tx'])
+# # #
+# # # #parse_qr tx
+# qr_data = testcommond.get_qr_data_frparse_prom_raw_tx(ret_list['tx'])
 # print("qr_data on ui = %s........" % qr_data)
-# tx_data = testcommond.parse_qr(qr_data)
+# tx_data = testcommond.parse_tx(qr_data)
 # print("tx_data = %s---------" % json.loads(tx_data))
 
 # #parse_qr_addr
@@ -115,8 +117,8 @@ print("tx info = %s=========" % tx_info)
 # qr_data = json.loads(data)
 # print("qr_addr = %s------------" % qr_data['qr_data'])
 #
-# add = testcommond.parse_address("bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r")
-# print("addr = %s--------" %add)
+add = testcommond.parse_pr("bitcoin:tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe?amount=10&message=test")
+print("addr = %s--------" %add)
 # #get_history_tx
 #
 # ##get_all_tx_list
@@ -155,5 +157,5 @@ print("testinfo = %s------------" %testinfo)
 # print("info== %s" % info)
 
 
-data = testcommond.get_tx_info('d8c325244f1c68b7983b55e45c8c1b4d61b82c3749deb35883eb71687f1f478b')
+data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
 print("get_tx_info = %s-===========" % data)

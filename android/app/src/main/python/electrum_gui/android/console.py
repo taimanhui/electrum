@@ -696,7 +696,7 @@ class AndroidCommands(commands.Commands):
         try:
             tx.deserialize()
         except Exception as e:
-            raise BaseException(e)
+            raise e
         tx.add_info_from_wallet(self.wallet)
         return self.get_details_info(tx)
 
@@ -775,9 +775,9 @@ class AndroidCommands(commands.Commands):
         data = data.strip()
         try:
             uri = util.parse_URI(data)
-            return json.dumps(uri)
+            return uri
         except Exception as e:
-            raise BaseException(e)
+            raise Exception(e)
 
     def parse_tx(self, data):
         ret_data = {}
@@ -789,13 +789,41 @@ class AndroidCommands(commands.Commands):
             tx = self.recover_tx_info(text)
         except Exception as e:
             tx = None
-            raise BaseException(e)
+            raise Exception(e)
         # if tx:
         #     if not isinstance(tx, PartialTransaction):
         #         tx = PartialTransaction.from_tx(tx)
 
         data = self.get_details_info(tx)
-        return json.dumps(data)
+        return data
+
+    def parse_pr(self, data):
+        add_status_flag = False
+        tx_status_flag = False
+        try:
+            add_data = self.parse_address(data)
+            add_status_flag = True
+        except Exception as e:
+            print("parse_pr...............error address")
+            add_status_flag = False
+
+        try:
+            tx_data = self.parse_tx(data)
+            tx_status_flag = True
+        except Exception as e:
+            print("parse_pr...............error tx")
+            tx_status_flag = False
+        out_data = {}
+        if(add_status_flag):
+            out_data['type'] = 1
+            out_data['data'] = add_data
+        elif(tx_status_flag):
+            out_data['type'] = 2
+            out_data['data'] = json.loads(tx_data)
+        else:
+            out_data['type'] = 3
+            out_data['data'] = "parse pr error"
+        return json.dumps(out_data)
 
     def broadcast_tx(self, tx):
         if self.network and self.network.is_connected():
@@ -889,21 +917,30 @@ class AndroidCommands(commands.Commands):
     # BEGIN commands which only exist here.
 
     def select_wallet(self, name):
-        if name is None:
-            self.wallet = None
-        else:
-            self.wallet = self.daemon._wallets[self._wallet_path(name)]
+        try:
+            self._assert_daemon_running()
+            if name is None:
+                self.wallet = None
+            else:
+                self.wallet = self.daemon._wallets[self._wallet_path(name)]
 
-        print("console.select_wallet[%s]=%s" %(name, self.wallet))
-        import time
-        time.sleep(0.5)
-        self.update_wallet()
-        self.update_interfaces()
+            import time
+            time.sleep(0.5)
+            self.update_wallet()
+            self.update_interfaces()
 
-        c, u, x = self.wallet.get_balance()
-        print("console.select_wallet %s %s %s==============" %(c, u, x))
-        print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
-        self.network.trigger_callback("wallet_updated", self.wallet)
+            c, u, x = self.wallet.get_balance()
+            print("console.select_wallet %s %s %s==============" %(c, u, x))
+            print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
+            self.network.trigger_callback("wallet_updated", self.wallet)
+            info = {
+                "wallet_type": self.wallet.wallet_type,
+                "balance": self.format_amount_and_units(c),
+                "name": name
+            }
+            return json.dumps(info)
+        except BaseException as e:
+            raise BaseException(e)
 
     def list_wallets(self):
         """List available wallets"""
