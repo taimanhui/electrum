@@ -32,9 +32,7 @@
 
         </activity>
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
-        <activity
-            android:name=".MainActivity"
-            >
+        <activity android:name=".MainActivity">
 
         </activity>
         <activity android:name=".activities.base.LunchActivity">
@@ -44,131 +42,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.set.VersionUpgradeActivity"
-            android:label=""
-            android:parentActivityName=".activities.HardwareInfoActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.HardwareInfoActivity" />
-        </activity>
-        <activity
-            android:name=".activities.SettingActivity"
-            android:label=""
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.MainActivity" />
-        </activity>
-        <activity
-            android:name=".activities.TransactionRecordsActivity"
-            android:label=""
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.MainActivity" />
-        </activity>
-        <activity
-            android:name=".activities.HardwareInfoActivity"
-            android:label=""
-            android:parentActivityName=".activities.SettingActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SettingActivity" />
-        </activity>
-        <activity
-            android:name=".activities.MessageManagerActivity"
-            android:label=""
-            android:parentActivityName=".activities.SettingActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SettingActivity" />
-        </activity>
-        <activity
-            android:name=".activities.LanguageSettingActivity"
-            android:label=""
-            android:parentActivityName=".activities.SettingActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SettingActivity" />
-        </activity>
-        <activity
-            android:name=".activities.ServerSettingActivity"
-            android:label=""
-            android:parentActivityName=".activities.SettingActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SettingActivity" />
-        </activity>
-        <activity
-            android:name=".activities.TransactionsSettingActivity"
-            android:label=""
-            android:parentActivityName=".activities.SettingActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SettingActivity" />
-        </activity>
-        <activity
-            android:name=".activities.ServiceOnlineActivity"
-            android:label=""
-            android:parentActivityName=".activities.SettingActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SettingActivity" />
-        </activity>
-        <activity
-            android:name=".activities.AboutActivity"
-            android:label=""
-            android:parentActivityName=".activities.SettingActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SettingActivity" />
-        </activity>
-        <activity
-            android:name=".activities.SendOne2OneMainPageActivity"
-            android:label=""
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.MainActivity" />
-        </activity>
-        <activity
-            android:name=".activities.SignaturePageActivity"
-            android:label=""
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".activities.ReceivedPageActivity"
-            android:label=""
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".activities.Send2ManyActivity"
-            android:label=""
-            android:parentActivityName=".activities.SendOne2OneMainPageActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SendOne2OneMainPageActivity" />
-        </activity>
-        <activity android:name=".activities.SendOne2ManyMainPageActivity"></activity>
-        <activity
-            android:name=".activities.TransactionDetailsActivity"
-            android:label=""
-            android:parentActivityName=".activities.SignaturePageActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.SignaturePageActivity" />
-        </activity>
-        <activity
-            android:name=".activities.TouchHardwareActivity"
-            android:label=""
-            android:parentActivityName=".activities.PinSettingActivity">
+        <activity android:name=".activities.set.VersionUpgradeActivity" />
+        <activity android:name=".activities.SettingActivity" />
+        <activity android:name=".activities.TransactionRecordsActivity" />
+        <activity android:name=".activities.HardwareInfoActivity" />
+        <activity android:name=".activities.MessageManagerActivity" />
+        <activity android:name=".activities.LanguageSettingActivity" />
+        <activity android:name=".activities.ServerSettingActivity" />
+        <activity android:name=".activities.TransactionsSettingActivity" />
+        <activity android:name=".activities.ServiceOnlineActivity" />
+        <activity android:name=".activities.AboutActivity" />
+        <activity android:name=".activities.SendOne2OneMainPageActivity" />
+        <activity android:name=".activities.SignaturePageActivity" />
+        <activity android:name=".activities.ReceivedPageActivity" />
+        <activity android:name=".activities.Send2ManyActivity" />
+        <activity android:name=".activities.SendOne2ManyMainPageActivity" />
+        <activity android:name=".activities.TransactionDetailsActivity" />
+        <activity android:name=".activities.TouchHardwareActivity">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
             </intent-filter>
@@ -184,50 +74,17 @@
             <meta-data
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/nfc_tech_filter" />
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.PinSettingActivity" />
         </activity>
-        <activity
-            android:name=".activities.ConfirmOnHardware"
-            android:label=""
-            android:parentActivityName=".activities.TouchHardwareActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.TouchHardwareActivity" />
-        </activity>
+        <activity android:name=".activities.ConfirmOnHardware"/>
         <activity android:name=".activities.CreateWalletActivity" />
-        <activity
-            android:name=".activities.ImportWalletPageActivity"
-            android:label=""
-            android:parentActivityName=".activities.CreateWalletActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.CreateWalletActivity" />
-        </activity>
+        <activity android:name=".activities.ImportWalletPageActivity"/>
         <activity android:name=".activities.CreateWalletPageActivity" />
-        <activity
-            android:name=".activities.PublicKeyInputEditActivity"
-            android:label=""
-            android:parentActivityName=".activities.ImportWalletPageActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.ImportWalletPageActivity" />
-        </activity>
-        <activity
-            android:name=".activities.SelectMultiSigWalletActivity"
-            android:label=""
-            android:parentActivityName=".activities.PublicKeyInputEditActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.PublicKeyInputEditActivity" />
-        </activity>
+        <activity android:name=".activities.PublicKeyInputEditActivity"/>
+        <activity android:name=".activities.SelectMultiSigWalletActivity"/>
         <activity
             android:name=".activities.WalletUnActivatedActivity"
             android:label="" />
-        <activity
-            android:name=".activities.ActivatedProcessing"
-            android:label="">
+        <activity android:name=".activities.ActivatedProcessing">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
             </intent-filter>
@@ -240,38 +97,17 @@
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
 
-            <meta-data
-                android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/nfc_tech_filter" />
         </activity>
-        <activity
-            android:name=".activities.ActivateSuccessActivity"
-            android:label="" />
-        <activity
-            android:name=".activities.CoSignerAddActivity"
-            android:label=""
-            android:parentActivityName=".activities.CreateWalletPageActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.CreateWalletPageActivity" />
-        </activity>
-        <activity
-            android:name=".activities.set.AgreementActivity"
-            android:label=""
-            android:parentActivityName=".activities.CreateWalletActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.haobtc.wallet.activities.CreateWalletActivity" />
-        </activity>
-        <activity android:name=".activities.ShareOtherActivity"></activity>
+        <activity android:name=".activities.ActivateSuccessActivity" />
+        <activity android:name=".activities.CoSignerAddActivity" />
+        <activity android:name=".activities.set.AgreementActivity" />
+        <activity android:name=".activities.ShareOtherActivity" />
 
         <activity android:name=".activities.GuideActivity" />
         <activity android:name=".activities.PinSettingActivity">
 
         </activity>
-        <activity
-            android:name=".activities.CreateWalletSuccessfulActivity"
-            android:label="" /> <!-- aotusize -->
+        <activity android:name=".activities.CreateWalletSuccessfulActivity" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />

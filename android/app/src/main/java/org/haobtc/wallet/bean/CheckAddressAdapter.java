@@ -18,7 +18,7 @@ public class CheckAddressAdapter extends BaseQuickAdapter<SendMoreAddressEvent, 
 
     @Override
     protected void convert(BaseViewHolder helper, SendMoreAddressEvent item) {
-        helper.setText(R.id.tet_moreaddress,item.getInputAddress()).setText(R.id.tet_payNum,item.getInputAmount());
+        helper.setText(R.id.tet_moreaddress,item.getInputAddress()).setText(R.id.tet_payNum,item.getInputAmount()+" BTC");
 
     }
 }

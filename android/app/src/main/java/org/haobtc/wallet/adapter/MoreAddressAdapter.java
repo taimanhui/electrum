@@ -24,14 +24,9 @@ public class MoreAddressAdapter extends BaseQuickAdapter<GetnewcreatTrsactionLis
         helper.setText(R.id.tet_moreaddress, item.getAddr());
 
         String amount = item.getAmount();
-        Log.i("amountamount", "convert: "+amount);
+        Log.i("amountamount", "convert: " + amount);
         if (!TextUtils.isEmpty(amount)) {
-            if (amount.contains("BTC")){
-                String mbtc = amount.replaceAll(". mBTC", " mBTC");
-                helper.setText(R.id.tet_payNum, mbtc);
-            }else{
-                helper.setText(R.id.tet_payNum, amount+" BTC");
-            }
+            helper.setText(R.id.tet_payNum, amount);
 
         }
 

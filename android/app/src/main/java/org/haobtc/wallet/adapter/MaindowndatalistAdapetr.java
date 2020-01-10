@@ -36,8 +36,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
 
         String amount = item.getAmount();
         if (!TextUtils.isEmpty(amount)){
-            String mbtc = amount.replaceAll(". mBTC", " mBTC");
-            helper.setText(R.id.tet_BTC, mbtc);
+            helper.setText(R.id.tet_BTC, amount);
         }
 
 

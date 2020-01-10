@@ -36,7 +36,7 @@
                 android:ellipsize="middle"
                 android:maxWidth="171dp"
                 android:singleLine="true"
-                android:text="12222222222222222222222222222222222"
+                tools:text="12222222222222222222222222222222222"
                 android:textColor="@color/text"
                 android:textSize="@dimen/sp_12" />
 
@@ -81,7 +81,7 @@
                 android:layout_below="@+id/tet_zt"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/dp_5"
-                android:text="-0.3322 BTC"
+                tools:text="-0.3322 BTC"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
 
