@@ -132,8 +132,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         if (get_default_fee_status != null) {
             String strFee = get_default_fee_status.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
-            String strFeeamont = strFee.substring(0, strFee.indexOf(". sat/byte"));
-            tvFee.setText(strFeeamont);
+            if (strFee.contains("sat/byte")){
+                String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
+                tvFee.setText(strFeeamont);
+            }
 
         }
 

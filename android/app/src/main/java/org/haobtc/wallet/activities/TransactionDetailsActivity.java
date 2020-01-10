@@ -241,14 +241,12 @@ public class TransactionDetailsActivity extends BaseActivity {
 //        }
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
-            String mbtc = amount.replaceAll(". mBTC", " mBTC");
-            textView14.setText(mbtc);
+            textView14.setText(amount);
         }
 
         //Miner's fee
         if (!TextUtils.isEmpty(fee)) {
-            String mbtcfee = fee.replaceAll(". mBTC", " mBTC");
-            textView15.setText(mbtcfee);
+            textView15.setText(fee);
         }
 
         //Remarks

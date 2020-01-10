@@ -140,8 +140,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (get_default_fee_status != null) {
             String strFee = get_default_fee_status.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
-            String strFeeamont = strFee.substring(0, strFee.indexOf(". sat/byte"));
-            tetMoneye.setText(strFeeamont);
+            if (strFee.contains("sat/byte")){
+                String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
+                tetMoneye.setText(strFeeamont);
+            }
 
         }
 

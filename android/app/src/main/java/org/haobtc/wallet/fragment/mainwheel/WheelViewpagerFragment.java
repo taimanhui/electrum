@@ -70,8 +70,7 @@ public class WheelViewpagerFragment extends Fragment {
     private void initdata() {
         wallet_card_name.setText(name);
         walletpersonce.setText(personce);
-        String mbtc = balance.replaceAll(". mBTC", " mBTC");
-        walletBlance.setText(mbtc);
+        walletBlance.setText(balance);
 
         btnLeft.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
