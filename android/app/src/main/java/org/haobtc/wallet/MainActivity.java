@@ -116,6 +116,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private boolean jumpOr;
     private PyObject parse_qr;
     private String txCreatTrsaction;
+    private PyObject parse_tx;
+    private MaindowndatalistAdapetr trsactionlistAdapter;
 
     @Override
     public int getLayoutId() {
@@ -308,6 +310,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             String strHistory = get_history_tx.toString();
             Log.i("strHistory", "onPage----: " + strHistory + "   size:  " + strHistory.length());
 
+            //1b2086332609d757478ff6ff0970872a
+
             if (strHistory.length() == 2) {
                 myDialog.dismiss();
                 tetNone.setVisibility(View.VISIBLE);
@@ -363,7 +367,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                 //Binder Adapter
                 recy_data.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                MaindowndatalistAdapetr trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
+                trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
                 recy_data.setAdapter(trsactionlistAdapter);
                 myDialog.dismiss();
                 trsactionlistAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -387,7 +391,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                 trsactionlistAdapter.setOnItemonDeleteClicklisoner(new MaindowndatalistAdapetr.onItemonDeleteClicklisoner() {
                     @Override
-                    public void onOnCLick(String incoisId) {
+                    public void onOnCLick(int incoisId) {
+                        String invoice_id = maintrsactionlistEvents.get(incoisId).getInvoice_id();
+                        try {
+                            Daemon.commands.callAttr("delete_invoice", invoice_id);
+                            maintrsactionlistEvents.remove(incoisId);
+                            trsactionlistAdapter.notifyItemChanged(incoisId);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                     }
                 });
@@ -479,40 +491,44 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
+                Log.i("ddddd", "onActivityResult: "+content);
                 //bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
-                Log.i("contentPyObject", "onActivityResult:  " + content);
                 if (!TextUtils.isEmpty(content)) {
                     try {
-                        parse_qr = Daemon.commands.callAttr("parse_qr", content);
+                        parse_qr = Daemon.commands.callAttr("parse_address", content);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        mToast(getResources().getString(R.string.changeaddress));
+                        try {
+                            parse_tx = Daemon.commands.callAttr("parse_tx", content);
+                            Log.i("PyObject", "parse_qr+++++++:  " + parse_tx);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            mToast(getResources().getString(R.string.data_not));
+                        }
                         return;
                     }
                     if (parse_qr != null) {
                         String strParse = parse_qr.toString();
-                        Log.i("PyObject", "onActivityResult:  " + strParse);
+                        Log.i("PyObject", "parse_qr:  " + strParse);
                         Gson gson = new Gson();
                         MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
-                        int status = mainSweepcodeBean.getStatus();
-                        String data1 = mainSweepcodeBean.getData();
-                        if (status == 1) {
-                            //address  -->  intent  send  activity
-                            Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
-                            intent.putExtra("sendAdress", data1);
-                            startActivity(intent);
-
-                        } else if (status == 2) {
-                            //trsaction -->  trsactiondetail
-                            Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
-                            intent.putExtra("tx_hash", data1);
-                            intent.putExtra("keyValue", "B");
-                            intent.putExtra("listType", "history");
-                            startActivity(intent);
-
-                        }
+                        String address = mainSweepcodeBean.getAddress();
+                        //address  -->  intent  send  activity
+                        Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
+                        intent.putExtra("sendAdress", address);
+                        startActivity(intent);
 
                     }
+//                    else if (parse_tx!=null){
+//                        String strParseTX = parse_tx.toString();
+//                        Log.i("PyObject", "parse_qr:  " + strParseTX);
+                        //trsaction -->  trsactiondetail
+//                        Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
+//                        intent.putExtra("tx_hash", data1);
+//                        intent.putExtra("keyValue", "B");
+//                        intent.putExtra("listType", "history");
+//                        startActivity(intent);
+//                    }
 
                 }
             }

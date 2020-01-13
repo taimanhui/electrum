@@ -53,7 +53,7 @@
     <string name="method_two">Input PublicKey Address</string>
     <string name="import_address">Input PublicKey Address</string>
     <string name="input_address">Please Input Address</string>
-    <string name="sweep">Sweep</string>
+    <string name="sweep">Scan</string>
     <string name="paste">Paste</string>
     <string name="confirm">Confirm</string>
     <string name="select_mutisig">Select Multisig Wallet</string>
@@ -62,7 +62,7 @@
     <string name="create_multisig">Create MultiSig Wallet</string>
     <string name="select">Please Select</string>
     <string name="select_cosigner">Select Cosigner</string>
-    <string name="select_sig_num">Select Signature Number</string>
+    <string name="select_sig_num">Select Sign Number</string>
     <string name="next">Next</string>
     <string name="set_wallet_name">Set Wallet Name</string>
     <string name="input_here">Input Here</string>
@@ -71,18 +71,18 @@
     <string name="complete">Complete(0–5)</string>
     <string name="create_successful">Created Successful</string>
     <string name="enter_wallet">Enter Wallet</string>
-    <string name="transaction_records">TransRecords</string>
+    <string name="transaction_records">Translations</string>
     <string name="trans_details">Transaction Details</string>
     <string name="send">Send</string>
     <string name="create_trans">Create Transaction</string>
     <string name="send2many">Send To Many</string>
-    <string name="signature">Signature</string>
+    <string name="signature">Sign</string>
     <string name="confirm_trans_d">Confirm Send Details</string>
     <string name="receive">Receive</string>
     <string name="share">Share</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="main">Home Page</string>
+    <string name="main">Home</string>
     <string name="more">More</string>
     <string name="cancel">Cancel</string>
     <string name="comments">Comment</string>
@@ -97,7 +97,7 @@
     <string name="to_num">addresses</string>
     <string name="amount">Amount</string>
     <string name="need_more">Need More ?</string>
-    <string name="import_file">File Import</string>
+    <string name="import_file">Import</string>
     <string name="prompt_sig">Input transaction message to obtain existing transaction information</string>
     <string name="raw">Please input transaction message</string>
     <string name="signature_trans">Sign the deal</string>
@@ -130,7 +130,7 @@
     <string name="pin_input_again">Incorrect input, please input again</string>
     <string name="prompt_create">The wallet was created successfully. Your collection address is as shown in the figure below</string>
     <string name="prompt_message">Please confirm the following information on the cold wallet hardware and click the "OK" button</string>
-    <string name="signature_status">Signature status</string>
+    <string name="signature_status">Sign status</string>
     <string name="slip_select_fee">Sliding selection miner fee</string>
     <string name="tips">Tips: the co signer is all the managers</string>
     <string name="watting_broadcast">Waiting for broadcasting</string>
@@ -152,7 +152,7 @@
     <string name="wait_broadcast">Waiting for broadcasting</string>
     <string name="forWord_orther">Forward to others</string>
     <string name="check_trsaction">View transactions on the chain</string>
-    <string name="completed">completed</string>
+    <string name="completed">confirmed</string>
     <string name="be_carefl">You have turned on automatic synchronization of transactions. Other co signers can obtain transactions through currency letter HD or forward transactions to other co signers for signature by using the following methods</string>
     <string name="forword_transfer">Forward transfer</string>
     <string name="screenshot">Screenshot forwarding QR code. Or copy the content and send it to other joint signers for signature</string>
@@ -169,13 +169,13 @@
     <string name="spin_get">Coin collection</string>
     <string name="spin_open">open</string>
     <string name="retract">Retract</string>
-    <string name="signature_sign">Signature of joint signer</string>
+    <string name="signature_sign">Sign of joint signer</string>
     <string name="chain_confirmation">Chain confirmation</string>
     <string name="time">time</string>
     <string name="trsactionhash">Transaction hash</string>
     <string name="finish">complete</string>
     <string name="choose_payaddress">Select payment wallet</string>
-    <string name="feenum">Number</string>
+    <string name="feenum">Amount</string>
     <string name="waitmoredres">Wait 15</string>
     <string name="now_verson">Current firmware version</string>
     <string name="verson_updata">Version update</string>
@@ -198,12 +198,13 @@
     <string name="downloadfail">Download successful</string>
     <string name="downloadsuccse">Download failed</string>
     <string name="message_big">Transaction information is too large to share with QR code</string>
-    <string name="rate">rate（sat/byte）</string>
+    <string name="rate">feerate（sat/byte）</string>
     <string name="sendMore">The maximum transfer quantity is 21000000BTC</string>
     <string name="insufficient">Insufficient funds</string>
     <string name="changewalletname">The wallet name already exists, please change it</string>
     <string name="choosepath">Selection path</string>
     <string name="preservations">preservation</string>
     <string name="add_wallet">No wallet Click to add</string>
+    <string name="data_not">Data cannot be parsed</string>
 
 </resources>

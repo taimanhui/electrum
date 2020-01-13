@@ -19,7 +19,6 @@ import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import java.util.List;
 
 public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistEvent, BaseViewHolder> {
-
     public MaindowndatalistAdapetr(@Nullable List<MaintrsactionlistEvent> data) {
         super(R.layout.fragment_item_trans, data);
     }
@@ -66,7 +65,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
             }
 
         } else {
-            imgDelete.setVisibility(View.GONE);
+            imgDelete.setVisibility(View.VISIBLE);
             String tx_status = item.getTx_status();
             if ("Signed".equals(tx_status)) {
                 //new creat trsaction
@@ -89,7 +88,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
 
             imgDelete.setOnClickListener(v -> {
                 if (onItemonDeleteClicklisoner!=null){
-                    onItemonDeleteClicklisoner.onOnCLick(item.getInvoice_id());
+                    onItemonDeleteClicklisoner.onOnCLick(helper.getLayoutPosition());
                 }
             });
 
@@ -97,7 +96,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
 
     }
     public interface onItemonDeleteClicklisoner{
-        void onOnCLick(String incoisId);
+        void onOnCLick(int incoisId);
     }
 
     private onItemonDeleteClicklisoner onItemonDeleteClicklisoner;

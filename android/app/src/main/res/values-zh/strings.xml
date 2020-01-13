@@ -203,5 +203,6 @@
     <string name="choosepath">选择路径</string>
     <string name="preservations">保存</string>
     <string name="add_wallet">暂无钱包 点击添加</string>
+    <string name="data_not">数据无法解析</string>
 
 </resources>
