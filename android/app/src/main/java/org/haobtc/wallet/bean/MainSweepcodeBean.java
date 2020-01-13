@@ -5,28 +5,17 @@ import com.google.gson.annotations.SerializedName;
 public class MainSweepcodeBean {
 
     /**
-     * status : 1
-     * data : mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
+     * address : bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r
      */
 
-    @SerializedName("status")
-    private int status;
-    @SerializedName("data")
-    private String data;
+    @SerializedName("address")
+    private String address;
 
-    public int getStatus() {
-        return status;
+    public String getAddress() {
+        return address;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public String getData() {
-        return data;
-    }
-
-    public void setData(String data) {
-        this.data = data;
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

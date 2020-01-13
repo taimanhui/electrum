@@ -221,6 +221,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutputAddr();
 //        List<String> input_addr = getnewcreatTrsactionListBean.getInputAddr();
         List<String> cosigner = getnewcreatTrsactionListBean.getCosigner();
+        List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
         String txid = getnewcreatTrsactionListBean.getTxid();
         rowtx = getnewcreatTrsactionListBean.getTx();
         //trsaction hash
@@ -239,6 +240,15 @@ public class TransactionDetailsActivity extends BaseActivity {
 //            String strInputAddr = input_addr.get(0);
 //            tetPayAddress.setText(strInputAddr);
 //        }
+
+        if (signStatus!=null){
+            Integer integer = signStatus.get(0);
+            Integer integer1 = signStatus.get(1);
+            String strNum = integer + "/" +integer1;
+            textView20.setText(strNum);
+        }
+
+
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
             textView14.setText(amount);
@@ -343,6 +353,9 @@ public class TransactionDetailsActivity extends BaseActivity {
             case R.id.sig_trans:
                 String strBtncontent = sigTrans.getText().toString();
                 if (strBtncontent.equals(getResources().getString(R.string.signature_trans))) {
+                    Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
+
+                    startActivity(intentCon);
 
                 } else if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);

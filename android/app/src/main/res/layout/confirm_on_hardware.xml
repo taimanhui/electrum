@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:orientation="vertical"
     android:clipToPadding="true"
     android:fitsSystemWindows="true">
 
     <RelativeLayout
+        android:id="@+id/relatilayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_50">
 
@@ -33,11 +33,13 @@
     </RelativeLayout>
 
     <ScrollView
+        android:layout_below="@+id/relatilayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bk_page">
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -45,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="223dp"
                 android:layout_marginStart="@dimen/layout_margin"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/layout_margin"
                 app:cardCornerRadius="@dimen/corner_radius">
 
@@ -78,24 +80,31 @@
                 android:id="@+id/fragment_trans_in_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="293dp" />
+                android:layout_marginTop="@dimen/dp_10" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </ScrollView>
 
-
-    <Button
-        android:id="@+id/confirm_on_hardware"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_40"
-        android:textAllCaps="false"
+    <LinearLayout
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/text_margin"
-        android:layout_marginEnd="@dimen/text_margin"
-        android:layout_marginBottom="@dimen/layout_margin"
-        android:background="@drawable/button_bk"
-        android:text="@string/confirm_on_hardware"
-        android:textColor="@android:color/white" />
+        android:orientation="vertical"
+        android:background="@color/button_bk_ddake"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+        <Button
+            android:id="@+id/confirm_on_hardware"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_40"
+            android:textAllCaps="false"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:background="@drawable/button_bk"
+            android:text="@string/confirm_on_hardware"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
 
-</LinearLayout>
+
+
+</RelativeLayout>
