@@ -43,16 +43,13 @@ public class LunchActivity extends BaseActivity {
             Global.app = MyApplication.getInstance();
             Python.start(new AndroidPlatform(Global.app));
             Global.py = Python.getInstance();
-            if (BuildConfig.net_type.equals("TestNet")) {
+            if (BuildConfig.net_type.equals(getResources().getString(R.string.TestNet))) {
                 Global.py.getModule("electrum.constants").callAttr("set_testnet");
-            } else if (BuildConfig.net_type.equals("RegTest")) {
+            } else if (BuildConfig.net_type.equals(getResources().getString(R.string.RegTest))) {
                 Global.py.getModule("electrum.constants").callAttr("set_regtest");
             }
             Log.i("JXM", "t4 = " + (System.currentTimeMillis() - t));
-            Global.mHandler = null;
-            if (Global.mHandler == null) {
-                Global.mHandler = new Handler(Looper.getMainLooper());
-            }
+            Global.mHandler = new Handler(Looper.getMainLooper());
             Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
             Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
             new Daemon();
@@ -92,10 +89,10 @@ public class LunchActivity extends BaseActivity {
     //switch language
     private void judgeLanguage(String language) {
         if (!TextUtils.isEmpty(language)) {
-            if (language.equals("Chinese")) {
-                mTextChinese();
-            } else if (language.equals("English")) {
+            if (language.equals("English")) {
                 mTextEnglish();
+            } else {
+                mTextChinese();
             }
         }
 

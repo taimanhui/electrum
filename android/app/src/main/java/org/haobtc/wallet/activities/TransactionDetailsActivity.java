@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.wallet.adapter.SinatrayPersonAdapetr;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.InputOutputAddressEvent;
+import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -118,6 +120,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String jsondef_get;
     private GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
     private String rowtx;
+    private String strParse;
+    private String language;
 
 
     @Override
@@ -130,11 +134,13 @@ public class TransactionDetailsActivity extends BaseActivity {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        language = preferences.getString("language", "");
         Intent intent = getIntent();
         rowTrsation = intent.getStringExtra("txCreatTrsaction");
         keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
         tx_hash = intent.getStringExtra("tx_hash");
         listType = intent.getStringExtra("listType");
+        strParse = intent.getStringExtra("strParse");
 
 
         Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   rowTrsation -- : " + rowTrsation);
@@ -154,6 +160,9 @@ public class TransactionDetailsActivity extends BaseActivity {
                 if (listType.equals("history")) {
                     //histry trsaction detail
                     trsactionDetail();
+
+                } else if (listType.equals("scan")) {
+                    scanDataDetailMessage();
 
                 } else {
                     //creat succses
@@ -194,7 +203,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (def_get_tx_info_from_raw!=null){
+            if (def_get_tx_info_from_raw != null) {
                 jsondef_get = def_get_tx_info_from_raw.toString();
                 jsonDetailData(jsondef_get);
             }
@@ -203,6 +212,7 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     }
 
+    @SuppressLint("DefaultLocale")
     private void jsonDetailData(String jsondef_get) {
         Log.i("jsonDetailData", "jsonDetail==== " + jsondef_get);
         try {
@@ -228,40 +238,36 @@ public class TransactionDetailsActivity extends BaseActivity {
         tetTrsactionHash.setText(txid);
         //input address num
         int size = output_addr.size();
-        tetAddressNum.setText(String.format("等%d个", size));
-        //output_address
-        if (output_addr != null) {
-            String addr = output_addr.get(0).getAddr();
-            tetGetMoneyaddress.setText(addr);
+        if (language.equals("Chinese")) {
+            tetAddressNum.setText(String.format("%s%d%s", getResources().getString(R.string.wait), size, getResources().getString(R.string.ge)));
+        } else if (language.equals("English")) {
+            tetAddressNum.setText(String.format("%s%d", getResources().getString(R.string.wait), size));
         }
+        //output_address
+        String addr = output_addr.get(0).getAddr();
+        tetGetMoneyaddress.setText(addr);
 
 //        if (input_addr != null) {
 //            //input_address
 //            String strInputAddr = input_addr.get(0);
 //            tetPayAddress.setText(strInputAddr);
 //        }
-
-        if (signStatus!=null){
+        if (signStatus != null) {
             Integer integer = signStatus.get(0);
             Integer integer1 = signStatus.get(1);
-            String strNum = integer + "/" +integer1;
+            String strNum = integer + "/" + integer1;
             textView20.setText(strNum);
         }
-
-
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
             textView14.setText(amount);
         }
-
         //Miner's fee
         if (!TextUtils.isEmpty(fee)) {
             textView15.setText(fee);
         }
-
         //Remarks
         tetContent.setText(description);
-
         //cosigner
         for (int i = 0; i < cosigner.size(); i++) {
             InputOutputAddressEvent inputOutputAddressEvent = new InputOutputAddressEvent();
@@ -271,7 +277,69 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         SinatrayPersonAdapetr sinatrayPersonAdapetr = new SinatrayPersonAdapetr(strSinalist);
         recySignatory.setAdapter(sinatrayPersonAdapetr);
+        //judge state
+        judgeState(tx_status);
 
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void scanDataDetailMessage() {
+        Gson gson = new Gson();
+        ScanCheckDetailBean scanCheckDetailBean = gson.fromJson(strParse, ScanCheckDetailBean.class);
+        ScanCheckDetailBean.DataBean scanListdata = scanCheckDetailBean.getData();
+        String amount = scanListdata.getAmount();
+        String fee = scanListdata.getFee();
+        String description = scanListdata.getDescription();
+        String tx_status = scanListdata.getTxStatus();
+        List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddr = scanListdata.getOutputAddr();
+//        List<String> input_addr = getnewcreatTrsactionListBean.getInputAddr();
+        List<String> cosigner = scanListdata.getCosigner();
+        List<Integer> signStatusMes = scanListdata.getSignStatus();
+        String txid = scanListdata.getTxid();
+        rowtx = scanListdata.getTx();
+        //trsaction hash
+        tetTrsactionHash.setText(txid);
+        //input address num
+        int size = outputAddr.size();
+        if (language.equals("English")) {
+            tetAddressNum.setText(String.format("%s%d", getResources().getString(R.string.wait), size));
+        } else {
+            tetAddressNum.setText(String.format("%s%d%s", getResources().getString(R.string.wait), size, getResources().getString(R.string.ge)));
+        }
+        //output_address
+        String addr = outputAddr.get(0).getAddr();
+        tetGetMoneyaddress.setText(addr);
+
+//        if (input_addr != null) {
+//            //input_address
+//            String strInputAddr = input_addr.get(0);
+//            tetPayAddress.setText(strInputAddr);
+//        }
+        if (signStatusMes != null) {
+            Integer integer = signStatusMes.get(0);
+            Integer integer1 = signStatusMes.get(1);
+            String strNum = integer + "/" + integer1;
+            textView20.setText(strNum);
+        }
+        //Transfer accounts num
+        if (!TextUtils.isEmpty(amount)) {
+            textView14.setText(amount);
+        }
+        //Miner's fee
+        if (!TextUtils.isEmpty(fee)) {
+            textView15.setText(fee);
+        }
+        //Remarks
+        tetContent.setText(description);
+        //cosigner
+        for (int i = 0; i < cosigner.size(); i++) {
+            InputOutputAddressEvent inputOutputAddressEvent = new InputOutputAddressEvent();
+            inputOutputAddressEvent.setNum(String.valueOf(i + 1));
+            inputOutputAddressEvent.setAddress(cosigner.get(i));
+            strSinalist.add(inputOutputAddressEvent);
+        }
+        SinatrayPersonAdapetr sinatrayPersonAdapetr = new SinatrayPersonAdapetr(strSinalist);
+        recySignatory.setAdapter(sinatrayPersonAdapetr);
         //judge state
         judgeState(tx_status);
 

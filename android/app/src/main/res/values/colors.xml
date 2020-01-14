@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#E91E63</color>
+    <color name="delete_back">#C40303</color>
     <color name="separation_line">#EBEBEB</color>
     <color name="text">#FF494949</color>
     <color name="light_text">#FFB3B3B3</color>

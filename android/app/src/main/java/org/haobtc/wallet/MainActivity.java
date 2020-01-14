@@ -54,6 +54,7 @@ import org.haobtc.wallet.adapter.MyPagerAdapter;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MainWheelBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
+import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
@@ -118,6 +119,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private String txCreatTrsaction;
     private PyObject parse_tx;
     private MaindowndatalistAdapetr trsactionlistAdapter;
+    private int sendAmount = 0;
+    private String message = "";
+    private String strNames;
 
     @Override
     public int getLayoutId() {
@@ -208,6 +212,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Gson gson = new Gson();
             MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
             List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
+            strNames = wallets.get(0).getName();
             if (wallets != null) {
                 for (int i = 0; i < wallets.size(); i++) {
                     String walletType = wallets.get(i).getWalletType();
@@ -223,6 +228,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 viewPager.setOffscreenPageLimit(4);
                 viewPager.setPageMargin(40);
                 viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+
                 //choose wallet
                 try {
                     Daemon.commands.callAttr("load_wallet", dataListName.get(0));
@@ -266,7 +272,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             Log.i("onPageSelected", "mCurrentPosition-----" + mCurrentPosition);
 
                             if (mCurrentPosition != position) {
-                                String strNames = dataListName.get(position);
+                                strNames = dataListName.get(position);
                                 Log.i("onPageSelected", "strNames-----" + strNames);
                                 if (!TextUtils.isEmpty(strNames)) {
                                     try {
@@ -370,37 +376,42 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
                 recy_data.setAdapter(trsactionlistAdapter);
                 myDialog.dismiss();
-                trsactionlistAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                     @Override
-                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                        try {
-                            JSONObject jsonObject = jsonArray.getJSONObject(position);
-                            String type1 = jsonObject.getString("type");
-                            String tx_hash1 = jsonObject.getString("tx_hash");
-                            Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
-                            intent.putExtra("tx_hash", tx_hash1);
-                            intent.putExtra("keyValue", "B");
-                            intent.putExtra("listType", type1);
-                            intent.putExtra("txCreatTrsaction",txCreatTrsaction);
-                            startActivity(intent);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                        String typeDele = maintrsactionlistEvents.get(position).getType();
+                        switch (view.getId()){
+                            case R.id.lin_Item:
+                                try {
+                                    JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                    String type1 = jsonObject.getString("type");
+                                    String tx_hash1 = jsonObject.getString("tx_hash");
+                                    Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
+                                    intent.putExtra("tx_hash", tx_hash1);
+                                    intent.putExtra("keyValue", "B");
+                                    intent.putExtra("listType", type1);
+                                    intent.putExtra("txCreatTrsaction", txCreatTrsaction);
+                                    startActivity(intent);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case R.id.txt_delete:
+                                if ("tx".equals(typeDele)){
+                                    String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
+                                    try {
+                                        Daemon.commands.callAttr("delete_invoice", invoice_id);
+                                        maintrsactionlistEvents.remove(position);
+                                        trsactionlistAdapter.notifyItemChanged(position);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }else{
+                                    mToast(getResources().getString(R.string.delete_unBroad));
+                                }
 
-                trsactionlistAdapter.setOnItemonDeleteClicklisoner(new MaindowndatalistAdapetr.onItemonDeleteClicklisoner() {
-                    @Override
-                    public void onOnCLick(int incoisId) {
-                        String invoice_id = maintrsactionlistEvents.get(incoisId).getInvoice_id();
-                        try {
-                            Daemon.commands.callAttr("delete_invoice", invoice_id);
-                            maintrsactionlistEvents.remove(incoisId);
-                            trsactionlistAdapter.notifyItemChanged(incoisId);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                                break;
                         }
-
                     }
                 });
 
@@ -444,18 +455,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 Intent intent2 = new Intent(this, TransactionRecordsActivity.class);
                 startActivity(intent2);
                 break;
-            case R.id.wallet_card_bn1:
-                Intent intent3 = new Intent(this, SendOne2OneMainPageActivity.class);
-                startActivity(intent3);
-                break;
-            case R.id.wallet_card_bn2:
-                Intent intent4 = new Intent(this, ReceivedPageActivity.class);
-                startActivity(intent4);
-                break;
-            case R.id.wallet_card_bn3:
-                Intent intent5 = new Intent(this, SignaturePageActivity.class);
-                startActivity(intent5);
-                break;
             case R.id.tet_Addmoney:
                 Intent intent6 = new Intent(MainActivity.this, CreateWalletPageActivity.class);
                 startActivity(intent6);
@@ -491,45 +490,54 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("ddddd", "onActivityResult: "+content);
+                Log.i("ddddd", "onActivityResult: " + content);
                 //bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
                 if (!TextUtils.isEmpty(content)) {
                     try {
-                        parse_qr = Daemon.commands.callAttr("parse_address", content);
+                        parse_qr = Daemon.commands.callAttr("parse_pr", content);
+
                     } catch (Exception e) {
                         e.printStackTrace();
-                        try {
-                            parse_tx = Daemon.commands.callAttr("parse_tx", content);
-                            Log.i("PyObject", "parse_qr+++++++:  " + parse_tx);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            mToast(getResources().getString(R.string.data_not));
-                        }
+                        Log.i("PyObject", "parse_qr+++++++:  " + e.getMessage());
                         return;
                     }
                     if (parse_qr != null) {
                         String strParse = parse_qr.toString();
                         Log.i("PyObject", "parse_qr:  " + strParse);
-                        Gson gson = new Gson();
-                        MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
-                        String address = mainSweepcodeBean.getAddress();
-                        //address  -->  intent  send  activity
-                        Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
-                        intent.putExtra("sendAdress", address);
-                        startActivity(intent);
+                        try {
+                            JSONObject jsonObject = new JSONObject(strParse);
+                            int type = jsonObject.getInt("type");
+                            Gson gson = new Gson();
+                            if (type == 1) {
+                                MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
+                                MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
+                                String address = listData.getAddress();
+                                sendAmount = listData.getAmount();
+                                message = listData.getMessage();
+
+                                //address  -->  intent  send  activity
+                                Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
+                                intent.putExtra("sendAdress", address);
+                                intent.putExtra("sendamount", sendAmount);
+                                intent.putExtra("sendmessage", message);
+                                intent.putExtra("wallet_name",strNames);
+                                startActivity(intent);
+                            } else if (type == 2) {
+                                Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
+                                intent.putExtra("strParse", strParse);
+                                intent.putExtra("keyValue", "B");
+                                intent.putExtra("listType", "scan");
+                                startActivity(intent);
+                            } else {
+                                mToast(getResources().getString(R.string.address_wrong));
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                     }
-//                    else if (parse_tx!=null){
-//                        String strParseTX = parse_tx.toString();
-//                        Log.i("PyObject", "parse_qr:  " + strParseTX);
-                        //trsaction -->  trsactiondetail
-//                        Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
-//                        intent.putExtra("tx_hash", data1);
-//                        intent.putExtra("keyValue", "B");
-//                        intent.putExtra("listType", "history");
-//                        startActivity(intent);
-//                    }
-
                 }
             }
         }

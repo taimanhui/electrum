@@ -165,7 +165,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"/>
 
-            <androidx.recyclerview.widget.RecyclerView
+            <org.haobtc.wallet.utils.SlideRecyclerView
                 android:id="@+id/recy_data"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -175,7 +175,7 @@
                 tools:itemCount="4"
                 tools:listitem="@layout/fragment_item_trans" >
 
-            </androidx.recyclerview.widget.RecyclerView>
+            </org.haobtc.wallet.utils.SlideRecyclerView>
             <TextView
                 android:id="@+id/tet_None"
                 android:textColor="@color/light_text"
