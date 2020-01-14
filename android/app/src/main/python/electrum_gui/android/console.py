@@ -508,8 +508,8 @@ class AndroidCommands(commands.Commands):
             tx = None
             raise BaseException(e)
         data = {}
-        if not isinstance(tx, PartialTransaction):
-            tx = PartialTransaction.from_tx(tx)
+        # if not isinstance(tx, PartialTransaction):
+        #     tx = PartialTransaction.from_tx(tx)
         data = self.get_details_info(tx)
         return data
 
@@ -530,6 +530,13 @@ class AndroidCommands(commands.Commands):
             s = r = len(self.wallet.get_keystores())
 
         type = self.wallet.wallet_type
+        in_list = []
+        if isinstance(tx, PartialTransaction):
+            for i in tx.inputs():
+                in_info = {}
+                in_info['addr'] = i.address
+                in_list.append(in_info)
+
         out_list = []
         for o in tx.outputs():
             address, value = o.address, o.value
@@ -542,12 +549,12 @@ class AndroidCommands(commands.Commands):
             'txid':tx_details.txid,
             'can_broadcast':tx_details.can_broadcast,
             'amount': self.format_amount_and_units(tx_details.amount),
-            'fee': self.format_amount_and_units(tx_details.fee),
+            'fee': self.format_amount_and_units(tx_details.fee) if isinstance(tx, PartialTransaction) else 0,
             'description':self.wallet.get_label(tx_details.txid),
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
             'sign_status':[s,r],
             'output_addr':out_list,
-            #'input_addr':[txin.address for txin in tx.inputs()],
+            'input_addr':in_list,
             'cosigner':[x.xpub for x in self.wallet.get_keystores()],
             'tx':tx.serialize_as_bytes().hex()
         }
@@ -692,6 +699,7 @@ class AndroidCommands(commands.Commands):
         print("get_tx_info:tx=%s" % tx)
         if not tx:
             raise BaseException('get transaction info failed')
+        #tx = PartialTransaction.from_tx(tx)
         tx = copy.deepcopy(tx)
         try:
             tx.deserialize()
@@ -775,6 +783,7 @@ class AndroidCommands(commands.Commands):
         data = data.strip()
         try:
             uri = util.parse_URI(data)
+            uri['amount'] = self.format_amount_and_units(uri['amount'])
             return uri
         except Exception as e:
             raise Exception(e)

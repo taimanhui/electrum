@@ -99,9 +99,9 @@ print("mktx================%s" % ret_list)
 #
 # #get_tx_by_raw
 
-# tx_info_str = testcommond.get_tx_info_from_raw(ret_list['tx'])
-# tx_info = json.loads(tx_info_str)
-# print("tx info = %s=========" % tx_info)
+tx_info_str = testcommond.get_tx_info_from_raw(ret_list['tx'])
+tx_info = json.loads(tx_info_str)
+print("tx info = %s=========" % tx_info)
 # # #sign_tx
 # # #testcommond.sign_tx(ret_list['tx'])
 # # #
@@ -112,12 +112,12 @@ print("mktx================%s" % ret_list)
 # print("tx_data = %s---------" % json.loads(tx_data))
 
 # #parse_qr_addr
-# data = testcommond.get_wallet_address_show_UI()
+data = testcommond.get_wallet_address_show_UI()
 #
 # qr_data = json.loads(data)
 # print("qr_addr = %s------------" % qr_data['qr_data'])
 #
-add = testcommond.parse_pr("bitcoin:tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe?amount=10&message=test")
+add = testcommond.parse_pr("bitcoin:tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe?amount=5&message=test")
 print("addr = %s--------" %add)
 # #get_history_tx
 #
@@ -156,6 +156,7 @@ print("testinfo = %s------------" %testinfo)
 # info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
 # print("info== %s" % info)
 
-
-data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
-print("get_tx_info = %s-===========" % data)
+data = testcommond.get_tx_info_from_raw("020000000001015282796c926b7dc670940bac7abbc7febce874a76653940b88111c594364ddbf01000000171600147d264c997695b8b998f9efcff74fce91bbb6075efeffffff026890210000000000160014d670320606df1e984341206706cce7cf7a5d97b140420f00000000002200209f2f1060a8d7ddf0019b4fae87d022ff257e74b9db40d592a29ca0b1d0e7d07a0247304402200ea749b63fce6983ceb6581e7809be68869176edcf7a4510ab2f8b6a04cf987802207b81cfe080e91b51afc5af7804fd1a68dc791af47da686e2775d2ed228a99259012103488cd2293cedf0d9df588c98e775b09dcea969a0d765ebdfdf5f28ce97b8fa49f1911800")
+print("data === %s " %data)
+#data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
+#print("get_tx_info = %s-===========" % data)
