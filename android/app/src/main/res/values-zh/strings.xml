@@ -27,7 +27,7 @@
     <string name="use_change">使用找零地址</string>
     <string name="boot_message">我以阅读并同意（协议）</string>
     <string name="create">创建钱包</string>
-    <string name="import_w">导入钱包</string>
+    <string name="import_w">多人共管钱包</string>
     <string name="introduce">币信冷钱包介绍</string>
     <string name="introduce_detials">1.币信冷钱包为BTC硬件钱包，私钥永不触网 \n 2.币信冷钱包为开源钱包 \n 3.币信冷钱包自带屏幕，付款时进行双向确认，资产更为安全 \n4.币信冷钱包工卡片式设计符合人体工学，使用和保存更方便\n 5.币信冷钱包使用军工级芯片 \n6.币信冷钱包不提供私钥导出功能，若您不需要多人签名，您可设置1 of 2的多签钱包，当其中一个冷钱包丢失时，您可使用备份冷钱包进行交易或进行资产转移 \n7.建议您购买>2个冷钱包 购买地址</string>
     <string name="active">激活冷钱包</string>
@@ -84,7 +84,7 @@
     <string name="cancel">取消</string>
     <string name="comments">备注</string>
     <string name="limit">0/20</string>
-    <string name="btc">BTC</string>
+    <string name="btc">mBTC</string>
     <string name="count">0/20</string>
     <string name="fee">矿工费</string>
     <string name="total">总计转账数量</string>
@@ -204,5 +204,12 @@
     <string name="preservations">保存</string>
     <string name="add_wallet">暂无钱包 点击添加</string>
     <string name="data_not">数据无法解析</string>
+    <string name="address_wrong">地址解析错误</string>
+    <string name="wait">等</string>
+    <string name="ge">个</string>
+    <string name="delete">删除</string>
+    <string name="delete_unBroad">只允许删除未广播的交易</string>
+    <string name="my_walet_many">个人钱包支持多硬件备份</string>
+    <string name="fee_toohigh">费率过高</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -22,10 +23,12 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -41,6 +44,7 @@ import org.haobtc.wallet.bean.GetAddressBean;
 import org.haobtc.wallet.bean.MainWheelBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,13 +109,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         init();
     }
 
+    @SuppressLint("DefaultLocale")
     private void init() {
-        Intent intent = getIntent();
-        wallet_name = intent.getStringExtra("wallet_name");
-        wallet_amount = intent.getStringExtra("wallet_balance");
-        String sendAdress = intent.getStringExtra("sendAdress");
-        editAddress.setText(sendAdress);
-        tetWalletname.setText(wallet_name);
         rxPermissions = new RxPermissions(this);
         selectSend.setOnClickListener(this);
         selectSigNum.setOnClickListener(this);
@@ -120,6 +119,23 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         buttonSweep.setOnClickListener(this);
         buttonPaste.setOnClickListener(this);
         dataListName = new ArrayList<>();
+        Intent intent = getIntent();
+        wallet_name = intent.getStringExtra("wallet_name");
+        wallet_amount = intent.getStringExtra("wallet_balance");
+        String sendAdress = intent.getStringExtra("sendAdress");
+        String sendmessage = intent.getStringExtra("sendmessage");
+        tetWalletname.setText(wallet_name);
+        int sendamount = intent.getIntExtra("sendamount", 0);
+        editAddress.setText(sendAdress);
+        if (sendamount != 0) {
+            tetamount.setText(String.format("%d", sendamount));
+        }
+        if (!TextUtils.isEmpty(sendmessage)) {
+            editTextComments.setText(String.format("%s", sendmessage));
+        }else{
+            editTextComments.setText(String.format("%s", ""));
+        }
+
         tetMoneychange();
         //fee
         getFeeamont();
@@ -140,7 +156,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (get_default_fee_status != null) {
             String strFee = get_default_fee_status.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
-            if (strFee.contains("sat/byte")){
+            if (strFee.contains("sat/byte")) {
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 tetMoneye.setText(strFeeamont);
             }
@@ -442,9 +458,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         } catch (Exception e) {
             e.printStackTrace();
             Log.i("CreatTransaction", "mCrea-----  " + e.getMessage());
-            if (e.getMessage().contains("Insufficient funds")){
-                mToast(getResources().getString(R.string.insufficient));
-            }else if (e.getMessage().contains("invalid bitcoin address")){
+            if (e.getMessage().contains("Insufficient funds")) {
+//                mToast(getResources().getString(R.string.insufficient));
+                mToast(getResources().getString(R.string.fee_toohigh));
+            } else if (e.getMessage().contains("invalid bitcoin address")) {
                 mToast(getResources().getString(R.string.changeaddress));
             }
 
@@ -461,7 +478,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
                 intent.putExtra("keyValue", "A");
-                intent.putExtra("txCreatTrsaction",beanTx);
+                intent.putExtra("txCreatTrsaction", beanTx);
                 startActivity(intent);
             }
         }
@@ -525,21 +542,23 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (!TextUtils.isEmpty(strAmount)) {
             //compare
             BigDecimal bignum1 = new BigDecimal(strAmount);
-            String strBtc = wallet_amount.substring(0, wallet_amount.length() - 5);
-            BigDecimal bignum2 = new BigDecimal(strBtc);
-            int math = bignum1.compareTo(bignum2);
-            //if math = 1 -> bignum2
-            BigDecimal bigDecimal = new BigDecimal(21000000);
-            int mathMax = bignum1.compareTo(bigDecimal);
-            if (mathMax == 1) {
-                mToast(getResources().getString(R.string.sendMore));
-            } else {
-                if (math == 1) {
-                    mToast(getResources().getString(R.string.wallet_insufficient));
-                    //walletmoney == 1  ->  Sorry, your credit is running low
-                    walletmoney = 1;
-                } else if (math == -1 || math == 0) {
-                    walletmoney = 0;
+            if (!TextUtils.isEmpty(wallet_amount)) {
+                String strBtc = wallet_amount.substring(0, wallet_amount.length() - 5);
+                BigDecimal bignum2 = new BigDecimal(strBtc);
+                int math = bignum1.compareTo(bignum2);
+                //if math = 1 -> bignum2
+                BigDecimal bigDecimal = new BigDecimal(21000000);
+                int mathMax = bignum1.compareTo(bigDecimal);
+                if (mathMax == 1) {
+                    mToast(getResources().getString(R.string.sendMore));
+                } else {
+                    if (math == 1) {
+                        mToast(getResources().getString(R.string.wallet_insufficient));
+                        //walletmoney == 1  ->  Sorry, your credit is running low
+                        walletmoney = 1;
+                    } else if (math == -1 || math == 0) {
+                        walletmoney = 0;
+                    }
                 }
             }
 

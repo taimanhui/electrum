@@ -26,7 +26,7 @@
     <string name="use_change">Use change address</string>
     <string name="boot_message">I have read and aggred(Agreement)</string>
     <string name="create">Create Wallet</string>
-    <string name="import_w">Import Wallet</string>
+    <string name="import_w">Multi person Wallet</string>
     <string name="introduce">The Introduce Of The BiXin Wallet</string>
     <string name="introduce_detials">1. The coin letter cold wallet is a BTC hardware wallet, and the private key will never touch the net. 2. The coin letter cold wallet is an open source wallet. 3. The coin letter cold wallet has its own screen, and it can be confirmed in two ways when making payment, making the assets safer. 4. The coin letter cold money contractor card design is ergonomic, and it is more convenient to use and save. 5. The coin letter cold wallet uses military grade chips. 6. The coin letter cold wallet does not provide the function of private key export, if you Without multi signature, you can set 1 / 2 of multi signature wallets. When one of the cold wallets is lost, you can use the backup cold wallets for transaction or asset transfer. 7. It is recommended that you buy more than 2 cold wallets purchase addresses</string>
     <string name="app_name">BiXin Cold Wallet</string>
@@ -206,5 +206,14 @@
     <string name="preservations">preservation</string>
     <string name="add_wallet">No wallet Click to add</string>
     <string name="data_not">Data cannot be parsed</string>
+    <string name="address_wrong">Address resolution error</string>
+    <string name="wait">Wait for </string>
+    <string name="ge">ge</string>
+    <string name="TestNet">TestNet</string>
+    <string name="RegTest">RegTest</string>
+    <string name="delete">Delete</string>
+    <string name="delete_unBroad">Only transactions that are not broadcast can be deleted</string>
+    <string name="my_walet_many">Personal wallet supports multiple hardware backup</string>
+    <string name="fee_toohigh">The rate is too high</string>
 
 </resources>

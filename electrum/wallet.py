@@ -1638,6 +1638,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         if key in self.invoices:
             self.invoices.pop(key)
             self.storage.put('invoices', self.invoices)
+            self.storage.write()
         elif self.lnworker:
             self.lnworker.delete_payment(key)
 

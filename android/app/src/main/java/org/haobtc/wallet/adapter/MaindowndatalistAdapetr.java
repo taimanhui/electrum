@@ -18,6 +18,8 @@ import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 
 import java.util.List;
 
+import static org.haobtc.wallet.R.id.txt_delete;
+
 public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistEvent, BaseViewHolder> {
     public MaindowndatalistAdapetr(@Nullable List<MaintrsactionlistEvent> data) {
         super(R.layout.fragment_item_trans, data);
@@ -65,7 +67,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
             }
 
         } else {
-            imgDelete.setVisibility(View.VISIBLE);
+            imgDelete.setVisibility(View.GONE);
             String tx_status = item.getTx_status();
             if ("Signed".equals(tx_status)) {
                 //new creat trsaction
@@ -86,22 +88,11 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 tetview.setBackground(mContext.getResources().getDrawable(R.drawable.orange_circle));
             }
 
-            imgDelete.setOnClickListener(v -> {
-                if (onItemonDeleteClicklisoner!=null){
-                    onItemonDeleteClicklisoner.onOnCLick(helper.getLayoutPosition());
-                }
-            });
-
         }
 
-    }
-    public interface onItemonDeleteClicklisoner{
-        void onOnCLick(int incoisId);
+        helper.addOnClickListener(R.id.lin_Item);
+        helper.addOnClickListener(R.id.txt_delete);
+
     }
 
-    private onItemonDeleteClicklisoner onItemonDeleteClicklisoner;
-
-    public void setOnItemonDeleteClicklisoner(MaindowndatalistAdapetr.onItemonDeleteClicklisoner onItemonDeleteClicklisoner) {
-        this.onItemonDeleteClicklisoner = onItemonDeleteClicklisoner;
-    }
 }
