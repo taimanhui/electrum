@@ -19,10 +19,13 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -310,8 +313,8 @@ public class TransactionRecordsActivity extends BaseActivity {
                 tx_hash = jsonObject.getString("tx_hash");
                 amount = jsonObject.getString("amount");
                 is_mine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
+                date = jsonObject.getString("date");
                 if (type.equals("history")) {
-                    date = jsonObject.getString("date");
                     confirmations = jsonObject.getString("confirmations");
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
@@ -327,7 +330,7 @@ public class TransactionRecordsActivity extends BaseActivity {
                     String invoice_id = jsonObject.getString("invoice_id");//delete use
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
-//                    maintrsactionlistEvent.setDate(date);
+                    maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
                     maintrsactionlistEvent.setIs_mine(is_mine);
                     maintrsactionlistEvent.setType(type);
@@ -341,21 +344,51 @@ public class TransactionRecordsActivity extends BaseActivity {
                 MaindowndatalistAdapetr trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
                 recyJylist.setAdapter(trsactionlistAdapter);
 
-                trsactionlistAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                     @Override
-                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                        try {
-                            JSONObject jsonObject = jsonArray.getJSONObject(position);
-                            String type1 = jsonObject.getString("type");
-                            String tx_hash1 = jsonObject.getString("tx_hash");
-                            Intent intent = new Intent(TransactionRecordsActivity.this, TransactionDetailsActivity.class);
-                            intent.putExtra("tx_hash", tx_hash1);
-                            intent.putExtra("keyValue", "B");
-                            intent.putExtra("listType", type1);
-                            intent.putExtra("txCreatTrsaction", txCreatTrsaction);
-                            startActivity(intent);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                        String typeDele = maintrsactionlistEvents.get(position).getType();
+                        switch (view.getId()){
+                            case R.id.lin_Item:
+                                try {
+                                    JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                    String tx_hash1 = jsonObject.getString("tx_hash");
+                                    Intent intent = new Intent(TransactionRecordsActivity.this, TransactionDetailsActivity.class);
+                                    if (typeDele.equals("tx")){
+                                        String tx_Onclick = jsonObject.getString("tx");
+                                        intent.putExtra("keyValue", "B");
+                                        intent.putExtra("listType", typeDele);
+                                        intent.putExtra("txCreatTrsaction", tx_Onclick);
+                                        startActivity(intent);
+
+                                    }else{
+                                        intent.putExtra("tx_hash", tx_hash1);
+                                        intent.putExtra("keyValue", "B");
+                                        intent.putExtra("listType", typeDele);
+                                        startActivity(intent);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case R.id.txt_delete:
+                                if ("tx".equals(typeDele)){
+                                    String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
+                                    try {
+                                        Daemon.commands.callAttr("delete_invoice", invoice_id);
+                                        maintrsactionlistEvents.remove(position);
+                                        trsactionlistAdapter.notifyItemChanged(position);
+                                        trsactionlistAdapter.notifyDataSetChanged();
+                                        EventBus.getDefault().post(new FirstEvent("22"));
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }else{
+                                    mToast(getResources().getString(R.string.delete_unBroad));
+                                }
+
+                                break;
                         }
                     }
                 });

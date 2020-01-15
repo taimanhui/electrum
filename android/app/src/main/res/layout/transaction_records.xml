@@ -83,14 +83,16 @@
         android:elevation="@dimen/dp_4"
         app:cardCornerRadius="@dimen/corner_radius">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <org.haobtc.wallet.utils.SlideRecyclerView
             android:id="@+id/recy_jylist"
             android:name="com.example.myapplication1.ItemFragment2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
-            tools:listitem="@layout/fragment_item_trans" />
+            tools:listitem="@layout/fragment_item_trans" >
+
+        </org.haobtc.wallet.utils.SlideRecyclerView>
 
         <TextView
             android:id="@+id/tet_None"

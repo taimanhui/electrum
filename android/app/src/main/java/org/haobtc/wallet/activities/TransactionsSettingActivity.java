@@ -1,14 +1,9 @@
 package org.haobtc.wallet.activities;
 
-
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.utils.CommonUtils;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -24,6 +19,8 @@ public class TransactionsSettingActivity extends BaseActivity {
     }
 
     public void initView() {
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
 
     }
 
@@ -41,4 +38,5 @@ public class TransactionsSettingActivity extends BaseActivity {
                 break;
         }
     }
+
 }

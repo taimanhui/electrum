@@ -77,7 +77,7 @@ android {
         TestNet {
             buildConfigField "String", "net_type", "\"TestNet\""
         }
-        RegTest{
+        RegTest {
             buildConfigField "String", "net_type", "\"RegTest\""
         }
     }
@@ -168,7 +168,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     //immersionbar
     implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
-    //adpter
+    //baseadpter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     //OKhttp
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
@@ -186,6 +186,9 @@ dependencies {
     //wheel_viewpager
     implementation 'com.github.ThirdGoddess:GoddessTNT:v1.5'
     implementation project(path: ':dRlibfileselector')
+    //Pull up refresh pull down load
+    implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.4-7'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-6'
 
 }
 repositories {

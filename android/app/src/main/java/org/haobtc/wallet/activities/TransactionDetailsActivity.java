@@ -413,7 +413,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                 break;
             case R.id.img_share:
                 Intent intent = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
-                intent.putExtra("keys", keyValue);//adopt tx length fix textview length
                 intent.putExtra("rowTrsaction", tx_hash);
                 intent.putExtra("rowTx", rowtx);
                 startActivity(intent);
@@ -427,7 +426,6 @@ public class TransactionDetailsActivity extends BaseActivity {
 
                 } else if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
-                    intent1.putExtra("keys", keyValue);//adopt tx length fix textview length
                     intent1.putExtra("rowTrsaction", tx_hash);
                     intent1.putExtra("rowTx", rowtx);
                     startActivity(intent1);

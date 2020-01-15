@@ -31,6 +31,9 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
 import com.yzq.zxinglibrary.android.CaptureActivity;
@@ -69,7 +72,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
 
     private ImageView imageViewSweep, imageViewSetting;
     private TextView textView;
@@ -122,6 +125,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int sendAmount = 0;
     private String message = "";
     private String strNames;
+    private SmartRefreshLayout refreshLayout;
 
     @Override
     public int getLayoutId() {
@@ -161,10 +165,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         imageViewSetting = findViewById(R.id.img_setting);
         textView = findViewById(R.id.textView_more);
         tetNone = findViewById(R.id.tet_None);
+        refreshLayout = findViewById(R.id.smart_RefreshLayout);
         imageViewSweep.setOnClickListener(this);
         imageViewSetting.setOnClickListener(this);
         textView.setOnClickListener(this);
         btnAddmoney.setOnClickListener(this);
+        refreshLayout.setEnableLoadMore(false);
+        refreshLayout.setEnableRefresh(true);
+        refreshLayout.setOnRefreshListener(this);
 
 
     }
@@ -314,9 +322,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             tetNone.setVisibility(View.GONE);
             recy_data.setVisibility(View.VISIBLE);
             String strHistory = get_history_tx.toString();
-            Log.i("strHistory", "onPage----: " + strHistory + "   size:  " + strHistory.length());
-
-            //1b2086332609d757478ff6ff0970872a
+            Log.i("strHistory", "onPage----: " + strHistory);
 
             if (strHistory.length() == 2) {
                 myDialog.dismiss();
@@ -336,6 +342,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
+        refreshLayout.finishRefresh();
         try {
             jsonArray = new JSONArray(strHistory);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -371,51 +378,60 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
 
-                //Binder Adapter
-                recy_data.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
-                recy_data.setAdapter(trsactionlistAdapter);
-                myDialog.dismiss();
-                trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                    @Override
-                    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                        String typeDele = maintrsactionlistEvents.get(position).getType();
-                        switch (view.getId()){
-                            case R.id.lin_Item:
-                                try {
-                                    JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                    String type1 = jsonObject.getString("type");
-                                    String tx_hash1 = jsonObject.getString("tx_hash");
-                                    Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
+            }
+            //Binder Adapter
+            trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
+            recy_data.setAdapter(trsactionlistAdapter);
+            myDialog.dismiss();
+            trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    String typeDele = maintrsactionlistEvents.get(position).getType();
+                    switch (view.getId()){
+                        case R.id.lin_Item:
+                            try {
+                                JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                String tx_hash1 = jsonObject.getString("tx_hash");
+                                Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
+                                if (typeDele.equals("tx")){
+                                    String tx_Onclick = jsonObject.getString("tx");
+                                    intent.putExtra("keyValue", "B");
+                                    intent.putExtra("listType", typeDele);
+                                    intent.putExtra("txCreatTrsaction", tx_Onclick);
+                                    startActivity(intent);
+
+                                }else{
                                     intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("keyValue", "B");
-                                    intent.putExtra("listType", type1);
-                                    intent.putExtra("txCreatTrsaction", txCreatTrsaction);
+                                    intent.putExtra("listType", typeDele);
                                     startActivity(intent);
-                                } catch (JSONException e) {
+                                }
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case R.id.txt_delete:
+                            if ("tx".equals(typeDele)){
+                                String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
+                                try {
+                                    Daemon.commands.callAttr("delete_invoice", invoice_id);
+                                    maintrsactionlistEvents.remove(position);
+                                    trsactionlistAdapter.notifyItemChanged(position);
+                                    trsactionlistAdapter.notifyDataSetChanged();
+                                    downMainListdata();
+
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                break;
-                            case R.id.txt_delete:
-                                if ("tx".equals(typeDele)){
-                                    String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
-                                    try {
-                                        Daemon.commands.callAttr("delete_invoice", invoice_id);
-                                        maintrsactionlistEvents.remove(position);
-                                        trsactionlistAdapter.notifyItemChanged(position);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }else{
-                                    mToast(getResources().getString(R.string.delete_unBroad));
-                                }
-
-                                break;
-                        }
+                            }else{
+                                mToast(getResources().getString(R.string.delete_unBroad));
+                            }
+                            break;
                     }
-                });
-
-            }
+                }
+            });
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -471,8 +487,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Log.i("threadMode", "event: " + msgVote);
             //Rolling Wallet
             mWheelplanting();
+
+        }else if (msgVote.equals("22")){
+            maintrsactionlistEvents.clear();
             //trsaction list data
             downMainListdata();
+            trsactionlistAdapter.notifyDataSetChanged();
 
         }
     }
@@ -561,4 +581,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        maintrsactionlistEvents.clear();
+        //trsaction list data
+        downMainListdata();
+        trsactionlistAdapter.notifyDataSetChanged();
+
+    }
 }

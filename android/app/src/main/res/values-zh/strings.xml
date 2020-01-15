@@ -161,7 +161,7 @@
     <string name="signed">已签名</string>
     <string name="partsigned">部分签名</string>
     <string name="finish">完成</string>
-    <string name="preservationbitmappic">保存成功</string>
+    <string name="preservationbitmappic">已保存到系统相册</string>
     <string name="preservationfail">保存失败</string>
     <string name="spin_all">全部</string>
     <string name="spin_coin">发币</string>

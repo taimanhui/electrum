@@ -162,7 +162,7 @@
     <string name="download">download</string>
     <string name="signed">Signed</string>
     <string name="partsigned">Partial signature</string>
-    <string name="preservationbitmappic">Save successfully</string>
+    <string name="preservationbitmappic">Saved to system album</string>
     <string name="preservationfail">Save Fail</string>
     <string name="spin_all">All</string>
     <string name="spin_coin">Coin making</string>
