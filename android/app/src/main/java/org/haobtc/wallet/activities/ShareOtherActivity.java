@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -74,8 +75,6 @@ public class ShareOtherActivity extends BaseActivity {
     private boolean toGallery;
     private Dialog dialogBtom;
     private String rowTx;
-    private String keys;
-    private int lenth;
 
     @Override
     public int getLayoutId() {
@@ -89,8 +88,6 @@ public class ShareOtherActivity extends BaseActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         rowTrsaction = intent.getStringExtra("rowTrsaction");
-        //adopt tx length fix textview length
-        keys = intent.getStringExtra("keys");
         rowTx = intent.getStringExtra("rowTx");
         Log.i("rowTrsaction", "init----: " + rowTrsaction);
         rxPermissions = new RxPermissions(this);
@@ -183,19 +180,14 @@ public class ShareOtherActivity extends BaseActivity {
             case R.id.tet_open:
                 String strOpen = tetOpen.getText().toString();
                 if (strOpen.equals(getResources().getString(R.string.spin_open))) {
-                    if (keys.equals("A")) {
-                        lenth = 6000;
-                    } else {
-                        lenth = 400;
-                    }
                     LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
-                    linearParams1.height = lenth;
+                    linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
                     tetTrsactionText.setLayoutParams(linearParams1);
                     tetOpen.setText(getResources().getString(R.string.retract));
 
                 } else {
                     LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
-                    linearParams1.height = 170;
+                    linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
                     tetTrsactionText.setLayoutParams(linearParams1);
                     tetOpen.setText(getResources().getString(R.string.spin_open));
                 }

@@ -8,8 +8,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- <uses-permission -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- <uses-permission -->
     <!-- android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" -->
     <!-- tools:ignore="ProtectedPermissions" /> -->
     <uses-feature android:name="android.hardware.camera" />
@@ -28,13 +27,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".entries.FsActivity">
-
-        </activity>
+        <activity android:name=".activities.manywallet.ManyWalletTogetherActivity"></activity>
+        <activity android:name=".entries.FsActivity"></activity>
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity android:name=".activities.base.LunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,12 +71,12 @@
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/nfc_tech_filter" />
         </activity>
-        <activity android:name=".activities.ConfirmOnHardware"/>
+        <activity android:name=".activities.ConfirmOnHardware" />
         <activity android:name=".activities.CreateWalletActivity" />
-        <activity android:name=".activities.ImportWalletPageActivity"/>
+        <activity android:name=".activities.ImportWalletPageActivity" />
         <activity android:name=".activities.CreateWalletPageActivity" />
-        <activity android:name=".activities.PublicKeyInputEditActivity"/>
-        <activity android:name=".activities.SelectMultiSigWalletActivity"/>
+        <activity android:name=".activities.PublicKeyInputEditActivity" />
+        <activity android:name=".activities.SelectMultiSigWalletActivity" />
         <activity
             android:name=".activities.WalletUnActivatedActivity"
             android:label="" />
@@ -96,17 +92,13 @@
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
-
         </activity>
         <activity android:name=".activities.ActivateSuccessActivity" />
         <activity android:name=".activities.CoSignerAddActivity" />
         <activity android:name=".activities.set.AgreementActivity" />
         <activity android:name=".activities.ShareOtherActivity" />
-
         <activity android:name=".activities.GuideActivity" />
-        <activity android:name=".activities.PinSettingActivity">
-
-        </activity>
+        <activity android:name=".activities.PinSettingActivity"></activity>
         <activity android:name=".activities.CreateWalletSuccessfulActivity" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
