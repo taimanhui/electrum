@@ -481,12 +481,11 @@
 
                         <TextView
                             android:id="@+id/tet_confirm"
-                            android:visibility="gone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/sp_13"
                             android:layout_marginStart="@dimen/dp_5"
-                            android:text="@string/confirmnum"
+                            tools:text="@string/confirmnum"
                             android:textColor="@color/graytext_color"
                             app:layout_constraintStart_toEndOf="@id/tet_state"
                             app:layout_constraintBottom_toBottomOf="@id/textView18" />

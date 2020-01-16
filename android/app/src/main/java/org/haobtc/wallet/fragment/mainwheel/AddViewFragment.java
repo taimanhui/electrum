@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.CreateWalletPageActivity;
+import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,7 +30,7 @@ public class AddViewFragment extends Fragment {
         cardAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CreateWalletPageActivity.class);
+                Intent intent = new Intent(getActivity(), CreateWalletActivity.class);
                 getActivity().startActivity(intent);
             }
         });

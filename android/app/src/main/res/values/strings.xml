@@ -187,7 +187,7 @@
     <string name="please_input_amount">Please enter the transfer quantity</string>
     <string name="pleas_add_outputAdrs">Please add collection address</string>
     <string name="pay_wallet">Payment Wallet</string>
-    <string name="confirmnum">Confirmation number >2</string>
+    <string name="confirmnum">Confirmation number</string>
     <string name="wallet_insufficient">Insufficient wallet balance</string>
     <string name="filename">Please fill in the file name</string>
     <string name="alredycopy">Already copied</string>
@@ -215,5 +215,23 @@
     <string name="delete_unBroad">Only transactions that are not broadcast can be deleted</string>
     <string name="my_walet_many">Personal wallet supports multiple hardware backup</string>
     <string name="fee_toohigh">The rate is too high</string>
+    <string name="pictrue_fail">Image parsing failed</string>
+    <string name="creat_ggwallet">Create a shared Wallet</string>
+    <string name="Basics_message">Basic information</string>
+    <string name="band_manager">Bind co administrator</string>
+    <string name="creat_finish">Create completion</string>
+    <string name="please_input">Please input</string>
+    <string name="together_num">Co management</string>
+    <string name="public_key">To create a co managed wallet, you need to add the public key of 5 co managers</string>
+    <string name="text_little_num">0</string>
+    <string name="text_big_num">15</string>
+    <string name="text_5">5</string>
+    <string name="signed_num">Number of signatures</string>
+    <string name="tet_tips">Shared wallet requires 3 out of 5 signatures</string>
+    <string name="title_name">key</string>
+    <string name="add_bixin_key">Add BixinKEY</string>
+    <string name="xiaomi_walet">wallet</string>
+    <string name="choose_onekey">You can use any one of the 3 bixinkeys to transfer</string>
+
 
 </resources>

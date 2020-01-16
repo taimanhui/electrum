@@ -199,6 +199,7 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                 Intent intent = new Intent(this, CreateWalletSuccessfulActivity.class);
                 // intent.putExtra();
                 startActivity(intent);
+                finish();
 
                 break;
             case R.id.bn_use_hardware_add_cosigner_popup:

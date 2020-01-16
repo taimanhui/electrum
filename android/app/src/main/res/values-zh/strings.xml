@@ -185,7 +185,7 @@
     <string name="please_input_amount">请输入转账数量</string>
     <string name="pleas_add_outputAdrs">请添加收款地址</string>
     <string name="pay_wallet">付款钱包</string>
-    <string name="confirmnum">确认数>2</string>
+    <string name="confirmnum">确认数</string>
     <string name="wallet_insufficient">钱包余额不足</string>
     <string name="filename">请填写文件名</string>
     <string name="alredycopy">已复制</string>
@@ -211,5 +211,19 @@
     <string name="delete_unBroad">只允许删除未广播的交易</string>
     <string name="my_walet_many">个人钱包支持多硬件备份</string>
     <string name="fee_toohigh">费率过高</string>
+    <string name="pictrue_fail">图片解析失败</string>
+    <string name="creat_ggwallet">创建共管钱包</string>
+    <string name="Basics_message">基础信息</string>
+    <string name="band_manager">绑定共管人</string>
+    <string name="creat_finish">创建完成</string>
+    <string name="please_input">请输入</string>
+    <string name="together_num">共管人数</string>
+    <string name="public_key">创建共管钱包需添加5位公管人的公钥</string>
+    <string name="signed_num">签名人数</string>
+    <string name="tet_tips">共管钱包需要5位公管人中的3位签名</string>
+    <string name="title_name">图图的钥匙</string>
+    <string name="add_bixin_key">添加BixinKEY</string>
+    <string name="xiaomi_walet">小米的钱包3-5</string>
+    <string name="choose_onekey">可使用3个BixinKEY中任意一个授权转账</string>
 
 </resources>
