@@ -101,7 +101,7 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
                 EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
-
+                finishAffinity();
                 break;
             case R.id.img_back:
                 finish();

@@ -8,10 +8,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-
-
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 import org.haobtc.wallet.activities.set.AgreementActivity;
 
 public class CreateWalletActivity extends BaseActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -41,20 +40,8 @@ public class CreateWalletActivity extends BaseActivity implements View.OnClickLi
         button_import_wallet = findViewById(R.id.bn_import_wallet);
         radioButtonAg.setOnCheckedChangeListener(this);
         tetAgreement.setOnClickListener(this);
-        button_create_wallet.setOnClickListener(v -> {
-            if (checked) {
-                Intent intent = new Intent(this, CreateWalletPageActivity.class);
-                startActivity(intent);
-            }
-
-        });
-        button_import_wallet.setOnClickListener(v -> {
-            if (checked) {
-                Intent intent = new Intent(this, ImportWalletPageActivity.class);
-                startActivity(intent);
-            }
-
-        });
+        button_create_wallet.setOnClickListener(this);
+        button_import_wallet.setOnClickListener(this);
 
     }
 
@@ -72,12 +59,16 @@ public class CreateWalletActivity extends BaseActivity implements View.OnClickLi
                 startActivity(intent);
                 break;
             case R.id.bn_create_wallet:
+//                if (checked) {
                 Intent intent1 = new Intent(this, CreateWalletPageActivity.class);
                 startActivity(intent1);
+//                }
                 break;
             case R.id.bn_import_wallet:
-                Intent intent2 = new Intent(this, ImportWalletPageActivity.class);
+//                if (checked) {
+                Intent intent2 = new Intent(this, ManyWalletTogetherActivity.class);
                 startActivity(intent2);
+//                }
                 break;
 
         }

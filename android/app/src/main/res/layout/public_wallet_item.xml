@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/layout_margin"
+    android:layout_marginTop="@dimen/layout_margin"
+    android:layout_marginEnd="@dimen/layout_margin"
+    android:background="@drawable/white_tuo"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+        <TextView
+            android:id="@+id/tet_Walletname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="15dp"
+            android:text="@string/title_name"
+            android:textColor="#494949"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/img_delete"
+            android:layout_width="@dimen/dp_21"
+            android:layout_height="@dimen/dp_21"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:padding="3dp"
+            android:src="@drawable/close_big_black" />
+
+
+        <View
+            android:id="@+id/ewrwerw"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1"
+            android:layout_below="@+id/img_delete"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="13.5dp"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:background="@color/line_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ewrwerw"
+            android:maxLines="4"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_16"
+            android:layout_marginTop="15.5dp"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:textColor="#b1b7c5"
+            android:textSize="15sp"
+            tools:text="33dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfddfdkfjdkfdfdfn3334j5fjfjffjeejjdk3k3033dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfddfdkfjdkfdfdfn3334j5fjfjffjeejjdk3k3033dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfd" />
+
+
+
+</RelativeLayout>

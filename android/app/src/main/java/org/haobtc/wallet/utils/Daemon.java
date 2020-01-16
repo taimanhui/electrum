@@ -1,5 +1,9 @@
 package org.haobtc.wallet.utils;
 
+import android.util.Log;
+
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Global;
 import com.chaquo.python.PyObject;
 
@@ -13,6 +17,8 @@ public class Daemon {
     }
 
     public void onCallback(int event, String msg) {
-        System.out.println("DaemonModel.kt onCallback in.....========================================================================="+event + msg);
+
+//        EventBus.getDefault().post(new FirstEvent("22"));
+        Log.i("onCallback", "Callback in.....=================="+event +"   ============================    "+ msg);
     }
 }

@@ -129,7 +129,7 @@ class AndroidCommands(commands.Commands):
 
         self.num_zeros = int(self.config.get('num_zeros', 0))
         self.rbf = self.config.get("use_rbf", True)
-
+        self.ccy = self.daemon.fx.get_currency()
         from threading import Timer
         t = Timer(5.0, self.timer_action)
         t.start()
@@ -169,18 +169,21 @@ class AndroidCommands(commands.Commands):
             elif server_lag > 1:
                 status = _("Server is lagging ({} blocks)").format(server_lag)
             else:
-                status = ''
-        else:
-            status = _("Disconnected")
-        if status:
-            self.balance = status
-            self.fiat_balance = status
-        else:
-            c, u, x = self.wallet.get_balance()
-            text = self.format_amount(c+x+u)
-            self.balance = str(text.strip()) + ' [size=22dp]%s[/size]'% self.base_unit
-            self.fiat_balance = self.daemon.fx.format_amount(c+u+x) + ' [size=22dp]%s[/size]'% self.daemon.fx.ccy
-        #self.callbackIntent.onCallback("update_status")
+                c, u, x = self.wallet.get_balance()
+                text = _("Balance") + ": %s " % (self.format_amount_and_units(c))
+                if u:
+                    text += " [%s unconfirmed]" % (self.format_amount(u, is_diff=True).strip())
+                if x:
+                    text += " [%s unmatured]" % (self.format_amount(x, is_diff=True).strip())
+                if self.wallet.lnworker:
+                    l = self.wallet.lnworker.get_balance()
+                    text += u'    \U0001f5f2 %s' % (self.format_amount_and_units(l).strip())
+
+                # append fiat balance and price
+                if self.daemon.fx.is_enabled():
+                    text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
+                print("update_statue text = %s" % text)
+        #self.callbackIntent.onCallback("update_status", text)
 
     def save_tx_to_file(self, path, tx):
         print("save_tx_to_file in.....")
@@ -465,6 +468,46 @@ class AndroidCommands(commands.Commands):
     def base_unit(self):
         return util.decimal_point_to_base_unit_name(self.decimal_point)
 
+    #set use unconfirmed coin
+    def set_unconf(self, x):
+        self.config.set_key('confirmed_only', bool(x))
+
+    #fiat balance
+    def get_exchanges(self):
+        if not self.daemon.fx: return
+        b = self.daemon.fx.is_enabled()
+        if b:
+            h = self.daemon.fx.get_history_config()
+            c = self.daemon.fx.get_currency()
+            exchanges = self.daemon.fx.get_exchanges_by_ccy(c, h)
+        else:
+            exchanges = self.daemon.fx.get_exchanges_by_ccy('USD', False)
+        return json.dumps(sorted(exchanges))
+
+    def set_exchange(self, exchange):
+        if self.daemon.fx and self.daemon.fx.is_enabled() and exchange and exchange != self.daemon.fx.exchange.name():
+            self.daemon.fx.set_exchange(exchange)
+
+    def set_currency(self, ccy):
+        self.daemon.fx.set_enabled(True)
+        if ccy != self.ccy:
+            self.daemon.fx.set_currency(ccy)
+            self.ccy = ccy
+        self.update_status()
+
+    def get_exchange_currency(self, type, amount):
+        text = ""
+        rate = self.daemon.fx.exchange_rate() if self.daemon.fx else Decimal('NaN')
+        if rate.is_nan() or amount is None:
+            return text
+        else:
+            if type == "base":
+                amount = self.get_amount(amount)
+                text = self.daemon.fx.ccy_amount_str(amount * Decimal(rate) / COIN, False)
+            elif type == "fiat":
+                text = self.format_amount((int(Decimal(amount) / Decimal(rate) * COIN)))
+            return text
+
     #set base unit for(BTC/mBTC/bits/sat)
     def set_base_uint(self, base_unit):
         self.base_unit = base_unit
@@ -727,8 +770,7 @@ class AndroidCommands(commands.Commands):
             ri['amount'] = self.format_amount_and_units(delta)
             if self.fiat_unit:
                 fx = self.daemon.fx
-                fiat_value = delta / Decimal(bitcoin.COIN) * self.wallet.price_at_timestamp(tx_hash,
-                                                                                                fx.timestamp_rate)
+                fiat_value = delta / Decimal(bitcoin.COIN) * self.wallet.price_at_timestamp(tx_hash, fx.timestamp_rate)
                 fiat_value = Fiat(fiat_value, fx.ccy)
                 ri['quote_text'] = fiat_value.to_ui_string()
         return ri

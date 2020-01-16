@@ -52,6 +52,7 @@ import org.haobtc.wallet.activities.SignaturePageActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.adapter.MyPagerAdapter;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
@@ -472,7 +473,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 startActivity(intent2);
                 break;
             case R.id.tet_Addmoney:
-                Intent intent6 = new Intent(MainActivity.this, CreateWalletPageActivity.class);
+                Intent intent6 = new Intent(MainActivity.this, CreateWalletActivity.class);
                 startActivity(intent6);
 
                 break;
@@ -573,10 +574,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             if (secondTime - firstTime > 2000) {
                 Toast.makeText(MainActivity.this, R.string.dowbke_to_exit, Toast.LENGTH_SHORT).show();
                 firstTime = secondTime;
-                return true;
             } else {
                 System.exit(0);
             }
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }

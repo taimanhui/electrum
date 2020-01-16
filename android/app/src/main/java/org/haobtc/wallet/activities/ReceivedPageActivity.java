@@ -111,12 +111,16 @@ public class ReceivedPageActivity extends BaseActivity {
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
                                 File file = saveImageToGallery(this, bitmap);
-                                String path = insertImageToSystem(this, file.getPath());
-                                Intent imageIntent = new Intent(Intent.ACTION_SEND);
-                                imageIntent.setType("image/jpeg");
-                                imageIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
-                                startActivity(Intent.createChooser(imageIntent, getResources().getString(R.string.share)));
+                                if (file!=null){
+                                    String path = insertImageToSystem(this, file.getPath());
+                                    Intent imageIntent = new Intent(Intent.ACTION_SEND);
+                                    imageIntent.setType("image/jpeg");
+                                    imageIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+                                    startActivity(Intent.createChooser(imageIntent, getResources().getString(R.string.share)));
 
+                                }else{
+                                    mToast(getResources().getString(R.string.pictrue_fail));
+                                }
 
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
@@ -132,7 +136,8 @@ public class ReceivedPageActivity extends BaseActivity {
 
     private File saveImageToGallery(Context context, Bitmap bmp) {
         // 首先保存图片
-        String storePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "rapidpay";
+        String storePath = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
+        Log.i("storePath", "storePath: "+storePath);
         File appDir = new File(storePath);
         if (!appDir.exists()) {
             appDir.mkdir();

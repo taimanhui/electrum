@@ -29,6 +29,7 @@ import org.haobtc.wallet.bean.InputOutputAddressEvent;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.utils.Daemon;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -277,8 +278,10 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         SinatrayPersonAdapetr sinatrayPersonAdapetr = new SinatrayPersonAdapetr(strSinalist);
         recySignatory.setAdapter(sinatrayPersonAdapetr);
-        //judge state
-        judgeState(tx_status);
+        if (!TextUtils.isEmpty(tx_status)){
+            //judge state
+            judgeState(tx_status);
+        }
 
     }
 
@@ -340,8 +343,11 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         SinatrayPersonAdapetr sinatrayPersonAdapetr = new SinatrayPersonAdapetr(strSinalist);
         recySignatory.setAdapter(sinatrayPersonAdapetr);
-        //judge state
-        judgeState(tx_status);
+        if (!TextUtils.isEmpty(tx_status)){
+            //judge state
+            judgeState(tx_status);
+        }
+
 
     }
 
@@ -368,7 +374,17 @@ public class TransactionDetailsActivity extends BaseActivity {
             imgProgresstwo.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
-            tetConfirm.setVisibility(View.VISIBLE);
+            //Number of judgment confirmation
+            String strConfirl = tx_status.replaceAll(" confirmations","");
+            BigDecimal bignum1 = new BigDecimal(strConfirl);
+            BigDecimal bigDecimal = new BigDecimal(100);
+            int mathMax = bignum1.compareTo(bigDecimal);
+            if (mathMax == 1) {
+                tetConfirm.setText(String.format("%s%s", getResources().getString(R.string.confirmnum), ">100"));
+            }else{
+                tetConfirm.setText(String.format("%s%s", getResources().getString(R.string.confirmnum), strConfirl));
+            }
+
             //text color
             tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
