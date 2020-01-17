@@ -232,6 +232,21 @@
     <string name="add_bixin_key">Add BixinKEY</string>
     <string name="xiaomi_walet">wallet</string>
     <string name="choose_onekey">You can use any one of the 3 bixinkeys to transfer</string>
+    <string name="creat_personal">Create a personal Wallet</string>
+    <string name="set_two_num">Set number of backups</string>
+    <string name="creat_bixinkey">You need to bind 3 bixinkeys, and you can use any hardware to complete the transaction</string>
+    <string name="bixinkey_walt">BixinKEY Hardware Wallet</string>
+    <string name="personal_walt">Personal Wallet</string>
+    <string name="input_histry">Import history Wallet</string>
+    <string name="app_walt">App Wallet</string>
+    <string name="create_new_walt">Create a new wallet</string>
+    <string name="input_help_word">Import mnemonics</string>
+    <string name="confirm_creat">Confirm creation</string>
+    <string name="key_name">小米的KEY1</string>
+    <string name="hand_input">手动输入</string>
+    <string name="name">名字</string>
+    <string name="public_address">公钥地址</string>
+    <string name="make_aname">起个名字标记一下</string>
 
 
 </resources>

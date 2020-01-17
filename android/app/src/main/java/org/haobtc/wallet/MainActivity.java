@@ -397,6 +397,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 if (typeDele.equals("tx")){
                                     String tx_Onclick = jsonObject.getString("tx");
                                     intent.putExtra("keyValue", "B");
+                                    intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("listType", typeDele);
                                     intent.putExtra("txCreatTrsaction", tx_Onclick);
                                     startActivity(intent);

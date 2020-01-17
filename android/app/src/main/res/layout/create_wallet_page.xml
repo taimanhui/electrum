@@ -5,11 +5,8 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:id="@+id/rel_hideKey"
-    android:clickable="true"
     android:clipToPadding="true"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    android:focusable="true">
+    android:fitsSystemWindows="true">
 
     <RelativeLayout
         android:id="@+id/reckidshjkjsn"
