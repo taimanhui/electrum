@@ -147,7 +147,7 @@
                 android:id="@+id/img_share"
                 android:layout_width="45dp"
                 android:layout_height="@dimen/dp_40"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="end"
                 android:layout_marginEnd="5.3dp"

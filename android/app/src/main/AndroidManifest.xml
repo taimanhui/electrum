@@ -27,10 +27,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activities.onlywallet.CreatFinishPersonalActivity"></activity>
+        <activity android:name=".activities.onlywallet.CreateOnlyChooseActivity" />
+        <activity android:name=".activities.onlywallet.CreatePersonalWalletActivity" />
         <activity android:name=".activities.manywallet.ManyWalletTogetherActivity" />
         <activity android:name=".entries.FsActivity" />
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".MainActivity" />
         <activity android:name=".activities.base.LunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

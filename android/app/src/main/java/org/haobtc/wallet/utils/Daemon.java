@@ -16,9 +16,12 @@ public class Daemon {
         commands.callAttr("set_callback_fun", this);
     }
 
-    public void onCallback(int event, String msg) {
+    public void onCallback(String event, String msg) {
+        Log.i("onCallback", "=================="+event +"   ============================    "+ msg);
 
-//        EventBus.getDefault().post(new FirstEvent("22"));
-        Log.i("onCallback", "Callback in.....=================="+event +"   ============================    "+ msg);
+        if (event.equals("5")){
+            EventBus.getDefault().post(new FirstEvent("22"));
+        }
+
     }
 }

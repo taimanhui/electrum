@@ -31,6 +31,7 @@
     <color name="circle_color">#D1D1D1</color>
     <color name="little_circle_color">#f8f9fc</color>
     <color name="text_0">#b1b7c5</color>
+    <color name="set_txt">#484d5c</color>
 
 
 </resources>

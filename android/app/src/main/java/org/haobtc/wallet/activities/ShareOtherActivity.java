@@ -187,7 +187,7 @@ public class ShareOtherActivity extends BaseActivity {
 
                 } else {
                     LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
-                    linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+                    linearParams1.height = 200;;
                     tetTrsactionText.setLayoutParams(linearParams1);
                     tetOpen.setText(getResources().getString(R.string.spin_open));
                 }

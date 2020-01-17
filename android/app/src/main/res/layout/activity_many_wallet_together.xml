@@ -113,6 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="287dp"
                     android:layout_marginStart="@dimen/layout_margin"
+                    android:layout_marginBottom="@dimen/dp_2"
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
                     android:visibility="gone"
@@ -431,7 +432,7 @@
                     android:id="@+id/recl_BinxinKey"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     tools:itemCount="2"
                     tools:listitem="@layout/public_wallet_item">
 
@@ -448,7 +449,7 @@
                     android:background="@drawable/add_bk"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <TextView
                         android:layout_width="wrap_content"

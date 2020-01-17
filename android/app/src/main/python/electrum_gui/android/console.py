@@ -183,7 +183,7 @@ class AndroidCommands(commands.Commands):
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
                 print("update_statue text = %s" % text)
-        #self.callbackIntent.onCallback("update_status", text)
+        self.callbackIntent.onCallback("update_status", text)
 
     def save_tx_to_file(self, path, tx):
         print("save_tx_to_file in.....")
