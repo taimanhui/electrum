@@ -6,12 +6,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +19,6 @@ import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
-import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
@@ -37,23 +35,29 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class TransactionRecordsActivity extends BaseActivity {
+public class TransactionRecordsActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
     @BindView(R.id.recy_jylist)
     RecyclerView recyJylist;
-    @BindView(R.id.spi_BTC)
-    AppCompatSpinner spiBTC;
-    @BindView(R.id.spi_ZT)
-    AppCompatSpinner spiZT;
+    //    @BindView(R.id.spi_BTC)
+//    AppCompatSpinner spiBTC;
+//    @BindView(R.id.spi_ZT)
+//    AppCompatSpinner spiZT;
     @BindView(R.id.tet_None)
     TextView tetNone;
     @BindView(R.id.img_backTrsa)
     ImageView imgBackTrsa;
+    @BindView(R.id.radio_one)
+    RadioButton radioOne;
+    @BindView(R.id.radio_two)
+    RadioButton radioTwo;
+    @BindView(R.id.radio_group)
+    RadioGroup radioGroup;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private SharedPreferences preferences;
-    private int haveSelectBTC = 0;
-    private int haveSelectState = 0;
-    private String strChoose;
-    private String strChoosestate;
+    //    private int haveSelectBTC = 0;
+//    private int haveSelectState = 0;
+    private String strChoose = "send";
+    //    private String strChoosestate;
     private String tx_hash;
     private String date;
     private String amount;
@@ -68,172 +72,172 @@ public class TransactionRecordsActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         preferences = getSharedPreferences("preferences", MODE_PRIVATE);
-
+        radioGroup.setOnCheckedChangeListener(this);
     }
 
     public void initData() {
         maintrsactionlistEvents = new ArrayList<>();
         //datalist
-        mTransactionrecordAll();
+//        mTransactionrecordAll();
         //spinnerTYPE
-        mSpinnerTypeLeft();
-
+//        mSpinnerTypeLeft();
         //spinnerZT
-        mSpinnerZTRight();
+//        mSpinnerZTRight();
+        mTransactionrecordSend(strChoose);
 
     }
 
-    public void mSpinnerTypeLeft() {
-        String[] strTyoe = getResources().getStringArray(R.array.type);
+//    public void mSpinnerTypeLeft() {
+//        String[] strTyoe = getResources().getStringArray(R.array.type);
+//
+//        // 建立Adapter并且绑定数据源
+//        ArrayAdapter<String> arrayTypeAdapter = new ArrayAdapter<String>(TransactionRecordsActivity.this, R.layout.spinnerlin, strTyoe);
+//        //设置样式
+//        arrayTypeAdapter.setDropDownViewResource(R.layout.spinnerlin);
+//        spiBTC.setAdapter(arrayTypeAdapter);
+//        spiBTC.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                maintrsactionlistEvents.clear();
+//                if (position == 0) {
+//                    haveSelectBTC = 0;
+//                    if (haveSelectState == 1) {
+//                        //datalist
+//                        mTransactionrecordSate(strChoosestate);
+//                    } else {
+//                        //datalist all
+//                        mTransactionrecordAll();
+//                    }
+//
+//                } else {
+//                    haveSelectBTC = 1;
+//                    if (position == 1 && haveSelectState == 1) {
+//                        //send
+//                        strChoose = "send";
+//                        mTransactionrecordSendTwo(strChoose, strChoosestate);
+//
+//                    } else if (position == 2 && haveSelectState == 1) {
+//                        //receive
+//                        strChoose = "receive";
+//                        mTransactionrecordSendTwo(strChoose, strChoosestate);
+//
+//                    } else if (position == 1) {
+//                        //send
+//                        strChoose = "send";
+//                        mTransactionrecordSend(strChoose);
+//
+//                    } else if (position == 2) {
+//                        //receive
+//                        strChoose = "receive";
+//                        mTransactionrecordSend(strChoose);
+//
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
+//
+//    }
 
-        // 建立Adapter并且绑定数据源
-        ArrayAdapter<String> arrayTypeAdapter = new ArrayAdapter<String>(TransactionRecordsActivity.this, R.layout.spinnerlin, strTyoe);
-        //设置样式
-        arrayTypeAdapter.setDropDownViewResource(R.layout.spinnerlin);
-        spiBTC.setAdapter(arrayTypeAdapter);
-        spiBTC.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                maintrsactionlistEvents.clear();
-                if (position == 0) {
-                    haveSelectBTC = 0;
-                    if (haveSelectState == 1) {
-                        //datalist
-                        mTransactionrecordSate(strChoosestate);
-                    } else {
-                        //datalist all
-                        mTransactionrecordAll();
-                    }
-
-                } else {
-                    haveSelectBTC = 1;
-                    if (position == 1 && haveSelectState == 1) {
-                        //send
-                        strChoose = "send";
-                        mTransactionrecordSendTwo(strChoose, strChoosestate);
-
-                    } else if (position == 2 && haveSelectState == 1) {
-                        //receive
-                        strChoose = "receive";
-                        mTransactionrecordSendTwo(strChoose, strChoosestate);
-
-                    } else if (position == 1) {
-                        //send
-                        strChoose = "send";
-                        mTransactionrecordSend(strChoose);
-
-                    } else if (position == 2) {
-                        //receive
-                        strChoose = "receive";
-                        mTransactionrecordSend(strChoose);
-
-                    }
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-    }
-
-    private void mSpinnerZTRight() {
-        String[] strZTlist = getResources().getStringArray(R.array.state);
-
-        // 建立Adapter并且绑定数据源
-        ArrayAdapter<String> arrayZTAdapter = new ArrayAdapter<String>(TransactionRecordsActivity.this, R.layout.spinnerlin, strZTlist);
-        //设置样式
-        arrayZTAdapter.setDropDownViewResource(R.layout.spinnerlin);
-        spiZT.setAdapter(arrayZTAdapter);
-        spiZT.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                maintrsactionlistEvents.clear();
-                if (position == 0) {
-                    //all
-                    haveSelectState = 0;
-                    if (haveSelectBTC == 1) {
-                        mTransactionrecordSend(strChoose);
-                    } else {
-                        //datalist
-                        mTransactionrecordAll();
-                    }
-
-                } else {
-                    haveSelectState = 1;
-                    if (position == 1 && haveSelectBTC == 1) {
-                        //tobebroadcast
-                        strChoosestate = "tobebroadcast";
-                        mTransactionrecordSendTwo(strChoose, strChoosestate);
-
-                    } else if (position == 2 && haveSelectBTC == 1) {
-                        //tobesign
-                        strChoosestate = "tobesign";
-                        mTransactionrecordSendTwo(strChoose, strChoosestate);
-
-                    } else if (position == 3 && haveSelectBTC == 1) {
-                        //tobeconfirm
-                        strChoosestate = "tobeconfirm";
-                        mTransactionrecordSendTwo(strChoose, strChoosestate);
-
-                    } else if (position == 4 && haveSelectBTC == 1) {
-                        //confirmed
-                        strChoosestate = "confirmed";
-                        mTransactionrecordSendTwo(strChoose, strChoosestate);
-
-                    } else if (position == 1) {
-                        //tobebroadcast
-                        strChoosestate = "tobebroadcast";
-                        mTransactionrecordSate(strChoosestate);
-
-                    } else if (position == 2) {
-                        //tobesign
-                        strChoosestate = "tobesign";
-                        mTransactionrecordSate(strChoosestate);
-
-                    } else if (position == 3) {
-                        //tobeconfirm
-                        strChoosestate = "tobeconfirm";
-                        mTransactionrecordSate(strChoosestate);
-
-                    } else if (position == 4) {
-                        //confirmed
-                        strChoosestate = "confirmed";
-                        mTransactionrecordSate(strChoosestate);
-
-                    }
-
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-    }
+//    private void mSpinnerZTRight() {
+//        String[] strZTlist = getResources().getStringArray(R.array.state);
+//
+//        // 建立Adapter并且绑定数据源
+//        ArrayAdapter<String> arrayZTAdapter = new ArrayAdapter<String>(TransactionRecordsActivity.this, R.layout.spinnerlin, strZTlist);
+//        //设置样式
+//        arrayZTAdapter.setDropDownViewResource(R.layout.spinnerlin);
+//        spiZT.setAdapter(arrayZTAdapter);
+//        spiZT.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                maintrsactionlistEvents.clear();
+//                if (position == 0) {
+//                    //all
+//                    haveSelectState = 0;
+//                    if (haveSelectBTC == 1) {
+//                        mTransactionrecordSend(strChoose);
+//                    } else {
+//                        //datalist
+//                        mTransactionrecordAll();
+//                    }
+//
+//                } else {
+//                    haveSelectState = 1;
+//                    if (position == 1 && haveSelectBTC == 1) {
+//                        //tobebroadcast
+//                        strChoosestate = "tobebroadcast";
+//                        mTransactionrecordSendTwo(strChoose, strChoosestate);
+//
+//                    } else if (position == 2 && haveSelectBTC == 1) {
+//                        //tobesign
+//                        strChoosestate = "tobesign";
+//                        mTransactionrecordSendTwo(strChoose, strChoosestate);
+//
+//                    } else if (position == 3 && haveSelectBTC == 1) {
+//                        //tobeconfirm
+//                        strChoosestate = "tobeconfirm";
+//                        mTransactionrecordSendTwo(strChoose, strChoosestate);
+//
+//                    } else if (position == 4 && haveSelectBTC == 1) {
+//                        //confirmed
+//                        strChoosestate = "confirmed";
+//                        mTransactionrecordSendTwo(strChoose, strChoosestate);
+//
+//                    } else if (position == 1) {
+//                        //tobebroadcast
+//                        strChoosestate = "tobebroadcast";
+//                        mTransactionrecordSate(strChoosestate);
+//
+//                    } else if (position == 2) {
+//                        //tobesign
+//                        strChoosestate = "tobesign";
+//                        mTransactionrecordSate(strChoosestate);
+//
+//                    } else if (position == 3) {
+//                        //tobeconfirm
+//                        strChoosestate = "tobeconfirm";
+//                        mTransactionrecordSate(strChoosestate);
+//
+//                    } else if (position == 4) {
+//                        //confirmed
+//                        strChoosestate = "confirmed";
+//                        mTransactionrecordSate(strChoosestate);
+//
+//                    }
+//
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
+//
+//    }
 
     //all data
-    private void mTransactionrecordAll() {
-        PyObject get_history_tx = null;
-        try {
-            //get transaction json
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (get_history_tx != null) {
-            //get transaction list
-            getHistroyIntry(get_history_tx);
-        }
-
-    }
+//    private void mTransactionrecordAll() {
+//        PyObject get_history_tx = null;
+//        try {
+//            //get transaction json
+//            get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//        if (get_history_tx != null) {
+//            //get transaction list
+//            getHistroyIntry(get_history_tx);
+//        }
+//
+//    }
 
     private void mTransactionrecordSend(String sends) {
         //get transaction json
@@ -250,35 +254,35 @@ public class TransactionRecordsActivity extends BaseActivity {
 
     }
 
-    private void mTransactionrecordSate(String states) {
-        //get transaction json
-        PyObject get_history_tx = null;
-        try {
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", new Kwarg("history_status", states));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (get_history_tx != null) {
-            getHistroyIntry(get_history_tx);
-        }
+//    private void mTransactionrecordSate(String states) {
+//        //get transaction json
+//        PyObject get_history_tx = null;
+//        try {
+//            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", new Kwarg("history_status", states));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//        if (get_history_tx != null) {
+//            getHistroyIntry(get_history_tx);
+//        }
+//
+//    }
 
-    }
-
-    private void mTransactionrecordSendTwo(String sends, String state) {
-        //get transaction json
-        PyObject get_history_tx = null;
-        try {
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", new Kwarg("tx_status", sends), new Kwarg("history_status", state));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (get_history_tx != null) {
-            //get transaction list
-            getHistroyIntry(get_history_tx);
-        }
-    }
+//    private void mTransactionrecordSendTwo(String sends, String state) {
+//        //get transaction json
+//        PyObject get_history_tx = null;
+//        try {
+//            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", new Kwarg("tx_status", sends), new Kwarg("history_status", state));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//        if (get_history_tx != null) {
+//            //get transaction list
+//            getHistroyIntry(get_history_tx);
+//        }
+//    }
 
     private void getHistroyIntry(PyObject get_history_tx) {
         //get transaction list
@@ -348,20 +352,20 @@ public class TransactionRecordsActivity extends BaseActivity {
                     @Override
                     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                         String typeDele = maintrsactionlistEvents.get(position).getType();
-                        switch (view.getId()){
+                        switch (view.getId()) {
                             case R.id.lin_Item:
                                 try {
                                     JSONObject jsonObject = jsonArray.getJSONObject(position);
                                     String tx_hash1 = jsonObject.getString("tx_hash");
                                     Intent intent = new Intent(TransactionRecordsActivity.this, TransactionDetailsActivity.class);
-                                    if (typeDele.equals("tx")){
+                                    if (typeDele.equals("tx")) {
                                         String tx_Onclick = jsonObject.getString("tx");
                                         intent.putExtra("keyValue", "B");
                                         intent.putExtra("listType", typeDele);
                                         intent.putExtra("txCreatTrsaction", tx_Onclick);
                                         startActivity(intent);
 
-                                    }else{
+                                    } else {
                                         intent.putExtra("tx_hash", tx_hash1);
                                         intent.putExtra("keyValue", "B");
                                         intent.putExtra("listType", typeDele);
@@ -372,7 +376,7 @@ public class TransactionRecordsActivity extends BaseActivity {
                                 }
                                 break;
                             case R.id.txt_delete:
-                                if ("tx".equals(typeDele)){
+                                if ("tx".equals(typeDele)) {
                                     String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
                                     try {
                                         Daemon.commands.callAttr("delete_invoice", invoice_id);
@@ -384,7 +388,7 @@ public class TransactionRecordsActivity extends BaseActivity {
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
-                                }else{
+                                } else {
                                     mToast(getResources().getString(R.string.delete_unBroad));
                                 }
 
@@ -406,6 +410,24 @@ public class TransactionRecordsActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_backTrsa:
                 finish();
+                break;
+        }
+    }
+
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (checkedId){
+            case R.id.radio_one:
+                strChoose = "send";
+                maintrsactionlistEvents.clear();
+                mTransactionrecordSend(strChoose);
+
+                break;
+            case R.id.radio_two:
+                strChoose = "receive";
+                maintrsactionlistEvents.clear();
+                mTransactionrecordSend(strChoose);
                 break;
         }
     }

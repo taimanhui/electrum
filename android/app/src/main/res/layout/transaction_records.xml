@@ -16,97 +16,140 @@
 
         <ImageView
             android:id="@+id/img_backTrsa"
-            android:src="@drawable/back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"/>
+            android:src="@drawable/back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:text="@string/transaction_records"
-            android:textSize="@dimen/text_size"
-            android:textColor="@color/text"/>
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
 
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="54dp"
-        android:layout_marginTop="@dimen/dp_1"
+        android:layout_height="@dimen/dp_44"
         android:background="@android:color/white"
-        android:elevation="@dimen/dp_4"
-        android:gravity="center_vertical">
+        android:gravity="center">
 
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/spi_BTC"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginStart="@dimen/text_margin"
-            android:layout_weight="1"
-            android:dropDownWidth="130dp"
-            android:dropDownHorizontalOffset="70dp"
-            android:dropDownVerticalOffset="54dp"
-            android:elevation="@dimen/layout_margin"
-            android:entries="@array/type"
-            android:gravity="center"
-            android:spinnerMode="dropdown"/>
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="136.5dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5.5dp"
+            android:orientation="horizontal">
 
-        <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/spi_ZT"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginEnd="@dimen/sp_16"
-            android:layout_weight="1"
-            android:dropDownWidth="130dp"
-            android:dropDownHorizontalOffset="70dp"
-            android:dropDownVerticalOffset="54dp"
-            android:entries="@array/state"
-            android:gravity="center_vertical"
-            android:spinnerMode="dropdown">
 
-        </androidx.appcompat.widget.AppCompatSpinner>
+            <RadioButton
+                android:id="@+id/radio_one"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="36.2dp"
+                android:button="@null"
+                android:checked="true"
+                android:drawableBottom="@drawable/src_qiye"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:text="@string/send"
+                android:textColor="@drawable/textcolor"
+                android:textSize="@dimen/sp_16" />
+
+            <RadioButton
+                android:id="@+id/radio_two"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="36.2dp"
+                android:button="@null"
+                android:drawableBottom="@drawable/src_qiye"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:text="@string/receive"
+                android:textColor="@drawable/textcolor"
+                android:textSize="@dimen/sp_16" />
+
+        </RadioGroup>
+
+
+        <!--        <androidx.appcompat.widget.AppCompatSpinner-->
+        <!--            android:id="@+id/spi_BTC"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="54dp"-->
+        <!--            android:layout_marginStart="@dimen/text_margin"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:dropDownWidth="130dp"-->
+        <!--            android:dropDownHorizontalOffset="70dp"-->
+        <!--            android:dropDownVerticalOffset="54dp"-->
+        <!--            android:elevation="@dimen/layout_margin"-->
+        <!--            android:entries="@array/type"-->
+        <!--            android:gravity="center"-->
+        <!--            android:spinnerMode="dropdown"/>-->
+
+        <!--        <androidx.appcompat.widget.AppCompatSpinner-->
+        <!--            android:id="@+id/spi_ZT"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="54dp"-->
+        <!--            android:layout_marginEnd="@dimen/sp_16"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:dropDownWidth="130dp"-->
+        <!--            android:dropDownHorizontalOffset="70dp"-->
+        <!--            android:dropDownVerticalOffset="54dp"-->
+        <!--            android:entries="@array/state"-->
+        <!--            android:gravity="center_vertical"-->
+        <!--            android:spinnerMode="dropdown">-->
+
+        <!--        </androidx.appcompat.widget.AppCompatSpinner>-->
 
     </LinearLayout>
 
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/layout_margin"
-        android:layout_marginTop="@dimen/layout_margin"
-        android:layout_marginEnd="@dimen/layout_margin"
-        android:layout_marginBottom="@dimen/layout_margin"
-        android:elevation="@dimen/dp_4"
-        app:cardCornerRadius="@dimen/corner_radius">
+        android:background="@color/bk_page"
+        android:orientation="vertical">
 
-        <org.haobtc.wallet.utils.SlideRecyclerView
-            android:id="@+id/recy_jylist"
-            android:name="com.example.myapplication1.ItemFragment2"
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="4"
-            tools:listitem="@layout/fragment_item_trans" >
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="@dimen/layout_margin"
+            android:layout_marginEnd="@dimen/layout_margin"
+            android:layout_marginBottom="@dimen/layout_margin"
+            android:elevation="@dimen/dp_4"
+            app:cardCornerRadius="@dimen/corner_radius">
 
-        </org.haobtc.wallet.utils.SlideRecyclerView>
+            <org.haobtc.wallet.utils.SlideRecyclerView
+                android:id="@+id/recy_jylist"
+                android:name="com.example.myapplication1.ItemFragment2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="4"
+                tools:listitem="@layout/fragment_item_trans">
 
-        <TextView
-            android:id="@+id/tet_None"
-            android:textColor="@color/light_text"
-            android:layout_marginTop="50.5dp"
-            android:textSize="@dimen/text_size"
-            android:visibility="gone"
-            android:text="@string/no_records"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_200"/>
+            </org.haobtc.wallet.utils.SlideRecyclerView>
+
+            <TextView
+                android:id="@+id/tet_None"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_200"
+                android:layout_marginTop="50.5dp"
+                android:gravity="center"
+                android:text="@string/no_records"
+                android:textColor="@color/light_text"
+                android:textSize="@dimen/text_size"
+                android:visibility="gone" />
 
 
-    </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-
+    </LinearLayout>
 </LinearLayout>

@@ -35,12 +35,12 @@
                     android:src="@drawable/progress_one"
                     android:visibility="visible" />
 
-                <ImageView
-                    android:id="@+id/img_progresstwo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/progress_two"
-                    android:visibility="gone" />
+                <!--                <ImageView-->
+                <!--                    android:id="@+id/img_progresstwo"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:src="@drawable/progress_two"-->
+                <!--                    android:visibility="gone" />-->
 
                 <ImageView
                     android:id="@+id/img_progressthree"
@@ -73,18 +73,6 @@
                     android:textColor="@color/button_bk_disableok"
                     android:textSize="@dimen/sp_12" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/tet_Trtwo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/signature_sign"
-                    android:textColor="#b3b3b3"
-                    android:textSize="@dimen/sp_12" />
 
                 <View
                     android:layout_width="match_parent"
@@ -156,412 +144,319 @@
         </RelativeLayout>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/hjsdjhsbhm"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/lin_progress">
-
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/layout_margin"
+                android:layout_marginEnd="@dimen/layout_margin"
+                android:layout_marginBottom="30dp"
+                android:background="@drawable/white_tuo"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp_21">
 
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card_Trantime"
+                <TextView
+                    android:id="@+id/textView14"
                     android:layout_width="match_parent"
-                    android:layout_height="105dp"
-                    android:layout_marginStart="@dimen/layout_margin"
-                    android:layout_marginTop="@dimen/layout_margin"
-                    android:layout_marginEnd="@dimen/layout_margin"
-                    android:visibility="gone"
-                    app:cardCornerRadius="@dimen/corner_radius">
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginTop="42dp"
+                    android:gravity="center"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/big_text_size"
+                    tools:text="+1.387648738 BTC" />
 
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_40"
-                        android:layout_marginTop="@dimen/layout_margin"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="88dp"
-                            android:textColor="@color/light_text"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:drawablePadding="23dp"
-                            android:text="@string/trsactionhash" />
-                        <!--
-                                    #E6E6E6 100% 1 34
-                        -->
-                        <TextView
-                            android:id="@+id/tet_trsactionHash"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/dp_10"
-                            android:ellipsize="end"
-                            android:maxWidth="200dp"
-                            android:maxLines="1"
-                            android:text="xxxxxxxxxxxxxxxxxxxx" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
-                        android:layout_marginStart="@dimen/text_margin"
-                        android:layout_marginTop="50dp"
-                        android:background="@color/separation_line" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_40"
-                        android:layout_marginTop="55dp"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:layout_width="88dp"
-                            android:textColor="@color/light_text"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:drawablePadding="23dp"
-                            android:text="@string/time" />
-
-                        <TextView
-                            android:id="@+id/tet_trsactionTime"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/text_margin"
-                            android:ellipsize="end"
-                            android:maxWidth="200dp"
-                            android:maxLines="1" />
-
-                    </LinearLayout>
-
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView4"
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
-                    android:layout_marginStart="@dimen/layout_margin"
-                    android:layout_marginTop="@dimen/layout_margin"
-                    android:layout_marginEnd="@dimen/layout_margin"
-                    app:cardCornerRadius="@dimen/corner_radius">
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginTop="27dp"
+                    android:background="@color/separation_line" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/text_margin"
-                        android:layout_marginTop="18dp"
-                        android:text="@string/btc"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/big_text_size" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="74dp"
-                        android:layout_marginTop="@dimen/dp_21"
-                        android:text="@string/bitcoin"
-                        android:textColor="@color/light_text"
-                        android:textSize="15sp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
-                        android:layout_marginTop="59.5dp"
-                        android:background="@color/separation_line" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="81dp">
-
-                        <TextView
-                            android:layout_width="98dp"
-                            android:textColor="@color/light_text"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:drawableStart="@drawable/blue_point"
-                            android:drawablePadding="23dp"
-                            android:text="@string/from" />
-
-                        <TextView
-                            android:id="@+id/tet_payAddress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/text_margin"
-                            android:ellipsize="end"
-                            android:maxLines="1"
-                            tools:text="xxxxxxxxxxxxxxx" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
-                        android:layout_marginStart="@dimen/dp_40"
-                        android:layout_marginTop="119.5dp"
-                        android:background="@color/separation_line" />
-
-                    <View
-                        android:layout_width="@dimen/dp_1"
-                        android:layout_height="@dimen/dp_40"
-                        android:layout_marginStart="@dimen/dp_19"
-                        android:layout_marginTop="100dp"
-                        android:background="@color/separation_line" />
-
-                    <LinearLayout
-                        android:id="@+id/lin_getMoreaddress"
-                        android:layout_width="match_parent"
-                        android:gravity="center_vertical"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="133dp">
-
-                        <TextView
-                            android:layout_width="98dp"
-                            android:textColor="@color/light_text"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:drawableStart="@drawable/green_point"
-                            android:drawablePadding="23dp"
-                            android:text="@string/to" />
-                        <!--
-                                    #E6E6E6 100% 1 34
-                        -->
-                        <TextView
-                            android:id="@+id/tet_getMoneyaddress"
-                            android:layout_width="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/dp_10"
-                            android:ellipsize="end"
-                            android:maxLines="1"
-                            tools:text="xxxxxxxxxxxxxxxxxxxx" />
-
-
-                        <View
-                            android:layout_width="@dimen/dp_1"
-                            android:layout_marginEnd="@dimen/dp_10"
-                            android:layout_height="@dimen/dp_20"
-                            android:background="@color/separation_line" />
-
-
-                        <TextView
-                            android:id="@+id/tet_addressNum"
-                            android:textColor="@color/light_text"
-                            tools:text="@string/waitmoredres"
-                            android:layout_marginEnd="@dimen/dp_5"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_marginEnd="@dimen/dp_10"
-                            android:layout_height="wrap_content"
-                            android:contentDescription="@string/arrows"
-                            android:src="@drawable/jiantou" />
-
-                    </LinearLayout>
-
-
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardView3"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/layout_margin"
-                    android:layout_marginTop="@dimen/layout_margin"
-                    android:layout_marginEnd="@dimen/layout_margin"
-                    android:layout_marginBottom="70dp"
-                    app:cardCornerRadius="@dimen/corner_radius"
-                    app:layout_constraintTop_toBottomOf="@+id/cardView4">
+                    android:layout_marginTop="21.5dp">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:text="@string/pay_wallet"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13" />
 
-                        <TextView
-                            android:id="@+id/textView12"
-                            android:layout_width="88dp"
-                            android:textColor="@color/light_text"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:layout_marginTop="@dimen/dp_21"
-                            android:text="@string/amount"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/tet_payAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/text_margin"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        tools:text="小米的钱包" />
 
-                        <TextView
-                            android:id="@+id/textView14"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_20"
-                            tools:text="1.33333"
-                            app:layout_constraintStart_toEndOf="@id/textView12"
-                            app:layout_constraintTop_toTopOf="@id/textView12" />
+                </LinearLayout>
 
 
-                        <TextView
-                            android:id="@+id/textView13"
-                            android:layout_width="88dp"
-                            android:textColor="@color/light_text"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:layout_marginTop="@dimen/dp_19"
-                            android:text="@string/fee"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/textView12" />
+                <LinearLayout
+                    android:id="@+id/lin_getMoreaddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_19"
+                    android:gravity="center_vertical">
 
-                        <TextView
-                            android:id="@+id/textView15"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_20"
-                            tools:text="1.33333"
-                            app:layout_constraintStart_toEndOf="@id/textView13"
-                            app:layout_constraintTop_toTopOf="@id/textView13" />
+                    <TextView
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:drawablePadding="23dp"
+                        android:text="@string/to"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13" />
+
+                    <TextView
+                        android:id="@+id/tet_getMoneyaddress"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        tools:text="xxxxxxxxxxxxxxxxxxxx" />
+
+                    <TextView
+                        android:id="@+id/tet_addressNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13"
+                        tools:text="@string/waitmoredres" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:contentDescription="@string/arrows"
+                        android:src="@drawable/jiantou" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="21.5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:text="@string/fee"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13" />
+
+                    <TextView
+                        android:id="@+id/textView15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        tools:text="1.33333" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="21.5dp">
+
+                    <TextView
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:text="@string/comments"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13" />
+
+                    <TextView
+                        android:id="@+id/tet_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        tools:text="hello" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="21.5dp">
+
+                    <TextView
+                        android:id="@+id/textView18"
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:text="@string/transaction_status"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13" />
+
+                    <TextView
+                        android:id="@+id/tet_state"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        tools:text="@string/transaction_waitting" />
+
+                    <TextView
+                        android:id="@+id/tet_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        tools:text="@string/confirmnum" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="21.5dp">
+
+                    <TextView
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:text="@string/signature_status"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13" />
+
+                    <TextView
+                        android:id="@+id/textView20"
+                        android:layout_width="42dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/button_bk"
+                        android:gravity="center"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="@string/zero_three"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/smaller_text_size"
+                        android:visibility="visible"
+                        app:layout_constraintStart_toEndOf="@+id/textView19"
+                        app:layout_constraintTop_toTopOf="@+id/textView19" />
+
+                    <TextView
+                        android:id="@+id/tet_Nosign"
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:text="@string/no_singn"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/sp_13"
+                        android:visibility="gone" />
+
+                </LinearLayout>
 
 
-                        <TextView
-                            android:id="@+id/textView16"
-                            android:textColor="@color/light_text"
-                            android:layout_width="88dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:layout_marginTop="@dimen/dp_19"
-                            android:text="@string/comments"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/textView13" />
+                <LinearLayout
+                    android:id="@+id/lin_tractionHash"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="21.5dp"
+                    android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/tet_content"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_20"
-                            tools:text="hello"
-                            app:layout_constraintStart_toEndOf="@id/textView16"
-                            app:layout_constraintTop_toTopOf="@id/textView16" />
+                    <TextView
+                        android:layout_width="56dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:text="@string/trsactionhash"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13" />
 
-                        <View
-                            android:id="@+id/view"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/dp_1"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:layout_marginTop="133.5dp"
-                            android:background="@color/separation_line"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:layout_editor_absoluteX="@dimen/text_margin" />
+                    <TextView
+                        android:id="@+id/tet_trsactionHash"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        tools:text="33dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfddfdkfjdkfdfdfn3334j5fjfjffjeejjdk33320" />
+                </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/lin_tractionTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="21.5dp"
+                    android:visibility="gone">
 
-                        <TextView
-                            android:id="@+id/textView18"
-                            android:textColor="@color/light_text"
-                            android:layout_width="88dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:layout_marginTop="21.5dp"
-                            android:text="@string/transaction_status"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/view" />
+                    <TextView
+                        android:layout_width="52dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:text="@string/confrim_time"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_13" />
 
-                        <TextView
-                            android:id="@+id/tet_state"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_20"
-                            tools:text="@string/transaction_waitting"
-                            app:layout_constraintStart_toEndOf="@id/textView18"
-                            app:layout_constraintTop_toTopOf="@id/textView18" />
+                    <TextView
+                        android:id="@+id/tet_trsactionTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        tools:text="2019-12-9 12:00:00" />
+                </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tet_confirm"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/sp_13"
-                            android:layout_marginStart="@dimen/dp_5"
-                            tools:text="@string/confirmnum"
-                            android:textColor="@color/graytext_color"
-                            app:layout_constraintStart_toEndOf="@id/tet_state"
-                            app:layout_constraintBottom_toBottomOf="@id/textView18" />
-
-                        <View
-                            android:id="@+id/view1"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/dp_1"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:layout_marginTop="193.5dp"
-                            android:background="@color/separation_line"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/textView19"
-                            android:textColor="@color/light_text"
-                            android:layout_width="88dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
-                            android:layout_marginTop="21.5dp"
-                            android:text="@string/signature_status"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/view1" />
-
-                        <TextView
-                            android:id="@+id/textView20"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_19"
-                            android:background="@color/button_bk"
-                            android:paddingStart="3dp"
-                            android:paddingEnd="3dp"
-                            android:text="0/0"
-                            android:textColor="@android:color/white"
-                            android:textSize="@dimen/smaller_text_size"
-                            app:layout_constraintStart_toEndOf="@+id/textView19"
-                            app:layout_constraintTop_toTopOf="@+id/textView19" />
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recy_Signatory"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="18dp"
-                            android:paddingStart="@dimen/sp_16"
-                            android:paddingEnd="@dimen/sp_16"
-                            android:paddingBottom="@dimen/dp_10"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            app:layout_constraintTop_toBottomOf="@id/textView20"
-                            tools:itemCount="5"
-                            tools:listitem="@layout/sinatroy_item" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </androidx.cardview.widget.CardView>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <RelativeLayout
-            android:background="@android:color/white"
-            android:layout_alignParentBottom="true"
-            android:layout_width="match_parent"
-            android:layout_height="60dp">
+        <Button
+            android:id="@+id/sig_trans"
+            android:layout_width="300dp"
+            android:layout_height="@dimen/dp_40"
+            android:layout_below="@+id/hjsdjhsbhm"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:layout_marginBottom="@dimen/dp_16"
+            android:background="@drawable/button_bk"
+            android:text="@string/signature_trans"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
 
-            <Button
-                android:id="@+id/sig_trans"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_40"
-                android:textAllCaps="false"
-                android:layout_marginStart="@dimen/text_margin"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginEnd="@dimen/text_margin"
-                android:layout_marginBottom="@dimen/layout_margin"
-                android:background="@drawable/blue_backgraound"
-                android:text="@string/signature_trans"
-                android:textColor="@android:color/white" />
-        </RelativeLayout>
-
+        <TextView
+            android:id="@+id/tet_grive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_below="@+id/sig_trans"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
+            android:text="@string/broad_text"
+            android:textColor="@color/graytext_color"
+            android:textSize="@dimen/sp_12" />
     </RelativeLayout>
+
 </RelativeLayout>

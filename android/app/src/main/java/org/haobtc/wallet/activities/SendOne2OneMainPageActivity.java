@@ -54,10 +54,10 @@ import java.util.Map;
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     private LinearLayout selectSend;
-    private ImageView selectSigNum;
+    private ImageView selectSigNum, buttonSweep;
     private EditText editTextComments, editAddress;
-    private TextView bytesCount;
-    private Button buttonCreate, buttonSweep, buttonPaste;
+    private TextView bytesCount, buttonPaste;
+    private Button buttonCreate;
     private Dialog dialogBtom;
     private String strContent = "";
     private EditText tetMoneye;
@@ -132,7 +132,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
         if (!TextUtils.isEmpty(sendmessage)) {
             editTextComments.setText(String.format("%s", sendmessage));
-        }else{
+        } else {
             editTextComments.setText(String.format("%s", ""));
         }
 

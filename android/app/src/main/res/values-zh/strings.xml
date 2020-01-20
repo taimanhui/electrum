@@ -240,5 +240,23 @@
     <string name="name">名字</string>
     <string name="public_address">公钥地址</string>
     <string name="make_aname">起个名字标记一下</string>
+    <string name="set_bixinkey">设置BixinKEY数</string>
+    <string name="need_band3">需绑定3个BixinKEY，可使用任一BixinKEY授权发币设置多备份可防止单个BixinKEY丢失后，数字资产丢失</string>
+    <string name="blue_toose">蓝牙连接</string>
+    <string name="nfc_line">NFC连接</string>
+    <string name="have_bixinkey">共管人没有BixinKEY？</string>
+    <string name="no_singn">暂无签名</string>
+    <string name="confrim_time">确认时间</string>
+    <string name="broad_text">交易需广播到主网确认方能完成发币</string>
+    <string name="input_btc_address">请输入BTC地址</string>
+    <string name="get_bi_address">收币地址</string>
+    <string name="get_bi_num">收币数量</string>
+    <string name="mbtc_cny">可用 100mBTC = 5400.02CNY</string>
+    <string name="introduce_choose">备注（选填）</string>
+    <string name="slowly">慢</string>
+    <string name="quikly">快</string>
+    <string name="recomend_fee">推荐费率</string>
+    <string name="_sat_byte">20sat/byte 预计1个区块（10分钟）确认</string>
+    <string name="input_public_key">手动输入公钥</string>
 
 </resources>
