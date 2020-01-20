@@ -243,10 +243,31 @@
     <string name="input_help_word">Import mnemonics</string>
     <string name="confirm_creat">Confirm creation</string>
     <string name="key_name">小米的KEY1</string>
-    <string name="hand_input">手动输入</string>
-    <string name="name">名字</string>
-    <string name="public_address">公钥地址</string>
-    <string name="make_aname">起个名字标记一下</string>
-
-
+    <string name="hand_input">Manual input</string>
+    <string name="name">Name</string>
+    <string name="public_address">Public key address</string>
+    <string name="make_aname">Put a name on it</string>
+    <string name="set_bixinkey">Set bixinkey</string>
+    <string name="need_band3">You need to bind 3 BixinKEY. You can use any bixinkey to authorize issuing currency to set multiple backups to prevent the loss of digital assets after a single bixinkey is lost</string>
+    <string name="blue_toose">Bluetooth connectivity</string>
+    <string name="nfc_line">NFC Connect</string>
+    <string name="have_bixinkey">Co owner has no BixinKEY？</string>
+    <string name="zero_three">0-3</string>
+    <string name="no_singn">No signature at all</string>
+    <string name="confrim_time">Confirmation time</string>
+    <string name="broad_text">The transaction needs to be broadcast to the main network for confirmation before currency issuing can be completed</string>
+    <string name="_1_27354789">+1.27354789(unconfirmed)</string>
+    <string name="_12234567_cny">≈12234567 CNY</string>
+    <string name="input_btc_address">Please enter BTC address</string>
+    <string name="get_bi_address">Coin address</string>
+    <string name="get_bi_num">Quantity of money collected</string>
+    <string name="mbtc_cny">available 100mBTC = 5400.02CNY</string>
+    <string name="cny">CNY</string>
+    <string name="introduce_choose">Remarks (optional)</string>
+    <string name="_0_btc">0 BTC</string>
+    <string name="slowly">slow</string>
+    <string name="quikly">fast</string>
+    <string name="recomend_fee">Recommended rates</string>
+    <string name="_sat_byte">20sat/byte Estimated 1 block (10 minutes) confirmation</string>
+    <string name="input_public_key">Enter public key manually</string>
 </resources>

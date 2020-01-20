@@ -40,7 +40,7 @@ public class WheelViewpagerFragment extends Fragment {
     private String balance;
     private Button btnLeft;
     private Button btncenetr;
-    private Button btnright;
+//    private Button btnright;
 
     public WheelViewpagerFragment(String name, String personce, String balance) {
         this.name = name;
@@ -59,7 +59,7 @@ public class WheelViewpagerFragment extends Fragment {
 
         btnLeft = view.findViewById(R.id.wallet_card_bn1);
         btncenetr = view.findViewById(R.id.wallet_card_bn2);
-        btnright = view.findViewById(R.id.wallet_card_bn3);
+//        btnright = view.findViewById(R.id.wallet_card_bn3);
 
         initdata();
 
@@ -82,10 +82,10 @@ public class WheelViewpagerFragment extends Fragment {
             Intent intent = new Intent(getActivity(), ReceivedPageActivity.class);
             startActivity(intent);
         });
-        btnright.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), SignaturePageActivity.class);
-            startActivity(intent);
-        });
+//        btnright.setOnClickListener(v -> {
+//            Intent intent = new Intent(getActivity(), SignaturePageActivity.class);
+//            startActivity(intent);
+//        });
 
     }
 

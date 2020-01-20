@@ -13,9 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -23,14 +20,11 @@ import com.google.gson.JsonSyntaxException;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
-import org.haobtc.wallet.adapter.SinatrayPersonAdapetr;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
-import org.haobtc.wallet.bean.InputOutputAddressEvent;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -41,16 +35,12 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     @BindView(R.id.img_progressone)
     ImageView imgProgressone;
-    @BindView(R.id.img_progresstwo)
-    ImageView imgProgresstwo;
     @BindView(R.id.img_progressthree)
     ImageView imgProgressthree;
     @BindView(R.id.img_progressfour)
     ImageView imgProgressfour;
     @BindView(R.id.tet_Trone)
     TextView tetTrone;
-    @BindView(R.id.tet_Trtwo)
-    TextView tetTrtwo;
     @BindView(R.id.tet_Trthree)
     TextView tetTrthree;
     @BindView(R.id.tet_Trfore)
@@ -63,42 +53,21 @@ public class TransactionDetailsActivity extends BaseActivity {
     ImageView imgShare;
     @BindView(R.id.tb2)
     RelativeLayout tb2;
-
-    @BindView(R.id.card_Trantime)
-    CardView cardTrantime;
     @BindView(R.id.tet_getMoneyaddress)
     TextView tetGetMoneyaddress;
     @BindView(R.id.tet_payAddress)
     TextView tetPayAddress;
-    @BindView(R.id.cardView4)
-    CardView cardView4;
-    @BindView(R.id.textView12)
-    TextView textView12;
     @BindView(R.id.textView14)
     TextView textView14;
-    @BindView(R.id.textView13)
-    TextView textView13;
     @BindView(R.id.textView15)
     TextView textView15;
-    @BindView(R.id.textView16)
-    TextView textView16;
-    @BindView(R.id.view)
-    View view;
     @BindView(R.id.textView18)
     TextView textView18;
-    @BindView(R.id.view1)
-    View view1;
-    @BindView(R.id.textView19)
-    TextView textView19;
     @BindView(R.id.textView20)
     TextView textView20;
-    @BindView(R.id.cardView3)
-    CardView cardView3;
     @BindView(R.id.sig_trans)
     Button sigTrans;
     public static final String TAG = "com.bixin.wallet.activities.TransactionDetailsActivity";
-    @BindView(R.id.recy_Signatory)
-    RecyclerView recySignatory;
     @BindView(R.id.tet_content)
     TextView tetContent;
     @BindView(R.id.tet_state)
@@ -113,9 +82,14 @@ public class TransactionDetailsActivity extends BaseActivity {
     TextView tetAddressNum;
     @BindView(R.id.tet_confirm)
     TextView tetConfirm;
+    @BindView(R.id.lin_tractionHash)
+    LinearLayout linTractionHash;
+    @BindView(R.id.lin_tractionTime)
+    LinearLayout linTractionTime;
+    @BindView(R.id.tet_grive)
+    TextView tetGrive;
     private String keyValue;
     private String tx_hash;
-    private ArrayList<InputOutputAddressEvent> strSinalist;
     private String listType;
     private String rowTrsation;
     private String jsondef_get;
@@ -152,7 +126,6 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        strSinalist = new ArrayList<>();
         if (!TextUtils.isEmpty(keyValue)) {
             if (keyValue.equals("A")) {
                 //creat succses
@@ -213,6 +186,7 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     }
 
+    //intent ->histry or create
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String jsondef_get) {
         Log.i("jsonDetailData", "jsonDetail==== " + jsondef_get);
@@ -230,8 +204,6 @@ public class TransactionDetailsActivity extends BaseActivity {
         String description = getnewcreatTrsactionListBean.getDescription();
         String tx_status = getnewcreatTrsactionListBean.getTxStatus();
         List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutputAddr();
-//        List<String> input_addr = getnewcreatTrsactionListBean.getInputAddr();
-        List<String> cosigner = getnewcreatTrsactionListBean.getCosigner();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
         String txid = getnewcreatTrsactionListBean.getTxid();
         rowtx = getnewcreatTrsactionListBean.getTx();
@@ -239,20 +211,15 @@ public class TransactionDetailsActivity extends BaseActivity {
         tetTrsactionHash.setText(txid);
         //input address num
         int size = output_addr.size();
-        if (language.equals("Chinese")) {
-            tetAddressNum.setText(String.format("%s%d%s", getResources().getString(R.string.wait), size, getResources().getString(R.string.ge)));
-        } else if (language.equals("English")) {
+
+        if (language.equals("English")) {
             tetAddressNum.setText(String.format("%s%d", getResources().getString(R.string.wait), size));
+        } else {
+            tetAddressNum.setText(String.format("%s%d%s", getResources().getString(R.string.wait), size, getResources().getString(R.string.ge)));
         }
         //output_address
         String addr = output_addr.get(0).getAddr();
         tetGetMoneyaddress.setText(addr);
-
-//        if (input_addr != null) {
-//            //input_address
-//            String strInputAddr = input_addr.get(0);
-//            tetPayAddress.setText(strInputAddr);
-//        }
         if (signStatus != null) {
             Integer integer = signStatus.get(0);
             Integer integer1 = signStatus.get(1);
@@ -269,22 +236,14 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         //Remarks
         tetContent.setText(description);
-        //cosigner
-        for (int i = 0; i < cosigner.size(); i++) {
-            InputOutputAddressEvent inputOutputAddressEvent = new InputOutputAddressEvent();
-            inputOutputAddressEvent.setNum(String.valueOf(i + 1));
-            inputOutputAddressEvent.setAddress(cosigner.get(i));
-            strSinalist.add(inputOutputAddressEvent);
-        }
-        SinatrayPersonAdapetr sinatrayPersonAdapetr = new SinatrayPersonAdapetr(strSinalist);
-        recySignatory.setAdapter(sinatrayPersonAdapetr);
-        if (!TextUtils.isEmpty(tx_status)){
+        if (!TextUtils.isEmpty(tx_status)) {
             //judge state
             judgeState(tx_status);
         }
 
     }
 
+    //scan get
     @SuppressLint("DefaultLocale")
     private void scanDataDetailMessage() {
         Gson gson = new Gson();
@@ -295,8 +254,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         String description = scanListdata.getDescription();
         String tx_status = scanListdata.getTxStatus();
         List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddr = scanListdata.getOutputAddr();
-//        List<String> input_addr = getnewcreatTrsactionListBean.getInputAddr();
-        List<String> cosigner = scanListdata.getCosigner();
+
         List<Integer> signStatusMes = scanListdata.getSignStatus();
         String txid = scanListdata.getTxid();
         rowtx = scanListdata.getTx();
@@ -313,11 +271,6 @@ public class TransactionDetailsActivity extends BaseActivity {
         String addr = outputAddr.get(0).getAddr();
         tetGetMoneyaddress.setText(addr);
 
-//        if (input_addr != null) {
-//            //input_address
-//            String strInputAddr = input_addr.get(0);
-//            tetPayAddress.setText(strInputAddr);
-//        }
         if (signStatusMes != null) {
             Integer integer = signStatusMes.get(0);
             Integer integer1 = signStatusMes.get(1);
@@ -334,16 +287,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         //Remarks
         tetContent.setText(description);
-        //cosigner
-        for (int i = 0; i < cosigner.size(); i++) {
-            InputOutputAddressEvent inputOutputAddressEvent = new InputOutputAddressEvent();
-            inputOutputAddressEvent.setNum(String.valueOf(i + 1));
-            inputOutputAddressEvent.setAddress(cosigner.get(i));
-            strSinalist.add(inputOutputAddressEvent);
-        }
-        SinatrayPersonAdapetr sinatrayPersonAdapetr = new SinatrayPersonAdapetr(strSinalist);
-        recySignatory.setAdapter(sinatrayPersonAdapetr);
-        if (!TextUtils.isEmpty(tx_status)){
+        if (!TextUtils.isEmpty(tx_status)) {
             //judge state
             judgeState(tx_status);
         }
@@ -358,52 +302,55 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
-            imgProgresstwo.setVisibility(View.GONE);
+//            imgProgresstwo.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
             //text color
-            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+//            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             //trsaction hash and time
-            cardTrantime.setVisibility(View.VISIBLE);
+            linTractionHash.setVisibility(View.VISIBLE);
+            linTractionTime.setVisibility(View.VISIBLE);
         } else if (tx_status.contains("confirmations")) {//Confirmed
             tetState.setText(R.string.completed);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
-            imgProgresstwo.setVisibility(View.GONE);
+//            imgProgresstwo.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
             //Number of judgment confirmation
-            String strConfirl = tx_status.replaceAll(" confirmations","");
+            String strConfirl = tx_status.replaceAll(" confirmations", "");
             BigDecimal bignum1 = new BigDecimal(strConfirl);
             BigDecimal bigDecimal = new BigDecimal(100);
             int mathMax = bignum1.compareTo(bigDecimal);
             if (mathMax == 1) {
                 tetConfirm.setText(String.format("%s%s", getResources().getString(R.string.confirmnum), ">100"));
-            }else{
+            } else {
                 tetConfirm.setText(String.format("%s%s", getResources().getString(R.string.confirmnum), strConfirl));
             }
 
             //text color
-            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+//            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-            ////trsaction hash and time
-            cardTrantime.setVisibility(View.VISIBLE);
+            //trsaction hash and time
+            linTractionHash.setVisibility(View.VISIBLE);
+            linTractionTime.setVisibility(View.VISIBLE);
         } else if (tx_status.contains("Unsigned")) {//unsigned
             tetState.setText(R.string.unsigned);
             sigTrans.setText(R.string.signature_trans);
         } else if (tx_status.contains("Signed")) {//signed
             tetState.setText(R.string.wait_broadcast);
             sigTrans.setText(R.string.broadcast);
+            tetGrive.setVisibility(View.VISIBLE);
             //progress
             imgProgressone.setVisibility(View.GONE);
-            imgProgresstwo.setVisibility(View.GONE);
+//            imgProgresstwo.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.VISIBLE);
             imgProgressfour.setVisibility(View.GONE);
             //text color
-            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+//            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
 
         } else if (tx_status.contains("Partially signed")) {//you are signer
@@ -411,11 +358,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             sigTrans.setText(R.string.forWord_orther);
             //progress
             imgProgressone.setVisibility(View.GONE);
-            imgProgresstwo.setVisibility(View.VISIBLE);
+//            imgProgresstwo.setVisibility(View.VISIBLE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.GONE);
             //text color
-            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+//            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
         }
 
     }
@@ -461,5 +408,11 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }
 

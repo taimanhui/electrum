@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.mainwheel.WheelViewpagerFragment">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/wallet_card"
-        android:layout_marginEnd="@dimen/dp_10"
         android:layout_width="300dp"
         android:layout_height="180dp"
+        android:layout_marginEnd="@dimen/dp_10"
         android:elevation="4dp"
         app:cardCornerRadius="20dp">
 
@@ -22,11 +22,13 @@
             <TextView
                 android:id="@+id/wallet_card_name"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="26dp"
+                android:layout_height="25dp"
+                android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="26dp"
+                android:gravity="center_vertical"
                 android:text="@string/wallet_name"
                 android:textColor="@android:color/white"
+                android:textSize="@dimen/big_text_size"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +39,7 @@
                 android:layout_marginEnd="26dp"
                 android:drawableStart="@drawable/rule_white"
                 android:drawablePadding="5dp"
-                android:text="3-7"
+                android:text="@string/zero_three"
                 android:textColor="@android:color/white"
                 app:layout_constraintBaseline_toBaselineOf="@id/wallet_card_name"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -45,73 +47,102 @@
             <TextView
                 android:id="@+id/wallet_card_tv3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_height="17dp"
+                android:layout_marginTop="4dp"
                 android:text="@string/balance"
-                android:textColor="@android:color/white"
+                android:textColor="@color/wallet_yue"
+                android:textSize="@dimen/sp_12"
                 app:layout_constraintStart_toStartOf="@id/wallet_card_name"
                 app:layout_constraintTop_toBottomOf="@id/wallet_card_name" />
+
 
             <TextView
                 android:id="@+id/wallet_card_tv4"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:text="43.556 BTC"
+                android:layout_height="27dp"
+                android:layout_marginTop="3dp"
+                android:gravity="center_vertical"
                 android:textColor="@android:color/white"
+                android:textSize="@dimen/big_text_size"
                 app:layout_constraintStart_toStartOf="@id/wallet_card_tv3"
-                app:layout_constraintTop_toBottomOf="@id/wallet_card_tv3" />
+                app:layout_constraintTop_toBottomOf="@id/wallet_card_tv3"
+                tools:text="43.556789 BTC" />
 
-            <Button
-                android:id="@+id/wallet_card_bn1"
-                android:layout_width="82dp"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="27dp"
-                android:layout_marginStart="26dp"
-                android:textAllCaps="false"
-                android:layout_marginTop="17dp"
-                android:layout_marginEnd="9dp"
-                android:layout_marginBottom="19dp"
-                android:background="@drawable/button_bk_small"
-                android:gravity="center"
-                android:text="@string/send"
+                android:layout_marginStart="@dimen/dp_5"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical"
                 android:textColor="@android:color/white"
-                android:textSize="13sp"
+                android:textSize="@dimen/sp_12"
+                app:layout_constraintStart_toEndOf="@id/wallet_card_tv4"
+                app:layout_constraintTop_toBottomOf="@id/wallet_card_tv3"
+                android:text="@string/_1_27354789" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#c1d0e4"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/wallet_card_tv4"
+                app:layout_constraintTop_toBottomOf="@id/wallet_card_tv4"
+                android:text="@string/_12234567_cny" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="27dp"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/wallet_card_bn2"
+                android:layout_marginTop="15dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/wallet_card_tv4" />
+                app:layout_constraintTop_toBottomOf="@id/wallet_card_tv4">
 
-            <Button
-                android:id="@+id/wallet_card_bn2"
-                android:textAllCaps="false"
-                android:layout_width="82dp"
-                android:layout_height="27dp"
-                android:layout_marginStart="9dp"
-                android:layout_marginEnd="9dp"
-                android:background="@drawable/button_bk_small"
-                android:gravity="center"
-                android:text="@string/receive"
-                android:textColor="@android:color/white"
-                android:textSize="13sp"
-                app:layout_constraintBottom_toBottomOf="@id/wallet_card_bn1"
-                app:layout_constraintEnd_toStartOf="@id/wallet_card_bn3"
-                app:layout_constraintStart_toEndOf="@id/wallet_card_bn1" />
+                <Button
+                    android:id="@+id/wallet_card_bn1"
+                    android:layout_width="126dp"
+                    android:layout_height="27dp"
+                    android:layout_marginEnd="5.5dp"
+                    android:background="@drawable/button_bk_small"
+                    android:gravity="center"
+                    android:text="@string/send"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp" />
 
-            <Button
-                android:id="@+id/wallet_card_bn3"
-                android:layout_width="82dp"
-                android:layout_height="27dp"
-                android:textAllCaps="false"
-                android:layout_marginStart="9dp"
-                android:layout_marginEnd="26dp"
-                android:background="@drawable/button_bk_small"
-                android:gravity="center"
-                android:text="@string/signature"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/smaller_text_size"
-                app:layout_constraintBottom_toBottomOf="@id/wallet_card_bn2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/wallet_card_bn2" />
+                <Button
+                    android:id="@+id/wallet_card_bn2"
+                    android:layout_width="126dp"
+                    android:layout_height="27dp"
+                    android:layout_marginStart="5.5dp"
+                    android:background="@drawable/button_bk_small"
+                    android:gravity="center"
+                    android:text="@string/receive"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+
+<!--            <Button-->
+<!--                android:id="@+id/wallet_card_bn3"-->
+<!--                android:layout_width="82dp"-->
+<!--                android:layout_height="27dp"-->
+<!--                android:layout_marginStart="9dp"-->
+<!--                android:layout_marginEnd="26dp"-->
+<!--                android:background="@drawable/button_bk_small"-->
+<!--                android:gravity="center"-->
+<!--                android:text="@string/signature"-->
+<!--                android:textAllCaps="false"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textSize="@dimen/smaller_text_size"-->
+<!--                android:visibility="gone"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/wallet_card_bn2"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@id/wallet_card_bn2" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

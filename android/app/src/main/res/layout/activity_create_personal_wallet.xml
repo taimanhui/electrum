@@ -115,7 +115,7 @@
                     android:layout_marginTop="18.5dp"
                     android:paddingStart="@dimen/text_margin"
                     android:paddingEnd="@dimen/text_margin"
-                    android:text="@string/set_two_num"
+                    android:text="@string/set_bixinkey"
                     android:textColor="@color/set_txt"
                     android:textSize="@dimen/text_size" />
 
@@ -190,13 +190,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_16"
                     android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_16"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:textSize="12sp"
+                    android:text="@string/need_band3"
                     android:textColor="#b3b3b3"
-                    tools:text="需绑定3个BixinKEY，可使用任一BixinKEY授权发币设置多备份可防止单个BixinKEY丢失后，数字资产丢失"
-                    />
+                    android:textSize="12sp" />
 
 
             </LinearLayout>
