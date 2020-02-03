@@ -27,7 +27,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.onlywallet.CreatFinishPersonalActivity"></activity>
+        <activity android:name=".activities.set.CurrencyActivity"></activity>
+        <activity android:name=".activities.set.BixinKEYMenageActivity" />
+        <activity android:name=".activities.onlywallet.CreatFinishPersonalActivity" />
         <activity android:name=".activities.onlywallet.CreateOnlyChooseActivity" />
         <activity android:name=".activities.onlywallet.CreatePersonalWalletActivity" />
         <activity android:name=".activities.manywallet.ManyWalletTogetherActivity" />

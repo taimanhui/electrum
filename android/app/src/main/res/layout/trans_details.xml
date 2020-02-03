@@ -450,13 +450,13 @@
             android:id="@+id/tet_grive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:layout_below="@+id/sig_trans"
             android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
             android:text="@string/broad_text"
             android:textColor="@color/graytext_color"
-            android:textSize="@dimen/sp_12" />
+            android:textSize="@dimen/sp_12"
+            android:visibility="gone" />
     </RelativeLayout>
 
 </RelativeLayout>

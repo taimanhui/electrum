@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    tools:context=".activities.set.BixinKEYMenageActivity">
+
+    <LinearLayout
+        android:background="@color/bk_page"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:background="@color/button_bk_ddake"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50">
+
+            <ImageView
+                android:id="@+id/img_back"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
+                android:layout_centerVertical="true"
+                android:padding="@dimen/dp_8"
+                android:src="@drawable/back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:text="@string/bixinkey_manage"
+                android:textColor="@color/text"
+                android:textSize="@dimen/text_size" />
+
+            <TextView
+                android:id="@+id/tet_Add"
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_alignParentEnd="true"
+                android:text="@string/add_"
+                android:textColor="@color/button_bk_disableok"
+                android:textSize="@dimen/text_size" />
+
+
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recl_bixinKey_list"
+            android:layout_marginTop="@dimen/sp_16"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_10"
+            android:background="@drawable/white_tuo"
+            tools:listitem="@layout/bixinkey_check_item"
+            tools:itemCount="6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+
+</LinearLayout>

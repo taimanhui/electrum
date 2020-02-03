@@ -132,13 +132,16 @@ public class TransactionDetailsActivity extends BaseActivity {
                 mCreataSuccsesCheck();
             } else if (keyValue.equals("B")) {
                 if (listType.equals("history")) {
+                    tvInTb2.setText(R.string.recevid);
                     //histry trsaction detail
                     trsactionDetail();
 
                 } else if (listType.equals("scan")) {
+                    tvInTb2.setText(R.string.recevid);
                     scanDataDetailMessage();
 
                 } else {
+                    tvInTb2.setText(R.string.sendetail);
                     //creat succses
                     mCreataSuccsesCheck();
 

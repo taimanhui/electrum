@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/white"
     android:clipToPadding="true"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -33,9 +33,9 @@
     </RelativeLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@color/bk_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bk_page"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
@@ -86,8 +86,8 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/dp_16"
                     android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/dp_16"
                     android:src="@drawable/jiantou" />
 
             </LinearLayout>
@@ -128,30 +128,22 @@
                         android:id="@+id/address_count"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
+                        android:background="@drawable/little_blue_back"
+                        android:gravity="center"
                         android:paddingStart="@dimen/dp_10"
                         android:paddingEnd="@dimen/dp_10"
-                        android:background="@color/button_bk"
-                        android:gravity="center"
                         android:text="@string/to_num"
-                        android:textColor="@android:color/white" />
+                        android:textColor="@color/button_bk_disableok"
+                        android:textSize="@dimen/sp_13" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/dp_16"
                         android:layout_marginStart="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:src="@drawable/jiantou" />
 
                 </LinearLayout>
-
-                <View
-                    android:id="@+id/view2"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:background="@color/separation_line"
-                    app:layout_constraintTop_toBottomOf="@id/linearLayout10" />
 
                 <TextView
                     android:id="@+id/textView26"
@@ -164,7 +156,7 @@
                     android:textColor="@color/text"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/view2" />
+                    app:layout_constraintTop_toBottomOf="@id/linearLayout10" />
 
                 <TextView
                     android:id="@+id/tv_amount"
@@ -181,8 +173,9 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/lsdjlskm"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="130dp"
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/layout_margin"
             android:layout_marginEnd="@dimen/layout_margin"
@@ -203,11 +196,11 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/text_margin"
                         android:layout_weight="1"
-                        android:text="@string/rate"  />
+                        android:text="@string/fee" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -222,14 +215,14 @@
 
                     <EditText
                         android:id="@+id/tv_fee"
-                        android:paddingEnd="@dimen/dp_10"
-                        android:textSize="@dimen/sp_14"
-                        android:textColor="@color/text"
-                        android:background="@null"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
+                        android:background="@null"
                         android:paddingStart="@dimen/dp_10"
-                        android:text="0" />
+                        android:paddingEnd="@dimen/dp_10"
+                        android:text="0"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/sp_14" />
 
                     <ImageView
                         android:id="@+id/img_feeSelect"
@@ -241,19 +234,46 @@
 
                 </LinearLayout>
 
-                <View
+                <androidx.appcompat.widget.AppCompatSeekBar
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginTop="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:background="@color/separation_line" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:max="100"
+                    android:overScrollMode="never" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_16">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="@string/slowly"
+                        android:textColor="#b3b3b3"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:gravity="center_horizontal"
+                        android:text="@string/quikly"
+                        android:textColor="#b3b3b3"
+                        android:textSize="12sp" />
+
+                </RelativeLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/text_margin"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -265,12 +285,12 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/layout_margin"
-                        android:textSize="@dimen/sp_14"
                         android:layout_weight="1"
-                        android:inputType="text"
                         android:background="@null"
+                        android:inputType="text"
                         android:maxLength="20"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_14" />
 
                     <TextView
                         android:id="@+id/tet_textNum"
@@ -287,17 +307,16 @@
 
         <Button
             android:id="@+id/create_trans_one2many"
-            android:layout_width="343dp"
-            android:layout_height="@dimen/dp_40"
-            android:layout_centerInParent="true"
-            android:textAllCaps="false"
+            android:layout_width="300dp"
+            android:layout_height="@dimen/dp_50"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:layout_marginBottom="@dimen/dp_40"
             android:background="@drawable/button_bk"
-            android:text="@string/create_trans"
+            android:text="@string/next"
+            android:textAllCaps="false"
+            android:layout_marginTop="@dimen/dp_30"
             android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lsdjlskm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 

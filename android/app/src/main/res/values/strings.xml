@@ -8,7 +8,7 @@
     <string name="transaction_setting">Transaction Setting</string>
     <string name="service_online">Service Online</string>
     <string name="about">About（Provisions Of The Agreement）</string>
-    <string name="zh_simple">中文简体</string>
+    <string name="zh_simple">中文（简体）</string>
     <string name="zh_traditional">中文繁体</string>
     <string name="en">English</string>
     <string name="korean">Korean</string>
@@ -270,4 +270,31 @@
     <string name="recomend_fee">Recommended rates</string>
     <string name="_sat_byte">20sat/byte Estimated 1 block (10 minutes) confirmation</string>
     <string name="input_public_key">Enter public key manually</string>
+    <string name="input_send_num">Enter the issuing currency quantity</string>
+    <string name="_0">0</string>
+    <string name="recevid">Money collection details</string>
+    <string name="sendetail">Details of currency issue</string>
+    <string name="legal_currency">Legal currency</string>
+    <string name="bixinkey_backups">BixinKEY Backup recovery</string>
+    <string name="bixinkey_manage">BixinKEY Manger</string>
+    <string name="input_bixinkey_text">Enter bixinkey backup text</string>
+    <string name="please_clode_text">Please enter backup text</string>
+    <string name="phone_choose">Or select from a backup stored locally</string>
+    <string name="cinfirm_recovery">Confirm recovery</string>
+    <string name="bee_table">Monetary unit</string>
+    <string name="bixinkey_qrspr">BixinKEY-QRSPR</string>
+    <string name="_1">Note: family share No.1</string>
+    <string name="_BTC">BTC</string>
+    <string name="mbtc_0_001_btc">mBTC = 0.001 BTC</string>
+    <string name="sat_0_00000001_btc">sat = 0.00000001 BTC</string>
+    <string name="btc_table">Bitcoin unit</string>
+    <string name="legal_table">Legal tender unit</string>
+    <string name="money_cny">RMB（CNY）</string>
+    <string name="dollar">dollar（USD）</string>
+    <string name="korean_money">South Korean won（KMR）</string>
+    <string name="synchroniz_service">同步服务器</string>
+    <string name="service_text">使用同步服务器，可通过BixinKEY备份和恢复多签钱包，并可在多个联署人间同步未签名交易； 同步服务器不存储任何私钥和个人信息。</string>
+    <string name="electrum_select">Electrum节点选择</string>
+    <string name="add_custom_node">添加自定义节点</string>
+    <string name="input_node_message">输入节点信息</string>
 </resources>
