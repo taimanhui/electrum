@@ -638,6 +638,11 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         out.sort(key=operator.itemgetter('time'))
         return out
 
+    def update_invoice(self, old_tx, new_tx):
+        for key, value in self.invoices:
+            if value['tx'] == old_tx:
+                value['tx'] = new_tx
+
     def get_invoice(self, key):
         if key not in self.invoices:
             return

@@ -58,6 +58,7 @@ password = '111111'
 #path = '/storage/emulated/0/Pictures/test'
 #testcommond.save_tx_to_file(path, '123')
 
+#testcommond.set_currency("CNY")
 testcommond.set_currency("None")
 #load_wallet
 testcommond.load_wallet(name, password)
@@ -92,10 +93,14 @@ output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':
 all_output.append(output_info)
 #all_output.append(output_info1)
 output_str = json.dumps(all_output)
-fee = 0.02
+fee = 150
 message = 'test111'
 print("--------------all_output= %s" %output_str)
-ret_str = testcommond.mktx(output_str, message, fee)
+ret_str = testcommond.get_fee_by_feerate(output_str, message, 0.9)
+ret_list = json.loads(ret_str)
+print("get_fee_by_feerate================%s" % ret_list)
+
+ret_str = testcommond.mktx(output_str, message)
 ret_list = json.loads(ret_str)
 print("mktx================%s" % ret_list)
 
