@@ -39,7 +39,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="360dp"
             android:layout_marginLeft="@dimen/layout_margin"
             android:layout_marginTop="10dp"
             android:layout_marginRight="@dimen/layout_margin"
@@ -56,6 +56,7 @@
                     android:id="@+id/tet_s1"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:visibility="gone"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:drawableEnd="@drawable/jiantou"
@@ -72,16 +73,34 @@
                     android:background="@color/separation_line" />
 
                 <TextView
-                    android:id="@+id/tet_s2"
+                    android:id="@+id/tet_bixinKey"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:visibility="gone"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:drawableEnd="@drawable/jiantou"
                     android:focusable="true"
                     android:gravity="center_vertical"
-                    android:text="@string/message_manager"
+                    android:text="@string/bixinkey_manage"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/text_size" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:background="@color/separation_line" />
+
+                <TextView
+                    android:id="@+id/tet_s2"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:visibility="visible"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:drawableEnd="@drawable/jiantou"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/bixinkey_backups"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size" />
 
@@ -100,6 +119,23 @@
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:text="@string/language"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/text_size" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:background="@color/separation_line" />
+                <TextView
+                    android:id="@+id/tet_Faru"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:drawableEnd="@drawable/jiantou"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/legal_currency"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size" />
 

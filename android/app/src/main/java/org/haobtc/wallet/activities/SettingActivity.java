@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.set.CurrencyActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,6 +32,10 @@ public class SettingActivity extends BaseActivity {
     TextView tetS7;
     @BindView(R.id.img_back)
     ImageView imgBack;
+    @BindView(R.id.tet_bixinKey)
+    TextView tetBixinKey;
+    @BindView(R.id.tet_Faru)
+    TextView tetFaru;
 
     @Override
     public int getLayoutId() {
@@ -46,39 +51,38 @@ public class SettingActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.tet_s1, R.id.tet_s2, R.id.tet_s3, R.id.tet_s4, R.id.tet_s5, R.id.tet_s6, R.id.tet_s7,R.id.img_back})
+    @OnClick({R.id.tet_s1, R.id.tet_s2, R.id.tet_s3, R.id.tet_s4, R.id.tet_s5, R.id.tet_s6, R.id.tet_s7, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.tet_bixinKey:
+                
+                break;
             case R.id.tet_s1:
-                Intent intent1 = new Intent(this, HardwareInfoActivity.class);
-                startActivity(intent1);
+                mIntent(HardwareInfoActivity.class);
                 break;
             case R.id.tet_s2:
-                Intent intent2 = new Intent(this, MessageManagerActivity.class);
-                startActivity(intent2);
+                mIntent(MessageManagerActivity.class);
                 break;
             case R.id.tet_s3:
-                Intent intent3 = new Intent(this, LanguageSettingActivity.class);
-                startActivity(intent3);
+                mIntent(LanguageSettingActivity.class);
                 break;
             case R.id.tet_s4:
-                Intent intent4 = new Intent(this, ServerSettingActivity.class);
-                startActivity(intent4);
+                mIntent(ServerSettingActivity.class);
                 break;
             case R.id.tet_s5:
-                Intent intent5 = new Intent(this, TransactionsSettingActivity.class);
-                startActivity(intent5);
+                mIntent(TransactionsSettingActivity.class);
                 break;
             case R.id.tet_s6:
-                Intent intent6 = new Intent(this, ServiceOnlineActivity.class);
-                startActivity(intent6);
+               mIntent(ServiceOnlineActivity.class);
                 break;
             case R.id.tet_s7:
-                Intent intent7 = new Intent(this, AboutActivity.class);
-                startActivity(intent7);
+                mIntent(AboutActivity.class);
                 break;
             case R.id.img_back:
                 finish();
+                break;
+            case R.id.tet_Faru:
+                mIntent(CurrencyActivity.class);
                 break;
         }
     }

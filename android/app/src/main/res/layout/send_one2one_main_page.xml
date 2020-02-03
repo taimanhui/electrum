@@ -425,6 +425,7 @@
                     <Button
                         android:layout_width="70dp"
                         android:layout_height="match_parent"
+                        android:textAllCaps="false"
                         android:background="@drawable/blue_strok"
                         android:text="@string/recomend_fee"
                         android:textColor="@color/button_bk_disableok"

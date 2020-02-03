@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -20,12 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
-import com.gyf.immersionbar.ImmersionBar;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
@@ -34,22 +30,30 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.SendmoreAddressAdapter;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
-import org.haobtc.wallet.utils.CommonUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class Send2ManyActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     public static final String TOTAL_AMOUNT = "org.haobtc.wallet.activities.Send2ManyActivity.TOTAL";
     public static final String ADDRESS = "org.haobtc.activities.Send2ManyActivity.ADDRESS";
-    private Button buttonSweep, buttonPaste, buttonNext;
+    @BindView(R.id.edit_Context)
+    EditText editContext;
+    @BindView(R.id.byte_count)
+    TextView byteCount;
+    private Button buttonNext;
     private EditText editTextAddress, editTextAmount;
     private LinearLayout buttonAdd;
-    private TextView textViewTotal;
+    private TextView buttonPaste, textViewTotal;
+    private ImageView buttonSweep;
     private RecyclerView recyclerView;
     private static final int REQUEST_CODE = 0;
     private RxPermissions rxPermissions;
@@ -95,6 +99,30 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
         totalAmount = new BigDecimal("0");
+        setEditTextComments();
+    }
+
+    private void setEditTextComments() {
+        editContext.addTextChangedListener(new TextWatcher() {
+            CharSequence input;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                input = s;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                byteCount.setText(String.format(Locale.CHINA, "%d/20", input.length()));
+                if (input.length() > 19) {
+                    Toast.makeText(Send2ManyActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     @Override
@@ -236,7 +264,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                     textViewTotal.setText(String.format("%d", 0));
                     buttonNext.setEnabled(false);
                     buttonNext.setBackground(getResources().getDrawable(R.color.button_bk_grey));
-                }else{
+                } else {
                     totalAmount = new BigDecimal("0");
                     for (int i = 0; i < sendMoreAddressList.size(); i++) {
                         BigDecimal bignum1 = new BigDecimal(sendMoreAddressList.get(i).getInputAmount());
@@ -294,5 +322,12 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
             }
         }
 
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

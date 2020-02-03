@@ -138,6 +138,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
 
         view.findViewById(R.id.tet_handInput).setOnClickListener(v ->{
             showInputDialogs(ManyWalletTogetherActivity.this, R.layout.bixinkey_input);
+            dialogBtom.cancel();
         });
         //cancel dialog
         view.findViewById(R.id.img_Cancle).setOnClickListener(v -> {
