@@ -175,7 +175,7 @@
     <string name="choose_payaddress">选择付款钱包</string>
     <string name="feenum">数量</string>
     <string name="waitmoredres">等15个</string>
-    <string name="now_verson">当前固件版本</string>
+    <string name="now_verson">系统固件版本</string>
     <string name="verson_updata">v1.1.2版本更新</string>
     <string name="fix_where">1.优化了主界面</string>
     <string name="set_NFC">请在系统设置中先启用NFC功能！</string>
@@ -280,5 +280,19 @@
     <string name="electrum_select">Electrum节点选择</string>
     <string name="add_custom_node">添加自定义节点</string>
     <string name="input_node_message">输入节点信息</string>
+    <string name="restore_factory">恢复出厂设置</string>
+    <string name="somemore_wallet">**的钱包</string>
+    <string name="bixinkey_message">BixinKEY信息</string>
+    <string name="bixinkey">小米的BixinKEY</string>
+    <string name="verson_update">固件版本（升级）</string>
+    <string name="v_1_2_3">V 1.2.3</string>
+    <string name="fix_pin">修改PIN码</string>
+    <string name="nopass_pay">免密支付</string>
+    <string name="opened">已开启</string>
+    <string name="bluetooth_name">蓝牙名称</string>
+    <string name="bixinkey_name">名称</string>
+    <string name="bixinkey_set">BixinKEY设置</string>
+    <string name="choose_update">请选择固件进行升级</string>
+    <string name="bluetooth_code">蓝牙固件版本</string>
 
 </resources>

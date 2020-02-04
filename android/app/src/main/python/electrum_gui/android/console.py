@@ -159,6 +159,7 @@ class AndroidCommands(commands.Commands):
         if self.network is None or not self.network.is_connected():
             status = _("Offline")
         elif self.network.is_connected():
+            out = {}
             self.num_blocks = self.network.get_local_height()
             server_height = self.network.get_server_height()
             server_lag = self.num_blocks - server_height
@@ -171,9 +172,13 @@ class AndroidCommands(commands.Commands):
             else:
                 c, u, x = self.wallet.get_balance()
                 text = _("Balance") + ": %s " % (self.format_amount_and_units(c))
+                out['balance'] = self.format_amount(c)
+                out['fiat'] = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
                 if u:
+                    out['unconfirmed'] = self.format_amount(u, is_diff=True).strip()
                     text += " [%s unconfirmed]" % (self.format_amount(u, is_diff=True).strip())
                 if x:
+                    out['unmatured'] = self.format_amount(x, is_diff=True).strip()
                     text += " [%s unmatured]" % (self.format_amount(x, is_diff=True).strip())
                 if self.wallet.lnworker:
                     l = self.wallet.lnworker.get_balance()
@@ -182,8 +187,8 @@ class AndroidCommands(commands.Commands):
                 # append fiat balance and price
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-                print("update_statue text = %s" % text)
-        self.callbackIntent.onCallback("update_status", text)
+                #print("update_statue text = %s out = %s" % (text, out))
+        #self.callbackIntent.onCallback(Status.update_status, out)
 
     def save_tx_to_file(self, path, tx):
         print("save_tx_to_file in.....")
@@ -392,34 +397,58 @@ class AndroidCommands(commands.Commands):
         max_prec_amount = int(power * x)
         return max_prec_amount
 
+    def parse_output(self, outputs):
+        all_output_add = json.loads(outputs)
+        outputs_addrs = []
+        for key in all_output_add:
+            for address, amount in key.items():
+                outputs_addrs.append(PartialTxOutput.from_address_and_value(address, self.get_amount(amount)))
+                print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" % (
+                    self.wallet, self.wallet.wallet_type, self.wallet.use_change, self.wallet.get_addresses()))
+        return outputs_addrs
 
-    def mktx(self, outputs, message, fee):
+    def get_fee_by_feerate(self, outputs, message, feerate):
         try:
             self._assert_wallet_isvalid()
             all_output_add = json.loads(outputs)
-            outputs_addrs = []
-            for key in all_output_add:
-                for address, amount in key.items():
-                    outputs_addrs.append(PartialTxOutput.from_address_and_value(address, self.get_amount(amount)))
-                    print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" %(self.wallet, self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
-            coins = self.wallet.get_spendable_coins(domain = None)
-            tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee))
+            outputs_addrs = self.parse_output(outputs)
+            coins = self.wallet.get_spendable_coins(domain=None)
+            fee_per_kb = 1000 * Decimal(feerate)
+            from functools import partial
+            fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
+            # tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee_estimator))
+            tx = self.wallet.make_unsigned_transaction(coins=coins, outputs=outputs_addrs, fee=fee_estimator)
             tx.set_rbf(self.rbf)
             self.wallet.set_label(tx.txid(), message)
-            partial_tx = tx.serialize_as_bytes().hex()
-            print("console:mkun:tx====%s" % partial_tx)
+            size = tx.estimated_size()
+            fee = tx.get_fee()
+            print("feee-----%s size =%s" % (fee, size))
+            self.tx = tx.serialize_as_bytes().hex()
+            print("console:mkun:tx====%s" % self.tx)
             tx_details = self.wallet.get_tx_info(tx)
             print("tx_details 1111111 = %s" % json.dumps(tx_details))
 
             ret_data = {
                 'amount': tx_details.amount,
                 'fee': tx_details.fee,
-                'tx': str(partial_tx)
+                'tx': str(self.tx)
             }
-            self.do_save(outputs_addrs, message, partial_tx)
+            return json.dumps(ret_data)
         except Exception as e:
             raise BaseException(e)
 
+
+    def mktx(self, outputs, message):
+        try:
+            self._assert_wallet_isvalid()
+            outputs_addrs = self.parse_output(outputs)
+            self.do_save(outputs_addrs, message, self.tx)
+        except Exception as e:
+            raise BaseException(e)
+
+        ret_data = {
+            'tx': str(self.tx)
+        }
         json_str = json.dumps(ret_data)
         return json_str
 
@@ -473,6 +502,7 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('confirmed_only', bool(x))
 
     #fiat balance
+    #TODO获取支持法币列表
     def get_exchanges(self):
         if not self.daemon.fx: return
         b = self.daemon.fx.is_enabled()
@@ -603,6 +633,7 @@ class AndroidCommands(commands.Commands):
         }
         json_data = json.dumps(ret_data)
         return json_data
+
     #invoices
     def delete_invoice(self, key):
         try:
@@ -624,6 +655,13 @@ class AndroidCommands(commands.Commands):
             if not invoice:
                 return
             self.wallet.save_invoice(invoice)
+        except Exception as e:
+            raise BaseException(e)
+
+    def update_invoices(self, old_tx, new_tx):
+        try:
+            self._assert_wallet_isvalid()
+            self.wallet.update_invoice(old_tx, new_tx)
         except Exception as e:
             raise BaseException(e)
 
@@ -913,9 +951,11 @@ class AndroidCommands(commands.Commands):
     def sign_tx(self, tx):
         try:
             self._assert_wallet_isvalid()
+            old_tx = tx
             tx = tx_from_any(tx)
             tx.deserialize()
             sign_tx = self.wallet.sign_transaction(tx, None)
+            self.update_invoices(old_tx, sign_tx)
             return sign_tx
         except Exception as e:
             raise BaseException(e)
