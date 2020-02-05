@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.set.BixinKEYMenageActivity;
 import org.haobtc.wallet.activities.set.CurrencyActivity;
 
 import butterknife.BindView;
@@ -55,7 +56,7 @@ public class SettingActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_bixinKey:
-                
+                mIntent(BixinKEYMenageActivity.class);
                 break;
             case R.id.tet_s1:
                 mIntent(HardwareInfoActivity.class);

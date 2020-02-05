@@ -36,10 +36,104 @@
     </RelativeLayout>
 
     <LinearLayout
-
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bk_page">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_18"
+            android:textSize="@dimen/sp_12"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:gravity="center_vertical"
+            android:text="@string/choose_update"
+            android:textColor="@color/light_text" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/layout_margin"
+            app:cardCornerRadius="@dimen/corner_radius">
+
+            <LinearLayout
+                android:layout_marginBottom="@dimen/dp_20"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_50"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="@string/now_verson"
+                        android:textColor="@color/text" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:drawablePadding="@dimen/dp_10"
+                        android:text="@string/v_1_2_3"
+                        android:textColor="@color/light_text" />
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:background="@color/separation_line" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:gravity="center_vertical"
+                    android:text="@string/verson_updata"
+                    android:textColor="@color/text" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp_12"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:gravity="center_vertical"
+                    android:text="@string/fix_where"
+                    android:textColor="@color/light_text" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp_12"
+                    android:layout_marginTop="@dimen/dp_4"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:gravity="center_vertical"
+                    android:text="@string/fix_where"
+                    android:textColor="@color/light_text" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -65,11 +159,11 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:text="@string/now_verson"
+                        android:text="@string/bluetooth_code"
                         android:textColor="@color/text" />
 
                     <TextView
@@ -77,7 +171,7 @@
                         android:layout_height="wrap_content"
                         android:drawableEnd="@drawable/jiantou"
                         android:drawablePadding="@dimen/dp_10"
-                        android:text="v1.0.0"
+                        android:text="@string/v_1_2_3"
                         android:textColor="@color/light_text" />
 
 

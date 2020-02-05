@@ -40,7 +40,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="240dp"
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/layout_margin"
@@ -133,6 +133,22 @@
                         android:thumb="@drawable/switch_custom_thumb_selector"
                         android:track="@drawable/switch_custom_track_selector" />
                 </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:background="@color/separation_line" />
+
+                <TextView
+                    android:id="@+id/tet_addNode"
+                    android:layout_width="match_parent"
+                    android:layout_height="59.5dp"
+                    android:gravity="center"
+                    android:text="@string/restore_factory"
+                    android:textColor="@color/button_bk_disableok"
+                    android:textSize="15sp" />
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </RelativeLayout>
