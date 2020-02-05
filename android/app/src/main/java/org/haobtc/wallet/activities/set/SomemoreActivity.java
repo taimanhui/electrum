@@ -6,6 +6,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.set.fixpin.InputOldPINActivity;
+import org.haobtc.wallet.activities.set.recovery_set.RecoverySetActivity;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -60,10 +63,12 @@ public class SomemoreActivity extends BaseActivity {
                 mIntent(VersionUpgradeActivity.class);
                 break;
             case R.id.lin_OnckThree:
+                mIntent(InputOldPINActivity.class);
                 break;
             case R.id.lin_OnckFour:
                 break;
             case R.id.lin_OnckFive:
+                mIntent(RecoverySetActivity.class);
                 break;
         }
     }

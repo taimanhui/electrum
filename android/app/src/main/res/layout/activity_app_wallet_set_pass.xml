@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:orientation="vertical"
+    tools:context=".activities.onlywallet.AppWalletSetPassActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:background="@color/button_bk_ddake">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/creat_app_wallet"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_height="match_parent"
+        android:background="@color/bk_page"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:background="@color/tet_tips"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/dp_16"
+            android:paddingEnd="@dimen/dp_16"
+            android:text="@string/wallet_tips"
+            android:textColor="#ffb12b"
+            android:textSize="13sp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="59.5dp"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:text="@string/creat_app_wallet"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginStart="@dimen/sp_16"
+                    android:layout_marginEnd="@dimen/sp_16"
+                    android:background="@color/separation_line" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="59.5dp"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:background="@null"
+                    android:gravity="center_vertical"
+                    android:hint="@string/please_input_pass"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginStart="@dimen/sp_16"
+                    android:layout_marginEnd="@dimen/sp_16"
+                    android:background="@color/separation_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="59.5dp"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:hint="@string/please_next_input_pass"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btn_setPin"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/dp_30"
+            android:background="@drawable/button_bk"
+            android:text="@string/next"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+</LinearLayout>

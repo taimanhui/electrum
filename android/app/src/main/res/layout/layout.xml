@@ -55,7 +55,7 @@
         android:background="@color/little_circle_color">
 
         <EditText
-            android:id="@+id/edit_text"
+            android:id="@+id/edit_text1"
             android:layout_width="0dp"
             android:layout_height="@dimen/dp_50"
             android:layout_marginStart="@dimen/dp_10"
@@ -67,14 +67,14 @@
             android:textSize="@dimen/text_size" />
 
         <ImageView
-            android:id="@+id/bn_sweep"
+            android:id="@+id/bn_sweep1"
             android:layout_width="@dimen/dp_30"
             android:layout_height="@dimen/dp_50"
             android:padding="@dimen/dp_8"
             android:src="@drawable/saoyisao" />
 
         <TextView
-            android:id="@+id/bn_paste"
+            android:id="@+id/bn_paste1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/dp_8"
@@ -93,7 +93,7 @@
         android:gravity="center_horizontal">
 
         <Button
-            android:id="@+id/btn_Recovery"
+            android:id="@+id/btn_Recovery1"
             android:layout_width="300dp"
             android:layout_height="@dimen/dp_40"
             android:background="@drawable/button_bk"

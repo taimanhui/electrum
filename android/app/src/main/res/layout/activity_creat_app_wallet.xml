@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:orientation="vertical"
+    tools:context=".activities.onlywallet.CreatAppWalletActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:background="@color/button_bk_ddake">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/creat_app_wallet"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bk_page">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/white_tuo"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="59.5dp"
+                android:layout_marginStart="@dimen/dp_16"
+                android:gravity="center_vertical"
+                android:text="@string/creat_app_wallet"
+                android:textColor="@color/text_color"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:layout_marginStart="@dimen/sp_16"
+                android:layout_marginEnd="@dimen/sp_16"
+                android:background="@color/separation_line" />
+
+            <LinearLayout
+                android:id="@+id/lin_OnckTwo"
+                android:layout_width="match_parent"
+                android:layout_height="58.5dp"
+                android:background="@color/button_bk_ddake">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:text="@string/set_wallet_name"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/tet_setWalletName"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_16"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center_vertical|end"
+                    android:hint="@string/please_input"
+                    android:singleLine="true"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13" />
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:layout_marginStart="@dimen/sp_16"
+                android:layout_marginEnd="@dimen/sp_16"
+                android:layout_marginBottom="20.5dp"
+                android:background="@color/separation_line" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_setPin"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/dp_30"
+            android:background="@drawable/button_bk"
+            android:text="@string/next"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

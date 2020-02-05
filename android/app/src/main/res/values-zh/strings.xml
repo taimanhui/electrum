@@ -294,5 +294,25 @@
     <string name="bixinkey_set">BixinKEY设置</string>
     <string name="choose_update">请选择固件进行升级</string>
     <string name="bluetooth_code">蓝牙固件版本</string>
+    <string name="input_old_pin">输入原始PIN码</string>
+    <string name="bixinkey_fit">将手机与BixinKEY贴合</string>
+    <string name="tip_tips">数据传输需要一定时间，请保持贴合状态</string>
+    <string name="pin_sussce">PIN码验证成功</string>
+    <string name="pin_seted">新的PIN码已设置</string>
+    <string name="input_new_pin">输入新PIN码</string>
+    <string name="recovery_risk">恢复出厂设置将存在以下风险</string>
+    <string name="tips_1">1.恢复出厂设置后私钥将被抹除</string>
+    <string name="tips_2">2.该BixinKEY将不能签名相关钱包的交易</string>
+    <string name="tips_3">3.为避免数字资产丢失，请备份BixinKEY</string>
+    <string name="please_backups">请备份BixinKEY</string>
+    <string name="confirm_recovery">确认恢复出厂设置</string>
+    <string name="backuped_key">已备份的BixinKEY</string>
+    <string name="backup_bixinkey">备份BixinKEY</string>
+    <string name="key_qrspr">BixinKEY-QRSPR 备份信息</string>
+    <string name="copy_backup_tet">复制备份文本</string>
+    <string name="creat_app_wallet">创建App钱包</string>
+    <string name="wallet_tips">本钱包不保留钱包的任何信息，密码没有找回途径，请务必牢记钱包密码。</string>
+    <string name="please_input_pass">请输入密码</string>
+    <string name="please_next_input_pass">再次输入密码</string>
 
 </resources>

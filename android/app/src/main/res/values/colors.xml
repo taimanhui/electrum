@@ -36,6 +36,8 @@
     <color name="wallet_yue">#c1d0e4</color>
     <color name="butotn_back">#e5ebff</color>
     <color name="little_blue">#e9eeff</color>
+    <color name="pin_back_color">#94adff</color>
+    <color name="tet_tips">#fff6e5</color>
 
 
 </resources>
