@@ -27,7 +27,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.set.BixinKeyMessageActivity"></activity>
+        <activity android:name=".activities.onlywallet.AppWalletSetPassActivity"></activity>
+        <activity android:name=".activities.onlywallet.CreatAppWalletActivity" />
+        <activity android:name=".activities.set.recovery_set.BackupMessageActivity" />
+        <activity android:name=".activities.set.recovery_set.Backup_recoveryActivity" />
+        <activity android:name=".activities.set.recovery_set.RecoverySetActivity" />
+        <activity android:name=".activities.set.fixpin.FitBixinKEYActivity" />
+        <activity android:name=".activities.set.fixpin.InputNewPINActivity" />
+        <activity android:name=".activities.set.fixpin.InputOldPINActivity" />
+        <activity android:name=".activities.set.BixinKeyMessageActivity" />
         <activity android:name=".activities.set.SomemoreActivity" />
         <activity android:name=".activities.set.CurrencyActivity" />
         <activity android:name=".activities.set.BixinKEYMenageActivity" />

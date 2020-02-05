@@ -1,14 +1,17 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
+import org.haobtc.wallet.activities.onlywallet.CreatAppWalletActivity;
 import org.haobtc.wallet.activities.onlywallet.CreatePersonalWalletActivity;
 
 import butterknife.BindView;
@@ -28,6 +31,8 @@ public class CreateWalletActivity extends BaseActivity {
     LinearLayout bnCreateWallet;
     @BindView(R.id.lin_input_helpWord)
     LinearLayout linInputHelpWord;
+    @BindView(R.id.tet_AppWallet)
+    TextView tetAppWallet;
     //remeber first back time
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
@@ -54,7 +59,7 @@ public class CreateWalletActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.lin_input_histry, R.id.bn_create_wallet, R.id.lin_input_helpWord})
+    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.lin_input_histry, R.id.bn_create_wallet, R.id.lin_input_helpWord,R.id.tet_AppWallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_backCreat:
@@ -73,6 +78,10 @@ public class CreateWalletActivity extends BaseActivity {
                 break;
             case R.id.lin_input_helpWord:
                 break;
+            case R.id.tet_AppWallet:
+                mIntent(CreatAppWalletActivity.class);
+                break;
         }
     }
+
 }
