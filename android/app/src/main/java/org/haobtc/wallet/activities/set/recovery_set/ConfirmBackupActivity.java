@@ -1,29 +1,37 @@
-package org.haobtc.wallet.activities;
+package org.haobtc.wallet.activities.set.recovery_set;
 
+import android.inputmethodservice.KeyboardView;
+import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.set.recovery_set.RecoverySetActivity;
+import org.haobtc.wallet.utils.PasswordInputView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class TransactionsSettingActivity extends BaseActivity {
-
+public class ConfirmBackupActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
-    @BindView(R.id.tet_addNode)
-    TextView tetAddNode;
+    @BindView(R.id.trader_pwd_set_pwd_edittext)
+    PasswordInputView traderPwdSetPwdEdittext;
+    @BindView(R.id.btn_setPin)
+    Button btnSetPin;
+    @BindView(R.id.keyboard_view)
+    KeyboardView keyboardView;
 
+    @Override
     public int getLayoutId() {
-        return R.layout.transaction_setting;
+        return R.layout.activity_confirm_backup;
     }
 
+    @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
 
     }
@@ -33,17 +41,14 @@ public class TransactionsSettingActivity extends BaseActivity {
 
     }
 
-
-    @OnClick({R.id.img_back,R.id.tet_addNode})
+    @OnClick({R.id.img_back, R.id.btn_setPin})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.tet_addNode:
-                mIntent(RecoverySetActivity.class);
+            case R.id.btn_setPin:
                 break;
         }
     }
-
 }

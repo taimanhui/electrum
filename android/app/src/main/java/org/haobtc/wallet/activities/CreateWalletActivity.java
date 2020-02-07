@@ -13,6 +13,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 import org.haobtc.wallet.activities.onlywallet.CreatAppWalletActivity;
 import org.haobtc.wallet.activities.onlywallet.CreatePersonalWalletActivity;
+import org.haobtc.wallet.activities.onlywallet.mnemonic_word.MnemonicWordActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,6 +78,7 @@ public class CreateWalletActivity extends BaseActivity {
                 mIntent(CreateWalletPageActivity.class);
                 break;
             case R.id.lin_input_helpWord:
+                mIntent(MnemonicWordActivity.class);
                 break;
             case R.id.tet_AppWallet:
                 mIntent(CreatAppWalletActivity.class);
