@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.set.recovery_set.ConfirmBackupActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,6 +56,7 @@ public class MessageManagerActivity extends BaseActivity {
             case R.id.bn_paste1:
                 break;
             case R.id.btn_Recovery1:
+                mIntent(ConfirmBackupActivity.class);
                 break;
         }
     }

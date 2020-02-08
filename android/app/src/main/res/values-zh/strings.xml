@@ -303,7 +303,7 @@
     <string name="recovery_risk">恢复出厂设置将存在以下风险</string>
     <string name="tips_1">1.恢复出厂设置后私钥将被抹除</string>
     <string name="tips_2">2.该BixinKEY将不能签名相关钱包的交易</string>
-    <string name="tips_3">3.为避免数字资产丢失，请备份BixinKEY</string>
+    <string name="tips_3">3.为避免数字资产丢失，</string>
     <string name="please_backups">请备份BixinKEY</string>
     <string name="confirm_recovery">确认恢复出厂设置</string>
     <string name="backuped_key">已备份的BixinKEY</string>
@@ -314,5 +314,12 @@
     <string name="wallet_tips">本钱包不保留钱包的任何信息，密码没有找回途径，请务必牢记钱包密码。</string>
     <string name="please_input_pass">请输入密码</string>
     <string name="please_next_input_pass">再次输入密码</string>
+    <string name="bixinkey_backup">从BixinKEY备份恢复</string>
+    <string name="input_dcrypt_pin">输入解密PIN码</string>
+    <string name="duizhao_pin">请对照BixinKEY备份的加密PIN码</string>
+    <string name="choose_help">请选择生成助记词的钱包</string>
+    <string name="bitcoin_core_xxx">由于不同钱包助记词规则不同，目前支持 Bitcoin Core，比特派，库深等平台使用XXX规则生成的助记词</string>
+    <string name="wallet">钱包</string>
+    <string name="_12_help_word">请按顺序输入12位助记词</string>
 
 </resources>
