@@ -1,6 +1,8 @@
 package org.haobtc.wallet.activities.onlywallet;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,7 +47,14 @@ public class CreatAppWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_setPin:
-                mIntent(AppWalletSetPassActivity.class);
+                String strWalletName = tetSetWalletName.getText().toString();
+                if (TextUtils.isEmpty(strWalletName)){
+                    mToast(getResources().getString(R.string.set_wallet));
+                    return;
+                }
+                Intent intent = new Intent(CreatAppWalletActivity.this, AppWalletSetPassActivity.class);
+                intent.putExtra("strName",strWalletName);
+                startActivity(intent);
                 break;
         }
     }

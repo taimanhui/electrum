@@ -321,5 +321,13 @@
     <string name="bitcoin_core_xxx">由于不同钱包助记词规则不同，目前支持 Bitcoin Core，比特派，库深等平台使用XXX规则生成的助记词</string>
     <string name="wallet">钱包</string>
     <string name="_12_help_word">请按顺序输入12位助记词</string>
+    <string name="set_wallet">请设置钱包名称</string>
+    <string name="set_bixinkey_num">请设置BixinKEY数</string>
+    <string name="set_public_num">请设置共管人数</string>
+    <string name="set_sign_num">请设置签名人数</string>
+    <string name="signnum_dongt_public">签名人数不可大于共管人数</string>
+    <string name="set_pass">请设置密码</string>
+    <string name="set_pass_second">请再次输入密码</string>
+    <string name="two_different_pass">两次密码输入不一致</string>
 
 </resources>

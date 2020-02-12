@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities.onlywallet;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 
 import butterknife.BindView;
@@ -85,11 +87,35 @@ public class CreatePersonalWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bn_multi_next:
-                Intent intent = new Intent(CreatePersonalWalletActivity.this, CreateOnlyChooseActivity.class);
+                mCreatOnlyWallet();
 
-                startActivity(intent);
                 break;
         }
+    }
+
+    //creat personal wallet
+    private void mCreatOnlyWallet() {
+        String strWalletName = editWalletNameSetting.getText().toString();
+        String indication = tvIndicator.getText().toString();
+        int sigNum = Integer.parseInt(indication);
+        if (TextUtils.isEmpty(strWalletName)){
+            mToast(getResources().getString(R.string.set_wallet));
+            return;
+        }
+        if (sigNum == 0){
+            mToast(getResources().getString(R.string.set_bixinkey_num));
+            return;
+        }
+
+        try {
+            Daemon.commands.callAttr("set_multi_wallet_info", strWalletName, 1, sigNum);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        Intent intent = new Intent(CreatePersonalWalletActivity.this, CreateOnlyChooseActivity.class);
+        intent.putExtra("sigNum",sigNum);
+        startActivity(intent);
     }
 
 }

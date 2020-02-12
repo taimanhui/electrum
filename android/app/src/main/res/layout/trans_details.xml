@@ -26,13 +26,13 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_10">
+                android:layout_marginTop="38dp">
 
                 <ImageView
                     android:id="@+id/img_progressone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/progress_one"
+                    android:src="@drawable/step1"
                     android:visibility="visible" />
 
                 <!--                <ImageView-->
@@ -46,14 +46,14 @@
                     android:id="@+id/img_progressthree"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/progress_three"
+                    android:src="@drawable/step2"
                     android:visibility="gone" />
 
                 <ImageView
                     android:id="@+id/img_progressfour"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/progress_four"
+                    android:src="@drawable/step3"
                     android:visibility="gone" />
 
             </RelativeLayout>

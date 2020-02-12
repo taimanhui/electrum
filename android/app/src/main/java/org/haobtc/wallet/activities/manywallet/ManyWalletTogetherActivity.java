@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.manywallet;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -16,10 +17,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.onlywallet.CreateOnlyChooseActivity;
+import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 
 import butterknife.BindView;
@@ -50,6 +53,20 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     TextView tvIndicatorTwo;
     @BindView(R.id.bn_add_key)
     LinearLayout bnAddKey;
+    @BindView(R.id.img_Progree1)
+    ImageView imgProgree1;
+    @BindView(R.id.img_Progree2)
+    ImageView imgProgree2;
+    @BindView(R.id.img_Progree3)
+    ImageView imgProgree3;
+    @BindView(R.id.card_viewOne)
+    CardView cardViewOne;
+    @BindView(R.id.card_viewThree)
+    CardView cardViewThree;
+    @BindView(R.id.recl_BinxinKey)
+    RecyclerView reclBinxinKey;
+    @BindView(R.id.rel_TwoNext)
+    RelativeLayout relTwoNext;
     private Dialog dialogBtom;
 
     @Override
@@ -117,13 +134,14 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.img_back, R.id.button,R.id.bn_add_key})
+    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
             case R.id.button:
+                mCreatWalletNext();
                 break;
             case R.id.bn_add_key:
                 showSelectFeeDialogs(ManyWalletTogetherActivity.this, R.layout.bluetooce_nfc);
@@ -131,12 +149,50 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         }
     }
 
+    private void mCreatWalletNext() {
+        String strInditor1 = tvIndicator.getText().toString();
+        String strInditor2 = tvIndicatorTwo.getText().toString();
+        String strWalletname = editWalletname.getText().toString();
+        int strUp1 = Integer.parseInt(strInditor1);
+        int strUp2 = Integer.parseInt(strInditor2);
+        if (TextUtils.isEmpty(strWalletname)) {
+            mToast(getResources().getString(R.string.set_wallet));
+            return;
+        }
+        if (strUp1 == 0) {
+            mToast(getResources().getString(R.string.set_public_num));
+            return;
+        }
+        if (strUp2 == 0) {
+            mToast(getResources().getString(R.string.set_sign_num));
+            return;
+        }
+        if (strUp2 > strUp1) {
+            mToast(getResources().getString(R.string.signnum_dongt_public));
+            return;
+        }
+        try {
+            Daemon.commands.callAttr("set_multi_wallet_info", strWalletname, strUp1, strUp2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        cardViewOne.setVisibility(View.GONE);
+        button.setVisibility(View.GONE);
+        imgProgree1.setVisibility(View.GONE);
+        imgProgree2.setVisibility(View.VISIBLE);
+        imgProgree3.setVisibility(View.GONE);
+        reclBinxinKey.setVisibility(View.VISIBLE);
+        bnAddKey.setVisibility(View.VISIBLE);
+        relTwoNext.setVisibility(View.VISIBLE);
+
+    }
+
     private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
         //set see view
         View view = View.inflate(context, resource, null);
         dialogBtom = new Dialog(context, R.style.dialog);
 
-        view.findViewById(R.id.tet_handInput).setOnClickListener(v ->{
+        view.findViewById(R.id.tet_handInput).setOnClickListener(v -> {
             showInputDialogs(ManyWalletTogetherActivity.this, R.layout.bixinkey_input);
             dialogBtom.cancel();
         });
@@ -179,4 +235,10 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         dialogBtom.show();
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }
