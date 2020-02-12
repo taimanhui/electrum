@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.onlywallet;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +37,7 @@ public class CreateOnlyChooseActivity extends BaseActivity {
     @BindView(R.id.bn_complete_add_cosigner)
     Button bnCompleteAddCosigner;
     private Dialog dialogBtom;
+    private int sigNum;
 
     @Override
     public int getLayoutId() {
@@ -45,12 +47,15 @@ public class CreateOnlyChooseActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        sigNum = intent.getIntExtra("sigNum", 0);
         init();
 
     }
 
+    @SuppressLint("DefaultLocale")
     private void init() {
-        tetPersonalNum.setText(String.format("%s(0/3)", getResources().getString(R.string.creat_personal)));
+        tetPersonalNum.setText(String.format("%s(0/%d)", getResources().getString(R.string.creat_personal),sigNum));
     }
 
     @Override
@@ -65,7 +70,7 @@ public class CreateOnlyChooseActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bn_add_key:
-                showSelectFeeDialogs(CreateOnlyChooseActivity.this, R.layout.bixinkey_input);
+                showSelectFeeDialogs(CreateOnlyChooseActivity.this, R.layout.bluetooce_nfc);
                 break;
             case R.id.bn_complete_add_cosigner:
                 Intent intent = new Intent(CreateOnlyChooseActivity.this, CreatFinishPersonalActivity.class);
@@ -78,10 +83,8 @@ public class CreateOnlyChooseActivity extends BaseActivity {
         View view = View.inflate(context, resource, null);
         dialogBtom = new Dialog(context, R.style.dialog);
 
-
-
         //cancel dialog
-        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
+        view.findViewById(R.id.img_Cancle).setOnClickListener(v -> {
             dialogBtom.cancel();
         });
 
