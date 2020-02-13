@@ -20,6 +20,7 @@ from electrum.storage import WalletStorage
 from electrum.wallet import (Standard_Wallet,
                                  Wallet)
 from electrum.bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
+from electrum import mnemonic
 
 #from android.preference import PreferenceManager
 from electrum.commands import satoshis
@@ -160,6 +161,7 @@ class AndroidCommands(commands.Commands):
             status = _("Offline")
         elif self.network.is_connected():
             out = {}
+            out['wallet_type'] = self.wallet.wallet_type
             self.num_blocks = self.network.get_local_height()
             server_height = self.network.get_server_height()
             server_lag = self.num_blocks - server_height
@@ -187,7 +189,7 @@ class AndroidCommands(commands.Commands):
                 # append fiat balance and price
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-                #print("update_statue text = %s out = %s" % (text, out))
+            #print("update_statue out = %s" % (out))
         #self.callbackIntent.onCallback(Status.update_status, out)
 
     def save_tx_to_file(self, path, tx):
@@ -437,7 +439,6 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-
     def mktx(self, outputs, message):
         try:
             self._assert_wallet_isvalid()
@@ -502,7 +503,12 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('confirmed_only', bool(x))
 
     #fiat balance
-    #TODO获取支持法币列表
+
+    def get_currencies(self):
+        self._assert_daemon_running()
+        currencies = sorted(self.daemon.fx.get_currencies(self.daemon.fx.get_history_config()))
+        return currencies
+
     def get_exchanges(self):
         if not self.daemon.fx: return
         b = self.daemon.fx.is_enabled()
@@ -575,8 +581,8 @@ class AndroidCommands(commands.Commands):
     ## get tx info from raw_tx
     def get_tx_info_from_raw(self, raw_tx):
         try:
+            print("console:get_tx_info_from_raw:tx===%s" % raw_tx)
             tx = self.recover_tx_info(raw_tx)
-            print("console:get_tx_info_from_raw:tx===%s" %raw_tx)
         except Exception as e:
             tx = None
             raise BaseException(e)
@@ -685,11 +691,13 @@ class AndroidCommands(commands.Commands):
                 temp_tx_data['tx_hash'] = tx_dict['txid']
                 temp_tx_data['date'] = util.format_time(invoice['time']) if invoice['time'] else _("unknown")
                 temp_tx_data['amount'] = tx_dict['amount']
+                print("amount------%s fee======%s temp_tx_data=%s" %(tx_dict['amount'], tx_dict['fee'],temp_tx_data['amount']))
                 temp_tx_data['message'] = tx_dict['description']
                 temp_tx_data['is_mine'] = True
                 temp_tx_data['tx_status'] = tx_dict["tx_status"]
                 temp_tx_data['invoice_id'] = invoice['id']
                 temp_tx_data['tx'] = invoice['tx']
+                print("invoice====%s type=%s" % (invoice['tx'], type(invoice['tx'])))
                 tx_data.append(temp_tx_data)
 
         if history_status is None and tx_status is None:
@@ -921,22 +929,18 @@ class AndroidCommands(commands.Commands):
                 self.network.run_from_another_thread(self.network.broadcast_transaction(tx))
             except TxBroadcastError as e:
                 msg = e.get_message_for_gui()
+                raise BaseException(msg)
             except BestEffortRequestFailed as e:
                 msg = repr(e)
+                raise BaseException(msg)
             else:
+                print("--------broadcast ok............")
                 status, msg = True, tx.txid()
       #          self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
             raise BaseException(('Cannot broadcast transaction') + ':\n' + ('Not connected'))
 
     ## setting
-    def set_rbf(self, status_rbf):
-        use_rbf = self.config.get('use_rbf', True)
-        if use_rbf == status_rbf :
-            return
-        self.config.set_key('use_rbf', status_rbf, True)
-        self.rbf = status_rbf
-
     def set_use_change(self, status_change):
         try:
             self._assert_wallet_isvalid()
@@ -948,14 +952,15 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('use_change', status_change, True)
         self.wallet.use_change = status_change
 
-    def sign_tx(self, tx):
+    def sign_tx(self, tx, password=None):
         try:
             self._assert_wallet_isvalid()
             old_tx = tx
             tx = tx_from_any(tx)
             tx.deserialize()
-            sign_tx = self.wallet.sign_transaction(tx, None)
-            self.update_invoices(old_tx, sign_tx)
+            sign_tx = self.wallet.sign_transaction(tx, password)
+            print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
+            self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
             return sign_tx
         except Exception as e:
             raise BaseException(e)
@@ -969,16 +974,28 @@ class AndroidCommands(commands.Commands):
         print("support for liyan")
 
     ####################################################
+    ## app wallet
+    def check_seed(self, check_seed, password):
+        try:
+            self._assert_wallet_isvalid()
+            if not self.wallet.has_seed():
+                raise BaseException('This wallet has no seed')
+            keystore = self.wallet.get_keystore()
+            seed = keystore.get_seed(password)
+            if seed != check_seed:
+                raise BaseException("pair seed failed")
+            print("pair seed successfule.....")
+        except BaseException as e:
+            raise BaseException(e)
+
     def create(self, name, password, seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
-        is_exist = False
+        new_seed = ""
         path = self._wallet_path(name)
         if exists(path):
-            is_exist = True
-            return is_exist
-            # raise FileExistsError(path)
+            raise BaseException("path is exist")
         storage = WalletStorage(path)
 
         if addresses is not None:
@@ -994,18 +1011,118 @@ class AndroidCommands(commands.Commands):
                 ks = keystore.from_master_key(master)
             else:
                 if seed is None:
-                    seed = self.make_seed()
+                    seed = mnemonic.Mnemonic('en').make_seed(seed_type='segwit')
+                    new_seed = seed
                     print("Your wallet generation seed is:\n\"%s\"" % seed)
+                    print("seed type = %s" %type(seed))
                 ks = keystore.from_seed(seed, passphrase, False)
 
             storage.put('keystore', ks.dump())
-            wallet = Standard_Wallet(storage)
-
+            wallet = Standard_Wallet(storage, config=self.config)
         wallet.update_password(None, password, True)
-        return is_exist
+        wallet.start_network(self.daemon.network)
+        self.daemon.add_wallet(wallet)
+        return new_seed
     # END commands from the argparse interface.
 
     # BEGIN commands which only exist here.
+    #####
+    #rbf api
+    def set_rbf(self, status_rbf):
+        use_rbf = self.config.get('use_rbf', True)
+        if use_rbf == status_rbf:
+            return
+        self.config.set_key('use_rbf', status_rbf, True)
+        self.rbf = status_rbf
+
+    def get_rbf_status(self, tx):
+        try:
+            tx = tx_from_any(tx)
+            tx.deserialize()
+            tx_hash = tx.txid()
+            #tx_hash = tx_item['txid']
+            tx = self.wallet.db.get_transaction(tx_hash)
+            if not tx:
+                return False
+            height = self.wallet.get_tx_height(tx_hash).height
+            is_relevant, is_mine, v, fee = self.wallet.get_wallet_delta(tx)
+            is_unconfirmed = height <= 0
+            if is_unconfirmed and tx:
+                # note: the current implementation of RBF *needs* the old tx fee
+                rbf = is_mine and not tx.is_final() and fee is not None
+                if rbf:
+                    return True
+                else:
+                    return False
+        except BaseException as e:
+            raise e
+
+    def get_rbf_fee_info(self, tx):
+        tx = tx_from_any(tx)
+        tx.deserialize()
+        txid = tx.txid()
+        assert txid
+        fee = self.wallet.get_tx_fee(txid)
+        if fee is None:
+            raise BaseException("Can't bump fee: unknown fee for original transaction.")
+        tx_size = tx.estimated_size()
+        old_fee_rate = fee / tx_size  # sat/vbyte
+
+        ret_data = {
+            'current fee': self.format_amount(fee) + ' ' + self.base_unit(),
+            'current fee rate': self.format_fee_rate(1000 * old_fee_rate),
+            'new fee rate': max(old_fee_rate * 1.5, old_fee_rate + 1),
+        }
+        return json.dumps(ret_data)
+
+    #TODO:new_tx in history or invoices, need test
+    def create_dump_fee(self, tx, new_fee_rate, is_final):
+        try:
+            new_tx = self.wallet.bump_fee(tx=tx, new_fee_rate=new_fee_rate, coins=self.get_coins())
+        except BaseException as e:
+            raise str(e)
+        if is_final:
+            new_tx.set_rbf(False)
+        out = {
+            'new_tx': new_tx.serialize_as_bytes().hex()
+        }
+        self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
+        return json.dumps(out)
+    #######
+
+    #network server
+    def get_default_server(self):
+        try:
+            self._assert_daemon_running()
+            net_params = self.network.get_parameters()
+            host, port, protocol = net_params.host, net_params.port, net_params.protocol
+        except BaseException as e:
+            raise e
+
+        default_server = {
+            'host':host,
+            'port':port,
+        }
+        return json.dumps(default_server)
+
+    def set_server(self, host, port):
+        try:
+            self._assert_daemon_running()
+            net_params = self.network.get_parameters()
+            net_params = net_params._replace(host=str(host),
+                                         port=str(port),
+                                         auto_connect=True)
+            self.network.run_from_another_thread(self.network.set_parameters(net_params))
+        except BaseException as e:
+            raise e
+
+    def get_server_list(self):
+        try:
+            self._assert_daemon_running()
+            servers = self.daemon.network.get_servers()
+        except BaseException as e:
+            raise e
+        return servers
 
     def select_wallet(self, name):
         try:

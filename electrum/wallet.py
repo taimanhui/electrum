@@ -639,9 +639,14 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         return out
 
     def update_invoice(self, old_tx, new_tx):
-        for key, value in self.invoices:
+        flag = False
+        for key, value in self.invoices.items():
             if value['tx'] == old_tx:
                 value['tx'] = new_tx
+                flag = True
+        return flag
+
+
 
     def get_invoice(self, key):
         if key not in self.invoices:

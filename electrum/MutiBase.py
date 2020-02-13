@@ -69,11 +69,15 @@ class MutiBase(Logger):
             raise Exception("the xpub to be delete not in keystore")
 
     def set_multi_wallet_info(self, path, m, n):
-        self.wallet_type = 'multisig'
-        multisig_type = "%dof%d" % (m, n)
-        self.data['wallet_type'] = multisig_type
-        self.n = n
-        self.m = m
+        if n == 1 and m == 1:
+            self.wallet_type = 'standard'
+            self.data['wallet_type'] = 'standard'
+        else:
+            self.wallet_type = 'multisig'
+            multisig_type = "%dof%d" % (m, n)
+            self.data['wallet_type'] = multisig_type
+            self.n = n
+            self.m = m
         self.path = path
         print("=================set_multi_wallet_info ok....")
 
@@ -156,7 +160,8 @@ class MutiBase(Logger):
         encrypt_keystore = any(k.may_have_password() for k in self.keystores)
 
         if self.wallet_type == 'standard':
-            self.data['seed_type'] = self.seed_type
+            #self.data['seed_type'] = self.seed_type
+            self.data['seed_type'] = 'segwit'
             keys = self.keystores[0].dump()
             self.data['keystore'] = keys
         elif self.wallet_type == 'multisig':

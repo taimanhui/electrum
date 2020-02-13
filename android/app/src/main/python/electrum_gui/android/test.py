@@ -28,13 +28,16 @@ print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.t
 testcommond = AndroidCommands()
 testcommond.start()
 
-name = 'hahahahhahh777'
-password = '111111'
+#name = 'hahahahhahh777' #2-2 multi wallet
+#name = 'hahahahhahh333' #1-N wallet
+name = 'hahahahhahh888' #1-1 wallet
+#name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
+password = 'None'
 
 #test hardware
 #testcommond.get_xpub_from_hw()
 
-# #create_wallet
+# #create_wallet 2-N HW wallet
 #
 # m = 2
 # n = 2
@@ -47,6 +50,43 @@ password = '111111'
 # testcommond.add_xpub(xpub1)
 # testcommond.add_xpub(xpub2)
 # testcommond.create_multi_wallet(name)
+
+# #create_wallet 1-N HW wallet
+#
+# m = 1
+# n = 2
+# #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
+# xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+# #xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# #testcommond.delete_wallet(name)
+# testcommond.set_multi_wallet_info(name,m,n)
+# testcommond.add_xpub(xpub1)
+# testcommond.add_xpub(xpub2)
+# testcommond.create_multi_wallet(name)
+
+# #create_wallet 1-1 HW wallet
+#
+# m = 1
+# n = 1
+# #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB' #VPUB
+# xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+# #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+# #xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# testcommond.delete_wallet(name)
+# testcommond.set_multi_wallet_info(name,m,n)
+# testcommond.add_xpub(xpub1)
+# #testcommond.add_xpub(xpub2)
+# testcommond.create_multi_wallet(name)
+
+## create software wallet by create seed
+
+name = "test1wwtest"
+password = "111"
+testcommond.delete_wallet(name)
+seed = testcommond.create(name, password, seed=123)
+#testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
 
 # ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 # print("=======ret1 = %s" %ret)
@@ -64,7 +104,22 @@ testcommond.set_currency("None")
 testcommond.load_wallet(name, password)
 data = testcommond.select_wallet(name)
 print("select data ============%s" %data)
-info = testcommond.get_wallets_list_info()
+
+data = testcommond.get_default_server()
+print("before data ====%s" %data)
+data = testcommond.get_server_list()
+print("server_list data =====%s" %data)
+data = testcommond.set_server("testnet.hsmiths.com", "53012")
+data = testcommond.get_default_server()
+print("after data ====%s" %data)
+
+data = testcommond.get_currencies()
+print("currencies = %s" %data)
+#testcommond.check_seed(seed, password)
+try:
+    info = testcommond.get_wallets_list_info()
+except BaseException as e:
+    pass
 
 testcommond.set_base_uint("mBTC")
 status = testcommond.get_default_fee_status()
@@ -84,19 +139,20 @@ print("after get exchange amount = %s" % data)
 # print("sign_tx = %s" %sign_tx)
 # testcommond.broadcast_tx(sign_tx)
 #testcommond.clear_invoices()
+
+testcommond.set_unconf(False)
 #create_tx
 all_output = []
-output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.01'}
+output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.005'}
 #output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
 #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.05'}
 #output_info = {'bcrt1q9a4kk79hacd2s838xhdvxmhxrs6tskfp744t7v9pj7f9flayjy0s4d3ttm':'5'}
 all_output.append(output_info)
 #all_output.append(output_info1)
 output_str = json.dumps(all_output)
-fee = 150
 message = 'test111'
 print("--------------all_output= %s" %output_str)
-ret_str = testcommond.get_fee_by_feerate(output_str, message, 0.9)
+ret_str = testcommond.get_fee_by_feerate(output_str, message, 1.0)
 ret_list = json.loads(ret_str)
 print("get_fee_by_feerate================%s" % ret_list)
 
@@ -112,12 +168,19 @@ print("invoices = %s" %ivoices)
 
 #
 # #get_tx_by_raw
-
+print("``````````tx %s=========" % ret_list['tx'])
 tx_info_str = testcommond.get_tx_info_from_raw(ret_list['tx'])
 tx_info = json.loads(tx_info_str)
-print("tx info = %s=========" % tx_info)
-# # #sign_tx
-# # #testcommond.sign_tx(ret_list['tx'])
+print("------tx info = %s=========" % tx_info)
+#sign_tx
+print("sign tx = %s=========" % ret_list['tx'])
+sign_tx = testcommond.sign_tx(ret_list['tx'], password)
+testcommond.broadcast_tx(sign_tx)
+
+#test rbf
+data = testcommond.get_rbf_status(sign_tx)
+print("rbf data = %s" %data)
+#data = testcommond.get_rbf_fee_info(tx)
 # # #
 # # # #parse_qr tx
 # qr_data = testcommond.get_qr_data_frparse_prom_raw_tx(ret_list['tx'])
@@ -170,7 +233,7 @@ print("testinfo = %s------------" %testinfo)
 # info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
 # print("info== %s" % info)
 
-data = testcommond.get_tx_info_from_raw("020000000001015282796c926b7dc670940bac7abbc7febce874a76653940b88111c594364ddbf01000000171600147d264c997695b8b998f9efcff74fce91bbb6075efeffffff026890210000000000160014d670320606df1e984341206706cce7cf7a5d97b140420f00000000002200209f2f1060a8d7ddf0019b4fae87d022ff257e74b9db40d592a29ca0b1d0e7d07a0247304402200ea749b63fce6983ceb6581e7809be68869176edcf7a4510ab2f8b6a04cf987802207b81cfe080e91b51afc5af7804fd1a68dc791af47da686e2775d2ed228a99259012103488cd2293cedf0d9df588c98e775b09dcea969a0d765ebdfdf5f28ce97b8fa49f1911800")
+data = testcommond.get_tx_info_from_raw(ret_list['tx'])
 print("data === %s " %data)
 #data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
 #print("get_tx_info = %s-===========" % data)
