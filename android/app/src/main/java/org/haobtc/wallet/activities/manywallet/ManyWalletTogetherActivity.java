@@ -1,9 +1,15 @@
 package org.haobtc.wallet.activities.manywallet;
 
+import android.Manifest;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -15,15 +21,23 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.common.Constant;
+
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,6 +82,9 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     @BindView(R.id.rel_TwoNext)
     RelativeLayout relTwoNext;
     private Dialog dialogBtom;
+    private RxPermissions rxPermissions;
+    private static final int REQUEST_CODE = 0;
+    private EditText edit_sweep;
 
     @Override
     public int getLayoutId() {
@@ -77,6 +94,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        rxPermissions = new RxPermissions(this);
 
     }
 
@@ -184,6 +202,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         reclBinxinKey.setVisibility(View.VISIBLE);
         bnAddKey.setVisibility(View.VISIBLE);
         relTwoNext.setVisibility(View.VISIBLE);
+        tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
 
     }
 
@@ -193,11 +212,14 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         dialogBtom = new Dialog(context, R.style.dialog);
 
         view.findViewById(R.id.tet_handInput).setOnClickListener(v -> {
-            showInputDialogs(ManyWalletTogetherActivity.this, R.layout.bixinkey_input);
             dialogBtom.cancel();
+            showInputDialogs(ManyWalletTogetherActivity.this, R.layout.bixinkey_input);
+
         });
+
+
         //cancel dialog
-        view.findViewById(R.id.img_Cancle).setOnClickListener(v -> {
+        view.findViewById(R.id.img1_Cancle).setOnClickListener(v -> {
             dialogBtom.cancel();
         });
 
@@ -216,29 +238,119 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     private void showInputDialogs(Context context, @LayoutRes int resource) {
         //set see view
         View view = View.inflate(context, resource, null);
-        dialogBtom = new Dialog(context, R.style.dialog);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
 
-        //cancel dialog
-        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
-            dialogBtom.cancel();
+        EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
+        TextView tet_Num = view.findViewById(R.id.txt_textNum);
+        edit_sweep = view.findViewById(R.id.edit_public_key_cosigner_popup);
+
+        edit_bixinName.addTextChangedListener(new TextWatcher() {
+            CharSequence input;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                input = s;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tet_Num.setText(String.format(Locale.CHINA, "%d/20", input.length()));
+                if (input.length() > 19) {
+                    Toast.makeText(ManyWalletTogetherActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        edit_sweep.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String strLine = edit_sweep.getText().toString();
+                if (!TextUtils.isEmpty(strLine)){
+                    view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.GONE);
+                    view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.VISIBLE);
+                }else{
+                    view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.GONE);
+                }
+            }
+        });
+        //sweep
+        view.findViewById(R.id.sweep_cosigner_popup).setOnClickListener(v -> {
+            rxPermissions
+                    .request(Manifest.permission.CAMERA)
+                    .subscribe(granted -> {
+                        if (granted) { // Always true pre-M
+                            //If you have already authorized it, you can directly jump to the QR code scanning interface
+                            Intent intent2 = new Intent(this, CaptureActivity.class);
+                            startActivityForResult(intent2, REQUEST_CODE);
+                        } else { // Oups permission denied
+                            Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
+                        }
+                    }).dispose();
+
+
+        });
+        //stick
+        view.findViewById(R.id.paste_cosigner_popup1).setOnClickListener(v -> {
+            //get Shear plate TODO：
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null) {
+                ClipData data = clipboard.getPrimaryClip();
+                if (data != null && data.getItemCount() > 0) {
+                    edit_sweep.setText(data.getItemAt(0).getText());
+                }
+            }
         });
 
 
-        dialogBtom.setContentView(view);
-        Window window = dialogBtom.getWindow();
+
+        view.findViewById(R.id.btn_Clear).setOnClickListener(v -> {
+            edit_sweep.setText("");
+        });
+
+        //cancel dialog
+        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
+            dialogBtoms.cancel();
+        });
+
+
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
         //set pop_up size
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         //set locate
         window.setGravity(Gravity.BOTTOM);
         //set animal
         window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
+        dialogBtoms.show();
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Scan QR code / barcode return
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+                edit_sweep.setText(content);
+            }
+        }
     }
+
 }

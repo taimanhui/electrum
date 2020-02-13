@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
@@ -82,7 +83,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                 }
                 if (!TextUtils.isEmpty(strSeed)) {
                     try {
-                        PyObject pyObject = Daemon.commands.callAttr("create", strName, strPass1, strSeed);
+                        PyObject pyObject = Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));
                         strpyObject = pyObject.toString();
                         Log.i("strpyObject", "onViewClicked----- " + strpyObject);
                     } catch (Exception e) {
@@ -93,20 +94,18 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     }
                 } else {
                     try {
-                        Log.i("strpyObject", "set  +  " + strName + "   " + strPass1);
-                        PyObject pyObject = Daemon.commands.callAttr("create", strName, strPass1);
-
+                        PyObject pyObject = Daemon.commands.callAttr("create", strName, strPass1,new Kwarg("seed", "None"));
                         strpyObject = pyObject.toString();
                         Log.i("strpyObject", "onViewClicked::::: " + strpyObject);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Log.i("strpyObject", "Exception::::: " + e.getMessage());
-                        return;
+//                        return;
 
                     }
                 }
 
-//                mIntent(RemeberMnemonicWordActivity.class);
+                mIntent(RemeberMnemonicWordActivity.class);
                 break;
         }
     }
