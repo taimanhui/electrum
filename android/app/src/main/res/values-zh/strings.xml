@@ -335,5 +335,10 @@
     <string name="remeber_help_word">已记下助记词</string>
     <string name="jump">跳过</string>
     <string name="mnemonic_word_12">请按顺序输入12位助记词</string>
+    <string name="public_person_2">共管人数最小2人</string>
+    <string name="input_name">请输入名字</string>
+    <string name="input_public_address">请输入公钥地址</string>
+    <string name="publickey_wrong">公钥格式不正确，请重新输入</string>
+    <string name="publicer">共管人</string>
 
 </resources>
