@@ -70,7 +70,7 @@ public class CreateOnlyChooseActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bn_add_key:
-                showSelectFeeDialogs(CreateOnlyChooseActivity.this, R.layout.bluetooce_nfc);
+                showSelectFeeDialogs(CreateOnlyChooseActivity.this, R.layout.bluetooth_personal);
                 break;
             case R.id.bn_complete_add_cosigner:
                 Intent intent = new Intent(CreateOnlyChooseActivity.this, CreatFinishPersonalActivity.class);

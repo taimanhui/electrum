@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -39,9 +38,9 @@
                 android:id="@+id/radio_two"
                 android:layout_width="65dp"
                 android:layout_height="match_parent"
-                android:checked="true"
                 android:layout_marginStart="@dimen/dp_20"
                 android:button="@null"
+                android:checked="true"
                 android:drawableBottom="@drawable/src_qiye"
                 android:gravity="center"
                 android:text="@string/nfc_line"
@@ -51,7 +50,7 @@
         </RadioGroup>
 
         <ImageView
-            android:id="@+id/img1_Cancle"
+            android:id="@+id/img_Cancle"
             android:layout_width="@dimen/dp_40"
             android:layout_height="47.5dp"
             android:layout_alignParentEnd="true"
@@ -68,37 +67,14 @@
             android:background="@color/separation_line" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="17dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/dp_45"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
             android:gravity="center_horizontal"
-            android:text="@string/have_bixinkey"
-            android:textColor="@color/text_color1"
-            android:textSize="@dimen/sp_12" />
-
-        <TextView
-            android:id="@+id/tet_handInput"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_30"
-            android:layout_marginBottom="@dimen/dp_20"
-            android:gravity="center_horizontal|bottom"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:textColor="@color/oncklick"
-            android:textSize="12sp"
-            android:text="@string/input_public_key" />
-
-        <View
-            android:layout_width="73dp"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="@dimen/dp_20"
-            android:layout_height="@dimen/dp_1"
-            android:background="@color/oncklick" />
-
-
+            android:layout_below="@+id/ln"
+            android:text="@string/bixinkey_fit"
+            android:textColor="@color/text"
+            android:textSize="18sp" />
 
     </RelativeLayout>
 

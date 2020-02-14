@@ -7,9 +7,9 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
+        android:layout_height="419dp"
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_10"
-        android:layout_height="419dp"
         android:layout_marginBottom="@dimen/layout_margin"
         app:cardCornerRadius="@dimen/corner_radius">
 
@@ -75,6 +75,7 @@
                     android:id="@+id/edit_keyName"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:maxLength="20"
                     android:layout_weight="1"
                     android:background="@null"
                     android:hint="@string/make_aname"
@@ -88,9 +89,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_16"
+                    android:text="@string/limit"
                     android:textColor="#b3b3b3"
-                    android:textSize="13sp"
-                    tools:text="8/20" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
 
@@ -150,7 +151,7 @@
                             style="?android:attr/buttonBarButtonStyle"
                             android:layout_width="100dp"
                             android:layout_height="36dp"
-                            android:layout_toStartOf="@+id/paste_cosigner_popup"
+                            android:layout_toStartOf="@+id/paste_cosigner_popup1"
                             android:background="@color/paste_bk"
                             android:drawableStart="@drawable/saoyisao"
                             android:gravity="center"
@@ -162,7 +163,7 @@
                             android:textSize="16sp" />
 
                         <Button
-                            android:id="@+id/paste_cosigner_popup"
+                            android:id="@+id/paste_cosigner_popup1"
                             style="?android:attr/buttonBarButtonStyle"
                             android:layout_width="100dp"
                             android:layout_height="36dp"
@@ -184,12 +185,14 @@
             </androidx.cardview.widget.CardView>
 
             <LinearLayout
+                android:id="@+id/lin_ComfirmAll"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_below="@+id/cardView2"
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_18"
-                android:layout_marginEnd="@dimen/dp_16">
+                android:layout_marginEnd="@dimen/dp_16"
+                android:visibility="gone">
 
                 <Button
                     android:id="@+id/btn_Clear"
@@ -216,6 +219,22 @@
                     android:textSize="@dimen/sp_14" />
 
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_ConfirmAll"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:visibility="visible"
+                android:layout_below="@+id/cardView2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_18"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@drawable/button_bk"
+                android:text="@string/confirm"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_14" />
 
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

@@ -1,11 +1,11 @@
 package org.haobtc.wallet.activities.onlywallet;
 
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import com.chad.library.adapter.base.BaseQuickAdapter;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -17,21 +17,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class RemeberMnemonicWordActivity extends BaseActivity {
-
+public class VerificationMnemonicWordActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.recl_helpWord)
     RecyclerView reclHelpWord;
-    @BindView(R.id.btn_setPin)
-    Button btnSetPin;
-    @BindView(R.id.tet_jump)
-    TextView tetJump;
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_remeber_mnemonic_word;
+        return R.layout.activity_verification_mnemonic_word;
     }
 
     @Override
@@ -42,7 +37,14 @@ public class RemeberMnemonicWordActivity extends BaseActivity {
             strings.add("mine");
         }
         reclHelpWord.setLayoutManager(new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL));
-        reclHelpWord.setAdapter(new HelpWordAdapter(strings));
+        HelpWordAdapter helpWordAdapter = new HelpWordAdapter(strings);
+        reclHelpWord.setAdapter(helpWordAdapter);
+        helpWordAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                mIntent(AppWalletCreateFinishActivity.class);
+            }
+        });
 
     }
 
@@ -52,17 +54,11 @@ public class RemeberMnemonicWordActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.img_back, R.id.btn_setPin, R.id.tet_jump})
+    @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
-                break;
-            case R.id.btn_setPin:
-                
-                break;
-            case R.id.tet_jump:
-                mIntent(VerificationMnemonicWordActivity.class);
                 break;
         }
     }

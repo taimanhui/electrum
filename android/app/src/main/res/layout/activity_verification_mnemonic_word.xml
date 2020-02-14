@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
     android:orientation="vertical"
-    tools:context=".activities.onlywallet.RemeberMnemonicWordActivity">
+    tools:context=".activities.onlywallet.VerificationMnemonicWordActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -76,19 +76,20 @@
                     android:layout_marginStart="@dimen/dp_16"
                     android:layout_marginTop="@dimen/dp_19"
                     android:layout_marginEnd="@dimen/dp_16"
-                    android:text="@string/input_help_word_tips"
+                    android:text="@string/mnemonic_word_12"
                     android:textColor="#b3b3b3"
                     android:textSize="13sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
                     android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_marginTop="@dimen/dp_19"
                     android:layout_marginEnd="@dimen/dp_16"
-                    android:text="@string/cread_wallet_tips"
-                    android:textColor="#b3b3b3"
-                    android:textSize="13sp" />
+                    android:background="@color/gray_little">
+
+                </RelativeLayout>
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recl_helpWord"
@@ -108,26 +109,5 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <Button
-            android:id="@+id/btn_setPin"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="@dimen/dp_30"
-            android:background="@drawable/button_bk"
-            android:text="@string/remeber_help_word"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white" />
-
-        <TextView
-            android:id="@+id/tet_jump"
-            android:layout_width="100dp"
-            android:layout_height="@dimen/dp_40"
-            android:layout_marginTop="@dimen/dp_10"
-            android:gravity="center"
-            android:text="@string/jump"
-            android:textColor="@color/text_0"
-            android:textSize="@dimen/sp_16" />
-
     </LinearLayout>
-
 </LinearLayout>

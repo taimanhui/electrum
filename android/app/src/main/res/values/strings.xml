@@ -346,6 +346,12 @@
     <string name="signnum_dongt_public">签名人数不可大于共管人数</string>
     <string name="set_pass">请设置密码</string>
     <string name="set_pass_second">请再次输入密码</string>
-    <string name="two_different_pass">两次密码输入不一致</string>
+    <string name="two_different_pass">两次密码不一致</string>
+    <string name="backups_wallet">备份钱包</string>
+    <string name="input_help_word_tips">钱包相关信息包括私钥均保存在手机 为避免本机丢失导致资产丢失，请备份钱包助记词</string>
+    <string name="cread_wallet_tips">请将助记词按顺序抄写在纸上，并在安全私密的地方保管。只有使用钱包助记词能恢复钱包</string>
+    <string name="remeber_help_word">已记下助记词</string>
+    <string name="jump">跳过</string>
+    <string name="mnemonic_word_12">请按顺序输入12位助记词</string>
 
 </resources>
