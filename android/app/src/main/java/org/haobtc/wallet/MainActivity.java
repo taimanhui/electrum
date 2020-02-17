@@ -212,6 +212,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e("mWheelplanting", "mWheelplanting:==== "+e.getMessage());
             return;
         }
 
@@ -316,6 +317,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
+            Log.i("downMainListdata", "downMaina===: "+e.getMessage());
             return;
         }
         //get transaction list
@@ -588,7 +590,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         maintrsactionlistEvents.clear();
         //trsaction list data
         downMainListdata();
-        trsactionlistAdapter.notifyDataSetChanged();
+        if (trsactionlistAdapter!=null){
+            trsactionlistAdapter.notifyDataSetChanged();
+        }
+
 
     }
 }

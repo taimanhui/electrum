@@ -48,22 +48,24 @@
 
             <ImageView
                 android:id="@+id/img_Progree1"
-                android:visibility="visible"
-                android:src="@drawable/step1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:src="@drawable/step1"
+                android:visibility="visible" />
+
             <ImageView
                 android:id="@+id/img_Progree2"
-                android:src="@drawable/step2"
-                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:src="@drawable/step2"
+                android:visibility="gone" />
+
             <ImageView
                 android:id="@+id/img_Progree3"
-                android:visibility="gone"
-                android:src="@drawable/step3"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:src="@drawable/step3"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
@@ -113,7 +115,6 @@
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
-            android:layout_marginBottom="@dimen/dp_66"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/bk_page">
@@ -131,9 +132,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="287dp"
                     android:layout_marginStart="@dimen/layout_margin"
-                    android:layout_marginBottom="@dimen/dp_2"
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
+                    android:layout_marginBottom="@dimen/dp_2"
                     android:visibility="visible"
                     app:cardCornerRadius="@dimen/corner_radius">
 
@@ -264,9 +265,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
+                                android:text="@string/_0"
                                 android:textColor="#6182f5"
-                                android:textSize="12sp"
-                                android:text="@string/_0" />
+                                android:textSize="12sp" />
 
                         </RelativeLayout>
 
@@ -329,7 +330,7 @@
                                 android:id="@+id/seek_bar_num"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/dp_30"
-                                android:max="5"
+                                android:max="15"
                                 android:overScrollMode="never"
                                 android:thumb="@drawable/white_clrcle" />
 
@@ -356,7 +357,7 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginEnd="5dp"
                                 android:gravity="center_horizontal"
-                                android:text="@string/text_5"
+                                android:text="@string/text_big_num"
                                 android:textColor="@color/text_0"
                                 android:textSize="12sp"
                                 tools:ignore="RelativeOverlap" />
@@ -366,9 +367,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
+                                android:text="@string/_0"
                                 android:textColor="#6182f5"
-                                android:textSize="12sp"
-                                android:text="@string/_0" />
+                                android:textSize="12sp" />
 
                         </RelativeLayout>
 
@@ -383,8 +384,7 @@
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
                     android:visibility="gone"
-                    app:cardCornerRadius="@dimen/corner_radius"
-                    app:layout_constraintTop_toBottomOf="@+id/textView24">
+                    app:cardCornerRadius="@dimen/corner_radius">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -393,6 +393,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tet_who_wallet"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
@@ -402,6 +403,7 @@
                             android:textSize="@dimen/big_text_size" />
 
                         <TextView
+                            android:id="@+id/tet_many_key"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
@@ -420,24 +422,13 @@
                             android:visibility="visible" />
 
                         <TextView
-                            android:id="@+id/tet_bigMessage"
-                            android:layout_width="match_parent"
-                            android:layout_height="248.3dp"
-                            android:layout_marginStart="@dimen/dp_20"
-                            android:layout_marginTop="@dimen/dp_20"
-                            android:layout_marginEnd="@dimen/dp_20"
-                            android:gravity="center"
-                            android:text="@string/message_big"
-                            android:textSize="@dimen/sp_12"
-                            android:visibility="gone" />
-
-                        <TextView
                             android:id="@+id/tet_Preservation"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="@dimen/dp_40"
+                            android:gravity="center_vertical"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/dp_20"
-                            android:layout_marginBottom="@dimen/dp_30"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:layout_marginBottom="@dimen/dp_20"
                             android:text="@string/preservation"
                             android:textColor="@color/button_bk_disableok"
                             android:textSize="@dimen/text_size" />
@@ -445,12 +436,59 @@
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_three_public"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/layout_margin"
+                    android:layout_marginTop="@dimen/layout_margin"
+                    android:layout_marginEnd="@dimen/layout_margin"
+                    android:layout_marginBottom="90dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="@dimen/corner_radius">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_marginTop="@dimen/dp_18"
+                            android:layout_marginBottom="@dimen/dp_18"
+                            android:textColor="#494949"
+                            android:textSize="18sp"
+                            android:text="@string/publicer" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp_1"
+                            android:background="@color/line_color" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recl_publicPerson"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:itemCount="3"
+                            tools:listitem="@layout/public_person">
+
+                        </androidx.recyclerview.widget.RecyclerView>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+
                 <!--      two      -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recl_BinxinKey"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/public_wallet_item">
 
@@ -498,20 +536,43 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/rel_TwoNext"
+        android:id="@+id/rel_TwoNext1"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:visibility="gone"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/bn_complete_add_cosigner"
             android:layout_width="343dp"
             android:layout_height="@dimen/dp_40"
             android:layout_centerInParent="true"
-            android:background="@drawable/little_radio_blue"
+            android:background="@drawable/little_radio_qian"
             android:text="@string/next"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white">
+
+        </Button>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rel_Finish"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btn_Finish"
+            android:layout_width="343dp"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerInParent="true"
+            android:background="@drawable/little_radio_blue"
+            android:text="@string/finish"
             android:textAllCaps="false"
             android:textColor="@android:color/white">
 

@@ -6,10 +6,13 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -27,16 +30,28 @@ import androidx.annotation.LayoutRes;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
+import org.haobtc.wallet.adapter.PublicPersonAdapter;
+import org.haobtc.wallet.bean.GetCodeAddressBean;
+import org.haobtc.wallet.event.AddBixinKeyEvent;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
+import org.haobtc.wallet.utils.MyDialog;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -79,12 +94,39 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     CardView cardViewThree;
     @BindView(R.id.recl_BinxinKey)
     RecyclerView reclBinxinKey;
-    @BindView(R.id.rel_TwoNext)
-    RelativeLayout relTwoNext;
+    @BindView(R.id.rel_Finish)
+    RelativeLayout relFinish;
+    @BindView(R.id.rel_TwoNext1)
+    RelativeLayout relTwoNext1;
+    @BindView(R.id.bn_complete_add_cosigner)
+    Button bnCompleteAddCosigner;
+    @BindView(R.id.card_three_public)
+    CardView cardThreePublic;
+    @BindView(R.id.tet_who_wallet)
+    TextView tetWhoWallet;
+    @BindView(R.id.tet_many_key)
+    TextView tetManyKey;
+    @BindView(R.id.img_Orcode)
+    ImageView imgOrcode;
+    @BindView(R.id.tet_Preservation)
+    TextView tetPreservation;
+    @BindView(R.id.recl_publicPerson)
+    RecyclerView reclPublicPerson;
+    @BindView(R.id.btn_Finish)
+    Button btnFinish;
     private Dialog dialogBtom;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private EditText edit_sweep;
+    private ArrayList<AddBixinKeyEvent> addEventsDatas;
+    private PyObject is_valiad_xpub;
+    private String strInditor2;
+    private String strInditor1;
+    private MyDialog myDialog;
+    private PyObject walletAddressShowUi;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor edit;
+    private final String FIRST_RUN = "is_first_run";
 
     @Override
     public int getLayoutId() {
@@ -94,13 +136,17 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
-
+        myDialog = MyDialog.showDialog(ManyWalletTogetherActivity.this);
     }
 
 
     @Override
     public void initData() {
+        addEventsDatas = new ArrayList<>();
+
         seekbarLatoutup();
         seekbarLatoutdown();
     }
@@ -152,7 +198,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key})
+    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key, R.id.btn_Finish, R.id.bn_complete_add_cosigner, R.id.tet_Preservation})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -164,12 +210,80 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             case R.id.bn_add_key:
                 showSelectFeeDialogs(ManyWalletTogetherActivity.this, R.layout.bluetooce_nfc);
                 break;
+            case R.id.btn_Finish:
+                //FIRST_RUN,if frist run
+                edit.putBoolean(FIRST_RUN, true);
+                edit.apply();
+                EventBus.getDefault().post(new FirstEvent("11"));
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                finishAffinity();
+                break;
+            case R.id.bn_complete_add_cosigner:
+                myDialog.show();
+                String strWalletname = editWalletname.getText().toString();
+                strInditor1 = tvIndicator.getText().toString();
+                strInditor2 = tvIndicatorTwo.getText().toString();
+                try {
+                    Daemon.commands.callAttr("create_multi_wallet", strWalletname);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    myDialog.dismiss();
+                    Log.e("jxmException", "Exception: " + e.getMessage());
+                    String message = e.getMessage();
+                    if ("BaseException: file already exists at path".equals(message)) {
+                        mToast(getResources().getString(R.string.changewalletname));
+                    }
+                    return;
+                }
+                myDialog.dismiss();
+                //Generate QR code
+                mGeneratecode();
+
+
+                cardViewOne.setVisibility(View.GONE);
+                button.setVisibility(View.GONE);
+                imgProgree1.setVisibility(View.GONE);
+                imgProgree2.setVisibility(View.GONE);
+                imgProgree3.setVisibility(View.VISIBLE);
+                reclBinxinKey.setVisibility(View.GONE);
+                bnAddKey.setVisibility(View.GONE);
+                relTwoNext1.setVisibility(View.GONE);
+                relFinish.setVisibility(View.VISIBLE);
+                tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+                cardViewThree.setVisibility(View.VISIBLE);
+                relFinish.setVisibility(View.VISIBLE);
+                cardThreePublic.setVisibility(View.VISIBLE);
+                tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
+                break;
+            case R.id.tet_Preservation:
+
+                break;
+        }
+    }
+
+    //get code
+    private void mGeneratecode() {
+        try {
+            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (walletAddressShowUi != null) {
+            String strCode = walletAddressShowUi.toString();
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            String qr_data = getCodeAddressBean.getQr_data();
+            Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            imgOrcode.setImageBitmap(bitmap);
+
         }
     }
 
     private void mCreatWalletNext() {
-        String strInditor1 = tvIndicator.getText().toString();
-        String strInditor2 = tvIndicatorTwo.getText().toString();
+        strInditor1 = tvIndicator.getText().toString();
+        strInditor2 = tvIndicatorTwo.getText().toString();
         String strWalletname = editWalletname.getText().toString();
         int strUp1 = Integer.parseInt(strInditor1);
         int strUp2 = Integer.parseInt(strInditor2);
@@ -185,10 +299,15 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             mToast(getResources().getString(R.string.set_sign_num));
             return;
         }
+        if (strUp1 < 2) {
+            mToast(getResources().getString(R.string.public_person_2));
+            return;
+        }
         if (strUp2 > strUp1) {
             mToast(getResources().getString(R.string.signnum_dongt_public));
             return;
         }
+
         try {
             Daemon.commands.callAttr("set_multi_wallet_info", strWalletname, strUp1, strUp2);
         } catch (Exception e) {
@@ -201,8 +320,11 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         imgProgree3.setVisibility(View.GONE);
         reclBinxinKey.setVisibility(View.VISIBLE);
         bnAddKey.setVisibility(View.VISIBLE);
-        relTwoNext.setVisibility(View.VISIBLE);
+        relTwoNext1.setVisibility(View.VISIBLE);
         tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+        bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getResources().getString(R.string.next), strInditor2));
+
+        bnCompleteAddCosigner.setEnabled(false);
 
     }
 
@@ -280,13 +402,41 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String strLine = edit_sweep.getText().toString();
-                if (!TextUtils.isEmpty(strLine)){
+                if (!TextUtils.isEmpty(strLine)) {
                     view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.GONE);
                     view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.VISIBLE);
                     view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.GONE);
                 }
+
+//                String strRaw = edit_sweep.getText().toString();
+//                Log.i("CharSequence", "------------ " + strRaw);
+//                if (!TextUtils.isEmpty(strRaw)) {
+//                    try {
+//                        try {
+//                            is_valiad_xpub = Daemon.commands.callAttr("is_valiad_xpub", strRaw);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            return;
+//                        }
+//                        if (is_valiad_xpub != null) {
+//                            String strValiad = is_valiad_xpub.toString();
+//                            if (strValiad.equals("False")) {
+//                                view.findViewById(R.id.tet_Error).setVisibility(View.VISIBLE);
+//                            } else {
+//                                view.findViewById(R.id.tet_Error).setVisibility(View.INVISIBLE);
+//                            }
+//
+//                        }
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        view.findViewById(R.id.tet_Error).setVisibility(View.VISIBLE);
+//                    }
+//
+//                } else {
+//                    view.findViewById(R.id.tet_Error).setVisibility(View.INVISIBLE);
+//                }
             }
         });
         //sweep
@@ -317,10 +467,83 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             }
         });
 
-
-
         view.findViewById(R.id.btn_Clear).setOnClickListener(v -> {
             edit_sweep.setText("");
+        });
+        view.findViewById(R.id.btn_ConfirmAll).setOnClickListener(v -> {
+            String strBixinname = edit_bixinName.getText().toString();
+            String strSweep = edit_sweep.getText().toString();
+            if (TextUtils.isEmpty(strBixinname)) {
+                mToast(getResources().getString(R.string.input_name));
+                return;
+            }
+            if (TextUtils.isEmpty(strSweep)) {
+                mToast(getResources().getString(R.string.input_public_address));
+                return;
+            }
+        });
+        view.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
+            String strBixinname = edit_bixinName.getText().toString();
+            String strSweep = edit_sweep.getText().toString();
+            if (TextUtils.isEmpty(strBixinname)) {
+                mToast(getResources().getString(R.string.input_name));
+                return;
+            }
+            if (TextUtils.isEmpty(strSweep)) {
+                mToast(getResources().getString(R.string.input_public_address));
+                return;
+            }
+            try {
+                //add
+                Daemon.commands.callAttr("add_xpub", strSweep);
+            } catch (Exception e) {
+                Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+            AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
+            addBixinKeyEvent.setKeyname(strBixinname);
+            addBixinKeyEvent.setKeyaddress(strSweep);
+            addEventsDatas.add(addBixinKeyEvent);
+            //public person
+            PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
+            reclPublicPerson.setAdapter(publicPersonAdapter);
+            //bixinKEY
+            AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
+            reclBinxinKey.setAdapter(addBixinKeyAdapter);
+
+            int cosignerNum = Integer.parseInt(strInditor2);
+            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+
+            if (addEventsDatas.size() == cosignerNum) {
+                bnCompleteAddCosigner.setEnabled(true);
+                bnCompleteAddCosigner.setBackground(getResources().getDrawable(R.drawable.little_radio_blue));
+                bnAddKey.setVisibility(View.GONE);
+            }
+            addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    switch (view.getId()) {
+                        case R.id.img_deleteKey:
+                            try {
+                                Daemon.commands.callAttr("delete_xpub", strSweep);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            addEventsDatas.remove(position);
+                            addBixinKeyAdapter.notifyDataSetChanged();
+                            bnAddKey.setVisibility(View.VISIBLE);
+                            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+
+                            bnCompleteAddCosigner.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
+                            bnCompleteAddCosigner.setEnabled(false);
+
+                            break;
+                    }
+                }
+            });
+            dialogBtoms.cancel();
+
         });
 
         //cancel dialog
@@ -353,4 +576,10 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }
