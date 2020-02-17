@@ -20,13 +20,11 @@
             android:textSize="15sp" />
 
         <ImageView
-            android:id="@+id/img_delete"
-            android:layout_width="@dimen/dp_21"
-            android:layout_height="@dimen/dp_21"
+            android:id="@+id/img_deleteKey"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:padding="3dp"
+            android:padding="12dp"
             android:src="@drawable/close_big_black" />
 
 
@@ -34,13 +32,14 @@
             android:id="@+id/ewrwerw"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_1"
-            android:layout_below="@+id/img_delete"
+            android:layout_below="@+id/img_deleteKey"
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginTop="13.5dp"
             android:layout_marginEnd="@dimen/dp_16"
             android:background="@color/line_color" />
 
         <TextView
+            android:id="@+id/tet_AddBixinkey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ewrwerw"

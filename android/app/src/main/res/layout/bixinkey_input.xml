@@ -95,16 +95,31 @@
             </LinearLayout>
 
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/textView9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_below="@id/lin_Useset"
-                android:layout_marginStart="@dimen/text_margin"
                 android:layout_marginTop="@dimen/dp_20"
-                android:text="@string/public_address"
-                android:textColor="@color/graytext_color"
-                android:textSize="@dimen/smaller_text_size" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:text="@string/public_address"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/smaller_text_size" />
+                <TextView
+                    android:id="@+id/tet_Error"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="@dimen/sp_16"
+                    android:text="@string/pin_input_again"
+                    android:textColor="#F26A3A"
+                    android:textSize="@dimen/sp_12"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView2"
