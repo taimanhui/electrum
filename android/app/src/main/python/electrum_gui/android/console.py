@@ -21,7 +21,7 @@ from electrum.wallet import (Standard_Wallet,
                                  Wallet)
 from electrum.bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
 from electrum import mnemonic
-
+from electrum.address_synchronizer import TX_HEIGHT_LOCAL, TX_HEIGHT_FUTURE
 #from android.preference import PreferenceManager
 from electrum.commands import satoshis
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
@@ -192,6 +192,23 @@ class AndroidCommands(commands.Commands):
             #print("update_statue out = %s" % (out))
         #self.callbackIntent.onCallback(Status.update_status, out)
 
+    def get_remove_flag(self, tx_hash):
+        height = self.wallet.get_tx_height(tx_hash).height
+        if height in [TX_HEIGHT_FUTURE, TX_HEIGHT_LOCAL]:
+            return True
+        else:
+            return False
+
+    def remove_local_tx(self, delete_tx):
+        to_delete = {delete_tx}
+        to_delete |= self.wallet.get_depending_transactions(delete_tx)
+
+        for tx in to_delete:
+            self.wallet.remove_transaction(tx)
+        self.wallet.storage.write()
+        # need to update at least: history_list, utxo_list, address_list
+        #self.parent.need_update.set()
+
     def save_tx_to_file(self, path, tx):
         print("save_tx_to_file in.....")
         with open(path, 'w') as f:
@@ -301,7 +318,7 @@ class AndroidCommands(commands.Commands):
                     raise BaseException(util.InvalidPassword())
                 storage.decrypt(password)
 
-            wallet = Wallet(storage, config = self.config)
+            wallet = Wallet(storage, config=self.config)
             wallet.start_network(self.network)
             self.daemon.add_wallet(wallet)
 
@@ -443,7 +460,10 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_wallet_isvalid()
             outputs_addrs = self.parse_output(outputs)
-            self.do_save(outputs_addrs, message, self.tx)
+            #self.do_save(outputs_addrs, message, self.tx)
+            tx = tx_from_any(self.tx)
+            tx.deserialize()
+            self.do_save(tx)
         except Exception as e:
             raise BaseException(e)
 
@@ -470,26 +490,34 @@ class AndroidCommands(commands.Commands):
         wallets = self.list_wallets()
         wallet_info = []
         for i in wallets:
-            path = self._wallet_path(i)
-            wallet = self.daemon.get_wallet(path)
-            if not wallet:
-                storage = WalletStorage(path)
-                if not storage.file_exists():
-                    raise BaseException("not find file %s" %path)
+            print("---------name=%s" %i)
+            self.load_wallet(i, '111111')
+            data = self.select_wallet(i)
 
-                try:
-                    wallet = Wallet(storage, config=self.config)
-                except Exception as e:
-                    raise BaseException(e)
-            c, u, x = wallet.get_balance()
-            info = {
-                "wallet_type" : wallet.wallet_type,
-                "balance" : self.format_amount_and_units(c),
-                "name" : i
-            }
-            wallet_info.append(info)
+
+            # path = self._wallet_path(i)
+            # wallet = self.daemon.get_wallet(path)
+            # print("--------name = %s" % i)
+            # if not wallet:
+            #     storage = WalletStorage(path)
+            #     if not storage.file_exists():
+            #         raise BaseException("not find file %s" %path)
+            #
+            #     try:
+            #         #wallet = Standard_Wallet(storage, config=self.config)
+            #         wallet = Wallet(storage, config=self.config)
+            #     except Exception as e:
+            #        # wallet = Standard_Wallet(storage, config=self.config)
+            #         raise BaseException(e)
+            # c, u, x = wallet.get_balance()
+            # info = {
+            #     "wallet_type": wallet.wallet_type,
+            #     "balance": self.format_amount_and_units(c),
+            #     "name": i
+            # }
+            wallet_info.append(json.loads(data))
             wallet_info_map['wallets'] = wallet_info
-            print("wallet_info = %s ............" % wallet_info_map)
+            print("----wallet_info = %s ............" % wallet_info_map)
         return json.dumps(wallet_info_map)
 
     def format_amount(self, x, is_diff=False, whitespaces=False):
@@ -655,14 +683,24 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def do_save(self, outputs, message, tx):
+    #def do_save(self, outputs, message, tx):
+        # try:
+        #     invoice = self.wallet.create_invoice(outputs, message, None, None, tx=tx)
+        #     if not invoice:
+        #         return
+        #     self.wallet.save_invoice(invoice)
+        # except Exception as e:
+        #     raise BaseException(e)
+
+    def do_save(self, tx):
         try:
-            invoice = self.wallet.create_invoice(outputs, message, None, None, tx=tx)
-            if not invoice:
-                return
-            self.wallet.save_invoice(invoice)
-        except Exception as e:
+            if not self.wallet.add_transaction(tx):
+                raise BaseException(("Transaction could not be saved.") + "\n" + ("It conflicts with current history."))
+        except BaseException as e:
             raise BaseException(e)
+        else:
+            self.wallet.storage.write()
+            # need to update at least: history_list, utxo_list, address_list
 
     def update_invoices(self, old_tx, new_tx):
         try:
@@ -947,7 +985,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         use_change = self.config.get('use_change')
-        if use_change == status_change :
+        if use_change == status_change:
             return
         self.config.set_key('use_change', status_change, True)
         self.wallet.use_change = status_change
@@ -960,7 +998,8 @@ class AndroidCommands(commands.Commands):
             tx.deserialize()
             sign_tx = self.wallet.sign_transaction(tx, password)
             print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
-            self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
+            self.do_save(sign_tx)
+            #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
             return sign_tx
         except Exception as e:
             raise BaseException(e)
@@ -1018,9 +1057,13 @@ class AndroidCommands(commands.Commands):
                 ks = keystore.from_seed(seed, passphrase, False)
 
             storage.put('keystore', ks.dump())
+            #storage.put('wallet_type', 'standard')
             wallet = Standard_Wallet(storage, config=self.config)
+            #wallet = Wallet(storage, config=self.config)
         wallet.update_password(None, password, True)
         wallet.start_network(self.daemon.network)
+        #wallet.synchronize()
+        wallet.storage.write()
         self.daemon.add_wallet(wallet)
         return new_seed
     # END commands from the argparse interface.
@@ -1035,12 +1078,8 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('use_rbf', status_rbf, True)
         self.rbf = status_rbf
 
-    def get_rbf_status(self, tx):
+    def get_rbf_status(self, tx_hash):
         try:
-            tx = tx_from_any(tx)
-            tx.deserialize()
-            tx_hash = tx.txid()
-            #tx_hash = tx_item['txid']
             tx = self.wallet.db.get_transaction(tx_hash)
             if not tx:
                 return False
@@ -1057,9 +1096,17 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def get_rbf_fee_info(self, tx):
-        tx = tx_from_any(tx)
-        tx.deserialize()
+    def format_fee_rate(self, fee_rate):
+        # fee_rate is in sat/kB
+        return util.format_fee_satoshis(fee_rate/1000, num_zeros=self.num_zeros) + ' sat/byte'
+
+    def get_rbf_fee_info(self, tx_hash):
+        tx = self.wallet.db.get_transaction(tx_hash)
+        if not tx:
+            return False
+        # tx_data = json.loads(self.get_details_info(tx))
+        # fee = tx_data['fee'].split(" ")[0]
+        # fee = self.get_amount(fee)
         txid = tx.txid()
         assert txid
         fee = self.wallet.get_tx_fee(txid)
@@ -1069,16 +1116,23 @@ class AndroidCommands(commands.Commands):
         old_fee_rate = fee / tx_size  # sat/vbyte
 
         ret_data = {
-            'current fee': self.format_amount(fee) + ' ' + self.base_unit(),
-            'current fee rate': self.format_fee_rate(1000 * old_fee_rate),
-            'new fee rate': max(old_fee_rate * 1.5, old_fee_rate + 1),
+            #'current_fee': self.format_amount(fee) + ' ' + self.base_unit(),
+            'current_feerate': self.format_fee_rate(1000 * old_fee_rate),
+            'new_feerate': max(old_fee_rate * 1.5, old_fee_rate + 1),
         }
         return json.dumps(ret_data)
 
     #TODO:new_tx in history or invoices, need test
-    def create_dump_fee(self, tx, new_fee_rate, is_final):
+
+    def create_bump_fee(self, tx_hash, new_fee_rate, is_final):
         try:
-            new_tx = self.wallet.bump_fee(tx=tx, new_fee_rate=new_fee_rate, coins=self.get_coins())
+            tx = self.wallet.db.get_transaction(tx_hash)
+            if not tx:
+                return False
+            coins = self.wallet.get_spendable_coins(None, nonlocal_only=False)
+            # tx = tx_from_any(tx)
+            # tx.deserialize()
+            new_tx = self.wallet.bump_fee(tx=tx, new_fee_rate=new_fee_rate, coins=coins)
         except BaseException as e:
             raise str(e)
         if is_final:
@@ -1086,7 +1140,8 @@ class AndroidCommands(commands.Commands):
         out = {
             'new_tx': new_tx.serialize_as_bytes().hex()
         }
-        self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
+        self.do_save(new_tx)
+        #self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
         return json.dumps(out)
     #######
 
