@@ -240,6 +240,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                 //Generate QR code
                 mGeneratecode();
 
+
                 cardViewOne.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
                 imgProgree1.setVisibility(View.GONE);
