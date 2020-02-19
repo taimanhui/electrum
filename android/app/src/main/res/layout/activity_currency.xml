@@ -32,177 +32,134 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bk_page"
-        android:orientation="vertical">
+        android:background="@color/bk_page">
 
-        <RelativeLayout
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_10"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="@dimen/dp_10"
-            android:background="@drawable/white_tuo"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/dnfjndjfns"
-                android:layout_width="wrap_content"
-                android:layout_height="59.5dp"
-                android:layout_marginStart="@dimen/dp_16"
-                android:gravity="center_vertical"
-                android:textColor="@color/graytext_color"
-                android:textSize="@dimen/sp_13"
-                android:text="@string/btc_table" />
-
-            <View
-                android:id="@+id/jhjhkjhk"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
-                android:layout_below="@+id/dnfjndjfns"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_10"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:background="@color/line_color" />
+                android:background="@drawable/white_tuo"
+                android:orientation="vertical">
 
-            <View
+                <TextView
+                    android:id="@+id/dnfjndjfns"
+                    android:layout_width="wrap_content"
+                    android:layout_height="59.5dp"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:text="@string/btc_table"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13" />
+
+                <View
+                    android:id="@+id/jhjhkjhk"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_below="@+id/dnfjndjfns"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_marginEnd="@dimen/dp_10"
+                    android:background="@color/line_color" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_below="@+id/dnfjndjfns"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_marginTop="60.5dp"
+                    android:layout_marginEnd="@dimen/dp_10"
+                    android:background="@color/line_color" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_below="@+id/dnfjndjfns"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_marginTop="119.5dp"
+                    android:layout_marginEnd="@dimen/dp_10"
+                    android:background="@color/line_color" />
+
+                <RadioGroup
+                    android:id="@+id/radio_one"
+                    android:layout_width="match_parent"
+                    android:layout_height="177dp"
+                    android:layout_below="@+id/jhjhkjhk"
+                    android:orientation="vertical"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingEnd="@dimen/dp_16">
+
+                    <RadioButton
+                        android:id="@+id/btn_btcOne"
+                        android:layout_width="match_parent"
+                        android:layout_height="59dp"
+                        android:button="@null"
+                        android:text="@string/_BTC"
+                        android:textColor="@drawable/textcolor"
+                        android:textSize="15sp" />
+
+                    <RadioButton
+                        android:id="@+id/btn_btcTwo"
+                        android:layout_width="match_parent"
+                        android:layout_height="59dp"
+                        android:button="@null"
+                        android:text="@string/mbtc_0_001_btc"
+                        android:textColor="@drawable/textcolor"
+                        android:textSize="15sp" />
+
+                    <RadioButton
+                        android:id="@+id/btn_btcThree"
+                        android:layout_width="match_parent"
+                        android:layout_height="59dp"
+                        android:button="@null"
+                        android:text="@string/sat_0_00000001_btc"
+                        android:textColor="@drawable/textcolor"
+                        android:textSize="15sp" />
+                </RadioGroup>
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
-                android:layout_below="@+id/dnfjndjfns"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginTop="60.5dp"
+                android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:background="@color/line_color" />
+                android:background="@drawable/white_tuo"
+                android:orientation="vertical">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
-                android:layout_below="@+id/dnfjndjfns"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginTop="119.5dp"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:background="@color/line_color" />
+                <TextView
+                    android:id="@+id/uyuerbfjhb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="59.5dp"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:text="@string/legal_table"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13" />
 
-            <RadioGroup
-                android:id="@+id/radio_one"
-                android:layout_width="match_parent"
-                android:layout_height="177dp"
-                android:layout_below="@+id/jhjhkjhk"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/dp_16"
-                android:paddingEnd="@dimen/dp_16">
 
-                <RadioButton
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recl_cnyTable"
                     android:layout_width="match_parent"
-                    android:layout_height="59dp"
-                    android:button="@null"
-                    android:text="@string/_BTC"
-                    android:textColor="@drawable/textcolor"
-                    android:textSize="15sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/dp_10"
+                    android:layout_below="@+id/uyuerbfjhb"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/cny_item">
 
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="59dp"
-                    android:button="@null"
-                    android:text="@string/mbtc_0_001_btc"
-                    android:textColor="@drawable/textcolor"
-                    android:textSize="15sp" />
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="59dp"
-                    android:button="@null"
-                    android:text="@string/sat_0_00000001_btc"
-                    android:textColor="@drawable/textcolor"
-                    android:textSize="15sp" />
-            </RadioGroup>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_10"
-            android:layout_marginTop="@dimen/dp_10"
-            android:layout_marginEnd="@dimen/dp_10"
-            android:background="@drawable/white_tuo"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/uyuerbfjhb"
-                android:layout_width="wrap_content"
-                android:layout_height="59.5dp"
-                android:layout_marginStart="@dimen/dp_16"
-                android:gravity="center_vertical"
-                android:textColor="@color/graytext_color"
-                android:textSize="@dimen/sp_13"
-                android:text="@string/legal_table" />
-
-            <View
-                android:id="@+id/idfrvdv"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
-                android:layout_below="@+id/uyuerbfjhb"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:background="@color/line_color" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
-                android:layout_below="@+id/uyuerbfjhb"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginTop="60.5dp"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:background="@color/line_color" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
-                android:layout_below="@+id/uyuerbfjhb"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginTop="119.5dp"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:background="@color/line_color" />
-
-            <RadioGroup
-                android:id="@+id/radio_two"
-                android:layout_width="match_parent"
-                android:layout_height="177dp"
-                android:layout_below="@+id/uyuerbfjhb"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/dp_16"
-                android:paddingEnd="@dimen/dp_16">
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="59dp"
-                    android:button="@null"
-                    android:text="@string/money_cny"
-                    android:textColor="@drawable/textcolor"
-                    android:textSize="15sp" />
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="59dp"
-                    android:button="@null"
-                    android:text="@string/doller"
-                    android:textColor="@drawable/textcolor"
-                    android:textSize="15sp" />
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="59dp"
-                    android:button="@null"
-                    android:text="@string/korean_money"
-                    android:textColor="@drawable/textcolor"
-                    android:textSize="15sp" />
-            </RadioGroup>
-
-        </RelativeLayout>
-
-
-    </LinearLayout>
-
+                </androidx.recyclerview.widget.RecyclerView>
+            </RelativeLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

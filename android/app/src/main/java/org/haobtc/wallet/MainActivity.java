@@ -55,6 +55,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.adapter.MyPagerAdapter;
+import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MainWheelBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
@@ -127,6 +128,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private String message = "";
     private String strNames;
     private SmartRefreshLayout refreshLayout;
+    private PyObject select_wallet;
+    private String balanceC;
+    private String nameAC;
+    private String streplaceC;
 
     @Override
     public int getLayoutId() {
@@ -209,42 +214,69 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         PyObject get_wallets_list_info = null;
         try {
-            get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
+            get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
+
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e("mWheelplanting", "mWheelplanting:==== " + e.getMessage());
             return;
         }
 
         if (get_wallets_list_info != null) {
-            String toString = get_wallets_list_info.toString();
-            Log.i("javaBean", "mjavaBean----: " + toString + "----lenth----" + toString.length());
-            Gson gson = new Gson();
-            MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
-            List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
-            strNames = wallets.get(0).getName();
-            if (wallets != null) {
-                for (int i = 0; i < wallets.size(); i++) {
-                    String walletType = wallets.get(i).getWalletType();
-                    String balance = wallets.get(i).getBalance();
-                    String name = wallets.get(i).getName();
+            List<PyObject> pyObjects = get_wallets_list_info.asList();
+//            String toString = get_wallets_list_info.toString();
+            Log.i("javaBean", "mjavaBean----: " + pyObjects);
+            strNames = pyObjects.get(0).toString();
+            if (pyObjects != null) {
+                for (int i = 0; i < pyObjects.size(); i++) {
+                    String name = pyObjects.get(i).toString();
                     dataListName.add(name);
-                    String streplace = walletType.replaceAll("of", "/");
-                    fragmentList.add(new WheelViewpagerFragment(name, streplace, balance));
+                    //choose wallet
+                    try {
+                        Daemon.commands.callAttr("load_wallet", name);
+                        select_wallet = Daemon.commands.callAttr("select_wallet", name);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (select_wallet != null) {
+                        String toString = select_wallet.toString();
+                        Log.i("select_wallet", "select_wallet+++: " + toString);
+                        Gson gson = new Gson();
+                        MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
+                        String walletType = mainWheelBean.getWalletType();
+                        balanceC = mainWheelBean.getBalance();
+                        nameAC = mainWheelBean.getName();
+                        streplaceC = walletType.replaceAll("of", "/");
 
+                    }
+                    fragmentList.add(new WheelViewpagerFragment(nameAC, streplaceC, balanceC));
                 }
+
                 dataListName.add("");
                 fragmentList.add(new AddViewFragment());
                 viewPager.setOffscreenPageLimit(4);
                 viewPager.setPageMargin(40);
                 viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                //choose wallet
-                try {
-                    Daemon.commands.callAttr("load_wallet", dataListName.get(0));
-                    Daemon.commands.callAttr("select_wallet", dataListName.get(0));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+                        //refresh only wallet
+//                        if (fragmentList.size() - 1 != position) {
+//                            ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
+//                        }
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+
+                    }
+                });
+
                 //trsaction list data
                 downMainListdata();
 
@@ -316,6 +348,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
+            Log.i("downMainListdata", "downMaina===: " + e.getMessage());
             return;
         }
         //get transaction list
@@ -385,16 +418,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             recy_data.setAdapter(trsactionlistAdapter);
             myDialog.dismiss();
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+
+                private String tx_hash1;
+                private String status;
+
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     String typeDele = maintrsactionlistEvents.get(position).getType();
-                    switch (view.getId()){
+                    switch (view.getId()) {
                         case R.id.lin_Item:
                             try {
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                String tx_hash1 = jsonObject.getString("tx_hash");
+                                tx_hash1 = jsonObject.getString("tx_hash");
                                 Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
-                                if (typeDele.equals("tx")){
+                                if (typeDele.equals("tx")) {
                                     String tx_Onclick = jsonObject.getString("tx");
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("tx_hash", tx_hash1);
@@ -402,7 +439,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     intent.putExtra("txCreatTrsaction", tx_Onclick);
                                     startActivity(intent);
 
-                                }else{
+                                } else {
                                     intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("listType", typeDele);
@@ -415,10 +452,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
                             break;
                         case R.id.txt_delete:
-                            if ("tx".equals(typeDele)){
+                            try {
+                                JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                tx_hash1 = jsonObject.getString("tx_hash");
+                                PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
+                                status = get_remove_flag.toString();
+                                Log.i("onItemChildClick", "onItemCh==== "+status);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (status.equals("true")){
                                 String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
                                 try {
-                                    Daemon.commands.callAttr("delete_invoice", invoice_id);
+                                    Daemon.commands.callAttr("remove_local_tx", tx_hash1);
                                     maintrsactionlistEvents.remove(position);
                                     trsactionlistAdapter.notifyItemChanged(position);
                                     trsactionlistAdapter.notifyDataSetChanged();
@@ -428,8 +475,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     e.printStackTrace();
                                 }
                             }else{
-                                mToast(getResources().getString(R.string.delete_unBroad));
+                                mToast("");
                             }
+
                             break;
                     }
                 }
@@ -490,7 +538,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             //Rolling Wallet
             mWheelplanting();
 
-        }else if (msgVote.equals("22")){
+        } else if (msgVote.equals("22")) {
             maintrsactionlistEvents.clear();
             //trsaction list data
             downMainListdata();
@@ -542,7 +590,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 intent.putExtra("sendAdress", address);
                                 intent.putExtra("sendamount", sendAmount);
                                 intent.putExtra("sendmessage", message);
-                                intent.putExtra("wallet_name",strNames);
+                                intent.putExtra("wallet_name", strNames);
                                 startActivity(intent);
                             } else if (type == 2) {
                                 Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
@@ -588,7 +636,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         maintrsactionlistEvents.clear();
         //trsaction list data
         downMainListdata();
-        trsactionlistAdapter.notifyDataSetChanged();
+        if (trsactionlistAdapter != null) {
+            trsactionlistAdapter.notifyDataSetChanged();
+        }
+
 
     }
 }

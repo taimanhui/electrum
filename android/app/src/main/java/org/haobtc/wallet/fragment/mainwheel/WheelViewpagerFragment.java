@@ -15,12 +15,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.SignaturePageActivity;
+import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +42,8 @@ public class WheelViewpagerFragment extends Fragment {
     private String balance;
     private Button btnLeft;
     private Button btncenetr;
-//    private Button btnright;
+    private PyObject select_wallet;
+    //    private Button btnright;
 
     public WheelViewpagerFragment(String name, String personce, String balance) {
         this.name = name;
@@ -87,6 +90,30 @@ public class WheelViewpagerFragment extends Fragment {
 //            startActivity(intent);
 //        });
 
+    }
+
+    public void refreshList(){
+        //get wallet message
+        try {
+            Daemon.commands.callAttr("load_wallet", name);
+            select_wallet = Daemon.commands.callAttr("select_wallet", name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (select_wallet != null) {
+            String toString = select_wallet.toString();
+            Log.i("select_wallet", "select_wallet+++: " + toString);
+            Gson gson = new Gson();
+            MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
+            String walletType = mainWheelBean.getWalletType();
+            String balanceC = mainWheelBean.getBalance();
+            String nameAC = mainWheelBean.getName();
+            String streplaceC = walletType.replaceAll("of", "/");
+            wallet_card_name.setText(nameAC);
+            walletpersonce.setText(streplaceC);
+            walletBlance.setText(balanceC);
+        }
     }
 
 }

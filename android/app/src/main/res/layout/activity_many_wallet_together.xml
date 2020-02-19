@@ -424,10 +424,11 @@
                         <TextView
                             android:id="@+id/tet_Preservation"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="@dimen/dp_40"
+                            android:gravity="center_vertical"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/dp_20"
-                            android:layout_marginBottom="@dimen/dp_30"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:layout_marginBottom="@dimen/dp_20"
                             android:text="@string/preservation"
                             android:textColor="@color/button_bk_disableok"
                             android:textSize="@dimen/text_size" />
@@ -468,8 +469,11 @@
                             android:background="@color/line_color" />
 
                         <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recl_publicPerson"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
                             tools:itemCount="3"
                             tools:listitem="@layout/public_person">
 
@@ -564,6 +568,8 @@
         android:visibility="gone">
 
         <Button
+            android:id="@+id/btn_Finish"
+
             android:layout_width="343dp"
             android:layout_height="@dimen/dp_40"
             android:layout_centerInParent="true"

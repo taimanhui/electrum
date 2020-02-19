@@ -6,10 +6,13 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -29,16 +32,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
+import org.haobtc.wallet.adapter.PublicPersonAdapter;
+import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
+import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -95,6 +106,14 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     TextView tetWhoWallet;
     @BindView(R.id.tet_many_key)
     TextView tetManyKey;
+    @BindView(R.id.img_Orcode)
+    ImageView imgOrcode;
+    @BindView(R.id.tet_Preservation)
+    TextView tetPreservation;
+    @BindView(R.id.recl_publicPerson)
+    RecyclerView reclPublicPerson;
+    @BindView(R.id.btn_Finish)
+    Button btnFinish;
     private Dialog dialogBtom;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
@@ -103,6 +122,11 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     private PyObject is_valiad_xpub;
     private String strInditor2;
     private String strInditor1;
+    private MyDialog myDialog;
+    private PyObject walletAddressShowUi;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor edit;
+    private final String FIRST_RUN = "is_first_run";
 
     @Override
     public int getLayoutId() {
@@ -112,8 +136,10 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
-
+        myDialog = MyDialog.showDialog(ManyWalletTogetherActivity.this);
     }
 
 
@@ -172,7 +198,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key, R.id.rel_Finish, R.id.bn_complete_add_cosigner})
+    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key, R.id.btn_Finish, R.id.bn_complete_add_cosigner, R.id.tet_Preservation})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -184,13 +210,37 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             case R.id.bn_add_key:
                 showSelectFeeDialogs(ManyWalletTogetherActivity.this, R.layout.bluetooce_nfc);
                 break;
-            case R.id.rel_Finish:
-
+            case R.id.btn_Finish:
+                //FIRST_RUN,if frist run
+                edit.putBoolean(FIRST_RUN, true);
+                edit.apply();
+                EventBus.getDefault().post(new FirstEvent("11"));
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                finishAffinity();
                 break;
             case R.id.bn_complete_add_cosigner:
+                myDialog.show();
                 String strWalletname = editWalletname.getText().toString();
                 strInditor1 = tvIndicator.getText().toString();
                 strInditor2 = tvIndicatorTwo.getText().toString();
+                try {
+                    Daemon.commands.callAttr("create_multi_wallet", strWalletname);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    myDialog.dismiss();
+                    Log.e("jxmException", "Exception: " + e.getMessage());
+                    String message = e.getMessage();
+                    if ("BaseException: file already exists at path".equals(message)) {
+                        mToast(getResources().getString(R.string.changewalletname));
+                    }
+                    return;
+                }
+                myDialog.dismiss();
+                //Generate QR code
+                mGeneratecode();
+
+
                 cardViewOne.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
                 imgProgree1.setVisibility(View.GONE);
@@ -205,8 +255,29 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                 relFinish.setVisibility(View.VISIBLE);
                 cardThreePublic.setVisibility(View.VISIBLE);
                 tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
+                break;
+            case R.id.tet_Preservation:
 
                 break;
+        }
+    }
+
+    //get code
+    private void mGeneratecode() {
+        try {
+            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (walletAddressShowUi != null) {
+            String strCode = walletAddressShowUi.toString();
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            String qr_data = getCodeAddressBean.getQr_data();
+            Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            imgOrcode.setImageBitmap(bitmap);
+
         }
     }
 
@@ -251,7 +322,8 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         bnAddKey.setVisibility(View.VISIBLE);
         relTwoNext1.setVisibility(View.VISIBLE);
         tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-        bnCompleteAddCosigner.setText(String.format("0-%s", strInditor2));
+        bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getResources().getString(R.string.next), strInditor2));
+
         bnCompleteAddCosigner.setEnabled(false);
 
     }
@@ -432,10 +504,16 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             addBixinKeyEvent.setKeyname(strBixinname);
             addBixinKeyEvent.setKeyaddress(strSweep);
             addEventsDatas.add(addBixinKeyEvent);
+            //public person
+            PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
+            reclPublicPerson.setAdapter(publicPersonAdapter);
+            //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
+
             int cosignerNum = Integer.parseInt(strInditor2);
-            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
                 bnCompleteAddCosigner.setBackground(getResources().getDrawable(R.drawable.little_radio_blue));
@@ -455,7 +533,8 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                             addEventsDatas.remove(position);
                             addBixinKeyAdapter.notifyDataSetChanged();
                             bnAddKey.setVisibility(View.VISIBLE);
-                            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+                            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+
                             bnCompleteAddCosigner.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
                             bnCompleteAddCosigner.setEnabled(false);
 
