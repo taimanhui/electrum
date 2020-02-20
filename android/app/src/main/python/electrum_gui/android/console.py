@@ -131,7 +131,9 @@ class AndroidCommands(commands.Commands):
         self.num_zeros = int(self.config.get('num_zeros', 0))
         self.rbf = self.config.get("use_rbf", True)
         self.ccy = self.daemon.fx.get_currency()
+
         #self.config.set_key('auto_connect', True, True)
+
         from threading import Timer
         t = Timer(5.0, self.timer_action)
         t.start()
@@ -851,6 +853,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException('get transaction info failed')
         #tx = PartialTransaction.from_tx(tx)
         label = self.wallet.get_label(tx_hash) or None
+        print("haha22222222222 label =%s" %label)
         tx = copy.deepcopy(tx)
         try:
             tx.deserialize()
@@ -1240,8 +1243,8 @@ class AndroidCommands(commands.Commands):
     def delete_wallet(self, name=None):
         """Delete a wallet"""
         try:
+            os.remove(self._wallet_path(name))
             r = self.daemon.delete_wallet(self._wallet_path(name))
-            #os.remove(self._wallet_path(name))
         except Exception as e:
             raise BaseException(e)
 

@@ -132,6 +132,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recl_nodeChose"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:itemCount="3"

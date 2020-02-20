@@ -243,7 +243,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
         //get transaction json
         PyObject get_history_tx = null;
         try {
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", new Kwarg("tx_status", sends));
+            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", sends);
         } catch (Exception e) {
             e.printStackTrace();
             return;

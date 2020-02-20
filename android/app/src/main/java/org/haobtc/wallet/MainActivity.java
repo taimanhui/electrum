@@ -420,7 +420,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
 
                 private String tx_hash1;
-                private String status;
+                private boolean status;
 
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
@@ -456,14 +456,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
                                 tx_hash1 = jsonObject.getString("tx_hash");
                                 PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
-                                status = get_remove_flag.toString();
+                                status= get_remove_flag.toBoolean();
                                 Log.i("onItemChildClick", "onItemCh==== "+status);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            if (status.equals("true")){
-                                String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
+                            if (status){
+//                                String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
                                 try {
                                     Daemon.commands.callAttr("remove_local_tx", tx_hash1);
                                     maintrsactionlistEvents.remove(position);
@@ -475,7 +475,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     e.printStackTrace();
                                 }
                             }else{
-                                mToast("");
+                                mToast(getResources().getString(R.string.delete_unBroad));
                             }
 
                             break;
