@@ -340,5 +340,6 @@
     <string name="input_public_address">请输入公钥地址</string>
     <string name="publickey_wrong">公钥格式不正确，请重新输入</string>
     <string name="publicer">共管人</string>
+    <string name="set_success">设置成功</string>
 
 </resources>

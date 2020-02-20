@@ -36,16 +36,20 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
         helper.setText(R.id.tet_address, item.getTx_hash());
 
         String amount = item.getAmount();
-        if (!TextUtils.isEmpty(amount)){
-            helper.setText(R.id.tet_BTC, amount);
+        if (!TextUtils.isEmpty(amount)) {
+            if (amount.contains("(")) {
+                String substring = amount.substring(0, amount.indexOf("("));
+                helper.setText(R.id.tet_BTC, substring);
+            }else {
+                helper.setText(R.id.tet_BTC, amount);
+            }
         }
-
 
         String date = item.getDate();
 
-        if ("unknown".equals(date)|| TextUtils.isEmpty(date)){
+        if ("unknown".equals(date) || TextUtils.isEmpty(date)) {
             helper.setText(R.id.tet_Time, "");
-        }else{
+        } else {
             helper.setText(R.id.tet_Time, item.getDate());
         }
 
@@ -80,7 +84,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FFF26A3A"));
                 tetview.setBackground(mContext.getResources().getDrawable(R.drawable.orange_circle));
-            }else if ("Partially signed".contains(tx_status)){
+            } else if ("Partially signed".contains(tx_status)) {
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.partsigned);
                 TextView tetview = helper.getView(R.id.tet_zt);

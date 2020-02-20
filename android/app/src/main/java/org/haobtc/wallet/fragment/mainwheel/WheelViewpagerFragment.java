@@ -73,7 +73,15 @@ public class WheelViewpagerFragment extends Fragment {
     private void initdata() {
         wallet_card_name.setText(name);
         walletpersonce.setText(personce);
-        walletBlance.setText(balance);
+        if (!TextUtils.isEmpty(balance)) {
+            if (balance.contains("(")) {
+                String substring = balance.substring(0, balance.indexOf("("));
+                walletBlance.setText(substring);
+            }else {
+                walletBlance.setText(balance);
+            }
+        }
+
 
         btnLeft.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
@@ -92,7 +100,7 @@ public class WheelViewpagerFragment extends Fragment {
 
     }
 
-    public void refreshList(){
+    public void refreshList() {
         //get wallet message
         try {
             Daemon.commands.callAttr("load_wallet", name);
@@ -112,7 +120,15 @@ public class WheelViewpagerFragment extends Fragment {
             String streplaceC = walletType.replaceAll("of", "/");
             wallet_card_name.setText(nameAC);
             walletpersonce.setText(streplaceC);
-            walletBlance.setText(balanceC);
+            if (!TextUtils.isEmpty(balanceC)) {
+                if (balanceC.contains("(")) {
+                    String substring = balanceC.substring(0, balanceC.indexOf("("));
+                    walletBlance.setText(substring);
+                }else{
+                    walletBlance.setText(balanceC);
+                }
+            }
+
         }
     }
 

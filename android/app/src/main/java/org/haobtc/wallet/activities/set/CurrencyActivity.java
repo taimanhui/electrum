@@ -89,37 +89,31 @@ public class CurrencyActivity extends BaseActivity {
                 switch (checkedId) {
                     case R.id.btn_btcOne:
                         try {
-                            Daemon.commands.callAttr("set_base_unit", "BTC");
+                            Daemon.commands.callAttr("set_base_uint", "BTC");
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e("set_base_unit", "set_base_unit:==== " + e.getMessage());
                             return;
                         }
-                        mToast("ddddd");
                         edit.putString("base_unit", "BTC");
                         edit.apply();
                         break;
                     case R.id.btn_btcTwo:
                         try {
-                            Daemon.commands.callAttr("set_base_unit", "mBTC");
+                            Daemon.commands.callAttr("set_base_uint", "mBTC");
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e("set_base_unit", "set_base_unit:==== " + e.getMessage());
                             return;
                         }
-                        mToast("fffff");
                         edit.putString("base_unit", "mBTC");
                         edit.apply();
                         break;
                     case R.id.btn_btcThree:
                         try {
-                            Daemon.commands.callAttr("set_base_unit", "sat");
+                            Daemon.commands.callAttr("set_base_uint", "sat");
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e("set_base_unit", "set_base_unit:==== " + e.getMessage());
                             return;
                         }
-                        mToast("ssss");
                         edit.putString("base_unit", "sat");
                         edit.apply();
                         break;

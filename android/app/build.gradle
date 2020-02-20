@@ -189,6 +189,8 @@ dependencies {
     //Pull up refresh pull down load
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.4-7'
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-6'
+    //alibaba json
+    implementation 'com.alibaba:fastjson:1.1.70.android'
 
 }
 repositories {
