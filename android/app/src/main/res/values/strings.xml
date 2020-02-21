@@ -359,5 +359,17 @@
     <string name="publickey_wrong">公钥格式不正确，请重新输入</string>
     <string name="publicer">共管人</string>
     <string name="set_success">设置成功</string>
+    <string name="check_all">查看全部</string>
+    <string name="add_speed">加速</string>
+    <string name="tips_addspeed">提示</string>
+    <string name="Confirm_speed">确认加速</string>
+    <string name="finish_tips">实际完成交易以链上为准！</string>
+    <string name="new_trsaction_tips">加速后，将生成新的交易；新交易需重新签名和广播！</string>
+    <string name="speed_fee">加速后费率为</string>
+    <string name="dontRBF">该交易不支持rbf功能</string>
+    <string name="about_only">关于</string>
+    <string name="_1_0_0">1.0.0</string>
+    <string name="verson_updates">版本更新</string>
+    <string name="user_agreement">用户协议</string>
 
 </resources>

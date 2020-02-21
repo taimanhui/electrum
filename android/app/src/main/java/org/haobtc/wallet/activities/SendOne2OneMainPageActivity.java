@@ -8,6 +8,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,13 +21,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.widget.AppCompatSeekBar;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -41,9 +42,10 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
-import org.haobtc.wallet.bean.MainWheelBean;
+import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.IndicatorSeekBar;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -52,7 +54,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
+    @BindView(R.id.edit_changeMoney)
+    TextView editChangeMoney;
+    @BindView(R.id.seek_bar)
+    IndicatorSeekBar seekBar;
+    @BindView(R.id.tv_indicator)
+    TextView tvIndicator;
     private LinearLayout selectSend;
     private ImageView selectSigNum, buttonSweep;
     private EditText editTextComments, editAddress;
@@ -77,10 +88,15 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private String wallet_amount;
-    private PyObject get_wallets_list_info;
+    private PyObject get_wallets_list;
     private PyObject mktx;
     private ImageView imgBack;
     private int walletmoney = 0;
+    private int catorText;
+    private PyObject pyObject;
+    private String chooseAmount;
+    private String chooseName;
+    private PyObject select_wallet;
 
     @Override
     public int getLayoutId() {
@@ -88,6 +104,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     }
 
     public void initView() {
+        ButterKnife.bind(this);
         preferences = getSharedPreferences("preferences", MODE_PRIVATE);
         edit = preferences.edit();
         selectSend = findViewById(R.id.llt_select_wallet);
@@ -142,6 +159,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         //InputMaxTextNum
         setEditTextComments();
         payAddressMore();
+
     }
 
     private void getFeeamont() {
@@ -158,10 +176,38 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             Log.i("get_default_fee", "strFee:   " + strFee);
             if (strFee.contains("sat/byte")) {
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
+                String strMax = strFeeamont.replaceAll(" ", "");
                 tetMoneye.setText(strFeeamont);
+                int intmaxFee = Integer.parseInt(strMax);
+                seekBar.setMax(intmaxFee);
+                seekBar.setProgress(intmaxFee);
+            }
+            seekbarLatoutup();
+        }
+    }
+
+    private void seekbarLatoutup() {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
+        seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
+                String indicatorText = String.valueOf(progress);
+                catorText = Integer.parseInt(indicatorText);// use get fee
+                tvIndicator.setText(String.format("%ssat/byte", indicatorText));
+                params.leftMargin = (int) indicatorOffset;
+                tvIndicator.setLayoutParams(params);
             }
 
-        }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                tvIndicator.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tvIndicator.setVisibility(View.VISIBLE);
+            }
+        });
 
     }
 
@@ -307,19 +353,26 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             dialogBtom.cancel();
         });
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-
+            wallet_name = chooseName;
             try {
                 Daemon.commands.callAttr("load_wallet", wallet_name);
-                Daemon.commands.callAttr("select_wallet", wallet_name);
+                select_wallet = Daemon.commands.callAttr("select_wallet", wallet_name);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            if (select_wallet != null) {
+                String toString = select_wallet.toString();
+                Gson gson = new Gson();
+                MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
+                wallet_amount = mainWheelBean.getBalance();
+            }
+
             tetWalletname.setText(wallet_name);
             dialogBtom.cancel();
         });
         recyPayaddress = view.findViewById(R.id.recy_payAdress);
 
-        recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2OneMainPageActivity.this));
+//        recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2OneMainPageActivity.this));
         choosePayAddressAdapetr = new ChoosePayAddressAdapetr(SendOne2OneMainPageActivity.this, dataListName);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
         recyclerviewOnclick();
@@ -339,25 +392,17 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     //getMorepayAddress
     private void payAddressMore() {
         try {
-            get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
+            get_wallets_list = Daemon.commands.callAttr("list_wallets");
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        if (get_wallets_list_info != null) {
-            String toString = get_wallets_list_info.toString();
-            Log.i("payAddressMore", "pay---: " + toString);
-            Gson gson = new Gson();
-            MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
-            List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
-            for (int i = 0; i < wallets.size(); i++) {
-                String wallet_type = wallets.get(i).getWalletType();
-                String name = wallets.get(i).getName();
-                String balance = wallets.get(i).getBalance();
+        if (get_wallets_list != null) {
+            List<PyObject> pyObjects = get_wallets_list.asList();
+            for (int i = 0; i < pyObjects.size(); i++) {
+                String walletName = pyObjects.get(i).toString();
                 AddressEvent addressEvent = new AddressEvent();
-                addressEvent.setName(name);
-                addressEvent.setType(wallet_type);
-                addressEvent.setAmount(balance);
+                addressEvent.setName(walletName);
                 dataListName.add(addressEvent);
             }
         }
@@ -368,8 +413,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapetr.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                wallet_name = dataListName.get(position).getName();
-                wallet_amount = dataListName.get(position).getAmount();
+                chooseName = dataListName.get(position).getName();
+                chooseAmount = dataListName.get(position).getAmount();
 
             }
         });
@@ -453,7 +498,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         Log.i("CreatTransaction", "strPramas: " + strPramas);
 
         try {
-            mktx = Daemon.commands.callAttr("mktx", strPramas, strComment, strMinerFee);
+            mktx = Daemon.commands.callAttr("mktx", strPramas, strComment);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -540,10 +585,22 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     public void afterTextChanged(Editable s) {
         strAmount = tetamount.getText().toString();
         if (!TextUtils.isEmpty(strAmount)) {
+            BigDecimal bigmBTC = new BigDecimal(strAmount);
+            try {
+                pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", bigmBTC);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                mToast(e.getMessage());
+            }
+            if (pyObject!=null) {
+                editChangeMoney.setText(pyObject.toString());
+            }
             //compare
             BigDecimal bignum1 = new BigDecimal(strAmount);
+            Log.i("wallet_amount", "afterTex+++++ " + wallet_amount);
             if (!TextUtils.isEmpty(wallet_amount)) {
-                String strBtc = wallet_amount.substring(0, wallet_amount.length() - 5);
+                String strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" mBTC"));
                 BigDecimal bignum2 = new BigDecimal(strBtc);
                 int math = bignum1.compareTo(bignum2);
                 //if math = 1 -> bignum2
@@ -562,9 +619,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 }
             }
 
+        }else{
+            editChangeMoney.setText("");
         }
-
     }
+
 }
 
 

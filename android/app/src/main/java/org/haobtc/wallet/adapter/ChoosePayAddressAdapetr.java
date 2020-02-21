@@ -62,9 +62,9 @@ public class ChoosePayAddressAdapetr extends RecyclerView.Adapter<ChoosePayAddre
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        String streplace = data.get(position).getType().replaceAll("of", "/");
+//        String streplace = data.get(position).getType().replaceAll("of", "/");
         holder.tet_WalletName.setText(data.get(position).getName());
-        holder.tet_WalletType.setText(streplace);
+//        holder.tet_WalletType.setText(streplace);
 
         if(mOnItemClickListener!=null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {

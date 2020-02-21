@@ -175,7 +175,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/lsdjlskm"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="140dp"
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/layout_margin"
             android:layout_marginEnd="@dimen/layout_margin"
@@ -234,10 +234,10 @@
 
                 </LinearLayout>
 
-                <androidx.appcompat.widget.AppCompatSeekBar
+                <org.haobtc.wallet.utils.IndicatorSeekBar
+                    android:id="@+id/seed_Bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
                     android:layout_marginTop="@dimen/dp_20"
                     android:max="100"
                     android:overScrollMode="never" />
@@ -264,8 +264,29 @@
                         android:text="@string/quikly"
                         android:textColor="#b3b3b3"
                         android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tv_indicator"
+                        android:layout_width="wrap_content"
+                        android:visibility="gone"
+                        android:paddingStart="@dimen/dp_8"
+                        android:maxLines="1"
+                        android:paddingEnd="@dimen/dp_8"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="@string/_0"
+                        android:textColor="#6182f5"
+                        android:textSize="12sp" />
 
                 </RelativeLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_12"
+                    android:text="@string/_sat_byte" />
 
 
                 <LinearLayout

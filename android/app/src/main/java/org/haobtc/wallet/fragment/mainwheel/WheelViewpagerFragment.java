@@ -22,11 +22,15 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.SignaturePageActivity;
+import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,6 +47,8 @@ public class WheelViewpagerFragment extends Fragment {
     private Button btnLeft;
     private Button btncenetr;
     private PyObject select_wallet;
+    private TextView tetCny;
+    private PyObject pyObject;
     //    private Button btnright;
 
     public WheelViewpagerFragment(String name, String personce, String balance) {
@@ -62,27 +68,47 @@ public class WheelViewpagerFragment extends Fragment {
 
         btnLeft = view.findViewById(R.id.wallet_card_bn1);
         btncenetr = view.findViewById(R.id.wallet_card_bn2);
-//        btnright = view.findViewById(R.id.wallet_card_bn3);
-
+        tetCny = view.findViewById(R.id.tet_Cny);
+        init();
         initdata();
 
 
         return view;
     }
 
-    private void initdata() {
+    private void init() {
         wallet_card_name.setText(name);
         walletpersonce.setText(personce);
+        if (personce.equals("")){
+
+        }else{
+            walletpersonce.setText(personce);
+        }
         if (!TextUtils.isEmpty(balance)) {
             if (balance.contains("(")) {
                 String substring = balance.substring(0, balance.indexOf("("));
                 walletBlance.setText(substring);
-            }else {
+                String userIdJiequ = balance.substring(balance.indexOf("("));
+                String replace = userIdJiequ.replace(")", "");
+                String replace1 = replace.replace("(", "");
+                tetCny.setText(String.format("≈%s", replace1));
+            } else {
                 walletBlance.setText(balance);
+                String replaceAll = balance.replaceAll(" ", "");
+                try {
+                    pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", replaceAll);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (pyObject!=null) {
+                    tetCny.setText(String.format("≈%sCNY", pyObject.toString()));
+                }
+
             }
         }
+    }
 
-
+    private void initdata() {
         btnLeft.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
             intent.putExtra("wallet_name", name);
@@ -124,7 +150,7 @@ public class WheelViewpagerFragment extends Fragment {
                 if (balanceC.contains("(")) {
                     String substring = balanceC.substring(0, balanceC.indexOf("("));
                     walletBlance.setText(substring);
-                }else{
+                } else {
                     walletBlance.setText(balanceC);
                 }
             }

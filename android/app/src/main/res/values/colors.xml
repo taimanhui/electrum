@@ -38,6 +38,7 @@
     <color name="little_blue">#e9eeff</color>
     <color name="pin_back_color">#94adff</color>
     <color name="tet_tips">#fff6e5</color>
-
+    <color name="black_gray_color">#777777</color>
+    <color name="black_0">#000000</color>
 
 </resources>

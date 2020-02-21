@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +39,8 @@ public class CurrencyActivity extends BaseActivity {
     RadioGroup radioOne;
     @BindView(R.id.recl_cnyTable)
     RecyclerView reclCnyTable;
+    @BindView(R.id.tet_CheckAll)
+    TextView tetCheckAll;
 
     private SharedPreferences.Editor edit;
     private String base_unit;
@@ -143,17 +149,17 @@ public class CurrencyActivity extends BaseActivity {
         listCNY.add(new CNYBean("韩元（KMR）", false));
         if (get_currencies != null) {
             for (int i = 0; i < pyObjects.size(); i++) {
-                if (!pyObjects.get(i).equals("CNY")&&!pyObjects.get(i).equals("USD")&&!pyObjects.get(i).equals("KMR")){
+                if (!pyObjects.get(i).equals("CNY") && !pyObjects.get(i).equals("USD") && !pyObjects.get(i).equals("KMR")) {
                     listCNY.add(new CNYBean(String.valueOf(pyObjects.get(i)), false));
                 }
             }
 
-            CNYAdapter cnyAdapter = new CNYAdapter(CurrencyActivity.this,listCNY,cny_unit);
+            CNYAdapter cnyAdapter = new CNYAdapter(CurrencyActivity.this, listCNY, cny_unit);
             reclCnyTable.setAdapter(cnyAdapter);
             cnyAdapter.setOnLisennorClick(new CNYAdapter.onLisennorClick() {
                 @Override
                 public void ItemClick(int pos) {
-                    if (pos == 0){
+                    if (pos == 0) {
                         try {
                             Daemon.commands.callAttr("set_currency", "CNY");
                         } catch (Exception e) {
@@ -161,7 +167,7 @@ public class CurrencyActivity extends BaseActivity {
                             Log.e("set_currency", "-------- " + e.getMessage());
                             return;
                         }
-                    }else if (pos == 1){
+                    } else if (pos == 1) {
                         try {
                             Daemon.commands.callAttr("set_currency", "USD");
                         } catch (Exception e) {
@@ -169,7 +175,7 @@ public class CurrencyActivity extends BaseActivity {
                             Log.e("set_currency", "+++++++++ " + e.getMessage());
                             return;
                         }
-                    }else if (pos == 2){
+                    } else if (pos == 2) {
                         try {
                             Daemon.commands.callAttr("set_currency", "KMR");
                         } catch (Exception e) {
@@ -177,7 +183,7 @@ public class CurrencyActivity extends BaseActivity {
                             Log.e("set_currency", "========== " + e.getMessage());
                             return;
                         }
-                    }else{
+                    } else {
                         try {
                             Daemon.commands.callAttr("set_currency", listCNY.get(pos).getName());
                         } catch (Exception e) {
@@ -187,7 +193,7 @@ public class CurrencyActivity extends BaseActivity {
                         }
                     }
 //                    Log.i(TAG, "ItemClick: ");
-                    edit.putInt("cny_unit",pos);
+                    edit.putInt("cny_unit", pos);
                     edit.apply();
                 }
             });
@@ -195,11 +201,26 @@ public class CurrencyActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.img_back})
+    @OnClick({R.id.img_back,R.id.tet_CheckAll})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
+                break;
+            case R.id.tet_CheckAll:
+                String strOpen = tetCheckAll.getText().toString();
+                if (strOpen.equals(getResources().getString(R.string.check_all))) {
+                    RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
+                    linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+                    reclCnyTable.setLayoutParams(linearParams1);
+                    tetCheckAll.setText(getResources().getString(R.string.retract));
+
+                } else {
+                    RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
+                    linearParams1.height = 530;;
+                    reclCnyTable.setLayoutParams(linearParams1);
+                    tetCheckAll.setText(getResources().getString(R.string.check_all));
+                }
                 break;
         }
     }

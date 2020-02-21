@@ -1,11 +1,13 @@
 package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -88,6 +90,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     LinearLayout linTractionTime;
     @BindView(R.id.tet_grive)
     TextView tetGrive;
+    @BindView(R.id.tet_addSpeed)
+    TextView tetAddSpeed;
     private String keyValue;
     private String tx_hash;
     private String listType;
@@ -97,6 +101,10 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String rowtx;
     private String strParse;
     private String language;
+    private boolean isIsmine;
+    private PyObject get_rbf_status;
+    private boolean aBoolean;
+    private String strNewfee;
 
 
     @Override
@@ -116,6 +124,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         tx_hash = intent.getStringExtra("tx_hash");
         listType = intent.getStringExtra("listType");
         strParse = intent.getStringExtra("strParse");
+        isIsmine = intent.getBooleanExtra("isIsmine", false);
 
 
         Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   rowTrsation -- : " + rowTrsation);
@@ -126,6 +135,23 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        if (isIsmine){
+            tetAddSpeed.setVisibility(View.VISIBLE);
+            try {
+                get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
+                Log.i("get_rbf_status", "___________: "+get_rbf_status.toString());
+            } catch (Exception e) {
+                Log.i("get_rbf_status", "++++++++++: "+e.getMessage());
+                e.printStackTrace();
+            }
+            if (get_rbf_status!=null){
+                aBoolean = get_rbf_status.toBoolean();
+
+            }
+
+        }else{
+            tetAddSpeed.setVisibility(View.GONE);
+        }
         if (!TextUtils.isEmpty(keyValue)) {
             if (keyValue.equals("A")) {
                 //creat succses
@@ -371,7 +397,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.img_back, R.id.img_share, R.id.sig_trans, R.id.lin_getMoreaddress})
+    @OnClick({R.id.img_back, R.id.img_share, R.id.sig_trans, R.id.lin_getMoreaddress,R.id.tet_addSpeed})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -408,14 +434,58 @@ public class TransactionDetailsActivity extends BaseActivity {
                 intent1.putExtra("jsondef_get", jsondef_get);
                 startActivity(intent1);
                 break;
+            case R.id.tet_addSpeed:
+                ifHaveRbf();
+
+                break;
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
+    private void ifHaveRbf() {
+        if (aBoolean){
+            PyObject get_rbf_fee_info = null;
+            try {
+                get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", tx_hash);
+            } catch (Exception e) {
+                Log.i("strNewfee", "++++++++: "+e.getMessage());
+                e.printStackTrace();
+            }
+            if (get_rbf_fee_info!=null){
+                strNewfee = get_rbf_fee_info.toString();
+                Log.i("strNewfee", "--------: "+ strNewfee);
+
+            }
+
+            View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
+            AlertDialog alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
+            ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
+            tetNewfee.setText(String.format("%s%s", getResources().getString(R.string.speed_fee), strNewfee));
+            img_Cancle.setOnClickListener(v -> {
+                alertDialog.dismiss();
+            });
+            viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
+                confirmedSpeed();
+            });
+            alertDialog.show();
+        }else{
+            mToast(getResources().getString(R.string.dontRBF));
+        }
+
     }
+
+    //confirm speed
+    private void confirmedSpeed() {
+        PyObject create_bump_fee = null;
+        try {
+            create_bump_fee = Daemon.commands.callAttr("create_bump_fee", tx_hash, strNewfee,false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (create_bump_fee!=null){
+
+        }
+    }
+
 }
 

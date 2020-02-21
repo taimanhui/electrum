@@ -55,6 +55,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.adapter.MyPagerAdapter;
+import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MainWheelBean;
@@ -106,18 +107,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private JSONArray jsonArray;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-
-                    break;
-            }
-        }
-    };
     private List<Fragment> fragmentList;
     private boolean jumpOr;
     private PyObject parse_qr;
@@ -132,6 +121,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private String balanceC;
     private String nameAC;
     private String streplaceC;
+    private ArrayList<AddressEvent> walletnameList;
 
     @Override
     public int getLayoutId() {
@@ -180,6 +170,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         refreshLayout.setEnableRefresh(true);
         refreshLayout.setOnRefreshListener(this);
 
+        //wallet name and balance list
+        walletnameList = new ArrayList<>();
 
     }
 
@@ -230,6 +222,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             if (pyObjects != null) {
                 for (int i = 0; i < pyObjects.size(); i++) {
                     String name = pyObjects.get(i).toString();
+                    //switch wallet
                     dataListName.add(name);
                     //choose wallet
                     try {
@@ -240,7 +233,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }
                     if (select_wallet != null) {
                         String toString = select_wallet.toString();
-                        Log.i("select_wallet", "select_wallet+++: " + toString);
+                        Log.i("select_walletccc", "select_wallet+++: " + toString);
                         Gson gson = new Gson();
                         MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
                         String walletType = mainWheelBean.getWalletType();
@@ -249,6 +242,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         streplaceC = walletType.replaceAll("of", "/");
 
                     }
+//                    AddressEvent addressEvent = new AddressEvent();
+//                    addressEvent.setName(nameAC);
+//                    addressEvent.setType(streplaceC);
+//                    walletnameList.add(addressEvent);
                     fragmentList.add(new WheelViewpagerFragment(nameAC, streplaceC, balanceC));
                 }
 
@@ -310,11 +307,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         @Override
                         public void run() {
                             maintrsactionlistEvents.clear();
-                            Log.i("onPageSelected", "mCurrentPosition-----" + mCurrentPosition);
-
                             if (mCurrentPosition != position) {
                                 strNames = dataListName.get(position);
-                                Log.i("onPageSelected", "strNames-----" + strNames);
                                 if (!TextUtils.isEmpty(strNames)) {
                                     try {
                                         Daemon.commands.callAttr("load_wallet", strNames);
@@ -322,6 +316,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                                     } catch (Exception e) {
                                         e.printStackTrace();
+                                        recy_data.setVisibility(View.GONE);
+                                        tetNone.setVisibility(View.VISIBLE);
+                                        myDialog.dismiss();
                                         Log.i("onPageSelected", "try-----" + e.getMessage());
                                         return;
                                     }
@@ -348,18 +345,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
+            myDialog.dismiss();
             Log.i("downMainListdata", "downMaina===: " + e.getMessage());
             return;
         }
+        myDialog.dismiss();
         //get transaction list
         if (!get_history_tx.isEmpty()) {
             tetNone.setVisibility(View.GONE);
             recy_data.setVisibility(View.VISIBLE);
             String strHistory = get_history_tx.toString();
             Log.i("strHistory", "onPage----: " + strHistory);
-
             if (strHistory.length() == 2) {
-                myDialog.dismiss();
                 tetNone.setVisibility(View.VISIBLE);
                 recy_data.setVisibility(View.GONE);
             } else {
@@ -377,6 +374,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
         refreshLayout.finishRefresh();
+
         try {
             jsonArray = new JSONArray(strHistory);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -418,10 +416,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             recy_data.setAdapter(trsactionlistAdapter);
             myDialog.dismiss();
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-
                 private String tx_hash1;
                 private boolean status;
-
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     String typeDele = maintrsactionlistEvents.get(position).getType();
@@ -430,17 +426,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             try {
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
                                 tx_hash1 = jsonObject.getString("tx_hash");
+                                is_mine = jsonObject.getBoolean("is_mine");
                                 Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
                                 if (typeDele.equals("tx")) {
                                     String tx_Onclick = jsonObject.getString("tx");
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("tx_hash", tx_hash1);
+                                    intent.putExtra("isIsmine",is_mine);
                                     intent.putExtra("listType", typeDele);
                                     intent.putExtra("txCreatTrsaction", tx_Onclick);
                                     startActivity(intent);
 
                                 } else {
                                     intent.putExtra("tx_hash", tx_hash1);
+                                    intent.putExtra("isIsmine",is_mine);
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("listType", typeDele);
                                     startActivity(intent);
@@ -484,6 +483,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             });
 
         } catch (JSONException e) {
+            Log.e("sndkjnskjn", "type++++: "+e.getMessage());
             e.printStackTrace();
         }
 

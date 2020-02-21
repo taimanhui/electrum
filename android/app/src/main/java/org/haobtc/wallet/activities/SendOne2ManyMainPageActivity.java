@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,15 +17,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
@@ -33,10 +38,13 @@ import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
 import org.haobtc.wallet.bean.MainWheelBean;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.IndicatorSeekBar;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -66,6 +74,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     ImageView imgBack;
     @BindView(R.id.create_trans_one2many)
     Button createTransOne2many;
+    @BindView(R.id.seed_Bar)
+    IndicatorSeekBar seedBar;
+    @BindView(R.id.tv_indicator)
+    TextView tvIndicator;
     private ArrayList<AddressEvent> dataListName;
     private Dialog dialogBtom;
     private RecyclerView recyPayaddress;
@@ -125,12 +137,38 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         if (get_default_fee_status != null) {
             String strFee = get_default_fee_status.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
-            if (strFee.contains("sat/byte")){
+            if (strFee.contains("sat/byte")) {
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
+                String strMax = strFeeamont.replaceAll(" ", "");
                 tvFee.setText(strFeeamont);
+                int intmaxFee = Integer.parseInt(strMax);
+                seedBar.setMax(intmaxFee);
+                seedBar.setProgress(intmaxFee);
+            }
+            seekbarLatoutup();
+        }
+    }
+    private void seekbarLatoutup() {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
+        seedBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
+                String indicatorText = String.valueOf(progress);
+                tvIndicator.setText(indicatorText);
+                params.leftMargin = (int) indicatorOffset;
+                tvIndicator.setLayoutParams(params);
             }
 
-        }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                tvIndicator.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tvIndicator.setVisibility(View.VISIBLE);
+            }
+        });
 
     }
 
@@ -209,7 +247,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 String strRemarks = editRemarks.getText().toString();
                 String strFee = tvFee.getText().toString();
                 try {
-                    mktx = Daemon.commands.callAttr("mktx", strmapBtc, strRemarks, strFee);
+                    mktx = Daemon.commands.callAttr("mktx", strmapBtc, strRemarks);
                     Log.i("CreatTransaction", "m-------: " + mktx);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -226,7 +264,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                         Intent intent = new Intent(SendOne2ManyMainPageActivity.this, TransactionDetailsActivity.class);
                         intent.putExtra("tx_hash", beanTx);
                         intent.putExtra("keyValue", "A");
-                        intent.putExtra("txCreatTrsaction",beanTx);
+                        intent.putExtra("txCreatTrsaction", beanTx);
                         startActivity(intent);
                     }
                 }
@@ -325,4 +363,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }
