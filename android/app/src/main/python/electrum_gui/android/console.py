@@ -112,8 +112,11 @@ class AndroidCommands(commands.Commands):
         self.daemon_running = False
         self.wizard = None
         self.plugin = Plugins(self.config, 'cmdline')
+        self.label_plugin = self.plugin.load_plugin("labels")
+        self.label_flag = self.config.get('use_labels', False)
         self.callbackIntent = None
         self.wallet = None
+        self.local_wallet_info = self.config.get("all_wallet_type_info", {})
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
                          'status', 'new_transaction', 'verified']
@@ -131,9 +134,9 @@ class AndroidCommands(commands.Commands):
         self.num_zeros = int(self.config.get('num_zeros', 0))
         self.rbf = self.config.get("use_rbf", True)
         self.ccy = self.daemon.fx.get_currency()
-
+        self.m = 0
+        self.n = 0
         #self.config.set_key('auto_connect', True, True)
-
         from threading import Timer
         t = Timer(5.0, self.timer_action)
         t.start()
@@ -164,7 +167,7 @@ class AndroidCommands(commands.Commands):
             status = _("Offline")
         elif self.network.is_connected():
             out = {}
-            out['wallet_type'] = self.wallet.wallet_type
+            #out['wallet_type'] = self.wallet.wallet_type
             self.num_blocks = self.network.get_local_height()
             server_height = self.network.get_server_height()
             server_lag = self.num_blocks - server_height
@@ -302,6 +305,11 @@ class AndroidCommands(commands.Commands):
         self.daemon.join()
         self.daemon_running = False
 
+    def get_wallet_type(self, name):
+        return self.local_wallet_info.get(name)
+
+    def get_all_wallet_type_info(self):
+        print("all type info == %s" % self.local_wallet_info)
 
     def load_wallet(self, name, password=None):
         """Load a wallet"""
@@ -333,6 +341,11 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         self.daemon.stop_wallet(self._wallet_path(name))
 
+    ###syn server
+    def set_syn_server(self, flag):
+        self.label_flag = flag
+        self.config.set_key('use_labels', bool(flag))
+
     ##set callback##############################
     def set_callback_fun(self, callbackIntent):
         print("self.callbackIntent =%s" %callbackIntent)
@@ -350,6 +363,8 @@ class AndroidCommands(commands.Commands):
         path = self._wallet_path(name)
         print("console:set_multi_wallet_info:path = %s---------" % path)
         self.wizard.set_multi_wallet_info(path, m, n)
+        self.m = m
+        self.n = n
 
     def add_xpub(self, xpub):
         try:
@@ -397,6 +412,8 @@ class AndroidCommands(commands.Commands):
             wallet = Wallet(storage, config=self.config)
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
+            self.local_wallet_info[name] = ("%s-%s" % (self.m, self.n))
+            self.config.set_key('all_wallet_type_info', self.local_wallet_info)
             if self.wallet:
                 self.close_wallet()
             self.wallet = wallet
@@ -467,6 +484,8 @@ class AndroidCommands(commands.Commands):
             tx = tx_from_any(self.tx)
             tx.deserialize()
             self.do_save(tx)
+            if self.label_flag:
+                self.label_plugin.push(self.wallet)
         except Exception as e:
             raise BaseException(e)
 
@@ -697,7 +716,7 @@ class AndroidCommands(commands.Commands):
     def do_save(self, tx):
         try:
             if not self.wallet.add_transaction(tx):
-                raise BaseException(("Transaction could not be saved.") + "\n" + ("It conflicts with current history."))
+                raise BaseException(("Transaction could not be saved.") + "\n" + ("It conflicts with current history. tx=") + tx.txid())
         except BaseException as e:
             raise BaseException(e)
         else:
@@ -853,7 +872,6 @@ class AndroidCommands(commands.Commands):
             raise BaseException('get transaction info failed')
         #tx = PartialTransaction.from_tx(tx)
         label = self.wallet.get_label(tx_hash) or None
-        print("haha22222222222 label =%s" %label)
         tx = copy.deepcopy(tx)
         try:
             tx.deserialize()
@@ -1092,6 +1110,8 @@ class AndroidCommands(commands.Commands):
         #wallet.synchronize()
         wallet.storage.write()
         self.daemon.add_wallet(wallet)
+        self.local_wallet_info[name] = 'standard'
+        self.config.set_key('all_wallet_type_info', self.local_wallet_info)
         return new_seed
     # END commands from the argparse interface.
 
@@ -1159,13 +1179,13 @@ class AndroidCommands(commands.Commands):
             if not tx:
                 return False
             coins = self.wallet.get_spendable_coins(None, nonlocal_only=False)
-            # tx = tx_from_any(tx)
-            # tx.deserialize()
             new_tx = self.wallet.bump_fee(tx=tx, new_fee_rate=new_fee_rate, coins=coins)
         except BaseException as e:
             raise str(e)
-        if is_final:
-            new_tx.set_rbf(False)
+
+        new_tx.set_rbf(self.rbf)
+        # if is_final:
+        #     new_tx.set_rbf(False)
         out = {
             'new_tx': new_tx.serialize_as_bytes().hex()
         }
@@ -1215,6 +1235,8 @@ class AndroidCommands(commands.Commands):
                 self.wallet = None
             else:
                 self.wallet = self.daemon._wallets[self._wallet_path(name)]
+            if self.label_flag:
+                self.label_plugin.load_wallet(self.wallet, None)
 
             import time
             time.sleep(0.5)
@@ -1226,7 +1248,7 @@ class AndroidCommands(commands.Commands):
             print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
             self.network.trigger_callback("wallet_updated", self.wallet)
             info = {
-                "wallet_type": self.wallet.wallet_type,
+                #"wallet_type": self.wallet.wallet_type,
                 "balance": self.format_amount_and_units(c),
                 "name": name
             }
@@ -1238,13 +1260,20 @@ class AndroidCommands(commands.Commands):
         """List available wallets"""
         name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
         print("console.list_wallets is %s................" %name_wallets)
-        return name_wallets
+        out = []
+        for name in name_wallets:
+            name_info = {}
+            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else 'unknow'
+            out.append(name_info)
+        return json.dumps(out)
 
     def delete_wallet(self, name=None):
         """Delete a wallet"""
         try:
-            os.remove(self._wallet_path(name))
             r = self.daemon.delete_wallet(self._wallet_path(name))
+            self.local_wallet_info.pop(name)
+            self.config.set_key('all_wallet_type_info', self.local_wallet_info)
+            #os.remove(self._wallet_path(name))
         except Exception as e:
             raise BaseException(e)
 

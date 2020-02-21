@@ -30,8 +30,8 @@ testcommond = AndroidCommands()
 testcommond.start()
 
 #name = 'hahahahhahh777' #2-2 multi wallet
-#name = 'hahahahhahh333' #1-N wallet
-name = 'hahahahhahh888' #1-1 wallet
+name = 'hahahahhahh333' #1-N wallet
+#name = 'hahahahhahh888' #1-1 wallet
 #name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
 password = "111111"
 #test hardware
@@ -51,8 +51,8 @@ password = "111111"
 # testcommond.add_xpub(xpub2)
 # testcommond.create_multi_wallet(name)
 
-# #create_wallet 1-N HW wallet
-#
+#create_wallet 1-N HW wallet
+
 # m = 1
 # n = 2
 # #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
@@ -67,18 +67,18 @@ password = "111111"
 
 # #create_wallet 1-1 HW wallet
 #
-# m = 1
-# n = 1
-# #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
-# #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB' #VPUB
-# xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
-# #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
-# #xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-# testcommond.delete_wallet(name)
-# testcommond.set_multi_wallet_info(name,m,n)
-# testcommond.add_xpub(xpub1)
-# #testcommond.add_xpub(xpub2)
-# testcommond.create_multi_wallet(name)
+m = 1
+n = 1
+#xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+#xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB' #VPUB
+xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+#xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+#xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+testcommond.delete_wallet(name)
+testcommond.set_multi_wallet_info(name,m,n)
+testcommond.add_xpub(xpub1)
+#testcommond.add_xpub(xpub2)
+testcommond.create_multi_wallet(name)
 
 ## create software wallet by create seed
 
@@ -99,19 +99,24 @@ password = "111111"
 #testcommond.save_tx_to_file(path, '123')
 
 list = testcommond.list_wallets()
-print("list = %s" %list)
+print("3333333333-list = %s" %list)
 
 
 testcommond.set_currency("CNY")
 #testcommond.set_currency("None")
 #load_wallet
+testcommond.get_all_wallet_type_info()
+data = testcommond.get_wallet_type(name)
+print("11111111111 %s type is %s" %(name, data))
 testcommond.load_wallet(name, password)
 data = testcommond.select_wallet(name)
 print("select data ============%s" %data)
 
-# testcommond.delete_wallet(name)
+testcommond.set_syn_server(False)
+#testcommond.delete_wallet(name)
 # testcommond.load_wallet(name)
 #
+
 # time.sleep(100)
 data = testcommond.get_default_server()
 print("before data ====%s" %data)
@@ -147,7 +152,7 @@ print("after get exchange amount = %s" % data)
 # sign_tx = testcommond.sign_tx("70736274ff0100db0200000003f9f512c210a473a6f8ae3d9cd1d70a6ca9017456d96a9be5bbb33f4b91bb31340100000000fdffffffad421a234543b89ac2a87408e441037a83fb1eb4a4824e0517d0fd88d293437b0000000000fdffffff7cd7e75c4ca82a2738f4ef8f1d47b1e70f2b03eb178cf2ec313418f02d4c51f20000000000fdffffff02809698000000000022002068a7f776a614653c7ac21226b44014abb28fc6f70105666c7661c6719a2579df34144e050000000022002042cf432cef83c2eaade6063f06a2cf6dde5852219db394e17d70b146eab8c355533100000001012b00e1f50500000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b5483045022100b04ceb1427db17589427489bdf2b9bdcf6c9c8bd4f70692fe2110e9e5b0d82bc02203359df024dd2cdf146b45c5480b06cfe02445ebfbf430d82ae86695aad97b695010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000001012bf40b000000000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b54830450221009a047cc4cd813fde862f7ea21aec12227944b00f8b2e535bd7eeaaa633a9c04e0220186667a639731c60ed4ffbde8e97ecbb7c4d29c76cb4d7ee21755924cddb3ede010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000001012b0000000000000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b5483045022100feaf26314f422bb470fe17cd40836e914ea4ba622b6623807992f43b444cda6602200738996c3729288071250b5ded009349233e183ff49a72f94bd8bed134a8a59b010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000000010147522102236c138f904245163fecae96b5b7f72bedebbd0be24cdf34979ea8339b281d452102edb35b9566f0a9b51c24a60f602a1cc8e780e10280fc2976e312b5c2471005a752ae220202236c138f904245163fecae96b5b7f72bedebbd0be24cdf34979ea8339b281d450cf131eba80100000000000000220202edb35b9566f0a9b51c24a60f602a1cc8e780e10280fc2976e312b5c2471005a70cf8025b60010000000000000000")
 # print("sign_tx = %s" %sign_tx)
 # testcommond.broadcast_tx(sign_tx)
-testcommond.clear_invoices()
+#testcommond.clear_invoices()
 
 testcommond.set_unconf(False)
 #create_tx
@@ -161,7 +166,7 @@ all_output.append(output_info)
 output_str = json.dumps(all_output)
 message = 'test111'
 print("--------------all_output= %s" %output_str)
-    #feerate = testcommond.get_default_fee_status()
+feerate = testcommond.get_default_fee_status()
 ret_str = testcommond.get_fee_by_feerate(output_str, message, 300)
 ret_list = json.loads(ret_str)
 print("get_fee_by_feerate================%s" % ret_list)
@@ -170,8 +175,9 @@ ret_str = testcommond.mktx(output_str, message)
 ret_list = json.loads(ret_str)
 print("----mktx================%s" % ret_list)
 
-testcommond.remove_local_tx('9bc301ef1c34fc415228d8e900779c83aca1c155ea8ece3986085190a9a3e294')
-#testcommond.remove_local_tx('31b86aa12bc9efef858b524a58e6a571014649509f5492957d1659544732bb1f')
+testcommond.remove_local_tx('ef87ad008dda2833c6643d2aa91eec7b467451ececf4763003c4bed4b6fef364')
+testcommond.remove_local_tx('5d5f88c31a2ac836c6f2b7b73f850e6716ca38991c55a2e01c57b40f4700a2a9')
+testcommond.remove_local_tx('e7744e56e35a3f32f9f4ab1ae014935bdbf9b59cce3113e492c28c72ee97f116')
 testinfo = testcommond.get_all_tx_list_old()
 print("hHHHHHHahahaha----testinfo create = %s------------" %testinfo)
 
@@ -196,12 +202,12 @@ data = json.loads(testinfo)
 # new_tx = json.loads(data)
 # print("---------new rbf info = %s" %data)
 
-testinfo = testcommond.get_all_tx_list(None)
-print("----testinfo rbf add= %s------------" %testinfo)
-data = json.loads(testinfo)
-data_hash = data[0]['tx_hash']
-data = testcommond.get_tx_info(data_hash)
-print("----hash info rbf add = %s-===========" % data)
+# testinfo = testcommond.get_all_tx_list(None)
+# print("----testinfo rbf add= %s------------" %testinfo)
+# data = json.loads(testinfo)
+# data_hash = data[0]['tx_hash']
+# data = testcommond.get_tx_info(data_hash)
+# print("----hash info rbf add = %s-===========" % data)
 # ivoices = testcommond.get_invoices()
 # print("after invoices = %s" %ivoices)
 # testcommond.clear_invoices()
