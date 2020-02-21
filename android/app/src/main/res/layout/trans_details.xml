@@ -271,11 +271,24 @@
 
                     <TextView
                         android:id="@+id/textView15"
-                        android:layout_width="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_color"
                         android:textSize="15sp"
                         tools:text="1.33333" />
+                    <TextView
+                        android:id="@+id/tet_addSpeed"
+                        android:textSize="@dimen/sp_12"
+                        android:gravity="center"
+                        android:text="@string/add_speed"
+                        android:background="@drawable/black_tuo"
+                        android:textColor="@color/button_bk_ddake"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_width="@dimen/dp_50"
+                        android:layout_height="21dp"/>
+
+
                 </LinearLayout>
 
                 <LinearLayout

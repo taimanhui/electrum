@@ -72,6 +72,8 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     }
 
     public void initView() {
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
         rxPermissions = new RxPermissions(this);
         buttonAdd = findViewById(R.id.lin_add_to);
         buttonSweep = findViewById(R.id.bn_sweep_2many);
@@ -324,10 +326,4 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
 
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }
