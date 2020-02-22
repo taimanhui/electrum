@@ -276,7 +276,7 @@
     <string name="doller">美元（USD）</string>
     <string name="korean_money">韩元（KMR）</string>
     <string name="synchroniz_service">同步服务器</string>
-    <string name="service_text">使用同步服务器，可通过BixinKEY备份和恢复多签钱包，并可在多个联署人间同步未签名交易； 同步服务器不存储任何私钥和个人信息。</string>
+    <string name="service_text">使用同步服务器，可备份和恢复多钱钱包，并可在多个联署人间同步并签名交易；</string>
     <string name="electrum_select">Electrum节点选择</string>
     <string name="add_custom_node">添加自定义节点</string>
     <string name="input_node_message">输入节点信息</string>
@@ -352,6 +352,28 @@
     <string name="about_only">关于</string>
     <string name="verson_updates">版本更新</string>
     <string name="user_agreement">用户协议</string>
-
+    <string name="syncnneth">同步服务器仅存储钱包公钥、名称等公开信息，不存储任何私钥和个人信息。</string>
+    <string name="electrum_tips">币信冷钱包使用Electrum开源分布式节点进行交易广播，和链上信息获取</string>
+    <string name="btc_com">BTC.com/</string>
+    <string name="get_btc_price">选择第三方服务获取比特币价格</string>
+    <string name="blockchain_choose">区块链浏览器选择</string>
+    <string name="check_trsaction_msg">选择区块链浏览器查看链上交易信息</string>
+    <string name="electrum_choose_tips">币信冷钱包使用Electrum开源分布式节点进行交易广播，和链上信息获取</string>
+    <string name="quotation_choose">行情服务器选择</string>
+    <string name="import_hardware">导入硬件钱包</string>
+    <string name="bixinkey_import">请通过BixinKEY导入</string>
+    <string name="begin_import">开始导入</string>
+    <string name="restore_default_set">恢复默认设置</string>
+    <string name="import_tips1">1.通过BixinKEY中保存的公钥，可从币信服务器搜索到与该公钥相关的钱包的公开信息。</string>
+    <string name="import_tips2">2.公开信息不包含任何私钥等隐私信息。</string>
+    <string name="import_tips">3.导入的钱包，需配合BixinKEY使用。</string>
+    <string name="walletname">钱包名称</string>
+    <string name="delete_wallet">删除钱包</string>
+    <string name="deletewallet_tips">软件钱包删除后，可通过助记词恢复</string>
+    <string name="delete_thiswallet">确认删除该钱包</string>
+    <string name="delete_succse">删除成功</string>
+    <string name="ifconfirm_recovery">是否确认恢复</string>
+    <string name="recovery_succse">恢复成功</string>
+    <string name="block_choose">区块链服务器选择</string>
 
 </resources>

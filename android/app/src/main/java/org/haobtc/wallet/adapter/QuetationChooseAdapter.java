@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.bean.CNYBean;
@@ -16,67 +19,64 @@ import org.haobtc.wallet.bean.CNYBean;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
+public class QuetationChooseAdapter extends RecyclerView.Adapter<QuetationChooseAdapter.myViewHolder> {
     private Context context;
-    private ArrayList<CNYBean> listCNY;
+    private ArrayList<CNYBean> exchangeList;
 
-    public CNYAdapter(Context context, ArrayList<CNYBean> listCNY,int cnypos) {
+    public QuetationChooseAdapter(Context context, ArrayList<CNYBean> exchangeList,int exchange) {
         this.context = context;
-        this.listCNY = listCNY;
-        this.listCNY.get(cnypos).setStatus(true);
+        this.exchangeList = exchangeList;
+        this.exchangeList.get(exchange).setStatus(true);
     }
 
-    public class myViewHolder extends RecyclerView.ViewHolder {
-        TextView tet_Cny;
 
-        public myViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tet_Cny = itemView.findViewById(R.id.tet_Cny);
+    public class myViewHolder extends BaseViewHolder {
+        TextView tet_WalletName;
+        public myViewHolder(View view) {
+            super(view);
+            tet_WalletName = view.findViewById(R.id.tet_WalletName);
         }
     }
 
     @NonNull
     @Override
     public myViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View inflate = LayoutInflater.from(context).inflate(R.layout.cny_item, null);
+        View inflate = LayoutInflater.from(context).inflate(R.layout.chooseaddress, null);
         return new myViewHolder(inflate);
     }
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tet_Cny.setText(listCNY.get(position).getName());
-
-        holder.tet_Cny.setOnClickListener(new View.OnClickListener() {
+        holder.tet_WalletName.setText(exchangeList.get(position).getName());
+        holder.tet_WalletName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (int i = 0; i < listCNY.size(); i++) {
-                    listCNY.get(i).setStatus(false);
+                for (int i = 0; i < exchangeList.size(); i++) {
+                    exchangeList.get(i).setStatus(false);
                 }
-                listCNY.get(position).setStatus(true);
-                Log.i("onClickJXM", "onClick: "+listCNY.get(position).isStatus());
+                exchangeList.get(position).setStatus(true);
                 onLisennorClick.ItemClick(position);
                 notifyDataSetChanged();
 
             }
         });
-        if (listCNY.get(position).isStatus()) {
-            holder.tet_Cny.setTextColor(context.getColor(R.color.button_bk_disableok));
+        if (exchangeList.get(position).isStatus()) {
+            holder.tet_WalletName.setTextColor(context.getColor(R.color.button_bk_disableok));
 //            holder.tet_types.setBackgroundColor(Color.parseColor("#ffffff"));
         } else {
-            holder.tet_Cny.setTextColor(context.getColor(R.color.text));
+            holder.tet_WalletName.setTextColor(context.getColor(R.color.text));
         }
+
     }
 
     @Override
     public int getItemCount() {
-        if (listCNY!=null){
-            return listCNY.size();
-        }else{
+        if (exchangeList != null) {
+            return exchangeList.size();
+        } else {
             return 0;
         }
-
     }
-
     public interface onLisennorClick {
         void ItemClick(int pos);
     }
@@ -86,5 +86,4 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
     public void setOnLisennorClick(onLisennorClick onLisennorClick) {
         this.onLisennorClick = onLisennorClick;
     }
-
 }

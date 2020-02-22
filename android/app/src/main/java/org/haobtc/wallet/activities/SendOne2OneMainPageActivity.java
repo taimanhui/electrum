@@ -8,6 +8,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -15,13 +16,13 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +65,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     IndicatorSeekBar seekBar;
     @BindView(R.id.tv_indicator)
     TextView tvIndicator;
+    @BindView(R.id.lin_btcAddress)
+    LinearLayout linBtcAddress;
     private LinearLayout selectSend;
     private ImageView selectSigNum, buttonSweep;
     private EditText editTextComments, editAddress;
@@ -97,6 +100,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String chooseAmount;
     private String chooseName;
     private PyObject select_wallet;
+    private int intmaxFee;
 
     @Override
     public int getLayoutId() {
@@ -122,8 +126,41 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         imgBack = findViewById(R.id.img_back);
         imgBack.setOnClickListener(this);
         tetamount.addTextChangedListener(this);
-
         init();
+        //edittext focus change
+        focusChange();
+    }
+
+    //edittext focus change
+    private void focusChange() {
+        linBtcAddress.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                linBtcAddress.getWindowVisibleDisplayFrame(r);
+                int screenHeight = linBtcAddress.getRootView()
+                        .getHeight();
+                int heightDifference = screenHeight - (r.bottom);
+                if (heightDifference > 200) {
+                    //Soft keyboard display
+                    mToast("mmmmmm");
+                } else {
+                    //Soft keyboard hidden
+                    mToast("cccc");
+                }
+            }
+        });
+        editAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mToast("dddd");
+                } else {
+                    mToast("cccccccc");
+                }
+            }
+        });
+
     }
 
     @SuppressLint("DefaultLocale")
@@ -178,7 +215,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "");
                 tetMoneye.setText(strFeeamont);
-                int intmaxFee = Integer.parseInt(strMax);
+                intmaxFee = Integer.parseInt(strMax);
                 seekBar.setMax(intmaxFee);
                 seekBar.setProgress(intmaxFee);
             }
@@ -187,15 +224,26 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     }
 
     private void seekbarLatoutup() {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
                 String indicatorText = String.valueOf(progress);
                 catorText = Integer.parseInt(indicatorText);// use get fee
-                tvIndicator.setText(String.format("%ssat/byte", indicatorText));
-                params.leftMargin = (int) indicatorOffset;
-                tvIndicator.setLayoutParams(params);
+                //changed fee
+                intmaxFee = catorText;
+//                tvIndicator.setText(indicatorText);
+//                tetMoneye.setText(indicatorText);
+//                params.leftMargin = (int) indicatorOffset;
+//                tvIndicator.setLayoutParams(params);
+                straddress = editAddress.getText().toString();
+                strAmount = tetamount.getText().toString();
+                if (!TextUtils.isEmpty(straddress) && !TextUtils.isEmpty(strAmount)) {
+                    //TODO:
+
+                }
+
+
             }
 
             @Override
@@ -593,7 +641,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 e.printStackTrace();
                 mToast(e.getMessage());
             }
-            if (pyObject!=null) {
+            if (pyObject != null) {
                 editChangeMoney.setText(pyObject.toString());
             }
             //compare
@@ -619,7 +667,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 }
             }
 
-        }else{
+        } else {
             editChangeMoney.setText("");
         }
     }

@@ -120,8 +120,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private PyObject select_wallet;
     private String balanceC;
     private String nameAC;
-    private String streplaceC;
     private ArrayList<AddressEvent> walletnameList;
+    private String walletType;
 
     @Override
     public int getLayoutId() {
@@ -236,17 +236,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         Log.i("select_walletccc", "select_wallet+++: " + toString);
                         Gson gson = new Gson();
                         MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
-                        String walletType = mainWheelBean.getWalletType();
+                        walletType = mainWheelBean.getWalletType();
                         balanceC = mainWheelBean.getBalance();
                         nameAC = mainWheelBean.getName();
-                        streplaceC = walletType.replaceAll("of", "/");
+
 
                     }
 //                    AddressEvent addressEvent = new AddressEvent();
 //                    addressEvent.setName(nameAC);
 //                    addressEvent.setType(streplaceC);
 //                    walletnameList.add(addressEvent);
-                    fragmentList.add(new WheelViewpagerFragment(nameAC, streplaceC, balanceC));
+                    fragmentList.add(new WheelViewpagerFragment(name, walletType, balanceC));
                 }
 
                 dataListName.add("");

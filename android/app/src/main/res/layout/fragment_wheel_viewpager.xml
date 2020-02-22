@@ -36,11 +36,25 @@
                 android:id="@+id/wallet_card_tv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="visible"
                 android:layout_marginEnd="26dp"
                 android:drawableStart="@drawable/rule_white"
                 android:drawablePadding="5dp"
                 android:text="@string/zero_three"
                 android:textColor="@android:color/white"
+                app:layout_constraintBaseline_toBaselineOf="@id/wallet_card_name"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <Button
+                android:id="@+id/app_wallet"
+                android:layout_width="@dimen/dp_55"
+                android:textSize="@dimen/sp_12"
+                android:visibility="gone"
+                android:background="@drawable/appwallet_back"
+                android:layout_height="20dp"
+                android:layout_marginEnd="26dp"
+                android:text="@string/app_walt"
+                android:textColor="@color/text"
                 app:layout_constraintBaseline_toBaselineOf="@id/wallet_card_name"
                 app:layout_constraintEnd_toEndOf="parent" />
 

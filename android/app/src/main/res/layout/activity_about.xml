@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -50,7 +51,7 @@
             android:orientation="vertical">
 
 
-            <ImageView
+            <org.haobtc.wallet.utils.XCRoundRectImageView
                 android:layout_width="84dp"
                 android:layout_height="84dp"
                 android:layout_marginTop="49dp"
@@ -84,8 +85,9 @@
 
                 <TextView
                     android:id="@+id/tet_s7"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:text="@string/verson_updates"
@@ -97,11 +99,13 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
                     android:drawableEnd="@drawable/jiantou"
+                    android:paddingEnd="@dimen/dp_16"
                     android:drawablePadding="@dimen/dp_10"
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:text="@string/_1_0_0"
-                    android:textColor="@color/graytext_color" />
+                    android:textColor="@color/graytext_color"
+                    tools:ignore="RtlSymmetry" />
             </RelativeLayout>
 
             <View
@@ -118,6 +122,8 @@
                 android:drawableEnd="@drawable/jiantou"
                 android:focusable="true"
                 android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_16"
+                android:paddingEnd="@dimen/dp_16"
                 android:text="@string/user_agreement"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />

@@ -8,7 +8,7 @@
     <color name="text">#FF494949</color>
     <color name="light_text">#FFB3B3B3</color>
     <color name="button_bk">#FF6182F5</color>
-    <color name="card_bk">#FFF5F5F5</color>
+    <color name="card_bk">#FFF5F5F5</color>x
     <color name="text_red">#FFF26A3A</color>
     <color name="paste_bk">#FFE9EEFF</color>
     <color name="text_color1">#FF333333</color>
@@ -40,5 +40,6 @@
     <color name="tet_tips">#fff6e5</color>
     <color name="black_gray_color">#777777</color>
     <color name="black_0">#000000</color>
+    <color name="red_text">#f26a3a</color>
 
 </resources>
