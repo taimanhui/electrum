@@ -3,9 +3,6 @@ package org.haobtc.wallet.fragment.mainwheel;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,23 +11,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
-import org.haobtc.wallet.activities.SignaturePageActivity;
-import org.haobtc.wallet.bean.AddressEvent;
+import org.haobtc.wallet.activities.onlywallet.CheckWalletDetailActivity;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.utils.Daemon;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +41,8 @@ public class WheelViewpagerFragment extends Fragment {
     private PyObject select_wallet;
     private TextView tetCny;
     private PyObject pyObject;
+    private CardView card_view;
+    private Button btn_appWallet;
     //    private Button btnright;
 
     public WheelViewpagerFragment(String name, String personce, String balance) {
@@ -68,10 +62,11 @@ public class WheelViewpagerFragment extends Fragment {
 
         btnLeft = view.findViewById(R.id.wallet_card_bn1);
         btncenetr = view.findViewById(R.id.wallet_card_bn2);
+        btn_appWallet = view.findViewById(R.id.app_wallet);
         tetCny = view.findViewById(R.id.tet_Cny);
+        card_view = view.findViewById(R.id.wallet_card);
         init();
         initdata();
-
 
         return view;
     }
@@ -79,11 +74,16 @@ public class WheelViewpagerFragment extends Fragment {
     private void init() {
         wallet_card_name.setText(name);
         walletpersonce.setText(personce);
-        if (personce.equals("")){
-
-        }else{
-            walletpersonce.setText(personce);
+        if (!TextUtils.isEmpty(personce)){
+            if (personce.equals("standard")){
+                btn_appWallet.setVisibility(View.VISIBLE);
+                walletpersonce.setVisibility(View.GONE);
+            }else{
+                String of = personce.replaceAll("of", "/");
+                walletpersonce.setText(of);
+            }
         }
+
         if (!TextUtils.isEmpty(balance)) {
             if (balance.contains("(")) {
                 String substring = balance.substring(0, balance.indexOf("("));
@@ -119,10 +119,11 @@ public class WheelViewpagerFragment extends Fragment {
             Intent intent = new Intent(getActivity(), ReceivedPageActivity.class);
             startActivity(intent);
         });
-//        btnright.setOnClickListener(v -> {
-//            Intent intent = new Intent(getActivity(), SignaturePageActivity.class);
-//            startActivity(intent);
-//        });
+        card_view.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), CheckWalletDetailActivity.class);
+            intent.putExtra("wallet_name", name);
+            startActivity(intent);
+        });
 
     }
 

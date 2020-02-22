@@ -151,7 +151,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="59.5dp"
                     android:gravity="center"
-                    android:text="@string/restore_factory"
+                    android:text="@string/restore_default_set"
                     android:textColor="@color/button_bk_disableok"
                     android:textSize="15sp" />
 

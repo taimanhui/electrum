@@ -27,7 +27,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.onlywallet.AppWalletCreateFinishActivity"/>
+        <activity android:name=".activities.set.BlockChooseActivity"></activity>
+        <activity android:name=".activities.onlywallet.CheckWalletDetailActivity" />
+        <activity android:name=".activities.set.QuetationChooseActivity" />
+        <activity android:name=".activities.onlywallet.ImportHistoryWalletActivity" />
+        <activity android:name=".activities.set.ElectrumNodeChooseActivity" />
+        <activity android:name=".activities.onlywallet.AppWalletCreateFinishActivity" />
         <activity android:name=".activities.onlywallet.VerificationMnemonicWordActivity" />
         <activity android:name=".activities.onlywallet.mnemonic_word.MnemonicWordActivity" />
         <activity android:name=".activities.set.recovery_set.ConfirmBackupActivity" />
