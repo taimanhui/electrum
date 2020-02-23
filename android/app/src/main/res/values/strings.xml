@@ -395,5 +395,6 @@
     <string name="ifconfirm_recovery">是否确认恢复</string>
     <string name="recovery_succse">恢复成功</string>
     <string name="block_choose">区块链服务器选择</string>
+    <string name="send_num">发币数量</string>
 
 </resources>

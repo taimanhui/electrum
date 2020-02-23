@@ -101,6 +101,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String chooseName;
     private PyObject select_wallet;
     private int intmaxFee;
+    private String strComment = "";
 
     @Override
     public int getLayoutId() {
@@ -127,8 +128,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         imgBack.setOnClickListener(this);
         tetamount.addTextChangedListener(this);
         init();
-        //edittext focus change
-        focusChange();
+
     }
 
     //edittext focus change
@@ -141,12 +141,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 int screenHeight = linBtcAddress.getRootView()
                         .getHeight();
                 int heightDifference = screenHeight - (r.bottom);
-                if (heightDifference > 200) {
-                    //Soft keyboard display
-                    mToast("mmmmmm");
-                } else {
+                if (heightDifference <= 200) {
                     //Soft keyboard hidden
-                    mToast("cccc");
+                    //getFeerate
+                    getFeerate();
                 }
             }
         });
@@ -154,9 +152,21 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    mToast("dddd");
+
                 } else {
-                    mToast("cccccccc");
+                    //getFeerate
+                    getFeerate();
+                }
+            }
+        });
+        tetamount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+
+                } else {
+                    //getFeerate
+                    getFeerate();
                 }
             }
         });
@@ -196,6 +206,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         //InputMaxTextNum
         setEditTextComments();
         payAddressMore();
+        //edittext focus change
+        focusChange();
 
     }
 
@@ -215,7 +227,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "");
                 tetMoneye.setText(strFeeamont);
-                intmaxFee = Integer.parseInt(strMax);
+                intmaxFee = Integer.parseInt(strMax);//fee
                 seekBar.setMax(intmaxFee);
                 seekBar.setProgress(intmaxFee);
             }
@@ -236,27 +248,20 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 //                tetMoneye.setText(indicatorText);
 //                params.leftMargin = (int) indicatorOffset;
 //                tvIndicator.setLayoutParams(params);
-                straddress = editAddress.getText().toString();
-                strAmount = tetamount.getText().toString();
-                if (!TextUtils.isEmpty(straddress) && !TextUtils.isEmpty(strAmount)) {
-                    //TODO:
-
-                }
-
-
+                //getFeerate
+                getFeerate();
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
+//                tvIndicator.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
+//                tvIndicator.setVisibility(View.VISIBLE);
             }
         });
-
     }
 
     private void tetMoneychange() {
@@ -522,6 +527,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     ClipData data = clipboard.getPrimaryClip();
                     if (data != null && data.getItemCount() > 0) {
                         editAddress.setText(data.getItemAt(0).getText());
+                        //getFeerate
+                        getFeerate();
                     }
                 }
                 break;
@@ -540,7 +547,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         pramas.put(straddress, strAmount);
         arrayList.add(pramas);
         String strMinerFee = tetMoneye.getText().toString();
-        String strComment = editTextComments.getText().toString();
+        strComment = editTextComments.getText().toString();
         String strPramas = new Gson().toJson(arrayList);
 
         Log.i("CreatTransaction", "strPramas: " + strPramas);
@@ -593,6 +600,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     } else {
                         editAddress.setText(content);
                     }
+                    //getFeerate
+                    getFeerate();
+
                 }
             }
         }
@@ -672,6 +682,29 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
     }
 
+    //get fee num
+    private void getFeerate() {
+        straddress = editAddress.getText().toString();
+        strAmount = tetamount.getText().toString();
+        strComment = editTextComments.getText().toString();
+        if (!TextUtils.isEmpty(straddress) && !TextUtils.isEmpty(strAmount)) {
+            ArrayList<Map<String, String>> arrayList = new ArrayList<>();
+            Map<String, String> pramas = new HashMap<>();
+            pramas.put(straddress, strAmount);
+            arrayList.add(pramas);
+            String strPramas = new Gson().toJson(arrayList);
+            PyObject get_fee_by_feerate = null;
+            try {
+                get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (get_fee_by_feerate != null) {
+                Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);
+            }
+
+        }
+    }
 }
 
 

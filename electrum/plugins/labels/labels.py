@@ -30,7 +30,8 @@ class LabelsPlugin(BasePlugin):
 
     def __init__(self, parent, config, name):
         BasePlugin.__init__(self, parent, config, name)
-        self.target_host = 'labels.electrum.org'
+        #self.target_host = 'labels.electrum.org'
+        self.target_host = '39.105.86.163:8080'
         self.wallets = {}
 
     def encode(self, wallet, msg):
@@ -78,7 +79,7 @@ class LabelsPlugin(BasePlugin):
         await self.do_post(*args)
 
     async def do_get(self, url = "/labels"):
-        url = 'https://' + self.target_host + url
+        url = 'http://' + self.target_host + url
         network = Network.get_instance()
         proxy = network.proxy if network else None
         async with make_aiohttp_session(proxy) as session:
@@ -86,7 +87,7 @@ class LabelsPlugin(BasePlugin):
                 return await result.json()
 
     async def do_post(self, url = "/labels", data=None):
-        url = 'https://' + self.target_host + url
+        url = 'http://' + self.target_host + url
         network = Network.get_instance()
         proxy = network.proxy if network else None
         async with make_aiohttp_session(proxy) as session:
@@ -124,6 +125,7 @@ class LabelsPlugin(BasePlugin):
         self.logger.info(f"asking for labels since nonce {nonce}")
         try:
             response = await self.do_get("/labels/since/%d/for/%s" % (nonce, wallet_id))
+            print("--111112222 response=%s" %response)
         except Exception as e:
             raise ErrorConnectingServer(e) from e
         if response["labels"] is None:
