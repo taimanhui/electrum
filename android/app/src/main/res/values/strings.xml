@@ -396,5 +396,9 @@
     <string name="recovery_succse">恢复成功</string>
     <string name="block_choose">区块链服务器选择</string>
     <string name="send_num">发币数量</string>
+    <string name="wrong_pass">密码输入错误</string>
+    <string name="msg_get_wrong">信息获取失败</string>
+    <string name="net_dont_use">当前网络不可用</string>
+    <string name="have_word">该词已存在</string>
 
 </resources>

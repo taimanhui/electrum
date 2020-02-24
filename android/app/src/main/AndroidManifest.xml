@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.haobtc.wallet">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -27,7 +28,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.set.BlockChooseActivity"></activity>
+        <activity android:name=".activities.transaction.CheckChainDetailWebActivity"/>
+        <activity android:name=".activities.set.BlockChooseActivity" />
         <activity android:name=".activities.onlywallet.CheckWalletDetailActivity" />
         <activity android:name=".activities.set.QuetationChooseActivity" />
         <activity android:name=".activities.onlywallet.ImportHistoryWalletActivity" />

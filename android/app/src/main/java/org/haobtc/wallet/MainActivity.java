@@ -1,19 +1,12 @@
 package org.haobtc.wallet;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -43,24 +35,17 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.activities.CreateWalletActivity;
-import org.haobtc.wallet.activities.CreateWalletPageActivity;
 import org.haobtc.wallet.activities.GuideActivity;
-import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.SettingActivity;
-import org.haobtc.wallet.activities.SignaturePageActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.adapter.MyPagerAdapter;
 import org.haobtc.wallet.bean.AddressEvent;
-import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
-import org.haobtc.wallet.bean.MainWheelBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
-import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
@@ -70,9 +55,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
@@ -119,9 +106,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private SmartRefreshLayout refreshLayout;
     private PyObject select_wallet;
     private String balanceC;
-    private String nameAC;
     private ArrayList<AddressEvent> walletnameList;
     private String walletType;
+    private String strType;
 
     @Override
     public int getLayoutId() {
@@ -197,9 +184,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             //Rolling Wallet
             mWheelplanting();
         }
-
     }
-
 
     private void mWheelplanting() {
         fragmentList = new ArrayList<>();
@@ -215,65 +200,54 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         if (get_wallets_list_info != null) {
-            List<PyObject> pyObjects = get_wallets_list_info.asList();
-//            String toString = get_wallets_list_info.toString();
-            Log.i("javaBean", "mjavaBean----: " + pyObjects + "  size +++   " + pyObjects.size());
-            if (pyObjects != null && pyObjects.size() != 0) {
-                strNames = pyObjects.get(0).toString();
-                for (int i = 0; i < pyObjects.size(); i++) {
-                    String name = pyObjects.get(i).toString();
+            String toStrings = get_wallets_list_info.toString();
+            Log.i("javaBean", "mjavaBean----+: " + toStrings);
+            com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
+            for (int i = 0; i < jsons.size(); i++) {
+                Map jsonToMap = (Map) jsons.get(i);
+                Set<String> keySets = jsonToMap.keySet();
+                Iterator<String> ki = keySets.iterator();
+                AddressEvent addressEvent = new AddressEvent();
+                while (ki.hasNext()) {
+                    //get key
+                    String key = ki.next();
+                    String value = jsonToMap.get(key).toString();
+                    addressEvent.setName(key);
+                    addressEvent.setType(value);
+                    walletnameList.add(addressEvent);
+                }
+            }
+            Log.i("mWheelplanting", "mWheelplanting: " + walletnameList.toString());
+
+            if (walletnameList != null && walletnameList.size() != 0) {
+                strNames = walletnameList.get(0).getName();
+                strType = walletnameList.get(0).getType();
+                for (int i = 0; i < walletnameList.size(); i++) {
+                    String name = walletnameList.get(i).getName();
+                    walletType = walletnameList.get(i).getType();
                     //switch wallet
                     dataListName.add(name);
-                    //choose wallet
                     try {
-                        Daemon.commands.callAttr("load_wallet", name);
-                        select_wallet = Daemon.commands.callAttr("select_wallet", name);
+                        Daemon.commands.callAttr("load_wallet", walletnameList.get(0).getName());
+                        Daemon.commands.callAttr("select_wallet",  walletnameList.get(0).getName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    if (select_wallet != null) {
-                        String toString = select_wallet.toString();
-                        Log.i("select_walletccc", "select_wallet+++: " + toString);
-                        Gson gson = new Gson();
-                        MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
-                        walletType = mainWheelBean.getWalletType();
-                        balanceC = mainWheelBean.getBalance();
-                        nameAC = mainWheelBean.getName();
-
+                    if (i != 0) {
+                        fragmentList.add(new WheelViewpagerFragment(name, walletType));
+                    } else {
+                        fragmentList.add(new WheelViewpagerFragment(name, walletType, true));
                     }
-//                    AddressEvent addressEvent = new AddressEvent();
-//                    addressEvent.setName(nameAC);
-//                    addressEvent.setType(streplaceC);
-//                    walletnameList.add(addressEvent);
-                    fragmentList.add(new WheelViewpagerFragment(name, walletType, balanceC));
-                }
 
+                }
+                //trsaction list data
+                downMainListdata();
                 dataListName.add("");
                 fragmentList.add(new AddViewFragment());
                 viewPager.setOffscreenPageLimit(4);
                 viewPager.setPageMargin(40);
                 viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                    @Override
-                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                    }
-
-                    @Override
-                    public void onPageSelected(int position) {
-                        //refresh only wallet
-//                        if (fragmentList.size() - 1 != position) {
-//                            ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
-//                        }
-                    }
-
-                    @Override
-                    public void onPageScrollStateChanged(int state) {
-
-                    }
-                });
-                //trsaction list data
-                downMainListdata();
             }
         }
         //scroll
@@ -295,31 +269,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     Log.i("onPageSelected", "名字为空");
                     mCurrentPosition = position;
                 } else {
+                    strNames = walletnameList.get(position).getName();
+                    strType = walletnameList.get(position).getType();
                     myDialog.show();
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            maintrsactionlistEvents.clear();
-                            if (mCurrentPosition != position) {
-                                strNames = dataListName.get(position);
-                                if (!TextUtils.isEmpty(strNames)) {
-                                    try {
-                                        Daemon.commands.callAttr("load_wallet", strNames);
-                                        Daemon.commands.callAttr("select_wallet", strNames);
-
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        recy_data.setVisibility(View.GONE);
-                                        tetNone.setVisibility(View.VISIBLE);
-                                        myDialog.dismiss();
-                                        Log.i("onPageSelected", "try-----" + e.getMessage());
-                                        return;
-                                    }
-                                    //trsaction list data
-                                    downMainListdata();
-                                }
+                            //refresh only wallet
+                            if (fragmentList.size() - 1 != position) {
+                                ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
                             }
+                            maintrsactionlistEvents.clear();
+                            //trsaction list data
+                            downMainListdata();
                             mCurrentPosition = position;
                         }
                     }, 350);
@@ -340,6 +303,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         } catch (Exception e) {
             e.printStackTrace();
             myDialog.dismiss();
+            tetNone.setVisibility(View.VISIBLE);
+            recy_data.setVisibility(View.GONE);
             Log.i("downMainListdata", "downMaina===: " + e.getMessage());
             return;
         }
@@ -379,6 +344,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 amount = jsonObject.getString("amount");
                 is_mine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
                 date = jsonObject.getString("date");
+                String tx_status = jsonObject.getString("tx_status");
                 if (type.equals("history")) {
                     confirmations = jsonObject.getString("confirmations");
                     //add attribute
@@ -388,9 +354,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     maintrsactionlistEvent.setIs_mine(is_mine);
                     maintrsactionlistEvent.setConfirmations(confirmations);
                     maintrsactionlistEvent.setType(type);
+                    maintrsactionlistEvent.setTx_status(tx_status);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
-                    String tx_status = jsonObject.getString("tx_status");
+
                     txCreatTrsaction = jsonObject.getString("tx");
                     String invoice_id = jsonObject.getString("invoice_id");//delete use
                     //add attribute
@@ -403,7 +370,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     maintrsactionlistEvent.setInvoice_id(invoice_id);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
-
             }
             //Binder Adapter
             trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
@@ -428,6 +394,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("isIsmine", is_mine);
+                                    intent.putExtra("strWalletName",strNames);
+                                    intent.putExtra("strwalletType",strType);
                                     intent.putExtra("listType", typeDele);
                                     intent.putExtra("txCreatTrsaction", tx_Onclick);
                                     startActivity(intent);
@@ -435,6 +403,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 } else {
                                     intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("isIsmine", is_mine);
+                                    intent.putExtra("strWalletName",strNames);
+                                    intent.putExtra("strwalletType",strType);
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("listType", typeDele);
                                     startActivity(intent);

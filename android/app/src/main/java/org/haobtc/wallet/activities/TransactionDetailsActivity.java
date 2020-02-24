@@ -10,21 +10,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
+import org.haobtc.wallet.bean.AddspeedBean;
+import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -105,6 +113,15 @@ public class TransactionDetailsActivity extends BaseActivity {
     private PyObject get_rbf_status;
     private boolean aBoolean;
     private String strNewfee;
+    private String strwalletType;
+    private String strWalletName;
+    private SharedPreferences preferences;
+    private String txid;
+    private boolean canBroadcast;
+    private SharedPreferences.Editor edit;
+    private String newFeerate;
+    private AlertDialog alertDialog;
+    private String tx_status;
 
 
     @Override
@@ -116,7 +133,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        edit = preferences.edit();
         language = preferences.getString("language", "");
         Intent intent = getIntent();
         rowTrsation = intent.getStringExtra("txCreatTrsaction");
@@ -124,6 +142,8 @@ public class TransactionDetailsActivity extends BaseActivity {
         tx_hash = intent.getStringExtra("tx_hash");
         listType = intent.getStringExtra("listType");
         strParse = intent.getStringExtra("strParse");
+        strWalletName = intent.getStringExtra("strWalletName");
+        strwalletType = intent.getStringExtra("strwalletType");
         isIsmine = intent.getBooleanExtra("isIsmine", false);
 
 
@@ -135,21 +155,25 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        if (isIsmine){
-            tetAddSpeed.setVisibility(View.VISIBLE);
-            try {
-                get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
-                Log.i("get_rbf_status", "___________: "+get_rbf_status.toString());
-            } catch (Exception e) {
-                Log.i("get_rbf_status", "++++++++++: "+e.getMessage());
-                e.printStackTrace();
-            }
-            if (get_rbf_status!=null){
-                aBoolean = get_rbf_status.toBoolean();
+        if (isIsmine) {
+//            if (tx_status.contains("confirmations")){
+//                tetAddSpeed.setVisibility(View.GONE);
+//            }else{
+                tetAddSpeed.setVisibility(View.VISIBLE);
+                try {
+                    get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
+                    Log.i("get_rbf_status", "___________: " + get_rbf_status.toString());
+                } catch (Exception e) {
+                    Log.i("get_rbf_status", "++++++++++: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                if (get_rbf_status != null) {
+                    aBoolean = get_rbf_status.toBoolean();
 
-            }
+                }
+//            }
 
-        }else{
+        } else {
             tetAddSpeed.setVisibility(View.GONE);
         }
         if (!TextUtils.isEmpty(keyValue)) {
@@ -231,11 +255,12 @@ public class TransactionDetailsActivity extends BaseActivity {
         String amount = getnewcreatTrsactionListBean.getAmount();
         String fee = getnewcreatTrsactionListBean.getFee();
         String description = getnewcreatTrsactionListBean.getDescription();
-        String tx_status = getnewcreatTrsactionListBean.getTxStatus();
+        tx_status = getnewcreatTrsactionListBean.getTxStatus();
         List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutputAddr();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
-        String txid = getnewcreatTrsactionListBean.getTxid();
+        txid = getnewcreatTrsactionListBean.getTxid();
         rowtx = getnewcreatTrsactionListBean.getTx();
+        canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
         //trsaction hash
         tetTrsactionHash.setText(txid);
         //input address num
@@ -369,7 +394,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         } else if (tx_status.contains("Unsigned")) {//unsigned
             tetState.setText(R.string.unsigned);
             sigTrans.setText(R.string.signature_trans);
-        } else if (tx_status.contains("Signed")) {//signed
+        } else if (tx_status.contains("Signed") || tx_status.contains("Local") || canBroadcast) {//signed
             tetState.setText(R.string.wait_broadcast);
             sigTrans.setText(R.string.broadcast);
             tetGrive.setVisibility(View.VISIBLE);
@@ -397,7 +422,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.img_back, R.id.img_share, R.id.sig_trans, R.id.lin_getMoreaddress,R.id.tet_addSpeed})
+    @OnClick({R.id.img_back, R.id.img_share, R.id.sig_trans, R.id.lin_getMoreaddress, R.id.tet_addSpeed})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -412,9 +437,14 @@ public class TransactionDetailsActivity extends BaseActivity {
             case R.id.sig_trans:
                 String strBtncontent = sigTrans.getText().toString();
                 if (strBtncontent.equals(getResources().getString(R.string.signature_trans))) {
-                    Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
+                    if (strwalletType.equals("standard")) {
+                        //sign input pass
+                        signInputpassDialog();
 
-                    startActivity(intentCon);
+                    } else {
+                        Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
+                        startActivity(intentCon);
+                    }
 
                 } else if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
@@ -423,9 +453,13 @@ public class TransactionDetailsActivity extends BaseActivity {
                     startActivity(intent1);
 
                 } else if (strBtncontent.equals(getResources().getString(R.string.broadcast))) {
+                    //bradcast trsaction
+                    braodcastTrsaction();
 
                 } else if (strBtncontent.equals(getResources().getString(R.string.check_trsaction))) {
-
+                    Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
+                    intent1.putExtra("checkTxid", txid);
+                    startActivity(intent1);
                 }
 
                 break;
@@ -441,34 +475,96 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
+    //Radio broadcast
+    private void braodcastTrsaction() {
+        String signedRowTrsation = preferences.getString("signedRowtrsation", "");
+        Log.i("signedRowTrsation", "-------: " + signedRowTrsation);
+        try {
+            Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
+            tetState.setText(R.string.waitchoose);
+            sigTrans.setText(R.string.check_trsaction);
+            imgProgressone.setVisibility(View.GONE);
+            imgProgressthree.setVisibility(View.GONE);
+            imgProgressfour.setVisibility(View.VISIBLE);
+            //text color
+            tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+            tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+            //trsaction hash and time
+            linTractionHash.setVisibility(View.VISIBLE);
+            linTractionTime.setVisibility(View.VISIBLE);
+            EventBus.getDefault().post(new FirstEvent("22"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void signInputpassDialog() {
+        View view1 = LayoutInflater.from(TransactionDetailsActivity.this).inflate(R.layout.input_wallet_pass, null, false);
+        AlertDialog alertDialog = new AlertDialog.Builder(TransactionDetailsActivity.this).setView(view1).create();
+        EditText str_pass = view1.findViewById(R.id.edit_password);
+        view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
+            String strPassword = str_pass.getText().toString();
+            if (TextUtils.isEmpty(strPassword)) {
+                mToast(getResources().getString(R.string.please_input_pass));
+                return;
+            }
+            try {
+                PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rowtx, strPassword);
+                if (sign_tx != null) {
+                    rowTrsation = sign_tx.toString();
+                    edit.putString("signedRowtrsation", rowTrsation);
+                    edit.apply();
+                    trsactionDetail();
+                    EventBus.getDefault().post(new FirstEvent("22"));
+
+                }
+                alertDialog.dismiss();
+            } catch (Exception e) {
+                Log.i("sign_txkkkkkkk", "+++++++++++= " + e.getMessage());
+                e.printStackTrace();
+            }
+
+        });
+        view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+
+    }
+
     private void ifHaveRbf() {
-        if (aBoolean){
+        if (aBoolean) {
             PyObject get_rbf_fee_info = null;
             try {
                 get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", tx_hash);
             } catch (Exception e) {
-                Log.i("strNewfee", "++++++++: "+e.getMessage());
+                Log.i("strNewfee", "++++++++: " + e.getMessage());
                 e.printStackTrace();
             }
-            if (get_rbf_fee_info!=null){
+            if (get_rbf_fee_info != null) {
                 strNewfee = get_rbf_fee_info.toString();
-                Log.i("strNewfee", "--------: "+ strNewfee);
+                Log.i("strNewfee", "--------: " + strNewfee);
+                View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
+                alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
+                ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
+                TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
 
+                Gson gson = new Gson();
+                AddspeedBean addspeedBean = gson.fromJson(strNewfee, AddspeedBean.class);
+                newFeerate = addspeedBean.getNewFeerate();
+                tetNewfee.setText(String.format("%s  %s", getResources().getString(R.string.speed_fee), newFeerate));
+                img_Cancle.setOnClickListener(v -> {
+                    alertDialog.dismiss();
+                });
+                viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
+                    confirmedSpeed();
+                });
+                alertDialog.show();
             }
 
-            View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
-            AlertDialog alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
-            ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
-            TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
-            tetNewfee.setText(String.format("%s%s", getResources().getString(R.string.speed_fee), strNewfee));
-            img_Cancle.setOnClickListener(v -> {
-                alertDialog.dismiss();
-            });
-            viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
-                confirmedSpeed();
-            });
-            alertDialog.show();
-        }else{
+
+        } else {
             mToast(getResources().getString(R.string.dontRBF));
         }
 
@@ -478,12 +574,21 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void confirmedSpeed() {
         PyObject create_bump_fee = null;
         try {
-            create_bump_fee = Daemon.commands.callAttr("create_bump_fee", tx_hash, strNewfee,false);
+            create_bump_fee = Daemon.commands.callAttr("create_bump_fee", tx_hash, newFeerate, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (create_bump_fee!=null){
-
+        if (create_bump_fee != null) {
+            Log.i("create_bump_fee", "confirmedSpeed: " + create_bump_fee.toString());
+            String strNewTX = create_bump_fee.toString();
+            Gson gson = new Gson();
+            AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
+            rowTrsation = addspeedNewtrsactionBean.getNewTx();
+            edit.putString("signedRowtrsation", rowTrsation);
+            edit.apply();
+            trsactionDetail();
+            EventBus.getDefault().post(new FirstEvent("22"));
+            alertDialog.dismiss();
         }
     }
 

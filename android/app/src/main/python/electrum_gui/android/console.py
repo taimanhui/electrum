@@ -722,6 +722,7 @@ class AndroidCommands(commands.Commands):
         else:
             self.wallet.storage.write()
             self.callbackIntent.onCallback(Status.update_history, "update history")
+
             # need to update at least: history_list, utxo_list, address_list
 
     def update_invoices(self, old_tx, new_tx):

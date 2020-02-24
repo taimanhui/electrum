@@ -130,17 +130,16 @@ public class CheckWalletDetailActivity extends BaseActivity {
         //cancel dialog
         view.findViewById(R.id.tet_ConfirmDelete).setOnClickListener(v -> {
             Log.i("wallet_name", "showDialogs: "+wallet_name);
-            PyObject delete_wallet = null;
             try {
-                delete_wallet = Daemon.commands.callAttr("delete_wallet", wallet_name);
-            } catch (Exception e) {
-                Log.i("delete_wallet", "delete_wallet: "+e.getMessage());
-                e.printStackTrace();
-            }
-            if (delete_wallet!=null){
+                Daemon.commands.callAttr("delete_wallet", wallet_name);
                 EventBus.getDefault().post(new FirstEvent("11"));
                 mToast(getResources().getString(R.string.delete_succse));
+                Log.i("delete_wallet", "-----------: ");
+            } catch (Exception e) {
+                Log.i("delete_wallet", "===========: "+e.getMessage());
+                e.printStackTrace();
             }
+
             dialogBtom.cancel();
         });
         //cancel dialog

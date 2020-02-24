@@ -96,6 +96,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                             }
                             Intent intent = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
                             intent.putExtra("strSeed",strSeed);
+                            intent.putExtra("strPass1",strPass1);
                             startActivity(intent);
                             myDialog.dismiss();
                         } else {
@@ -128,6 +129,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                             myDialog.dismiss();
                             Intent intent = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
                             intent.putExtra("strSeed",strpyObject);
+                            intent.putExtra("strPass1",strPass1);
                             startActivity(intent);
                         } else {
                             myDialog.dismiss();

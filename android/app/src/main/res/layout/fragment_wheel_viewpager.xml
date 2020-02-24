@@ -87,6 +87,7 @@
                 android:layout_height="27dp"
                 android:layout_marginStart="@dimen/dp_5"
                 android:layout_marginTop="4dp"
+                android:visibility="gone"
                 android:gravity="center_vertical"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/sp_12"

@@ -53,6 +53,7 @@ public class BlockChooseActivity extends BaseActivity {
             @Override
             public void ItemClick(int pos) {
                 edit.putInt("setBlock",pos);
+                edit.putString("blockServerLine",blockList.get(pos).getName());
                 edit.apply();
             }
         });

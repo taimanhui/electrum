@@ -70,7 +70,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
             Iterator<String> ki = keySets.iterator();
             while (ki.hasNext()) {
                 String k = ki.next();
-                //获取前面的key
+                //get key
                 String v = jsonToMap.get(k).toString();
                 Map<String, Object> vToMap = JSONObject.parseObject(v);
                 Set<String> vkeySets = vToMap.keySet();

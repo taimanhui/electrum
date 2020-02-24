@@ -27,7 +27,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:text="@string/server_setting"
+            android:text="@string/electrum_select"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
