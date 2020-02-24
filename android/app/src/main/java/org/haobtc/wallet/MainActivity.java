@@ -217,9 +217,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (get_wallets_list_info != null) {
             List<PyObject> pyObjects = get_wallets_list_info.asList();
 //            String toString = get_wallets_list_info.toString();
-            Log.i("javaBean", "mjavaBean----: " + pyObjects);
-            strNames = pyObjects.get(0).toString();
-            if (pyObjects != null) {
+            Log.i("javaBean", "mjavaBean----: " + pyObjects + "  size +++   " + pyObjects.size());
+            if (pyObjects != null && pyObjects.size() != 0) {
+                strNames = pyObjects.get(0).toString();
                 for (int i = 0; i < pyObjects.size(); i++) {
                     String name = pyObjects.get(i).toString();
                     //switch wallet
@@ -239,7 +239,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         walletType = mainWheelBean.getWalletType();
                         balanceC = mainWheelBean.getBalance();
                         nameAC = mainWheelBean.getName();
-
 
                     }
 //                    AddressEvent addressEvent = new AddressEvent();
@@ -273,18 +272,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                     }
                 });
-
                 //trsaction list data
                 downMainListdata();
-
             }
-
         }
         //scroll
         viewPagerScroll();
-
     }
-
 
     //viewPagerScroll
     private void viewPagerScroll() {
@@ -418,6 +412,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 private String tx_hash1;
                 private boolean status;
+
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     String typeDele = maintrsactionlistEvents.get(position).getType();
@@ -432,14 +427,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     String tx_Onclick = jsonObject.getString("tx");
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("tx_hash", tx_hash1);
-                                    intent.putExtra("isIsmine",is_mine);
+                                    intent.putExtra("isIsmine", is_mine);
                                     intent.putExtra("listType", typeDele);
                                     intent.putExtra("txCreatTrsaction", tx_Onclick);
                                     startActivity(intent);
 
                                 } else {
                                     intent.putExtra("tx_hash", tx_hash1);
-                                    intent.putExtra("isIsmine",is_mine);
+                                    intent.putExtra("isIsmine", is_mine);
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("listType", typeDele);
                                     startActivity(intent);
@@ -455,13 +450,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
                                 tx_hash1 = jsonObject.getString("tx_hash");
                                 PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
-                                status= get_remove_flag.toBoolean();
-                                Log.i("onItemChildClick", "onItemCh==== "+status);
+                                status = get_remove_flag.toBoolean();
+                                Log.i("onItemChildClick", "onItemCh==== " + status);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            if (status){
+                            if (status) {
 //                                String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
                                 try {
                                     Daemon.commands.callAttr("remove_local_tx", tx_hash1);
@@ -473,7 +468,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                            }else{
+                            } else {
                                 mToast(getResources().getString(R.string.delete_unBroad));
                             }
 
@@ -483,7 +478,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             });
 
         } catch (JSONException e) {
-            Log.e("sndkjnskjn", "type++++: "+e.getMessage());
+            Log.e("sndkjnskjn", "type++++: " + e.getMessage());
             e.printStackTrace();
         }
 
