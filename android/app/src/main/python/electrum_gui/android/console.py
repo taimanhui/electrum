@@ -196,7 +196,7 @@ class AndroidCommands(commands.Commands):
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
             #print("update_statue out = %s" % (out))
-        #self.callbackIntent.onCallback(Status.update_status, out)
+        self.callbackIntent.onCallback(Status.update_status, out)
 
     def get_remove_flag(self, tx_hash):
         height = self.wallet.get_tx_height(tx_hash).height
@@ -721,6 +721,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         else:
             self.wallet.storage.write()
+            self.callbackIntent.onCallback(Status.update_history, "update history")
             # need to update at least: history_list, utxo_list, address_list
 
     def update_invoices(self, old_tx, new_tx):
@@ -1009,6 +1010,9 @@ class AndroidCommands(commands.Commands):
         if self.network and self.network.is_connected():
             status = False
             try:
+                if isinstance(tx, str):
+                    tx = tx_from_any(tx)
+                    tx.deserialize()
                 self.network.run_from_another_thread(self.network.broadcast_transaction(tx))
             except TxBroadcastError as e:
                 msg = e.get_message_for_gui()
@@ -1046,7 +1050,7 @@ class AndroidCommands(commands.Commands):
             self.do_save(sign_tx)
             #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
             return sign_tx
-        except Exception as e:
+        except BaseException as e:
             raise BaseException(e)
     ##connection with terzorlib#########################
     def set_pin(self):
@@ -1122,7 +1126,7 @@ class AndroidCommands(commands.Commands):
         use_rbf = self.config.get('use_rbf', True)
         if use_rbf == status_rbf:
             return
-        self.config.set_key('use_rbf', status_rbf, True)
+        self.config.set_key('use_rbf', status_rbf)
         self.rbf = status_rbf
 
     def get_rbf_status(self, tx_hash):
@@ -1133,9 +1137,9 @@ class AndroidCommands(commands.Commands):
             height = self.wallet.get_tx_height(tx_hash).height
             is_relevant, is_mine, v, fee = self.wallet.get_wallet_delta(tx)
             is_unconfirmed = height <= 0
-            if is_unconfirmed and tx:
+            if tx:
                 # note: the current implementation of RBF *needs* the old tx fee
-                rbf = is_mine and not tx.is_final() and fee is not None
+                rbf = is_mine and self.rbf and fee is not None
                 if rbf:
                     return True
                 else:
@@ -1181,7 +1185,7 @@ class AndroidCommands(commands.Commands):
             coins = self.wallet.get_spendable_coins(None, nonlocal_only=False)
             new_tx = self.wallet.bump_fee(tx=tx, new_fee_rate=new_fee_rate, coins=coins)
         except BaseException as e:
-            raise str(e)
+            raise BaseException(e)
 
         new_tx.set_rbf(self.rbf)
         # if is_final:

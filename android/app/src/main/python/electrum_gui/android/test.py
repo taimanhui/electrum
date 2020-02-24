@@ -30,9 +30,9 @@ testcommond = AndroidCommands()
 testcommond.start()
 
 #name = 'hahahahhahh777' #2-2 multi wallet
-name = 'hahahahhahh333' #1-N wallet
+#name = 'hahahahhahh333' #1-N wallet
 #name = 'hahahahhahh888' #1-1 wallet
-#name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
+name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
 password = "111111"
 #test hardware
 #testcommond.get_xpub_from_hw()
@@ -67,18 +67,18 @@ password = "111111"
 
 # #create_wallet 1-1 HW wallet
 #
-m = 1
-n = 1
-#xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
-#xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB' #VPUB
-xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
-#xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
-#xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-testcommond.delete_wallet(name)
-testcommond.set_multi_wallet_info(name,m,n)
-testcommond.add_xpub(xpub1)
-#testcommond.add_xpub(xpub2)
-testcommond.create_multi_wallet(name)
+# m = 1
+# n = 1
+# #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB' #VPUB
+# xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+# #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+# #xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# testcommond.delete_wallet(name)
+# testcommond.set_multi_wallet_info(name,m,n)
+# testcommond.add_xpub(xpub1)
+# #testcommond.add_xpub(xpub2)
+# testcommond.create_multi_wallet(name)
 
 ## create software wallet by create seed
 
@@ -175,11 +175,14 @@ ret_str = testcommond.mktx(output_str, message)
 ret_list = json.loads(ret_str)
 print("----mktx================%s" % ret_list)
 
-testcommond.remove_local_tx('ef87ad008dda2833c6643d2aa91eec7b467451ececf4763003c4bed4b6fef364')
-testcommond.remove_local_tx('5d5f88c31a2ac836c6f2b7b73f850e6716ca38991c55a2e01c57b40f4700a2a9')
-testcommond.remove_local_tx('e7744e56e35a3f32f9f4ab1ae014935bdbf9b59cce3113e492c28c72ee97f116')
-testinfo = testcommond.get_all_tx_list_old()
-print("hHHHHHHahahaha----testinfo create = %s------------" %testinfo)
+# testcommond.remove_local_tx('026b7f9b565da93ade23422e76b9d1f0575f1bd074294b7e8aba54c50c176f50')
+# testcommond.remove_local_tx('496a746ad834ed9030bb977f2c645825307f0f7ac2dc5e2431ac658548976709')
+# testcommond.remove_local_tx('56571bd88fc37b720eb9e9a36bff0f3e834ccc7c05b71cfe4f180b91133cddb1')
+# testcommond.remove_local_tx('775329173112931e653f30c87d676051eff9c445c1487cda63975f868b66eeb6')
+# testcommond.remove_local_tx('0cdbab7e80a4d5a1fa36dff3b744262a54a4869224727ed68f5fc633923ceddd')
+
+# testinfo = testcommond.get_all_tx_list_old()
+# print("hHHHHHHahahaha----testinfo create = %s------------" %testinfo)
 
 testinfo = testcommond.get_all_tx_list(None)
 print("----testinfo create = %s------------" %testinfo)
@@ -224,12 +227,21 @@ data = json.loads(testinfo)
 # print("sign tx = %s=========" % new_tx['new_tx'])
 # sign_tx = testcommond.sign_tx(new_tx['new_tx'], password)
 sign_tx = testcommond.sign_tx(ret_list['tx'], password)
-# testinfo = testcommond.get_all_tx_list(None)
-# print("testinfo  sign= %s------------" %testinfo)
-# data = json.loads(testinfo)
-# data_hash = data[0]['tx_hash']
-# data = testcommond.get_tx_info(data_hash)
-# print("----hash info sign = %s-===========" % data)
+print("==========sign_tx = %s" %sign_tx)
+testinfo = testcommond.get_all_tx_list(None)
+print("testinfo  sign= %s------------" %testinfo)
+data = json.loads(testinfo)
+
+# for tx_info in data:
+#     data_hash = tx_info['tx_hash']
+#     #print("i = %s type(%s)" %(i,type(i)))
+#     #data_hash = data[i]['tx_hash']
+#     data = testcommond.get_tx_info(data_hash)
+#     print("----hash info sign[%s] = %s-===========" % (data_hash, data))
+
+#data_hash = 'f3559052ee91389a79be346bc311868ae416185d890ac228d2a70ee217f608bc'
+#data = testcommond.get_tx_info(data_hash)
+
 testcommond.broadcast_tx(sign_tx)
 
 # # #

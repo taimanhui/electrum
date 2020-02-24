@@ -1444,6 +1444,8 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             try:
                 if k.can_sign(tmp_tx):
                     k.sign_transaction(tmp_tx, password)
+            except InvalidPassword as e:
+                raise BaseException(e)
             except Exception as e:
                 print(f"{e}............")
                 #raise BaseException(e)
