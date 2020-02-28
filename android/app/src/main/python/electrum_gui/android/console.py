@@ -28,6 +28,7 @@ from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as pa
 from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 import trezorlib.btc
 from electrum import ecc
+from electrum.wallet_db import WalletDB
 
 from enum import Enum
 class Status(Enum):
@@ -132,11 +133,12 @@ class AndroidCommands(commands.Commands):
                 self.base_unit = v
 
         self.num_zeros = int(self.config.get('num_zeros', 0))
+        self.config.set_key('log_to_file', True, save=True)
         self.rbf = self.config.get("use_rbf", True)
         self.ccy = self.daemon.fx.get_currency()
         self.m = 0
         self.n = 0
-        #self.config.set_key('auto_connect', True, True)
+        self.config.set_key('auto_connect', True, True)
         from threading import Timer
         t = Timer(5.0, self.timer_action)
         t.start()
@@ -164,8 +166,10 @@ class AndroidCommands(commands.Commands):
         if not self.wallet:
             return
         if self.network is None or not self.network.is_connected():
+            print("network is ========offline")
             status = _("Offline")
         elif self.network.is_connected():
+            #print("network is ========connect")
             out = {}
             #out['wallet_type'] = self.wallet.wallet_type
             self.num_blocks = self.network.get_local_height()
@@ -196,7 +200,7 @@ class AndroidCommands(commands.Commands):
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
             #print("update_statue out = %s" % (out))
-        self.callbackIntent.onCallback(Status.update_status, out)
+        self.callbackIntent.onCallback("update_status", json.dumps(out))
 
     def get_remove_flag(self, tx_hash):
         height = self.wallet.get_tx_height(tx_hash).height
@@ -328,8 +332,14 @@ class AndroidCommands(commands.Commands):
                 if not password:
                     raise BaseException(util.InvalidPassword())
                 storage.decrypt(password)
-
-            wallet = Wallet(storage, config=self.config)
+            db = WalletDB(storage.read(), manual_upgrades=False)
+            if db.requires_split():
+                return
+            if db.requires_upgrade():
+                return
+            if db.get_action():
+                return
+            wallet = Wallet(db, storage, config=self.config)
             wallet.start_network(self.network)
             self.daemon.add_wallet(wallet)
 
@@ -405,11 +415,11 @@ class AndroidCommands(commands.Commands):
             self._assert_wizard_isvalid()
             path = self._wallet_path(name)
             print("console:create_multi_wallet:path = %s---------" % path)
-            storage = self.wizard.create_storage(path=path, password = '')
+            storage, db = self.wizard.create_storage(path=path, password = '')
         except Exception as e:
             raise BaseException(e)
         if storage:
-            wallet = Wallet(storage, config=self.config)
+            wallet = Wallet(db, storage, config=self.config)
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
             self.local_wallet_info[name] = ("%s-%s" % (self.m, self.n))
@@ -567,7 +577,7 @@ class AndroidCommands(commands.Commands):
             exchanges = self.daemon.fx.get_exchanges_by_ccy(c, h)
         else:
             exchanges = self.daemon.fx.get_exchanges_by_ccy('USD', False)
-        return json.dumps(sorted(exchanges))
+        return sorted(exchanges)
 
     def set_exchange(self, exchange):
         if self.daemon.fx and self.daemon.fx.is_enabled() and exchange and exchange != self.daemon.fx.exchange.name():
@@ -720,9 +730,8 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise BaseException(e)
         else:
-            self.wallet.storage.write()
-            self.callbackIntent.onCallback(Status.update_history, "update history")
-
+            self.wallet.save_db()
+            self.callbackIntent.onCallback("update_history", "update history")
             # need to update at least: history_list, utxo_list, address_list
 
     def update_invoices(self, old_tx, new_tx):
@@ -1034,10 +1043,9 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
         except Exception as e:
             raise BaseException(e)
-        use_change = self.config.get('use_change')
-        if use_change == status_change:
+        if self.wallet.use_change == status_change:
             return
-        self.config.set_key('use_change', status_change, True)
+        self.config.set_key('use_change', status_change, False)
         self.wallet.use_change = status_change
 
     def sign_tx(self, tx, password=None):
@@ -1086,7 +1094,7 @@ class AndroidCommands(commands.Commands):
         if exists(path):
             raise BaseException("path is exist")
         storage = WalletStorage(path)
-
+        db = WalletDB('', manual_upgrades=False)
         if addresses is not None:
             print("")
            # wallet = ImportedAddressWallet.from_text(storage, addresses)
@@ -1106,14 +1114,13 @@ class AndroidCommands(commands.Commands):
                     print("seed type = %s" %type(seed))
                 ks = keystore.from_seed(seed, passphrase, False)
 
-            storage.put('keystore', ks.dump())
-            #storage.put('wallet_type', 'standard')
-            wallet = Standard_Wallet(storage, config=self.config)
-            #wallet = Wallet(storage, config=self.config)
-        wallet.update_password(None, password, True)
+            db.put('keystore', ks.dump())
+            #db.put('wallet_type', 'standard')
+            wallet = Standard_Wallet(db, storage, config=self.config)
+            #wallet = Wallet(db, storage, config=self.config)
+        wallet.update_password(old_pw=None, new_pw=password, encrypt_storage=True)
         wallet.start_network(self.daemon.network)
-        #wallet.synchronize()
-        wallet.storage.write()
+        wallet.save_db()
         self.daemon.add_wallet(wallet)
         self.local_wallet_info[name] = 'standard'
         self.config.set_key('all_wallet_type_info', self.local_wallet_info)
@@ -1243,6 +1250,7 @@ class AndroidCommands(commands.Commands):
             if self.label_flag:
                 self.label_plugin.load_wallet(self.wallet, None)
 
+            self.wallet.use_change = self.config.get('use_change', False)
             import time
             time.sleep(0.5)
             self.update_wallet()

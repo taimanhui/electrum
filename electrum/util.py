@@ -48,6 +48,7 @@ from aiohttp_socks import SocksConnector, SocksVer
 from aiorpcx import TaskGroup
 import certifi
 import dns.resolver
+import ecdsa
 
 from .i18n import _
 from .logging import get_logger, Logger
@@ -114,7 +115,7 @@ pr_expiration_values = {
 
 def get_request_status(req):
     status = req['status']
-    exp = req.get('exp', 0)
+    exp = req.get('exp', 0) or 0
     if req['status'] == PR_UNPAID and exp > 0 and req['time'] + req['exp'] < time.time():
         status = PR_EXPIRED
     status_str = pr_tooltips[status]
@@ -154,6 +155,11 @@ class NotEnoughFunds(Exception):
 class NoDynamicFeeEstimates(Exception):
     def __str__(self):
         return _('Dynamic fee estimates not available')
+
+
+class MultipleSpendMaxTxOutputs(Exception):
+    def __str__(self):
+        return _('At most one output can be set to spend max')
 
 
 class InvalidPassword(Exception):
@@ -203,13 +209,15 @@ class Satoshis(object):
 
     def __new__(cls, value):
         self = super(Satoshis, cls).__new__(cls)
+        # note: 'value' sometimes has msat precision
         self.value = value
         return self
 
     def __repr__(self):
-        return 'Satoshis(%d)'%self.value
+        return f'Satoshis({self.value})'
 
     def __str__(self):
+        # note: precision is truncated to satoshis here
         return format_satoshis(self.value)
 
     def __eq__(self, other):
@@ -276,6 +284,8 @@ class MyEncoder(json.JSONEncoder):
             return obj.isoformat(' ')[:-3]
         if isinstance(obj, set):
             return list(obj)
+        if isinstance(obj, bytes): # for nametuples in lnchannel
+            return obj.hex()
         if hasattr(obj, 'to_json') and callable(obj.to_json):
             return obj.to_json()
         return super(MyEncoder, self).default(obj)
@@ -417,11 +427,31 @@ def profiler(func):
         return o
     return lambda *args, **kw_args: do_profile(args, kw_args)
 
+def android_ext_dir():
+    from android.storage import primary_external_storage_path
+    return primary_external_storage_path()
+
+def android_backup_dir():
+    d = os.path.join(android_ext_dir(), 'org.electrum.electrum')
+    if not os.path.exists(d):
+        os.mkdir(d)
+    return d
+
+# def android_data_dir():
+#     import jnius
+#     PythonActivity = jnius.autoclass('org.kivy.android.PythonActivity')
+#     return PythonActivity.mActivity.getFilesDir().getPath() + '/data'
 @lru_cache()
 def android_data_dir():
     from com.chaquo.python import Python
     context = Python.getPlatform().getApplication()
     return context.getFilesDir().getPath() + '/data'
+
+def get_backup_dir(config):
+    if 'ANDROID_DATA' in os.environ:
+        return android_backup_dir() if config.get('android_backups') else None
+    else:
+        return config.get('backup_dir')
 
 def ensure_sparse_file(filename):
     # On modern Linux, no need to do anything.
@@ -458,7 +488,12 @@ def assert_file_in_datadir_available(path, config_path):
 
 
 def standardize_path(path):
-    return os.path.normcase(os.path.realpath(os.path.abspath(path)))
+    return os.path.normcase(
+            os.path.realpath(
+                os.path.abspath(
+                    os.path.expanduser(
+                        path
+    ))))
 
 
 def get_new_wallet_name(wallet_folder: str) -> str:
@@ -536,7 +571,9 @@ def xor_bytes(a: bytes, b: bytes) -> bytes:
 
 
 def user_dir():
-    if 'ANDROID_DATA' in os.environ:
+    if "ELECTRUMDIR" in os.environ:
+        return os.environ["ELECTRUMDIR"]
+    elif 'ANDROID_DATA' in os.environ:
         return android_data_dir()
     elif os.name == 'posix':
         return os.path.join(os.environ["HOME"], ".electrum")
@@ -739,6 +776,8 @@ mainnet_block_explorers = {
     'OXT.me': ('https://oxt.me/',
                         {'tx': 'transaction/', 'addr': 'address/'}),
     'smartbit.com.au': ('https://www.smartbit.com.au/',
+                        {'tx': 'tx/', 'addr': 'address/'}),
+    'mynode.local': ('http://mynode.local:3002/',
                         {'tx': 'tx/', 'addr': 'address/'}),
     'system default': ('blockchain:/',
                         {'tx': 'tx/', 'addr': 'address/'}),
@@ -1041,7 +1080,9 @@ def make_aiohttp_session(proxy: Optional[dict], headers=None, timeout=None):
     if headers is None:
         headers = {'User-Agent': 'Electrum'}
     if timeout is None:
-        timeout = aiohttp.ClientTimeout(total=30)
+        # The default timeout is high intentionally.
+        # DNS on some systems can be really slow, see e.g. #5337
+        timeout = aiohttp.ClientTimeout(total=45)
     elif isinstance(timeout, (int, float)):
         timeout = aiohttp.ClientTimeout(total=timeout)
     ssl_context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH, cafile=ca_path)
@@ -1252,3 +1293,9 @@ def resolve_dns_srv(host: str):
             'port': srv.port,
         }
     return [dict_from_srv_record(srv) for srv in srv_records]
+
+
+def randrange(bound: int) -> int:
+    """Return a random integer k such that 1 <= k < bound, uniformly
+    distributed across that range."""
+    return ecdsa.util.randrange(bound)

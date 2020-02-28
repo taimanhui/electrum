@@ -39,7 +39,7 @@ from .i18n import _
 from .util import UserCancelled, InvalidPassword, WalletFileException
 from .logging import Logger
 from .simple_config import SimpleConfig
-
+from .wallet_db import WalletDB
 
 class ScriptTypeNotSupported(Exception): pass
 
@@ -187,11 +187,12 @@ class MutiBase(Logger):
             raise Exception("args wrong")
 
         storage = WalletStorage(self.path)
-        storage.set_keystore_encryption(bool(password))
         if encrypt_storage:
             storage.set_password(password, enc_version=storage_enc_version)
+        db = WalletDB('', manual_upgrades=False)
+        db.set_keystore_encryption(bool(password) and encrypt_keystore)
         for key, value in self.data.items():
-            storage.put(key, value)
-        storage.write()
-        storage.load_plugins()
-        return storage
+            db.put(key, value)
+        db.load_plugins()
+        db.write(storage)
+        return storage, db

@@ -69,8 +69,7 @@ deploy:
     - "android/app/build/outputs/apk/RegTest/release/*.apk"
   skip_cleanup: true
   name: electrum android development build (${TRAVIS_BRANCH})
-  body: Automatic development build of $TRAVIS_BRANCH branch
-    (commit $TRAVIS_COMMIT) built by Travis CI on $(date +'%F %T %Z').
+  body: Automatic electrum android development build of $TRAVIS_BRANCH branch (commit $TRAVIS_COMMIT) built by Travis CI on $(date +'%F %T %Z').
   prerelease: true
   overwrite: true
   target_commitish: $TRAVIS_COMMIT
