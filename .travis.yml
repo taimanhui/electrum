@@ -1,18 +1,16 @@
-dist: xenial
+dist: bionic
 language: python
 python:
     - 3.6
+env:
+  global:
+    - OWNER=${TRAVIS_REPO_SLUG%/*}
 git:
   depth: false
-addons:
-  apt:
-    sources:
-      - sourceline: 'ppa:tah83/secp256k1'
-    packages:
-      - libsecp256k1-0
 before_install:
   - git tag
 install:
+  - sudo apt-get -y install libsecp256k1-0
   - pip install -r contrib/requirements/requirements-travis.txt
 cache:
   - pip: true
@@ -46,8 +44,18 @@ jobs:
         - if [ $(ls android/app/build/outputs/apk/RegTest/debug/ | grep -c bixin-*) -eq 0 ]; then exit 1; fi
       after_success: true 
 
+branches:
+  except:
+    - travis-build
+
 before_deploy:
-  - git tag -f "travis-build"
+  - git tag -f travis-build
+  - git remote add gh
+    https://${OWNER}:${GITHUB_API_KEY}@github.com/${TRAVIS_REPO_SLUG}.git
+  - git push gh :travis-build || true
+  - git push -f gh travis-build
+  - git remote remove gh
+
 deploy:
   provider: releases
   api_key: $GITHUB_API_KEY
@@ -60,9 +68,12 @@ deploy:
     - "android/app/build/outputs/apk/RegTest/debug/*.apk"
     - "android/app/build/outputs/apk/RegTest/release/*.apk"
   skip_cleanup: true
-  overwrite: true
+  name: electrum android development build (${TRAVIS_BRANCH})
+  body: Automatic development build of $TRAVIS_BRANCH branch
+    (commit $TRAVIS_COMMIT) built by Travis CI on $(date +'%F %T %Z').
   prerelease: true
-  target_commitsh: $TRAVIS_COMMIT
+  overwrite: true
+  target_commitish: $TRAVIS_COMMIT
   on:
     branch: bixin_dev
     tags: false
