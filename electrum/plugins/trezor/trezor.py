@@ -159,7 +159,6 @@ class TrezorPlugin(HW_PluginBase):
 
     def create_client(self, device, handler):
         try:
-            #self.logger.info(f"connecting to device at {device.path}")
             transport = trezorlib.transport.get_transport(device.path)
         except BaseException as e:
             self.logger.info(f"cannot connect at {device.path} {e}")

@@ -1,33 +1,36 @@
 package org.haobtc.wallet.activities;
 
-import android.graphics.drawable.BitmapDrawable;
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.Toast;
+
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.fragment.ItemFragmentTransaction;
-import org.haobtc.wallet.utils.CommonUtils;
+import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
+import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class ConfirmOnHardware extends BaseActivity implements View.OnClickListener {
-    @BindView(R.id.img_back)
-    ImageView imgBack;
-    private Button button_confirm;
-    private PopupWindow popupWindow;
-    private View view, rootView;
-    private ImageView imageViewCancle, imageViewConnect, imageViewPin, imageViewSigning;
+    public static final String TAG = "org.haobtc.wallet.activities.ConfirmOnHardware";
+    private Dialog dialog;
+    private View view;
+    private ImageView imageViewCancel, imageViewSigning, imageBack;
 
 
     public int getLayoutId() {
@@ -36,18 +39,18 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-        ItemFragmentTransaction fragmentTransaction = new ItemFragmentTransaction();
-        fragmentTransaction.setArguments(getIntent().getExtras());
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_trans_in_confirm, fragmentTransaction).commit();
-        rootView = LayoutInflater.from(this).inflate(R.layout.confirm_on_hardware, null);
-        button_confirm = findViewById(R.id.confirm_on_hardware);
-        button_confirm.setOnClickListener(v -> {
-            showPopupSignProcessing();
-            setBackgroundAlpha(0.5f);
-
-        });
+        findViewById(R.id.confirm_on_hardware).setOnClickListener(this);
+        findViewById(R.id.img_back).setOnClickListener(this);
+        Bundle bundle = getIntent().getBundleExtra("outputs");
+        if (bundle != null) {
+            String totalAmount = bundle.getString("amount");
+            String fee = bundle.getString("fee");
+            ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputs = (ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean>) bundle.getSerializable("output");
+            for (GetnewcreatTrsactionListBean.OutputAddrBean output : outputs) {
+               String addr = output.getAddr();
+               String amount = output.getAmount();
+            }
+        }
     }
 
     @Override
@@ -57,113 +60,113 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 
     private void showPopupSignProcessing() {
         view = LayoutInflater.from(this).inflate(R.layout.touch_process_popupwindow, null);
-        imageViewCancle = view.findViewById(R.id.cancel_touch);
-        imageViewConnect = view.findViewById(R.id.imageView_connect);
-        imageViewPin = view.findViewById(R.id.imageView_pin);
+        imageViewCancel = view.findViewById(R.id.cancel_touch);
         imageViewSigning = view.findViewById(R.id.imageView_signing);
-        popupWindow = new PopupWindow();
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null, ""));
-        popupWindow.setContentView(view);
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(() ->
-                {
-                    Toast.makeText(ConfirmOnHardware.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                    setBackgroundAlpha(1f);
+        imageViewCancel.setOnClickListener(this);
+        dialog = new Dialog(this, R.style.dialog);
+        dialog.setContentView(view);
+        Window window = dialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.BOTTOM);
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialog.show();
+        Handler handler = new Handler();
+        handler.postDelayed(()-> {
+            String result = "";
+            try {
+                // old version code
+               // result = TouchHardwareActivity.futureTask.get(50, TimeUnit.SECONDS).toString();
+                // new version code
+                result = CustomerDialogFragment.futureTask.get(50, TimeUnit.SECONDS).toString();
+                imageViewSigning.setImageResource(R.drawable.chenggong);
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"获取签名异常",Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                showPopupSignFailed();
+                return;
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+                Toast.makeText(this,"签名超时",Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                showPopupSignTimeout();
+                return;
+            }
+            Handler handler1 = new Handler();
+            String finalResult = result;
+            handler1.postDelayed(()->{
+                if (!TextUtils.isEmpty(finalResult)) {
+                    Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
+                    intent1.putExtra(TouchHardwareActivity.FROM, TAG);
+                    intent1.putExtra("signed_raw_tx", finalResult);
+                    startActivity(intent1);
+                    dialog.dismiss();
                 }
-        );
-        imageViewCancle.setOnClickListener(this);
+            },1000);
+
+        }, 500);
     }
 
     private void showPopupSignFailed() {
         view = LayoutInflater.from(this).inflate(R.layout.signature_fail_popupwindow, null);
-        imageViewCancle = view.findViewById(R.id.cancel_sign_fail);
-        popupWindow = new PopupWindow();
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null, ""));
-        popupWindow.setContentView(view);
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(() ->
-                {
-                    Toast.makeText(ConfirmOnHardware.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                    setBackgroundAlpha(1f);
-                }
-        );
-        imageViewCancle.setOnClickListener(this);
+        imageViewCancel = view.findViewById(R.id.cancel_sign_fail);
+        dialog = new Dialog(this, R.style.dialog);
+        dialog.setContentView(view);
+        Window window = dialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.BOTTOM);
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialog.show();
+        imageViewCancel.setOnClickListener(this);
     }
 
     private void showPopupSignTimeout() {
-        Button button = findViewById(R.id.sign_again);
         view = LayoutInflater.from(this).inflate(R.layout.signature_timeout_popupwindow, null);
-        imageViewCancle = view.findViewById(R.id.cancel_sign_timeout);
-        popupWindow = new PopupWindow();
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null, ""));
-        popupWindow.setContentView(view);
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(() ->
-                {
-                    Toast.makeText(ConfirmOnHardware.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                    setBackgroundAlpha(1f);
-                }
-        );
-        imageViewCancle.setOnClickListener(this);
+        Button button = view.findViewById(R.id.sign_again);
+        imageViewCancel = view.findViewById(R.id.cancel_sign_timeout);
+        dialog = new Dialog(this, R.style.dialog);
+        dialog.setContentView(view);
+        Window window = dialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.BOTTOM);
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialog.show();
+        imageViewCancel.setOnClickListener(this);
         button.setOnClickListener(this);
     }
 
     private void showPopupSignException() {
         view = LayoutInflater.from(this).inflate(R.layout.signature_exception_popupwindow, null);
-        imageViewCancle = view.findViewById(R.id.cancel_sign_exception);
-        popupWindow = new PopupWindow();
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null, ""));
-        popupWindow.setContentView(view);
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setOnDismissListener(() ->
-                {
-                    Toast.makeText(ConfirmOnHardware.this, "PupWindow消失了！", Toast.LENGTH_SHORT).show();
-                    setBackgroundAlpha(1f);
-                }
-        );
-        imageViewCancle.setOnClickListener(this);
+        imageViewCancel = view.findViewById(R.id.cancel_sign_exception);
+        dialog = new Dialog(this, R.style.dialog);
+        dialog.setContentView(view);
+        Window window = dialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.BOTTOM);
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialog.show();
+        imageViewCancel.setOnClickListener(this);
     }
 
-    public void setBackgroundAlpha(float bgAlpha) {
-        WindowManager.LayoutParams lp = getWindow()
-                .getAttributes();
-        lp.alpha = bgAlpha;
-        getWindow().setAttributes(lp);
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
 
             case R.id.sign_again:
-                // todo:
-
-            default:
-                popupWindow.dismiss();
+                dialog.dismiss();
                 finish();
-        }
-
-    }
-
-
-    @OnClick({R.id.img_back})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
+                break;
+            case R.id.confirm_on_hardware:
+                showPopupSignProcessing();
+                break;
             case R.id.img_back:
                 finish();
                 break;
+            default:
+                dialog.dismiss();
         }
+
     }
+
 }

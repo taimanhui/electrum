@@ -6,7 +6,7 @@
     <item
         android:id="@+id/action_fileselect_ok"
         android:orderInCategory="100"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/action_fileselector_ok"/>
 
 </menu>

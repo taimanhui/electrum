@@ -38,7 +38,7 @@
                 android:layout_alignParentEnd="true"
                 android:padding="@dimen/dp_14"
                 android:contentDescription="@string/use_hardware"
-                android:src="@drawable/close_big_black"
+                app:srcCompat="@drawable/close_big_black"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <View
@@ -89,7 +89,7 @@
                     android:layout_marginStart="75dp"
                     android:layout_marginTop="@dimen/dp_4"
                     android:contentDescription="@string/use_hardware"
-                    android:src="@drawable/invalid_name" />
+                    app:srcCompat="@drawable/invalid_name" />
 
                 <TextView
                     android:id="@+id/bn_use_hardware_add_cosigner_popup"

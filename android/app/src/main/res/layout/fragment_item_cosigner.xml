@@ -61,7 +61,7 @@
                 android:layout_marginTop="9.6dp"
                 android:layout_marginEnd="11dp"
                 android:contentDescription="@string/picture"
-                android:src="@drawable/close_big_black"
+                app:srcCompat="@drawable/close_big_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

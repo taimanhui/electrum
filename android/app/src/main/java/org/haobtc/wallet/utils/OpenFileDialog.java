@@ -1,7 +1,6 @@
 package org.haobtc.wallet.utils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,8 +10,9 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 
 import java.io.File;
 import java.util.ArrayList;

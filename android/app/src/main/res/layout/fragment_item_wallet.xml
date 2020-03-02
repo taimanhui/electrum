@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_21"
                 android:contentDescription="@string/picture"
-                android:src="@drawable/duoxuan_unselected"
+                app:srcCompat="@drawable/duoxuan_unselected"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/textView3"

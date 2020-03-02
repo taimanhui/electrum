@@ -200,7 +200,7 @@
                         android:id="@+id/imgsudbnsd"
                         android:layout_width="17dp"
                         android:layout_height="17dp"
-                        android:src="@drawable/add" />
+                        app:srcCompat="@drawable/add" />
 
                     <TextView
                         android:layout_width="wrap_content"

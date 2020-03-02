@@ -381,4 +381,15 @@
     <string name="net_dont_use">当前网络不可用</string>
     <string name="have_word">该词已存在</string>
 
+    <string name="verify_pin">验证PIN码成功</string>
+    <string name="sign_successful">签名成功</string>
+    <string name="reading">读取公钥中</string>
+    <string name="reading_exception">BixinKEY读取错误</string>
+    <string name="select_ble_device">选择蓝牙设备进行连接</string>
+    <string name="tip_ble">请开启BixinKEY，并靠近手机</string>
+    <string name="reading_dot">读取公钥中...</string>
+    <string name="warning">本应用必要权限被拒绝，可能会影响您的正常使用</string>
+    <string name="ble_device_connecting">蓝牙设备连接中</string>
+    <string name="tip_ble_bonding">请开启BixinKEY, 确认配对码</string>
+    <string name="confirm_pub">确认公钥</string>
 </resources>

@@ -32,9 +32,10 @@
     <color name="little_circle_color">#f8f9fc</color>
     <color name="text_0">#b1b7c5</color>
     <color name="set_txt">#484d5c</color>
-    <color name="oncklick">#6b92ff</color>
+    <color name="onclick">#6b92ff</color>
     <color name="wallet_yue">#c1d0e4</color>
     <color name="butotn_back">#e5ebff</color>
+    <color name="bluetooth_item_bk">#f6f7f8</color>
     <color name="little_blue">#e9eeff</color>
     <color name="pin_back_color">#94adff</color>
     <color name="tet_tips">#fff6e5</color>

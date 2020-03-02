@@ -59,19 +59,6 @@ public class CreateWalletPageActivity extends BaseActivity implements TextWatche
     public static final String COSIGNER_NUM = "org.haobtc.wallet.activities.cosignerNum";
     public static final String SIGNUM_REQUIRE = "org.haobtc.wallet.activities.sigNumRequire";
     private Dialog dialogBtom;
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    break;
-                case 2:
-
-                    break;
-            }
-        }
-    };
     private MyDialog myDialog;
     private int consigerValue = 0;
     private int signumValue = 0;
@@ -147,7 +134,7 @@ public class CreateWalletPageActivity extends BaseActivity implements TextWatche
         dialogBtom.setContentView(view);
         Window window = dialogBtom.getWindow();
         //Set pop-up size
-        window.setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         //set locate
         window.setGravity(Gravity.BOTTOM);
         //set animal
@@ -202,7 +189,7 @@ public class CreateWalletPageActivity extends BaseActivity implements TextWatche
         dialogBtom.setContentView(view);
         Window window = dialogBtom.getWindow();
         //Set pop-up size
-        window.setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         //set locate
         window.setGravity(Gravity.BOTTOM);
         //set animal

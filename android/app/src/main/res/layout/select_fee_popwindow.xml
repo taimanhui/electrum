@@ -33,7 +33,7 @@
                 android:layout_marginTop="@dimen/dp_4"
                 android:contentDescription="@string/close"
                 android:padding="@dimen/sp_14"
-                android:src="@drawable/close_big_black"
+                app:srcCompat="@drawable/close_big_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

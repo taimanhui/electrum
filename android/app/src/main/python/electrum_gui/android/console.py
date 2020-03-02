@@ -10,7 +10,9 @@ import pkgutil
 import unittest
 import threading
 from electrum.bitcoin import base_decode, is_address
+from electrum.keystore import bip44_derivation
 from electrum.plugin import Plugins
+from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, PartialTxInput
 from electrum import commands, daemon, keystore, simple_config, storage, util, bitcoin
 from electrum.util import Fiat, create_and_start_event_loop, decimal_point_to_base_unit_name
@@ -28,8 +30,8 @@ from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as pa
 from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 import trezorlib.btc
 from electrum import ecc
+from trezorlib.customer_ui import CustomerUI
 from electrum.wallet_db import WalletDB
-
 from enum import Enum
 class Status(Enum):
     net = 1
@@ -117,6 +119,8 @@ class AndroidCommands(commands.Commands):
         self.label_flag = self.config.get('use_labels', False)
         self.callbackIntent = None
         self.wallet = None
+        self.client = None
+        self.path = ''
         self.local_wallet_info = self.config.get("all_wallet_type_info", {})
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
@@ -513,7 +517,6 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     def get_wallets_list_info(self):
-        wallet_info_map = {}
         try:
             self._assert_daemon_running()
         except Exception as e:
@@ -955,7 +958,6 @@ class AndroidCommands(commands.Commands):
                 file_content = f.read()
         except (ValueError, IOError, os.error) as reason:
             raise BaseException("Electrum was unable to open your transaction file")
-            return
         print("FILE== file info = %s" % file_content)
         tx = tx_from_any(file_content)
         return tx.serialize_as_bytes().hex()
@@ -1048,27 +1050,75 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('use_change', status_change, False)
         self.wallet.use_change = status_change
 
-    def sign_tx(self, tx, password=None):
+    def sign_tx(self, tx) -> str:
         try:
             self._assert_wallet_isvalid()
-            old_tx = tx
-            tx = tx_from_any(tx)
-            tx.deserialize()
-            sign_tx = self.wallet.sign_transaction(tx, password)
-            print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
-            self.do_save(sign_tx)
-            #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
-            return sign_tx
-        except BaseException as e:
+            ptx = tx_from_any(bytes.fromhex(tx))
+            stx = self.wallet.sign_transaction(ptx, None)
+            self.do_save(stx)
+            raw_tx = stx.serialize_as_bytes().hex()
+            return self.get_tx_info_from_raw(raw_tx)
+        except Exception as e:
             raise BaseException(e)
-    ##connection with terzorlib#########################
-    def set_pin(self):
-        print("support for liyan")
 
-    def get_feature(self):
-        print("support for liyan")
+    ##connection with terzorlib#########################
+    def backup_wallet(self):
+        return "hello world"
+
+    def wallet_recovery(self, str):
+        if str == "hello world":
+            return True
+        else:
+            return False
+
+    def init(self):
+        client = self.get_client()
+        try:
+            response = client.reset_device()
+        except Exception as e:
+            raise BaseException(e)
+        CustomerUI.state = 1
+        return response
+
+    def reset_pin(self):
+        client = self.get_client()
+        client.set_pin(True)
+
+    def get_client(self, path='nfc', ui=CustomerUI()) -> 'TrezorClientBase':
+        if self.client is not None and self.path == path:
+            return self.client
+        plugin = self.plugin.get_plugin("trezor")
+        client_list = plugin.enumerate()
+        print(client_list)
+        device = [cli for cli in client_list if cli.path == path]
+        assert len(device) != 0, "Not found the point device"
+        client = plugin.create_client(device[0], ui)
+        self.client = client
+        self.path = path
+        return client
+
+    # def get_feature(self):
+    #     client = self.get_client()
+    #     return client.features
+
+    def is_initialized(self, path='nfc'):
+        client = self.get_client(path=path)
+        return client.is_initialized()
+
+    def get_pin_status(self, path='nfc'):
+        self.client = None
+        self.path = ''
+        client = self.get_client(path=path)
+        return client.features.pin_cached
+
     def get_xpub_from_hw(self):
-        print("support for liyan")
+        client = self.get_client()
+        derivation = bip44_derivation(0)
+        try:
+            xpub = client.get_xpub(derivation, 'p2wsh')
+        except Exception as e:
+            raise BaseException(e)
+        return xpub
 
     ####################################################
     ## app wallet

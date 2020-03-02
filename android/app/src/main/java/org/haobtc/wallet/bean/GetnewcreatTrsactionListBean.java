@@ -2,9 +2,11 @@ package org.haobtc.wallet.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class GetnewcreatTrsactionListBean {
+public class GetnewcreatTrsactionListBean implements Serializable{
 
 
     /**
@@ -37,7 +39,7 @@ public class GetnewcreatTrsactionListBean {
     @SerializedName("sign_status")
     private List<Integer> signStatus;
     @SerializedName("output_addr")
-    private List<OutputAddrBean> outputAddr;
+    private ArrayList<OutputAddrBean> outputAddr;
     @SerializedName("cosigner")
     private List<String> cosigner;
 
@@ -105,11 +107,11 @@ public class GetnewcreatTrsactionListBean {
         this.signStatus = signStatus;
     }
 
-    public List<OutputAddrBean> getOutputAddr() {
+    public ArrayList<OutputAddrBean> getOutputAddr() {
         return outputAddr;
     }
 
-    public void setOutputAddr(List<OutputAddrBean> outputAddr) {
+    public void setOutputAddr(ArrayList<OutputAddrBean> outputAddr) {
         this.outputAddr = outputAddr;
     }
 
@@ -121,7 +123,7 @@ public class GetnewcreatTrsactionListBean {
         this.cosigner = cosigner;
     }
 
-    public static class OutputAddrBean {
+    public static class OutputAddrBean implements Serializable {
         /**
          * addr : bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r
          * amount : 0.0001 mBTC
