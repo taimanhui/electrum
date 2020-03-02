@@ -1,14 +1,17 @@
 package org.haobtc.wallet.activities.manywallet;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.Bundle;
+import android.nfc.Tag;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -27,10 +30,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chaquo.python.PyException;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -41,22 +46,41 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.ActivatedProcessing;
+import org.haobtc.wallet.activities.ConfirmOnHardware;
+import org.haobtc.wallet.activities.PinSettingActivity;
+import org.haobtc.wallet.activities.TransactionDetailsActivity;
+import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
+import org.haobtc.wallet.utils.NfcUtils;
+
+import java.util.Objects;
+
 import org.haobtc.wallet.utils.MyDialog;
+import org.xutils.ex.BaseException;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.wallet.activities.TouchHardwareActivity.FROM;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
 
 public class ManyWalletTogetherActivity extends BaseActivity {
 
@@ -115,9 +139,13 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     @BindView(R.id.btn_Finish)
     Button btnFinish;
     private Dialog dialogBtom;
+    // new version code
+    public String pin = "";
+    public static final String TAG = ManyWalletTogetherActivity.class.getSimpleName();
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private EditText edit_sweep;
+    private TextView textView;
     private ArrayList<AddBixinKeyEvent> addEventsDatas;
     private PyObject is_valiad_xpub;
     private String strInditor2;
@@ -127,15 +155,21 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private final String FIRST_RUN = "is_first_run";
+    private boolean executable = true;
+    private String tag;
+    private CustomerDialogFragment dialogFragment;
+    private boolean isActive;
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_many_wallet_together;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        tag = getIntent().getStringExtra(FROM);
         preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
@@ -146,9 +180,13 @@ public class ManyWalletTogetherActivity extends BaseActivity {
     @Override
     public void initData() {
         addEventsDatas = new ArrayList<>();
-
         seekbarLatoutup();
         seekbarLatoutdown();
+    }
+
+    private void showPopupAddCosigner1() {
+        dialogFragment = new CustomerDialogFragment(TAG, runnable, "");
+        dialogFragment.show(getSupportFragmentManager(), "");
     }
 
     private void seekbarLatoutup() {
@@ -208,7 +246,10 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                 mCreatWalletNext();
                 break;
             case R.id.bn_add_key:
-                showSelectFeeDialogs(ManyWalletTogetherActivity.this, R.layout.bluetooce_nfc);
+                // old version code
+                //showSelectFeeDialogs(ManyWalletTogetherActivity.this, R.layout.bluetooth_nfc);
+                // new version code
+                showPopupAddCosigner1();
                 break;
             case R.id.btn_Finish:
                 //FIRST_RUN,if frist run
@@ -288,23 +329,23 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         int strUp1 = Integer.parseInt(strInditor1);
         int strUp2 = Integer.parseInt(strInditor2);
         if (TextUtils.isEmpty(strWalletname)) {
-            mToast(getResources().getString(R.string.set_wallet));
+            mToast(getString(R.string.set_wallet));
             return;
         }
         if (strUp1 == 0) {
-            mToast(getResources().getString(R.string.set_public_num));
+            mToast(getString(R.string.set_public_num));
             return;
         }
         if (strUp2 == 0) {
-            mToast(getResources().getString(R.string.set_sign_num));
+            mToast(getString(R.string.set_sign_num));
             return;
         }
         if (strUp1 < 2) {
-            mToast(getResources().getString(R.string.public_person_2));
+            mToast(getString(R.string.public_person_2));
             return;
         }
         if (strUp2 > strUp1) {
-            mToast(getResources().getString(R.string.signnum_dongt_public));
+            mToast(getString(R.string.signnum_dongt_public));
             return;
         }
 
@@ -321,7 +362,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         reclBinxinKey.setVisibility(View.VISIBLE);
         bnAddKey.setVisibility(View.VISIBLE);
         relTwoNext1.setVisibility(View.VISIBLE);
-        tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+        tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
         bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getResources().getString(R.string.next), strInditor2));
 
         bnCompleteAddCosigner.setEnabled(false);
@@ -333,7 +374,8 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         View view = View.inflate(context, resource, null);
         dialogBtom = new Dialog(context, R.style.dialog);
 
-        view.findViewById(R.id.tet_handInput).setOnClickListener(v -> {
+        view.findViewById(R.id.text_input_publickey_by_hand).setOnClickListener(v -> {
+            showInputDialogs(ManyWalletTogetherActivity.this, R.layout.bixinkey_input);
             dialogBtom.cancel();
             showInputDialogs(ManyWalletTogetherActivity.this, R.layout.bixinkey_input);
 
@@ -341,7 +383,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
 
 
         //cancel dialog
-        view.findViewById(R.id.img1_Cancle).setOnClickListener(v -> {
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             dialogBtom.cancel();
         });
 
@@ -474,11 +516,11 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             String strBixinname = edit_bixinName.getText().toString();
             String strSweep = edit_sweep.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
-                mToast(getResources().getString(R.string.input_name));
+                mToast(getString(R.string.input_name));
                 return;
             }
             if (TextUtils.isEmpty(strSweep)) {
-                mToast(getResources().getString(R.string.input_public_address));
+                mToast(getString(R.string.input_public_address));
                 return;
             }
         });
@@ -486,11 +528,11 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             String strBixinname = edit_bixinName.getText().toString();
             String strSweep = edit_sweep.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
-                mToast(getResources().getString(R.string.input_name));
+                mToast(getString(R.string.input_name));
                 return;
             }
             if (TextUtils.isEmpty(strSweep)) {
-                mToast(getResources().getString(R.string.input_public_address));
+                mToast(getString(R.string.input_public_address));
                 return;
             }
             try {
@@ -516,7 +558,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
 
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
-                bnCompleteAddCosigner.setBackground(getResources().getDrawable(R.drawable.little_radio_blue));
+                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
@@ -535,7 +577,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                             bnAddKey.setVisibility(View.VISIBLE);
                             bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
 
-                            bnCompleteAddCosigner.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
+                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
                             bnCompleteAddCosigner.setEnabled(false);
 
                             break;
@@ -563,23 +605,220 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         dialogBtoms.show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
 
-        // Scan QR code / barcode return
-        if (requestCode == 0 && resultCode == RESULT_OK) {
-            if (data != null) {
-                String content = data.getStringExtra(Constant.CODED_CONTENT);
-                edit_sweep.setText(content);
+        EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
+        TextView tet_Num = view.findViewById(R.id.txt_textNum);
+        textView = view.findViewById(R.id.text_public_key_cosigner_popup);
+        textView.setText(xpub);
+        edit_bixinName.addTextChangedListener(new TextWatcher() {
+            CharSequence input;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                input = s;
             }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tet_Num.setText(String.format(Locale.CHINA, "%d/20", input.length()));
+                if (input.length() > 19) {
+                    Toast.makeText(ManyWalletTogetherActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
+            String strBixinname = edit_bixinName.getText().toString();
+            String strSweep = textView.getText().toString();
+            if (TextUtils.isEmpty(strBixinname)) {
+                mToast(getString(R.string.input_name));
+                return;
+            }
+            if (TextUtils.isEmpty(strSweep)) {
+                mToast(getString(R.string.input_public_address));
+                return;
+            }
+            try {
+                //add
+                Daemon.commands.callAttr("add_xpub", strSweep);
+            } catch (Exception e) {
+                Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+            AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
+            addBixinKeyEvent.setKeyname(strBixinname);
+            addBixinKeyEvent.setKeyaddress(strSweep);
+            addEventsDatas.add(addBixinKeyEvent);
+            //public person
+            PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
+            reclPublicPerson.setAdapter(publicPersonAdapter);
+            //bixinKEY
+            AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
+            reclBinxinKey.setAdapter(addBixinKeyAdapter);
+
+            int cosignerNum = Integer.parseInt(strInditor2);
+            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+
+            if (addEventsDatas.size() == cosignerNum) {
+                bnCompleteAddCosigner.setEnabled(true);
+                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+                bnAddKey.setVisibility(View.GONE);
+            }
+            addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    switch (view.getId()) {
+                        case R.id.img_deleteKey:
+                            try {
+                                Daemon.commands.callAttr("delete_xpub", strSweep);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            addEventsDatas.remove(position);
+                            addBixinKeyAdapter.notifyDataSetChanged();
+                            bnAddKey.setVisibility(View.VISIBLE);
+                            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+
+                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+                            bnCompleteAddCosigner.setEnabled(false);
+
+                            break;
+                    }
+                }
+            });
+            dialogBtoms.cancel();
+            dialogFragment.dismiss();
+
+        });
+
+        //cancel dialog
+        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
+            dialogBtoms.cancel();
+        });
+
+
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.show();
+    }
+
+
+    private Runnable runnable = () -> showInputDialogs(ManyWalletTogetherActivity.this, R.layout.bixinkey_input);
+
+    private boolean isInitialized() throws Exception {
+        boolean isInitialized = false;
+        try {
+            System.out.println("call is_initialized =====");
+            isInitialized = Daemon.commands.callAttr("is_initialized").toBoolean();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return isInitialized;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String action = intent.getAction(); // get the action of the coming intent
+        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
+                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
+                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            if (executable) {
+                Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
+                PyObject nfcHandler = nfc.get("NFCHandle");
+                nfcHandler.put("device", tags);
+                executable = false;
+            }
+            if (!TextUtils.isEmpty(pin)) {
+                CustomerDialogFragment.customerUI.put("pin", pin);
+                try {
+                    ReadingPubKeyDialogFragment dialog = (ReadingPubKeyDialogFragment) dialogFragment.showReadingDialog();
+                    String xpub = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
+                    dialog.dismiss();
+                    showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+                    return;
+                } catch (ExecutionException | TimeoutException | InterruptedException e) {
+                    dialogFragment.showReadingFailedDialog();
+                    if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+                        Toast.makeText(this, "PIN码输入有误，请从新输入", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            try {
+                boolean isInit = isInitialized();
+                if (isInit) {
+                    boolean pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
+                    System.out.println("java pin cashed===" + pinCached);
+                    // todo: get xpub
+                    CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
+                    new Thread(CustomerDialogFragment.futureTask).start();
+                    if (pinCached) {
+                        String xpub = CustomerDialogFragment.futureTask.get().toString();
+                        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+                    }
+
+                } else {
+                    // todo: Initialized
+                    if (isActive) {
+                        Intent intent1 = new Intent(this, ActivatedProcessing.class);
+                        startActivity(intent1);
+                    } else {
+                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                    startActivityForResult(intent1, REQUEST_ACTIVE);
+                    }
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CustomerDialogFragment.PIN_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                pin = data.getStringExtra("pin");
+                CustomerDialogFragment.pin = pin;
+                CustomerDialogFragment.customerUI.put("pin", pin);
+            }
+        } else if (requestCode == 0 && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+                edit_sweep.setText(content);
+            }
+        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
+            isActive = data.getBooleanExtra("isActive", false);
+            if (isActive) {
+                new Thread(() ->
+                        Daemon.commands.callAttr("init")
+                ).start();
+                /*
+                Intent intent = new Intent(this, ActivatedProcessing.class);
+                startActivity(intent);
+
+                 */
+            }
+        }
     }
 }
+

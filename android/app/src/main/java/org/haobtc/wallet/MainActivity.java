@@ -180,6 +180,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         viewPager = findViewById(R.id.viewPager);
         maintrsactionlistEvents = new ArrayList<>();
         dataListName = new ArrayList<>();
+        //Binder Adapter
+        trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
+        recy_data.setAdapter(trsactionlistAdapter);
         if (!jumpOr) {
             //Rolling Wallet
             mWheelplanting();
@@ -205,12 +208,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
             for (int i = 0; i < jsons.size(); i++) {
                 Map jsonToMap = (Map) jsons.get(i);
-                Set<String> keySets = jsonToMap.keySet();
-                Iterator<String> ki = keySets.iterator();
+                Set keySets = jsonToMap.keySet();
+                Iterator ki = keySets.iterator();
                 AddressEvent addressEvent = new AddressEvent();
                 while (ki.hasNext()) {
                     //get key
-                    String key = ki.next();
+                    String key = (String) ki.next();
                     String value = jsonToMap.get(key).toString();
                     addressEvent.setName(key);
                     addressEvent.setType(value);
@@ -324,6 +327,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
 
         } else {
+            refreshLayout.finishRefresh();
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
         }
@@ -371,9 +375,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
             }
-            //Binder Adapter
-            trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
-            recy_data.setAdapter(trsactionlistAdapter);
             myDialog.dismiss();
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 private String tx_hash1;

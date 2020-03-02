@@ -20,7 +20,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
+            app:srcCompat="@drawable/back" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -231,7 +231,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_45">
                             <ImageView
-                                android:src="@drawable/shiyong"
+                                app:srcCompat="@drawable/shiyong"
                                 android:layout_width="@dimen/dp_16"
                                 android:layout_height="@dimen/dp_18"/>
                             <TextView

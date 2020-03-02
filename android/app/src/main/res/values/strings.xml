@@ -270,6 +270,20 @@
     <string name="recomend_fee">Recommended rates</string>
     <string name="_sat_byte">20sat/byte Estimated 1 block (10 minutes) confirmation</string>
     <string name="input_public_key">Enter public key manually</string>
+
+    <string name="verify_pin">Verify PIN</string>
+    <string name="sign_successful">Sign Success</string>
+    <string name="reading">Reading</string>
+    <string name="reading_dot">读取公钥中...</string>
+    <string name="select_ble_device">选择蓝牙设备进行连接</string>
+    <string name="tip_ble">请开启BixinKEY，并靠近手机</string>
+    <string name="reading_exception">BixinKEY读取错误</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="warning">本应用必要权限被拒绝，可能会影响您的正常使用</string>
+    <string name="ble_device_connecting">Connecting  the device</string>
+    <string name="tip_ble_bonding">请开启BixinKEY, 确认配对码</string>
     <string name="input_send_num">Enter the issuing currency quantity</string>
     <string name="_0">0</string>
     <string name="recevid">Money collection details</string>
@@ -400,5 +414,5 @@
     <string name="msg_get_wrong">信息获取失败</string>
     <string name="net_dont_use">当前网络不可用</string>
     <string name="have_word">该词已存在</string>
-
+    <string name="confirm_pub">Confirm ExtendPublicKey</string>
 </resources>

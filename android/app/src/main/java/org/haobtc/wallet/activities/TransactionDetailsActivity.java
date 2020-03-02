@@ -1,9 +1,12 @@
 package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -24,6 +29,7 @@ import com.google.gson.JsonSyntaxException;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
 import org.haobtc.wallet.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.wallet.bean.AddspeedBean;
@@ -32,14 +38,24 @@ import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.Global;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
 
 public class TransactionDetailsActivity extends BaseActivity {
 
@@ -75,7 +91,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     TextView textView18;
     @BindView(R.id.textView20)
     TextView textView20;
-    @BindView(R.id.sig_trans)
+   // @BindView(R.id.sig_trans)
     Button sigTrans;
     public static final String TAG = "com.bixin.wallet.activities.TransactionDetailsActivity";
     @BindView(R.id.tet_content)
@@ -122,6 +138,12 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String newFeerate;
     private AlertDialog alertDialog;
     private String tx_status;
+    private String amount, fee;
+    ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr;
+    private boolean executable = true;
+    private String pin = "";
+    public static String signedRawTx;
+    private CustomerDialogFragment customerDialogFragment;
 
 
     @Override
@@ -131,8 +153,33 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
+        sigTrans = findViewById(R.id.sig_trans);
+        sigTrans.setOnClickListener((v) -> {
+            String strBtncontent = sigTrans.getText().toString();
+            if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
+                Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
+                intent1.putExtra("rowTrsaction", tx_hash);
+                intent1.putExtra("rowTx", rowtx);
+                startActivity(intent1);
+
+            } else if (strBtncontent.equals(getResources().getString(R.string.broadcast))) {
+                //bradcast trsaction
+                braodcastTrsaction();
+
+            } else if (strBtncontent.equals(getResources().getString(R.string.check_trsaction))) {
+                Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
+                intent1.putExtra("checkTxid", txid);
+                startActivity(intent1);
+            } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
+                if (strwalletType.equals("standard")) {
+                    //sign input pass
+                    signInputpassDialog();
+                } else {
+                    showCustomerDialog();
+                }
+            }
+        });
         preferences = getSharedPreferences("preferences", MODE_PRIVATE);
         edit = preferences.edit();
         language = preferences.getString("language", "");
@@ -159,18 +206,18 @@ public class TransactionDetailsActivity extends BaseActivity {
 //            if (tx_status.contains("confirmations")){
 //                tetAddSpeed.setVisibility(View.GONE);
 //            }else{
-                tetAddSpeed.setVisibility(View.VISIBLE);
-                try {
-                    get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
-                    Log.i("get_rbf_status", "___________: " + get_rbf_status.toString());
-                } catch (Exception e) {
-                    Log.i("get_rbf_status", "++++++++++: " + e.getMessage());
-                    e.printStackTrace();
-                }
-                if (get_rbf_status != null) {
-                    aBoolean = get_rbf_status.toBoolean();
+            tetAddSpeed.setVisibility(View.VISIBLE);
+            try {
+                get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
+                Log.i("get_rbf_status", "___________: " + get_rbf_status.toString());
+            } catch (Exception e) {
+                Log.i("get_rbf_status", "++++++++++: " + e.getMessage());
+                e.printStackTrace();
+            }
+            if (get_rbf_status != null) {
+                aBoolean = get_rbf_status.toBoolean();
 
-                }
+            }
 //            }
 
         } else {
@@ -252,11 +299,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             return;
         }
 
-        String amount = getnewcreatTrsactionListBean.getAmount();
-        String fee = getnewcreatTrsactionListBean.getFee();
+        amount = getnewcreatTrsactionListBean.getAmount();
+        fee = getnewcreatTrsactionListBean.getFee();
         String description = getnewcreatTrsactionListBean.getDescription();
         tx_status = getnewcreatTrsactionListBean.getTxStatus();
-        List<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr = getnewcreatTrsactionListBean.getOutputAddr();
+        output_addr = getnewcreatTrsactionListBean.getOutputAddr();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
         txid = getnewcreatTrsactionListBean.getTxid();
         rowtx = getnewcreatTrsactionListBean.getTx();
@@ -421,8 +468,17 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     }
 
-
-    @OnClick({R.id.img_back, R.id.img_share, R.id.sig_trans, R.id.lin_getMoreaddress, R.id.tet_addSpeed})
+    private Runnable runnable = this::gotoConfirmOnHardware;
+    private void gotoConfirmOnHardware() {
+        Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("output", output_addr);
+        bundle.putString("amount", amount);
+        bundle.putString("fee", fee);
+        intentCon.putExtra("outputs", bundle);
+        startActivity(intentCon);
+    }
+    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -434,19 +490,9 @@ public class TransactionDetailsActivity extends BaseActivity {
                 intent.putExtra("rowTx", rowtx);
                 startActivity(intent);
                 break;
-            case R.id.sig_trans:
+            /*case R.id.sig_trans:
                 String strBtncontent = sigTrans.getText().toString();
-                if (strBtncontent.equals(getResources().getString(R.string.signature_trans))) {
-                    if (strwalletType.equals("standard")) {
-                        //sign input pass
-                        signInputpassDialog();
-
-                    } else {
-                        Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
-                        startActivity(intentCon);
-                    }
-
-                } else if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
+                if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
                     intent1.putExtra("rowTrsaction", tx_hash);
                     intent1.putExtra("rowTx", rowtx);
@@ -460,9 +506,15 @@ public class TransactionDetailsActivity extends BaseActivity {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
                     intent1.putExtra("checkTxid", txid);
                     startActivity(intent1);
+                } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
+                    if (strwalletType.equals("standard")) {
+                        //sign input pass
+                        signInputpassDialog();
+                    } else {
+                        showCustomerDialog();
+                    }
                 }
-
-                break;
+                break;*/
             case R.id.lin_getMoreaddress:
                 Intent intent1 = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
                 intent1.putExtra("jsondef_get", jsondef_get);
@@ -470,11 +522,13 @@ public class TransactionDetailsActivity extends BaseActivity {
                 break;
             case R.id.tet_addSpeed:
                 ifHaveRbf();
-
                 break;
         }
     }
-
+    private void showCustomerDialog() {
+        customerDialogFragment = new CustomerDialogFragment(TAG, runnable, "");
+        customerDialogFragment.show(getSupportFragmentManager(), "");
+    }
     //Radio broadcast
     private void braodcastTrsaction() {
         String signedRowTrsation = preferences.getString("signedRowtrsation", "");
@@ -592,5 +646,97 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
+    private boolean isInitialized() throws Exception {
+        boolean isInitialized = false;
+        try {
+            System.out.println("call is_initialized =====");
+            isInitialized = Daemon.commands.callAttr("is_initialized").toBoolean();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return isInitialized;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String action = intent.getAction(); // get the action of the coming intent
+        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
+                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
+                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            if (executable) {
+                Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
+                PyObject nfcHandler = nfc.get("NFCHandle");
+                nfcHandler.put("device", tags);
+                executable = false;
+            }
+            if (!TextUtils.isEmpty(pin)) {
+                CustomerDialogFragment.customerUI.put("pin", pin);
+                gotoConfirmOnHardware();
+                /*try {
+                    signedRawTx = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
+                    System.out.println("获取到签名" + signedRawTx);
+                    return;
+                } catch (ExecutionException | TimeoutException | InterruptedException e) {
+                    if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+                        Toast.makeText(this, "PIN码输入有误，请从新输入", Toast.LENGTH_SHORT).show();
+                    }
+                }*/
+            }
+
+            try {
+                boolean isInit = isInitialized();
+                if (isInit) {
+                    boolean pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
+                    System.out.println("java pin cashed===" + pinCached);
+                    // todo: get sgin
+                    CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
+                    new Thread(CustomerDialogFragment.futureTask).start();
+                    if (pinCached) {
+                        gotoConfirmOnHardware();
+                    }
+                    /*if (pinCached) {
+                        try {
+                            signedRawTx = futureTask.get(40, TimeUnit.SECONDS).toString();
+                            System.out.println("获取到签名" + signedRawTx);
+                        } catch (ExecutionException | TimeoutException | InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }*/
+
+                } else {
+                    // todo: Initialized
+                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                    startActivityForResult(intent1, REQUEST_ACTIVE);
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 5 && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                pin = data.getStringExtra("pin");
+                CustomerDialogFragment.pin = pin;
+            }
+        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
+                boolean isActive = data.getBooleanExtra("isActive", false);
+                if (isActive) {
+                    new Thread(() ->
+                            Daemon.commands.callAttr("init")
+                    ).start();
+                    Intent intent = new Intent(this, ActivatedProcessing.class);
+                    startActivity(intent);
+            }
+        }
+    }
 }
 

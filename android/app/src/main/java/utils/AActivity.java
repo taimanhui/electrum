@@ -1,7 +1,8 @@
 package utils;
 
-import android.app.Activity;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /** Base class for a console-based activity that will run Python code. sys.stdout and sys.stderr
  * will be directed to the output view whenever the activity is resumed. If the Python code
@@ -10,7 +11,7 @@ import android.os.Bundle;
  * If STDIN_ENABLED is passed to the Task constructor, sys.stdin will also be redirected whenever
  * the activity is resumed. The input box will initially be hidden, and will be displayed the
  * first time sys.stdin is read. */
-public  class AActivity extends Activity {
+public  class AActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);

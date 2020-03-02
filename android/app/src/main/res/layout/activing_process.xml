@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
@@ -27,7 +28,7 @@
         android:layout_height="200dp"
         android:layout_marginTop="61dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/touch_again"
+        app:srcCompat="@drawable/touch_again"
         android:contentDescription="@string/touch_again"/>
     <TextView
         android:layout_width="wrap_content"
@@ -37,18 +38,19 @@
         android:text="@string/touch_again"
         android:textColor="@color/text"
         android:textSize="@dimen/big_text_size" />
+
     <TextView
         android:id="@+id/connect_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="135dp"
-        android:gravity="center"
         android:layout_marginTop="22dp"
-        android:drawablePadding="@dimen/corner_radius"
-        android:text="@string/connect"
         android:drawableStart="@drawable/jinxingzhong"
+        android:drawablePadding="@dimen/corner_radius"
+        android:gravity="center"
+        android:text="@string/connect"
         android:textColor="@color/text"
-        android:textSize="@dimen/smaller_text_size"/>
+        android:textSize="@dimen/smaller_text_size" />
 
     <TextView
         android:id="@+id/pin_setting_state"

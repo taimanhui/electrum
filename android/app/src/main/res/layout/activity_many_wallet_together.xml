@@ -400,7 +400,7 @@
                             android:layout_marginTop="@dimen/dp_20"
                             android:text="@string/xiaomi_walet"
                             android:textColor="@color/text"
-                            android:textSize="@dimen/big_text_size" />
+                            android:textSize="@dimen/big_text_size"/>
 
                         <TextView
                             android:id="@+id/tet_many_key"

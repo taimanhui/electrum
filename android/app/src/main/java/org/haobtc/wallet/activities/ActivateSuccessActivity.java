@@ -1,8 +1,9 @@
 package org.haobtc.wallet.activities;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.content.Intent;
+import android.widget.Button;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -15,6 +16,8 @@ public class ActivateSuccessActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+    @BindView(R.id.bn_back)
+    Button bnBack;
 
     public int getLayoutId() {
         return R.layout.activated_successful;
@@ -22,9 +25,7 @@ public class ActivateSuccessActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-
     }
 
     @Override
@@ -32,13 +33,16 @@ public class ActivateSuccessActivity extends BaseActivity {
 
     }
 
-
-    @OnClick({R.id.img_back})
+    @OnClick({R.id.img_back, R.id.bn_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
+            case R.id.bn_back:
+               Intent intent = new Intent(this, CreateWalletPageActivity.class);
+               startActivity(intent);
+
         }
     }
 }

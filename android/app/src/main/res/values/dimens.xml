@@ -35,4 +35,11 @@
     <dimen name="dp_9">9dp</dimen>
     <dimen name="dp_45">45dp</dimen>
     <dimen name="dp_55">55dp</dimen>
+    <dimen name="dp_15">15dp</dimen>
+    <dimen name="dp_46">46dp</dimen>
+    <dimen name="dp_59">59dp</dimen>
+    <dimen name="sp_18">18sp</dimen>
+    <dimen name="dp_70">70dp</dimen>
+    <dimen name="dp_95">95dp</dimen>
+    <dimen name="dp_80">80dp</dimen>
 </resources>

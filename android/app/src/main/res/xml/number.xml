@@ -1,18 +1,19 @@
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
-    android:horizontalGap="0px"
-    android:keyWidth="31%p"
-    android:keyHeight="42dip"
-    android:verticalGap="1px">
+    android:horizontalGap="1dp"
+    android:keyWidth="33.33%p"
+    android:keyHeight="70dp"
+    android:verticalGap="1dp"
+    android:background="@android:color/darker_gray">
 
     <Row>
         <Key
-            android:codes="49"
+            android:codes="55"
             android:keyLabel="*" />
         <Key
-            android:codes="50"
+            android:codes="56"
             android:keyLabel="*" />
         <Key
-            android:codes="51"
+            android:codes="57"
             android:keyLabel="*" />
     </Row>
 
@@ -30,26 +31,28 @@
 
     <Row>
         <Key
-            android:codes="55"
+            android:codes="49"
             android:keyLabel="*" />
         <Key
-            android:codes="56"
+            android:codes="50"
             android:keyLabel="*" />
         <Key
-            android:codes="57"
+            android:codes="51"
             android:keyLabel="*" />
     </Row>
 
     <Row>
         <Key
             android:codes="-3"
-            android:keyLabel="完成" />
+            android:keyLabel="@string/confirm"
+            android:keyEdgeFlags="left"/>
         <Key
             android:codes="48"
-            android:keyLabel="*" />
+            android:keyLabel="" />
         <Key
             android:codes="-5"
-            android:keyIcon="@drawable/close_big_black" />
+            android:keyIcon="@drawable/close_big_black"
+            android:keyEdgeFlags="right"/>
     </Row>
 
 </Keyboard>

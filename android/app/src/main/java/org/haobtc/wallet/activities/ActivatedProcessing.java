@@ -1,17 +1,19 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.os.Handler;
 import android.widget.TextView;
 
 import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
@@ -20,6 +22,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class ActivatedProcessing extends BaseActivity {
     @BindView(R.id.img_back)
@@ -32,15 +35,37 @@ public class ActivatedProcessing extends BaseActivity {
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
         textViewConnect = findViewById(R.id.connect_state);
         textViewPIN = findViewById(R.id.pin_setting_state);
         textViewProcess = findViewById(R.id.activate_state);
+        if (Ble.getInstance().getConnetedDevices().size() != 0) {
+            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().startsWith("BixinKEY")){
+                runOnUiThread(this::processingState);
+            }
+        }
     }
 
     private void processingState() {
-
+        Drawable drawableStart = getDrawable(R.drawable.chenggong);
+        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+        textViewConnect.setCompoundDrawables(drawableStart, null, null, null);
+        while (true) {
+            if (!TextUtils.isEmpty(CustomerDialogFragment.pin)) {
+                CustomerDialogFragment.customerUI.put("pin", CustomerDialogFragment.pin);
+                break;
+            }
+        }
+        textViewPIN.setCompoundDrawables(drawableStart, null, null, null);
+        while (true) {
+            int state = CustomerDialogFragment.customerUI.callAttr("get_state").toInt();
+            if (state == 1) {
+                CustomerDialogFragment.customerUI.put("state", 0);
+                textViewProcess.setCompoundDrawables(drawableStart, null, null, null);
+                new Handler().postDelayed(this::startNewPage, 500);
+                break;
+            }
+        }
     }
 
     @Override
@@ -56,6 +81,9 @@ public class ActivatedProcessing extends BaseActivity {
             // enable nfc discovery for the app
             System.out.println("为本App启用NFC感应");
             NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
+        } else {
+            // use in udp
+            new Handler().postDelayed(this::processingState, 200);
         }
     }
 
@@ -76,6 +104,8 @@ public class ActivatedProcessing extends BaseActivity {
     }
 
     private void startNewPage() {//TODO:
+        Intent intent = new Intent(this, ActivateSuccessActivity.class);
+        startActivity(intent);
 
     }
 
@@ -86,22 +116,7 @@ public class ActivatedProcessing extends BaseActivity {
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            // get the i/o handle from the intent
-            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
-            PyObject nfcHandler = nfc.get("NFCHandle");
-            nfcHandler.put("device", tag);
-/*            Log.i("tag", "tag in nfc");
-            PyObject instance = nfcHandler.call();
-            PyObject tagInPy = instance.get("device");
-            Tag tag1 = Objects.requireNonNull(tagInPy).toJava(Tag.class);
-            Log.i("assert", tag1.equals(tag) + "");
-            IsoDep isoDep = IsoDep.get(tag);
-            System.out.println(isoDep);
-            instance.callAttr("open");
-            System.out.println(isoDep.getMaxTransceiveLength());*/
-
-            startNewPage();
+            processingState();
         }
     }
 

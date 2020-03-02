@@ -1468,7 +1468,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             except UnknownTxinType:
                 pass
 
-    def sign_transaction(self, tx: Transaction, password) -> Optional[PartialTransaction]:
+    def sign_transaction(self, tx: 'PartialTransaction', password) -> Optional[PartialTransaction]:
         if self.is_watching_only():
             return
         if not isinstance(tx, PartialTransaction):
@@ -1485,7 +1485,6 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             except InvalidPassword as e:
                 raise BaseException(e)
             except Exception as e:
-                print(f"{e}............")
                 #raise BaseException(e)
                 continue
         # remove sensitive info; then copy back details from temporary tx

@@ -89,7 +89,6 @@
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:src="@drawable/jiantou" />
-
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
@@ -142,7 +141,6 @@
                         android:layout_marginStart="@dimen/text_margin"
                         android:layout_marginEnd="@dimen/dp_16"
                         android:src="@drawable/jiantou" />
-
                 </LinearLayout>
 
                 <TextView

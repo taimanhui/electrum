@@ -1,12 +1,13 @@
 package org.haobtc.wallet.utils;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,7 +20,7 @@ public class StatusBarUtil {
      * @param activity
      */
     @TargetApi(19)
-    public static void transparencyBar(Activity activity) {
+    public static void transparencyBar(AppCompatActivity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = activity.getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -41,7 +42,7 @@ public class StatusBarUtil {
      * @param activity
      * @param colorId
      */
-    public static void setStatusBarColor(Activity activity, int colorId) {
+    public static void setStatusBarColor(AppCompatActivity activity, int colorId) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = activity.getWindow();
@@ -63,7 +64,7 @@ public class StatusBarUtil {
      * @param activity
      * @return 1:MIUUI 2:Flyme 3:android6.0
      */
-    public static int StatusBarLightMode(Activity activity) {
+    public static int StatusBarLightMode(AppCompatActivity activity) {
         int result = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (MIUISetStatusBarLightMode(activity, true)) {
@@ -85,7 +86,7 @@ public class StatusBarUtil {
      * @param activity
      * @param type     1:MIUUI 2:Flyme 3:android6.0
      */
-    public static void StatusBarLightMode(Activity activity, int type) {
+    public static void StatusBarLightMode(AppCompatActivity activity, int type) {
         if (type == 1) {
             MIUISetStatusBarLightMode(activity, true);
         } else if (type == 2) {
@@ -99,7 +100,7 @@ public class StatusBarUtil {
     /**
      * Status bar dark mode, clear the status bar black text and icon of MIUI, flyme or above version 6.0
      */
-    public static void StatusBarDarkMode(Activity activity, int type) {
+    public static void StatusBarDarkMode(AppCompatActivity activity, int type) {
         if (type == 1) {
             MIUISetStatusBarLightMode(activity, false);
         } else if (type == 2) {
@@ -150,7 +151,7 @@ public class StatusBarUtil {
      * @param dark     Set the status bar text and icon color to dark
      * @return boolean if change is true
      */
-    public static boolean MIUISetStatusBarLightMode(Activity activity, boolean dark) {
+    public static boolean MIUISetStatusBarLightMode(AppCompatActivity activity, boolean dark) {
         boolean result = false;
         Window window = activity.getWindow();
         if (window != null) {

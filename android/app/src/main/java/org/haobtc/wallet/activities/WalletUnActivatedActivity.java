@@ -1,7 +1,7 @@
 package org.haobtc.wallet.activities;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,6 +17,8 @@ public class WalletUnActivatedActivity extends BaseActivity {
     public static final String TAG = "org.wallet.activities.WalletUnActivatedActivity";
     @BindView(R.id.img_back)
     ImageView imgBack;
+    @BindView(R.id.button_activate)
+    Button buttonActivate;
 
 
     @Override
@@ -25,9 +27,7 @@ public class WalletUnActivatedActivity extends BaseActivity {
     }
 
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-
     }
 
     @Override
@@ -40,12 +40,19 @@ public class WalletUnActivatedActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
+                Intent intent1 = new Intent();
+                intent1.putExtra("isActive", false);
+                setResult(Activity.RESULT_OK, intent1);
                 finish();
                 break;
             case R.id.button_activate:
-                Intent intent = new Intent(this, TouchHardwareActivity.class);
+                /*Intent intent = new Intent(this, TouchHardwareActivity.class);
                 intent.putExtra(TouchHardwareActivity.FROM, TAG);
-                startActivity(intent);
+                startActivity(intent);*/
+                Intent intent = new Intent();
+                intent.putExtra("isActive", true);
+                setResult(Activity.RESULT_OK, intent);
+                finish();
                 break;
         }
     }

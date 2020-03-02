@@ -1,11 +1,11 @@
 package org.haobtc.wallet.activities;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
@@ -14,13 +14,15 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,22 +34,27 @@ import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.adapter.CosignerAdapter;
-import org.haobtc.wallet.utils.CommonUtils;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
+import org.haobtc.wallet.fragment.BluetoothFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.UUID;
+
+import cn.com.heaton.blelibrary.ble.Ble;
+import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
+import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 public class CoSignerAddActivity extends BaseActivity implements View.OnClickListener {
     private static final int REQUEST_CODE = 0;
     private Button buttonComplete, buttonSweep, buttonPaste;
     private LinearLayout buttonAdd;
     private RecyclerView recyclerView;
-    private PopupWindow popupWindow;
-    private View rootView;
-    EditText editTextPublicKey;
+    private Dialog dialogAdd;
+    private EditText editTextPublicKey;
     private Intent intent;
     private int addNum = 0;
     private RxPermissions rxPermissions;
@@ -56,11 +63,11 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
     private ArrayList<Integer> nameNums;
     private String strContent;
     private CosignerAdapter cosignerAdapter;
-    public static final String WALLET_NAME = "org.haobtc.wallet.activities.walletName";
     private String nameExtra;
     private ImageView imgBack;
     private MyDialog myDialog;
-
+    public static final String WALLET_NAME = "org.haobtc.wallet.activities.walletName";
+    public final static String TAG = "org.haobtc.wallet.activities.CoSignerAddActivity";
 
     @Override
     public int getLayoutId() {
@@ -77,7 +84,7 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
         nameExtra = intent.getStringExtra(WALLET_NAME);
         buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
         buttonComplete.setEnabled(false);
-        buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
+        buttonComplete.setBackground(getDrawable(R.drawable.little_radio_qian));
         buttonAdd.setOnClickListener(this);
         buttonComplete.setOnClickListener(this);
         imgBack.setOnClickListener(this);
@@ -116,69 +123,60 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
             public void afterTextChanged(Editable s) {
                 if (s.length() != 0) {
                     buttonSweep.setText(R.string.clear);
-                    buttonSweep.setTextColor(getResources().getColor(android.R.color.white));
-                    buttonSweep.setBackground(getResources().getDrawable(R.drawable.button_bk_small_grey_big_radius));
+                    buttonSweep.setTextColor(getColor(android.R.color.white));
+                    buttonSweep.setBackground(getDrawable(R.drawable.button_bk_small_grey_big_radius));
                     buttonSweep.setCompoundDrawables(null, null, null, null);
                     buttonSweep.setGravity(Gravity.CENTER);
 
                     buttonPaste.setText(R.string.confirm);
-                    buttonPaste.setTextColor(getResources().getColor(android.R.color.white));
-                    buttonPaste.setBackground(getResources().getDrawable(R.drawable.button_bk_small_big_radius));
+                    buttonPaste.setTextColor(getColor(android.R.color.white));
+                    buttonPaste.setBackground(getDrawable(R.drawable.button_bk_small_big_radius));
                     buttonPaste.setCompoundDrawables(null, null, null, null);
                     buttonPaste.setGravity(Gravity.CENTER);
 
                 } else {
                     buttonSweep.setText(R.string.sweep);
-                    buttonSweep.setTextColor(getResources().getColor(R.color.button_bk));
-                    Drawable sweepIcon = getResources().getDrawable(R.drawable.saoyisao);
+                    buttonSweep.setTextColor(getColor(R.color.button_bk));
+                    Drawable sweepIcon = getDrawable(R.drawable.saoyisao);
                     sweepIcon.setBounds(0, 0, sweepIcon.getMinimumWidth(), sweepIcon.getMinimumHeight());
                     buttonSweep.setCompoundDrawables(sweepIcon, null, null, null);
-                    buttonSweep.setBackground(new ColorDrawable(getResources().getColor(R.color.paste_bk)));
+                    buttonSweep.setBackground(new ColorDrawable(getColor(R.color.paste_bk)));
                     buttonSweep.setGravity(Gravity.CENTER);
 
                     buttonPaste.setText(R.string.paste);
-                    buttonPaste.setTextColor(getResources().getColor(R.color.button_bk));
-                    Drawable pasteIcon = getResources().getDrawable(R.drawable.zhantie);
+                    buttonPaste.setTextColor(getColor(R.color.button_bk));
+                    Drawable pasteIcon = getDrawable(R.drawable.zhantie);
                     pasteIcon.setBounds(0, 0, pasteIcon.getMinimumWidth(), pasteIcon.getMinimumHeight());
                     buttonPaste.setCompoundDrawables(pasteIcon, null, null, null);
-                    buttonPaste.setBackground(new ColorDrawable(getResources().getColor(R.color.paste_bk)));
+                    buttonPaste.setBackground(new ColorDrawable(getColor(R.color.paste_bk)));
                     buttonPaste.setGravity(Gravity.CENTER);
                 }
 
             }
         });
-        popupWindow = new PopupWindow();
-        popupWindow.setContentView(view);
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(null, ""));
-        rootView = LayoutInflater.from(this).inflate(R.layout.add_cosigner, null);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setFocusable(true);
-        popupWindow.setOnDismissListener(() -> {
-            setBackgroundAlpha(1f);
-        });
-        popupWindow.showAtLocation(rootView, Gravity.BOTTOM, 0, 0);
         buttonUseHardware.setOnClickListener(this);
         buttonSweep.setOnClickListener(this);
         buttonPaste.setOnClickListener(this);
         imageViewCancel.setOnClickListener(this);
+        dialogAdd = new Dialog(this, R.style.dialog);
+        dialogAdd.setContentView(view);
+        Window window = dialogAdd.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogAdd.show();
+
 
     }
 
-    public void setBackgroundAlpha(float bgAlpha) {
-        WindowManager.LayoutParams lp = getWindow()
-                .getAttributes();
-        lp.alpha = bgAlpha;
-        getWindow().setAttributes(lp);
-    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bn_add_cosigner:
                 showPopupAddCosigner();
-                setBackgroundAlpha(0.5f);
                 break;
 
             case R.id.bn_complete_add_cosigner:
@@ -204,7 +202,8 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                 break;
             case R.id.bn_use_hardware_add_cosigner_popup:
                 Intent intent1 = new Intent(this, TouchHardwareActivity.class);
-                startActivity(intent1);
+                intent1.putExtra(TouchHardwareActivity.FROM, TAG);
+                startActivityForResult(intent1, 2);
                 break;
             case R.id.sweep_cosigner_popup:
                 String bnText = buttonSweep.getText().toString();
@@ -267,14 +266,14 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                             addNum = addNum - 1;
                             buttonAdd.setVisibility(View.VISIBLE);
                             buttonComplete.setText(String.format(Locale.CHINA, getResources().getString(R.string.finish) + "（%d-%d)", addNum, cosignerNum));
-                            buttonComplete.setBackground(getResources().getDrawable(R.drawable.little_radio_qian));
+                            buttonComplete.setBackground(getDrawable(R.drawable.little_radio_qian));
                             buttonComplete.setEnabled(false);
 
                         }
                     });
 
                     //todo:
-                    popupWindow.dismiss();
+                    dialogAdd.dismiss();
 
                 } else {
                     //get Shear plate TODO：
@@ -288,14 +287,14 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                 }
                 break;
             case R.id.cancel_cosigner_add_popup:
-                popupWindow.dismiss();
+                dialogAdd.dismiss();
                 break;
             case R.id.img_back:
                 finish();
                 break;
 
             default:
-                popupWindow.dismiss();
+                dialogAdd.dismiss();
 
         }
     }
@@ -310,6 +309,10 @@ public class CoSignerAddActivity extends BaseActivity implements View.OnClickLis
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 editTextPublicKey.setText(content);
             }
+
+        }
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+            editTextPublicKey.setText(data.getStringExtra("xpub"));
         }
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 
 import org.haobtc.wallet.R;
@@ -22,7 +23,7 @@ public class NumKeyboardUtil {
         keyboardView = (KeyboardView) act.findViewById(R.id.keyboard_view);
         keyboardView.setKeyboard(k);
         keyboardView.setEnabled(true);
-        keyboardView.setPreviewEnabled(true);
+        keyboardView.setPreviewEnabled(false);
         keyboardView.setOnKeyboardActionListener(listener);
 //        keyboardView.setBackgroundColor(Color.parseColor("#f1f1f1"));
 
@@ -60,7 +61,7 @@ public class NumKeyboardUtil {
         //The codes of some special operation keys are fixed, such as completion, fallback, etc
         @Override
         public void onKey(int primaryCode, int[] keyCodes) {
-            Editable editable = ed.getText();
+            Editable editable = ed.getEditableText();
             int start = ed.getSelectionStart();
             if (primaryCode == Keyboard.KEYCODE_DELETE) {// exit
                 if (editable != null && editable.length() > 0) {
@@ -70,6 +71,8 @@ public class NumKeyboardUtil {
                 }
             } else if (primaryCode == Keyboard.KEYCODE_CANCEL) {// finish
                 hideKeyboard();
+            } else if (primaryCode == 48) {
+                Log.i("Disable", "zero is useless" );
             } else { //The number to be entered is now in the edit box
                 editable.insert(start, Character.toString((char) primaryCode));
             }

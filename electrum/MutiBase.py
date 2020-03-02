@@ -29,7 +29,7 @@ from typing import List, TYPE_CHECKING, Tuple, NamedTuple, Any, Dict, Optional
 from . import bitcoin
 from . import keystore
 from . import mnemonic
-from .bip32 import is_bip32_derivation, xpub_type, normalize_bip32_derivation
+from .bip32 import is_bip32_derivation, xpub_type, normalize_bip32_derivation, BIP32Node, root_fp_and_der_prefix_from_xkey
 from .keystore import bip44_derivation, purpose48_derivation
 from .wallet import (Imported_Wallet, Standard_Wallet, Multisig_Wallet,
                      wallet_types, Wallet, Abstract_Wallet)
@@ -92,7 +92,7 @@ class MutiBase(Logger):
                 d = {
                     'type': 'hardware',
                     'hw_type': 'trezor',
-                    'derivation': '0',
+                    'derivation': bip44_derivation(0),
                     'xpub': xpub,
                     'label': 'device_info.label',
                 }

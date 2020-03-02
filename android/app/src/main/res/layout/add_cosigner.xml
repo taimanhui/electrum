@@ -24,7 +24,7 @@
             android:layout_gravity="end"
             android:layout_marginEnd="15.3dp"
             android:padding="8dp"
-            android:src="@drawable/back" />
+            app:srcCompat="@drawable/back" />
 
         <TextView
             android:id="@+id/tv_in_tb2"
