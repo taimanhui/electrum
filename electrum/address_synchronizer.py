@@ -40,7 +40,7 @@ from .logging import Logger
 
 if TYPE_CHECKING:
     from .network import Network
-    from .json_db import JsonDB
+    from .wallet_db import WalletDB
 
 
 TX_HEIGHT_FUTURE = -3
@@ -70,7 +70,7 @@ class AddressSynchronizer(Logger):
     inherited by wallet
     """
 
-    def __init__(self, db: 'JsonDB'):
+    def __init__(self, db: 'WalletDB'):
         self.db = db
         self.network = None  # type: Network
         Logger.__init__(self)
@@ -104,7 +104,8 @@ class AddressSynchronizer(Logger):
         self.load_unverified_transactions()
         self.remove_local_transactions_we_dont_have()
 
-    def is_mine(self, address) -> bool:
+    def is_mine(self, address: Optional[str]) -> bool:
+        if not address: return False
         return self.db.is_addr_in_history(address)
 
     def get_addresses(self):
@@ -194,7 +195,7 @@ class AddressSynchronizer(Logger):
         conflicting_txns = set()
         with self.transaction_lock:
             for txin in tx.inputs():
-                if txin.is_coinbase():
+                if txin.is_coinbase_input():
                     continue
                 prevout_hash = txin.prevout.txid.hex()
                 prevout_n = txin.prevout.out_idx
@@ -228,7 +229,7 @@ class AddressSynchronizer(Logger):
             # BUT we track is_mine inputs in a txn, and during subsequent calls
             # of add_transaction tx, we might learn of more-and-more inputs of
             # being is_mine, as we roll the gap_limit forward
-            is_coinbase = tx.inputs()[0].is_coinbase()
+            is_coinbase = tx.inputs()[0].is_coinbase_input()
             tx_height = self.get_tx_height(tx_hash).height
             if not allow_unrelated:
                 # note that during sync, if the transactions are not properly sorted,
@@ -279,7 +280,7 @@ class AddressSynchronizer(Logger):
                                 self._get_addr_balance_cache.pop(addr, None)  # invalidate cache
                             return
             for txi in tx.inputs():
-                if txi.is_coinbase():
+                if txi.is_coinbase_input():
                     continue
                 prevout_hash = txi.prevout.txid.hex()
                 prevout_n = txi.prevout.out_idx
@@ -314,7 +315,7 @@ class AddressSynchronizer(Logger):
             if tx is not None:
                 # if we have the tx, this branch is faster
                 for txin in tx.inputs():
-                    if txin.is_coinbase():
+                    if txin.is_coinbase_input():
                         continue
                     prevout_hash = txin.prevout.txid.hex()
                     prevout_n = txin.prevout.out_idx
@@ -583,13 +584,17 @@ class AddressSynchronizer(Logger):
             return cached_local_height
         return self.network.get_local_height() if self.network else self.db.get('stored_height', 0)
 
-    def add_future_tx(self, tx: Transaction, num_blocks: int) -> None:
+    def add_future_tx(self, tx: Transaction, num_blocks: int) -> bool:
         assert num_blocks > 0, num_blocks
         with self.lock:
-            self.add_transaction(tx)
-            self.future_tx[tx.txid()] = num_blocks
+            tx_was_added = self.add_transaction(tx)
+            if tx_was_added:
+                self.future_tx[tx.txid()] = num_blocks
+            return tx_was_added
 
     def get_tx_height(self, tx_hash: str) -> TxMinedInfo:
+        if tx_hash is None:  # ugly backwards compat...
+            return TxMinedInfo(height=TX_HEIGHT_LOCAL, conf=0)
         with self.lock:
             verified_tx_mined_info = self.db.get_verified_tx(tx_hash)
             if verified_tx_mined_info:
@@ -758,7 +763,8 @@ class AddressSynchronizer(Logger):
         for prevout_str, v in coins.items():
             tx_height, value, is_cb = v
             prevout = TxOutpoint.from_str(prevout_str)
-            utxo = PartialTxInput(prevout=prevout)
+            utxo = PartialTxInput(prevout=prevout,
+                                  is_coinbase_output=is_cb)
             utxo._trusted_address = address
             utxo._trusted_value_sats = value
             utxo.block_height = tx_height
@@ -825,7 +831,7 @@ class AddressSynchronizer(Logger):
                     continue
                 if nonlocal_only and utxo.block_height == TX_HEIGHT_LOCAL:
                     continue
-                if (mature_only and utxo.prevout.is_coinbase()
+                if (mature_only and utxo.is_coinbase_output()
                         and utxo.block_height + COINBASE_MATURITY > mempool_height):
                     continue
                 coins.append(utxo)
