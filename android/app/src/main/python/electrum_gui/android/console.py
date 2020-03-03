@@ -219,7 +219,7 @@ class AndroidCommands(commands.Commands):
 
         for tx in to_delete:
             self.wallet.remove_transaction(tx)
-        self.wallet.storage.write()
+        self.wallet.save_db()
         # need to update at least: history_list, utxo_list, address_list
         #self.parent.need_update.set()
 
@@ -1050,15 +1050,18 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('use_change', status_change, False)
         self.wallet.use_change = status_change
 
-    def sign_tx(self, tx) -> str:
+    def sign_tx(self, tx, password=None):
         try:
             self._assert_wallet_isvalid()
-            ptx = tx_from_any(bytes.fromhex(tx))
-            stx = self.wallet.sign_transaction(ptx, None)
-            self.do_save(stx)
-            raw_tx = stx.serialize_as_bytes().hex()
-            return self.get_tx_info_from_raw(raw_tx)
-        except Exception as e:
+            old_tx = tx
+            tx = tx_from_any(tx)
+            tx.deserialize()
+            sign_tx = self.wallet.sign_transaction(tx, password)
+            print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
+            self.do_save(sign_tx)
+            #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
+            return sign_tx
+        except BaseException as e:
             raise BaseException(e)
 
     ##connection with terzorlib#########################

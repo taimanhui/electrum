@@ -20,7 +20,7 @@ signed_segwit_blob = "01000000000101b66d722484f2db63e827ebf41d02684fed0c6550e850
 
 signed_blob_signatures = ['3046022100a82bbc57a0136751e5433f41cf000b3f1a99c6744775e76ec764fb78c54ee100022100f9e80b7de89de861dc6fb0c1429d5da72c2b6b2ee2406bc9bfb1beedd729d98501', ]
 
-class TestBCDataStream(SequentialTestCase):
+class TestBCDataStream(ElectrumTestCase):
 
     def test_compact_size(self):
         s = transaction.BCDataStream()
@@ -55,31 +55,13 @@ class TestBCDataStream(SequentialTestCase):
 
     def test_bytes(self):
         s = transaction.BCDataStream()
-        with self.assertRaises(transaction.SerializationError):
-            s.read_bytes(1)
         s.write(b'foobar')
         self.assertEqual(s.read_bytes(3), b'foo')
         self.assertEqual(s.read_bytes(2), b'ba')
-        with self.assertRaises(transaction.SerializationError):
-            s.read_bytes(4)
-        self.assertEqual(s.read_bytes(0), b'')
-        self.assertEqual(s.read_bytes(1), b'r')
-        self.assertEqual(s.read_bytes(0), b'')
+        self.assertEqual(s.read_bytes(4), b'r')
+        self.assertEqual(s.read_bytes(1), b'')
 
-    def test_bool(self):
-        s = transaction.BCDataStream()
-        s.write(b'f\x00\x00b')
-        self.assertTrue(s.read_boolean())
-        self.assertFalse(s.read_boolean())
-        self.assertFalse(s.read_boolean())
-        self.assertTrue(s.read_boolean())
-        s.write_boolean(True)
-        s.write_boolean(False)
-        self.assertEqual(b'\x01\x00', s.read_bytes(2))
-        self.assertFalse(s.can_read_more())
-
-
-class TestTransaction(SequentialTestCase):
+class TestTransaction(ElectrumTestCase):
 
     def test_tx_update_signatures(self):
         tx = tx_from_any("cHNidP8BAFUBAAAAASpcmpT83pj1WBzQAWLGChOTbOt1OJ6mW/OGM7Qk60AxAAAAAAD/////AUBCDwAAAAAAGXapFCMKw3g0BzpCFG8R74QUrpKf6q/DiKwAAAAAAAAA")
