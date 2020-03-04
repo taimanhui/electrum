@@ -218,12 +218,12 @@
     <string name="creat_finish">创建完成</string>
     <string name="please_input">请输入</string>
     <string name="together_num">共管人数</string>
-    <string name="public_key">创建共管钱包需添加5位公管人的公钥</string>
+    <string name="public_key">创建共管钱包需添加5位共管人的公钥</string>
     <string name="signed_num">签名人数</string>
-    <string name="tet_tips">共管钱包需要5位公管人中的3位签名</string>
+    <string name="tet_tips">共管钱包需要5位共管人中的3位签名</string>
     <string name="title_name">图图的钥匙</string>
     <string name="add_bixin_key">添加BixinKEY</string>
-    <string name="xiaomi_walet" tools:ignore="TypographyDashes">小米的钱包3-5</string>
+    <string name="xiaomi_walet">小米的钱包3-5</string>
     <string name="choose_onekey">可使用3个BixinKEY中任意一个授权转账</string>
     <string name="creat_personal">创建个人钱包</string>
     <string name="set_two_num">设置备份数</string>
@@ -249,7 +249,7 @@
     <string name="confrim_time">确认时间</string>
     <string name="broad_text">交易需广播到主网确认方能完成发币</string>
     <string name="input_btc_address">请输入BTC地址</string>
-    <string name="_1_27354789">+1.273589(未确认)</string>
+    <string name="unconfirm">(未确认)</string>
     <string name="get_bi_address">收币地址</string>
     <string name="get_bi_num">收币数量</string>
     <string name="mbtc_cny">可用 100mBTC = 5400.02CNY</string>
@@ -284,7 +284,7 @@
     <string name="somemore_wallet">**的钱包</string>
     <string name="bixinkey_message">BixinKEY信息</string>
     <string name="bixinkey">小米的BixinKEY</string>
-    <string name="verson_update">固件版本（升级）</string>将手机与BixinKEY贴合
+    <string name="verson_update">固件版本（升级）</string>
     <string name="v_1_2_3">V 1.2.3</string>
     <string name="fix_pin">修改PIN码</string>
     <string name="nopass_pay">免密支付</string>
@@ -354,7 +354,6 @@
     <string name="user_agreement">用户协议</string>
     <string name="syncnneth">同步服务器仅存储钱包公钥、名称等公开信息，不存储任何私钥和个人信息。</string>
     <string name="electrum_tips">币信冷钱包使用Electrum开源分布式节点进行交易广播，和链上信息获取</string>
-    <string name="btc_com">BTC.com/</string>
     <string name="get_btc_price">选择第三方服务获取比特币价格</string>
     <string name="blockchain_choose">区块链浏览器选择</string>
     <string name="check_trsaction_msg">选择区块链浏览器查看链上交易信息</string>
@@ -380,6 +379,18 @@
     <string name="msg_get_wrong">信息获取失败</string>
     <string name="net_dont_use">当前网络不可用</string>
     <string name="have_word">该词已存在</string>
+    <string name="select_wallet">选择钱包</string>
+    <string name="please_selectwallet">请选择钱包</string>
+    <!--  Last translation  -->
+    <string name="backup_succse">备份成功</string>
+    <string name="none_wallet">暂无钱包</string>
+    <string name="setwallet_pass">设置钱包密码</string>
+    <string name="input_pass_format1">密码只能且必须包含大写字母、小写字母、数字和标准符号</string>
+    <string name="intput_pass_format2">本钱包不保留钱包的任何信息，密码没有找回途径，请务必牢记钱包密码</string>
+    <string name="helpword_wrong">助记词输入有误，请检查后更改</string>
+    <string name="sign_failed">签名失败</string>
+    <string name="passtype_wrong">密码格式输入错误</string>
+
 
     <string name="verify_pin">验证PIN码成功</string>
     <string name="sign_successful">签名成功</string>

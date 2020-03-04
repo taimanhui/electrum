@@ -1,15 +1,21 @@
 package org.haobtc.wallet.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chaquo.python.PyObject;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.set.recovery_set.ConfirmBackupActivity;
+import org.haobtc.wallet.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +34,7 @@ public class MessageManagerActivity extends BaseActivity {
     TextView bnPaste;
     @BindView(R.id.btn_Recovery1)
     Button btnRecovery1;
+    private String stfRecovery;
 
     public int getLayoutId() {
         return R.layout.layout;
@@ -36,6 +43,8 @@ public class MessageManagerActivity extends BaseActivity {
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        stfRecovery = intent.getStringExtra("stfRecovery");
 
     }
 
@@ -56,7 +65,27 @@ public class MessageManagerActivity extends BaseActivity {
             case R.id.bn_paste1:
                 break;
             case R.id.btn_Recovery1:
-                mIntent(ConfirmBackupActivity.class);
+                String strBackuptext = editText.getText().toString();
+                if (TextUtils.isEmpty(strBackuptext)){
+                    mToast(getResources().getString(R.string.please_clode_text));
+                    return;
+                }
+                PyObject recovery_wallet = null;
+                try {
+                    recovery_wallet = Daemon.commands.callAttr("recovery_wallet", stfRecovery);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (recovery_wallet != null) {
+                    boolean aBoolean = recovery_wallet.toBoolean();
+                    Log.i("aBoolean", "aBoolean: "+aBoolean);
+                    if (aBoolean){
+                        mToast(getResources().getString(R.string.recovery_succse));
+                    }
+
+                }
+
+//                mIntent(ConfirmBackupActivity.class);
                 break;
         }
     }

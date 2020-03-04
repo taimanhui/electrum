@@ -31,7 +31,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.transaction.CheckChainDetailWebActivity"/>
+
+        <activity android:name=".activities.onlywallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity"/>
+        <activity android:name=".activities.onlywallet.mnemonic_word.CreatePersonalHelpPassActivity" />
+        <activity android:name=".activities.onlywallet.mnemonic_word.CreateHelpWordWalletActivity" />
+        <activity android:name=".activities.transaction.CheckChainDetailWebActivity" />
         <activity android:name=".activities.set.BlockChooseActivity" />
         <activity android:name=".activities.onlywallet.CheckWalletDetailActivity" />
         <activity android:name=".activities.set.QuetationChooseActivity" />

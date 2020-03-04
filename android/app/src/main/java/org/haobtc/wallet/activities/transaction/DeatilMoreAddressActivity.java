@@ -40,6 +40,7 @@ public class DeatilMoreAddressActivity extends BaseActivity {
         addressList = (List) getIntent().getSerializableExtra("listdetail");
         Log.i("jsondef_get", "initView: "+ addressList);
 
+
     }
 
     @Override

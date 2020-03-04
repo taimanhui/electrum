@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Global;
 import com.chaquo.python.PyObject;
 
@@ -23,8 +24,9 @@ public class Daemon {
 
     public void onCallback(String event, String msg) {
         Log.i("onCallback", "=================="+event +"   ============================    "+ msg);
-
-        if (event.equals("5")){
+        if (event.equals("update_status")){
+            EventBus.getDefault().post(new SecondEvent(msg));
+        }else{
             EventBus.getDefault().post(new FirstEvent("22"));
         }
 

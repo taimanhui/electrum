@@ -86,7 +86,7 @@ public class LunchActivity extends BaseActivity {
         String language = preferences.getString("language", "");
         judgeLanguage(language);
 
-        boolean jumpOr = preferences.getBoolean("JumpOr", true);
+        boolean jumpOr = preferences.getBoolean("JumpOr", false);
         if (preferences.getBoolean(FIRST_RUN, false)) {
             Intent intent = new Intent(LunchActivity.this, MainActivity.class);
             startActivity(intent);
@@ -94,11 +94,11 @@ public class LunchActivity extends BaseActivity {
 
         } else {
             if (jumpOr) {
-                //splash
-                initGuide();
-            } else {
                 //CreatWallet
                 initCreatWallet();
+            } else {
+                //splash
+                initGuide();
             }
 
         }

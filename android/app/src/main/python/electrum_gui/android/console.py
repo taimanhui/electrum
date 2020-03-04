@@ -219,7 +219,7 @@ class AndroidCommands(commands.Commands):
 
         for tx in to_delete:
             self.wallet.remove_transaction(tx)
-        self.wallet.storage.write()
+        self.wallet.save_db()
         # need to update at least: history_list, utxo_list, address_list
         #self.parent.need_update.set()
 
@@ -493,7 +493,7 @@ class AndroidCommands(commands.Commands):
     def mktx(self, outputs, message):
         try:
             self._assert_wallet_isvalid()
-            outputs_addrs = self.parse_output(outputs)
+            #outputs_addrs = self.parse_output(outputs)
             #self.do_save(outputs_addrs, message, self.tx)
             tx = tx_from_any(self.tx)
             tx.deserialize()

@@ -62,7 +62,7 @@ public class QuetationChooseActivity extends BaseActivity {
             e.printStackTrace();
         }
         if (get_exchanges!=null){
-
+            Log.i("get_exchanges", "getExchangelist: "+get_exchanges);
             List<PyObject> pyObjects = get_exchanges.asList();
             for (int i = 0; i < pyObjects.size(); i++) {
                 CNYBean cnyBean = new CNYBean(pyObjects.get(i).toString(), false);

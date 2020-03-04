@@ -1,16 +1,6 @@
 package org.haobtc.wallet.activities.base;
 
 import android.app.Application;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
-import org.haobtc.wallet.BuildConfig;
-import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.Global;
-
 
 import java.util.UUID;
 

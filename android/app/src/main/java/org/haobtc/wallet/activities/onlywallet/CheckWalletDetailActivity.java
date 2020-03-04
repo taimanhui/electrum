@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.MyDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,10 +51,11 @@ public class CheckWalletDetailActivity extends BaseActivity {
     @BindView(R.id.tet_Copy)
     TextView tetCopy;
     @BindView(R.id.tet_deleteWallet)
-    TextView tetDeleteWallet;
+    Button tetDeleteWallet;
     private String wallet_name;
     private Dialog dialogBtom;
     private PyObject delete_wallet;
+    private MyDialog myDialog;
 
     @Override
     public int getLayoutId() {
@@ -62,6 +65,7 @@ public class CheckWalletDetailActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        myDialog = MyDialog.showDialog(CheckWalletDetailActivity.this);
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
         tetName.setText(wallet_name);
@@ -129,12 +133,15 @@ public class CheckWalletDetailActivity extends BaseActivity {
         //delete
         //cancel dialog
         view.findViewById(R.id.tet_ConfirmDelete).setOnClickListener(v -> {
+            myDialog.show();
             Log.i("wallet_name", "showDialogs: "+wallet_name);
             try {
                 Daemon.commands.callAttr("delete_wallet", wallet_name);
                 EventBus.getDefault().post(new FirstEvent("11"));
                 mToast(getResources().getString(R.string.delete_succse));
-                Log.i("delete_wallet", "-----------: ");
+
+                myDialog.dismiss();
+                finish();
             } catch (Exception e) {
                 Log.i("delete_wallet", "===========: "+e.getMessage());
                 e.printStackTrace();

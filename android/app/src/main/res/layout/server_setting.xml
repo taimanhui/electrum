@@ -270,7 +270,7 @@
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:paddingEnd="@dimen/dp_16"
-                        android:text="@string/bixin_com"
+                        tools:text="bixin.com"
                         android:textColor="@color/button_bk_disableok"
                         android:textSize="@dimen/sp_14"
                         tools:ignore="RtlSymmetry" />
