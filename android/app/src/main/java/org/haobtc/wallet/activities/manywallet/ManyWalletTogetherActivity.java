@@ -113,7 +113,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     @BindView(R.id.img_Progree3)
     ImageView imgProgree3;
     @BindView(R.id.card_viewOne)
-    RelativeLayout cardViewOne;
+    CardView cardViewOne;
     @BindView(R.id.card_viewThree)
     CardView cardViewThree;
     @BindView(R.id.recl_BinxinKey)
@@ -332,7 +332,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 myDialog.dismiss();
                 //Generate QR code
                 mGeneratecode();
-
 
                 cardViewOne.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);

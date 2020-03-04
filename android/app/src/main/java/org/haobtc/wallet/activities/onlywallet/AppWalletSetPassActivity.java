@@ -77,20 +77,26 @@ public class AppWalletSetPassActivity extends BaseActivity {
                 String strPass2 = edtPass2.getText().toString();
                 if (TextUtils.isEmpty(strPass1)) {
                     mToast(getResources().getString(R.string.set_pass));
+                    myDialog.dismiss();
                     return;
                 }
                 if (TextUtils.isEmpty(strPass2)) {
                     mToast(getResources().getString(R.string.set_pass_second));
+                    myDialog.dismiss();
                     return;
                 }
                 if (!strPass1.equals(strPass2)) {
                     mToast(getResources().getString(R.string.two_different_pass));
+                    myDialog.dismiss();
                     return;
                 }
-                if (!isPassType(strPass1)){
-                    mToast(getResources().getString(R.string.passtype_wrong));
-                    return;
-                }
+//                boolean passType = isPassType(strPass1);
+//                Log.i("passType", "passType: "+passType);
+//                if (!passType){
+//                    mToast(getResources().getString(R.string.passtype_wrong));
+//                    myDialog.dismiss();
+//                    return;
+//                }
                 if (!TextUtils.isEmpty(strSeed)) {
                     try {
                         Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));

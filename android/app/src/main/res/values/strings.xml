@@ -403,6 +403,17 @@
     <string name="TestNet">TestNet</string>
     <string name="RegTest">RegTest</string>
     <string name="sign_failed">Signature failed</string>
-    <string name="passtype_wrong">密码格式输入错误</string>
+    <string name="passtype_wrong">Password format input error</string>
+    <string name="verify_pin">PIN verification succeeded</string>
+    <string name="sign_successful">Successful sign</string>
+    <string name="reading">Read public key</string>
+    <string name="reading_exception">BixinKEY Read error</string>
+    <string name="select_ble_device">Select Bluetooth device to connect</string>
+    <string name="tip_ble">Please turn on bixinkey and get close to your phone</string>
+    <string name="reading_dot">Read public key...</string>
+    <string name="warning">The necessary permissions of this app are denied, which may affect your normal use</string>
+    <string name="ble_device_connecting">Bluetooth device connecting</string>
+    <string name="tip_ble_bonding">Please open bixinkey to confirm the pairing code</string>
+    <string name="confirm_pub">Confirm public key</string>
 
 </resources>

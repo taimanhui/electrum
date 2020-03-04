@@ -168,6 +168,7 @@ public class WheelViewpagerFragment extends Fragment {
                         getWalletMsg();
                         edit.putString(name, strPassword);
                         edit.apply();
+                        Log.i("sldjksdksndksn", "9999999: ");
                     } catch (Exception e) {
                         Log.i("lllllllll", "json++: " + e.getMessage());
                         if (e.getMessage().toString().contains("Incorrect password")) {
@@ -197,6 +198,7 @@ public class WheelViewpagerFragment extends Fragment {
         } else {
             try {
                 Daemon.commands.callAttr("load_wallet", name);
+                Log.i("sldjksdksndksn", "33333: ");
                 getWalletMsg();
             } catch (Exception e) {
                 e.printStackTrace();

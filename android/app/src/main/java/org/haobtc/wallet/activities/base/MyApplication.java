@@ -37,10 +37,10 @@ public class MyApplication extends Application {
     }
     // init ble
     private void initBle() {
-        Ble.options().setLogBleEnable(true)//设置是否输出打印蓝牙日志
-                .setThrowBleException(true)//设置是否抛出蓝牙异常
-                .setLogTAG("AndroidBLE")//设置全局蓝牙操作日志TAG
-                .setAutoConnect(false)//设置是否自动连接
+        Ble.options().setLogBleEnable(true)//Set whether to print Bluetooth log
+                .setThrowBleException(true)//Set whether to throw Bluetooth exception
+                .setLogTAG("AndroidBLE")//Set global Bluetooth operation log TAG
+                .setAutoConnect(false)//Set whether to connect automatically
                 .setFilterScan(false)//设置是否过滤扫描到的设备
                 .setConnectFailedRetryCount(3)
                 .setConnectTimeout(10 * 1000)//设置连接超时时长

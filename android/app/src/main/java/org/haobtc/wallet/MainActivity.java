@@ -184,7 +184,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         //Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
         recy_data.setAdapter(trsactionlistAdapter);
-        if (!jumpOr) {
+        if (jumpOr) {
             //Rolling Wallet
             mWheelplanting();
         }

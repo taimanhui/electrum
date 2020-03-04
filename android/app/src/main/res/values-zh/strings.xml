@@ -390,8 +390,6 @@
     <string name="helpword_wrong">助记词输入有误，请检查后更改</string>
     <string name="sign_failed">签名失败</string>
     <string name="passtype_wrong">密码格式输入错误</string>
-
-
     <string name="verify_pin">验证PIN码成功</string>
     <string name="sign_successful">签名成功</string>
     <string name="reading">读取公钥中</string>
