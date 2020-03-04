@@ -66,6 +66,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     private Map<String, String> pramasBtc;
     private ArrayList<Map<String, String>> mapsBtc;
     private String strmapBtc;
+    private String wallet_type;
 
     public int getLayoutId() {
         return R.layout.send_to_many;
@@ -100,6 +101,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     private void init() {
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
+        wallet_type = intent.getStringExtra("wallet_type");
         totalAmount = new BigDecimal("0");
         setEditTextComments();
     }
@@ -176,6 +178,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                     intent.putExtra(TOTAL_AMOUNT, textViewTotal.getText().toString());
                     intent.putExtra(ADDRESS, "");
                     intent.putExtra("wallet_name", wallet_name);
+                    intent.putExtra("wallet_type",wallet_type);
                     intent.putExtra("addressNum", size);
                     intent.putExtra("totalAmount", bigAmont);
                     intent.putExtra("strmapBtc", strmapBtc);
@@ -228,7 +231,6 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         totalAmount = new BigDecimal("0");
         for (int i = 0; i < sendMoreAddressList.size(); i++) {
             BigDecimal bignum1 = new BigDecimal(sendMoreAddressList.get(i).getInputAmount());
-            Log.i("bignum1", "add------: " + bignum1);
             //Total transfer quantity
             totalAmount = totalAmount.add(bignum1);
         }
@@ -239,11 +241,11 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         mapsBtc.clear();
         mapsBtc.add(pramasBtc);
         strmapBtc = new Gson().toJson(mapsBtc);//intent to sendone2manypage
-        Log.i("mapsBtc", "mapsBtc-----: " + strmapBtc);
 
         //edittext to null
         editTextAddress.setText("");
         editTextAmount.setText("");
+        editContext.setText("");
         buttonNext.setEnabled(true);
         buttonNext.setBackground(getResources().getDrawable(R.color.button_bk));
         SendmoreAddressAdapter sendmoreAddressAdapter = new SendmoreAddressAdapter(Send2ManyActivity.this, sendMoreAddressList);
@@ -270,7 +272,6 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                     totalAmount = new BigDecimal("0");
                     for (int i = 0; i < sendMoreAddressList.size(); i++) {
                         BigDecimal bignum1 = new BigDecimal(sendMoreAddressList.get(i).getInputAmount());
-                        Log.i("bignum1", "add------: " + bignum1);
                         //Total transfer quantity
                         totalAmount = totalAmount.add(bignum1);
                     }

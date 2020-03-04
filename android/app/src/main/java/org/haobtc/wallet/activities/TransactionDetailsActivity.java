@@ -91,7 +91,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     TextView textView18;
     @BindView(R.id.textView20)
     TextView textView20;
-   // @BindView(R.id.sig_trans)
+    // @BindView(R.id.sig_trans)
     Button sigTrans;
     public static final String TAG = "com.bixin.wallet.activities.TransactionDetailsActivity";
     @BindView(R.id.tet_content)
@@ -206,6 +206,7 @@ public class TransactionDetailsActivity extends BaseActivity {
 //            if (tx_status.contains("confirmations")){
 //                tetAddSpeed.setVisibility(View.GONE);
 //            }else{
+
             tetAddSpeed.setVisibility(View.VISIBLE);
             try {
                 get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
@@ -469,6 +470,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     }
 
     private Runnable runnable = this::gotoConfirmOnHardware;
+
     private void gotoConfirmOnHardware() {
         Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
         Bundle bundle = new Bundle();
@@ -478,6 +480,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         intentCon.putExtra("outputs", bundle);
         startActivity(intentCon);
     }
+
     @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -525,14 +528,15 @@ public class TransactionDetailsActivity extends BaseActivity {
                 break;
         }
     }
+
     private void showCustomerDialog() {
         customerDialogFragment = new CustomerDialogFragment(TAG, runnable, "");
         customerDialogFragment.show(getSupportFragmentManager(), "");
     }
+
     //Radio broadcast
     private void braodcastTrsaction() {
         String signedRowTrsation = preferences.getString("signedRowtrsation", "");
-        Log.i("signedRowTrsation", "-------: " + signedRowTrsation);
         try {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
             tetState.setText(R.string.waitchoose);
@@ -547,6 +551,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             linTractionHash.setVisibility(View.VISIBLE);
             linTractionTime.setVisibility(View.VISIBLE);
             EventBus.getDefault().post(new FirstEvent("22"));
+            Log.i("signedRowTrsation", "-------: ");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -565,16 +570,20 @@ public class TransactionDetailsActivity extends BaseActivity {
             try {
                 PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rowtx, strPassword);
                 if (sign_tx != null) {
+
+                    Log.i("sign_txkkkkkkk", "sign_tx: " + sign_tx);
                     rowTrsation = sign_tx.toString();
+//                    tx_hash = sign_tx.toString();
                     edit.putString("signedRowtrsation", rowTrsation);
                     edit.apply();
-                    trsactionDetail();
+                    mCreataSuccsesCheck();
                     EventBus.getDefault().post(new FirstEvent("22"));
 
                 }
                 alertDialog.dismiss();
             } catch (Exception e) {
                 Log.i("sign_txkkkkkkk", "+++++++++++= " + e.getMessage());
+                mToast(getResources().getString(R.string.sign_failed));
                 e.printStackTrace();
             }
 
@@ -638,9 +647,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             Gson gson = new Gson();
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
             rowTrsation = addspeedNewtrsactionBean.getNewTx();
+
+//            tx_hash = addspeedNewtrsactionBean.getNewTx();
             edit.putString("signedRowtrsation", rowTrsation);
             edit.apply();
-            trsactionDetail();
+            mCreataSuccsesCheck();
             EventBus.getDefault().post(new FirstEvent("22"));
             alertDialog.dismiss();
         }
@@ -728,13 +739,13 @@ public class TransactionDetailsActivity extends BaseActivity {
                 CustomerDialogFragment.pin = pin;
             }
         } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
-                boolean isActive = data.getBooleanExtra("isActive", false);
-                if (isActive) {
-                    new Thread(() ->
-                            Daemon.commands.callAttr("init")
-                    ).start();
-                    Intent intent = new Intent(this, ActivatedProcessing.class);
-                    startActivity(intent);
+            boolean isActive = data.getBooleanExtra("isActive", false);
+            if (isActive) {
+                new Thread(() ->
+                        Daemon.commands.callAttr("init")
+                ).start();
+                Intent intent = new Intent(this, ActivatedProcessing.class);
+                startActivity(intent);
             }
         }
     }

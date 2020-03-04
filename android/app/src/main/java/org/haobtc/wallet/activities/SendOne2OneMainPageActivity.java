@@ -9,17 +9,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -107,6 +110,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private int intmaxFee;
     private String strComment = "";
     private String waletType;
+    private ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener;
+    private boolean mIsSoftKeyboardShowing;
+    private int screenHeight;
 
     @Override
     public int getLayoutId() {
@@ -138,22 +144,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     //edittext focus change
     private void focusChange() {
-        linBtcAddress.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-//                Rect r = new Rect();
-//                linBtcAddress.getWindowVisibleDisplayFrame(r);
-//                int screenHeight = linBtcAddress.getRootView()
-//                        .getHeight();
-//                int heightDifference = screenHeight - (r.bottom);
-//                if (heightDifference <= 200) {
-//                    //Soft keyboard hidden
-//                    //getFeerate
-//                    Log.i("getFeerate", "11111111111111");
-//                    getFeerate();
-//                }
-            }
-        });
+        registerKeyBoard();
+
         editAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -179,6 +171,37 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             }
         });
 
+    }
+    private void registerKeyBoard() {
+        DisplayMetrics metric = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metric);
+        int width = metric.widthPixels;
+        int height = metric.heightPixels;
+        screenHeight = height;
+        mIsSoftKeyboardShowing = false;
+        mLayoutChangeListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //Determine the size of window visible area
+                Rect r = new Rect();
+                getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+                //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
+                int heightDifference = screenHeight - (r.bottom - r.top);
+                boolean isKeyboardShowing = heightDifference > screenHeight / 3;
+
+                //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
+                if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
+                    mIsSoftKeyboardShowing = isKeyboardShowing;
+                    if (mIsSoftKeyboardShowing){
+                    }else{
+                        //getFeerate
+                        getFeerate();
+                    }
+                }
+            }
+        };
+        //Register layout change monitoring
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(mLayoutChangeListener);
     }
 
     @SuppressLint("DefaultLocale")
@@ -234,9 +257,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             String strFee = get_default_fee_status.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
             if (strFee.contains("sat/byte")) {
+                String strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte")+8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "");
-//                tetMoneye.setText(strFeeamont);
+
+                tetMoneye.setText(strFeemontAs);
                 intmaxFee = Integer.parseInt(strMax);//fee
                 seekBar.setMax(intmaxFee);
                 seekBar.setProgress(intmaxFee);
@@ -246,7 +271,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     }
 
     private void seekbarLatoutup() {
-//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
@@ -254,24 +278,18 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 catorText = Integer.parseInt(indicatorText);// use get fee
                 //changed fee
                 intmaxFee = catorText;
-//                tvIndicator.setText(indicatorText);
-//                tetMoneye.setText(indicatorText);
-//                params.leftMargin = (int) indicatorOffset;
-//                tvIndicator.setLayoutParams(params);
 
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-//                tvIndicator.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //getFeerate
-                Log.i("getFeerate", "44444444444444");
+
                 getFeerate();
-//                tvIndicator.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -521,11 +539,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 break;
             case R.id.fee_select:
                 //Miner money
-                showPopupSelectFee();
+//                showPopupSelectFee();
                 break;
             case R.id.tv_send2many:
                 Intent intent = new Intent(this, Send2ManyActivity.class);
                 intent.putExtra("wallet_name", wallet_name);
+                intent.putExtra("wallet_type",waletType);
                 startActivity(intent);
                 break;
             case R.id.create_trans_one2one:
@@ -617,12 +636,24 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
                 intent.putExtra("keyValue", "A");
-                intent.putExtra("strwalletType",waletType);
+
+                intent.putExtra("strwalletType", waletType);
                 intent.putExtra("txCreatTrsaction", beanTx);
                 startActivity(intent);
             }
         }
 
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(mLayoutChangeListener);
+        } else {
+            getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(mLayoutChangeListener);
+        }
     }
 
     @Override
@@ -686,7 +717,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             BigDecimal bigmBTC = new BigDecimal(strAmount);
             try {
                 pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", bigmBTC);
-                Log.i("pyObjectcommands", "---------: "+pyObject);
+
+                Log.i("pyObjectcommands", "---------: " + pyObject);
             } catch (Exception e) {
                 e.printStackTrace();
                 mToast(e.getMessage());
@@ -746,12 +778,14 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 Gson gson = new Gson();
                 GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
                 int fee = getsendFeenumBean.getFee();
-                tetMoneye.setText(String.format("%smBTC", String.valueOf(fee)));
+
+                tetMoneye.setText(String.format("%ssat", String.valueOf(fee)));
 
             }
 
         }
     }
+
 }
 
 

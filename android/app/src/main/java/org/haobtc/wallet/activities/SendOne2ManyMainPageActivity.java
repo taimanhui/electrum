@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,6 +28,8 @@ import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
@@ -36,14 +39,20 @@ import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
+import org.haobtc.wallet.bean.GetsendFeenumBean;
 import org.haobtc.wallet.bean.MainWheelBean;
+import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -88,6 +97,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private PyObject mktx;
     private SharedPreferences.Editor edit;
     private List addressList;
+    private int intmaxFee;
+    private String waletType;
 
     public int getLayoutId() {
         return R.layout.send_one2many_main;
@@ -102,6 +113,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         Intent intent = getIntent();
         addressList = (List) getIntent().getSerializableExtra("listdetail");
         wallet_name = intent.getStringExtra("wallet_name");
+        waletType = intent.getStringExtra("wallet_type");
         int addressNum = intent.getIntExtra("addressNum", 0);
         String totalAmount = intent.getStringExtra("totalAmount");
 
@@ -112,6 +124,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         tvAmount.setText(String.format("%s BTC", totalAmount));
         //InputMaxTextNum
         setEditTextComments();
+        getFeerate();
 
     }
 
@@ -138,35 +151,36 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             String strFee = get_default_fee_status.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
             if (strFee.contains("sat/byte")) {
+                String strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "");
-                tvFee.setText(strFeeamont);
-                int intmaxFee = Integer.parseInt(strMax);
+                tvFee.setText(strFeemontAs);
+                intmaxFee = Integer.parseInt(strMax);
                 seedBar.setMax(intmaxFee);
                 seedBar.setProgress(intmaxFee);
             }
             seekbarLatoutup();
         }
     }
+
     private void seekbarLatoutup() {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seedBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
                 String indicatorText = String.valueOf(progress);
-                tvIndicator.setText(indicatorText);
-                params.leftMargin = (int) indicatorOffset;
-                tvIndicator.setLayoutParams(params);
+                int catorText = Integer.parseInt(indicatorText);// use get fee
+                //changed fee
+                intmaxFee = catorText;
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
+                //getFeerate
+                getFeerate();
             }
         });
 
@@ -199,24 +213,27 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private void payAddressMore() {
         PyObject get_wallets_list_info = null;
         try {
-            get_wallets_list_info = Daemon.commands.callAttr("get_wallets_list_info");
+            get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
         if (get_wallets_list_info != null) {
             String toString = get_wallets_list_info.toString();
-            Log.i("payAddressMore", "pay---: " + toString);
-            Gson gson = new Gson();
-            MainWheelBean mainWheelBean = gson.fromJson(toString, MainWheelBean.class);
-            List<MainWheelBean.WalletsBean> wallets = mainWheelBean.getWallets();
-            for (int i = 0; i < wallets.size(); i++) {
-                String wallet_type = wallets.get(i).getWalletType();
-                String name = wallets.get(i).getName();
+            JSONArray jsons = JSONObject.parseArray(toString);
+            for (int i = 0; i < jsons.size(); i++) {
+                Map jsonToMap = (Map) jsons.get(i);
+                Set<String> keySets = jsonToMap.keySet();
+                Iterator<String> ki = keySets.iterator();
                 AddressEvent addressEvent = new AddressEvent();
-                addressEvent.setName(name);
-                addressEvent.setType(wallet_type);
-                dataListName.add(addressEvent);
+                while (ki.hasNext()) {
+                    //get key
+                    String key = ki.next();
+                    String value = jsonToMap.get(key).toString();
+                    addressEvent.setName(key);
+                    addressEvent.setType(value);
+                    dataListName.add(addressEvent);
+                }
             }
         }
 
@@ -238,7 +255,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 break;
             case R.id.img_feeSelect:
                 //Miner money
-                showSelectFeeDialogs(SendOne2ManyMainPageActivity.this, R.layout.select_fee_popwindow);
+//                showSelectFeeDialogs(SendOne2ManyMainPageActivity.this, R.layout.select_fee_popwindow);
                 break;
             case R.id.img_back:
                 finish();
@@ -264,6 +281,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                         Intent intent = new Intent(SendOne2ManyMainPageActivity.this, TransactionDetailsActivity.class);
                         intent.putExtra("tx_hash", beanTx);
                         intent.putExtra("keyValue", "A");
+                        intent.putExtra("strwalletType", waletType);
                         intent.putExtra("txCreatTrsaction", beanTx);
                         startActivity(intent);
                     }
@@ -329,8 +347,12 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             dialogBtom.cancel();
         });
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-//            Daemon.commands.callAttr("load_wallet", wallet_name);
-//            Daemon.commands.callAttr("select_wallet", wallet_name);
+            try {
+                Daemon.commands.callAttr("load_wallet", wallet_name);
+                Daemon.commands.callAttr("select_wallet", wallet_name);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             walletName.setText(wallet_name);
             dialogBtom.cancel();
@@ -358,15 +380,41 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             @Override
             public void onItemClick(int position) {
                 wallet_name = dataListName.get(position).getName();
+                waletType = dataListName.get(position).getType();
 
             }
         });
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
+    //get fee num
+    private void getFeerate() {
+        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
+        Map<String, String> pramas = new HashMap<>();
+        if (addressList!=null){
+            for (int i = 0; i < addressList.size(); i++) {
+                String straddress = ((SendMoreAddressEvent) (addressList.get(0))).getInputAddress();
+                String strAmount = ((SendMoreAddressEvent) (addressList.get(0))).getInputAmount();
+                pramas.put(straddress, strAmount);
+                arrayList.add(pramas);
+            }
+
+            String strPramas = new Gson().toJson(arrayList);
+            PyObject get_fee_by_feerate = null;
+            try {
+                get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", intmaxFee);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (get_fee_by_feerate != null) {
+                Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);
+                String strnewFee = get_fee_by_feerate.toString();
+                Gson gson = new Gson();
+                GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
+                int fee = getsendFeenumBean.getFee();
+                tvFee.setText(String.format("%ssat", String.valueOf(fee)));
+
+            }
+        }
     }
+
 }

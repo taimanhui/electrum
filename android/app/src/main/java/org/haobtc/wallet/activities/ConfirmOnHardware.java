@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,25 +13,45 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
+import org.haobtc.wallet.adapter.HardwareAdapter;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.wallet.event.SendMoreAddressEvent;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class ConfirmOnHardware extends BaseActivity implements View.OnClickListener {
     public static final String TAG = "org.haobtc.wallet.activities.ConfirmOnHardware";
     private Dialog dialog;
     private View view;
     private ImageView imageViewCancel, imageViewSigning, imageBack;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
+    @BindView(R.id.tet_payAddress)
+    TextView tetPayAddress;
+    @BindView(R.id.tet_feeNum)
+    TextView tetFeeNum;
+    @BindView(R.id.recl_Msg)
+    RecyclerView reclMsg;
+    private Button button_confirm;
+    private PopupWindow popupWindow;
+    private View  rootView;
+    private ImageView imageViewCancle, imageViewConnect, imageViewPin;
+    private ArrayList<SendMoreAddressEvent> addressEventList;
 
 
     public int getLayoutId() {
@@ -39,6 +60,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 
     @Override
     public void initView() {
+        ButterKnife.bind(this);
         findViewById(R.id.confirm_on_hardware).setOnClickListener(this);
         findViewById(R.id.img_back).setOnClickListener(this);
         Bundle bundle = getIntent().getBundleExtra("outputs");
@@ -55,6 +77,31 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 
     @Override
     public void initData() {
+        addressEventList = new ArrayList<>();
+        Bundle bundle = getIntent().getBundleExtra("outputs");
+        Log.i("addressEventList", "+++++ "+bundle);
+        if (bundle != null) {
+            String totalAmount = bundle.getString("amount");
+            String fee = bundle.getString("fee");
+            Log.i("addressEventList", "=====: "+totalAmount);
+            Log.i("addressEventList", "+++++ "+fee);
+            SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
+            ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputs = (ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean>) bundle.getSerializable("output");
+            for (GetnewcreatTrsactionListBean.OutputAddrBean output : outputs) {
+                String addr = output.getAddr();
+                String amount = output.getAmount();
+                sendMoreAddressEvent.setInputAddress(addr);
+                sendMoreAddressEvent.setInputAmount(amount);
+                addressEventList.add(sendMoreAddressEvent);
+
+            }
+            Log.i("addressEventList", "-----: "+addressEventList);
+            tetPayAddress.setText(totalAmount);
+            tetFeeNum.setText(fee);
+            HardwareAdapter hardwareAdapter = new HardwareAdapter(addressEventList);
+            reclMsg.setAdapter(hardwareAdapter);
+        }
+
 
     }
 
@@ -152,7 +199,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
             case R.id.sign_again:
                 dialog.dismiss();
                 finish();

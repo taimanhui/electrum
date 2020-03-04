@@ -18,17 +18,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.onlywallet.CheckWalletDetailActivity;
 import org.haobtc.wallet.bean.MainNewWalletBean;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,6 +63,9 @@ public class WheelViewpagerFragment extends Fragment {
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
 
+    private TextView tetFiat;
+    private ConstraintLayout conlayBback;
+
 
     public WheelViewpagerFragment(String name, String personce) {
         this.name = name;
@@ -75,6 +85,9 @@ public class WheelViewpagerFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wheel_viewpager, container, false);
+
+        //Eventbus register
+        EventBus.getDefault().register(this);
         preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         strSeed = preferences.getString("strSeed", "");
@@ -82,11 +95,12 @@ public class WheelViewpagerFragment extends Fragment {
         wallet_card_name = view.findViewById(R.id.wallet_card_name);
         walletpersonce = view.findViewById(R.id.wallet_card_tv2);
         walletBlance = view.findViewById(R.id.wallet_card_tv4);
-
+        tetFiat = view.findViewById(R.id.tet_fiat);
         btnLeft = view.findViewById(R.id.wallet_card_bn1);
         btncenetr = view.findViewById(R.id.wallet_card_bn2);
         btn_appWallet = view.findViewById(R.id.app_wallet);
         tetCny = view.findViewById(R.id.tet_Cny);
+        conlayBback = view.findViewById(R.id.conlay_back);
         card_view = view.findViewById(R.id.wallet_card);
         init();
         initdata();
@@ -102,9 +116,15 @@ public class WheelViewpagerFragment extends Fragment {
             if (personce.equals("standard")) {
                 btn_appWallet.setVisibility(View.VISIBLE);
                 walletpersonce.setVisibility(View.GONE);
+                conlayBback.setBackground(getResources().getDrawable(R.drawable.home_gray_bg));
+                btnLeft.setBackground(getResources().getDrawable(R.drawable.text_tou_back_blue));
+                btncenetr.setBackground(getResources().getDrawable(R.drawable.text_tou_back_blue));
             } else {
                 String of = personce.replaceAll("of", "/");
                 walletpersonce.setText(of);
+                conlayBback.setBackground(getResources().getDrawable(R.drawable.home_bg));
+                btnLeft.setBackground(getResources().getDrawable(R.drawable.button_bk_small));
+                btncenetr.setBackground(getResources().getDrawable(R.drawable.button_bk_small));
             }
         }
 
@@ -121,7 +141,7 @@ public class WheelViewpagerFragment extends Fragment {
             Intent intent = new Intent(getActivity(), ReceivedPageActivity.class);
             startActivity(intent);
         });
-        card_view.setOnClickListener(v -> {
+        conlayBback.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CheckWalletDetailActivity.class);
             intent.putExtra("wallet_name", name);
             startActivity(intent);
@@ -130,28 +150,29 @@ public class WheelViewpagerFragment extends Fragment {
     }
 
     public void refreshList() {
-        if (personce.equals("standard")){
+        if (personce.equals("standard")) {
             String strScrollPass = preferences.getString(name, "");
-            Log.i("refreshList", "---: "+strScrollPass);
-            if (TextUtils.isEmpty(strScrollPass)){
+            Log.i("refreshList", "---: " + strScrollPass);
+            if (TextUtils.isEmpty(strScrollPass)) {
                 View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.input_wallet_pass, null, false);
                 AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(view1).create();
                 EditText str_pass = view1.findViewById(R.id.edit_password);
                 view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
                     String strPassword = str_pass.getText().toString();
-                    if (TextUtils.isEmpty(strPassword)){
+                    if (TextUtils.isEmpty(strPassword)) {
                         Toast.makeText(getActivity(), getResources().getString(R.string.please_input_pass), Toast.LENGTH_SHORT).show();
                         return;
                     }
                     try {
                         Daemon.commands.callAttr("load_wallet", name, strPassword);
                         getWalletMsg();
-                        edit.putString(name,strPassword);
+                        edit.putString(name, strPassword);
                         edit.apply();
+                        Log.i("sldjksdksndksn", "9999999: ");
                     } catch (Exception e) {
-                        Log.i("lllllllll", "json++: "+e.getMessage());
-                        if (e.getMessage().toString().contains("Incorrect password")){
-                            Toast.makeText(getActivity(),getResources().getString(R.string.wrong_pass), Toast.LENGTH_SHORT).show();
+                        Log.i("lllllllll", "json++: " + e.getMessage());
+                        if (e.getMessage().toString().contains("Incorrect password")) {
+                            Toast.makeText(getActivity(), getResources().getString(R.string.wrong_pass), Toast.LENGTH_SHORT).show();
                         }
                         e.printStackTrace();
                     }
@@ -165,26 +186,28 @@ public class WheelViewpagerFragment extends Fragment {
                 });
                 alertDialog.setCanceledOnTouchOutside(false);
                 alertDialog.show();
-            }else{
+            } else {
                 try {
-                    Daemon.commands.callAttr("load_wallet", name,strScrollPass);
+                    Daemon.commands.callAttr("load_wallet", name, strScrollPass);
                     getWalletMsg();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
-        }else{
+        } else {
             try {
                 Daemon.commands.callAttr("load_wallet", name);
+                Log.i("sldjksdksndksn", "33333: ");
                 getWalletMsg();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     //get wallet message
-    public void getWalletMsg(){
+    public void getWalletMsg() {
         try {
             select_wallet = Daemon.commands.callAttr("select_wallet", name);
         } catch (Exception e) {
@@ -209,11 +232,47 @@ public class WheelViewpagerFragment extends Fragment {
                 if (balanceC.contains("(")) {
                     String substring = balanceC.substring(0, balanceC.indexOf("("));
                     walletBlance.setText(substring);
+                    String strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
+                    tetCny.setText(String.format("≈ %s", strCNY));
                 } else {
                     walletBlance.setText(balanceC);
+
                 }
             }
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
+            Log.i("threadMode", "event: " + msgVote);
+            //Rolling Wallet
+            try {
+                JSONObject jsonObject = new JSONObject(msgVote);
+                if (msgVote.contains("balance")) {
+                    String balance = jsonObject.getString("balance");
+                    walletBlance.setText(balance);
+                }
+                if (msgVote.contains("fiat")) {
+                    String fiat = jsonObject.getString("fiat");
+                    tetCny.setText(fiat);
+                }
+                if (msgVote.contains("unconfirmed")) {
+                    String unconfirmed = jsonObject.getString("unconfirmed");
+                    tetFiat.setText(String.format("%s%s", unconfirmed, getResources().getString(R.string.unconfirm)));
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

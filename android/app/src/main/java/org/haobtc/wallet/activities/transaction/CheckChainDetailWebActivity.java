@@ -160,4 +160,18 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myDialog.dismiss();
+        if (webHeckChain != null) {
+            webHeckChain.destroy();
+        }
+        if (netBroadcastReceiver != null) {
+            //注销广播
+            unregisterReceiver(netBroadcastReceiver);
+        }
+    }
+
+
 }

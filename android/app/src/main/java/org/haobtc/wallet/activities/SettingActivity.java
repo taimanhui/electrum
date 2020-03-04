@@ -8,6 +8,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.set.BixinKEYMenageActivity;
 import org.haobtc.wallet.activities.set.CurrencyActivity;
+import org.haobtc.wallet.activities.set.recovery_set.Backup_recoveryActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,7 +61,7 @@ public class SettingActivity extends BaseActivity {
                 mIntent(HardwareInfoActivity.class);
                 break;
             case R.id.tet_s2:
-                mIntent(MessageManagerActivity.class);
+                mIntent(Backup_recoveryActivity.class);
                 break;
             case R.id.tet_s3:
                 mIntent(LanguageSettingActivity.class);

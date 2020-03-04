@@ -25,6 +25,9 @@ import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -87,48 +90,68 @@ public class VerificationMnemonicWordActivity extends BaseActivity {
             strings.add(wordsList[i]);
         }
 
+
+        List<String> randomList = createRandomList(strings, 12);
+
         reclHelpWord.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
-        HelpWordAdapter helpWordAdapter = new HelpWordAdapter(strings);
+        HelpWordAdapter helpWordAdapter = new HelpWordAdapter(randomList);
         reclHelpWord.setAdapter(helpWordAdapter);
         helpWordAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 //                mIntent(AppWalletCreateFinishActivity.class);
-                String strWord = strings.get(position);
+
+                String strWord = randomList.get(position);
                 helpWord(strWord);
             }
         });
 
     }
 
+
+    //change list -- random number
+    private List<String> createRandomList(List<String> list, int n) {
+        Map<Integer, String> mmap = new HashMap<Integer, String>();
+        List<String> mlistNew = new ArrayList<String>();
+        while (mmap.size() < n) {
+            int random = (int) (Math.random() * list.size());
+            if (!mmap.containsKey(random)) {
+                mmap.put(random, "");
+                mlistNew.add(list.get(random));
+            }
+        }
+        return mlistNew;
+    }
+
+
     private void helpWord(String strWord) {
-        if (strWord.equals(strRemeber)){
+        if (strWord.equals(strRemeber)) {
             mToast(getResources().getString(R.string.have_word));
-        }else{
+        } else {
             strRemeber = strWord;
-            if (TextUtils.isEmpty(editOne.getText().toString())){
+            if (TextUtils.isEmpty(editOne.getText().toString())) {
                 editOne.setText(strWord);
-            }else if (TextUtils.isEmpty(editTwo.getText().toString())){
+            } else if (TextUtils.isEmpty(editTwo.getText().toString())) {
                 editTwo.setText(strWord);
-            }else if (TextUtils.isEmpty(editThree.getText().toString())){
+            } else if (TextUtils.isEmpty(editThree.getText().toString())) {
                 editThree.setText(strWord);
-            }else if (TextUtils.isEmpty(editFour.getText().toString())){
+            } else if (TextUtils.isEmpty(editFour.getText().toString())) {
                 editFour.setText(strWord);
-            }else if (TextUtils.isEmpty(editFive.getText().toString())){
+            } else if (TextUtils.isEmpty(editFive.getText().toString())) {
                 editFive.setText(strWord);
-            }else if (TextUtils.isEmpty(editSix.getText().toString())){
+            } else if (TextUtils.isEmpty(editSix.getText().toString())) {
                 editSix.setText(strWord);
-            }else if (TextUtils.isEmpty(editSeven.getText().toString())){
+            } else if (TextUtils.isEmpty(editSeven.getText().toString())) {
                 editSeven.setText(strWord);
-            }else if (TextUtils.isEmpty(editEight.getText().toString())){
+            } else if (TextUtils.isEmpty(editEight.getText().toString())) {
                 editEight.setText(strWord);
-            }else if (TextUtils.isEmpty(editNine.getText().toString())){
+            } else if (TextUtils.isEmpty(editNine.getText().toString())) {
                 editNine.setText(strWord);
-            }else if (TextUtils.isEmpty(editTen.getText().toString())){
+            } else if (TextUtils.isEmpty(editTen.getText().toString())) {
                 editTen.setText(strWord);
-            }else if (TextUtils.isEmpty(editEleven.getText().toString())){
+            } else if (TextUtils.isEmpty(editEleven.getText().toString())) {
                 editEleven.setText(strWord);
-            }else if (TextUtils.isEmpty(editTwelve.getText().toString())){
+            } else if (TextUtils.isEmpty(editTwelve.getText().toString())) {
                 editTwelve.setText(strWord);
                 //if ok
                 helpWordOk();
@@ -153,11 +176,12 @@ public class VerificationMnemonicWordActivity extends BaseActivity {
         String streleven = editEleven.getText().toString();
         String strtwelve = editTwelve.getText().toString();
 
-        String strNewseed  = strone+" "+strtwo+" "+strthree+" "+strfour+" "+strfive+" "+strsix+" "+strseven+" "+streight+" "+strnine+" "+strten+" "+streleven+" "+strtwelve;
+
+        String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
 
 
         try {
-            Daemon.commands.callAttr("check_seed",strNewseed,strPass1);
+            Daemon.commands.callAttr("check_seed", strNewseed, strPass1);
             //FIRST_RUN,if frist run
             edit.putBoolean(FIRST_RUN, true);
             edit.apply();

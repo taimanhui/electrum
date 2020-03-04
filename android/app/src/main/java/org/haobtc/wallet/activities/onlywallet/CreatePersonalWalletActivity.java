@@ -1,15 +1,24 @@
 package org.haobtc.wallet.activities.onlywallet;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import androidx.annotation.LayoutRes;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -47,7 +56,34 @@ public class CreatePersonalWalletActivity extends BaseActivity {
     }
 
     private void init() {
+        editWalletNameSetting.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String indication = tvIndicator.getText().toString();
+                if (!TextUtils.isEmpty(s.toString())){
+                    if (Integer.parseInt(indication)!=0){
+                        bnMultiNext.setEnabled(true);
+                        bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                    }else{
+                        bnMultiNext.setEnabled(false);
+                        bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    }
+                }else{
+                    bnMultiNext.setEnabled(false);
+                    bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                }
+            }
+        });
 
     }
 
@@ -61,10 +97,25 @@ public class CreatePersonalWalletActivity extends BaseActivity {
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
+                String walletName = editWalletNameSetting.getText().toString();
                 String indicatorText = String.valueOf(progress);
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
+                if (progress!=0){
+                    if (!TextUtils.isEmpty(walletName)){
+                        bnMultiNext.setEnabled(true);
+                        bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                    }else{
+                        bnMultiNext.setEnabled(false);
+                        bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    }
+
+                }else{
+                    bnMultiNext.setEnabled(false);
+                    bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                }
+
             }
 
             @Override
@@ -98,11 +149,11 @@ public class CreatePersonalWalletActivity extends BaseActivity {
         String strWalletName = editWalletNameSetting.getText().toString();
         String indication = tvIndicator.getText().toString();
         int sigNum = Integer.parseInt(indication);
-        if (TextUtils.isEmpty(strWalletName)){
+        if (TextUtils.isEmpty(strWalletName)) {
             mToast(getResources().getString(R.string.set_wallet));
             return;
         }
-        if (sigNum == 0){
+        if (sigNum == 0) {
             mToast(getResources().getString(R.string.set_bixinkey_num));
             return;
         }
@@ -113,9 +164,36 @@ public class CreatePersonalWalletActivity extends BaseActivity {
             e.printStackTrace();
 
         }
-        Intent intent = new Intent(CreatePersonalWalletActivity.this, CreateOnlyChooseActivity.class);
-        intent.putExtra("sigNum",sigNum);
-        startActivity(intent);
+        if (sigNum > 1) {
+            Intent intent = new Intent(CreatePersonalWalletActivity.this, CreateOnlyChooseActivity.class);
+            intent.putExtra("sigNum", sigNum);
+            startActivity(intent);
+        } else {
+            showSelectFeeDialogs(CreatePersonalWalletActivity.this, R.layout.bluetooth_personal);
+        }
+
+    }
+
+    private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtom = new Dialog(context, R.style.dialog);
+
+        //cancel dialog
+        view.findViewById(R.id.img_Cancle).setOnClickListener(v -> {
+            dialogBtom.cancel();
+        });
+
+
+        dialogBtom.setContentView(view);
+        Window window = dialogBtom.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtom.show();
     }
 
 }

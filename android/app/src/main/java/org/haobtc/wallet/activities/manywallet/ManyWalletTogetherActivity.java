@@ -82,7 +82,7 @@ import butterknife.OnClick;
 import static org.haobtc.wallet.activities.TouchHardwareActivity.FROM;
 import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
 
-public class ManyWalletTogetherActivity extends BaseActivity {
+public class ManyWalletTogetherActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -174,6 +174,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
         edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
         myDialog = MyDialog.showDialog(ManyWalletTogetherActivity.this);
+        editWalletname.addTextChangedListener(this);
     }
 
 
@@ -198,6 +199,7 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
+
             }
 
             @Override
@@ -208,6 +210,31 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 tvIndicator.setVisibility(View.VISIBLE);
+                String strWalletname = editWalletname.getText().toString();
+                String invator1 = tvIndicator.getText().toString();
+                String invator2 = tvIndicatorTwo.getText().toString();
+                if (Integer.parseInt(invator1) != 0) {
+                    if (!TextUtils.isEmpty(strWalletname)) {
+                        if (Integer.parseInt(invator2) == 0) {
+                            Log.i("skduhksjnsc", "222: ");
+                            button.setEnabled(false);
+                            button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                        } else {
+                            Log.i("skduhksjnsc", "333: ");
+                            button.setEnabled(true);
+                            button.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                            mToast("kkkkkkkkk");
+                        }
+                    } else {
+                        Log.i("skduhksjnsc", "444: ");
+                        button.setEnabled(false);
+                        button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    }
+                } else {
+                    Log.i("skduhksjnsc", "555: ");
+                    button.setEnabled(false);
+                    button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                }
             }
         });
 
@@ -232,6 +259,31 @@ public class ManyWalletTogetherActivity extends BaseActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 tvIndicatorTwo.setVisibility(View.VISIBLE);
+                String strWalletname = editWalletname.getText().toString();
+                String invator1 = tvIndicator.getText().toString();
+                String invator2 = tvIndicatorTwo.getText().toString();
+                if (Integer.parseInt(invator1) != 0) {
+                    if (!TextUtils.isEmpty(strWalletname)) {
+                        if (Integer.parseInt(invator2) == 0) {
+                            Log.i("skduhksjnsc", "222: ");
+                            button.setEnabled(false);
+                            button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                        } else {
+                            Log.i("skduhksjnsc", "333: ");
+                            button.setEnabled(true);
+                            button.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                        }
+
+                    } else {
+                        Log.i("skduhksjnsc", "444: ");
+                        button.setEnabled(false);
+                        button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    }
+                } else {
+                    Log.i("skduhksjnsc", "555: ");
+                    button.setEnabled(false);
+                    button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                }
             }
         });
     }
@@ -280,7 +332,6 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                 myDialog.dismiss();
                 //Generate QR code
                 mGeneratecode();
-
 
                 cardViewOne.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
@@ -781,8 +832,8 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                         Intent intent1 = new Intent(this, ActivatedProcessing.class);
                         startActivity(intent1);
                     } else {
-                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                    startActivityForResult(intent1, REQUEST_ACTIVE);
+                        Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                        startActivityForResult(intent1, REQUEST_ACTIVE);
                     }
                 }
             } catch (Exception e) {
@@ -819,6 +870,39 @@ public class ManyWalletTogetherActivity extends BaseActivity {
                  */
             }
         }
+    }
+
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        String indication = tvIndicator.getText().toString();
+        String indication2 = tvIndicatorTwo.getText().toString();
+        if (!TextUtils.isEmpty(s.toString())) {
+            if (Integer.parseInt(indication) != 0) {
+                if (Integer.parseInt(indication2) != 0) {
+                    button.setEnabled(true);
+                    button.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                } else {
+                    button.setEnabled(false);
+                    button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                }
+            } else {
+                button.setEnabled(false);
+                button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+            }
+        } else {
+            button.setEnabled(false);
+            button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+        }
+
     }
 }
 

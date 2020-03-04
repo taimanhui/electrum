@@ -239,7 +239,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/text_margin"
-                android:text="@string/_0"
+                android:text="@string/text_little_num"
                 android:textColor="@color/button_bk"
                 android:textSize="22sp">
 

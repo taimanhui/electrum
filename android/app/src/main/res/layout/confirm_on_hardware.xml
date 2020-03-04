@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:clipToPadding="true"
     android:fitsSystemWindows="true">
@@ -33,15 +34,16 @@
     </RelativeLayout>
 
     <ScrollView
-        android:layout_below="@+id/relatilayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relatilayout"
+        android:layout_marginBottom="70dp"
         android:background="@color/bk_page">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -76,35 +78,145 @@
 
             </androidx.cardview.widget.CardView>
 
-            <FrameLayout
-                android:id="@+id/fragment_trans_in_confirm"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/dp_10" />
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dp_10"
+                android:background="@drawable/white_tuo"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginBottom="17dp"
+                        android:text="@string/btc_c"
+                        android:textColor="#494949"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:text="@string/bitcoin"
+                        android:textColor="#b3b3b3"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_16"
+                    android:background="@color/line_color" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:layout_marginBottom="17dp"
+                        android:text="@string/from"
+                        android:textColor="#b3b3b3"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tet_payAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:maxLines="1"
+                        tools:text="ksdhiunrfjskmdliweu893rj98"
+                        android:textColor="#494949"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_16"
+                    android:background="@color/line_color" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="53dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:layout_marginBottom="17dp"
+                        android:text="@string/fee"
+                        android:textColor="#b3b3b3"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tet_feeNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:maxLines="1"
+                        tools:text="0.00005BTC"
+                        android:textColor="#494949"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recl_Msg"
+                android:layout_width="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/hardware_item"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginEnd="@dimen/layout_margin" />
 
         </LinearLayout>
 
     </ScrollView>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
         android:background="@color/button_bk_ddake"
         android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="60dp">
+        android:orientation="vertical">
+
         <Button
             android:id="@+id/confirm_on_hardware"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_40"
-            android:textAllCaps="false"
             android:layout_marginStart="@dimen/text_margin"
             android:layout_marginEnd="@dimen/text_margin"
             android:background="@drawable/button_bk"
             android:text="@string/confirm_on_hardware"
+            android:textAllCaps="false"
             android:textColor="@android:color/white" />
     </LinearLayout>
-
 
 
 </RelativeLayout>

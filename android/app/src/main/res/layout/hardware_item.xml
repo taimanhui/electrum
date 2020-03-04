@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/white_tuo"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="17dp"
+        android:layout_marginBottom="17dp"
+        android:text="@string/btc_c"
+        android:textColor="#494949"
+        android:textSize="18sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:background="@color/line_color" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="53dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginBottom="17dp"
+            android:text="@string/to"
+            android:textColor="#b3b3b3"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tet_getAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:maxLines="1"
+            android:text="@string/lnbcdfd4fdsk"
+            android:textColor="#494949"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:background="@color/line_color" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="53dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginBottom="17dp"
+            android:text="@string/feenum"
+            android:textColor="#b3b3b3"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tet_getNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:maxLines="1"
+            tools:text="0.00005BTC"
+            android:textColor="#494949"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

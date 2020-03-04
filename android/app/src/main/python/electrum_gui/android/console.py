@@ -493,7 +493,7 @@ class AndroidCommands(commands.Commands):
     def mktx(self, outputs, message):
         try:
             self._assert_wallet_isvalid()
-            outputs_addrs = self.parse_output(outputs)
+            #outputs_addrs = self.parse_output(outputs)
             #self.do_save(outputs_addrs, message, self.tx)
             tx = tx_from_any(self.tx)
             tx.deserialize()
