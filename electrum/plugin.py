@@ -91,7 +91,7 @@ class Plugins(DaemonThread):
                 self.register_wallet_type(name, gui_good, details)
             details = d.get('registers_keystore')
             if details:
-                print("plugin.load_plugins.name=%s gui_good=%s detals = %s" %(name, gui_good, details))
+                #print("plugin.load_plugins.name=%s gui_good=%s detals = %s" %(name, gui_good, details))
                 self.register_keystore(name, gui_good, details)
             self.descriptions[name] = d
             if not d.get('requires_wallet_type') and self.config.get('use_' + name):
