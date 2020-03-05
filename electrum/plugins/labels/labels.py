@@ -125,7 +125,6 @@ class LabelsPlugin(BasePlugin):
         self.logger.info(f"asking for labels since nonce {nonce}")
         try:
             response = await self.do_get("/labels/since/%d/for/%s" % (nonce, wallet_id))
-            print("--111112222 response=%s" %response)
         except Exception as e:
             raise ErrorConnectingServer(e) from e
         if response["labels"] is None:
@@ -160,7 +159,7 @@ class LabelsPlugin(BasePlugin):
         try:
             await self.pull_thread(wallet, force)
         except ErrorConnectingServer as e:
-            self.logger.info(str(e))
+            self.logger.info(repr(e))
 
     def pull(self, wallet, force):
         if not wallet.network: raise Exception(_('You are offline.'))

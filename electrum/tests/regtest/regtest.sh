@@ -82,10 +82,10 @@ if [[ $1 == "init" ]]; then
     $agent setconfig --offline server 127.0.0.1:51001:t
     # alice is funded, bob is listening
     if [[ $2 == "bob" ]]; then
-	    $bob setconfig --offline lightning_listen localhost:9735
+	$bob setconfig --offline lightning_listen localhost:9735
     else
-      echo "funding $2"
-      $bitcoin_cli sendtoaddress $($agent getunusedaddress -o) 1
+        echo "funding $2"
+        $bitcoin_cli sendtoaddress $($agent getunusedaddress -o) 1
     fi
 fi
 
@@ -163,7 +163,7 @@ if [[ $1 == "breach" ]]; then
 fi
 
 if [[ $1 == "redeem_htlcs" ]]; then
-    $bob setconfig lightning_settle_delay 10
+    $bob enable_htlc_settle false
     wait_for_balance alice 1
     echo "alice opens channel"
     bob_node=$($bob nodeid)
@@ -173,10 +173,9 @@ if [[ $1 == "redeem_htlcs" ]]; then
     # alice pays bob
     invoice=$($bob add_lightning_request 0.05 -m "test")
     $alice lnpay $invoice --timeout=1 || true
-    sleep 1
     settled=$($alice list_channels | jq '.[] | .local_htlcs | .settles | length')
     if [[ "$settled" != "0" ]]; then
-        echo 'SETTLE_DELAY did not work'
+        echo 'enable_htlc_settle did not work'
         exit 1
     fi
     # bob goes away
@@ -206,7 +205,7 @@ fi
 
 
 if [[ $1 == "breach_with_unspent_htlc" ]]; then
-    $bob setconfig lightning_settle_delay 3
+    $bob enable_htlc_settle false
     wait_for_balance alice 1
     echo "alice opens channel"
     bob_node=$($bob nodeid)
@@ -218,14 +217,14 @@ if [[ $1 == "breach_with_unspent_htlc" ]]; then
     $alice lnpay $invoice --timeout=1 || true
     settled=$($alice list_channels | jq '.[] | .local_htlcs | .settles | length')
     if [[ "$settled" != "0" ]]; then
-        echo "SETTLE_DELAY did not work, $settled != 0"
+        echo "enable_htlc_settle did not work, $settled != 0"
         exit 1
     fi
     ctx=$($alice get_channel_ctx $channel)
-    sleep 5
+    $bob enable_htlc_settle true
     settled=$($alice list_channels | jq '.[] | .local_htlcs | .settles | length')
     if [[ "$settled" != "1" ]]; then
-        echo "SETTLE_DELAY did not work, $settled != 1"
+        echo "enable_htlc_settle did not work, $settled != 1"
         exit 1
     fi
     echo "alice breaches with old ctx"
@@ -235,7 +234,7 @@ fi
 
 
 if [[ $1 == "breach_with_spent_htlc" ]]; then
-    $bob setconfig lightning_settle_delay 3
+    $bob enable_htlc_settle false
     wait_for_balance alice 1
     echo "alice opens channel"
     bob_node=$($bob nodeid)
@@ -248,14 +247,14 @@ if [[ $1 == "breach_with_spent_htlc" ]]; then
     ctx=$($alice get_channel_ctx $channel)
     settled=$($alice list_channels | jq '.[] | .local_htlcs | .settles | length')
     if [[ "$settled" != "0" ]]; then
-        echo "SETTLE_DELAY did not work, $settled != 0"
+        echo "enable_htlc_settle did not work, $settled != 0"
         exit 1
     fi
     cp /tmp/alice/regtest/wallets/default_wallet /tmp/alice/regtest/wallets/toxic_wallet
-    sleep 5
+    $bob enable_htlc_settle true
     settled=$($alice list_channels | jq '.[] | .local_htlcs | .settles | length')
     if [[ "$settled" != "1" ]]; then
-        echo "SETTLE_DELAY did not work, $settled != 1"
+        echo "enable_htlc_settle did not work, $settled != 1"
         exit 1
     fi
     echo $($bob getbalance)
