@@ -1,13 +1,16 @@
 package org.haobtc.wallet.activities.manywallet;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -16,6 +19,9 @@ import androidx.fragment.app.FragmentActivity;
 import android.os.Handler;
 import android.os.Message;
 
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
@@ -31,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
@@ -39,6 +47,9 @@ import org.haobtc.wallet.activities.ConfirmOnHardware;
 import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
+import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
+import org.haobtc.wallet.adapter.PublicPersonAdapter;
+import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
 import org.haobtc.wallet.fragment.BluetoothFragment;
@@ -50,6 +61,7 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -71,9 +83,9 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     private String tag;
     private String extras;
     public static String pin;
-    private Runnable runnable;
+    private List<Runnable> runnables;
     public static PyObject pyHandler, customerUI;
-    private MyHandler handler;
+    public static MyHandler handler;
     public static FutureTask<PyObject> futureTask;
     private static final int PIN_CURRENT = 1;
     private static final int PIN_NEW_FIRST = 2;
@@ -82,16 +94,18 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     public static final int REQUEST_ACTIVE = 4;
     public static final int REQUEST_SIGN = 6;
     private static final int REQUEST_ENABLE_BT = 1;
+    public static final int SHOW_PROCESSING = 7;
     private BluetoothConnectingFragment fragment;
     public static String xpub;
     private Ble<BleDevice> mBle;
     private ReadingPubKeyDialogFragment dialogFragment;
-    private boolean isActive = false;
+    public static boolean isActive = false;
     private BluetoothFragment bleFragment;
+    public static boolean pinCached;
 
-    public CustomerDialogFragment(String tag, @Nullable Runnable runnable, String extra) {
+    public CustomerDialogFragment(String tag, @Nullable List<Runnable> runnables, String extra) {
         this.tag = tag;
-        this.runnable = runnable;
+        this.runnables = runnables;
         this.extras = extra;
     }
 
@@ -132,6 +146,10 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                     Intent intent2 = new Intent(reference.get(), PinSettingActivity.class);
                     intent2.putExtra("pin", PIN_New_SECOND);
                     reference.get().startActivityForResult(intent2, PIN_REQUEST);  */
+                case SHOW_PROCESSING:
+                    Intent intent2 = new Intent(reference.get(), ActivatedProcessing.class);
+                    reference.get().startActivity(intent2);
+
             }
         }
     }
@@ -190,6 +208,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
             new Handler().postDelayed(()-> {
                 boolean isInit = false; //should be false
                     try {
+                        System.out.println("java ==== isInitialized");
                         isInit = isInitialized();
                     } catch (Exception e) {
                         Log.e("BLE", e.getMessage() == null ? "unknown error": e.getMessage());
@@ -199,19 +218,22 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                         Toast.makeText(getContext(), "communication error, check init status error", Toast.LENGTH_SHORT).show();
                     }
                         if (isInit) {
-                            boolean pinCached = false;
+                            pinCached = false;
                             try {
+                                System.out.println("java ==== get_pin_status");
                                 pinCached = Daemon.commands.callAttr("get_pin_status", "bluetooth").toBoolean();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             if (ManyWalletTogetherActivity.TAG.equals(tag)) {
                                 // todo: get xpub
-                                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
+                                System.out.println("java ==== get_xpub_from_hw");
+                                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
                                 new Thread(futureTask).start();
                                 if (pinCached) {
                                     try {
                                         xpub = futureTask.get(5, TimeUnit.SECONDS).toString();
+                                        Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
                                         dialogFragment.dismiss();
                                     } catch (ExecutionException | InterruptedException e) {
                                         dialogFragment.dismiss();
@@ -222,10 +244,11 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                                 }
                             } else if (TransactionDetailsActivity.TAG.equals(tag)) {
                                 // todo： sign
+                                System.out.println("java ==== sign_tx");
                                 futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", extras));
                                 new Thread(futureTask).start();
                                 if (pinCached) {
-                                    Objects.requireNonNull(getActivity()).runOnUiThread(runnable);
+                                    Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
                                     dismiss();
                                 }
                             }
@@ -237,7 +260,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                         }
 
 
-            }, 550);
+            }, 600);
 
         }
 
@@ -259,7 +282,6 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
             super.onWiteFailed(device, message);
         }
     };
-
 
     private void setNotify(BleDevice device) {
         /*连接成功后，设置通知*/
@@ -395,7 +417,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                 }
                 dismiss();
                 Activity activity = getActivity();
-                if (activity != null) getActivity().runOnUiThread(runnable);
+                if (activity != null) getActivity().runOnUiThread(runnables.get(0));
         }
     }
 
@@ -412,11 +434,17 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
                 if (isActive) {
-                    new Thread(() ->
-                            Daemon.commands.callAttr("init")
+
+                    new Thread(() -> {
+                        try {
+                            Daemon.commands.callAttr("init", "bluetooth");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                     ).start();
-                    Intent intent = new Intent(getActivity(), ActivatedProcessing.class);
-                    startActivity(intent);
+                    /*Intent intent = new Intent(getActivity(), ActivatedProcessing.class);
+                    startActivity(intent);*/
                 }
             }
         }

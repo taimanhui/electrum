@@ -158,95 +158,135 @@ print("after get exchange amount = %s" % data)
 # testcommond.broadcast_tx(sign_tx)
 #testcommond.clear_invoices()
 
-testcommond.set_use_change(True)
-testcommond.set_unconf(False)
+testcommond.set_use_change(False)
+testcommond.set_unconf(True)
 
 #create_tx
 time.sleep(5)
-all_output = []
-output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2':'0.05'}
-#output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
-#output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
-#output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
-all_output.append(output_info)
-#all_output.append(output_info1)
-output_str = json.dumps(all_output)
-message = 'test111'
-print("--------------all_output= %s" %output_str)
-feerate = testcommond.get_default_fee_status()
-ret_str = testcommond.get_fee_by_feerate(output_str, message, 10)
-ret_list = json.loads(ret_str)
-print("get_fee_by_feerate================%s" % ret_list)
+flag = False
+if not flag:
+    sign_list = []
+    for i in [1, 2]:
+        print("i=%s------------" %i)
+        all_output = []
+        output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2': '0.05'}
+        # output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+        # output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
+        # output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
+        all_output.append(output_info)
+        # all_output.append(output_info1)
+        output_str = json.dumps(all_output)
+        message = 'test111'
+        print("--------------all_output= %s" % output_str)
+        feerate = testcommond.get_default_fee_status()
+        ret_str = testcommond.get_fee_by_feerate(output_str, message, 10)
+        ret_list = json.loads(ret_str)
+        print("get_fee_by_feerate================%s" % ret_list)
 
-ret_str = testcommond.mktx(output_str, message)
-ret_list = json.loads(ret_str)
-print("----mktx================%s" % ret_list)
+        ret_str = testcommond.mktx(output_str, message)
+        ret_list = json.loads(ret_str)
+        print("----mktx================%s" % ret_list)
+
+        testinfo = testcommond.get_all_tx_list(None)
+        print("----testinfo create = %s------------" % testinfo)
+        data = json.loads(testinfo)
+
+        sign_tx = testcommond.sign_tx(ret_list['tx'], password)
+        print("==========sign_tx = %s" % sign_tx)
+        testinfo = testcommond.get_all_tx_list(None)
+        print("testinfo  sign= %s------------" % testinfo)
+        data = json.loads(testinfo)
+        sign_list.append(sign_tx)
+    data = testcommond.get_default_server()
+    print("broadcast data ====%s" % data)
+    time.sleep(5)
+    for sig in sign_list:
+        testcommond.broadcast_tx(sig)
+elif flag:
+    all_output = []
+    output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2':'0.05'}
+    #output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+    #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
+    #output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
+    all_output.append(output_info)
+    #all_output.append(output_info1)
+    output_str = json.dumps(all_output)
+    message = 'test111'
+    print("--------------all_output= %s" %output_str)
+    feerate = testcommond.get_default_fee_status()
+    ret_str = testcommond.get_fee_by_feerate(output_str, message, 10)
+    ret_list = json.loads(ret_str)
+    print("get_fee_by_feerate================%s" % ret_list)
+
+    ret_str = testcommond.mktx(output_str, message)
+    ret_list = json.loads(ret_str)
+    print("----mktx================%s" % ret_list)
 
 
-# testinfo = testcommond.get_all_tx_list_old()
-# print("hHHHHHHahahaha----testinfo create = %s------------" %testinfo)
+    # testinfo = testcommond.get_all_tx_list_old()
+    # print("hHHHHHHahahaha----testinfo create = %s------------" %testinfo)
 
-testinfo = testcommond.get_all_tx_list(None)
-print("----testinfo create = %s------------" %testinfo)
-data = json.loads(testinfo)
+    testinfo = testcommond.get_all_tx_list(None)
+    print("----testinfo create = %s------------" %testinfo)
+    data = json.loads(testinfo)
 
-# ivoices = testcommond.get_invoices()
-# print("before invoices = %s" %ivoices)
+    # ivoices = testcommond.get_invoices()
+    # print("before invoices = %s" %ivoices)
 
-#test rbf
+    #test rbf
 
-# data_hash = data[0]['tx_hash']
-# data = testcommond.get_tx_info(data_hash)
-# print("----hash info create = %s-===========" % data)
-# flag = testcommond.get_rbf_status(data_hash)
-# print("--------rbf data = %s" %flag)
-# data = testcommond.get_rbf_fee_info(data_hash)
-# ret = json.loads(data)
-# print("--------get_rbf_fee_info = %s" %ret)
-# data = testcommond.create_bump_fee(data_hash, ret['new_feerate'], False)
-# new_tx = json.loads(data)
-# print("---------new rbf info = %s" %data)
+    # data_hash = data[0]['tx_hash']
+    # data = testcommond.get_tx_info(data_hash)
+    # print("----hash info create = %s-===========" % data)
+    # flag = testcommond.get_rbf_status(data_hash)
+    # print("--------rbf data = %s" %flag)
+    # data = testcommond.get_rbf_fee_info(data_hash)
+    # ret = json.loads(data)
+    # print("--------get_rbf_fee_info = %s" %ret)
+    # data = testcommond.create_bump_fee(data_hash, ret['new_feerate'], False)
+    # new_tx = json.loads(data)
+    # print("---------new rbf info = %s" %data)
 
-# testinfo = testcommond.get_all_tx_list(None)
-# print("----testinfo rbf add= %s------------" %testinfo)
-# data = json.loads(testinfo)
-# data_hash = data[0]['tx_hash']
-# data = testcommond.get_tx_info(data_hash)
-# print("----hash info rbf add = %s-===========" % data)
-# ivoices = testcommond.get_invoices()
-# print("after invoices = %s" %ivoices)
-# testcommond.clear_invoices()
-# ivoices = testcommond.get_invoices()
-# print("clear after invoices = %s" %ivoices)
+    # testinfo = testcommond.get_all_tx_list(None)
+    # print("----testinfo rbf add= %s------------" %testinfo)
+    # data = json.loads(testinfo)
+    # data_hash = data[0]['tx_hash']
+    # data = testcommond.get_tx_info(data_hash)
+    # print("----hash info rbf add = %s-===========" % data)
+    # ivoices = testcommond.get_invoices()
+    # print("after invoices = %s" %ivoices)
+    # testcommond.clear_invoices()
+    # ivoices = testcommond.get_invoices()
+    # print("clear after invoices = %s" %ivoices)
 
-#
-# #get_tx_by_raw
-# print("``````````tx %s=========" % new_tx['new_tx'])
-# tx_info_str = testcommond.get_tx_info_from_raw(new_tx['new_tx'])
-# tx_info = json.loads(tx_info_str)
-# print("------tx info = %s=========" % tx_info)
-#sign_tx
-# print("sign tx = %s=========" % new_tx['new_tx'])
-# sign_tx = testcommond.sign_tx(new_tx['new_tx'], password)
-sign_tx = testcommond.sign_tx(ret_list['tx'], password)
-print("==========sign_tx = %s" %sign_tx)
-testinfo = testcommond.get_all_tx_list(None)
-print("testinfo  sign= %s------------" %testinfo)
-data = json.loads(testinfo)
+    #
+    # #get_tx_by_raw
+    # print("``````````tx %s=========" % new_tx['new_tx'])
+    # tx_info_str = testcommond.get_tx_info_from_raw(new_tx['new_tx'])
+    # tx_info = json.loads(tx_info_str)
+    # print("------tx info = %s=========" % tx_info)
+    #sign_tx
+    # print("sign tx = %s=========" % new_tx['new_tx'])
+    # sign_tx = testcommond.sign_tx(new_tx['new_tx'], password)
+    sign_tx = testcommond.sign_tx(ret_list['tx'], password)
+    print("==========sign_tx = %s" %sign_tx)
+    testinfo = testcommond.get_all_tx_list(None)
+    print("testinfo  sign= %s------------" %testinfo)
+    data = json.loads(testinfo)
 
-# for tx_info in data:
-#     data_hash = tx_info['tx_hash']
-#     #print("i = %s type(%s)" %(i,type(i)))
-#     #data_hash = data[i]['tx_hash']
-#     data = testcommond.get_tx_info(data_hash)
-#     print("----hash info sign[%s] = %s-===========" % (data_hash, data))
+    # for tx_info in data:
+    #     data_hash = tx_info['tx_hash']
+    #     #print("i = %s type(%s)" %(i,type(i)))
+    #     #data_hash = data[i]['tx_hash']
+    #     data = testcommond.get_tx_info(data_hash)
+    #     print("----hash info sign[%s] = %s-===========" % (data_hash, data))
 
-# data_hash = '176d7aad5fbe1d9d616d91db391b19aeaf970d22481eae2327039cbf4e295b6e'
-# data = testcommond.get_tx_info(data_hash)
-data = testcommond.get_default_server()
-print("broadcast data ====%s" %data)
-time.sleep(5)
-testcommond.broadcast_tx(sign_tx)
+    # data_hash = '176d7aad5fbe1d9d616d91db391b19aeaf970d22481eae2327039cbf4e295b6e'
+    # data = testcommond.get_tx_info(data_hash)
+    data = testcommond.get_default_server()
+    print("broadcast data ====%s" %data)
+    time.sleep(5)
+    testcommond.broadcast_tx(sign_tx)
 
 # # #
 # # # #parse_qr tx

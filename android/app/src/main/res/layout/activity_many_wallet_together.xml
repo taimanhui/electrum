@@ -265,7 +265,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
-                                android:text="@string/_0"
+                                android:text="@string/text_little_num"
                                 android:textColor="#6182f5"
                                 android:textSize="12sp" />
 
@@ -367,7 +367,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
-                                android:text="@string/_0"
+                                android:text="@string/text_little_num"
                                 android:textColor="#6182f5"
                                 android:textSize="12sp" />
 
@@ -569,7 +569,6 @@
 
         <Button
             android:id="@+id/btn_Finish"
-
             android:layout_width="343dp"
             android:layout_height="@dimen/dp_40"
             android:layout_centerInParent="true"

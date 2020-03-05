@@ -125,11 +125,182 @@
                 android:text="@string/_12_help_word" />
 
             <LinearLayout
-                android:background="@color/gray_little"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_16"
-                android:layout_width="match_parent"
-                android:layout_height="150dp">
+                android:orientation="vertical">
+
+                <!--         one           -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_30">
+
+                    <EditText
+                        android:id="@+id/edit_one"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                    <EditText
+                        android:id="@+id/edit_two"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                    <EditText
+                        android:id="@+id/edit_three"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                </LinearLayout>
+                <!--         two           -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_marginTop="@dimen/dp_10">
+
+                    <EditText
+                        android:id="@+id/edit_four"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                    <EditText
+                        android:id="@+id/edit_five"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                    <EditText
+                        android:id="@+id/edit_six"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                </LinearLayout>
+                <!--         three           -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_marginTop="@dimen/dp_10">
+
+                    <EditText
+                        android:id="@+id/edit_seven"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                    <EditText
+                        android:id="@+id/edit_eight"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                    <EditText
+                        android:id="@+id/edit_nine"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                </LinearLayout>
+                <!--         four           -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_marginTop="@dimen/dp_10">
+
+                    <EditText
+                        android:id="@+id/edit_ten"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                    <EditText
+                        android:id="@+id/edit_eleven"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                    <EditText
+                        android:id="@+id/edit_twelve"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_5"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:layout_weight="1"
+                        android:background="@drawable/gray_tuo_6"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_12" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

@@ -46,9 +46,6 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.button_activate:
-                /*Intent intent = new Intent(this, TouchHardwareActivity.class);
-                intent.putExtra(TouchHardwareActivity.FROM, TAG);
-                startActivity(intent);*/
                 Intent intent = new Intent();
                 intent.putExtra("isActive", true);
                 setResult(Activity.RESULT_OK, intent);

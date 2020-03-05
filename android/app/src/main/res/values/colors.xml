@@ -3,7 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#E91E63</color>
-    <color name="delete_back">#C40303</color>
+    <color name="delete_back">#f26a3a</color>
     <color name="separation_line">#EBEBEB</color>
     <color name="text">#FF494949</color>
     <color name="light_text">#FFB3B3B3</color>
@@ -42,5 +42,7 @@
     <color name="black_gray_color">#777777</color>
     <color name="black_0">#000000</color>
     <color name="red_text">#f26a3a</color>
+    <color name="gray_text_tou">#3bffffff</color>
+    <color name="blue_text_tou">#3bffffff</color>
 
 </resources>

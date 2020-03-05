@@ -19,6 +19,9 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -74,16 +77,26 @@ public class AppWalletSetPassActivity extends BaseActivity {
                 String strPass2 = edtPass2.getText().toString();
                 if (TextUtils.isEmpty(strPass1)) {
                     mToast(getResources().getString(R.string.set_pass));
+                    myDialog.dismiss();
                     return;
                 }
                 if (TextUtils.isEmpty(strPass2)) {
                     mToast(getResources().getString(R.string.set_pass_second));
+                    myDialog.dismiss();
                     return;
                 }
                 if (!strPass1.equals(strPass2)) {
                     mToast(getResources().getString(R.string.two_different_pass));
+                    myDialog.dismiss();
                     return;
                 }
+//                boolean passType = isPassType(strPass1);
+//                Log.i("passType", "passType: "+passType);
+//                if (!passType){
+//                    mToast(getResources().getString(R.string.passtype_wrong));
+//                    myDialog.dismiss();
+//                    return;
+//                }
                 if (!TextUtils.isEmpty(strSeed)) {
                     try {
                         Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));
@@ -147,6 +160,15 @@ public class AppWalletSetPassActivity extends BaseActivity {
 
                 break;
         }
+    }
+
+    //judge mobile is wrong or right
+    public boolean isPassType(String mobiles) {
+        Pattern p = Pattern
+                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{4,}");
+        Matcher m = p.matcher(mobiles);
+
+        return m.matches();
     }
 
 }

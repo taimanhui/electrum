@@ -48,9 +48,6 @@ public class CreateWalletActivity extends BaseActivity {
         ButterKnife.bind(this);
         preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
-        edit.putBoolean("JumpOr", false);
-        edit.apply();
-
 
     }
 

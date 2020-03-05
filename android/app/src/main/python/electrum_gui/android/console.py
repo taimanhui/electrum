@@ -120,7 +120,7 @@ class AndroidCommands(commands.Commands):
         self.callbackIntent = None
         self.wallet = None
         self.client = None
-        self.path = ''
+        self.path = 'bluetooth'
         self.local_wallet_info = self.config.get("all_wallet_type_info", {})
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
@@ -219,7 +219,7 @@ class AndroidCommands(commands.Commands):
 
         for tx in to_delete:
             self.wallet.remove_transaction(tx)
-        self.wallet.storage.write()
+        self.wallet.save_db()
         # need to update at least: history_list, utxo_list, address_list
         #self.parent.need_update.set()
 
@@ -493,7 +493,7 @@ class AndroidCommands(commands.Commands):
     def mktx(self, outputs, message):
         try:
             self._assert_wallet_isvalid()
-            outputs_addrs = self.parse_output(outputs)
+            #outputs_addrs = self.parse_output(outputs)
             #self.do_save(outputs_addrs, message, self.tx)
             tx = tx_from_any(self.tx)
             tx.deserialize()
@@ -1050,15 +1050,18 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('use_change', status_change, False)
         self.wallet.use_change = status_change
 
-    def sign_tx(self, tx) -> str:
+    def sign_tx(self, tx, password=None):
         try:
             self._assert_wallet_isvalid()
-            ptx = tx_from_any(bytes.fromhex(tx))
-            stx = self.wallet.sign_transaction(ptx, None)
-            self.do_save(stx)
-            raw_tx = stx.serialize_as_bytes().hex()
-            return self.get_tx_info_from_raw(raw_tx)
-        except Exception as e:
+            old_tx = tx
+            tx = tx_from_any(tx)
+            tx.deserialize()
+            sign_tx = self.wallet.sign_transaction(tx, password)
+            print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
+            self.do_save(sign_tx)
+            #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
+            return sign_tx
+        except BaseException as e:
             raise BaseException(e)
 
     ##connection with terzorlib#########################
@@ -1071,8 +1074,8 @@ class AndroidCommands(commands.Commands):
         else:
             return False
 
-    def init(self):
-        client = self.get_client()
+    def init(self, path='nfc'):
+        client = self.get_client(path=path)
         try:
             response = client.reset_device()
         except Exception as e:
@@ -1089,9 +1092,10 @@ class AndroidCommands(commands.Commands):
             return self.client
         plugin = self.plugin.get_plugin("trezor")
         client_list = plugin.enumerate()
-        print(client_list)
+        print(f"total device====={client_list}")
         device = [cli for cli in client_list if cli.path == path]
         assert len(device) != 0, "Not found the point device"
+        print(f"======{device[0]}====")
         client = plugin.create_client(device[0], ui)
         self.client = client
         self.path = path
@@ -1107,12 +1111,12 @@ class AndroidCommands(commands.Commands):
 
     def get_pin_status(self, path='nfc'):
         self.client = None
-        self.path = ''
+        self.path = 'bluetooth'
         client = self.get_client(path=path)
         return client.features.pin_cached
 
-    def get_xpub_from_hw(self):
-        client = self.get_client()
+    def get_xpub_from_hw(self, path='nfc'):
+        client = self.get_client(path=path)
         derivation = bip44_derivation(0)
         try:
             xpub = client.get_xpub(derivation, 'p2wsh')

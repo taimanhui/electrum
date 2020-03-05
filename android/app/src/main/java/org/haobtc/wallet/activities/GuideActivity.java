@@ -1,6 +1,8 @@
 package org.haobtc.wallet.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -42,6 +44,11 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean("JumpOr",true);
+        edit.apply();
+
         viewPager = findViewById(R.id.vp);
         LayoutInflater inflater = LayoutInflater.from(this);
         viewList.add(inflater.inflate(R.layout.boot_page_item1, null));

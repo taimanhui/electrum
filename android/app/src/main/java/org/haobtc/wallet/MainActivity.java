@@ -47,6 +47,7 @@ import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.Daemon;
@@ -122,7 +123,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         //Eventbus register
         EventBus.getDefault().register(this);
 //        init();
-        jumpOr = sharedPreferences.getBoolean("JumpOr", true);
+        jumpOr = sharedPreferences.getBoolean("JumpOr", false);
         if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
             init();
 
@@ -183,7 +184,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         //Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
         recy_data.setAdapter(trsactionlistAdapter);
-        if (!jumpOr) {
+        if (jumpOr) {
             //Rolling Wallet
             mWheelplanting();
         }
@@ -191,11 +192,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void mWheelplanting() {
         fragmentList = new ArrayList<>();
-
+        walletnameList.clear();
         PyObject get_wallets_list_info = null;
         try {
             get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
-
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("mWheelplanting", "mWheelplanting:==== " + e.getMessage());
@@ -204,7 +204,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         if (get_wallets_list_info != null) {
             String toStrings = get_wallets_list_info.toString();
-            Log.i("javaBean", "mjavaBean----+: " + toStrings);
+            Log.i("javaBean", "mjavaBean-----: " + toStrings);
             com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
             for (int i = 0; i < jsons.size(); i++) {
                 Map jsonToMap = (Map) jsons.get(i);
@@ -232,7 +232,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     dataListName.add(name);
                     try {
                         Daemon.commands.callAttr("load_wallet", walletnameList.get(0).getName());
-                        Daemon.commands.callAttr("select_wallet",  walletnameList.get(0).getName());
+                        Daemon.commands.callAttr("select_wallet", walletnameList.get(0).getName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -252,6 +252,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
 
             }
+        } else {
+            dataListName.add("");
+            fragmentList.add(new AddViewFragment());
+            viewPager.setOffscreenPageLimit(4);
+            viewPager.setPageMargin(40);
+            viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+
         }
         //scroll
         viewPagerScroll();
@@ -395,8 +402,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("isIsmine", is_mine);
-                                    intent.putExtra("strWalletName",strNames);
-                                    intent.putExtra("strwalletType",strType);
+                                    intent.putExtra("strWalletName", strNames);
+                                    intent.putExtra("strwalletType", strType);
                                     intent.putExtra("listType", typeDele);
                                     intent.putExtra("txCreatTrsaction", tx_Onclick);
                                     startActivity(intent);
@@ -404,8 +411,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 } else {
                                     intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("isIsmine", is_mine);
-                                    intent.putExtra("strWalletName",strNames);
-                                    intent.putExtra("strwalletType",strType);
+                                    intent.putExtra("strWalletName", strNames);
+                                    intent.putExtra("strwalletType", strType);
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("listType", typeDele);
                                     startActivity(intent);
@@ -500,7 +507,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void event(FirstEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if (msgVote.equals("11")) {
-            Log.i("threadMode", "event: " + msgVote);
             //Rolling Wallet
             mWheelplanting();
 

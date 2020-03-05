@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +41,7 @@ public class ActivateSuccessActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bn_back:
-               Intent intent = new Intent(this, CreateWalletPageActivity.class);
+               Intent intent = new Intent(this, CreateWalletActivity.class);
                startActivity(intent);
 
         }

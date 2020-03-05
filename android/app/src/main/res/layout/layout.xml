@@ -141,7 +141,7 @@
                 android:layout_height="22dp"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/sp_16"
-                android:text="@string/bixinkey_qrspr" />
+                tools:text="BixinKEY-ORSPR" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -149,7 +149,7 @@
                 android:layout_marginTop="@dimen/dp_2"
                 android:textColor="#b1b7c5"
                 android:textSize="@dimen/sp_12"
-                android:text="@string/_1" />
+                tools:text="备注：家庭共用1号" />
 
         </LinearLayout>
 

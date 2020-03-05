@@ -21,7 +21,10 @@ import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.GuideActivity;
+import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+
+import java.lang.ref.WeakReference;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 
@@ -58,6 +61,8 @@ public class LunchActivity extends BaseActivity {
             Global.mHandler = new Handler(Looper.getMainLooper());
             Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
             Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
+            Daemon.daemonWeakReference = new WeakReference<>(new Daemon());
+            Daemon.commands.callAttr("set_callback_fun", Daemon.daemonWeakReference.get());
             initPermissions();
         }
     };
@@ -86,7 +91,7 @@ public class LunchActivity extends BaseActivity {
         String language = preferences.getString("language", "");
         judgeLanguage(language);
 
-        boolean jumpOr = preferences.getBoolean("JumpOr", true);
+        boolean jumpOr = preferences.getBoolean("JumpOr", false);
         if (preferences.getBoolean(FIRST_RUN, false)) {
             Intent intent = new Intent(LunchActivity.this, MainActivity.class);
             startActivity(intent);
@@ -94,11 +99,11 @@ public class LunchActivity extends BaseActivity {
 
         } else {
             if (jumpOr) {
-                //splash
-                initGuide();
-            } else {
                 //CreatWallet
                 initCreatWallet();
+            } else {
+                //splash
+                initGuide();
             }
 
         }

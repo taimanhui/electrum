@@ -9,12 +9,9 @@ import android.widget.ImageView;
 import android.os.Handler;
 import android.widget.TextView;
 
-import com.chaquo.python.PyObject;
-
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
-import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
@@ -41,7 +38,8 @@ public class ActivatedProcessing extends BaseActivity {
         textViewProcess = findViewById(R.id.activate_state);
         if (Ble.getInstance().getConnetedDevices().size() != 0) {
             if (Ble.getInstance().getConnetedDevices().get(0).getBleName().startsWith("BixinKEY")){
-                runOnUiThread(this::processingState);
+                new Handler().postDelayed(this::processingState
+                , 100);
             }
         }
     }
@@ -83,7 +81,7 @@ public class ActivatedProcessing extends BaseActivity {
             NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
         } else {
             // use in udp
-            new Handler().postDelayed(this::processingState, 200);
+            new Handler().postDelayed(this::processingState, 100);
         }
     }
 
