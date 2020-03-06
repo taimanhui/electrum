@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.CNYAdapter;
 import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ public class CurrencyActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        base_unit = preferences.getString("base_unit", "");
+        base_unit = preferences.getString("base_unit", "mBTC");
         cny_unit = preferences.getInt("cny_unit", 0);
         edit = preferences.edit();
 
@@ -79,9 +81,7 @@ public class CurrencyActivity extends BaseActivity {
         for (int i = 0; i < radioOnearray.length; i++) {
             radioOnearray[i] = (RadioButton) radioOne.getChildAt(i);
         }
-        if (TextUtils.isEmpty(base_unit)) {
-            radioOnearray[0].setChecked(true);
-        } else if (base_unit.equals("BTC")) {
+        if (base_unit.equals("BTC")) {
             radioOnearray[0].setChecked(true);
         } else if (base_unit.equals("mBTC")) {
             radioOnearray[1].setChecked(true);
@@ -164,7 +164,6 @@ public class CurrencyActivity extends BaseActivity {
                             Daemon.commands.callAttr("set_currency", "CNY");
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e("set_currency", "-------- " + e.getMessage());
                             return;
                         }
                     } else if (pos == 1) {
@@ -172,7 +171,6 @@ public class CurrencyActivity extends BaseActivity {
                             Daemon.commands.callAttr("set_currency", "USD");
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e("set_currency", "+++++++++ " + e.getMessage());
                             return;
                         }
                     } else if (pos == 2) {
@@ -180,7 +178,6 @@ public class CurrencyActivity extends BaseActivity {
                             Daemon.commands.callAttr("set_currency", "KMR");
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e("set_currency", "========== " + e.getMessage());
                             return;
                         }
                     } else {
@@ -188,10 +185,10 @@ public class CurrencyActivity extends BaseActivity {
                             Daemon.commands.callAttr("set_currency", listCNY.get(pos).getName());
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e("set_currency", "********** " + e.getMessage());
                             return;
                         }
                     }
+                    EventBus.getDefault().post(new FirstEvent("22"));
 //                    Log.i(TAG, "ItemClick: ");
                     edit.putInt("cny_unit", pos);
                     edit.apply();

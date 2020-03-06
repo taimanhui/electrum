@@ -47,12 +47,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     TextView tetFeeNum;
     @BindView(R.id.recl_Msg)
     RecyclerView reclMsg;
-    private Button button_confirm;
-    private PopupWindow popupWindow;
-    private View  rootView;
-    private ImageView imageViewCancle, imageViewConnect, imageViewPin;
     private ArrayList<SendMoreAddressEvent> addressEventList;
-
 
     public int getLayoutId() {
         return R.layout.confirm_on_hardware;
@@ -63,37 +58,23 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         ButterKnife.bind(this);
         findViewById(R.id.confirm_on_hardware).setOnClickListener(this);
         findViewById(R.id.img_back).setOnClickListener(this);
-        Bundle bundle = getIntent().getBundleExtra("outputs");
-        if (bundle != null) {
-            String totalAmount = bundle.getString("amount");
-            String fee = bundle.getString("fee");
-            ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputs = (ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean>) bundle.getSerializable("output");
-            for (GetnewcreatTrsactionListBean.OutputAddrBean output : outputs) {
-               String addr = output.getAddr();
-               String amount = output.getAmount();
-            }
-        }
     }
 
     @Override
     public void initData() {
         addressEventList = new ArrayList<>();
         Bundle bundle = getIntent().getBundleExtra("outputs");
-        Log.i("addressEventList", "+++++ "+bundle);
         if (bundle != null) {
             String totalAmount = bundle.getString("amount");
             String fee = bundle.getString("fee");
-            Log.i("addressEventList", "=====: "+totalAmount);
-            Log.i("addressEventList", "+++++ "+fee);
-            SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
             ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputs = (ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean>) bundle.getSerializable("output");
             for (GetnewcreatTrsactionListBean.OutputAddrBean output : outputs) {
+                SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
                 String addr = output.getAddr();
                 String amount = output.getAmount();
                 sendMoreAddressEvent.setInputAddress(addr);
                 sendMoreAddressEvent.setInputAmount(amount);
                 addressEventList.add(sendMoreAddressEvent);
-
             }
             Log.i("addressEventList", "-----: "+addressEventList);
             tetPayAddress.setText(totalAmount);
@@ -101,8 +82,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             HardwareAdapter hardwareAdapter = new HardwareAdapter(addressEventList);
             reclMsg.setAdapter(hardwareAdapter);
         }
-
-
     }
 
     private void showPopupSignProcessing() {

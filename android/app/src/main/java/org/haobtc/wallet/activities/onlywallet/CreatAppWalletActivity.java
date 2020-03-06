@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities.onlywallet;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,6 +24,8 @@ public class CreatAppWalletActivity extends BaseActivity {
     EditText tetSetWalletName;
     @BindView(R.id.btn_setPin)
     Button btnSetPin;
+    private SharedPreferences preferences;
+    private int defaultName;
 
     @Override
     public int getLayoutId() {
@@ -32,11 +35,15 @@ public class CreatAppWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        defaultName = preferences.getInt("defaultName", 0);
 
     }
 
     @Override
     public void initData() {
+        int walletNameNum = defaultName+1;
+        tetSetWalletName.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
 
     }
 

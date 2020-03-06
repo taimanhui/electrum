@@ -3,6 +3,8 @@ package org.haobtc.wallet.activities.set.recovery_set;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,7 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class RecoverySetActivity extends BaseActivity {
+public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
 
     @BindView(R.id.img_back)
@@ -22,6 +24,8 @@ public class RecoverySetActivity extends BaseActivity {
     TextView tetBackups;
     @BindView(R.id.btn_setPin)
     Button btnSetPin;
+    @BindView(R.id.checkbox_Know)
+    CheckBox checkboxKnow;
 
     @Override
     public int getLayoutId() {
@@ -36,6 +40,7 @@ public class RecoverySetActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        checkboxKnow.setOnCheckedChangeListener(this);
 
     }
 
@@ -50,6 +55,17 @@ public class RecoverySetActivity extends BaseActivity {
                 break;
             case R.id.btn_setPin:
                 break;
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked){
+            btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
+            btnSetPin.setEnabled(true);
+        }else{
+            btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
+            btnSetPin.setEnabled(false);
         }
     }
 }

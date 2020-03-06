@@ -139,14 +139,12 @@ public class CheckWalletDetailActivity extends BaseActivity {
                 Daemon.commands.callAttr("delete_wallet", wallet_name);
                 EventBus.getDefault().post(new FirstEvent("11"));
                 mToast(getResources().getString(R.string.delete_succse));
-
-                myDialog.dismiss();
                 finish();
             } catch (Exception e) {
                 Log.i("delete_wallet", "===========: "+e.getMessage());
                 e.printStackTrace();
             }
-
+            myDialog.dismiss();
             dialogBtom.cancel();
         });
         //cancel dialog

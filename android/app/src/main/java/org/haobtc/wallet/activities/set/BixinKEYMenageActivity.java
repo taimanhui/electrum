@@ -39,19 +39,19 @@ public class BixinKEYMenageActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        ArrayList<String> strings = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            strings.add("BixinKEY"+i);
-        }
-        BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(strings);
-        reclBixinKeyList.setAdapter(bixinkeyManagerAdapter);
-
-        bixinkeyManagerAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                mIntent(SomemoreActivity.class);
-            }
-        });
+//        ArrayList<String> strings = new ArrayList<>();
+//        for (int i = 0; i < 5; i++) {
+//            strings.add("BixinKEY"+i);
+//        }
+//        BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(strings);
+//        reclBixinKeyList.setAdapter(bixinkeyManagerAdapter);
+//
+//        bixinkeyManagerAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+//                mIntent(SomemoreActivity.class);
+//            }
+//        });
 
     }
 

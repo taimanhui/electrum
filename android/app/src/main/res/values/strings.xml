@@ -248,7 +248,7 @@
     <string name="no_singn">No signatures for now</string>
     <string name="confrim_time">Confirmation time</string>
     <string name="broad_text">Transaction needs enough confirmations on the main net to become valid</string>
-    <string name="input_btc_address">Please enter bitcoin address</string>
+    <string name="input_btc_address">Please enter the address</string>
     <string name="unconfirm">(unconfirmed)</string>
     <string name="get_bi_address">Receiving address</string>
     <string name="get_bi_num">Number to receive</string>
@@ -415,5 +415,13 @@
     <string name="ble_device_connecting">Bluetooth device connecting</string>
     <string name="tip_ble_bonding">Please open bixinkey to confirm the pairing code</string>
     <string name="confirm_pub">Confirm public key</string>
+    <string name="str_0_00">0.00</string>
+    <string name="input_backup_wallet">Import backup Wallet</string>
+    <string name="is_use">May use</string>
+    <string name="the_only_bixinkey">BixinKEY\'s any authorized transfer</string>
+    <string name="iknow_risk">I know the above risks</string>
+    <string name="key_backup">BixinKEY backups&#38;recovery</string>
+    <string name="lunch_invalid_text">2020 ©BIXIN GLOBAL Co.,Ltd</string>
+    <string name="pin_wrong">PIN is entered incorrectly. Please input it again</string>
 
 </resources>

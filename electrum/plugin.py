@@ -32,7 +32,7 @@ from typing import (NamedTuple, Any, Union, TYPE_CHECKING, Optional, Tuple,
                     Dict, Iterable, List)
 
 from .i18n import _
-from .util import (profiler, DaemonThread, UserCancelled, ThreadJob)
+from .util import (profiler, DaemonThread, UserCancelled, ThreadJob, UserFacingException)
 from . import bip32
 from . import plugins
 from .simple_config import SimpleConfig
@@ -60,7 +60,7 @@ class Plugins(DaemonThread):
         self.pkgpath = os.path.dirname(plugins.__file__)
         self.config = config
         self.hw_wallets = {}
-        self.plugins = {}
+        self.plugins = {}  # type: Dict[str, BasePlugin]
         self.gui_name = gui_name
         self.descriptions = {}
         self.device_manager = DeviceMgr(config)
@@ -91,7 +91,6 @@ class Plugins(DaemonThread):
                 self.register_wallet_type(name, gui_good, details)
             details = d.get('registers_keystore')
             if details:
-                print("plugin.load_plugins.name=%s gui_good=%s detals = %s" %(name, gui_good, details))
                 self.register_keystore(name, gui_good, details)
             self.descriptions[name] = d
             if not d.get('requires_wallet_type') and self.config.get('use_' + name):
@@ -199,8 +198,8 @@ class Plugins(DaemonThread):
             self.logger.info(f"registering hardware {name}: {details}")
             register_keystore(details[1], dynamic_constructor)
 
-    def get_plugin(self, name):
-        if not name in self.plugins:
+    def get_plugin(self, name: str) -> 'BasePlugin':
+        if name not in self.plugins:
             self.load_plugin(name)
         return self.plugins[name]
 

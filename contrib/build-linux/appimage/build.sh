@@ -21,11 +21,13 @@ SQUASHFSKIT_COMMIT="ae0d656efa2d0df2fcac795b6823b44462f19386"
 VERSION=`git describe --tags --dirty --always`
 APPIMAGE="$DISTDIR/electrum-$VERSION-x86_64.AppImage"
 
+. "$CONTRIB"/build_tools_util.sh
+
 rm -rf "$BUILDDIR"
 mkdir -p "$APPDIR" "$CACHEDIR" "$DISTDIR"
 
-
-. "$CONTRIB"/build_tools_util.sh
+# potential leftover from setuptools that might make pip put garbage in binary
+rm -rf "$PROJECT_ROOT/build"
 
 
 info "downloading some dependencies."
@@ -123,7 +125,7 @@ mkdir -p "$CACHEDIR/pip_cache"
 
 
 info "copying zbar"
-cp "/usr/lib/libzbar.so.0" "$APPDIR/usr/lib/libzbar.so.0"
+cp "/usr/lib/x86_64-linux-gnu/libzbar.so.0" "$APPDIR/usr/lib/libzbar.so.0"
 
 
 info "desktop integration."
@@ -212,6 +214,7 @@ rm -rf "$PYDIR"/site-packages/*.dist-info/
 rm -rf "$PYDIR"/site-packages/*.egg-info/
 for f in "$PYDIR"/site-packages/jsonschema-*.dist-info2; do mv "$f" "$(echo "$f" | sed s/\.dist-info2/\.dist-info/)"; done
 for f in "$PYDIR"/site-packages/importlib_metadata-*.dist-info2; do mv "$f" "$(echo "$f" | sed s/\.dist-info2/\.dist-info/)"; done
+
 
 find -exec touch -h -d '2000-11-11T11:11:11+00:00' {} +
 

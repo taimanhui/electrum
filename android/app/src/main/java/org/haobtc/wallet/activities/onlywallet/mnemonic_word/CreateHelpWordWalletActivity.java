@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.onlywallet.mnemonic_word;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,8 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
     TextView tetTextNum;
     @BindView(R.id.bn_multi_next)
     Button bnMultiNext;
+    private String newWallet_type;
+    private String strNewseed;
 
     @Override
     public int getLayoutId() {
@@ -33,6 +36,9 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        newWallet_type = intent.getStringExtra("newWallet_type");
+        strNewseed = intent.getStringExtra("strNewseed");
 
     }
 
@@ -48,7 +54,12 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bn_multi_next:
-                mIntent(CreatePersonalHelpPassActivity.class);
+                String strWalletname = editWalletNameSetting.getText().toString();
+                Intent intent = new Intent(CreateHelpWordWalletActivity.this, CreatePersonalHelpPassActivity.class);
+                intent.putExtra("newWallet_type", newWallet_type);
+                intent.putExtra("strNewseed",strNewseed);
+                intent.putExtra("strnewWalletname",strWalletname);
+                startActivity(intent);
                 break;
         }
     }

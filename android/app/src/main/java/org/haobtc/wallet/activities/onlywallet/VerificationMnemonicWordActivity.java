@@ -68,6 +68,7 @@ public class VerificationMnemonicWordActivity extends BaseActivity {
     private final String FIRST_RUN = "is_first_run";
     private SharedPreferences.Editor edit;
     private MyDialog myDialog;
+    private String strName;
 
     @Override
     public int getLayoutId() {
@@ -77,12 +78,13 @@ public class VerificationMnemonicWordActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         myDialog = MyDialog.showDialog(VerificationMnemonicWordActivity.this);
         Intent intent = getIntent();
         String strSeeds = intent.getStringExtra("strSeeds");
         strPass1 = intent.getStringExtra("strPass1");
+        strName = intent.getStringExtra("strName");
         String[] wordsList = strSeeds.split(" ");
 
         ArrayList<String> strings = new ArrayList<>();
@@ -182,15 +184,15 @@ public class VerificationMnemonicWordActivity extends BaseActivity {
 
         try {
             Daemon.commands.callAttr("check_seed", strNewseed, strPass1);
-            //FIRST_RUN,if frist run
-            edit.putBoolean(FIRST_RUN, true);
-            edit.apply();
-            EventBus.getDefault().post(new FirstEvent("11"));
+            Intent intent = new Intent(this, AppWalletCreateFinishActivity.class);
+            intent.putExtra("strName",strName);
             myDialog.dismiss();
-            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-            finishAffinity();
         } catch (Exception e) {
+            myDialog.dismiss();
+            if (e.getMessage().contains("pair seed failed")){
+                mToast(getResources().getString(R.string.helpword_wrong));
+            }
             e.printStackTrace();
         }
 

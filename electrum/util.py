@@ -427,6 +427,7 @@ def profiler(func):
         return o
     return lambda *args, **kw_args: do_profile(args, kw_args)
 
+
 def android_ext_dir():
     from android.storage import primary_external_storage_path
     return primary_external_storage_path()
@@ -937,11 +938,12 @@ def create_bip21_uri(addr, amount_sat: Optional[int], message: Optional[str],
 
 
 def maybe_extract_bolt11_invoice(data: str) -> Optional[str]:
-    lower = data.lower()
-    if lower.startswith('lightning:ln'):
-        lower = lower[10:]
-    if lower.startswith('ln'):
-        return lower
+    data = data.strip()  # whitespaces
+    data = data.lower()
+    if data.startswith('lightning:ln'):
+        data = data[10:]
+    if data.startswith('ln'):
+        return data
     return None
 
 
@@ -1131,14 +1133,14 @@ class NetworkJobOnDefaultServer(Logger):
         """Initialise fields. Called every time the underlying
         server connection changes.
         """
-        self.group = SilentTaskGroup()
+        self.taskgroup = SilentTaskGroup()
 
     async def _start(self, interface: 'Interface'):
         self.interface = interface
-        await interface.group.spawn(self._start_tasks)
+        await interface.taskgroup.spawn(self._start_tasks)
 
     async def _start_tasks(self):
-        """Start tasks in self.group. Called every time the underlying
+        """Start tasks in self.taskgroup. Called every time the underlying
         server connection changes.
         """
         raise NotImplementedError()  # implemented by subclasses
@@ -1148,7 +1150,7 @@ class NetworkJobOnDefaultServer(Logger):
         await self._stop()
 
     async def _stop(self):
-        await self.group.cancel_remaining()
+        await self.taskgroup.cancel_remaining()
 
     @log_exceptions
     async def _restart(self, *args):

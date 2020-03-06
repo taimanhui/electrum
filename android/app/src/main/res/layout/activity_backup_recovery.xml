@@ -27,7 +27,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:text="@string/bixinkey_backups"
+            android:text="@string/key_backup"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 

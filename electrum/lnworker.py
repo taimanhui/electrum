@@ -7,7 +7,7 @@ import os
 from decimal import Decimal
 import random
 import time
-from typing import Optional, Sequence, Tuple, List, Dict, TYPE_CHECKING
+from typing import Optional, Sequence, Tuple, List, Dict, TYPE_CHECKING, NamedTuple
 import threading
 import socket
 import json
@@ -19,6 +19,7 @@ from concurrent import futures
 
 import dns.resolver
 import dns.exception
+from aiorpcx import run_in_thread
 
 from . import constants
 from . import keystore
@@ -32,7 +33,7 @@ from .transaction import Transaction
 from .crypto import sha256
 from .bip32 import BIP32Node
 from .util import bh2u, bfh, InvoiceError, resolve_dns_srv, is_ip_address, log_exceptions
-from .util import ignore_exceptions, make_aiohttp_session
+from .util import ignore_exceptions, make_aiohttp_session, SilentTaskGroup
 from .util import timestamp_to_datetime
 from .util import MyEncoder
 from .logging import Logger
@@ -55,7 +56,7 @@ from .lnutil import (Outpoint, LNPeerAddr,
                      ShortChannelID, PaymentAttemptLog, PaymentAttemptFailureDetails)
 from .lnutil import ln_dummy_address, ln_compare_features
 from .transaction import PartialTxOutput, PartialTransaction, PartialTxInput
-from .lnonion import OnionFailureCode
+from .lnonion import OnionFailureCode, process_onion_packet, OnionPacket
 from .lnmsg import decode_msg
 from .i18n import _
 from .lnrouter import RouteEdge, LNPaymentRoute, is_route_sane_to_use
@@ -75,15 +76,20 @@ GRAPH_DOWNLOAD_SECONDS = 600
 
 FALLBACK_NODE_LIST_TESTNET = (
     LNPeerAddr(host='203.132.95.10', port=9735, pubkey=bfh('038863cf8ab91046230f561cd5b386cbff8309fa02e3f0c3ed161a3aeb64a643b9')),
+    LNPeerAddr(host='2401:d002:4402:0:bf1d:986a:7598:6d49', port=9735, pubkey=bfh('038863cf8ab91046230f561cd5b386cbff8309fa02e3f0c3ed161a3aeb64a643b9')),
     LNPeerAddr(host='50.116.3.223', port=9734, pubkey=bfh('03236a685d30096b26692dce0cf0fa7c8528bdf61dbf5363a3ef6d5c92733a3016')),
     LNPeerAddr(host='3.16.119.191', port=9735, pubkey=bfh('03d5e17a3c213fe490e1b0c389f8cfcfcea08a29717d50a9f453735e0ab2a7c003')),
     LNPeerAddr(host='34.250.234.192', port=9735, pubkey=bfh('03933884aaf1d6b108397e5efe5c86bcf2d8ca8d2f700eda99db9214fc2712b134')),
     LNPeerAddr(host='88.99.209.230', port=9735, pubkey=bfh('0260d9119979caedc570ada883ff614c6efb93f7f7382e25d73ecbeba0b62df2d7')),
     LNPeerAddr(host='160.16.233.215', port=9735, pubkey=bfh('023ea0a53af875580899da0ab0a21455d9c19160c4ea1b7774c9d4be6810b02d2c')),
     LNPeerAddr(host='197.155.6.173', port=9735, pubkey=bfh('0269a94e8b32c005e4336bfb743c08a6e9beb13d940d57c479d95c8e687ccbdb9f')),
+    LNPeerAddr(host='2c0f:fb18:406::4', port=9735, pubkey=bfh('0269a94e8b32c005e4336bfb743c08a6e9beb13d940d57c479d95c8e687ccbdb9f')),
     LNPeerAddr(host='163.172.94.64', port=9735, pubkey=bfh('030f0bf260acdbd3edcad84d7588ec7c5df4711e87e6a23016f989b8d3a4147230')),
     LNPeerAddr(host='23.237.77.12', port=9735, pubkey=bfh('02312627fdf07fbdd7e5ddb136611bdde9b00d26821d14d94891395452f67af248')),
-    LNPeerAddr(host='197.155.6.173', port=9735, pubkey=bfh('0269a94e8b32c005e4336bfb743c08a6e9beb13d940d57c479d95c8e687ccbdb9f')),
+    LNPeerAddr(host='197.155.6.172', port=9735, pubkey=bfh('02ae2f22b02375e3e9b4b4a2db4f12e1b50752b4062dbefd6e01332acdaf680379')),
+    LNPeerAddr(host='2c0f:fb18:406::3', port=9735, pubkey=bfh('02ae2f22b02375e3e9b4b4a2db4f12e1b50752b4062dbefd6e01332acdaf680379')),
+    LNPeerAddr(host='23.239.23.44', port=9740, pubkey=bfh('034fe52e98a0e9d3c21b767e1b371881265d8c7578c21f5afd6d6438da10348b36')),
+    LNPeerAddr(host='2600:3c01::f03c:91ff:fe05:349c', port=9740, pubkey=bfh('034fe52e98a0e9d3c21b767e1b371881265d8c7578c21f5afd6d6438da10348b36')),
 )
 
 FALLBACK_NODE_LIST_MAINNET = [
@@ -103,10 +109,18 @@ FALLBACK_NODE_LIST_MAINNET = [
     LNPeerAddr(host='167.172.44.148', port=9735, pubkey=bfh('0395033b252c6f40e3756984162d68174e2bd8060a129c0d3462a9370471c6d28f')),
     LNPeerAddr(host='138.68.14.104', port=9735, pubkey=bfh('03bb88ccc444534da7b5b64b4f7b15e1eccb18e102db0e400d4b9cfe93763aa26d')),
     LNPeerAddr(host='3.124.63.44', port=9735, pubkey=bfh('0242a4ae0c5bef18048fbecf995094b74bfb0f7391418d71ed394784373f41e4f3')),
+    LNPeerAddr(host='2001:470:8:2e1::43', port=9735, pubkey=bfh('03baa70886d9200af0ffbd3f9e18d96008331c858456b16e3a9b41e735c6208fef')),
+    LNPeerAddr(host='2601:186:c100:6bcd:219:d1ff:fe75:dc2f', port=9735, pubkey=bfh('0298f6074a454a1f5345cb2a7c6f9fce206cd0bf675d177cdbf0ca7508dd28852f')),
+    LNPeerAddr(host='2001:41d0:e:734::1', port=9735, pubkey=bfh('03a503d8e30f2ff407096d235b5db63b4fcf3f89a653acb6f43d3fc492a7674019')),
+    LNPeerAddr(host='2a01:4f9:2b:2254::2', port=9735, pubkey=bfh('02f3069a342ae2883a6f29e275f06f28a56a6ea2e2d96f5888a3266444dcf542b6')),
+    LNPeerAddr(host='2a02:8070:24c1:100:528c:2997:6dbc:a054', port=9735, pubkey=bfh('02a45def9ae014fdd2603dd7033d157faa3a55a72b06a63ae22ef46d9fafdc6e8d')),
+    LNPeerAddr(host='2600:3c01::f03c:91ff:fe05:349c', port=9736, pubkey=bfh('02731b798b39a09f9f14e90ee601afb6ebb796d6e5797de14582a978770b33700f')),
+    LNPeerAddr(host='2a00:8a60:e012:a00::21', port=9735, pubkey=bfh('027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71')),
+    LNPeerAddr(host='2604:a880:400:d1::8bd:1001', port=9735, pubkey=bfh('03649c72a4816f0cd546f84aafbd657e92a30ab474de7ab795e8b5650a427611f7')),
+    LNPeerAddr(host='2a01:4f8:c0c:7b31::1', port=9735, pubkey=bfh('02c16cca44562b590dd279c942200bdccfd4f990c3a69fad620c10ef2f8228eaff')),
+    LNPeerAddr(host='2001:41d0:1:b40d::1', port=9735, pubkey=bfh('026726a4b043d413b45b334876d17b8a98848129604429ec65532ba286a42efeac')),
 ]
 
-
-from typing import NamedTuple
 
 class PaymentInfo(NamedTuple):
     payment_hash: bytes
@@ -126,6 +140,7 @@ class LNWorker(Logger):
         Logger.__init__(self)
         self.node_keypair = generate_keypair(BIP32Node.from_xkey(xprv), LnKeyFamily.NODE_KEY)
         self.peers = {}  # type: Dict[bytes, Peer]  # pubkey -> Peer
+        self.taskgroup = SilentTaskGroup()
         # set some feature flags as baseline for both LNWallet and LNGossip
         # note that e.g. DATA_LOSS_PROTECT is needed for LNGossip as many peers require it
         self.localfeatures = LnLocalFeatures(0)
@@ -136,6 +151,7 @@ class LNWorker(Logger):
         return {}
 
     async def maybe_listen(self):
+        # FIXME: only one LNWorker can listen at a time (single port)
         listen_addr = self.config.get('lightning_listen')
         if listen_addr:
             addr, port = listen_addr.rsplit(':', 2)
@@ -151,11 +167,26 @@ class LNWorker(Logger):
                     return
                 peer = Peer(self, node_id, transport)
                 self.peers[node_id] = peer
-                await self.network.main_taskgroup.spawn(peer.main_loop())
-            await asyncio.start_server(cb, addr, int(port))
+                await self.taskgroup.spawn(peer.main_loop())
+            try:
+                await asyncio.start_server(cb, addr, int(port))
+            except OSError as e:
+                self.logger.error(f"cannot listen for lightning p2p. error: {e!r}")
 
-    @log_exceptions
+    @ignore_exceptions  # don't kill outer taskgroup
     async def main_loop(self):
+        self.logger.info("starting taskgroup.")
+        try:
+            async with self.taskgroup as group:
+                await group.spawn(self._maintain_connectivity())
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:
+            self.logger.exception("taskgroup died.")
+        finally:
+            self.logger.info("taskgroup stopped.")
+
+    async def _maintain_connectivity(self):
         while True:
             await asyncio.sleep(1)
             now = time.time()
@@ -176,11 +207,14 @@ class LNWorker(Logger):
         self._last_tried_peer[peer_addr] = time.time()
         self.logger.info(f"adding peer {peer_addr}")
         peer = Peer(self, node_id, transport)
-        await self.network.main_taskgroup.spawn(peer.main_loop())
+        await self.taskgroup.spawn(peer.main_loop())
         self.peers[node_id] = peer
         return peer
 
-    def num_peers(self):
+    def peer_closed(self, peer: Peer) -> None:
+        self.peers.pop(peer.pubkey)
+
+    def num_peers(self) -> int:
         return sum([p.is_initialized() for p in self.peers.values()])
 
     def start_network(self, network: 'Network'):
@@ -252,17 +286,24 @@ class LNWorker(Logger):
                 #self.logger.info('taking random ln peer from our channel db')
                 return [peer]
 
-        # TODO remove this. For some reason the dns seeds seem to ignore the realm byte
-        # and only return mainnet nodes. so for the time being dns seeding is disabled:
+        # getting desperate... let's try hardcoded fallback list of peers
         if constants.net in (constants.BitcoinTestnet, ):
-            return [random.choice(FALLBACK_NODE_LIST_TESTNET)]
+            fallback_list = FALLBACK_NODE_LIST_TESTNET
         elif constants.net in (constants.BitcoinMainnet, ):
-            return [random.choice(FALLBACK_NODE_LIST_MAINNET)]
+            fallback_list = FALLBACK_NODE_LIST_MAINNET
         else:
-            return []
+            return []  # regtest??
 
-        # try peers from dns seed.
-        # return several peers to reduce the number of dns queries.
+        fallback_list = [peer for peer in fallback_list if peer not in self._last_tried_peer]
+        if fallback_list:
+            return [random.choice(fallback_list)]
+
+        # last resort: try dns seeds (BOLT-10)
+        return await run_in_thread(self._get_peers_from_dns_seeds)
+
+    def _get_peers_from_dns_seeds(self) -> Sequence[LNPeerAddr]:
+        # NOTE: potentially long blocking call, do not run directly on asyncio event loop.
+        # Return several peers to reduce the number of dns queries.
         if not constants.net.LN_DNS_SEEDS:
             return []
         dns_seed = random.choice(constants.net.LN_DNS_SEEDS)
@@ -273,6 +314,7 @@ class LNWorker(Logger):
             srv_answers = resolve_dns_srv('r{}.{}'.format(
                 constants.net.LN_REALM_BYTE, dns_seed))
         except dns.exception.DNSException as e:
+            self.logger.info(f'failed querying (1) dns seed "{dns_seed}" for ln peers: {repr(e)}')
             return []
         random.shuffle(srv_answers)
         num_peers = 2 * NUM_PEERS_TARGET
@@ -283,7 +325,8 @@ class LNWorker(Logger):
             try:
                 # note: this might block for several seconds
                 answers = dns.resolver.query(srv_ans['host'])
-            except dns.exception.DNSException:
+            except dns.exception.DNSException as e:
+                self.logger.info(f'failed querying (2) dns seed "{dns_seed}" for ln peers: {repr(e)}')
                 continue
             try:
                 ln_host = str(answers[0])
@@ -292,9 +335,9 @@ class LNWorker(Logger):
                 pubkey = get_compressed_pubkey_from_bech32(bech32_pubkey)
                 peers.append(LNPeerAddr(ln_host, port, pubkey))
             except Exception as e:
-                self.logger.info('error with parsing peer from dns seed: {}'.format(e))
+                self.logger.info(f'error with parsing peer from dns seed: {repr(e)}')
                 continue
-        self.logger.info('got {} ln peers from dns seed'.format(len(peers)))
+        self.logger.info(f'got {len(peers)} ln peers from dns seed')
         return peers
 
     @staticmethod
@@ -325,7 +368,7 @@ class LNGossip(LNWorker):
     def start_network(self, network: 'Network'):
         assert network
         super().start_network(network)
-        asyncio.run_coroutine_threadsafe(network.daemon.taskgroup.spawn(self.maintain_db()), self.network.asyncio_loop)
+        asyncio.run_coroutine_threadsafe(self.taskgroup.spawn(self.maintain_db()), self.network.asyncio_loop)
 
     async def maintain_db(self):
         await self.channel_db.load_data()
@@ -341,16 +384,26 @@ class LNGossip(LNWorker):
         self.unknown_ids.update(new)
         self.network.trigger_callback('unknown_channels', len(self.unknown_ids))
         self.network.trigger_callback('gossip_peers', self.num_peers())
+        self.network.trigger_callback('ln_gossip_sync_progress')
 
     def get_ids_to_query(self):
         N = 500
         l = list(self.unknown_ids)
         self.unknown_ids = set(l[N:])
         self.network.trigger_callback('unknown_channels', len(self.unknown_ids))
+        self.network.trigger_callback('ln_gossip_sync_progress')
         return l[0:N]
 
-    def peer_closed(self, peer):
-        self.peers.pop(peer.pubkey)
+    def get_sync_progress_estimate(self) -> Tuple[Optional[int], Optional[int]]:
+        if self.num_peers() == 0:
+            return None, None
+        nchans_with_0p, nchans_with_1p, nchans_with_2p = self.channel_db.get_num_channels_partitioned_by_policy_count()
+        num_db_channels = nchans_with_0p + nchans_with_1p + nchans_with_2p
+        # some channels will never have two policies (only one is in gossip?...)
+        # so if we have at least 1 policy for a channel, we consider that channel "complete" here
+        current_est = num_db_channels - nchans_with_0p
+        total_est = len(self.unknown_ids) + num_db_channels
+        return current_est, total_est
 
 
 class LNWallet(LNWorker):
@@ -368,6 +421,9 @@ class LNWallet(LNWorker):
         self.sweep_address = wallet.get_receiving_address()
         self.lock = threading.RLock()
         self.logs = defaultdict(list)  # type: Dict[str, List[PaymentAttemptLog]]  # key is RHASH
+        # used in tests
+        self.enable_htlc_settle = asyncio.Event()
+        self.enable_htlc_settle.set()
 
         # note: accessing channels (besides simple lookup) needs self.lock!
         self.channels = {}
@@ -429,7 +485,6 @@ class LNWallet(LNWorker):
         self.lnwatcher = LNWalletWatcher(self, network)
         self.lnwatcher.start_network(network)
         self.network = network
-        daemon = network.daemon
         for chan_id, chan in self.channels.items():
             self.lnwatcher.add_channel(chan.funding_outpoint.to_str(), chan.get_funding_address())
 
@@ -441,14 +496,14 @@ class LNWallet(LNWorker):
                 self.sync_with_local_watchtower(),
                 self.sync_with_remote_watchtower(),
         ]:
-            # FIXME: exceptions in those coroutines will cancel daemon.taskgroup
-            asyncio.run_coroutine_threadsafe(daemon.taskgroup.spawn(coro), self.network.asyncio_loop)
+            tg_coro = self.taskgroup.spawn(coro)
+            asyncio.run_coroutine_threadsafe(tg_coro, self.network.asyncio_loop)
 
     def peer_closed(self, peer):
         for chan in self.channels_for_peer(peer.pubkey).values():
             chan.peer_state = peer_states.DISCONNECTED
             self.network.trigger_callback('channel', chan)
-        self.peers.pop(peer.pubkey)
+        super().peer_closed(peer)
 
     def get_channel_status(self, chan):
         # status displayed in the GUI
@@ -550,7 +605,7 @@ class LNWallet(LNWorker):
             item = {
                 'channel_id': bh2u(chan.channel_id),
                 'type': 'channel_opening',
-                'label': _('Open channel'),
+                'label': self.wallet.get_label(funding_txid) or _('Open channel'),
                 'txid': funding_txid,
                 'amount_msat': chan.balance(LOCAL, ctn=0),
                 'direction': 'received',
@@ -565,7 +620,7 @@ class LNWallet(LNWorker):
             item = {
                 'channel_id': bh2u(chan.channel_id),
                 'txid': closing_txid,
-                'label': _('Close channel'),
+                'label': self.wallet.get_label(closing_txid) or _('Close channel'),
                 'type': 'channel_closure',
                 'amount_msat': -chan.balance_minus_outgoing_htlcs(LOCAL),
                 'direction': 'sent',
@@ -684,9 +739,6 @@ class LNWallet(LNWorker):
             await self.force_close_channel(chan.channel_id)
             return
 
-        if chan.get_state() == channel_states.PREOPENING:
-            chan.set_state(channel_states.OPENING)
-
         if chan.get_state() == channel_states.OPENING:
             if chan.short_channel_id is None:
                 self.save_short_chan_id(chan)
@@ -775,14 +827,11 @@ class LNWallet(LNWorker):
             funding_sat=funding_sat,
             push_msat=push_sat * 1000,
             temp_channel_id=os.urandom(32))
-        self.add_new_channel(chan)
         self.network.trigger_callback('channels_updated', self.wallet)
         self.wallet.add_transaction(funding_tx)  # save tx as local into the wallet
         self.wallet.set_label(funding_tx.txid(), _('Open channel'))
         if funding_tx.is_complete():
-            # TODO make more robust (timeout low? server returns error?)
-            await asyncio.wait_for(self.network.broadcast_transaction(funding_tx), LN_P2P_NETWORK_TIMEOUT)
-            chan.set_state(channel_states.OPENING)
+            await self.network.try_broadcasting(funding_tx, 'open_channel')
         return chan, funding_tx
 
     def add_channel(self, chan):
@@ -808,8 +857,11 @@ class LNWallet(LNWorker):
                 if not addrs:
                     raise ConnStringFormatError(_('Don\'t know any addresses for node:') + ' ' + bh2u(node_id))
                 host, port, timestamp = self.choose_preferred_address(addrs)
+            port = int(port)
+            # Try DNS-resolving the host (if needed). This is simply so that
+            # the caller gets a nice exception if it cannot be resolved.
             try:
-                socket.getaddrinfo(host, int(port))
+                await asyncio.get_event_loop().getaddrinfo(host, port)
             except socket.gaierror:
                 raise ConnStringFormatError(_('Hostname does not resolve (getaddrinfo failed)'))
             # add peer
@@ -1276,7 +1328,7 @@ class LNWallet(LNWorker):
             with self.lock:
                 channels = list(self.channels.values())
             for chan in channels:
-                if chan.is_closed() or chan.is_closing():
+                if chan.is_closed():
                     continue
                 if constants.net is not constants.BitcoinRegtest:
                     chan_feerate = chan.get_latest_feerate(LOCAL)
@@ -1289,10 +1341,9 @@ class LNWallet(LNWorker):
                     continue
                 peer = self.peers.get(chan.node_id, None)
                 if peer:
-                    await peer.group.spawn(peer.reestablish_channel(chan))
+                    await peer.taskgroup.spawn(peer.reestablish_channel(chan))
                 else:
-                    await self.network.main_taskgroup.spawn(
-                        self.reestablish_peer_for_given_channel(chan))
+                    await self.taskgroup.spawn(self.reestablish_peer_for_given_channel(chan))
 
     def current_feerate_per_kw(self):
         from .simple_config import FEE_LN_ETA_TARGET, FEERATE_FALLBACK_STATIC_FEE, FEERATE_REGTEST_HARDCODED

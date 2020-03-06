@@ -39,6 +39,7 @@ public class RemeberMnemonicWordActivity extends BaseActivity {
     private final String FIRST_RUN = "is_first_run";
     private String strSeed;
     private String strPass1;
+    private String strName;
 
     @Override
     public int getLayoutId() {
@@ -48,10 +49,11 @@ public class RemeberMnemonicWordActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         Intent intent = getIntent();
         strPass1 = intent.getStringExtra("strPass1");
+        strName = intent.getStringExtra("strName");
 
 
     }
@@ -81,16 +83,13 @@ public class RemeberMnemonicWordActivity extends BaseActivity {
                 Intent intent1 = new Intent(RemeberMnemonicWordActivity.this, VerificationMnemonicWordActivity.class);
                 intent1.putExtra("strSeeds",strSeed);
                 intent1.putExtra("strPass1",strPass1);
+                intent1.putExtra("strName",strName);
                 startActivity(intent1);
                 break;
             case R.id.tet_jump:
-                //FIRST_RUN,if frist run
-                edit.putBoolean(FIRST_RUN, true);
-                edit.apply();
-                EventBus.getDefault().post(new FirstEvent("11"));
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(this, AppWalletCreateFinishActivity.class);
+                intent.putExtra("strName",strName);
                 startActivity(intent);
-                finishAffinity();
                 break;
         }
     }

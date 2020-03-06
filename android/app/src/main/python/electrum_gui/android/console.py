@@ -188,7 +188,7 @@ class AndroidCommands(commands.Commands):
             else:
                 c, u, x = self.wallet.get_balance()
                 text = _("Balance") + ": %s " % (self.format_amount_and_units(c))
-                out['balance'] = self.format_amount(c)
+                out['balance'] = self.format_amount(c) + ' '+ self.base_unit
                 out['fiat'] = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
                 if u:
                     out['unconfirmed'] = self.format_amount(u, is_diff=True).strip()

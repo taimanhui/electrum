@@ -17,9 +17,12 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.recyclerview.widget.RecyclerView;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -55,7 +58,7 @@ public class CreateOnlyChooseActivity extends BaseActivity {
 
     @SuppressLint("DefaultLocale")
     private void init() {
-        tetPersonalNum.setText(String.format("%s(0/%d)", getResources().getString(R.string.creat_personal),sigNum));
+        tetPersonalNum.setText(String.format("%s(0/%d)", getResources().getString(R.string.creat_personal), sigNum));
     }
 
     @Override
@@ -70,7 +73,8 @@ public class CreateOnlyChooseActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bn_add_key:
-                showSelectFeeDialogs(CreateOnlyChooseActivity.this, R.layout.bluetooth_personal);
+                // new version code
+                showPopupAddCosigner1();
                 break;
             case R.id.bn_complete_add_cosigner:
                 Intent intent = new Intent(CreateOnlyChooseActivity.this, CreatFinishPersonalActivity.class);
@@ -78,26 +82,10 @@ public class CreateOnlyChooseActivity extends BaseActivity {
                 break;
         }
     }
-    private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        dialogBtom = new Dialog(context, R.style.dialog);
 
-        //cancel dialog
-        view.findViewById(R.id.img_Cancle).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-
-
-        dialogBtom.setContentView(view);
-        Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
+    private void showPopupAddCosigner1() {
+        CustomerDialogFragment dialogFragment = new CustomerDialogFragment("", null, "");
+        dialogFragment.show(getSupportFragmentManager(), "");
     }
 
 }
