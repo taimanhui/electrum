@@ -158,18 +158,18 @@ print("after get exchange amount = %s" % data)
 # testcommond.broadcast_tx(sign_tx)
 #testcommond.clear_invoices()
 
-testcommond.set_use_change(False)
+testcommond.set_use_change(True)
 testcommond.set_unconf(True)
 
 #create_tx
 time.sleep(5)
-flag = False
+flag = True
 if not flag:
     sign_list = []
     for i in [1, 2]:
         print("i=%s------------" %i)
         all_output = []
-        output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2': '0.05'}
+        output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2': '0.001'}
         # output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
         # output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
         # output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
@@ -204,7 +204,7 @@ if not flag:
         testcommond.broadcast_tx(sig)
 elif flag:
     all_output = []
-    output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2':'0.05'}
+    output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2':'0.005'}
     #output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
     #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
     #output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}

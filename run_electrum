@@ -341,6 +341,7 @@ if __name__ == '__main__':
     # singleton
     config = SimpleConfig(config_options)
 
+    constants.set_testnet()
     if config.get('testnet'):
         constants.set_testnet()
     elif config.get('regtest'):

@@ -7,7 +7,6 @@ class TestLightning(unittest.TestCase):
 
     @staticmethod
     def run_shell(args, timeout=30):
-        print("args=%s" %args)
         process = subprocess.Popen(['electrum/tests/regtest/regtest.sh'] + args, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
         for line in iter(process.stdout.readline, b''):
             sys.stdout.write(line.decode(sys.stdout.encoding))
@@ -20,17 +19,13 @@ class TestLightning(unittest.TestCase):
         sys.stdout.write("***** %s ******\n" % test_name)
         # initialize and get funds
         for agent in self.agents:
-            print("111111111111")
             self.run_shell(['init', agent])
         # mine a block so that funds are confirmed
-        print("2222222222")
         self.run_shell(['new_block'])
         # extra configuration (optional)
-        print("3333333333333333333333")
         self.run_shell(['configure_' + test_name])
         # start daemons
         for agent in self.agents:
-            print("44444444444444")
             self.run_shell(['start', agent])
 
     def tearDown(self):

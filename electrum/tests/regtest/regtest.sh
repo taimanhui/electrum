@@ -82,10 +82,10 @@ if [[ $1 == "init" ]]; then
     $agent setconfig --offline server 127.0.0.1:51001:t
     # alice is funded, bob is listening
     if [[ $2 == "bob" ]]; then
-	    $bob setconfig --offline lightning_listen localhost:9735
+	$bob setconfig --offline lightning_listen localhost:9735
     else
-      echo "funding $2"
-      $bitcoin_cli sendtoaddress $($agent getunusedaddress -o) 1
+        echo "funding $2"
+        $bitcoin_cli sendtoaddress $($agent getunusedaddress -o) 1
     fi
 fi
 

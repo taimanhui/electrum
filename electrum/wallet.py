@@ -1484,7 +1484,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             except UnknownTxinType:
                 pass
 
-    def sign_transaction(self, tx: 'PartialTransaction', password) -> Optional[PartialTransaction]:
+    def sign_transaction(self, tx: Transaction, password) -> Optional[PartialTransaction]:
         if self.is_watching_only():
             return
         if not isinstance(tx, PartialTransaction):

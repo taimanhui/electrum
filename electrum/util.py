@@ -427,6 +427,7 @@ def profiler(func):
         return o
     return lambda *args, **kw_args: do_profile(args, kw_args)
 
+
 def android_ext_dir():
     from android.storage import primary_external_storage_path
     return primary_external_storage_path()

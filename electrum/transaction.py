@@ -28,9 +28,6 @@
 # Note: The deserialization code originally comes from ABE.
 
 import struct
-import traceback
-import sys
-import threading
 import io
 import base64
 from typing import (Sequence, Union, NamedTuple, Tuple, Optional, Iterable,
@@ -51,8 +48,9 @@ from .bitcoin import (TYPE_ADDRESS, TYPE_SCRIPT, hash_160,
 from .crypto import sha256d
 from .logging import get_logger
 
-from .bitcoin import rev_hex, int_to_hex, EncodeBase58Check, DecodeBase58Check
-from .bip32 import *
+if TYPE_CHECKING:
+    from .wallet import Abstract_Wallet
+
 
 _logger = get_logger(__name__)
 DEBUG_PSBT_PARSING = False
@@ -651,7 +649,6 @@ class Transaction:
     def deserialize(self) -> None:
         if self._cached_network_ser is None:
             return
-
         if self._inputs is not None:
             return
 
