@@ -51,8 +51,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+//        sourceCompatibility = 1.8
+//        targetCompatibility = 1.8
     }
     dataBinding.enabled = true
     sourceSets {
@@ -62,10 +64,9 @@ android {
                 include "electrum/**"                               // In ../.. (renamed below)
                 include("chaquopy/**", "electrum_gui/**",  // In src/main/python
                         "electrum_plugins/**")
+                include "android/app/src/main/trezor/python-trezor/src/**"
                 exclude "**/*.po", "**/*.pot"
 
-                srcDir "src/main/trezor/python-trezor/src"
-                include "trezorlib/**"
             }
         }
     }
