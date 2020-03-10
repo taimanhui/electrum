@@ -337,7 +337,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         handler = MyHandler.getInstance(getActivity());
         customerUI.put("handler", handler);
         NfcUtils.nfc(getActivity());
-        if (TransactionDetailsActivity.TAG.equals(tag)) {
+        if (!ManyWalletTogetherActivity.TAG.equals(tag)) {
             relativeLayout.setVisibility(View.GONE);
         }
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {

@@ -176,11 +176,12 @@ public class TransactionDetailsActivity extends BaseActivity {
                     //sign input pass
                     signInputpassDialog();
                 } else {
-                    showCustomerDialog();
+//                    showCustomerDialog();
+                    gotoConfirmOnHardware();
                 }
             }
         });
-        preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         language = preferences.getString("language", "");
         Intent intent = getIntent();
@@ -472,6 +473,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private Runnable runnable = this::gotoConfirmOnHardware;
 
     private void gotoConfirmOnHardware() {
+        Log.i("jsdhujbejnfksndml", "output_addr: "+output_addr);
         Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", output_addr);
@@ -541,6 +543,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
+            EventBus.getDefault().post(new FirstEvent("22"));
             imgProgressone.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
@@ -550,7 +553,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             //trsaction hash and time
             linTractionHash.setVisibility(View.VISIBLE);
             linTractionTime.setVisibility(View.VISIBLE);
-            EventBus.getDefault().post(new FirstEvent("22"));
             Log.i("signedRowTrsation", "-------: ");
         } catch (Exception e) {
             e.printStackTrace();

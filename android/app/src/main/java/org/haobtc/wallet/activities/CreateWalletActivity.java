@@ -46,7 +46,7 @@ public class CreateWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
 
     }

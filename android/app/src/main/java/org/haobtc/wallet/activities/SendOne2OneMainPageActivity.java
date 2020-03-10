@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -76,6 +75,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     TextView tvIndicator;
     @BindView(R.id.lin_btcAddress)
     LinearLayout linBtcAddress;
+    @BindView(R.id.tet_Table)
+    TextView tetTable;
+    @BindView(R.id.tet_WalletTable)
+    TextView tetWalletTable;
     private LinearLayout selectSend;
     private ImageView selectSigNum, buttonSweep;
     private EditText editTextComments, editAddress;
@@ -113,6 +116,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener;
     private boolean mIsSoftKeyboardShowing;
     private int screenHeight;
+    private String base_unit;
 
     @Override
     public int getLayoutId() {
@@ -121,7 +125,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        base_unit = preferences.getString("base_unit", "BTC");
         edit = preferences.edit();
         selectSend = findViewById(R.id.llt_select_wallet);
         tetMoneye = findViewById(R.id.tet_Money);
@@ -153,7 +158,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
                 } else {
                     //getFeerate
-                    Log.i("getFeerate", "222222222222222222");
                     getFeerate();
                 }
             }
@@ -165,13 +169,13 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
                 } else {
                     //getFeerate
-                    Log.i("getFeerate", "33333333333333333333");
                     getFeerate();
                 }
             }
         });
 
     }
+
     private void registerKeyBoard() {
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
@@ -192,8 +196,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
                 if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
                     mIsSoftKeyboardShowing = isKeyboardShowing;
-                    if (mIsSoftKeyboardShowing){
-                    }else{
+                    if (mIsSoftKeyboardShowing) {
+                    } else {
                         //getFeerate
                         getFeerate();
                     }
@@ -214,6 +218,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         buttonSweep.setOnClickListener(this);
         buttonPaste.setOnClickListener(this);
         dataListName = new ArrayList<>();
+        tetTable.setText(base_unit);
+        tetWalletTable.setText(base_unit);
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
         wallet_amount = intent.getStringExtra("wallet_balance");
@@ -257,7 +263,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             String strFee = get_default_fee_status.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
             if (strFee.contains("sat/byte")) {
-                String strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte")+8);
+                String strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "");
 
@@ -544,7 +550,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             case R.id.tv_send2many:
                 Intent intent = new Intent(this, Send2ManyActivity.class);
                 intent.putExtra("wallet_name", wallet_name);
-                intent.putExtra("wallet_type",waletType);
+                intent.putExtra("wallet_type", waletType);
                 startActivity(intent);
                 break;
             case R.id.create_trans_one2one:
@@ -730,7 +736,15 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             BigDecimal bignum1 = new BigDecimal(strAmount);
             Log.i("wallet_amount", "afterTex+++++ " + wallet_amount);
             if (!TextUtils.isEmpty(wallet_amount)) {
-                String strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" mBTC"));
+                String strBtc = "";
+                if (wallet_amount.contains("mBTC")) {
+                    strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" mBTC"));
+                } else if (wallet_amount.contains("sat")) {
+                    strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" sat"));
+                } else {
+                    strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" BTC"));
+                }
+
                 BigDecimal bignum2 = new BigDecimal(strBtc);
                 int math = bignum1.compareTo(bignum2);
                 //if math = 1 -> bignum2
@@ -786,6 +800,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }
 
 

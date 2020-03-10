@@ -108,7 +108,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         Intent intent = getIntent();
         addressList = (List) getIntent().getSerializableExtra("listdetail");

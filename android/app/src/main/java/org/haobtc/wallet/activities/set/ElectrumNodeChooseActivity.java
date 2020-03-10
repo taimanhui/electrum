@@ -1,7 +1,9 @@
 package org.haobtc.wallet.activities.set;
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -11,11 +13,14 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ElectrumListAdapter;
+import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -36,7 +41,10 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
     @BindView(R.id.btn_Finish)
     Button btnFinish;
     private PyObject get_server_list;
-    private ArrayList<String> electrumList;
+    private ArrayList<CNYBean> electrumList;
+    private int exChange;
+    private SharedPreferences.Editor edit;
+    private ArrayList<SendMoreAddressEvent> addressEvents;
 
     @Override
     public int getLayoutId() {
@@ -46,12 +54,16 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
+        exChange = preferences.getInt("exChange", 0);
 
     }
 
     @Override
     public void initData() {
         electrumList = new ArrayList<>();
+        addressEvents = new ArrayList<>();
         //get electrum list
         getElectrumData();
 
@@ -64,6 +76,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
             e.printStackTrace();
         }
         if (get_server_list != null) {
+            SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
             String get_server = get_server_list.toString();
             Map<String, Object> jsonToMap = JSONObject.parseObject(get_server);
             Set<String> keySets = jsonToMap.keySet();
@@ -80,13 +93,28 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     if ("s".equals(vk)) {
                         String vvalue = vToMap.get(vk).toString();
                         String strElectrum = k + ":" + vvalue;
-                        electrumList.add(strElectrum);
+                        sendMoreAddressEvent.setInputAddress(k);
+                        sendMoreAddressEvent.setInputAmount(vvalue);
+                        addressEvents.add(sendMoreAddressEvent);
+                        CNYBean cnyBean = new CNYBean(strElectrum, false);
+                        electrumList.add(cnyBean);
                     }
                 }
             }
-            ElectrumListAdapter electrumListAdapter = new ElectrumListAdapter(electrumList);
+            ElectrumListAdapter electrumListAdapter = new ElectrumListAdapter(ElectrumNodeChooseActivity.this,electrumList,exChange);
             reclNodeChose.setAdapter(electrumListAdapter);
-
+            electrumListAdapter.setOnLisennorClick(new ElectrumListAdapter.onLisennorClick() {
+                @Override
+                public void ItemClick(int pos) {
+                    try {
+                        Daemon.commands.callAttr("set_server",addressEvents.get(pos).getInputAddress(),addressEvents.get(pos).getInputAmount());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    edit.putInt("exChange",pos);
+                    edit.apply();
+                }
+            });
         }
     }
 

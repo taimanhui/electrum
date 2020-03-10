@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.onlywallet;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -22,6 +23,7 @@ import androidx.annotation.LayoutRes;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 
@@ -42,6 +44,9 @@ public class CreatePersonalWalletActivity extends BaseActivity {
     Button bnMultiNext;
     @BindView(R.id.tv_indicator)
     TextView tvIndicator;
+    private SharedPreferences.Editor edit;
+    private int defaultName;
+    private int walletNameNum;
 
     @Override
     public int getLayoutId() {
@@ -51,11 +56,17 @@ public class CreatePersonalWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
+        defaultName = preferences.getInt("defaultName", 0);
         init();
 
     }
 
     private void init() {
+        walletNameNum = defaultName+1;
+        editWalletNameSetting.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
+
         editWalletNameSetting.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -164,36 +175,20 @@ public class CreatePersonalWalletActivity extends BaseActivity {
             e.printStackTrace();
 
         }
+        edit.putInt("defaultName",walletNameNum);
+        edit.apply();
         if (sigNum > 1) {
             Intent intent = new Intent(CreatePersonalWalletActivity.this, CreateOnlyChooseActivity.class);
             intent.putExtra("sigNum", sigNum);
             startActivity(intent);
         } else {
-            showSelectFeeDialogs(CreatePersonalWalletActivity.this, R.layout.bluetooth_personal);
+            // new version code
+            showPopupAddCosigner1();
         }
 
     }
-
-    private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtom = new Dialog(context, R.style.dialog);
-
-        //cancel dialog
-        view.findViewById(R.id.img_Cancle).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-
-
-        dialogBtom.setContentView(view);
-        Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
+    private void showPopupAddCosigner1() {
+        CustomerDialogFragment dialogFragment = new CustomerDialogFragment("", null, "");
+        dialogFragment.show(getSupportFragmentManager(), "");
     }
-
 }

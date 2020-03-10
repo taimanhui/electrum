@@ -248,7 +248,7 @@
     <string name="no_singn">暂无签名</string>
     <string name="confrim_time">确认时间</string>
     <string name="broad_text">交易需广播到主网确认方能完成发币</string>
-    <string name="input_btc_address">请输入BTC地址</string>
+    <string name="input_btc_address">请输入地址</string>
     <string name="unconfirm">(未确认)</string>
     <string name="get_bi_address">收币地址</string>
     <string name="get_bi_num">收币数量</string>
@@ -401,4 +401,13 @@
     <string name="ble_device_connecting">蓝牙设备连接中</string>
     <string name="tip_ble_bonding">请开启BixinKEY, 确认配对码</string>
     <string name="confirm_pub">确认公钥</string>
+    <string name="input_backup_wallet">导入备份钱包</string>
+    <string name="is_use">可使用</string>
+    <string name="the_only_bixinkey">BixinKEY中任意一个授权转账</string>
+    <string name="iknow_risk">我已知晓以上风险</string>
+    <string name="key_backup">BixinKEY备份&#38;恢复</string>
+    <string name="pin_wrong">PIN码输入有误，请从新输入</string>
+    <string name="recover_backup">恢复备份钱包</string>
+    <string name="improt_wrong">请求失败</string>
+
 </resources>

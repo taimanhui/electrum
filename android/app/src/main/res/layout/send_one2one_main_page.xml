@@ -37,12 +37,12 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_marginBottom="@dimen/dp_20"
         android:layout_height="match_parent"
         android:background="@color/bk_page">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_marginBottom="@dimen/dp_30"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -82,6 +82,7 @@
                         android:textColor="@color/text" />
 
                     <TextView
+                        android:id="@+id/tet_WalletTable"
                         android:layout_width="wrap_content"
                         android:layout_height="18dp"
                         android:layout_marginStart="@dimen/text_margin"
@@ -225,6 +226,7 @@
                                 tools:ignore="NestedWeights" />
 
                             <TextView
+                                android:id="@+id/tet_Table"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:layout_marginEnd="10.5dp"
@@ -458,11 +460,9 @@
 
                     </LinearLayout>
 
-
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
 
             <Button
                 android:id="@+id/create_trans_one2one"
@@ -470,7 +470,6 @@
                 android:layout_height="@dimen/dp_40"
                 android:layout_centerInParent="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="@dimen/dp_20"
                 android:layout_centerVertical="true"
                 android:layout_marginTop="@dimen/dp_30"
                 android:background="@drawable/button_bk"

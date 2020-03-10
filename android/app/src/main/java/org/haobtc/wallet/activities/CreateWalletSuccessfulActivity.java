@@ -54,7 +54,7 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(CreateWalletSuccessfulActivity.this);
-        preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
 
 
@@ -96,9 +96,6 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
                 Toast.makeText(CreateWalletSuccessfulActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_enter_wallet:
-                //FIRST_RUN,if frist run
-                edit.putBoolean(FIRST_RUN, true);
-                edit.apply();
                 EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);

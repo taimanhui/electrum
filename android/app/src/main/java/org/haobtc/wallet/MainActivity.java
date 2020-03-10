@@ -82,10 +82,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     //remeber first back time
     private long firstTime = 0;
     private MyDialog myDialog;
-    private ArrayList<String> dataListName;
+    //    private ArrayList<String> dataListName;
     private int mCurrentPosition = 0;
     private TextView tetNone;
-    private PyObject get_history_tx;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private String tx_hash;
     private String date;
@@ -119,14 +118,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void initView() {
-        sharedPreferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        //FIRST_RUN,if frist run
+        edit.putBoolean(FIRST_RUN, true);
+        edit.apply();
         //Eventbus register
         EventBus.getDefault().register(this);
 //        init();
         jumpOr = sharedPreferences.getBoolean("JumpOr", false);
         if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
             init();
-
         } else {
             if (jumpOr) {
                 //splash
@@ -135,9 +137,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 //CreatWallet
                 initCreatWallet();
             }
-
         }
-
     }
 
     private void init() {
@@ -167,7 +167,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Intent intent = new Intent(this, CreateWalletActivity.class);
         startActivity(intent);
         finish();
-
     }
 
     private void initGuide() {
@@ -180,7 +179,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void initData() {
         viewPager = findViewById(R.id.viewPager);
         maintrsactionlistEvents = new ArrayList<>();
-        dataListName = new ArrayList<>();
+//        dataListName = new ArrayList<>();
         //Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
         recy_data.setAdapter(trsactionlistAdapter);
@@ -202,7 +201,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             return;
         }
 
-        if (get_wallets_list_info != null) {
+        if (get_wallets_list_info != null && get_wallets_list_info.size() != 0) {
             String toStrings = get_wallets_list_info.toString();
             Log.i("javaBean", "mjavaBean-----: " + toStrings);
             com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
@@ -229,7 +228,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     String name = walletnameList.get(i).getName();
                     walletType = walletnameList.get(i).getType();
                     //switch wallet
-                    dataListName.add(name);
+//                    dataListName.add(name);
                     try {
                         Daemon.commands.callAttr("load_wallet", walletnameList.get(0).getName());
                         Daemon.commands.callAttr("select_wallet", walletnameList.get(0).getName());
@@ -245,7 +244,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
                 //trsaction list data
                 downMainListdata();
-                dataListName.add("");
+//                dataListName.add("");
                 fragmentList.add(new AddViewFragment());
                 viewPager.setOffscreenPageLimit(4);
                 viewPager.setPageMargin(40);
@@ -253,11 +252,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             }
         } else {
-            dataListName.add("");
-            fragmentList.add(new AddViewFragment());
-            viewPager.setOffscreenPageLimit(4);
-            viewPager.setPageMargin(40);
-            viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+//            dataListName.add("");
+//            fragmentList.add(new AddViewFragment());
+//            viewPager.setOffscreenPageLimit(4);
+//            viewPager.setPageMargin(40);
+            viewPager.setVisibility(View.GONE);
 
         }
         //scroll
@@ -290,7 +289,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             if (fragmentList.size() - 1 != position) {
                                 ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
                             }
-                            maintrsactionlistEvents.clear();
                             //trsaction list data
                             downMainListdata();
                             mCurrentPosition = position;
@@ -307,12 +305,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void downMainListdata() {
+        maintrsactionlistEvents.clear();
+        trsactionlistAdapter.notifyDataSetChanged();
+        PyObject get_history_tx = null;
         try {
             //get transaction json
             get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
             myDialog.dismiss();
+            refreshLayout.finishRefresh();
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
             Log.i("downMainListdata", "downMaina===: " + e.getMessage());
@@ -320,11 +322,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         myDialog.dismiss();
         //get transaction list
-        if (!get_history_tx.isEmpty()) {
+        if (get_history_tx != null) {
             tetNone.setVisibility(View.GONE);
             recy_data.setVisibility(View.VISIBLE);
             String strHistory = get_history_tx.toString();
             Log.i("strHistory", "onPage----: " + strHistory);
+            refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
                 tetNone.setVisibility(View.VISIBLE);
                 recy_data.setVisibility(View.GONE);
@@ -343,8 +346,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
-        refreshLayout.finishRefresh();
-
+        maintrsactionlistEvents.clear();
         try {
             jsonArray = new JSONArray(strHistory);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -383,6 +385,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
             myDialog.dismiss();
+            trsactionlistAdapter.notifyDataSetChanged();
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 private String tx_hash1;
                 private boolean status;
@@ -516,6 +519,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             downMainListdata();
             trsactionlistAdapter.notifyDataSetChanged();
 
+        } else if (msgVote.equals("33")) {
+            tetNone.setVisibility(View.VISIBLE);
+            recy_data.setVisibility(View.GONE);
         }
     }
 
@@ -611,7 +617,5 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (trsactionlistAdapter != null) {
             trsactionlistAdapter.notifyDataSetChanged();
         }
-
-
     }
 }
