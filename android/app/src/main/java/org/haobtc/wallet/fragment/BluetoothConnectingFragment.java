@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.haobtc.wallet.R;
@@ -17,6 +20,8 @@ public class BluetoothConnectingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.bluetooth_device_connecting_or_bonding, container, false);
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dialog_progress_anim);
+        view.findViewById(R.id.connecting).startAnimation(animation);
         return view;
     }
     public View getView() {

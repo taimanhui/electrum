@@ -28,11 +28,22 @@
         android:src="@drawable/quan_2" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="87dp"
+        android:layout_height="24dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:src="@drawable/invalid_logo" />
+        android:layout_marginBottom="57dp"
+        android:src="@drawable/bixinkey_logo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_40"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/graytext_color"
+        android:textSize="@dimen/sp_7"
+        android:text="@string/lunch_invalid_text" />
+
 
 </RelativeLayout>

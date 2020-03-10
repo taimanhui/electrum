@@ -87,7 +87,7 @@ public class LunchActivity extends BaseActivity {
     }
 
     private void init() {
-        SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String language = preferences.getString("language", "");
         judgeLanguage(language);
 

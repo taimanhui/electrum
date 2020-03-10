@@ -64,7 +64,7 @@ public class Backup_recoveryActivity extends BaseActivity {
                     Log.i("backup_wallet", "onViewClicked: "+recovery_wallet);
                 }
 
-//                mIntent(BackupMessageActivity.class);
+                mIntent(BackupMessageActivity.class);
                 break;
             case R.id.lin_OnckTwo:
                 Intent intent = new Intent(Backup_recoveryActivity.this,MessageManagerActivity.class);

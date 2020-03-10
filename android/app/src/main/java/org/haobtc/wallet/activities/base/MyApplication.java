@@ -41,14 +41,15 @@ public class MyApplication extends Application {
                 .setThrowBleException(true)//Set whether to throw Bluetooth exception
                 .setLogTAG("AndroidBLE")//Set global Bluetooth operation log TAG
                 .setAutoConnect(false)//Set whether to connect automatically
-                .setFilterScan(false)//设置是否过滤扫描到的设备
+                .setFilterScan(false)//Set whether to filter the founded devices
                 .setConnectFailedRetryCount(3)
-                .setConnectTimeout(10 * 1000)//设置连接超时时长
-                .setScanPeriod(12 * 1000)//设置扫描时长
+                .setConnectTimeout(10 * 1000)// Set the connection timeout
+                .setScanPeriod(12 * 1000)// Set the Scanning period
                 .setServiceBindFailedRetryCount(3)
                 .setUuidService(UUID.fromString(PRIMARY_SERVICE))
                 .setUuidWriteCha(UUID.fromString(WRITE_CHARACTERISTIC))
                 .setUuidNotify(UUID.fromString(READ_CHARACTERISTIC))
+                .setUuidReadCha(UUID.fromString(READ_CHARACTERISTIC))
                 .create(mInstance);
     }
 }

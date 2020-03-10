@@ -16,6 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor edit = preferences.edit();
         edit.putBoolean("JumpOr",true);
         edit.apply();
@@ -83,6 +84,16 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     public void initData() {
         initDots();
         initCallback();
+        currency();
+    }
+
+    private void currency() {
+        try {
+            Daemon.commands.callAttr("set_currency", "CNY");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     private void initDots() {

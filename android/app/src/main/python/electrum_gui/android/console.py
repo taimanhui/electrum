@@ -167,6 +167,7 @@ class AndroidCommands(commands.Commands):
         self.update_history()
 
     def update_status(self):
+        out = {}
         if not self.wallet:
             return
         if self.network is None or not self.network.is_connected():
@@ -174,7 +175,6 @@ class AndroidCommands(commands.Commands):
             status = _("Offline")
         elif self.network.is_connected():
             #print("network is ========connect")
-            out = {}
             #out['wallet_type'] = self.wallet.wallet_type
             self.num_blocks = self.network.get_local_height()
             server_height = self.network.get_server_height()
@@ -188,7 +188,7 @@ class AndroidCommands(commands.Commands):
             else:
                 c, u, x = self.wallet.get_balance()
                 text = _("Balance") + ": %s " % (self.format_amount_and_units(c))
-                out['balance'] = self.format_amount(c)
+                out['balance'] = self.format_amount(c) + ' '+ self.base_unit
                 out['fiat'] = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
                 if u:
                     out['unconfirmed'] = self.format_amount(u, is_diff=True).strip()
@@ -1060,7 +1060,8 @@ class AndroidCommands(commands.Commands):
             print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
             self.do_save(sign_tx)
             #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
-            return sign_tx
+            # return sign_tx
+            return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
         except BaseException as e:
             raise BaseException(e)
 

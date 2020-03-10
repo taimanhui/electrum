@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ public class ReadingPubKeyDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_read_publickey, container, false);
+        view.findViewById(R.id.cancel_reading).setOnClickListener((v) -> dismiss());
         Window window = Objects.requireNonNull(getDialog()).getWindow();
         if (window != null) {
             window.setBackgroundDrawableResource(R.color.transparent);

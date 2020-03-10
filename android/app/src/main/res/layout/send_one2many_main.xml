@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_weight="1"
-                    android:text="@string/from"
+                    android:text="@string/pay_wallet"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size" />
 

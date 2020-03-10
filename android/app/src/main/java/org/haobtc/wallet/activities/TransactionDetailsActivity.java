@@ -177,22 +177,28 @@ public class TransactionDetailsActivity extends BaseActivity {
                     //sign input pass
                     signInputpassDialog();
                 } else {
-                    showCustomerDialog();
+//                    showCustomerDialog();
+                    gotoConfirmOnHardware();
                 }
             }
         });
-        preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         language = preferences.getString("language", "");
         Intent intent = getIntent();
-        rowTrsation = intent.getStringExtra("txCreatTrsaction");
-        keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
-        tx_hash = intent.getStringExtra("tx_hash");
-        listType = intent.getStringExtra("listType");
-        strParse = intent.getStringExtra("strParse");
-        strWalletName = intent.getStringExtra("strWalletName");
-        strwalletType = intent.getStringExtra("strwalletType");
-        isIsmine = intent.getBooleanExtra("isIsmine", false);
+        if (!TextUtils.isEmpty(intent.getStringExtra("signed_raw_tx"))) {
+            signedRawTx = intent.getStringExtra("signed_raw_tx");
+        } else {
+            rowTrsation = intent.getStringExtra("txCreatTrsaction");
+            keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
+            tx_hash = intent.getStringExtra("tx_hash");
+            listType = intent.getStringExtra("listType");
+            strParse = intent.getStringExtra("strParse");
+            strWalletName = intent.getStringExtra("strWalletName");
+            strwalletType = intent.getStringExtra("strwalletType");
+            isIsmine = intent.getBooleanExtra("isIsmine", false);
+        }
+
 
 
         Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   rowTrsation -- : " + rowTrsation);
@@ -203,6 +209,11 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        if (!TextUtils.isEmpty(signedRawTx)) {
+            jsonDetailData(signedRawTx);
+            signedRawTx = "";
+            return;
+        }
         if (isIsmine) {
 //            if (tx_status.contains("confirmations")){
 //                tetAddSpeed.setVisibility(View.GONE);
@@ -473,6 +484,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private Runnable runnable = this::gotoConfirmOnHardware;
 
     private void gotoConfirmOnHardware() {
+        Log.i("jsdhujbejnfksndml", "output_addr: "+output_addr);
         Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", output_addr);
@@ -544,6 +556,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
+            EventBus.getDefault().post(new FirstEvent("22"));
             imgProgressone.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
@@ -553,7 +566,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             //trsaction hash and time
             linTractionHash.setVisibility(View.VISIBLE);
             linTractionTime.setVisibility(View.VISIBLE);
-            EventBus.getDefault().post(new FirstEvent("22"));
             Log.i("signedRowTrsation", "-------: ");
         } catch (Exception e) {
             e.printStackTrace();
@@ -689,15 +701,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             if (!TextUtils.isEmpty(pin)) {
                 CustomerDialogFragment.customerUI.put("pin", pin);
                 gotoConfirmOnHardware();
-                /*try {
-                    signedRawTx = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
-                    System.out.println("获取到签名" + signedRawTx);
-                    return;
-                } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                    if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                        Toast.makeText(this, "PIN码输入有误，请从新输入", Toast.LENGTH_SHORT).show();
-                    }
-                }*/
             }
 
             try {
@@ -711,16 +714,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                     if (pinCached) {
                         gotoConfirmOnHardware();
                     }
-                    /*if (pinCached) {
-                        try {
-                            signedRawTx = futureTask.get(40, TimeUnit.SECONDS).toString();
-                            System.out.println("获取到签名" + signedRawTx);
-                        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                    }*/
-
                 } else {
                     // todo: Initialized
                     Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
@@ -745,6 +738,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                         return;
                 }
                 if (!pinCached) {
+                    CustomerDialogFragment.customerUI.put("pin", pin);
                     gotoConfirmOnHardware();
                 }
             }

@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
@@ -16,24 +16,23 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LanguageSettingActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class LanguageSettingActivity extends BaseActivity {
 
     @BindView(R.id.radio_chineseasy)
-    RadioButton radioChineseasy;
+    TextView radioChineseasy;
     @BindView(R.id.radio_character)
-    RadioButton radioCharacter;
+    TextView radioCharacter;
     @BindView(R.id.radio_english)
-    RadioButton radioEnglish;
+    TextView radioEnglish;
     @BindView(R.id.radio_Korean)
-    RadioButton radioKorean;
+    TextView radioKorean;
     @BindView(R.id.radio_Japanese)
-    RadioButton radioJapanese;
-    @BindView(R.id.radio_group)
-    RadioGroup radioGroup;
+    TextView radioJapanese;
     @BindView(R.id.img_back)
     ImageView imgBack;
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
+    private String language;
 
     public int getLayoutId() {
         return R.layout.language_setting;
@@ -42,40 +41,48 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
     public void initView() {
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        language = preferences.getString("language", "");
         edit = preferences.edit();
-        radioGroup.setOnCheckedChangeListener(this);
 
     }
 
     @Override
     public void initData() {
+        if (language.equals("English")) {
+            radioEnglish.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+            radioChineseasy.setTextColor(getResources().getColor(R.color.text_color1));
+        }
 
     }
 
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        switch (checkedId) {
+    @OnClick({R.id.img_back, R.id.radio_chineseasy, R.id.radio_character, R.id.radio_english, R.id.radio_Korean, R.id.radio_Japanese})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
             case R.id.radio_chineseasy:
                 mTextChinese();
-                refreshSelf();
                 edit.putString("language", "Chinese");
                 edit.apply();
+                radioEnglish.setTextColor(getResources().getColor(R.color.text_color1));
+                radioChineseasy.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+                refreshSelf();
                 break;
             case R.id.radio_character:
-
                 break;
             case R.id.radio_english:
                 mTextEnglish();
-                refreshSelf();
                 edit.putString("language", "English");
                 edit.apply();
+                radioEnglish.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+                radioChineseasy.setTextColor(getResources().getColor(R.color.text_color1));
+                refreshSelf();
                 break;
             case R.id.radio_Korean:
-
                 break;
             case R.id.radio_Japanese:
-
                 break;
         }
     }
@@ -86,13 +93,4 @@ public class LanguageSettingActivity extends BaseActivity implements RadioGroup.
         startActivity(intent);
     }
 
-
-    @OnClick(R.id.img_back)
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
-        }
-    }
 }

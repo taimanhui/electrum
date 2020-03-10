@@ -77,7 +77,7 @@ public class MnemonicWordActivity extends BaseActivity {
     private ArrayList<AddressEvent> dataListName;
     private ChoosePayAddressAdapetr choosePayAddressAdapetr;
     private String wallet_name;
-    private String newWallet_name = "";
+    private String newWallet_type = "";
     private SharedPreferences preferences;
 
     @Override
@@ -110,7 +110,7 @@ public class MnemonicWordActivity extends BaseActivity {
         dataListName.add(addressEvent);
     }
 
-    @OnClick({R.id.img_back, R.id.lin_Bitype,R.id.btn_setPin})
+    @OnClick({R.id.img_back, R.id.lin_Bitype, R.id.btn_setPin})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -124,7 +124,6 @@ public class MnemonicWordActivity extends BaseActivity {
                 showDialogs(MnemonicWordActivity.this, R.layout.selectwallet_item);
                 break;
             case R.id.btn_setPin:
-                String strWalletPass = preferences.getString(newWallet_name, "");
                 String strone = editOne.getText().toString();
                 String strtwo = editTwo.getText().toString();
                 String strthree = editThree.getText().toString();
@@ -137,12 +136,12 @@ public class MnemonicWordActivity extends BaseActivity {
                 String strten = editTen.getText().toString();
                 String streleven = editEleven.getText().toString();
                 String strtwelve = editTwelve.getText().toString();
-                Log.i("newWallet_name", "newWallet_name: "+newWallet_name);
+                Log.i("newWallet_name", "newWallet_name: " + newWallet_type);
                 if (dataListName == null || dataListName.size() == 0) {
                     mToast(getResources().getString(R.string.none_wallet));
                     return;
                 }
-                if (TextUtils.isEmpty(newWallet_name)) {
+                if (TextUtils.isEmpty(newWallet_type)) {
                     mToast(getResources().getString(R.string.please_selectwallet));
                     return;
                 }
@@ -153,22 +152,12 @@ public class MnemonicWordActivity extends BaseActivity {
                     return;
                 }
                 String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
-                PyObject createNewseed = null;
-                try {
-                    createNewseed = Daemon.commands.callAttr("create", newWallet_name, strWalletPass, strNewseed);
-                } catch (Exception e) {
-                    if (e.getMessage().contains("path is exist")){
-                        mToast(getResources().getString(R.string.changewalletname));
-                    }
-                    e.printStackTrace();
-                }
-                if (createNewseed!=null){
-                    Log.i("createNewseed", "0=======: "+createNewseed);
-                    Intent intent = new Intent(MnemonicWordActivity.this, CreateHelpWordWalletActivity.class);
-                    intent.putExtra("newWallet_name",newWallet_name);
-                    startActivity(intent);
 
-                }
+                Intent intent = new Intent(MnemonicWordActivity.this, CreateHelpWordWalletActivity.class);
+                intent.putExtra("newWallet_type", newWallet_type);
+                intent.putExtra("strNewseed",strNewseed);
+                startActivity(intent);
+
 
                 break;
 
@@ -184,8 +173,8 @@ public class MnemonicWordActivity extends BaseActivity {
             dialogBtom.cancel();
         });
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-            newWallet_name = wallet_name;
-            tetKeyName.setText(newWallet_name);
+            newWallet_type = wallet_name;
+            tetKeyName.setText(newWallet_type);
             dialogBtom.cancel();
 
         });

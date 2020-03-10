@@ -1,42 +1,27 @@
 package org.haobtc.wallet.fragment;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.os.Handler;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.zxing.common.StringUtils;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.base.MyApplication;
-import org.haobtc.wallet.utils.ClsUtils;
 
-import java.sql.Time;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
-import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 
@@ -44,9 +29,12 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
 
     public static List<BleDevice> mValues = new ArrayList<>();
     private Context context;
-   private BleConnectCallback<BleDevice> connectCallback;
-   private Ble<BleDevice> mBle;
-   public BleDeviceRecyclerViewAdapter(Context context) {
+    private BleConnectCallback<BleDevice> connectCallback;
+    private Ble<BleDevice> mBle;
+    public static BluetoothDevice device;
+    public static BleDevice mBleDevice;
+
+    public BleDeviceRecyclerViewAdapter(Context context) {
         this.context = context;
     }
 
@@ -55,7 +43,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
     }
 
     public void add(BleDevice device) {
-        if (!mValues.contains(device) && device.getBleName()!= null) {
+        if (!mValues.contains(device) && device.getBleName() != null) {
             if (device.getBleName().startsWith("BixinKEY")) {
                 mValues.add(device);
                 notifyDataSetChanged();
@@ -82,15 +70,27 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
             @Override
             public void onClick(View v) {
                 mBle.stopScan();
-                if (holder.device.isConnected()) {
-                    mBle.disconnect(holder.device);
-                    mBle.connect(holder.device, connectCallback);
-                } else if (holder.device.isConnectting()) {
-                    mBle.cancelConnectting(holder.device);
-                    mBle.connect(holder.device, connectCallback);
-                } else if (holder.device.isDisconnected()) {
-                    mBle.connect(holder.device, connectCallback);
+                device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(holder.device.getBleAddress());
+                mBleDevice = holder.device;
+                switch (device.getBondState()) {
+                    case BluetoothDevice.BOND_BONDED:
+                        if (holder.device.isConnected()) {
+                            mBle.disconnect(holder.device);
+                            mBle.connect(holder.device, connectCallback);
+                        } else if (holder.device.isConnectting()) {
+                            mBle.cancelConnectting(holder.device);
+                            mBle.connect(holder.device, connectCallback);
+                        } else if (holder.device.isDisconnected()) {
+                            mBle.connect(holder.device, connectCallback);
+                        }
+                        break;
+                    case BluetoothDevice.BOND_NONE:
+                       boolean bond =  device.createBond();
+                       if (!bond) {
+                           Log.e("BLE", "无法绑定设备");
+                       }
                 }
+
             }
         });
     }

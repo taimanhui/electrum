@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.nfc.Tag;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -69,6 +70,9 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 import org.haobtc.wallet.utils.MyDialog;
@@ -167,6 +171,10 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     private String tag;
     private CustomerDialogFragment dialogFragment;
     private boolean isActive;
+    private int defaultName;
+    private int walletNameNum;
+    private Bitmap bitmap;
+    public static boolean isNfc;
 
     @Override
     public int getLayoutId() {
@@ -178,11 +186,15 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     public void initView() {
         ButterKnife.bind(this);
         tag = getIntent().getStringExtra(FROM);
-        preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        defaultName = preferences.getInt("defaultName", 0);
         edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
         myDialog = MyDialog.showDialog(ManyWalletTogetherActivity.this);
         editWalletname.addTextChangedListener(this);
+        walletNameNum = defaultName+1;
+        editWalletname.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
+
     }
 
 
@@ -227,22 +239,17 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 if (Integer.parseInt(invator1) != 0) {
                     if (!TextUtils.isEmpty(strWalletname)) {
                         if (Integer.parseInt(invator2) == 0) {
-                            Log.i("skduhksjnsc", "222: ");
                             button.setEnabled(false);
                             button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
                         } else {
-                            Log.i("skduhksjnsc", "333: ");
                             button.setEnabled(true);
                             button.setBackground(getResources().getDrawable(R.drawable.button_bk));
-                            mToast("kkkkkkkkk");
                         }
                     } else {
-                        Log.i("skduhksjnsc", "444: ");
                         button.setEnabled(false);
                         button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
                     }
                 } else {
-                    Log.i("skduhksjnsc", "555: ");
                     button.setEnabled(false);
                     button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
                 }
@@ -276,22 +283,18 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 if (Integer.parseInt(invator1) != 0) {
                     if (!TextUtils.isEmpty(strWalletname)) {
                         if (Integer.parseInt(invator2) == 0) {
-                            Log.i("skduhksjnsc", "222: ");
                             button.setEnabled(false);
                             button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
                         } else {
-                            Log.i("skduhksjnsc", "333: ");
                             button.setEnabled(true);
                             button.setBackground(getResources().getDrawable(R.drawable.button_bk));
                         }
 
                     } else {
-                        Log.i("skduhksjnsc", "444: ");
                         button.setEnabled(false);
                         button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
                     }
                 } else {
-                    Log.i("skduhksjnsc", "555: ");
                     button.setEnabled(false);
                     button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
                 }
@@ -315,9 +318,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 showPopupAddCosigner1();
                 break;
             case R.id.btn_Finish:
-                //FIRST_RUN,if frist run
-                edit.putBoolean(FIRST_RUN, true);
-                edit.apply();
                 EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
@@ -341,9 +341,10 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                     return;
                 }
                 myDialog.dismiss();
+                edit.putInt("defaultName",walletNameNum);
+                edit.apply();
                 //Generate QR code
                 mGeneratecode();
-
                 cardViewOne.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
                 imgProgree1.setVisibility(View.GONE);
@@ -358,10 +359,43 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 relFinish.setVisibility(View.VISIBLE);
                 cardThreePublic.setVisibility(View.VISIBLE);
                 tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
+                tetManyKey.setText(String.format("%s%s%s", getResources().getString(R.string.is_use), strInditor1, getResources().getString(R.string.the_only_bixinkey)));
                 break;
             case R.id.tet_Preservation:
+                rxPermissions
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                boolean toGallery = saveBitmap(bitmap);
+                                if (toGallery) {
+                                    mToast(getResources().getString(R.string.preservationbitmappic));
+                                } else {
+                                    Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
+                                }
 
+                            } else { // Oups permission denied
+                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
                 break;
+        }
+    }
+
+    public boolean saveBitmap(Bitmap bitmap) {
+        try {
+            File filePic = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + System.currentTimeMillis() + ".jpg");
+            if (!filePic.exists()) {
+                filePic.getParentFile().mkdirs();
+                filePic.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(filePic);
+            boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+            return success;
+
+        } catch (IOException ignored) {
+            return false;
         }
     }
 
@@ -378,7 +412,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qr_data = getCodeAddressBean.getQr_data();
-            Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
             imgOrcode.setImageBitmap(bitmap);
 
         }
@@ -513,34 +547,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                     view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.VISIBLE);
                     view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.GONE);
                 }
-
-//                String strRaw = edit_sweep.getText().toString();
-//                Log.i("CharSequence", "------------ " + strRaw);
-//                if (!TextUtils.isEmpty(strRaw)) {
-//                    try {
-//                        try {
-//                            is_valiad_xpub = Daemon.commands.callAttr("is_valiad_xpub", strRaw);
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                            return;
-//                        }
-//                        if (is_valiad_xpub != null) {
-//                            String strValiad = is_valiad_xpub.toString();
-//                            if (strValiad.equals("False")) {
-//                                view.findViewById(R.id.tet_Error).setVisibility(View.VISIBLE);
-//                            } else {
-//                                view.findViewById(R.id.tet_Error).setVisibility(View.INVISIBLE);
-//                            }
-//
-//                        }
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                        view.findViewById(R.id.tet_Error).setVisibility(View.VISIBLE);
-//                    }
-//
-//                } else {
-//                    view.findViewById(R.id.tet_Error).setVisibility(View.INVISIBLE);
-//                }
             }
         });
         //sweep
@@ -788,7 +794,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     private boolean isInitialized() throws Exception {
         boolean isInitialized = false;
         try {
-            System.out.println("call is_initialized =====");
             isInitialized = Daemon.commands.callAttr("is_initialized").toBoolean();
         } catch (Exception e) {
             e.printStackTrace();
@@ -804,6 +809,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            isNfc = true;
             if (executable) {
                 Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
@@ -822,20 +828,35 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 } catch (ExecutionException | TimeoutException | InterruptedException e) {
                     dialogFragment.showReadingFailedDialog();
                     if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                        Toast.makeText(this, "PIN码输入有误，请从新输入", Toast.LENGTH_SHORT).show();
+                        mToast(getResources().getString(R.string.pin_wrong));
                     }
                 }
             }
+            boolean isInit = false;
             try {
-                boolean isInit = isInitialized();
-                if (isInit) {
-                    boolean pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
-                    System.out.println("java pin cashed===" + pinCached);
+                isInit = isInitialized();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (isInit) {
+                boolean pinCached = false;
+                try {
+                    pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                     // todo: get xpub
                     CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
                     new Thread(CustomerDialogFragment.futureTask).start();
                     if (pinCached) {
-                        xpub = CustomerDialogFragment.futureTask.get().toString();
+                        try {
+                            xpub = CustomerDialogFragment.futureTask.get().toString();
+                        } catch (ExecutionException | InterruptedException e) {
+                            e.printStackTrace();
+                            return;
+                        }
                         showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
                     }
 
@@ -849,12 +870,9 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                         startActivityForResult(intent1, REQUEST_ACTIVE);
                     }
                 }
-            } catch (Exception e) {
-                Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
             }
 
         }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -863,14 +881,22 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             if (data != null) {
                 pin = data.getStringExtra("pin");
                 CustomerDialogFragment.pin = pin;
-                CustomerDialogFragment.customerUI.put("pin", pin);
-                try {
-                    xpub = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
-                    showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-                } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                    dialogFragment.showReadingFailedDialog();
-                    if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                        Toast.makeText(this, "PIN码输入有误，请从新输入", Toast.LENGTH_SHORT).show();
+                if (!isNfc) {
+                    CustomerDialogFragment.customerUI.put("pin", pin);
+                }
+                if (CustomerDialogFragment.isActive) {
+                    CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                    return;
+                }
+                if (!isNfc) {
+                    try {
+                        xpub = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
+                        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+                    } catch (ExecutionException | TimeoutException | InterruptedException e) {
+                        dialogFragment.showReadingFailedDialog();
+                        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+                            Toast.makeText(this, "PIN码输入有误，请重新输入", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             }
@@ -883,16 +909,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
             }
-         /*   if (isActive) {
-                new Thread(() ->
-                        Daemon.commands.callAttr("init")
-                ).start();*/
-                /*
-                Intent intent = new Intent(this, ActivatedProcessing.class);
-                startActivity(intent);
-
-
-            } */
         }
     }
 
@@ -913,18 +929,18 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             if (Integer.parseInt(indication) != 0) {
                 if (Integer.parseInt(indication2) != 0) {
                     button.setEnabled(true);
-                    button.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                    button.setBackground(getDrawable(R.drawable.button_bk));
                 } else {
                     button.setEnabled(false);
-                    button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    button.setBackground(getDrawable(R.drawable.button_bk_grey));
                 }
             } else {
                 button.setEnabled(false);
-                button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                button.setBackground(getDrawable(R.drawable.button_bk_grey));
             }
         } else {
             button.setEnabled(false);
-            button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+            button.setBackground(getDrawable(R.drawable.button_bk_grey));
         }
 
     }
