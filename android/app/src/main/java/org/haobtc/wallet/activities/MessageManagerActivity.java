@@ -70,20 +70,19 @@ public class MessageManagerActivity extends BaseActivity {
                     mToast(getResources().getString(R.string.please_clode_text));
                     return;
                 }
-                PyObject recovery_wallet = null;
-                try {
-                    recovery_wallet = Daemon.commands.callAttr("recovery_wallet", stfRecovery);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (recovery_wallet != null) {
-                    boolean aBoolean = recovery_wallet.toBoolean();
-                    Log.i("aBoolean", "aBoolean: "+aBoolean);
-                    if (aBoolean){
-                        mToast(getResources().getString(R.string.recovery_succse));
-                    }
-
-                }
+//                PyObject recovery_wallet = null;
+//                try {
+//                    recovery_wallet = Daemon.commands.callAttr("recovery_wallet", stfRecovery);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                if (recovery_wallet != null) {
+//                    boolean aBoolean = recovery_wallet.toBoolean();
+//                    Log.i("aBoolean", "aBoolean: "+aBoolean);
+//                    if (aBoolean){
+//                        mToast(getResources().getString(R.string.recovery_succse));
+//                    }
+//                }
 
 //                mIntent(ConfirmBackupActivity.class);
                 break;

@@ -167,6 +167,7 @@ class AndroidCommands(commands.Commands):
         self.update_history()
 
     def update_status(self):
+        out = {}
         if not self.wallet:
             return
         if self.network is None or not self.network.is_connected():
@@ -174,7 +175,6 @@ class AndroidCommands(commands.Commands):
             status = _("Offline")
         elif self.network.is_connected():
             #print("network is ========connect")
-            out = {}
             #out['wallet_type'] = self.wallet.wallet_type
             self.num_blocks = self.network.get_local_height()
             server_height = self.network.get_server_height()

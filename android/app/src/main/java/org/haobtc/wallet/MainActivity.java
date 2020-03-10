@@ -82,7 +82,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     //remeber first back time
     private long firstTime = 0;
     private MyDialog myDialog;
-//    private ArrayList<String> dataListName;
+    //    private ArrayList<String> dataListName;
     private int mCurrentPosition = 0;
     private TextView tetNone;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
@@ -201,7 +201,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             return;
         }
 
-        if (get_wallets_list_info != null) {
+        if (get_wallets_list_info != null && get_wallets_list_info.size() != 0) {
             String toStrings = get_wallets_list_info.toString();
             Log.i("javaBean", "mjavaBean-----: " + toStrings);
             com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
@@ -253,10 +253,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         } else {
 //            dataListName.add("");
-            fragmentList.add(new AddViewFragment());
-            viewPager.setOffscreenPageLimit(4);
-            viewPager.setPageMargin(40);
-            viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+//            fragmentList.add(new AddViewFragment());
+//            viewPager.setOffscreenPageLimit(4);
+//            viewPager.setPageMargin(40);
+            viewPager.setVisibility(View.GONE);
 
         }
         //scroll
@@ -519,7 +519,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             downMainListdata();
             trsactionlistAdapter.notifyDataSetChanged();
 
-        }else if (msgVote.equals("33")){
+        } else if (msgVote.equals("33")) {
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
         }

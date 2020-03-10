@@ -40,7 +40,7 @@ android {
             }
         }
         ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            abiFilters "armeabi-v7a", "x86"
         }
         resConfigs "zh"
     }
@@ -163,8 +163,6 @@ dependencies {
     implementation "ch.acra:acra-http:$acraVersion"
     implementation 'com.jakewharton:butterknife:10.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
-    implementation 'com.jakewharton:butterknife:10.1.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
     //Picasso
     implementation 'com.squareup.picasso:picasso:2.5.2'
     //immersionbar
@@ -180,10 +178,8 @@ dependencies {
     implementation 'me.jessyan:autosize:0.9.1'
     //gson
     implementation 'com.google.code.gson:gson:2.8.6'
-
     //Eventbus
     implementation 'org.greenrobot:eventbus:3.0.0'
-
     //wheel_viewpager
     implementation 'com.github.ThirdGoddess:GoddessTNT:v1.5'
     implementation project(path: ':dRlibfileselector')

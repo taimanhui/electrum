@@ -407,5 +407,7 @@
     <string name="iknow_risk">我已知晓以上风险</string>
     <string name="key_backup">BixinKEY备份&#38;恢复</string>
     <string name="pin_wrong">PIN码输入有误，请从新输入</string>
+    <string name="recover_backup">恢复备份钱包</string>
+    <string name="improt_wrong">请求失败</string>
 
 </resources>

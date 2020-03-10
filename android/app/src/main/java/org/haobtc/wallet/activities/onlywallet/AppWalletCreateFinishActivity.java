@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,7 +45,7 @@ public class AppWalletCreateFinishActivity extends BaseActivity {
     @BindView(R.id.tet_Preservation)
     TextView tetPreservation;
     @BindView(R.id.rel_Finish)
-    RelativeLayout relFinish;
+    Button relFinish;
     @BindView(R.id.tet_Walleyname)
     TextView tetWalleyname;
     private RxPermissions rxPermissions;

@@ -191,7 +191,9 @@ public class VerificationMnemonicWordActivity extends BaseActivity {
         } catch (Exception e) {
             myDialog.dismiss();
             if (e.getMessage().contains("pair seed failed")){
-                mToast(getResources().getString(R.string.helpword_wrong));
+                mToast(getString(R.string.helpword_wrong));
+            }else{
+                mToast(getString(R.string.improt_wrong));
             }
             e.printStackTrace();
         }

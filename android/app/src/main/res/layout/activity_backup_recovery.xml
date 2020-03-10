@@ -41,7 +41,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_10"
             android:layout_marginTop="@dimen/dp_16"
             android:layout_marginEnd="@dimen/dp_10"
@@ -78,39 +78,23 @@
 
 
             </LinearLayout>
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_1"
                 android:layout_marginStart="@dimen/sp_16"
                 android:layout_marginEnd="@dimen/sp_16"
+                android:layout_alignParentBottom="true"
                 android:background="@color/separation_line" />
+          <androidx.recyclerview.widget.RecyclerView
+              android:id="@+id/reclCheckKey"
+              tools:itemCount="2"
+              tools:listitem="@layout/bixinkey_check_item"
+              android:background="@color/button_bk_ddake"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
-            <LinearLayout
-                android:id="@+id/lin_OnckTwo"
-                android:layout_width="match_parent"
-                android:layout_height="59.5dp"
-                android:background="@color/button_bk_ddake">
+          </androidx.recyclerview.widget.RecyclerView>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="@string/bixinkey_backups"
-                    android:textColor="@color/text_color"
-                    android:textSize="15sp" />
-
-
-                <ImageView
-                    android:layout_width="37dp"
-                    android:layout_height="match_parent"
-                    android:padding="15dp"
-                    android:src="@drawable/jiantou" />
-
-
-            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

@@ -423,5 +423,8 @@
     <string name="key_backup">BixinKEY backups&#38;recovery</string>
     <string name="lunch_invalid_text">2020 ©BIXIN GLOBAL Co.,Ltd</string>
     <string name="pin_wrong">PIN is entered incorrectly. Please input it again</string>
+    <string name="bixinkey_orspr">BixinKEY-ORSPR</string>
+    <string name="recover_backup">Restore backup Wallet</string>
+    <string name="improt_wrong">request was aborted</string>
 
 </resources>

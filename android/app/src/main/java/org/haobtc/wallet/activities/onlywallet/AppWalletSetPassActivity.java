@@ -93,7 +93,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     return;
                 }
                 boolean passType = isPassType(strPass1);
-                if (!passType){
+                if (!passType) {
                     mToast(getResources().getString(R.string.passtype_wrong));
                     myDialog.dismiss();
                     return;
@@ -101,17 +101,22 @@ public class AppWalletSetPassActivity extends BaseActivity {
                 if (!TextUtils.isEmpty(strSeed)) {
                     try {
                         Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));
-                        if (!TextUtils.isEmpty(strSeed)) {
-                            Intent intent = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
-                            intent.putExtra("strSeed", strSeed);
-                            intent.putExtra("strName",strName);
-                            intent.putExtra("strPass1", strPass1);
-                            startActivity(intent);
-//                            myDialog.dismiss();
-                        } else {
-                            myDialog.dismiss();
-                        }
-
+                        //load wallet
+//                        try {
+//                            Daemon.commands.callAttr("load_wallet", strName);
+//                            Daemon.commands.callAttr("select_wallet", strName);
+//                            Log.i("skjhdjdjhhhhhhhhhj", "111111111: ");
+//                        } catch (Exception e) {
+//                            Log.i("skjhdjdjhhhhhhhhhj", "222222222: ");
+//                            e.printStackTrace();
+//                            return;
+//                        }
+                        myDialog.dismiss();
+                        Intent intent = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
+                        intent.putExtra("strSeed", strSeed);
+                        intent.putExtra("strName", strName);
+                        intent.putExtra("strPass1", strPass1);
+                        startActivity(intent);
                     } catch (Exception e) {
                         myDialog.dismiss();
                         e.printStackTrace();
@@ -126,12 +131,23 @@ public class AppWalletSetPassActivity extends BaseActivity {
                         PyObject pyObject = Daemon.commands.callAttr("create", strName, strPass1);
                         strpyObject = pyObject.toString();
                         if (!TextUtils.isEmpty(strpyObject)) {
+                            //load wallet
+//                            try {
+//                                Daemon.commands.callAttr("load_wallet", strName);
+//                                Daemon.commands.callAttr("select_wallet", strName);
+//                                Log.i("skjhdjdjhhhhhhhhhj", "3333333333: ");
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                                myDialog.dismiss();
+//                                Log.i("skjhdjdjhhhhhhhhhj", "444444444: ");
+//                                return;
+//                            }
                             edit.putString("strSeed", strpyObject);
                             edit.apply();
                             myDialog.dismiss();
                             Intent intent = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
                             intent.putExtra("strSeed", strpyObject);
-                            intent.putExtra("strName",strName);
+                            intent.putExtra("strName", strName);
                             intent.putExtra("strPass1", strPass1);
                             startActivity(intent);
                         } else {

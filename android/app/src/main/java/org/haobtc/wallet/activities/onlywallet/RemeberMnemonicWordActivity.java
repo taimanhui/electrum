@@ -87,7 +87,7 @@ public class RemeberMnemonicWordActivity extends BaseActivity {
                 startActivity(intent1);
                 break;
             case R.id.tet_jump:
-                Intent intent = new Intent(this, AppWalletCreateFinishActivity.class);
+                Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("strName",strName);
                 startActivity(intent);
                 break;
