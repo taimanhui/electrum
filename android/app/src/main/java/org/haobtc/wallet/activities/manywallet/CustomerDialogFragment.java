@@ -35,6 +35,7 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 
 import org.acra.data.StringFormat;
@@ -44,6 +45,8 @@ import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.MyApplication;
+import org.haobtc.wallet.activities.onlywallet.CreateOnlyChooseActivity;
+import org.haobtc.wallet.activities.onlywallet.CreatePersonalWalletActivity;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
 import org.haobtc.wallet.fragment.BluetoothFragment;
@@ -130,6 +133,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
             Log.i(TAG, "发送数据失败:" + message);
         }
     };
+
     private void dealWithBusiness() {
         boolean isInit = false; //should be false
         try {
@@ -149,10 +153,15 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                 e.printStackTrace();
                 dismiss();
             }
-            if (ManyWalletTogetherActivity.TAG.equals(tag)) {
+            Log.i("dealWithBusiness", "dealW===========  "+tag);
+            if (ManyWalletTogetherActivity.TAG.equals(tag) || CreatePersonalWalletActivity.TAG.equals(tag)|| CreateOnlyChooseActivity.TAG.equals(tag)) {
                 // todo: get xpub
                 Log.i(TAG, "java ==== get_xpub_from_hw");
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
+                if (CreatePersonalWalletActivity.TAG.equals(tag)){
+                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth",new Kwarg("_type", "p2wpkh")));
+                }else{
+                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
+                }
                 new Thread(futureTask).start();
                 dialogFragment = (ReadingPubKeyDialogFragment) showReadingDialog();
                 if (pinCached) {
@@ -193,15 +202,15 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         public void onConnectionChanged(BleDevice device) {
 
             if (device.isConnectting()) {
-               Log.i(TAG,"正在连接---" + device.getBleName());
+                Log.i(TAG, "正在连接---" + device.getBleName());
                 showConnecting();
             }
             if (BleDeviceRecyclerViewAdapter.device.getBondState() != BluetoothDevice.BOND_BONDED) {
                 return;
             }
             if (device.isConnected()) {
-                Log.i(TAG,"以连接至---" + device.getBleName());
-              //  dialogFragment = (ReadingPubKeyDialogFragment) showReadingDialog();
+                Log.i(TAG, "以连接至---" + device.getBleName());
+                //  dialogFragment = (ReadingPubKeyDialogFragment) showReadingDialog();
             }
 
         }
@@ -223,7 +232,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
             pyHandler.put("CALL_BACK", writeCallBack);
             Instant begin = Instant.now();
             while (true) {
-               BluetoothGattDescriptor notify = mBle.getBleRequest().getReadCharacteristic(BleDeviceRecyclerViewAdapter.device.getAddress()).getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
+                BluetoothGattDescriptor notify = mBle.getBleRequest().getReadCharacteristic(BleDeviceRecyclerViewAdapter.device.getAddress()).getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
                 boolean isNotify = Arrays.equals(notify.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 if (isNotify) {
                     new Handler().postDelayed(() -> dealWithBusiness(), 500);
@@ -232,17 +241,18 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                 if (Duration.between(begin, Instant.now()).toMillis() > 20000) {
                     showReadingFailedDialog();
                     dismiss();
-                   break;
+                    break;
                 }
             }
         }
+
         @Override
         public void onConnectException(BleDevice device, int errorCode) {
             super.onConnectException(device, errorCode);
             Log.e(TAG, String.format("连接异常，异常状态码: %d", errorCode));
             if (errorCode == 133) {
-               Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toast.makeText(getContext(), "硬件设备正在被其他设备使用", Toast.LENGTH_LONG).show());
-               return;
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toast.makeText(getContext(), "硬件设备正在被其他设备使用", Toast.LENGTH_LONG).show());
+                return;
             }
             try {
                 showReadingFailedDialog();
@@ -288,9 +298,9 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
             switch (action) {
                 case BluetoothDevice.ACTION_BOND_STATE_CHANGED:
                     if (BleDeviceRecyclerViewAdapter.device != null) {
-                            if (BleDeviceRecyclerViewAdapter.device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                                mBle.connect(BleDeviceRecyclerViewAdapter.mBleDevice, connectCallback);
-                            }
+                        if (BleDeviceRecyclerViewAdapter.device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                            mBle.connect(BleDeviceRecyclerViewAdapter.mBleDevice, connectCallback);
+                        }
                     }
             }
 
@@ -337,14 +347,14 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     }
 
 
-    ReadingPubKeyDialogFragment showReadingDialog() {
+    public ReadingPubKeyDialogFragment showReadingDialog() {
         getChildFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
         ReadingPubKeyDialogFragment fragment = new ReadingPubKeyDialogFragment();
         fragment.show(getChildFragmentManager(), "");
         return fragment;
     }
 
-    void showReadingFailedDialog() {
+    public void showReadingFailedDialog() {
         ReadingPubKeyFailedDialogFragment fragment = new ReadingPubKeyFailedDialogFragment();
         fragment.show(getChildFragmentManager(), "");
     }
@@ -474,7 +484,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         Objects.requireNonNull(getActivity()).registerReceiver(broadcastReceiver, bondFilter);
         if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
             // enable nfc discovery for the app
-            Log.i("NFC","为本App启用NFC感应");
+            Log.i("NFC", "为本App启用NFC感应");
             NfcUtils.mNfcAdapter.enableForegroundDispatch(getActivity(), NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
         }
     }
@@ -485,7 +495,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
             // disable nfc discovery for the app
             NfcUtils.mNfcAdapter.disableForegroundDispatch(getActivity());
-            Log.i("NFC","禁用本App的NFC感应");
+            Log.i("NFC", "禁用本App的NFC感应");
         }
     }
 

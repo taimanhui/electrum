@@ -35,6 +35,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     private List<View> viewList = new ArrayList<>();
     private ImageView[] dots;
     private int[] ids = {R.id.iv1, R.id.iv2};
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
@@ -46,7 +47,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor edit = preferences.edit();
+        edit = preferences.edit();
         edit.putBoolean("JumpOr",true);
         edit.apply();
 
@@ -94,6 +95,14 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
             e.printStackTrace();
             return;
         }
+        try {
+            Daemon.commands.callAttr("set_base_uint", "mBTC");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        edit.putString("base_unit", "mBTC");
+        edit.apply();
     }
 
     private void initDots() {

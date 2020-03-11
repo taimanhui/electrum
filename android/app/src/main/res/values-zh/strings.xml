@@ -262,7 +262,6 @@
     <string name="input_send_num">输入发币数量</string>
     <string name="recevid">收币详情</string>
     <string name="sendetail">发币详情</string>
-    <string name="legal_currency">法币</string>
     <string name="bixinkey_backups">BixinKEY备份恢复</string>
     <string name="bixinkey_manage">BixinKEY管理</string>
     <string name="input_bixinkey_text">输入BixinKEY备份文本</string>
@@ -409,5 +408,7 @@
     <string name="pin_wrong">PIN码输入有误，请从新输入</string>
     <string name="recover_backup">恢复备份钱包</string>
     <string name="improt_wrong">请求失败</string>
+    <string name="band_bixinkey">绑定的BixinKEY</string>
+    <string name="legal_currency">货币单位</string>
 
 </resources>
