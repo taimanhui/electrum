@@ -67,6 +67,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tetWalletname"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_20"
@@ -79,6 +80,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_20"
+                        android:visibility="gone"
                         android:layout_marginTop="@dimen/corner_radius"
                         android:text="@string/choose_onekey"
                         android:textColor="@color/light_text"
@@ -142,7 +144,7 @@
                         android:layout_marginBottom="16.5dp"
                         android:textColor="#494949"
                         android:textSize="18sp"
-                        tools:text="绑定的BixinKEY" />
+                        android:text="@string/band_bixinkey" />
 
                     <View
                         android:id="@+id/ewrwerw"
@@ -154,6 +156,8 @@
                         android:id="@+id/recl_keyView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_5"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="2"
                         tools:listitem="@layout/bixinkey_item">
 
@@ -161,7 +165,6 @@
                     </androidx.recyclerview.widget.RecyclerView>
 
                 </LinearLayout>
-
 
             </androidx.cardview.widget.CardView>
 
@@ -186,8 +189,6 @@
 
         </Button>
 
-
     </RelativeLayout>
-
 
 </RelativeLayout>

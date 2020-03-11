@@ -1,22 +1,19 @@
 package org.haobtc.wallet.activities.set.recovery_set;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-
+import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
-
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -26,6 +23,7 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
     Button btnSetPin;
     @BindView(R.id.checkbox_Know)
     CheckBox checkboxKnow;
+    private CustomerDialogFragment dialogFragment;
 
     @Override
     public int getLayoutId() {
@@ -35,7 +33,6 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
     @Override
     public void initView() {
         ButterKnife.bind(this);
-
     }
 
     @Override
@@ -54,8 +51,14 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
                 mIntent(Backup_recoveryActivity.class);
                 break;
             case R.id.btn_setPin:
+                showPopupAddCosigner1();
                 break;
         }
+    }
+
+    private void showPopupAddCosigner1() {
+        dialogFragment = new CustomerDialogFragment("", null, "");
+        dialogFragment.show(getSupportFragmentManager(), "");
     }
 
     @Override

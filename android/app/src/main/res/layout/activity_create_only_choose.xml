@@ -48,6 +48,7 @@
             android:id="@+id/recl_BinxinKey"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:visibility="visible"
             tools:itemCount="2"
             tools:listitem="@layout/public_wallet_item">
@@ -90,9 +91,10 @@
         <Button
             android:id="@+id/bn_complete_add_cosigner"
             android:layout_width="343dp"
+            android:enabled="false"
             android:layout_height="@dimen/dp_40"
             android:layout_centerInParent="true"
-            android:background="@drawable/little_radio_blue"
+            android:background="@drawable/little_radio_qian"
             android:text="@string/confirm_creat"
             android:textAllCaps="false"
             android:textColor="@android:color/white">

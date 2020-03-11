@@ -262,7 +262,6 @@
     <string name="input_send_num">Enter amount to send</string>
     <string name="recevid">Details of receiving</string>
     <string name="sendetail">Details of sending</string>
-    <string name="legal_currency">Fiat</string>
     <string name="bixinkey_backups">BixinKEY backup restore</string>
     <string name="bixinkey_manage">BixinKEY management</string>
     <string name="input_bixinkey_text">Enter BixinKEY\'s backup text</string>
@@ -426,5 +425,7 @@
     <string name="bixinkey_orspr">BixinKEY-ORSPR</string>
     <string name="recover_backup">Restore backup Wallet</string>
     <string name="improt_wrong">request was aborted</string>
+    <string name="band_bixinkey">绑定的BixinKEY</string>
+    <string name="legal_currency">Monetary unit</string>
 
 </resources>

@@ -79,6 +79,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     TextView tetTable;
     @BindView(R.id.tet_WalletTable)
     TextView tetWalletTable;
+    @BindView(R.id.tet_strunit)
+    TextView tetStrunit;
     private LinearLayout selectSend;
     private ImageView selectSigNum, buttonSweep;
     private EditText editTextComments, editAddress;
@@ -117,6 +119,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private boolean mIsSoftKeyboardShowing;
     private int screenHeight;
     private String base_unit;
+    private String strUnit;
 
     @Override
     public int getLayoutId() {
@@ -126,7 +129,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     public void initView() {
         ButterKnife.bind(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        base_unit = preferences.getString("base_unit", "BTC");
+        base_unit = preferences.getString("base_unit", "mBTC");
+        strUnit = preferences.getString("cny_strunit", "CNY");
         edit = preferences.edit();
         selectSend = findViewById(R.id.llt_select_wallet);
         tetMoneye = findViewById(R.id.tet_Money);
@@ -220,6 +224,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         dataListName = new ArrayList<>();
         tetTable.setText(base_unit);
         tetWalletTable.setText(base_unit);
+        tetStrunit.setText(strUnit);
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
         wallet_amount = intent.getStringExtra("wallet_balance");
