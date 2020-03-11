@@ -123,10 +123,6 @@ public class PinSettingActivity extends BaseActivity {
                 break;
             case R.id.bn_next:
                 if (edtPwd.getText().length() == 6) {
-                    // old version code todo:remove
-                    // startNewPage(tag);
-
-                    // new version code todo: open
                     Intent intent = new Intent();
                     intent.putExtra("pin", edtPwd.getText().toString());
                     setResult(Activity.RESULT_OK, intent);
@@ -136,41 +132,5 @@ public class PinSettingActivity extends BaseActivity {
                 }
                 break;
         }
-    }
-
-    private void startNewPage(String tags) {
-        if (!TextUtils.isEmpty(tags) && !NfcUtils.mNfcAdapter.isEnabled()) {
-            PyObject ui = Global.py.getModule("trezorlib.customer_ui");
-            PyObject customerUI = ui.get("CustomerUI");
-            customerUI.put("pin", edtPwd.getText().toString());
-        }
-        switch (tags) {
-            case WalletUnActivatedActivity.TAG:
-                Intent intent = new Intent(this, ActivatedProcessing.class);
-                intent.putExtra("pin", edtPwd.getText().toString());
-                startActivity(intent);
-                break;
-            case CoSignerAddActivity.TAG:
-                Intent intent1 = new Intent();
-                intent1.putExtra("pin", edtPwd.getText().toString());
-                setResult(1, intent1);
-                finish();
-                break;
-            case TransactionDetailsActivity.TAG:
-                Intent intent2 = new Intent();
-                intent2.putExtra("pin", edtPwd.getText().toString());
-                intent2.putExtra(TouchHardwareActivity.FROM, TransactionDetailsActivity.TAG);
-                setResult(1, intent2);
-                finish();
-                break;
-            default:
-        }
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        // old version code todo: remove
-        //finish();
     }
 }

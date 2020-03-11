@@ -175,6 +175,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     private int walletNameNum;
     private Bitmap bitmap;
     public static boolean isNfc;
+    private boolean isInit;
 
     @Override
     public int getLayoutId() {
@@ -810,69 +811,78 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             isNfc = true;
-            if (executable) {
-                Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
-                PyObject nfcHandler = nfc.get("NFCHandle");
-                nfcHandler.put("device", tags);
-                executable = false;
-            }
-            if (!TextUtils.isEmpty(pin)) {
-                CustomerDialogFragment.customerUI.put("pin", pin);
-                try {
-                    ReadingPubKeyDialogFragment dialog = (ReadingPubKeyDialogFragment) dialogFragment.showReadingDialog();
-                    xpub = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
-                    dialog.dismiss();
-                    showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-                    return;
-                } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                    dialogFragment.showReadingFailedDialog();
-                    if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                        mToast(getResources().getString(R.string.pin_wrong));
-                    }
-                }
-            }
-            boolean isInit = false;
-            try {
-                isInit = isInitialized();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (isInit) {
-                boolean pinCached = false;
-                try {
-                    pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                    // todo: get xpub
-                    CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
-                    new Thread(CustomerDialogFragment.futureTask).start();
-                    if (pinCached) {
-                        try {
-                            xpub = CustomerDialogFragment.futureTask.get().toString();
-                        } catch (ExecutionException | InterruptedException e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-                    }
-
-                } else {
-                    // todo: Initialized
-                    if (isActive) {
-                        Intent intent1 = new Intent(this, ActivatedProcessing.class);
-                        startActivity(intent1);
-                    } else {
-                        Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                        startActivityForResult(intent1, REQUEST_ACTIVE);
-                    }
-                }
-            }
+            dealWithBusiness(intent);
+        }
 
         }
+
+    private void dealWithBusiness(Intent intent) {
+        if (executable) {
+            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
+            PyObject nfcHandler = nfc.get("NFCHandle");
+            nfcHandler.put("device", tags);
+            executable = false;
+        }
+        if (!TextUtils.isEmpty(pin) && isInit) {
+            CustomerDialogFragment.customerUI.put("pin", pin);
+            try {
+                ReadingPubKeyDialogFragment dialog = (ReadingPubKeyDialogFragment) dialogFragment.showReadingDialog();
+                xpub = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
+                dialog.dismiss();
+                showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+                return;
+            } catch (ExecutionException | TimeoutException | InterruptedException e) {
+                dialogFragment.showReadingFailedDialog();
+                if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+                    mToast(getResources().getString(R.string.pin_wrong));
+                }
+            }
+        }
+        try {
+            isInit = isInitialized();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (isInit) {
+            boolean pinCached = false;
+            try {
+                pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+                // todo: get xpub
+                CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
+                new Thread(CustomerDialogFragment.futureTask).start();
+                if (pinCached) {
+                    try {
+                        xpub = CustomerDialogFragment.futureTask.get().toString();
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+                }
+
+            } else {
+                // todo: Initialized
+                if (isActive) {
+                    new Thread(() -> {
+                        try {
+                            Daemon.commands.callAttr("init");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    ).start();
+                } else {
+                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                    startActivityForResult(intent1, REQUEST_ACTIVE);
+                }
+            }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -881,8 +891,13 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             if (data != null) {
                 pin = data.getStringExtra("pin");
                 CustomerDialogFragment.pin = pin;
+                if (isActive)  {
+                    CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                    return;
+                }
                 if (!isNfc) {
                     CustomerDialogFragment.customerUI.put("pin", pin);
+                    pin = "";
                 }
                 if (CustomerDialogFragment.isActive) {
                     CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);

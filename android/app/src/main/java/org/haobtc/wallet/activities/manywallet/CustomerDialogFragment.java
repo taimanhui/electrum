@@ -86,7 +86,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     private static final int PIN_NEW_FIRST = 2;
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int NOTIFY_SUCCESS = 6;
-    public static String pin;
+    public static String pin = "";
     public static PyObject pyHandler, customerUI;
     public static MyHandler handler;
     public static FutureTask<PyObject> futureTask;
@@ -103,7 +103,6 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     private Ble<BleDevice> mBle;
     private ReadingPubKeyDialogFragment dialogFragment;
     private BluetoothFragment bleFragment;
-    private static boolean isNotify;
     private BleScanCallback<BleDevice> scanCallback = new BleScanCallback<BleDevice>() {
         @Override
         public void onLeScan(final BleDevice device, int rssi, byte[] scanRecord) {
@@ -131,19 +130,71 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
             Log.i(TAG, "发送数据失败:" + message);
         }
     };
+    private void dealWithBusiness() {
+        boolean isInit = false; //should be false
+        try {
+            Log.i(TAG, "java ==== isInitialized");
+            isInit = isInitialized();
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage() == null ? "unknown error" : e.getMessage());
+            Toast.makeText(getContext(), "communication error, check init status", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (isInit) {
+            pinCached = false;
+            try {
+                Log.i(TAG, "java ==== get_pin_status");
+                pinCached = Daemon.commands.callAttr("get_pin_status", "bluetooth").toBoolean();
+            } catch (Exception e) {
+                e.printStackTrace();
+                dismiss();
+            }
+            if (ManyWalletTogetherActivity.TAG.equals(tag)) {
+                // todo: get xpub
+                Log.i(TAG, "java ==== get_xpub_from_hw");
+                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
+                new Thread(futureTask).start();
+                dialogFragment = (ReadingPubKeyDialogFragment) showReadingDialog();
+                if (pinCached) {
+                    try {
+                        xpub = futureTask.get(5, TimeUnit.SECONDS).toString();
+                        Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
+                        dialogFragment.dismiss();
+                    } catch (ExecutionException | InterruptedException e) {
+                        dialogFragment.dismiss();
+                        showReadingFailedDialog();
+                    } catch (TimeoutException e) {
+                        e.printStackTrace();
+                        dismiss();
+                    }
+                }
+            } else if (TransactionDetailsActivity.TAG.equals(tag)) {
+                // todo： sign
+                Log.i(TAG, "java ==== sign_tx");
+                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", extras));
+                new Thread(futureTask).start();
+                if (pinCached) {
+                    Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
+                    dismiss();
+                }
+            }
+
+        } else {
+            // todo: Initialized
+            Intent intent = new Intent(getContext(), WalletUnActivatedActivity.class);
+            startActivityForResult(intent, REQUEST_ACTIVE);
+        }
+
+
+    }
+
     private BleConnectCallback<BleDevice> connectCallback = new BleConnectCallback<BleDevice>() {
         @Override
         public void onConnectionChanged(BleDevice device) {
 
             if (device.isConnectting()) {
                Log.i(TAG,"正在连接---" + device.getBleName());
-                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                    if (fragment == null) {
-                        fragment = new BluetoothConnectingFragment();
-                        getChildFragmentManager().beginTransaction().replace(R.id.ble_device, fragment, "connecting").commitNow();
-                        relativeLayout.setVisibility(View.GONE);
-                    }
-                });
+                showConnecting();
             }
             if (BleDeviceRecyclerViewAdapter.device.getBondState() != BluetoothDevice.BOND_BONDED) {
                 return;
@@ -158,7 +209,6 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         @Override
         public void onServicesDiscovered(BleDevice device) {
             super.onServicesDiscovered(device);
-            isNotify = false;
             setNotify(device);
         }
 
@@ -166,83 +216,34 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         @Override
         public void onReady(BleDevice device) {
             super.onReady(device);
+            showConnecting();
             ManyWalletTogetherActivity.isNfc = false;
             pyHandler.put("BLE", mBle);
             pyHandler.put("BLE_DEVICE", device);
-           // pyHandler.put("BLE_ADDRESS", device.getBleAddress());
             pyHandler.put("CALL_BACK", writeCallBack);
             Instant begin = Instant.now();
-            for (;;) {
+            while (true) {
                BluetoothGattDescriptor notify = mBle.getBleRequest().getReadCharacteristic(BleDeviceRecyclerViewAdapter.device.getAddress()).getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
-               isNotify = Arrays.equals(notify.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                boolean isNotify = Arrays.equals(notify.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 if (isNotify) {
-                    new Handler().postDelayed(this::dealWithBusiness, 500);
+                    new Handler().postDelayed(() -> dealWithBusiness(), 500);
                     break;
                 }
-                if (Duration.between(begin, Instant.now()).toMillis() > 2000) {
+                if (Duration.between(begin, Instant.now()).toMillis() > 20000) {
                     showReadingFailedDialog();
+                    dismiss();
                    break;
                 }
             }
-        }
-        private void dealWithBusiness() {
-            boolean isInit = false; //should be false
-            try {
-                Log.i(TAG, "java ==== isInitialized");
-                isInit = isInitialized();
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage() == null ? "unknown error" : e.getMessage());
-                Toast.makeText(getContext(), "communication error, check init status", Toast.LENGTH_SHORT).show();
-            }
-            if (isInit) {
-                pinCached = false;
-                try {
-                    Log.i(TAG, "java ==== get_pin_status");
-                    pinCached = Daemon.commands.callAttr("get_pin_status", "bluetooth").toBoolean();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (ManyWalletTogetherActivity.TAG.equals(tag)) {
-                    // todo: get xpub
-                    Log.i(TAG, "java ==== get_xpub_from_hw");
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
-                    new Thread(futureTask).start();
-                    dialogFragment = (ReadingPubKeyDialogFragment) showReadingDialog();
-                    if (pinCached) {
-                        try {
-                            xpub = futureTask.get(5, TimeUnit.SECONDS).toString();
-                            Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
-                            dialogFragment.dismiss();
-                        } catch (ExecutionException | InterruptedException e) {
-                            dialogFragment.dismiss();
-                            showReadingFailedDialog();
-                        } catch (TimeoutException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else if (TransactionDetailsActivity.TAG.equals(tag)) {
-                    // todo： sign
-                    Log.i(TAG, "java ==== sign_tx");
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", extras));
-                    new Thread(futureTask).start();
-                    if (pinCached) {
-                        Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
-                        dismiss();
-                    }
-                }
-
-            } else {
-                // todo: Initialized
-                Intent intent = new Intent(getContext(), WalletUnActivatedActivity.class);
-                startActivityForResult(intent, REQUEST_ACTIVE);
-            }
-
-
         }
         @Override
         public void onConnectException(BleDevice device, int errorCode) {
             super.onConnectException(device, errorCode);
             Log.e(TAG, String.format("连接异常，异常状态码: %d", errorCode));
+            if (errorCode == 133) {
+               Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toast.makeText(getContext(), "硬件设备正在被其他设备使用", Toast.LENGTH_LONG).show());
+               return;
+            }
             try {
                 showReadingFailedDialog();
             } catch (Exception e) {
@@ -263,6 +264,17 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
             Log.e(TAG, String.format("连接设备==%s超时", device.getBleName()));
         }
     };
+
+    private void showConnecting() {
+        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+            if (fragment == null) {
+                fragment = new BluetoothConnectingFragment();
+                getChildFragmentManager().beginTransaction().replace(R.id.ble_device, fragment, "connecting").commitNow();
+                relativeLayout.setVisibility(View.GONE);
+            }
+        });
+    }
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -325,7 +337,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     }
 
 
-    DialogFragment showReadingDialog() {
+    ReadingPubKeyDialogFragment showReadingDialog() {
         getChildFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
         ReadingPubKeyDialogFragment fragment = new ReadingPubKeyDialogFragment();
         fragment.show(getChildFragmentManager(), "");
@@ -380,19 +392,12 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                     imageView.setVisibility(View.GONE);
                     textView.setVisibility(View.GONE);
                     turnOnBlueTooth();
-                    if (mBle.isScanning()) {
-                        mBle.stopScan();
-                    }
-                    mBle.startScan(scanCallback);
+                    refreshDeviceList(true);
                     getChildFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
                     break;
                 case R.id.radio_nfc:
                     group.check(R.id.radio_nfc);
-                    if (mBle.isScanning()) {
-                        mBle.stopScan();
-                    }
-                    BleDeviceRecyclerViewAdapter.mValues.clear();
-                    adapter.notifyDataSetChanged();
+                    refreshDeviceList(false);
                     imageView.setVisibility(View.VISIBLE);
                     textView.setVisibility(View.VISIBLE);
                     frameLayout.setVisibility(View.GONE);
@@ -411,20 +416,27 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         return view;
     }
 
+    private void refreshDeviceList(boolean start) {
+        if (mBle.isScanning()) {
+            mBle.stopScan();
+        }
+        BleDeviceRecyclerViewAdapter.mValues.clear();
+        adapter.notifyDataSetChanged();
+        if (start) {
+            mBle.startScan(scanCallback);
+        }
+    }
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_cancel:
-                if (mBle.isScanning()) {
-                    mBle.stopScan();
-                }
+                refreshDeviceList(false);
                 dismiss();
                 break;
             case R.id.text_input_publickey_by_hand:
-                if (mBle.isScanning()) {
-                    mBle.stopScan();
-                }
+                refreshDeviceList(false);
                 dismiss();
                 Activity activity = getActivity();
                 if (activity != null) getActivity().runOnUiThread(runnables.get(0));
@@ -435,11 +447,9 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
+            Toast.makeText(getContext(), "需要打开蓝牙才能正常使用此通讯方式", Toast.LENGTH_LONG).show();
         } else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
-            if (mBle.isScanning()) {
-                mBle.stopScan();
-            }
-            mBle.startScan(scanCallback);
+            refreshDeviceList(true);
         } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
@@ -518,10 +528,6 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                     intent1.putExtra("pin", PIN_NEW_FIRST);
                     reference.get().startActivityForResult(intent1, PIN_REQUEST);
                     break;
-                /*case PIN_New_SECOND:
-                    Intent intent2 = new Intent(reference.get(), PinSettingActivity.class);
-                    intent2.putExtra("pin", PIN_New_SECOND);
-                    reference.get().startActivityForResult(intent2, PIN_REQUEST);  */
                 case SHOW_PROCESSING:
                     Intent intent2 = new Intent(reference.get(), ActivatedProcessing.class);
                     reference.get().startActivity(intent2);

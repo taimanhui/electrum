@@ -56,6 +56,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity.isNfc;
 
 public class TransactionDetailsActivity extends BaseActivity {
 
@@ -91,7 +92,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     TextView textView18;
     @BindView(R.id.textView20)
     TextView textView20;
-    // @BindView(R.id.sig_trans)
+    @BindView(R.id.sig_trans)
     Button sigTrans;
     public static final String TAG = "com.bixin.wallet.activities.TransactionDetailsActivity";
     @BindView(R.id.tet_content)
@@ -145,6 +146,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     public static String signedRawTx;
     private CustomerDialogFragment customerDialogFragment;
     private boolean pinCached;
+    private boolean isActive;
 
 
     @Override
@@ -155,33 +157,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        sigTrans = findViewById(R.id.sig_trans);
-        sigTrans.setOnClickListener((v) -> {
-            String strBtncontent = sigTrans.getText().toString();
-            if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
-                Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
-                intent1.putExtra("rowTrsaction", tx_hash);
-                intent1.putExtra("rowTx", rowtx);
-                startActivity(intent1);
-
-            } else if (strBtncontent.equals(getResources().getString(R.string.broadcast))) {
-                //bradcast trsaction
-                braodcastTrsaction();
-
-            } else if (strBtncontent.equals(getResources().getString(R.string.check_trsaction))) {
-                Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
-                intent1.putExtra("checkTxid", txid);
-                startActivity(intent1);
-            } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
-                if (strwalletType.equals("standard")) {
-                    //sign input pass
-                    signInputpassDialog();
-                } else {
-//                    showCustomerDialog();
-                    gotoConfirmOnHardware();
-                }
-            }
-        });
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         language = preferences.getString("language", "");
@@ -506,7 +481,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 intent.putExtra("rowTx", rowtx);
                 startActivity(intent);
                 break;
-            /*case R.id.sig_trans:
+            case R.id.sig_trans:
                 String strBtncontent = sigTrans.getText().toString();
                 if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
@@ -530,7 +505,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                         showCustomerDialog();
                     }
                 }
-                break;*/
+                break;
             case R.id.lin_getMoreaddress:
                 Intent intent1 = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
                 intent1.putExtra("jsondef_get", jsondef_get);
@@ -698,6 +673,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 nfcHandler.put("device", tags);
                 executable = false;
             }
+            isNfc = true;
             if (!TextUtils.isEmpty(pin)) {
                 CustomerDialogFragment.customerUI.put("pin", pin);
                 gotoConfirmOnHardware();
@@ -716,8 +692,19 @@ public class TransactionDetailsActivity extends BaseActivity {
                     }
                 } else {
                     // todo: Initialized
-                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                    startActivityForResult(intent1, REQUEST_ACTIVE);
+                    if (isActive) {
+                        new Thread(() -> {
+                            try {
+                                Daemon.commands.callAttr("init");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        ).start();
+                    } else {
+                        Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                        startActivityForResult(intent1, REQUEST_ACTIVE);
+                    }
                 }
             } catch (Exception e) {
                 Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
@@ -733,14 +720,26 @@ public class TransactionDetailsActivity extends BaseActivity {
             if (data != null) {
                 pin = data.getStringExtra("pin");
                 CustomerDialogFragment.pin = pin;
+                if (isActive)  {
+                    CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                    return;
+                }
+                if (!isNfc) {
+                    CustomerDialogFragment.customerUI.put("pin", pin);
+                    pin = "";
+                }
                 if (CustomerDialogFragment.isActive) {
-                        CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
-                        return;
+                    CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                    return;
                 }
                 if (!pinCached) {
                     CustomerDialogFragment.customerUI.put("pin", pin);
                     gotoConfirmOnHardware();
                 }
+            }
+        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                isActive = data.getBooleanExtra("isActive", false);
             }
         }
     }

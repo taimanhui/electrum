@@ -38,22 +38,23 @@ public class ActivatedProcessing extends BaseActivity {
         textViewProcess = findViewById(R.id.activate_state);
         if (Ble.getInstance().getConnetedDevices().size() != 0) {
             if (Ble.getInstance().getConnetedDevices().get(0).getBleName().startsWith("BixinKEY")){
-                new Handler().postDelayed(this::processingState
-                , 100);
+                new Handler().postDelayed(() -> processingState(false)
+                , 10);
             }
         }
     }
 
-    private void processingState() {
+    private void processingState(boolean isNfc) {
         Drawable drawableStart = getDrawable(R.drawable.chenggong);
         Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
         textViewConnect.setCompoundDrawables(drawableStart, null, null, null);
-        while (true) {
+        while (isNfc) {
             if (!TextUtils.isEmpty(CustomerDialogFragment.pin)) {
                 CustomerDialogFragment.customerUI.put("pin", CustomerDialogFragment.pin);
                 break;
             }
         }
+
         textViewPIN.setCompoundDrawables(drawableStart, null, null, null);
         while (true) {
             int state = CustomerDialogFragment.customerUI.callAttr("get_state").toInt();
@@ -81,7 +82,7 @@ public class ActivatedProcessing extends BaseActivity {
             NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
         } else {
             // use in udp
-            new Handler().postDelayed(this::processingState, 100);
+            new Handler().postDelayed(() -> processingState(false), 100);
         }
     }
 
@@ -114,7 +115,7 @@ public class ActivatedProcessing extends BaseActivity {
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            processingState();
+            processingState(true);
         }
     }
 

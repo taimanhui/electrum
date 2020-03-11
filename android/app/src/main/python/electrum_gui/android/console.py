@@ -120,7 +120,7 @@ class AndroidCommands(commands.Commands):
         self.callbackIntent = None
         self.wallet = None
         self.client = None
-        self.path = 'bluetooth'
+        self.path = ''
         self.local_wallet_info = self.config.get("all_wallet_type_info", {})
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
@@ -1112,7 +1112,7 @@ class AndroidCommands(commands.Commands):
 
     def get_pin_status(self, path='nfc'):
         self.client = None
-        self.path = 'bluetooth'
+        self.path = ''
         client = self.get_client(path=path)
         return client.features.pin_cached
 
