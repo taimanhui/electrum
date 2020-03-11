@@ -2,10 +2,7 @@ package org.haobtc.wallet.fragment;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,8 +72,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
                 switch (device.getBondState()) {
                     case BluetoothDevice.BOND_BONDED:
                         if (holder.device.isConnected()) {
-                            mBle.disconnect(holder.device);
-                            mBle.connect(holder.device, connectCallback);
+                            connectCallback.onReady(holder.device);
                         } else if (holder.device.isConnectting()) {
                             mBle.cancelConnectting(holder.device);
                             mBle.connect(holder.device, connectCallback);
