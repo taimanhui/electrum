@@ -175,7 +175,6 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
 
 
-
         Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   rowTrsation -- : " + rowTrsation);
     }
 
@@ -190,10 +189,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             return;
         }
         if (isIsmine) {
-//            if (tx_status.contains("confirmations")){
-//                tetAddSpeed.setVisibility(View.GONE);
-//            }else{
-
+            tvInTb2.setText(R.string.sendetail);
             tetAddSpeed.setVisibility(View.VISIBLE);
             try {
                 get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
@@ -210,6 +206,7 @@ public class TransactionDetailsActivity extends BaseActivity {
 
         } else {
             tetAddSpeed.setVisibility(View.GONE);
+            tvInTb2.setText(R.string.recevid);
         }
         if (!TextUtils.isEmpty(keyValue)) {
             if (keyValue.equals("A")) {
@@ -459,7 +456,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private Runnable runnable = this::gotoConfirmOnHardware;
 
     private void gotoConfirmOnHardware() {
-        Log.i("jsdhujbejnfksndml", "output_addr: "+output_addr);
+        Log.i("jsdhujbejnfksndml", "output_addr: " + output_addr);
         Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", output_addr);
@@ -469,7 +466,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         startActivity(intentCon);
     }
 
-    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed})
+    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -720,7 +717,8 @@ public class TransactionDetailsActivity extends BaseActivity {
             if (data != null) {
                 pin = data.getStringExtra("pin");
                 CustomerDialogFragment.pin = pin;
-                if (isActive)  {
+                if (isActive) {
+                    CustomerDialogFragment.customerUI.put("pin", pin);
                     CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
                     return;
                 }

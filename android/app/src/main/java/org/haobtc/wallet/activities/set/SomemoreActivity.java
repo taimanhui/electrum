@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.set;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,7 +43,9 @@ public class SomemoreActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-
+        Intent intent = getIntent();
+        String keyListItem = intent.getStringExtra("keyListItem");
+        tetKeyName.setText(keyListItem);
     }
 
     @Override

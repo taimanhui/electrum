@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.set;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
@@ -63,7 +64,9 @@ public class BixinKEYMenageActivity extends BaseActivity {
             bixinkeyManagerAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                    mIntent(SomemoreActivity.class);
+                    Intent intent = new Intent(BixinKEYMenageActivity.this, SomemoreActivity.class);
+                    intent.putExtra("keyListItem",keyList.get(position));
+                    startActivity(intent);
                 }
             });
         }

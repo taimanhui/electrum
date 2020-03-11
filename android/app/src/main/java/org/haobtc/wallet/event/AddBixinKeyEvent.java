@@ -1,6 +1,8 @@
 package org.haobtc.wallet.event;
 
-public class AddBixinKeyEvent {
+import java.io.Serializable;
+
+public class AddBixinKeyEvent implements Serializable {
     private String keyname;
     private String keyaddress;
 

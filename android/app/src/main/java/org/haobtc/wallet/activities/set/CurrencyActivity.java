@@ -166,6 +166,7 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
+                        edit.putString("cny_strunit", "CNY");
                     } else if (pos == 1) {
                         try {
                             Daemon.commands.callAttr("set_currency", "USD");
@@ -173,13 +174,15 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
+                        edit.putString("cny_strunit", "USD");
                     } else if (pos == 2) {
                         try {
-                            Daemon.commands.callAttr("set_currency", "KMR");
+                            Daemon.commands.callAttr("set_currency", "KRW");
                         } catch (Exception e) {
                             e.printStackTrace();
                             return;
                         }
+                        edit.putString("cny_strunit", "KRW");
                     } else {
                         try {
                             Daemon.commands.callAttr("set_currency", listCNY.get(pos).getName());
@@ -187,6 +190,7 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
+                        edit.putString("cny_strunit", listCNY.get(pos).getName());
                     }
                     EventBus.getDefault().post(new FirstEvent("22"));
 //                    Log.i(TAG, "ItemClick: ");

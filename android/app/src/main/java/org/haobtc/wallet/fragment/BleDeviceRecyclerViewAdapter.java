@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -84,6 +85,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
                        boolean bond =  device.createBond();
                        if (!bond) {
                            Log.e("BLE", "无法绑定设备");
+                           Toast.makeText(context, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
                        }
                 }
 

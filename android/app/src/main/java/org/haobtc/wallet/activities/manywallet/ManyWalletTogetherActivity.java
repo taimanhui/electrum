@@ -223,17 +223,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
                 String strWalletname = editWalletname.getText().toString();
                 String invator1 = tvIndicator.getText().toString();
                 String invator2 = tvIndicatorTwo.getText().toString();
@@ -254,6 +243,18 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                     button.setEnabled(false);
                     button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
                 }
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                tvIndicator.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tvIndicator.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -268,16 +269,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 tvIndicatorTwo.setText(indicatorText);
                 paramsTwo.leftMargin = (int) indicatorOffset;
                 tvIndicatorTwo.setLayoutParams(paramsTwo);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                tvIndicatorTwo.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                tvIndicatorTwo.setVisibility(View.VISIBLE);
                 String strWalletname = editWalletname.getText().toString();
                 String invator1 = tvIndicator.getText().toString();
                 String invator2 = tvIndicatorTwo.getText().toString();
@@ -299,6 +290,17 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                     button.setEnabled(false);
                     button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
                 }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                tvIndicatorTwo.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tvIndicatorTwo.setVisibility(View.VISIBLE);
+
             }
         });
     }
@@ -334,7 +336,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 } catch (Exception e) {
                     e.printStackTrace();
                     myDialog.dismiss();
-                    Log.e("jxmException", "Exception: " + e.getMessage());
                     String message = e.getMessage();
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getResources().getString(R.string.changewalletname));
