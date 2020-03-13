@@ -299,7 +299,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //getFeerate
-
                 getFeerate();
             }
         });
@@ -790,9 +789,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
             } catch (Exception e) {
                 e.printStackTrace();
+                return;
             }
+            Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);
             if (get_fee_by_feerate != null) {
-                Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);
                 String strnewFee = get_fee_by_feerate.toString();
                 Gson gson = new Gson();
                 GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
@@ -805,12 +805,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }
 
 

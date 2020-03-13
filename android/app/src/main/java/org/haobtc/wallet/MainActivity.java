@@ -188,66 +188,76 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("mWheelplanting", "mWheelplanting:==== " + e.getMessage());
+            fragmentList.add(new AddViewFragment());
+            viewPager.setOffscreenPageLimit(4);
+            viewPager.setPageMargin(40);
+            viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+            //trsaction list data
+            tetNone.setVisibility(View.VISIBLE);
+            recy_data.setVisibility(View.GONE);
             return;
         }
 
         if (get_wallets_list_info != null && get_wallets_list_info.size() != 0) {
             String toStrings = get_wallets_list_info.toString();
-            Log.i("javaBean", "mjavaBean-----: " + toStrings);
-            com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
-            for (int i = 0; i < jsons.size(); i++) {
-                Map jsonToMap = (Map) jsons.get(i);
-                Set keySets = jsonToMap.keySet();
-                Iterator ki = keySets.iterator();
-                AddressEvent addressEvent = new AddressEvent();
-                while (ki.hasNext()) {
-                    //get key
-                    String key = (String) ki.next();
-                    String value = jsonToMap.get(key).toString();
-                    addressEvent.setName(key);
-                    addressEvent.setType(value);
-                    walletnameList.add(addressEvent);
+            if (toStrings.length() != 2) {
+                Log.i("get_wallets_list_info", "mjavaBean-----: " + toStrings);
+                com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
+                for (int i = 0; i < jsons.size(); i++) {
+                    Map jsonToMap = (Map) jsons.get(i);
+                    Set keySets = jsonToMap.keySet();
+                    Iterator ki = keySets.iterator();
+                    AddressEvent addressEvent = new AddressEvent();
+                    while (ki.hasNext()) {
+                        //get key
+                        String key = (String) ki.next();
+                        String value = jsonToMap.get(key).toString();
+                        addressEvent.setName(key);
+                        addressEvent.setType(value);
+                        walletnameList.add(addressEvent);
+                    }
                 }
-            }
-            Log.i("mWheelplanting", "mWheelplanting: " + walletnameList.toString());
+                Log.i("mWheelplanting", "mWheelplanting: " + walletnameList.toString());
 
-            if (walletnameList != null && walletnameList.size() != 0) {
-                strNames = walletnameList.get(0).getName();
-                strType = walletnameList.get(0).getType();
-                for (int i = 0; i < walletnameList.size(); i++) {
-                    String name = walletnameList.get(i).getName();
-                    walletType = walletnameList.get(i).getType();
-                    //switch wallet
+                if (walletnameList != null && walletnameList.size() != 0) {
+                    strNames = walletnameList.get(0).getName();
+                    strType = walletnameList.get(0).getType();
+                    for (int i = 0; i < walletnameList.size(); i++) {
+                        String name = walletnameList.get(i).getName();
+                        walletType = walletnameList.get(i).getType();
+                        //switch wallet
 //                    dataListName.add(name);
-                    try {
-                        Daemon.commands.callAttr("load_wallet", walletnameList.get(0).getName());
-                        Daemon.commands.callAttr("select_wallet", walletnameList.get(0).getName());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+//                        try {
+//                            Daemon.commands.callAttr("load_wallet", walletnameList.get(0).getName());
+//                            Daemon.commands.callAttr("select_wallet", walletnameList.get(0).getName());
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            return;
+//                        }
+                        if (i != 0) {
+                            fragmentList.add(new WheelViewpagerFragment(name, walletType));
+                        } else {
+                            fragmentList.add(new WheelViewpagerFragment(name, walletType, true));
+                        }
+
                     }
-                    if (i != 0) {
-                        fragmentList.add(new WheelViewpagerFragment(name, walletType));
-                    } else {
-                        fragmentList.add(new WheelViewpagerFragment(name, walletType, true));
-                    }
+                    //trsaction list data
+                    downMainListdata();
+                    fragmentList.add(new AddViewFragment());
+                    viewPager.setOffscreenPageLimit(4);
+                    viewPager.setPageMargin(40);
+                    viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
 
                 }
-                //trsaction list data
-                downMainListdata();
-//                dataListName.add("");
+            }else{
                 fragmentList.add(new AddViewFragment());
                 viewPager.setOffscreenPageLimit(4);
                 viewPager.setPageMargin(40);
                 viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-
+                //trsaction list data
+                tetNone.setVisibility(View.VISIBLE);
+                recy_data.setVisibility(View.GONE);
             }
-        } else {
-//            dataListName.add("");
-//            fragmentList.add(new AddViewFragment());
-//            viewPager.setOffscreenPageLimit(4);
-//            viewPager.setPageMargin(40);
-            viewPager.setVisibility(View.GONE);
-
         }
         //scroll
         viewPagerScroll();

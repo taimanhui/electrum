@@ -215,6 +215,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     }
 
     private void seekbarLatoutup() {
+        seekBarFee.setProgress(2);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBarFee.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
@@ -261,6 +262,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     }
 
     private void seekbarLatoutdown() {
+        seekBarNum.setProgress(1);
         RelativeLayout.LayoutParams paramsTwo = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
