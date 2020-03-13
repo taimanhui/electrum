@@ -3,10 +3,12 @@ package org.haobtc.wallet.activities.set;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -101,17 +103,17 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     }
                 }
             }
-            ElectrumListAdapter electrumListAdapter = new ElectrumListAdapter(ElectrumNodeChooseActivity.this,electrumList,exChange);
+            ElectrumListAdapter electrumListAdapter = new ElectrumListAdapter(ElectrumNodeChooseActivity.this, electrumList, exChange);
             reclNodeChose.setAdapter(electrumListAdapter);
             electrumListAdapter.setOnLisennorClick(new ElectrumListAdapter.onLisennorClick() {
                 @Override
                 public void ItemClick(int pos) {
                     try {
-                        Daemon.commands.callAttr("set_server",addressEvents.get(pos).getInputAddress(),addressEvents.get(pos).getInputAmount());
+                        Daemon.commands.callAttr("set_server", addressEvents.get(pos).getInputAddress(), addressEvents.get(pos).getInputAmount());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    edit.putInt("exChange",pos);
+                    edit.putInt("exChange", pos);
                     edit.apply();
                 }
             });
@@ -129,6 +131,32 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                 View view1 = LayoutInflater.from(this).inflate(R.layout.add_node_layout, null, false);
                 AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
                 ImageView img_Cancle = view1.findViewById(R.id.cancel_select_wallet);
+
+                view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
+                    EditText edit_ip = view1.findViewById(R.id.edit_ip);
+                    EditText edit_port = view1.findViewById(R.id.edit_port);
+                    if (TextUtils.isEmpty(edit_ip.getText().toString())) {
+                        mToast(getString(R.string.please_inputIp));
+                        return;
+                    }
+                    if (TextUtils.isEmpty(edit_port.getText().toString())) {
+                        mToast(getString(R.string.please_inputPort));
+                        return;
+                    }
+
+                    try {
+                        Daemon.commands.callAttr("set_server", edit_ip.getText().toString(), edit_port.getText().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("printStackTrace", "printStackTrace: "+e.getMessage());
+                        return;
+                    }
+                    electrumList.clear();
+                    getElectrumData();
+                    mToast(getString(R.string.add_finished));
+                    alertDialog.dismiss();
+
+                });
                 img_Cancle.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });

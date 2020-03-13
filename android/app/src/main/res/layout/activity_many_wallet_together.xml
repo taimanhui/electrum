@@ -233,7 +233,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/dp_30"
                                 android:max="15"
-                                android:overScrollMode="never"
                                 android:thumb="@drawable/white_clrcle" />
 
                         </RelativeLayout>
@@ -334,7 +333,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/dp_30"
                                 android:max="15"
-                                android:overScrollMode="never"
                                 android:thumb="@drawable/white_clrcle" />
 
 

@@ -92,12 +92,12 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     myDialog.dismiss();
                     return;
                 }
-                boolean passType = isPassType(strPass1);
-                if (!passType) {
-                    mToast(getResources().getString(R.string.passtype_wrong));
-                    myDialog.dismiss();
-                    return;
-                }
+//                boolean passType = isPassType(strPass1);
+//                if (!passType) {
+//                    mToast(getResources().getString(R.string.passtype_wrong));
+//                    myDialog.dismiss();
+//                    return;
+//                }
                 if (!TextUtils.isEmpty(strSeed)) {
                     try {
                         Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));
@@ -173,7 +173,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
     //judge mobile is wrong or right
     public boolean isPassType(String mobiles) {
         Pattern p = Pattern
-                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{4,}");
+                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
         Matcher m = p.matcher(mobiles);
 
         return m.matches();

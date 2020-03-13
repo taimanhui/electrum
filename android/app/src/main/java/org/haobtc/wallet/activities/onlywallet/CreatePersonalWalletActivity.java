@@ -144,6 +144,7 @@ public class CreatePersonalWalletActivity extends BaseActivity {
     }
 
     private void seekbarLatoutup() {
+        seekBarNum.setProgress(1);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
@@ -279,6 +280,15 @@ public class CreatePersonalWalletActivity extends BaseActivity {
                 //add
                 Daemon.commands.callAttr("add_xpub", strSweep);
             } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+            try {
+                Daemon.commands.callAttr("load_wallet", walletName);
+                Daemon.commands.callAttr("select_wallet", walletName);
+                Log.i("skjhdjdjhhhhhhhhhj", "111111111: ");
+            } catch (Exception e) {
+                Log.i("skjhdjdjhhhhhhhhhj", "222222222: ");
                 e.printStackTrace();
                 return;
             }

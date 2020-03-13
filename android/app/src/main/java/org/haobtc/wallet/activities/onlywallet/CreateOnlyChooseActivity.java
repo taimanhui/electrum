@@ -85,6 +85,7 @@ public class CreateOnlyChooseActivity extends BaseActivity {
     private String walletNames;
     private ArrayList<AddBixinKeyEvent> addEventsDatas;
     private int walletNameNum;
+    private boolean isInit;
 
     @Override
     public int getLayoutId() {
@@ -123,6 +124,15 @@ public class CreateOnlyChooseActivity extends BaseActivity {
                 showPopupAddCosigner1();
                 break;
             case R.id.bn_complete_add_cosigner:
+                try {
+                    Daemon.commands.callAttr("load_wallet", walletNames);
+                    Daemon.commands.callAttr("select_wallet", walletNames);
+                    Log.i("skjhdjdjhhhhhhhhhj", "111111111: ");
+                } catch (Exception e) {
+                    Log.i("skjhdjdjhhhhhhhhhj", "222222222: ");
+                    e.printStackTrace();
+                    return;
+                }
                 Intent intent = new Intent(CreateOnlyChooseActivity.this, CreatFinishPersonalActivity.class);
                 intent.putExtra("walletNames", walletNames);
                 intent.putExtra("flagTag", "onlyChoose");
@@ -271,7 +281,7 @@ public class CreateOnlyChooseActivity extends BaseActivity {
                 nfcHandler.put("device", tags);
                 executable = false;
             }
-            if (!TextUtils.isEmpty(pin)) {
+            if (!TextUtils.isEmpty(pin) && isInit) {
                 CustomerDialogFragment.customerUI.put("pin", pin);
                 try {
                     ReadingPubKeyDialogFragment dialog = (ReadingPubKeyDialogFragment) dialogFragment.showReadingDialog();
@@ -286,7 +296,6 @@ public class CreateOnlyChooseActivity extends BaseActivity {
                     }
                 }
             }
-            boolean isInit = false;
             try {
                 isInit = isInitialized();
             } catch (Exception e) {

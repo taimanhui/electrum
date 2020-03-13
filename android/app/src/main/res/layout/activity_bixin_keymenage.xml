@@ -37,6 +37,7 @@
 
             <TextView
                 android:id="@+id/tet_Add"
+                android:visibility="gone"
                 android:layout_width="64dp"
                 android:layout_height="match_parent"
                 android:gravity="center"

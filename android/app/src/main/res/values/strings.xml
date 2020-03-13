@@ -278,7 +278,6 @@
     <string name="service_text">Use syncing server to back up and recover multiple wallets【恢复多钱钱包】, or sync and sign transactions among several co-signers;</string>
     <string name="electrum_select">Select Electrum node</string>
     <string name="add_custom_node">Add customized node</string>
-    <string name="input_node_message">Enter node info</string>
     <string name="restore_factory">Restore factory settings</string>
     <string name="somemore_wallet">**\'s wallet</string>
     <string name="bixinkey_message">BixinKEY info</string>
@@ -353,7 +352,7 @@
     <string name="user_agreement">Terms of usage</string>
     <string name="syncnneth">Syncing servers only keep openly available info such as public keys, names, etc. No private keys or personal info will be stored</string>
     <string name="electrum_tips">Bixin cold wallet uses open-source &#038; decentralized Electrum nodes for transaction propagation and on-chain info retrieval</string>
-    <string name="btc_com">BTC.com/</string>
+    <string name="btc_com">https://btc.com/</string>
     <string name="get_btc_price">Select 3rd party service to get bitcoin price</string>
     <string name="blockchain_choose">Select block explorer</string>
     <string name="check_trsaction_msg">Select block explorer to view on-chain information</string>
@@ -385,12 +384,12 @@
     <string name="backup_succse">Backup success</string>
     <string name="none_wallet">No Wallet</string>
     <string name="setwallet_pass">Set wallet password</string>
-    <string name="input_pass_format1">Passwords can only and must contain uppercase letters, lowercase letters, numbers, and standard symbols</string>
+    <string name="input_pass_format1">Password must be at least 8 digits, and can only and must contain uppercase letters, lowercase letters, numbers and standard symbols</string>
     <string name="intput_pass_format2">This wallet does not keep any information of the wallet. The password has no way to find it. Please remember the wallet password</string>
     <string name="helpword_wrong">Error in mnemonic input, please check and change</string>
     <string name="zero_three">0/2</string>
     <string name="_1_0_0">1.0.0</string>
-    <string name="lnbcdfd4fdsk">akshdkhdkhkdhkjdakjldkajsliieihdihsdkjsjda</string>
+    <string name="lnbcdfd4fdsk">aksdhkjdakjldkajsliieihdihsdkjsjda</string>
     <string name="_BTC">BTC</string>
     <string name="mbtc_0_001_btc">mBTC=0.001BTC</string>
     <string name="sat_0_00000001_btc">sat=0.00000001BTC</string>
@@ -425,7 +424,26 @@
     <string name="bixinkey_orspr">BixinKEY-ORSPR</string>
     <string name="recover_backup">Restore backup Wallet</string>
     <string name="improt_wrong">request was aborted</string>
-    <string name="band_bixinkey">绑定的BixinKEY</string>
+    <string name="band_bixinkey">Bound BixinKEY</string>
     <string name="legal_currency">Monetary unit</string>
+    <string name="goto_upgrade">To upgrade</string>
+    <string name="fit_key">Please fit BixinKEY hardware to your phone</string>
+    <string name="upgradeing">Upgrading to v1.2</string>
+    <string name="_55">55%</string>
+    <string name="fit_key_warning">Do not leave BixinKEY on your phone during upgrade</string>
+    <string name="please_choose_firmware">Please select a firmware</string>
+    <string name="ip">IP</string>
+    <string name="port_number">Port number</string>
+    <string name="please_inputIp">Please input IP</string>
+    <string name="please_inputPort">Please enter the port number</string>
+    <string name="add_finished">Add success</string>
+    <string name="upgradeed">Upgraded to v1.2</string>
+    <string name="please_confirmKEY">Please confirm the letter pin code on BixinKEY</string>
+    <string name="hours_24">24 hour limit</string>
+    <string name="no_need_PIN">No PIN required</string>
+    <string name="no_need_hardware">No hardware confirmation required</string>
+    <string name="set_to_Bixinkey">Set to BixinKEY</string>
+    <string name="send_shortcut_access">Currency express channel</string>
+    <string name="please_input_walletname">Please enter the wallet name</string>
 
 </resources>

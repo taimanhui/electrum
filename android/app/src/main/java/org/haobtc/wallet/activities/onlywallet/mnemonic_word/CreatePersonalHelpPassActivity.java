@@ -101,8 +101,6 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         try {
             Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed));
 
-            mIntent(CreateInputHelpWordWalletSuccseActivity.class);
-
         } catch (Exception e) {
             myDialog.dismiss();
             e.printStackTrace();
@@ -110,16 +108,21 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 mToast(getResources().getString(R.string.changewalletname));
             }
             return;
-            //local taste noodle trial level soda mobile orchard amazing bean gossip library
         }
-
-
+        try {
+            Daemon.commands.callAttr("load_wallet", name);
+            Daemon.commands.callAttr("select_wallet", name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        mIntent(CreateInputHelpWordWalletSuccseActivity.class);
     }
 
     //judge mobile is wrong or right
     public boolean isPassType(String mobiles) {
         Pattern p = Pattern
-                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{4,}");
+                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
         Matcher m = p.matcher(mobiles);
 
         return m.matches();
