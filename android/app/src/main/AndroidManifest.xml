@@ -16,10 +16,15 @@
         <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:name="android.hardware.nfc" android:required="true" />
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
 
     <application
         android:name=".activities.base.MyApplication"
@@ -31,8 +36,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <activity android:name=".activities.onlywallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity"/>
+        <activity android:name=".activities.onlywallet.ChooseHistryWalletActivity"/>
+        <activity android:name=".activities.set.NoSecretPaymentActivity" />
+        <activity android:name=".activities.set.fixpin.ConfirmPincodeActivity" />
+        <activity android:name=".activities.set.UpgradeFinishedActivity" />
+        <activity android:name=".activities.set.UpgradeBixinKEYActivity" />
+        <activity android:name=".activities.onlywallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity" />
         <activity android:name=".activities.onlywallet.mnemonic_word.CreatePersonalHelpPassActivity" />
         <activity android:name=".activities.onlywallet.mnemonic_word.CreateHelpWordWalletActivity" />
         <activity android:name=".activities.transaction.CheckChainDetailWebActivity" />

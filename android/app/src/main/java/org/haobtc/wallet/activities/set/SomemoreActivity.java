@@ -1,10 +1,12 @@
 package org.haobtc.wallet.activities.set;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.set.fixpin.InputOldPINActivity;
@@ -34,6 +36,8 @@ public class SomemoreActivity extends BaseActivity {
     LinearLayout linOnckFour;
     @BindView(R.id.lin_OnckFive)
     LinearLayout linOnckFive;
+    @BindView(R.id.tetKeyname)
+    TextView tetKeyname;
 
     @Override
     public int getLayoutId() {
@@ -46,6 +50,7 @@ public class SomemoreActivity extends BaseActivity {
         Intent intent = getIntent();
         String keyListItem = intent.getStringExtra("keyListItem");
         tetKeyName.setText(keyListItem);
+        tetKeyname.setText(String.format("%s%s", keyListItem, getString(R.string.settings)));
     }
 
     @Override
@@ -69,10 +74,12 @@ public class SomemoreActivity extends BaseActivity {
                 mIntent(InputOldPINActivity.class);
                 break;
             case R.id.lin_OnckFour:
+                mIntent(NoSecretPaymentActivity.class);
                 break;
             case R.id.lin_OnckFive:
                 mIntent(RecoverySetActivity.class);
                 break;
         }
     }
+
 }

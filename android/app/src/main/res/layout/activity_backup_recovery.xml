@@ -83,11 +83,11 @@
                 android:layout_height="@dimen/dp_1"
                 android:layout_marginStart="@dimen/sp_16"
                 android:layout_marginEnd="@dimen/sp_16"
-                android:layout_alignParentBottom="true"
                 android:background="@color/separation_line" />
           <androidx.recyclerview.widget.RecyclerView
               android:id="@+id/reclCheckKey"
               tools:itemCount="2"
+              app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
               tools:listitem="@layout/bixinkey_check_item"
               android:background="@color/button_bk_ddake"
               android:layout_width="match_parent"

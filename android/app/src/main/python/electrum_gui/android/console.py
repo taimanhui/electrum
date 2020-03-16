@@ -426,7 +426,8 @@ class AndroidCommands(commands.Commands):
             wallet = Wallet(db, storage, config=self.config)
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
-            self.local_wallet_info[name] = ("%s-%s" % (self.m, self.n))
+            wallet_type = "%s-%s" % (self.m, self.n)
+            self.local_wallet_info[name] = wallet_type
             self.config.set_key('all_wallet_type_info', self.local_wallet_info)
             if self.wallet:
                 self.close_wallet()
@@ -434,11 +435,24 @@ class AndroidCommands(commands.Commands):
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
             self.select_wallet(self.wallet_name)
+            if self.label_flag:
+                self.label_plugin.load_wallet(self.wallet, wallet_type)
         self.wizard = None
+
+    ############
+    def get_wallet_info_from_server(self, xpub):
+        try:
+            if self.label_flag:
+                self.label_plugin.pull(xpub)
+        except BaseException as e:
+            raise e
 
     ##create tx#########################
     def get_default_fee_status(self):
-        return self.config.get_fee_status()
+        try:
+            return self.config.get_fee_status()
+        except BaseException as e:
+            raise e
 
     def get_amount(self, amount):
         try:
@@ -498,8 +512,8 @@ class AndroidCommands(commands.Commands):
             tx = tx_from_any(self.tx)
             tx.deserialize()
             self.do_save(tx)
-            if self.label_flag:
-                self.label_plugin.push(self.wallet)
+            # if self.label_flag:
+            #     self.label_plugin.push(self.wallet)
         except Exception as e:
             raise BaseException(e)
 
@@ -1180,6 +1194,8 @@ class AndroidCommands(commands.Commands):
         self.daemon.add_wallet(wallet)
         self.local_wallet_info[name] = 'standard'
         self.config.set_key('all_wallet_type_info', self.local_wallet_info)
+        # if self.label_flag:
+        #     self.label_plugin.load_wallet(self.wallet, None)
         return new_seed
     # END commands from the argparse interface.
 
@@ -1303,8 +1319,6 @@ class AndroidCommands(commands.Commands):
                 self.wallet = None
             else:
                 self.wallet = self.daemon._wallets[self._wallet_path(name)]
-            if self.label_flag:
-                self.label_plugin.load_wallet(self.wallet, None)
 
             self.wallet.use_change = self.config.get('use_change', False)
             import time
