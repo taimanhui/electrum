@@ -146,6 +146,7 @@ class LabelsPlugin(BasePlugin):
             result[walletId] = wallet_list
         self.logger.info(f"received {len(response)} wallets")
         print("wallet info is %s---" %result)
+        return result
 
     @ignore_exceptions
     @log_exceptions

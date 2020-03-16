@@ -574,7 +574,8 @@ class Network(Logger):
             if proxy:
                 proxy_modes.index(proxy['mode']) + 1
                 int(proxy['port'])
-        except:
+        except BaseException as e:
+            raise e
             return
         self.config.set_key('auto_connect', net_params.auto_connect, False)
         self.config.set_key('oneserver', net_params.oneserver, False)

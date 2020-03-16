@@ -443,7 +443,7 @@ class AndroidCommands(commands.Commands):
     def get_wallet_info_from_server(self, xpub):
         try:
             if self.label_flag:
-                self.label_plugin.pull(xpub)
+                return self.label_plugin.pull(xpub)
         except BaseException as e:
             raise e
 
@@ -699,12 +699,11 @@ class AndroidCommands(commands.Commands):
             out_info['addr'] = address
             out_info['amount'] = self.format_amount_and_units(value)
             out_list.append(out_info)
-        #print("===============tx:%s" %tx.serialize_as_bytes().hex())
         ret_data = {
             'txid':tx_details.txid,
             'can_broadcast':tx_details.can_broadcast,
             'amount': self.format_amount_and_units(tx_details.amount),
-            'fee': self.format_amount_and_units(tx_details.fee) if isinstance(tx, PartialTransaction) else 0,
+            'fee': self.format_amount_and_units(tx_details.fee),
             'description':self.wallet.get_label(tx_details.txid),
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
             'sign_status':[s,r],
@@ -895,7 +894,6 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         tx = self.wallet.db.get_transaction(tx_hash)
-       # print("get_tx_info:tx=%s" % tx)
         if not tx:
             raise BaseException('get transaction info failed')
         #tx = PartialTransaction.from_tx(tx)
@@ -1074,7 +1072,7 @@ class AndroidCommands(commands.Commands):
             print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
             self.do_save(sign_tx)
             #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
-            # return sign_tx
+            #return sign_tx
             return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
         except BaseException as e:
             raise BaseException(e)
@@ -1131,7 +1129,6 @@ class AndroidCommands(commands.Commands):
         return client.features.pin_cached
 
     def get_xpub_from_hw(self, path='nfc', _type='p2wsh'):
-        print(f"get xpub py")
         client = self.get_client(path=path)
         derivation = bip44_derivation(0)
         try:
