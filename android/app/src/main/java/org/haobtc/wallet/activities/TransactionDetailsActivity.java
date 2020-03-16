@@ -39,24 +39,21 @@ import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
-import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.futureTask;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.executorService;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.isNFC;
 
 import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
-import static org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity.isNfc;
 
 public class TransactionDetailsActivity extends BaseActivity {
 
@@ -147,13 +144,14 @@ public class TransactionDetailsActivity extends BaseActivity {
     private CustomerDialogFragment customerDialogFragment;
     private boolean pinCached;
     private boolean isActive;
-
+    private boolean ready;
 
     @Override
     public int getLayoutId() {
         return R.layout.trans_details;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
@@ -663,50 +661,52 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            if (executable) {
-                Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
-                PyObject nfcHandler = nfc.get("NFCHandle");
-                nfcHandler.put("device", tags);
-                executable = false;
-            }
-            isNfc = true;
-            if (!TextUtils.isEmpty(pin)) {
-                CustomerDialogFragment.customerUI.put("pin", pin);
-                gotoConfirmOnHardware();
-            }
+            isNFC = true;
+            dealWithBusiness(intent);
+        }
+    }
 
-            try {
-                boolean isInit = isInitialized();
-                if (isInit) {
-                    pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
-                    System.out.println("java pin cashed===" + pinCached);
-                    // todo: get sgin
-                    CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
-                    new Thread(CustomerDialogFragment.futureTask).start();
-                    if (pinCached) {
-                        gotoConfirmOnHardware();
-                    }
-                } else {
-                    // todo: Initialized
-                    if (isActive) {
-                        new Thread(() -> {
-                            try {
-                                Daemon.commands.callAttr("init");
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        ).start();
-                    } else {
-                        Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                        startActivityForResult(intent1, REQUEST_ACTIVE);
-                    }
+    private void dealWithBusiness(Intent intent) {
+        if (executable) {
+            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
+            PyObject nfcHandler = nfc.get("NFCHandle");
+            nfcHandler.put("device", tags);
+            executable = false;
+        }
+        if (ready) {
+            CustomerDialogFragment.customerUI.put("pin", pin);
+            gotoConfirmOnHardware();
+            ready = false;
+        }
+        try {
+            boolean isInit = isInitialized();
+            if (isInit) {
+                pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
+                System.out.println("java pin cashed===" + pinCached);
+                // todo: get sgin
+                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
+                executorService.submit(futureTask);
+                if (pinCached) {
+                    gotoConfirmOnHardware();
                 }
-            } catch (Exception e) {
-                Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
+            } else {
+                // todo: Initialized
+                if (isActive) {
+                    executorService.execute(() -> {
+                        try {
+                            Daemon.commands.callAttr("init");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                } else {
+                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                    startActivityForResult(intent1, REQUEST_ACTIVE);
+                }
             }
-
+        } catch (Exception e) {
+            Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -716,22 +716,30 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (requestCode == 5 && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 pin = data.getStringExtra("pin");
-                CustomerDialogFragment.pin = pin;
-                if (isActive) {
-                    CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
-                    return;
-                }
-                if (!isNfc) {
-                    CustomerDialogFragment.customerUI.put("pin", pin);
-                    pin = "";
-                }
-                if (CustomerDialogFragment.isActive) {
-                    CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
-                    return;
-                }
-                if (!pinCached) {
-                    CustomerDialogFragment.customerUI.put("pin", pin);
-                    gotoConfirmOnHardware();
+                int tag = data.getIntExtra("tag", 0);
+                switch (tag) {
+                    case CustomerDialogFragment.PIN_NEW_FIRST: // 激活
+                        // ble 激活
+                        if (CustomerDialogFragment.isActive) {
+                            CustomerDialogFragment.customerUI.put("pin", pin);
+                            CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                            CustomerDialogFragment.isActive = false;
+                        } else if (isActive) {
+                            // nfc 激活
+                            CustomerDialogFragment.pin = pin;
+                            CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                            isActive = false;
+                        }
+                        break;
+                    case CustomerDialogFragment.PIN_CURRENT: // 签名
+                        if (!isNFC) { // ble
+                            CustomerDialogFragment.customerUI.put("pin", pin);
+                            gotoConfirmOnHardware();
+                        } else { // nfc
+                            ready = true;
+                        }
+                        break;
+                    default:
                 }
             }
         } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {

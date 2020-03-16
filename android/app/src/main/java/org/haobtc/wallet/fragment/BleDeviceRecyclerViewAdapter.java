@@ -3,19 +3,23 @@ package org.haobtc.wallet.fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.wallet.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
@@ -39,14 +43,14 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
         this.connectCallback = connectCallback;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void add(BleDevice device) {
-        if (!mValues.contains(device) && device.getBleName() != null) {
-            if (device.getBleName().startsWith("BixinKEY")) {
-                mValues.add(device);
-                notifyDataSetChanged();
-            }
-        }
-
+            mValues.add(device);
+            // 由于设备被连接时，会停止广播导致该设备无法被搜索到,所以要添加本APP以连接的设备到列表中
+            mValues.addAll(Ble.getInstance().getConnetedDevices());
+            mValues = mValues.stream().distinct().
+                    filter(bleDevice -> bleDevice.getBleName() != null && bleDevice.getBleName().startsWith("BixinKEY")).collect(Collectors.toList());
+            notifyDataSetChanged();
     }
 
     @NonNull
@@ -84,9 +88,9 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
                        boolean bond =  device.createBond();
                        if (!bond) {
                            Log.e("BLE", "无法绑定设备");
+                           Toast.makeText(context, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
                        }
                 }
-
             }
         });
     }

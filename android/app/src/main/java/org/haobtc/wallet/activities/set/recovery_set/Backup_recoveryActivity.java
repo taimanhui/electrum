@@ -1,20 +1,17 @@
 package org.haobtc.wallet.activities.set.recovery_set;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
-import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
-import org.haobtc.wallet.activities.set.BixinKEYMenageActivity;
-import org.haobtc.wallet.activities.set.SomemoreActivity;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
 
 import java.util.ArrayList;
@@ -36,6 +33,7 @@ public class Backup_recoveryActivity extends BaseActivity {
     RecyclerView reclCheckKey;
     private String stfRecovery;
     private CustomerDialogFragment dialogFragment;
+    public final static  String TAG = Backup_recoveryActivity.class.getSimpleName();
     private Set<String> bixinKEYlist;
 
     @Override
@@ -82,25 +80,12 @@ public class Backup_recoveryActivity extends BaseActivity {
                 break;
             case R.id.tet_keyName:
                 showPopupAddCosigner1();
-//                PyObject recovery_wallet = null;
-//                try {
-//                    recovery_wallet = Daemon.commands.callAttr("backup_wallet");
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                if (recovery_wallet != null) {
-//                    stfRecovery = recovery_wallet.toString();
-//                    mToast(getResources().getString(R.string.backup_succse));
-//                    Log.i("backup_wallet", "onViewClicked: "+recovery_wallet);
-//                }
-//                mIntent(BackupMessageActivity.class);
                 break;
         }
     }
 
     private void showPopupAddCosigner1() {
-        dialogFragment = new CustomerDialogFragment("", null, "");
+        dialogFragment = new CustomerDialogFragment(TAG, null, "");
         dialogFragment.show(getSupportFragmentManager(), "");
     }
-
 }

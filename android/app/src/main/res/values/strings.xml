@@ -426,6 +426,8 @@
     <string name="improt_wrong">request was aborted</string>
     <string name="band_bixinkey">Bound BixinKEY</string>
     <string name="legal_currency">Monetary unit</string>
+    <string name="backup_message">BixinKEY-QWE 备份信息</string>
+    <string name="promote_message">1. 请牢记备份PIN码 \n2. 请记BixinKEY展示的密码</string>
     <string name="goto_upgrade">To upgrade</string>
     <string name="fit_key">Please fit BixinKEY hardware to your phone</string>
     <string name="upgradeing">Upgrading to v1.2</string>

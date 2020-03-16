@@ -409,6 +409,7 @@
     <string name="improt_wrong">请求失败</string>
     <string name="band_bixinkey">绑定的BixinKEY</string>
     <string name="legal_currency">货币单位</string>
+    <string name="backup_message">BixinKEY-QWE 备份信息</string>
     <string name="goto_upgrade">去升级</string>
     <string name="fit_key">请将BixinKEY硬件与手机贴合</string>
     <string name="upgradeing">正在升级至v1.2</string>

@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 
 public abstract class BaseActivity extends AppCompatActivity {
     private String strUTF8;
-    private MyDialog myDialog;
     private Bitmap bitmap;
     private String filed1utf;
     private String nowTime;

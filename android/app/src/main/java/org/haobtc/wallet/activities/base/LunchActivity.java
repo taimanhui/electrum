@@ -21,6 +21,7 @@ import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.GuideActivity;
+import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
@@ -46,19 +47,12 @@ public class LunchActivity extends BaseActivity {
     private Handler nHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
-            long t = System.currentTimeMillis();
-            Global.app = MyApplication.getInstance();
-            if (!Python.isStarted()) {
-                Python.start(new AndroidPlatform(Global.app));
-            }
             Global.py = Python.getInstance();
             if (BuildConfig.net_type.equals(getResources().getString(R.string.TestNet))) {
                 Global.py.getModule("electrum.constants").callAttr("set_testnet");
             } else if (BuildConfig.net_type.equals(getResources().getString(R.string.RegTest))) {
                 Global.py.getModule("electrum.constants").callAttr("set_regtest");
             }
-            Log.i("JXM", "t4 = " + (System.currentTimeMillis() - t));
-            Global.mHandler = new Handler(Looper.getMainLooper());
             Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
             Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
             Daemon.daemonWeakReference = new WeakReference<>(new Daemon());

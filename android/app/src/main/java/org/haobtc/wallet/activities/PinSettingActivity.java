@@ -39,8 +39,7 @@ public class PinSettingActivity extends BaseActivity {
     @BindView(R.id.pin_description)
     TextView textViewPinDescription;
     private NumKeyboardUtil keyboardUtil;
-    // old version code todo: remove
-    private String tag;
+    private int tag;
 
     @Override
     public int getLayoutId() {
@@ -51,14 +50,7 @@ public class PinSettingActivity extends BaseActivity {
         ButterKnife.bind(this);
         edtPwd.setInputType(InputType.TYPE_NULL);
         keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
-        // old version code todo:remove
-        /*tag = getIntent().getStringExtra(TouchHardwareActivity.FROM);
-        if (CoSignerAddActivity.TAG.equals(tag) || TransactionDetailsActivity.TAG.equals(tag)) {
-            textViewPinDescription.setText(getResources().getString(R.string.pin_input));
-        }*/
-
-        // new version code todo:open
-        int tag = getIntent().getIntExtra("pin", 0);
+        tag = getIntent().getIntExtra("pin", 0);
         switch (tag) {
             case 1:
                 textViewPinDescription.setText(getString(R.string.pin_input));
@@ -125,6 +117,7 @@ public class PinSettingActivity extends BaseActivity {
                 if (edtPwd.getText().length() == 6) {
                     Intent intent = new Intent();
                     intent.putExtra("pin", edtPwd.getText().toString());
+                    intent.putExtra("tag", tag);
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 } else {
