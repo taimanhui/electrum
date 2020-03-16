@@ -427,5 +427,7 @@
     <string name="improt_wrong">request was aborted</string>
     <string name="band_bixinkey">绑定的BixinKEY</string>
     <string name="legal_currency">Monetary unit</string>
+    <string name="backup_message">BixinKEY-QWE 备份信息</string>
+    <string name="promote_message">1. 请牢记备份PIN码 \n2. 请记BixinKEY展示的密码</string>
 
 </resources>

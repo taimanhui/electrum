@@ -1,6 +1,7 @@
 package org.haobtc.wallet.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,12 @@ import org.haobtc.wallet.R;
 import java.util.Objects;
 
 public class ReadingPubKeyFailedDialogFragment extends DialogFragment {
+    private Runnable runnable;
+
+    public void setRunnable(Runnable runnable) {
+        this.runnable = runnable;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -29,7 +36,7 @@ public class ReadingPubKeyFailedDialogFragment extends DialogFragment {
         });
         Button button = view.findViewById(R.id.retry);
         button.setOnClickListener((v) -> {
-            dismiss();
+            Objects.requireNonNull(getActivity()).runOnUiThread(runnable);
         });
         Window window = Objects.requireNonNull(getDialog()).getWindow();
         if (window != null) {

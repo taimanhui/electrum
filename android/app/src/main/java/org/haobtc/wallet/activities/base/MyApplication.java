@@ -2,6 +2,10 @@ package org.haobtc.wallet.activities.base;
 
 import android.app.Application;
 
+
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+
 import java.util.UUID;
 
 import cn.com.heaton.blelibrary.ble.Ble;
@@ -15,15 +19,9 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        new Thread(){
-            @Override
-            public void run() {
-                super.run();
-            }
-        }.start();
         mInstance = this;
         initBle();
-
+        initChaquo();
     }
     public static MyApplication getInstance() {
         if (mInstance == null) {
@@ -41,7 +39,7 @@ public class MyApplication extends Application {
                 .setThrowBleException(true)//Set whether to throw Bluetooth exception
                 .setLogTAG("AndroidBLE")//Set global Bluetooth operation log TAG
                 .setAutoConnect(false)//Set whether to connect automatically
-                .setFilterScan(false)//Set whether to filter the founded devices
+                .setFilterScan(true)//Set whether to filter the founded devices
                 .setConnectFailedRetryCount(3)
                 .setConnectTimeout(10 * 1000)// Set the connection timeout
                 .setScanPeriod(12 * 1000)// Set the Scanning period
@@ -51,5 +49,11 @@ public class MyApplication extends Application {
                 .setUuidNotify(UUID.fromString(READ_CHARACTERISTIC))
                 .setUuidReadCha(UUID.fromString(READ_CHARACTERISTIC))
                 .create(mInstance);
+    }
+    private void initChaquo() {
+        if (!Python.isStarted()) {
+            Python.start(new AndroidPlatform(mInstance));
+        }
+
     }
 }

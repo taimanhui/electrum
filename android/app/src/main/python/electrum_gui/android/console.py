@@ -1117,6 +1117,7 @@ class AndroidCommands(commands.Commands):
         return client.features.pin_cached
 
     def get_xpub_from_hw(self, path='nfc', _type='p2wsh'):
+        print(f"get xpub py")
         client = self.get_client(path=path)
         derivation = bip44_derivation(0)
         try:

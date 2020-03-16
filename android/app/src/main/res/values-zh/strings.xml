@@ -410,5 +410,6 @@
     <string name="improt_wrong">请求失败</string>
     <string name="band_bixinkey">绑定的BixinKEY</string>
     <string name="legal_currency">货币单位</string>
+    <string name="backup_message">BixinKEY-QWE 备份信息</string>
 
 </resources>

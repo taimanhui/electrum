@@ -1,24 +1,22 @@
 package org.haobtc.wallet.activities.manywallet;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.Manifest;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.NfcAdapter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Handler;
-import android.os.Message;
 import android.os.Environment;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -33,14 +31,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chaquo.python.PyException;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -51,10 +46,6 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.ActivatedProcessing;
-import org.haobtc.wallet.activities.ConfirmOnHardware;
-import org.haobtc.wallet.activities.PinSettingActivity;
-import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
@@ -66,25 +57,19 @@ import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
-import org.haobtc.wallet.utils.NfcUtils;
+import org.haobtc.wallet.utils.MyDialog;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Objects;
-
-import org.haobtc.wallet.utils.MyDialog;
-import org.xutils.ex.BaseException;
-
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.LogRecord;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -92,7 +77,10 @@ import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.TouchHardwareActivity.FROM;
 import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.futureTask;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.executorService;
 import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.xpub;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.isNFC;
 
 public class ManyWalletTogetherActivity extends BaseActivity implements TextWatcher {
 
@@ -174,8 +162,8 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     private int defaultName;
     private int walletNameNum;
     private Bitmap bitmap;
-    public static boolean isNfc;
     private boolean isInit;
+    private boolean ready;
 
     @Override
     public int getLayoutId() {
@@ -230,18 +218,18 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                     if (!TextUtils.isEmpty(strWalletname)) {
                         if (Integer.parseInt(invator2) == 0) {
                             button.setEnabled(false);
-                            button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                            button.setBackground(getDrawable(R.drawable.button_bk_grey));
                         } else {
                             button.setEnabled(true);
-                            button.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                            button.setBackground(getDrawable(R.drawable.button_bk));
                         }
                     } else {
                         button.setEnabled(false);
-                        button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                        button.setBackground(getDrawable(R.drawable.button_bk_grey));
                     }
                 } else {
                     button.setEnabled(false);
-                    button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    button.setBackground(getDrawable(R.drawable.button_bk_grey));
                 }
 
             }
@@ -276,19 +264,19 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                     if (!TextUtils.isEmpty(strWalletname)) {
                         if (Integer.parseInt(invator2) == 0) {
                             button.setEnabled(false);
-                            button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                            button.setBackground(getDrawable(R.drawable.button_bk_grey));
                         } else {
                             button.setEnabled(true);
-                            button.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                            button.setBackground(getDrawable(R.drawable.button_bk));
                         }
 
                     } else {
                         button.setEnabled(false);
-                        button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                        button.setBackground(getDrawable(R.drawable.button_bk_grey));
                     }
                 } else {
                     button.setEnabled(false);
-                    button.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    button.setBackground(getDrawable(R.drawable.button_bk_grey));
                 }
             }
 
@@ -315,9 +303,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 mCreatWalletNext();
                 break;
             case R.id.bn_add_key:
-                // old version code
-                //showSelectFeeDialogs(ManyWalletTogetherActivity.this, R.layout.bluetooth_nfc);
-                // new version code
                 showPopupAddCosigner1();
                 break;
             case R.id.btn_Finish:
@@ -746,23 +731,20 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    switch (view.getId()) {
-                        case R.id.img_deleteKey:
-                            try {
-                                Daemon.commands.callAttr("delete_xpub", strSweep);
+                    if (view.getId() == R.id.img_deleteKey) {
+                        try {
+                            Daemon.commands.callAttr("delete_xpub", strSweep);
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            addEventsDatas.remove(position);
-                            addBixinKeyAdapter.notifyDataSetChanged();
-                            bnAddKey.setVisibility(View.VISIBLE);
-                            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        addEventsDatas.remove(position);
+                        addBixinKeyAdapter.notifyDataSetChanged();
+                        bnAddKey.setVisibility(View.VISIBLE);
+                        bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
 
-                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
-                            bnCompleteAddCosigner.setEnabled(false);
-
-                            break;
+                        bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+                        bnCompleteAddCosigner.setEnabled(false);
                     }
                 }
             });
@@ -796,12 +778,26 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     private boolean isInitialized() throws Exception {
         boolean isInitialized = false;
         try {
-            isInitialized = Daemon.commands.callAttr("is_initialized").toBoolean();
+            isInitialized = executorService.submit(() -> Daemon.commands.callAttr("is_initialized")).get().toBoolean();
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
         return isInitialized;
+    }
+    private void getResult() {
+        try {
+            ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
+            xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
+            dialog.dismiss();
+            showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
+            if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+                mToast(getResources().getString(R.string.pin_wrong));
+            } else {
+                dialogFragment.showReadingFailedDialog();
+            }
+        }
     }
 
     @Override
@@ -811,11 +807,11 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            isNfc = true;
+            isNFC = true;
             dealWithBusiness(intent);
         }
 
-        }
+    }
 
     private void dealWithBusiness(Intent intent) {
         if (executable) {
@@ -825,20 +821,10 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             nfcHandler.put("device", tags);
             executable = false;
         }
-        if (!TextUtils.isEmpty(pin) && isInit) {
+        if (ready) {
             CustomerDialogFragment.customerUI.put("pin", pin);
-            try {
-                ReadingPubKeyDialogFragment dialog = (ReadingPubKeyDialogFragment) dialogFragment.showReadingDialog();
-                xpub = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
-                dialog.dismiss();
-                showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-                return;
-            } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                dialogFragment.showReadingFailedDialog();
-                if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                    mToast(getResources().getString(R.string.pin_wrong));
-                }
-            }
+            getResult();
+            ready = false;
         }
         try {
             isInit = isInitialized();
@@ -850,16 +836,16 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
         if (isInit) {
             boolean pinCached = false;
             try {
-                pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
+                pinCached = executorService.submit(() -> Daemon.commands.callAttr("get_pin_status")).get().toBoolean();
             } catch (Exception e) {
                 e.printStackTrace();
             }
                 // todo: get xpub
-                CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
-                new Thread(CustomerDialogFragment.futureTask).start();
+                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
+                executorService.submit(futureTask);
                 if (pinCached) {
                     try {
-                        xpub = CustomerDialogFragment.futureTask.get().toString();
+                        xpub = futureTask.get().toString();
                     } catch (ExecutionException | InterruptedException e) {
                         e.printStackTrace();
                         return;
@@ -870,14 +856,15 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             } else {
                 // todo: Initialized
                 if (isActive) {
-                    new Thread(() -> {
-                        try {
-                            Daemon.commands.callAttr("init");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    ).start();
+                    executorService.execute(
+                            () -> {
+                                try {
+                                    Daemon.commands.callAttr("init");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                    );
                 } else {
                     Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                     startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -889,39 +876,41 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CustomerDialogFragment.PIN_REQUEST && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
+            if (data != null) { // 激活、创建
                 pin = data.getStringExtra("pin");
-                CustomerDialogFragment.pin = pin;
-                if (isActive)  {
-                    CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
-                    return;
-                }
-                if (!isNfc) {
-                    CustomerDialogFragment.customerUI.put("pin", pin);
-                    pin = "";
-                }
-                if (CustomerDialogFragment.isActive) {
-                    CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
-                    return;
-                }
-                if (!isNfc) {
-                    try {
-                        xpub = CustomerDialogFragment.futureTask.get(40, TimeUnit.SECONDS).toString();
-                        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-                    } catch (ExecutionException | TimeoutException | InterruptedException e) {
-                        dialogFragment.showReadingFailedDialog();
-                        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                            Toast.makeText(this, "PIN码输入有误，请重新输入", Toast.LENGTH_SHORT).show();
+                int tag = data.getIntExtra("tag", 0);
+                switch (tag) {
+                    case CustomerDialogFragment.PIN_NEW_FIRST: // 激活
+                        // ble 激活
+                        if (CustomerDialogFragment.isActive) {
+                            CustomerDialogFragment.customerUI.put("pin", pin);
+                            CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                            CustomerDialogFragment.isActive = false;
+                        } else if (isActive) {
+                            // nfc 激活
+                            CustomerDialogFragment.pin = pin;
+                            CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                            isActive = false;
                         }
-                    }
+                        break;
+                    case CustomerDialogFragment.PIN_CURRENT: // 创建
+                           if (!isNFC) { // ble
+                               CustomerDialogFragment.customerUI.put("pin", pin);
+                               new Handler().postDelayed(this::getResult, (long) 0.2);
+                           } else { // nfc
+                              ready = true;
+                           }
+                           break;
+                    default:
                 }
+
             }
         } else if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 edit_sweep.setText(content);
             }
-        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) { // nfc 和 ble 激活
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
             }
