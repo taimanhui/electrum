@@ -60,11 +60,12 @@ class MutiBase(Logger):
 
     def delete_xpub(self, xpub):
         find = False
-        for pub in map(lambda x: x.xpub, self.keystores):
+        for pos, pub in enumerate(map(lambda x: x.xpub, self.keystores)):
             if pub == xpub:
                 find = True
-                self.keystores.pop()
+                self.keystores.pop(pos)
                 break
+
         if not find:
             raise Exception("the xpub to be delete not in keystore")
 

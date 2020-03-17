@@ -1,1412 +1,433 @@
-from __future__ import absolute_import, division, print_function
-
-import copy
 from code import InteractiveConsole
 import json
 import os
-from decimal import Decimal
 from os.path import exists, join
 import pkgutil
 import unittest
-import threading
-from electrum.bitcoin import base_decode, is_address
-from electrum.keystore import bip44_derivation
-from electrum.plugin import Plugins
-from electrum.plugins.trezor.clientbase import TrezorClientBase
-from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, PartialTxInput
-from electrum import commands, daemon, keystore, simple_config, storage, util, bitcoin
-from electrum.util import Fiat, create_and_start_event_loop, decimal_point_to_base_unit_name
-from electrum import MutiBase
-from electrum.i18n import _
-from electrum.storage import WalletStorage
-from electrum.wallet import (Standard_Wallet,
-                                 Wallet)
-from electrum.bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
-from electrum import mnemonic
-from electrum.address_synchronizer import TX_HEIGHT_LOCAL, TX_HEIGHT_FUTURE
-#from android.preference import PreferenceManager
-from electrum.commands import satoshis
-from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
-from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
-import trezorlib.btc
-from electrum import ecc
-from trezorlib.customer_ui import CustomerUI
-from electrum.wallet_db import WalletDB
-from enum import Enum
-class Status(Enum):
-    net = 1
-    broadcast = 2
-    sign = 3
-    update_wallet = 4
-    update_status = 5
-    update_history = 6
-    update_interfaces = 7
-    create_wallet_error = 8
-
-
-
-class AndroidConsole(InteractiveConsole):
-    """`interact` must be run on a background thread, because it blocks waiting for input.
-    """
-    def __init__(self, app, cmds):
-        namespace = dict(c=cmds, context=app)
-        namespace.update({name: CommandWrapper(cmds, name) for name in all_commands})
-        namespace.update(help=Help())
-        InteractiveConsole.__init__(self, locals=namespace)
-
-    def interact(self):
-        try:
-            InteractiveConsole.interact(
-                self, banner=(
-                    _("WARNING!") + "\n" +
-                    _("Do not enter code here that you don't understand. Executing the wrong "
-                      "code could lead to your coins being irreversibly lost.") + "\n" +
-                    "Type 'help' for available commands and variables."))
-        except SystemExit:
-            pass
-
-
-class CommandWrapper:
-    def __init__(self, cmds, name):
-        self.cmds = cmds
-        self.name = name
-
-    def __call__(self, *args, **kwargs):
-        return getattr(self.cmds, self.name)(*args, **kwargs)
-
-
-class Help:
-    def __repr__(self):
-        return self.help()
-
-    def __call__(self, *args):
-        print(self.help(*args))
-
-    def help(self, name_or_wrapper=None):
-        if name_or_wrapper is None:
-            return("Commands:\n" +
-                   "\n".join(f"  {cmd}" for name, cmd in sorted(all_commands.items())) +
-                   "\nType help(<command>) for more details.\n"
-                   "The following variables are also available: "
-                   "c.config, c.daemon, c.network, c.wallet, context")
-        else:
-            if isinstance(name_or_wrapper, CommandWrapper):
-                cmd = all_commands[name_or_wrapper.name]
-            else:
-                cmd = all_commands[name_or_wrapper]
-            return f"{cmd}\n{cmd.description}"
-
-
-# Adds additional commands which aren't available over JSON RPC.
-class AndroidCommands(commands.Commands):
-    def __init__(self):
-        loop, stop_loop, loop_thread = create_and_start_event_loop()#TODO:close loop
-        config_options = {}
-        config_options['auto_connect'] = True
-        self.config = simple_config.SimpleConfig(config_options)
-        fd = daemon.get_file_descriptor(self.config)
-        if not fd:
-            raise BaseException("Daemon already running")  # Same wording as in daemon.py.
-
-        # Initialize here rather than in start() so the DaemonModel has a chance to register
-        # its callback before the daemon threads start.
-        self.daemon = daemon.Daemon(self.config, fd)
-        self.network = self.daemon.network
-        self.daemon_running = False
-        self.wizard = None
-        self.plugin = Plugins(self.config, 'cmdline')
-        self.label_plugin = self.plugin.load_plugin("labels")
-        self.label_flag = self.config.get('use_labels', False)
-        self.callbackIntent = None
-        self.wallet = None
-        self.client = None
-        self.path = ''
-        self.local_wallet_info = self.config.get("all_wallet_type_info", {})
-        if self.network:
-            interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
-                         'status', 'new_transaction', 'verified']
-            self.network.register_callback(self.on_network_event, interests)
-            self.network.register_callback(self.on_fee, ['fee'])
-            self.network.register_callback(self.on_fee_histogram, ['fee_histogram'])
-            self.network.register_callback(self.on_quotes, ['on_quotes'])
-            self.network.register_callback(self.on_history, ['on_history'])
-        self.fiat_unit = self.daemon.fx.ccy if self.daemon.fx.is_enabled() else ''
-        self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
-        for k, v in util.base_units_inverse.items():
-            if k == self.decimal_point:
-                self.base_unit = v
-
-        self.num_zeros = int(self.config.get('num_zeros', 0))
-        self.config.set_key('log_to_file', True, save=True)
-        self.rbf = self.config.get("use_rbf", True)
-        self.ccy = self.daemon.fx.get_currency()
-        self.m = 0
-        self.n = 0
-        self.config.set_key('auto_connect', True, True)
-        from threading import Timer
-        t = Timer(5.0, self.timer_action)
-        t.start()
-
-    # BEGIN commands from the argparse interface.
-    def is_valiad_xpub(self, xpub):
-        return keystore.is_bip32_key(xpub)
-
-    def on_fee(self, event, *arg):
-        self.fee_status = self.config.get_fee_status()
-
-    def on_fee_histogram(self, *args):
-        self.update_history()
-
-    def on_quotes(self, d):
-        self.update_status()
-        self.update_history()
-
-    def on_history(self, d):
-        if self.wallet:
-            self.wallet.clear_coin_price_cache()
-        self.update_history()
-
-    def update_status(self):
-        out = {}
-        if not self.wallet:
-            return
-        if self.network is None or not self.network.is_connected():
-            print("network is ========offline")
-            status = _("Offline")
-        elif self.network.is_connected():
-            #print("network is ========connect")
-            #out['wallet_type'] = self.wallet.wallet_type
-            self.num_blocks = self.network.get_local_height()
-            server_height = self.network.get_server_height()
-            server_lag = self.num_blocks - server_height
-            if not self.wallet.up_to_date or server_height == 0:
-                num_sent, num_answered = self.wallet.get_history_sync_state_details()
-                status = ("{} [size=18dp]({}/{})[/size]"
-                          .format(_("Synchronizing..."), num_answered, num_sent))
-            elif server_lag > 1:
-                status = _("Server is lagging ({} blocks)").format(server_lag)
-            else:
-                c, u, x = self.wallet.get_balance()
-                text = _("Balance") + ": %s " % (self.format_amount_and_units(c))
-                out['balance'] = self.format_amount(c) + ' '+ self.base_unit
-                out['fiat'] = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
-                if u:
-                    out['unconfirmed'] = self.format_amount(u, is_diff=True).strip()
-                    text += " [%s unconfirmed]" % (self.format_amount(u, is_diff=True).strip())
-                if x:
-                    out['unmatured'] = self.format_amount(x, is_diff=True).strip()
-                    text += " [%s unmatured]" % (self.format_amount(x, is_diff=True).strip())
-                if self.wallet.lnworker:
-                    l = self.wallet.lnworker.get_balance()
-                    text += u'    \U0001f5f2 %s' % (self.format_amount_and_units(l).strip())
-
-                # append fiat balance and price
-                if self.daemon.fx.is_enabled():
-                    text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-            #print("update_statue out = %s" % (out))
-        self.callbackIntent.onCallback("update_status", json.dumps(out))
-
-    def get_remove_flag(self, tx_hash):
-        height = self.wallet.get_tx_height(tx_hash).height
-        if height in [TX_HEIGHT_FUTURE, TX_HEIGHT_LOCAL]:
-            return True
-        else:
-            return False
-
-    def remove_local_tx(self, delete_tx):
-        to_delete = {delete_tx}
-        to_delete |= self.wallet.get_depending_transactions(delete_tx)
-
-        for tx in to_delete:
-            self.wallet.remove_transaction(tx)
-        self.wallet.save_db()
-        # need to update at least: history_list, utxo_list, address_list
-        #self.parent.need_update.set()
-
-    def save_tx_to_file(self, path, tx):
-        print("save_tx_to_file in.....")
-        with open(path, 'w') as f:
-            f.write(tx)
-
-    def get_wallet_info(self):
-        wallet_info = {}
-        wallet_info['balance'] = self.balance
-        wallet_info['fiat_balance'] = self.fiat_balance
-        wallet_info['name'] = self.wallet.basename()
-        return json.dumps(wallet_info)
-
-    def update_interfaces(self):
-        net_params = self.network.get_parameters()
-        self.num_nodes = len(self.network.get_interfaces())
-        self.num_chains = len(self.network.get_blockchains())
-        chain = self.network.blockchain()
-        self.blockchain_forkpoint = chain.get_max_forkpoint()
-        self.blockchain_name = chain.get_name()
-        interface = self.network.interface
-        if interface:
-            self.server_host = interface.host
-        else:
-            self.server_host = str(net_params.host) + ' (connecting...)'
-        self.proxy_config = net_params.proxy or {}
-        mode = self.proxy_config.get('mode')
-        host = self.proxy_config.get('host')
-        port = self.proxy_config.get('port')
-        self.proxy_str = (host + ':' + port) if mode else _('None')
-        #self.callbackIntent.onCallback("update_interfaces")
-
-    def update_wallet(self):
-        self.update_status()
-        #self.callbackIntent.onCallback("update_wallet")
-
-    def update_history(self):
-        print("")
-        #self.callbackIntent.onCallback("update_history")
-
-    def on_network_event(self, event, *args):
-        if event == 'network_updated':
-            self.update_interfaces()
-            self.update_status()
-        elif event == 'wallet_updated':
-            self.update_status()
-            self.update_wallet()
-        elif event == 'blockchain_updated':
-            # to update number of confirmations in history
-            self.update_wallet()
-        elif event == 'status':
-            self.update_status()
-        elif event == 'new_transaction':
-            self.update_wallet()
-        elif event == 'verified':
-            self.update_wallet()
-
-    def timer_action(self):
-        self.update_wallet()
-        self.update_interfaces()
-
-    def daemon_action(self):
-        self.daemon_running = True
-        self.daemon.run_daemon()
-
-    def start(self):
-        t1 = threading.Thread(target=self.daemon_action)
-        t1.setDaemon(True)
-        t1.start()
-        import time
-        time.sleep(1.0)
-        print("parent thread")
-
-    def status(self):
-        """Get daemon status"""
-        try:
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        return self.daemon.run_daemon({"subcommand": "status"})
-
-    def stop(self):
-        """Stop the daemon"""
-        try:
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        self.daemon.stop()
-        self.daemon.join()
-        self.daemon_running = False
-
-    def get_wallet_type(self, name):
-        return self.local_wallet_info.get(name)
-
-    def get_all_wallet_type_info(self):
-        print("all type info == %s" % self.local_wallet_info)
-
-    def load_wallet(self, name, password=None):
-        """Load a wallet"""
-        print("console.load_wallet_by_name in....")
-        try:
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        path = self._wallet_path(name)
-        wallet = self.daemon.get_wallet(path)
-        if not wallet:
-            storage = WalletStorage(path)
-            if not storage.file_exists():
-                raise BaseException("not find file %s" %path)
-            if storage.is_encrypted():
-                if not password:
-                    raise BaseException(util.InvalidPassword())
-                storage.decrypt(password)
-            db = WalletDB(storage.read(), manual_upgrades=False)
-            if db.requires_split():
-                return
-            if db.requires_upgrade():
-                return
-            if db.get_action():
-                return
-            wallet = Wallet(db, storage, config=self.config)
-            wallet.start_network(self.network)
-            self.daemon.add_wallet(wallet)
-
-    def close_wallet(self, name=None):
-        """Close a wallet"""
-        try:
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        self.daemon.stop_wallet(self._wallet_path(name))
-
-    ###syn server
-    def set_syn_server(self, flag):
-        self.label_flag = flag
-        self.config.set_key('use_labels', bool(flag))
-
-    ##set callback##############################
-    def set_callback_fun(self, callbackIntent):
-        print("self.callbackIntent =%s" %callbackIntent)
-        self.callbackIntent = callbackIntent
-
-    #craete multi wallet##############################
-    def set_multi_wallet_info(self, name, m, n):
-        try:
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        if self.wizard is not None:
-            self.wizard = None
-        self.wizard = MutiBase.MutiBase(self.config)
-        path = self._wallet_path(name)
-        print("console:set_multi_wallet_info:path = %s---------" % path)
-        self.wizard.set_multi_wallet_info(path, m, n)
-        self.m = m
-        self.n = n
-
-    def add_xpub(self, xpub):
-        try:
-            self._assert_daemon_running()
-            self._assert_wizard_isvalid()
-            self.wizard.restore_from_xpub(xpub)
-        except Exception as e:
-            raise BaseException(e)
-
-    def delete_xpub(self, xpub):
-        try:
-            self._assert_daemon_running()
-            self._assert_wizard_isvalid()
-            self.wizard.delete_xpub(xpub)
-        except Exception as e:
-            raise BaseException(e)
-
-    def get_keystores_info(self):
-        try:
-            self._assert_daemon_running()
-            self._assert_wizard_isvalid()
-            ret = self.wizard.get_keystores_info()
-        except Exception as e:
-            raise BaseException(e)
-        return ret
-
-    def get_cosigner_num(self):
-        try:
-            self._assert_daemon_running()
-            self._assert_wizard_isvalid()
-        except Exception as e:
-            raise BaseException(e)
-        return self.wizard.get_cosigner_num()
-
-    def create_multi_wallet(self, name):
-        try:
-            self._assert_daemon_running()
-            self._assert_wizard_isvalid()
-            path = self._wallet_path(name)
-            print("console:create_multi_wallet:path = %s---------" % path)
-            storage, db = self.wizard.create_storage(path=path, password = '')
-        except Exception as e:
-            raise BaseException(e)
-        if storage:
-            wallet = Wallet(db, storage, config=self.config)
-            wallet.start_network(self.daemon.network)
-            self.daemon.add_wallet(wallet)
-            wallet_type = "%s-%s" % (self.m, self.n)
-            self.local_wallet_info[name] = wallet_type
-            self.config.set_key('all_wallet_type_info', self.local_wallet_info)
-            if self.wallet:
-                self.close_wallet()
-            self.wallet = wallet
-            self.wallet_name = wallet.basename()
-            print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
-            self.select_wallet(self.wallet_name)
-            if self.label_flag:
-                self.label_plugin.load_wallet(self.wallet, wallet_type)
-        self.wizard = None
-
-    ############
-    def get_wallet_info_from_server(self, xpub):
-        try:
-            if self.label_flag:
-                return self.label_plugin.pull(xpub)
-        except BaseException as e:
-            raise e
-
-    ##create tx#########################
-    def get_default_fee_status(self):
-        try:
-            return self.config.get_fee_status()
-        except BaseException as e:
-            raise e
-
-    def get_amount(self, amount):
-        try:
-            x = Decimal(str(amount))
-        except:
-            return None
-        # scale it to max allowed precision, make it an int
-        power = pow(10, self.decimal_point)
-        max_prec_amount = int(power * x)
-        return max_prec_amount
-
-    def parse_output(self, outputs):
-        all_output_add = json.loads(outputs)
-        outputs_addrs = []
-        for key in all_output_add:
-            for address, amount in key.items():
-                outputs_addrs.append(PartialTxOutput.from_address_and_value(address, self.get_amount(amount)))
-                print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" % (
-                    self.wallet, self.wallet.wallet_type, self.wallet.use_change, self.wallet.get_addresses()))
-        return outputs_addrs
-
-    def get_fee_by_feerate(self, outputs, message, feerate):
-        try:
-            self._assert_wallet_isvalid()
-            all_output_add = json.loads(outputs)
-            outputs_addrs = self.parse_output(outputs)
-            coins = self.wallet.get_spendable_coins(domain=None)
-            fee_per_kb = 1000 * Decimal(feerate)
-            from functools import partial
-            fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
-            # tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee_estimator))
-            tx = self.wallet.make_unsigned_transaction(coins=coins, outputs=outputs_addrs, fee=fee_estimator)
-            tx.set_rbf(self.rbf)
-            self.wallet.set_label(tx.txid(), message)
-            size = tx.estimated_size()
-            fee = tx.get_fee()
-            print("feee-----%s size =%s" % (fee, size))
-            self.tx = tx.serialize_as_bytes().hex()
-            print("console:mkun:tx====%s" % self.tx)
-            tx_details = self.wallet.get_tx_info(tx)
-            print("tx_details 1111111 = %s" % json.dumps(tx_details))
-
-            ret_data = {
-                'amount': tx_details.amount,
-                'fee': tx_details.fee,
-                'tx': str(self.tx)
-            }
-            return json.dumps(ret_data)
-        except Exception as e:
-            raise BaseException(e)
-
-    def mktx(self, outputs, message):
-        try:
-            self._assert_wallet_isvalid()
-            #outputs_addrs = self.parse_output(outputs)
-            #self.do_save(outputs_addrs, message, self.tx)
-            tx = tx_from_any(self.tx)
-            tx.deserialize()
-            self.do_save(tx)
-            # if self.label_flag:
-            #     self.label_plugin.push(self.wallet)
-        except Exception as e:
-            raise BaseException(e)
-
-        ret_data = {
-            'tx': str(self.tx)
-        }
-        json_str = json.dumps(ret_data)
-        return json_str
-
-    def deserialize(self, raw_tx):
-        try:
-            tx = Transaction(raw_tx)
-            tx.deserialize()
-        except Exception as e:
-            raise BaseException(e)
-
-    def get_wallets_list_info(self):
-        try:
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        wallet_info_map = {}
-        wallets = self.list_wallets()
-        wallet_info = []
-        for i in wallets:
-            print("---------name=%s" %i)
-            self.load_wallet(i, '111111')
-            data = self.select_wallet(i)
-
-
-            # path = self._wallet_path(i)
-            # wallet = self.daemon.get_wallet(path)
-            # print("--------name = %s" % i)
-            # if not wallet:
-            #     storage = WalletStorage(path)
-            #     if not storage.file_exists():
-            #         raise BaseException("not find file %s" %path)
-            #
-            #     try:
-            #         #wallet = Standard_Wallet(storage, config=self.config)
-            #         wallet = Wallet(storage, config=self.config)
-            #     except Exception as e:
-            #        # wallet = Standard_Wallet(storage, config=self.config)
-            #         raise BaseException(e)
-            # c, u, x = wallet.get_balance()
-            # info = {
-            #     "wallet_type": wallet.wallet_type,
-            #     "balance": self.format_amount_and_units(c),
-            #     "name": i
-            # }
-            wallet_info.append(json.loads(data))
-            wallet_info_map['wallets'] = wallet_info
-            print("----wallet_info = %s ............" % wallet_info_map)
-        return json.dumps(wallet_info_map)
-
-    def format_amount(self, x, is_diff=False, whitespaces=False):
-        return util.format_satoshis(x, self.num_zeros, self.decimal_point, is_diff=is_diff, whitespaces=whitespaces)
-
-    def base_unit(self):
-        return util.decimal_point_to_base_unit_name(self.decimal_point)
-
-    #set use unconfirmed coin
-    def set_unconf(self, x):
-        self.config.set_key('confirmed_only', bool(x))
-
-    #fiat balance
-    def get_currencies(self):
-        self._assert_daemon_running()
-        currencies = sorted(self.daemon.fx.get_currencies(self.daemon.fx.get_history_config()))
-        return currencies
-
-    def get_exchanges(self):
-        if not self.daemon.fx: return
-        b = self.daemon.fx.is_enabled()
-        if b:
-            h = self.daemon.fx.get_history_config()
-            c = self.daemon.fx.get_currency()
-            exchanges = self.daemon.fx.get_exchanges_by_ccy(c, h)
-        else:
-            exchanges = self.daemon.fx.get_exchanges_by_ccy('USD', False)
-        return sorted(exchanges)
-
-    def set_exchange(self, exchange):
-        if self.daemon.fx and self.daemon.fx.is_enabled() and exchange and exchange != self.daemon.fx.exchange.name():
-            self.daemon.fx.set_exchange(exchange)
-
-    def set_currency(self, ccy):
-        self.daemon.fx.set_enabled(True)
-        if ccy != self.ccy:
-            self.daemon.fx.set_currency(ccy)
-            self.ccy = ccy
-        self.update_status()
-
-    def get_exchange_currency(self, type, amount):
-        text = ""
-        rate = self.daemon.fx.exchange_rate() if self.daemon.fx else Decimal('NaN')
-        if rate.is_nan() or amount is None:
-            return text
-        else:
-            if type == "base":
-                amount = self.get_amount(amount)
-                text = self.daemon.fx.ccy_amount_str(amount * Decimal(rate) / COIN, False)
-            elif type == "fiat":
-                text = self.format_amount((int(Decimal(amount) / Decimal(rate) * COIN)))
-            return text
-
-    #set base unit for(BTC/mBTC/bits/sat)
-    def set_base_uint(self, base_unit):
-        self.base_unit = base_unit
-        self.decimal_point = util.base_unit_name_to_decimal_point(self.base_unit)
-        self.config.set_key('decimal_point', self.decimal_point, True)
-
-    def format_amount_and_units(self, amount):
-        try:
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        text = self.format_amount(amount) + ' '+ self.base_unit
-        x = self.daemon.fx.format_amount_and_units(amount) if self.daemon.fx else None
-        if text and x:
-            text += ' (%s)'%x
-        return text
-
-    ##qr api
-    def get_raw_tx_from_qr_data(self, data):
-        from electrum.util import bh2u
-        return bh2u(base_decode(data, None, base=43))
-
-    def get_qr_data_from_raw_tx(self, raw_tx):
-        from electrum.bitcoin import base_encode, bfh
-        text = bfh(raw_tx)
-        return base_encode(text, base=43)
-
-    def recover_tx_info(self, tx):
-        tx = tx_from_any(bytes.fromhex(tx))
-        temp_tx = copy.deepcopy(tx)
-        temp_tx.deserialize()
-        temp_tx.add_info_from_wallet(self.wallet)
-        return temp_tx
-
-    ## get tx info from raw_tx
-    def get_tx_info_from_raw(self, raw_tx):
-        try:
-            print("console:get_tx_info_from_raw:tx===%s" % raw_tx)
-            tx = self.recover_tx_info(raw_tx)
-        except Exception as e:
-            tx = None
-            raise BaseException(e)
-        data = {}
-        # if not isinstance(tx, PartialTransaction):
-        #     tx = PartialTransaction.from_tx(tx)
-        data = self.get_details_info(tx)
-        return data
-
-    def get_details_info(self, tx):
-        try:
-            self._assert_wallet_isvalid()
-        except Exception as e:
-            raise BaseException(e)
-        tx_details = self.wallet.get_tx_info(tx)
-        if 'Partially signed' in tx_details.status:
-            r = len(self.wallet.get_keystores())
-            temp_s, temp_r = tx.signature_count()
-            s, r = temp_s/r, temp_r/r
-        elif 'Unsigned' in tx_details.status:
-            s = 0
-            r = len(self.wallet.get_keystores())
-        else:
-            s = r = len(self.wallet.get_keystores())
-
-        type = self.wallet.wallet_type
-        in_list = []
-        if isinstance(tx, PartialTransaction):
-            for i in tx.inputs():
-                in_info = {}
-                in_info['addr'] = i.address
-                in_list.append(in_info)
-
-        out_list = []
-        for o in tx.outputs():
-            address, value = o.address, o.value
-            out_info = {}
-            out_info['addr'] = address
-            out_info['amount'] = self.format_amount_and_units(value)
-            out_list.append(out_info)
-        ret_data = {
-            'txid':tx_details.txid,
-            'can_broadcast':tx_details.can_broadcast,
-            'amount': self.format_amount_and_units(tx_details.amount),
-            'fee': self.format_amount_and_units(tx_details.fee),
-            'description':self.wallet.get_label(tx_details.txid),
-            'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
-            'sign_status':[s,r],
-            'output_addr':out_list,
-            'input_addr':in_list,
-            'cosigner':[x.xpub for x in self.wallet.get_keystores()],
-            'tx':tx.serialize_as_bytes().hex()
-        }
-        json_data = json.dumps(ret_data)
-        return json_data
-
-    #invoices
-    def delete_invoice(self, key):
-        try:
-            self._assert_wallet_isvalid()
-            self.wallet.delete_invoice(key)
-        except Exception as e:
-            raise BaseException(e)
-
-    def get_invoices(self):
-        try:
-            self._assert_wallet_isvalid()
-            return self.wallet.get_invoices()
-        except Exception as e:
-            raise BaseException(e)
-
-    #def do_save(self, outputs, message, tx):
-        # try:
-        #     invoice = self.wallet.create_invoice(outputs, message, None, None, tx=tx)
-        #     if not invoice:
-        #         return
-        #     self.wallet.save_invoice(invoice)
-        # except Exception as e:
-        #     raise BaseException(e)
-
-    def do_save(self, tx):
-        try:
-            if not self.wallet.add_transaction(tx):
-                raise BaseException(("Transaction could not be saved.") + "\n" + ("It conflicts with current history. tx=") + tx.txid())
-        except BaseException as e:
-            raise BaseException(e)
-        else:
-            self.wallet.save_db()
-            self.callbackIntent.onCallback("update_history", "update history")
-            # need to update at least: history_list, utxo_list, address_list
-
-    def update_invoices(self, old_tx, new_tx):
-        try:
-            self._assert_wallet_isvalid()
-            self.wallet.update_invoice(old_tx, new_tx)
-        except Exception as e:
-            raise BaseException(e)
-
-    def clear_invoices(self):
-        try:
-            self._assert_wallet_isvalid()
-            self.wallet.clear_invoices()
-        except Exception as e:
-            raise BaseException(e)
-
-    ##get history
-    def get_all_tx_list(self, search_type=None):
-        history_data = []
-        history_info = self.get_history_tx()
-        history_dict = json.loads(history_info)
-        if search_type is None:
-            history_data = history_dict
-        elif search_type == 'send':
-            for info in history_dict:
-                if info['is_mine']:
-                    history_data.append(info)
-        elif search_type == 'receive':
-            for info in history_dict:
-                if not info['is_mine']:
-                    history_data.append(info)
-
-        all_data = []
-        for i in history_data:
-            i['type'] = 'history'
-            data = self.get_tx_info(i['tx_hash'])
-            i['tx_status'] = json.loads(data)['tx_status']
-            all_data.append(i)
-        return json.dumps(all_data)
-
-    def get_all_tx_list_old(self, tx_status=None, history_status=None):#tobe optimization
-        tx_data = []
-        history_data = []
-        if (tx_status is None or tx_status == 'send') and (history_status == None or history_status == 'tobesign' or history_status == 'tobebroadcast'):
-            invoices = self.wallet.get_invoices()
-            for invoice in invoices:
-                tx_json = self.get_tx_info_from_raw(invoice['tx'])
-                tx_dict = json.loads(tx_json)
-                temp_tx_data = {}
-                temp_tx_data['tx_hash'] = tx_dict['txid']
-                temp_tx_data['date'] = util.format_time(invoice['time']) if invoice['time'] else _("unknown")
-                temp_tx_data['amount'] = tx_dict['amount']
-                print("amount------%s fee======%s temp_tx_data=%s" %(tx_dict['amount'], tx_dict['fee'],temp_tx_data['amount']))
-                temp_tx_data['message'] = tx_dict['description']
-                temp_tx_data['is_mine'] = True
-                temp_tx_data['tx_status'] = tx_dict["tx_status"]
-                temp_tx_data['invoice_id'] = invoice['id']
-                temp_tx_data['tx'] = invoice['tx']
-                print("invoice====%s type=%s" % (invoice['tx'], type(invoice['tx'])))
-                tx_data.append(temp_tx_data)
-
-        if history_status is None and tx_status is None:
-            history_data_json = self.get_history_tx()
-            history_data = json.loads(history_data_json)
-        elif tx_status is None and history_status is not None:
-            if history_status == 'tobeconfirm':
-                print("")
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    con_num = info['confirmations']
-                    if info['confirmations'] <= 0:
-                        history_data.append(info)
-            elif history_status == 'confirmed':
-                print("")
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if info['confirmations'] > 0:
-                        history_data.append(info)
-        elif history_status is None and tx_status is not None:
-            if tx_status == 'send':
-                print("")
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if info['is_mine']:
-                        history_data.append(info)
-            elif tx_status == 'receive':
-                print("")
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if not info['is_mine']:
-                        history_data.append(info)
-        elif tx_status == 'send':
-            if history_status == 'tobeconfirm':
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if info['is_mine'] and info['confirmations'] <= 0:
-                        history_data.append(info)
-            elif history_status == 'confirmed':
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if info['is_mine'] and info['confirmations'] > 0:
-                        history_data.append(info)
-        elif tx_status == 'receive':
-            if history_status == 'tobeconfirm':
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if not info['is_mine'] and info['confirmations'] <= 0:
-                        history_data.append(info)
-            elif history_status == 'confirmed':
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if not info['is_mine'] and info['confirmations'] > 0:
-                        history_data.append(info)
-        all_data = []
-        for tx in tx_data:
-            tx['type'] = 'tx'
-            all_data.append(tx)
-        for i in history_data:
-            i['type'] = 'history'
-            all_data.append(i)
-        return json.dumps(all_data)
-
-    ##history
-    def get_history_tx(self):
-        try:
-            self._assert_wallet_isvalid()
-        except Exception as e:
-            raise BaseException(e)
-        history = reversed(self.wallet.get_history())
-        all_data = [self.get_card(*item) for item in history]
-        return json.dumps(all_data)
-
-    def get_tx_info(self, tx_hash):
-        try:
-            self._assert_wallet_isvalid()
-        except Exception as e:
-            raise BaseException(e)
-        tx = self.wallet.db.get_transaction(tx_hash)
-        if not tx:
-            raise BaseException('get transaction info failed')
-        #tx = PartialTransaction.from_tx(tx)
-        label = self.wallet.get_label(tx_hash) or None
-        tx = copy.deepcopy(tx)
-        try:
-            tx.deserialize()
-        except Exception as e:
-            raise e
-        tx.add_info_from_wallet(self.wallet)
-        return self.get_details_info(tx)
-
-    def get_card(self, tx_hash, tx_mined_status, delta, fee, balance):
-        try:
-            self._assert_wallet_isvalid()
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        status, status_str = self.wallet.get_tx_status(tx_hash, tx_mined_status)
-        label = self.wallet.get_label(tx_hash) if tx_hash else _('Pruned transaction outputs')
-        ri = {}
-        ri['tx_hash'] = tx_hash
-        ri['date'] = status_str
-        ri['message'] = label
-        ri['confirmations'] = tx_mined_status.conf
-        if delta is not None:
-            ri['is_mine'] = delta < 0
-            if delta < 0: delta = - delta
-            ri['amount'] = self.format_amount_and_units(delta)
-            if self.fiat_unit:
-                fx = self.daemon.fx
-                fiat_value = delta / Decimal(bitcoin.COIN) * self.wallet.price_at_timestamp(tx_hash, fx.timestamp_rate)
-                fiat_value = Fiat(fiat_value, fx.ccy)
-                ri['quote_text'] = fiat_value.to_ui_string()
-        return ri
-
-    def get_wallet_address_show_UI(self):#TODO:需要按照electrum方式封装二维码数据?
-        try:
-            self._assert_wallet_isvalid()
-            data = util.create_bip21_uri(self.wallet.get_addresses()[0], "", "")
-        except Exception as e:
-            raise BaseException(e)
-        data_json = {}
-        data_json['qr_data'] = data
-        data_json['addr'] = self.wallet.get_addresses()[0]
-        return json.dumps(data_json)
-
-    ##save tx to file
-    def save_tx_to_file(self, path, tx):
-        print("FILE==:save_tx_to_file in..... %s" % path)
-        try:
-            if tx is None:
-                raise BaseException("tx is empty")
-            tx = tx_from_any(tx)
-            if isinstance(tx, PartialTransaction):
-                tx.finalize_psbt()
-            print("FILE==:path = %s" % path)
-            if tx.is_complete():  # network tx hex
-                with open(path, "w+") as f:
-                    network_tx_hex = tx.serialize_to_network()
-                    print("FILE==:TXN")
-                    f.write(network_tx_hex + '\n')
-            else:  # if partial: PSBT bytes
-                assert isinstance(tx, PartialTransaction)
-                with open(path, "wb+") as f:
-                    print("FILE==:PSBT")
-                    f.write(tx.serialize_as_bytes())
-        except Exception as e:
-            raise BaseException(e)
-
-    def read_tx_from_file(self, path):
-        try:
-            with open(path, "rb") as f:
-                file_content = f.read()
-        except (ValueError, IOError, os.error) as reason:
-            raise BaseException("Electrum was unable to open your transaction file")
-        print("FILE== file info = %s" % file_content)
-        tx = tx_from_any(file_content)
-        return tx.serialize_as_bytes().hex()
-
-    ##Analyze QR data
-    def parse_address(self, data):
-        data = data.strip()
-        try:
-            uri = util.parse_URI(data)
-            uri['amount'] = self.format_amount_and_units(uri['amount'])
-            return uri
-        except Exception as e:
-            raise Exception(e)
-
-    def parse_tx(self, data):
-        ret_data = {}
-        # try to decode transaction
-        from electrum.transaction import Transaction
-        from electrum.util import bh2u
-        try:
-            text = bh2u(base_decode(data, base=43))
-            tx = self.recover_tx_info(text)
-        except Exception as e:
-            tx = None
-            raise Exception(e)
-        # if tx:
-        #     if not isinstance(tx, PartialTransaction):
-        #         tx = PartialTransaction.from_tx(tx)
-
-        data = self.get_details_info(tx)
-        return data
-
-    def parse_pr(self, data):
-        add_status_flag = False
-        tx_status_flag = False
-        try:
-            add_data = self.parse_address(data)
-            add_status_flag = True
-        except Exception as e:
-            print("parse_pr...............error address")
-            add_status_flag = False
-
-        try:
-            tx_data = self.parse_tx(data)
-            tx_status_flag = True
-        except Exception as e:
-            print("parse_pr...............error tx")
-            tx_status_flag = False
-        out_data = {}
-        if(add_status_flag):
-            out_data['type'] = 1
-            out_data['data'] = add_data
-        elif(tx_status_flag):
-            out_data['type'] = 2
-            out_data['data'] = json.loads(tx_data)
-        else:
-            out_data['type'] = 3
-            out_data['data'] = "parse pr error"
-        return json.dumps(out_data)
-
-    def broadcast_tx(self, tx):
-        if self.network and self.network.is_connected():
-            status = False
-            try:
-                if isinstance(tx, str):
-                    tx = tx_from_any(tx)
-                    tx.deserialize()
-                self.network.run_from_another_thread(self.network.broadcast_transaction(tx))
-            except TxBroadcastError as e:
-                msg = e.get_message_for_gui()
-                raise BaseException(msg)
-            except BestEffortRequestFailed as e:
-                msg = repr(e)
-                raise BaseException(msg)
-            else:
-                print("--------broadcast ok............")
-                status, msg = True, tx.txid()
-      #          self.callbackIntent.onCallback(Status.broadcast, msg)
-        else:
-            raise BaseException(('Cannot broadcast transaction') + ':\n' + ('Not connected'))
-
-    ## setting
-    def set_use_change(self, status_change):
-        try:
-            self._assert_wallet_isvalid()
-        except Exception as e:
-            raise BaseException(e)
-        if self.wallet.use_change == status_change:
-            return
-        self.config.set_key('use_change', status_change, False)
-        self.wallet.use_change = status_change
-
-    def sign_tx(self, tx, password=None):
-        try:
-            self._assert_wallet_isvalid()
-            old_tx = tx
-            tx = tx_from_any(tx)
-            tx.deserialize()
-            sign_tx = self.wallet.sign_transaction(tx, password)
-            print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
-            self.do_save(sign_tx)
-            #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
-            #return sign_tx
-            return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
-        except BaseException as e:
-            raise BaseException(e)
-
-    ##connection with terzorlib#########################
-    def backup_wallet(self):
-        return "hello world"
-
-    def wallet_recovery(self, str):
-        if str == "hello world":
-            return True
-        else:
-            return False
-
-    def init(self, path='nfc'):
-        client = self.get_client(path=path)
-        try:
-            response = client.reset_device()
-        except Exception as e:
-            raise BaseException(e)
-        CustomerUI.state = 1
-        return response
-
-    def reset_pin(self):
-        client = self.get_client()
-        client.set_pin(True)
-
-    def get_client(self, path='nfc', ui=CustomerUI()) -> 'TrezorClientBase':
-        if self.client is not None and self.path == path:
-            return self.client
-        plugin = self.plugin.get_plugin("trezor")
-        client_list = plugin.enumerate()
-        print(f"total device====={client_list}")
-        device = [cli for cli in client_list if cli.path == path]
-        assert len(device) != 0, "Not found the point device"
-        print(f"======{device[0]}====")
-        client = plugin.create_client(device[0], ui)
-        self.client = client
-        self.path = path
-        return client
-
-    # def get_feature(self):
-    #     client = self.get_client()
-    #     return client.features
-
-    def is_initialized(self, path='nfc'):
-        client = self.get_client(path=path)
-        return client.is_initialized()
-
-    def get_pin_status(self, path='nfc'):
-        self.client = None
-        self.path = ''
-        client = self.get_client(path=path)
-        return client.features.pin_cached
-
-    def get_xpub_from_hw(self, path='nfc', _type='p2wsh'):
-            client = self.get_client(path=path)
-            derivation = bip44_derivation(0)
-            try:
-                xpub = client.get_xpub(derivation, _type)
-            except Exception as e:
-                raise BaseException(e)
-            return xpub
-
-    ####################################################
-    ## app wallet
-    def check_seed(self, check_seed, password):
-        try:
-            self._assert_wallet_isvalid()
-            if not self.wallet.has_seed():
-                raise BaseException('This wallet has no seed')
-            keystore = self.wallet.get_keystore()
-            seed = keystore.get_seed(password)
-            if seed != check_seed:
-                raise BaseException("pair seed failed")
-            print("pair seed successfule.....")
-        except BaseException as e:
-            raise BaseException(e)
-
-    def create(self, name, password, seed=None, passphrase="", bip39_derivation=None,
-               master=None, addresses=None, privkeys=None):
-        """Create or restore a new wallet"""
-        print("CREATE in....name = %s" % name)
-        new_seed = ""
-        path = self._wallet_path(name)
-        if exists(path):
-            raise BaseException("path is exist")
-        storage = WalletStorage(path)
-        db = WalletDB('', manual_upgrades=False)
-        if addresses is not None:
-            print("")
-           # wallet = ImportedAddressWallet.from_text(storage, addresses)
-        elif privkeys is not None:
-            print("")
-            #wallet = ImportedPrivkeyWallet.from_text(storage, privkeys)
-        else:
-            if bip39_derivation is not None:
-                ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
-            elif master is not None:
-                ks = keystore.from_master_key(master)
-            else:
-                if seed is None:
-                    seed = mnemonic.Mnemonic('en').make_seed(seed_type='segwit')
-                    new_seed = seed
-                    print("Your wallet generation seed is:\n\"%s\"" % seed)
-                    print("seed type = %s" %type(seed))
-                ks = keystore.from_seed(seed, passphrase, False)
-
-            db.put('keystore', ks.dump())
-            #db.put('wallet_type', 'standard')
-            wallet = Standard_Wallet(db, storage, config=self.config)
-            #wallet = Wallet(db, storage, config=self.config)
-        wallet.update_password(old_pw=None, new_pw=password, encrypt_storage=True)
-        wallet.start_network(self.daemon.network)
-        wallet.save_db()
-        self.daemon.add_wallet(wallet)
-        self.local_wallet_info[name] = 'standard'
-        self.config.set_key('all_wallet_type_info', self.local_wallet_info)
-        # if self.label_flag:
-        #     self.label_plugin.load_wallet(self.wallet, None)
-        return new_seed
-    # END commands from the argparse interface.
-
-    # BEGIN commands which only exist here.
-    #####
-    #rbf api
-    def set_rbf(self, status_rbf):
-        use_rbf = self.config.get('use_rbf', True)
-        if use_rbf == status_rbf:
-            return
-        self.config.set_key('use_rbf', status_rbf)
-        self.rbf = status_rbf
-
-    def get_rbf_status(self, tx_hash):
-        try:
-            tx = self.wallet.db.get_transaction(tx_hash)
-            if not tx:
-                return False
-            height = self.wallet.get_tx_height(tx_hash).height
-            is_relevant, is_mine, v, fee = self.wallet.get_wallet_delta(tx)
-            is_unconfirmed = height <= 0
-            if tx:
-                # note: the current implementation of RBF *needs* the old tx fee
-                rbf = is_mine and self.rbf and fee is not None
-                if rbf:
-                    return True
-                else:
-                    return False
-        except BaseException as e:
-            raise e
-
-    def format_fee_rate(self, fee_rate):
-        # fee_rate is in sat/kB
-        return util.format_fee_satoshis(fee_rate/1000, num_zeros=self.num_zeros) + ' sat/byte'
-
-    def get_rbf_fee_info(self, tx_hash):
-        tx = self.wallet.db.get_transaction(tx_hash)
-        if not tx:
-            return False
-        # tx_data = json.loads(self.get_details_info(tx))
-        # fee = tx_data['fee'].split(" ")[0]
-        # fee = self.get_amount(fee)
-        txid = tx.txid()
-        assert txid
-        fee = self.wallet.get_tx_fee(txid)
-        if fee is None:
-            raise BaseException("Can't bump fee: unknown fee for original transaction.")
-        tx_size = tx.estimated_size()
-        old_fee_rate = fee / tx_size  # sat/vbyte
-        #data = max(old_fee_rate * 1.5, old_fee_rate + 1)
-        new_rate = Decimal(max(old_fee_rate * 1.5, old_fee_rate + 1)).quantize(Decimal('0.0'))
-        ret_data = {
-            #'current_fee': self.format_amount(fee) + ' ' + self.base_unit(),
-            'current_feerate': self.format_fee_rate(1000 * old_fee_rate),
-            'new_feerate': str(new_rate),
-        }
-        return json.dumps(ret_data)
-
-    #TODO:new_tx in history or invoices, need test
-
-    def create_bump_fee(self, tx_hash, new_fee_rate, is_final):
-        try:
-            print("create bump fee tx_hash---------=%s" %tx_hash)
-            tx = self.wallet.db.get_transaction(tx_hash)
-            if not tx:
-                return False
-            coins = self.wallet.get_spendable_coins(None, nonlocal_only=False)
-            new_tx = self.wallet.bump_fee(tx=tx, new_fee_rate=new_fee_rate, coins=coins)
-        except BaseException as e:
-            raise BaseException(e)
-
-        new_tx.set_rbf(self.rbf)
-        # if is_final:
-        #     new_tx.set_rbf(False)
-        out = {
-            'new_tx': new_tx.serialize_as_bytes().hex()
-        }
-        self.do_save(new_tx)
-        #self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
-        return json.dumps(out)
-    #######
-
-    #network server
-    def get_default_server(self):
-        try:
-            self._assert_daemon_running()
-            net_params = self.network.get_parameters()
-            host, port, protocol = net_params.host, net_params.port, net_params.protocol
-        except BaseException as e:
-            raise e
-
-        default_server = {
-            'host':host,
-            'port':port,
-        }
-        return json.dumps(default_server)
-
-    def set_server(self, host, port):
-        try:
-            self._assert_daemon_running()
-            net_params = self.network.get_parameters()
-            net_params = net_params._replace(host=str(host),
-                                         port=str(port),
-                                         auto_connect=True)
-            self.network.run_from_another_thread(self.network.set_parameters(net_params))
-        except BaseException as e:
-            raise e
-
-    def get_server_list(self):
-        try:
-            self._assert_daemon_running()
-            servers = self.daemon.network.get_servers()
-        except BaseException as e:
-            raise e
-        return json.dumps(servers)
-
-    def select_wallet(self, name):
-        try:
-            self._assert_daemon_running()
-            if name is None:
-                self.wallet = None
-            else:
-                self.wallet = self.daemon._wallets[self._wallet_path(name)]
-
-            self.wallet.use_change = self.config.get('use_change', False)
-            import time
-            time.sleep(0.5)
-            self.update_wallet()
-            self.update_interfaces()
-
-            c, u, x = self.wallet.get_balance()
-            print("console.select_wallet %s %s %s==============" %(c, u, x))
-            print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
-            self.network.trigger_callback("wallet_updated", self.wallet)
-            info = {
-                #"wallet_type": self.wallet.wallet_type,
-                "balance": self.format_amount_and_units(c),
-                "name": name
-            }
-            return json.dumps(info)
-        except BaseException as e:
-            raise BaseException(e)
-
-    def list_wallets(self):
-        """List available wallets"""
-        name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
-        print("console.list_wallets is %s................" %name_wallets)
-        out = []
-        for name in name_wallets:
-            name_info = {}
-            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else 'unknow'
-            out.append(name_info)
-        return json.dumps(out)
-
-    def delete_wallet(self, name=None):
-        """Delete a wallet"""
-        try:
-            r = self.daemon.delete_wallet(self._wallet_path(name))
-            self.local_wallet_info.pop(name)
-            self.config.set_key('all_wallet_type_info', self.local_wallet_info)
-            #os.remove(self._wallet_path(name))
-        except Exception as e:
-            raise BaseException(e)
-
-    # def unit_test(self):
-    #     """Run all unit tests. Expect failures with functionality not present on Android,
-    #     such as Trezor.
-    #     """
-    #     suite = unittest.defaultTestLoader.loadTestsFromNames(
-    #         tests.__name__ + "." + info.name
-    #         for info in pkgutil.iter_modules(tests.__path__)
-    #         if info.name.startswith("test_"))
-    #     unittest.TextTestRunner(verbosity=2).run(suite)
-
-    # END commands which only exist here.
-
-    def _assert_daemon_running(self):
-        if not self.daemon_running:
-            raise BaseException("Daemon not running")  # Same wording as in electrum script.
-
-    def _assert_wizard_isvalid(self):
-        if self.wizard is None:
-            raise BaseException("Wizard not running")
-            # Log callbacks on stderr so they'll appear in the console activity.
-
-    def _assert_wallet_isvalid(self):
-        if self.wallet is None:
-            raise BaseException("Wallet is None")
-            # Log callbacks on stderr so they'll appear in the console activity.
-
-    def _on_callback(self, *args):
-        util.print_stderr("[Callback] " + ", ".join(repr(x) for x in args))
-
-    def _wallet_path(self, name=""):
-        if name is None:
-            if not self.wallet:
-                raise ValueError("No wallet selected")
-            return self.wallet.storage.path
-        else:
-            wallets_dir = join(util.user_dir(), "wallets")
-            util.make_dir(wallets_dir)
-            return util.standardize_path(join(wallets_dir, name))
-
-
-all_commands = commands.known_commands.copy()
-for name, func in vars(AndroidCommands).items():
-    if not name.startswith("_"):
-        all_commands[name] = commands.Command(func, "")
-
-
-SP_SET_METHODS = {
-    bool: "putBoolean",
-    float: "putFloat",
-    int: "putLong",
-    str: "putString",
-}
-
+from electrum.logging import get_logger, configure_logging
+from electrum import util
+from electrum import constants
+from electrum import SimpleConfig
+from electrum.wallet import Wallet
+from electrum.storage import WalletStorage, get_derivation_used_for_hw_device_encryption
+from electrum.util import print_msg, print_stderr, json_encode, json_decode, UserCancelled, create_and_start_event_loop
+from electrum.util import InvalidPassword
+from electrum.commands import get_parser, known_commands, Commands, config_variables
+from electrum import daemon
+from electrum import keystore
+
+_logger = get_logger(__name__)
+from console import AndroidCommands
+
+import time
+util.setup_thread_excepthook()
+print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+#constants.set_testnet()
+constants.set_regtest()
+print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+
+testcommond = AndroidCommands()
+testcommond.start()
+testcommond.set_syn_server(True)
+#name = 'hahahahhahh777' #2-2 multi wallet
+#name = 'hahahahhahh333' #1-N wallet
+#name = 'hahahahhahh888' #1-1 wallet
+name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
+password = "111111"
+#password = "None"
+#test hardware
+#testcommond.get_xpub_from_hw()
+
+# #create_wallet 2-N HW wallet
+#
+# m = 2
+# n = 2
+# xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
+# #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+# xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# testcommond.delete_wallet(name)
+# testcommond.set_multi_wallet_info(name,m,n)
+# testcommond.add_xpub(xpub1)
+# testcommond.add_xpub(xpub2)
+# # ret = testcommond.get_cosigner_num()
+# # print("before num ===== %s" %ret)
+# # testcommond.delete_xpub(xpub1)
+# # testcommond.delete_xpub(xpub2)
+# # ret = testcommond.get_cosigner_num()
+# # print("after num ===== %s" % ret)
+# testcommond.create_multi_wallet(name)
+
+
+# time.sleep(5)
+# data1 = testcommond.get_wallet_info_from_server(xpub1)
+# print("data 1 = %s" %data1)
+# data2 =testcommond.get_wallet_info_from_server(xpub2)
+# print("data 2 = %s" %data2)
+# time.sleep(100000000)
+#create_wallet 1-N HW wallet
+
+# m = 1
+# n = 2
+# #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
+# xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+# #xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# testcommond.delete_wallet(name)
+# testcommond.set_multi_wallet_info(name,m,n)
+# testcommond.add_xpub(xpub1)
+# testcommond.add_xpub(xpub2)
+# testcommond.create_multi_wallet(name)
+
+# #create_wallet 1-1 HW wallet
+#
+# m = 1
+# n = 1
+# #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB' #VPUB
+# xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+# #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
+# #xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# testcommond.delete_wallet(name)
+# testcommond.set_multi_wallet_info(name,m,n)
+# testcommond.add_xpub(xpub1)
+# #testcommond.add_xpub(xpub2)
+# testcommond.create_multi_wallet(name)
+
+## create software wallet by create seed
+
+#name = "test1wwtest"
+#password = "111"
+testcommond.delete_wallet(name)
+# # #seed = testcommond.create(name, password)
+#testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
+testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
+#ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
+#print("=======ret1 = %s" %ret)
+# ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41v1111111111111111")
+# print("=======ret2 = %s" %ret)
+#testcommond.get_feature()
+#testcommond.get_xpub_from_hw()
+
+#path = '/storage/emulated/0/Pictures/test'
+#testcommond.save_tx_to_file(path, '123')
+
+list = testcommond.list_wallets()
+print("3333333333-list = %s" %list)
+
+
+testcommond.set_currency("CNY")
+#testcommond.set_currency("None")
+#load_wallet
+testcommond.get_all_wallet_type_info()
+data = testcommond.get_wallet_type(name)
+print("11111111111 %s type is %s" %(name, data))
+testcommond.load_wallet(name, password)
+data = testcommond.select_wallet(name)
+print("select data ============%s" %data)
+time.sleep(5)
+testcommond.set_use_change(False)
+#testcommond.delete_wallet(name)
+# testcommond.load_wallet(name)
+#
+# time.sleep(5)
+# sig = testcommond.sign_message('tb1q0atzlgpvfuy73hd5f6edue4pdpxsg36kgs0jkx', '123', '111111')
+# print("sig-----------=%s" % sig)
+# ret = testcommond.verify_message('tb1q0atzlgpvfuy73hd5f6edue4pdpxsg36kgs0jkx', '123', sig)
+# print("verify message (%s)" % ret)
+# time.sleep(100000000)
+# time.sleep(100)
+data = testcommond.get_default_server()
+print("before data ====%s" %data)
+
+#data = testcommond.set_server("39.97.224.50", "51002")
+data = testcommond.get_server_list()
+print("server_list data =====%s" %data)
+#data = testcommond.set_server("11111", "51002")
+
+# data = testcommond.get_default_server()
+# print("after data ====%s" %data)
+
+data = testcommond.get_currencies()
+print("currencies = %s" %data)
+#testcommond.check_seed(seed, password)
+#try:
+# info = testcommond.get_wallets_list_info()
+# print("-----wallets infos = %s" %info)
+#except BaseException as e:
+#    pass
+
+testcommond.set_base_uint("mBTC")
+status = testcommond.get_default_fee_status()
+print("status = %s" %status)
+
+exchange = testcommond.get_exchanges()
+print("exchange = %s" % exchange)
+
+data = testcommond.get_exchange_currency("base", 5)
+print("get exchange amount = %s" % data)
+
+data = testcommond.get_exchange_currency("fiat", 302.56)
+print("after get exchange amount = %s" % data)
+#testcommond.broadcast_tx("02000000000103f9f512c210a473a6f8ae3d9cd1d70a6ca9017456d96a9be5bbb33f4b91bb31340100000000fdffffffad421a234543b89ac2a87408e441037a83fb1eb4a4824e0517d0fd88d293437b0000000000fdffffff7cd7e75c4ca82a2738f4ef8f1d47b1e70f2b03eb178cf2ec313418f02d4c51f20000000000fdffffff02809698000000000022002068a7f776a614653c7ac21226b44014abb28fc6f70105666c7661c6719a2579df34144e050000000022002042cf432cef83c2eaade6063f06a2cf6dde5852219db394e17d70b146eab8c3550400483045022100b04ceb1427db17589427489bdf2b9bdcf6c9c8bd4f70692fe2110e9e5b0d82bc02203359df024dd2cdf146b45c5480b06cfe02445ebfbf430d82ae86695aad97b69501483045022100daee1421ffa2c9014e7cc90cbaba7944c1ec932d608df8b349a1c4546021e57c022000ede4580495457556b8d85483aaafffb3a9f14101c278d4959bb166e2cdcc9d01475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae04004830450221009a047cc4cd813fde862f7ea21aec12227944b00f8b2e535bd7eeaaa633a9c04e0220186667a639731c60ed4ffbde8e97ecbb7c4d29c76cb4d7ee21755924cddb3ede01483045022100cd8dac67a7e3ac8ed44436c7982ebe95022791cd884ba27ffac47296af599d230220077d86b5e50c0390c4846c16521aec427c4f78f471e5c20a5a1a27ebe6ec001f01475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae0400483045022100feaf26314f422bb470fe17cd40836e914ea4ba622b6623807992f43b444cda6602200738996c3729288071250b5ded009349233e183ff49a72f94bd8bed134a8a59b014830450221009ed0caff042fc4d668b162648546aa0b20235b71fbf4457fe2cf37bff85ef5cd022016dc5dd6ae2516077faf77523ecf5fb85fc904e83026a0f05e626403e3d535df01475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae53310000")
+#sign_tx
+# sign_tx = testcommond.sign_tx("70736274ff0100db0200000003f9f512c210a473a6f8ae3d9cd1d70a6ca9017456d96a9be5bbb33f4b91bb31340100000000fdffffffad421a234543b89ac2a87408e441037a83fb1eb4a4824e0517d0fd88d293437b0000000000fdffffff7cd7e75c4ca82a2738f4ef8f1d47b1e70f2b03eb178cf2ec313418f02d4c51f20000000000fdffffff02809698000000000022002068a7f776a614653c7ac21226b44014abb28fc6f70105666c7661c6719a2579df34144e050000000022002042cf432cef83c2eaade6063f06a2cf6dde5852219db394e17d70b146eab8c355533100000001012b00e1f50500000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b5483045022100b04ceb1427db17589427489bdf2b9bdcf6c9c8bd4f70692fe2110e9e5b0d82bc02203359df024dd2cdf146b45c5480b06cfe02445ebfbf430d82ae86695aad97b695010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000001012bf40b000000000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b54830450221009a047cc4cd813fde862f7ea21aec12227944b00f8b2e535bd7eeaaa633a9c04e0220186667a639731c60ed4ffbde8e97ecbb7c4d29c76cb4d7ee21755924cddb3ede010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000001012b0000000000000000220020341d2047d40eddcdf15f4508332a99cdfe834bdca7eb858a8dd96613502649862202029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b5483045022100feaf26314f422bb470fe17cd40836e914ea4ba622b6623807992f43b444cda6602200738996c3729288071250b5ded009349233e183ff49a72f94bd8bed134a8a59b010105475221029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b521037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc14652ae2206029ee33727df7fb097780b73080c9714b576a548beb3918e0dc686667c1bd8b8b50cf131eba800000000000000002206037df57f86e928ca11feda7d5ad71f64cf5a20675cce72b0b26dbb6701c29dc1460cf8025b6000000000000000000000010147522102236c138f904245163fecae96b5b7f72bedebbd0be24cdf34979ea8339b281d452102edb35b9566f0a9b51c24a60f602a1cc8e780e10280fc2976e312b5c2471005a752ae220202236c138f904245163fecae96b5b7f72bedebbd0be24cdf34979ea8339b281d450cf131eba80100000000000000220202edb35b9566f0a9b51c24a60f602a1cc8e780e10280fc2976e312b5c2471005a70cf8025b60010000000000000000")
+# print("sign_tx = %s" %sign_tx)
+# testcommond.broadcast_tx(sign_tx)
+#testcommond.clear_invoices()
+
+testcommond.set_use_change(False)
+testcommond.set_unconf(False)
+
+# testinfo = testcommond.get_all_tx_list(None)
+# print("testinfo  sign= %s------------" %testinfo)
+# data = json.loads(testinfo)
+
+# for tx_info in data:
+#     data_hash = tx_info['tx_hash']
+#     data = testcommond.get_tx_info(data_hash)
+#     print("----hash info sign[%s] = %s-===========" % (data_hash, data))
+# time.sleep(10000)
+#create_tx
+time.sleep(5)
+flag = True
+if not flag:
+    sign_list = []
+    for i in [1, 2]:
+        print("i=%s------------" %i)
+        all_output = []
+        output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2': '0.001'}
+        # output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+        # output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
+        # output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
+        all_output.append(output_info)
+        # all_output.append(output_info1)
+        output_str = json.dumps(all_output)
+        message = 'test111'
+        print("--------------all_output= %s" % output_str)
+        feerate = testcommond.get_default_fee_status()
+        ret_str = testcommond.get_fee_by_feerate(output_str, message, 10)
+        ret_list = json.loads(ret_str)
+        print("get_fee_by_feerate================%s" % ret_list)
+
+        ret_str = testcommond.mktx(output_str, message)
+        ret_list = json.loads(ret_str)
+        print("----mktx================%s" % ret_list)
+
+        testinfo = testcommond.get_all_tx_list(None)
+        print("----testinfo create = %s------------" % testinfo)
+        data = json.loads(testinfo)
+
+        sign_tx = testcommond.sign_tx(ret_list['tx'], password)
+        print("==========sign_tx = %s" % sign_tx)
+        testinfo = testcommond.get_all_tx_list(None)
+        print("testinfo  sign= %s------------" % testinfo)
+        data = json.loads(testinfo)
+        sign_list.append(sign_tx)
+    data = testcommond.get_default_server()
+    print("broadcast data ====%s" % data)
+    time.sleep(5)
+    for sig in sign_list:
+        testcommond.broadcast_tx(sig)
+elif flag:
+    all_output = []
+    output_info = {'bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p':'0.1'}
+    #output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+    #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
+    #output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
+    all_output.append(output_info)
+    #all_output.append(output_info1)
+    output_str = json.dumps(all_output)
+    message = 'test111'
+    print("--------------all_output= %s" %output_str)
+    feerate = testcommond.get_default_fee_status()
+    ret_str = testcommond.get_fee_by_feerate(output_str, message, 2)
+    ret_list = json.loads(ret_str)
+    print("get_fee_by_feerate================%s" % ret_list)
+
+    ret_str = testcommond.mktx(output_str, message)
+    ret_list = json.loads(ret_str)
+    print("----mktx================%s" % ret_list)
+
+
+    # testinfo = testcommond.get_all_tx_list_old()
+    # print("hHHHHHHahahaha----testinfo create = %s------------" %testinfo)
+
+    testinfo = testcommond.get_all_tx_list(None)
+    print("----testinfo create = %s------------" %testinfo)
+    data = json.loads(testinfo)
+
+    # ivoices = testcommond.get_invoices()
+    # print("before invoices = %s" %ivoices)
+
+    #test rbf
+
+    data_hash = data[0]['tx_hash']
+    data = testcommond.get_tx_info(data_hash)
+    print("----hash info create = %s-===========" % data)
+    flag = testcommond.get_rbf_status(data_hash)
+    print("--------rbf data = %s" %flag)
+    data = testcommond.get_rbf_fee_info(data_hash)
+    ret = json.loads(data)
+    print("--------get_rbf_fee_info = %s" %ret)
+    data = testcommond.create_bump_fee(data_hash, ret['new_feerate'])
+    new_tx = json.loads(data)
+    print("---------new rbf info = %s" %data)
+
+    # testinfo = testcommond.get_all_tx_list(None)
+    # print("----testinfo rbf add= %s------------" %testinfo)
+    # data = json.loads(testinfo)
+    # data_hash = data[0]['tx_hash']
+    # data = testcommond.get_tx_info(data_hash)
+    # print("----hash info rbf add = %s-===========" % data)
+    # ivoices = testcommond.get_invoices()
+    # print("after invoices = %s" %ivoices)
+    # testcommond.clear_invoices()
+    # ivoices = testcommond.get_invoices()
+    # print("clear after invoices = %s" %ivoices)
+
+    #
+    # #get_tx_by_raw
+    # print("``````````tx %s=========" % new_tx['new_tx'])
+    # tx_info_str = testcommond.get_tx_info_from_raw(new_tx['new_tx'])
+    # tx_info = json.loads(tx_info_str)
+    # print("------tx info = %s=========" % tx_info)
+    #sign_tx
+    print("sign tx = %s=========" % new_tx['new_tx'])
+    sign_tx = testcommond.sign_tx(new_tx['new_tx'], password)
+    # sign_tx = testcommond.sign_tx(ret_list['tx'], password)
+    print("==========sign_tx = %s" %sign_tx)
+    testinfo = testcommond.get_all_tx_list(None)
+    print("testinfo  sign= %s------------" %testinfo)
+    data = json.loads(testinfo)
+    old_data = data
+
+    for tx_info in data:
+        data_hash = tx_info['tx_hash']
+        #print("i = %s type(%s)" %(i,type(i)))
+        #data_hash = data[i]['tx_hash']
+        data = testcommond.get_tx_info(data_hash)
+        print("----hash info sign[%s] = %s-===========" % (data_hash, data))
+
+    # data_hash = '176d7aad5fbe1d9d616d91db391b19aeaf970d22481eae2327039cbf4e295b6e'
+    # data = testcommond.get_tx_info(data_hash)
+    server_data = testcommond.get_default_server()
+    print("broadcast data ====%s" %server_data)
+    time.sleep(5)
+    sign = json.loads(sign_tx)
+    testcommond.broadcast_tx(sign['tx'])
+    time.sleep(10)
+
+    #rbf uncomfired tx
+    #print("data = %s" %old_data)
+    #data_hash = old_data[0]['tx_hash']
+    data = testcommond.get_tx_info(sign['txid'])
+    print("uncomfired----hash info create = %s-===========" % data)
+    flag = testcommond.get_rbf_status(sign['txid'])
+    print("uncomfired--------rbf data = %s" % flag)
+    data = testcommond.get_rbf_fee_info(sign['txid'])
+    ret = json.loads(data)
+    print("uncomfired--------get_rbf_fee_info = %s" % ret)
+    data = testcommond.create_bump_fee(sign['txid'], ret['new_feerate'])
+    new_tx = json.loads(data)
+    print("uncomfired---------new rbf info = %s" % data)
+    print("uncomfired sign tx = %s=========" % new_tx['new_tx'])
+    sign_tx = testcommond.sign_tx(new_tx['new_tx'], password)
+    # sign_tx = testcommond.sign_tx(ret_list['tx'], password)
+    print("uncomfired ==========sign_tx = %s" % sign_tx)
+    testinfo = testcommond.get_all_tx_list(None)
+    print("uncomfired testinfo  sign= %s------------" % testinfo)
+    data = json.loads(testinfo)
+    for tx_info in data:
+        data_hash = tx_info['tx_hash']
+        #print("i = %s type(%s)" %(i,type(i)))
+        #data_hash = data[i]['tx_hash']
+        data = testcommond.get_tx_info(data_hash)
+        print("uncomfired ----hash info sign[%s] = %s-===========" % (data_hash, data))
+
+    # data_hash = '176d7aad5fbe1d9d616d91db391b19aeaf970d22481eae2327039cbf4e295b6e'
+    # data = testcommond.get_tx_info(data_hash)
+    data = testcommond.get_default_server()
+    print("uncomfired broadcast data ====%s" %data)
+    time.sleep(5)
+    sign = json.loads(sign_tx)
+    testcommond.broadcast_tx(sign['tx'])
+
+# # #
+# # # #parse_qr tx
+# qr_data = testcommond.get_qr_data_frparse_prom_raw_tx(ret_list['tx'])
+# print("qr_data on ui = %s........" % qr_data)
+# tx_data = testcommond.parse_tx(qr_data)
+# print("tx_data = %s---------" % json.loads(tx_data))
+
+# #parse_qr_addr
+data = testcommond.get_wallet_address_show_UI()
+#
+# qr_data = json.loads(data)
+# print("qr_addr = %s------------" % qr_data['qr_data'])
+#
+add = testcommond.parse_pr("bitcoin:tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe?amount=5&message=test")
+print("addr = %s--------" %add)
+# #get_history_tx
+#
+# ##get_all_tx_list
+#testinfo = testcommond.get_all_tx_list('', None, None)
+#print("testinfo = %s------------" %testinfo)
+time.sleep(10.0)
+testinfo = testcommond.get_all_tx_list(None)
+print("testinfo  broastcast= %s------------" %testinfo)
+data = json.loads(testinfo)
+data_hash = data[0]['tx_hash']
+data = testcommond.get_tx_info(data_hash)
+print("----hash info broastcast = %s-===========" % data)
+
+testinfo = testcommond.get_all_tx_list('send')
+print("send.....testinfo = %s------------" %testinfo)
+data = json.loads(testinfo)
+data_hash = data[0]['tx_hash']
+data = testcommond.get_tx_info(data_hash)
+print("----send hash info sign = %s-===========" % data)
+
+testinfo = testcommond.get_all_tx_list('receive')
+print("receive.....testinfo = %s------------" %testinfo)
+data = json.loads(testinfo)
+data_hash = data[0]['tx_hash']
+data = testcommond.get_tx_info(data_hash)
+print("----receive hash info sign = %s-===========" % data)
+
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'tobeconfirm')
+# print("testinfo = %s------------" %testinfo)
+#testinfo = testcommond.get_all_tx_list(ret_list['tx'], None, 'confirmed')
+#print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'send', None)
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'receive', None)
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'send', 'tobeconfirm')
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'send', 'confirmed')
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'receive', 'tobeconfirm')
+# print("testinfo = %s------------" %testinfo)
+# testinfo = testcommond.get_all_tx_list(ret_list['tx'], 'receive', 'confirmed')
+# print("testinfo = %s------------" %testinfo)
+
+#get_tx_info
+
+# info = testcommond.get_all_tx_list(ret_list['tx'])
+# print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send', history_status='tobeconfirmed')
+# print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
+# print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send', history_status='tobeconfirmed')
+# print("info== %s" % info)
+# info = testcommond.get_all_tx_list(ret_list['tx'], tx_status='send',history_status='confirmed')
+# print("info== %s" % info)
+
+# data = testcommond.get_tx_info_from_raw(ret_list['tx'])
+# print("data === %s " %data)
+#data = testcommond.get_tx_info('029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a')
+#print("get_tx_info = %s-===========" % data)
+# data = testcommond.get_default_server()
+# print("11111111after data ====%s" %data)

@@ -1062,6 +1062,43 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('use_change', status_change, False)
         self.wallet.use_change = status_change
 
+    #####sign message###########
+    def sign_message(self, address, message, password):
+        try:
+            self._assert_wallet_isvalid()
+            address  = address.strip()
+            message = message.strip()
+            if not bitcoin.is_address(address):
+                raise BaseException('Invalid Bitcoin address.')
+            if self.wallet.is_watching_only():
+                raise BaseException('This is a watching-only wallet.')
+            if not self.wallet.is_mine(address):
+                raise BaseException('Address not in wallet.')
+            txin_type = self.wallet.get_txin_type(address)
+            if txin_type not in ['p2pkh', 'p2wpkh', 'p2wpkh-p2sh']:
+                raise BaseException('Cannot sign messages with this type of address:%s\n\n' % txin_type)
+            sig = self.wallet.sign_message(address, message, password)
+            import base64
+            return base64.b64encode(sig).decode('ascii')
+        except BaseException as e:
+            raise e
+
+    def verify_message(self, address, message, signature):
+        address  = address.strip()
+        message = message.strip().encode('utf-8')
+        if not bitcoin.is_address(address):
+            raise BaseException('Invalid Bitcoin address.')
+        try:
+            # This can throw on invalid base64
+            import base64
+            sig = base64.b64decode(str(signature))
+            verified = ecc.verify_message_with_address(address, sig, message)
+        except Exception as e:
+            verified = False
+        return verified
+
+    ###############
+
     def sign_tx(self, tx, password=None):
         try:
             self._assert_wallet_isvalid()
@@ -1070,7 +1107,10 @@ class AndroidCommands(commands.Commands):
             tx.deserialize()
             sign_tx = self.wallet.sign_transaction(tx, password)
             print("=======sign_tx.serialize=%s" %sign_tx.serialize_as_bytes().hex())
-            self.do_save(sign_tx)
+            try:
+                self.do_save(sign_tx)
+            except:
+                pass
             #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
             #return sign_tx
             return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
@@ -1253,7 +1293,7 @@ class AndroidCommands(commands.Commands):
 
     #TODO:new_tx in history or invoices, need test
 
-    def create_bump_fee(self, tx_hash, new_fee_rate, is_final):
+    def create_bump_fee(self, tx_hash, new_fee_rate):
         try:
             print("create bump fee tx_hash---------=%s" %tx_hash)
             tx = self.wallet.db.get_transaction(tx_hash)
@@ -1265,12 +1305,13 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
         new_tx.set_rbf(self.rbf)
-        # if is_final:
-        #     new_tx.set_rbf(False)
         out = {
             'new_tx': new_tx.serialize_as_bytes().hex()
         }
-        self.do_save(new_tx)
+        try:
+            self.do_save(new_tx)
+        except:
+            pass
         #self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
         return json.dumps(out)
     #######
