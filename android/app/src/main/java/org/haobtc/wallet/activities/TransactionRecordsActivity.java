@@ -175,11 +175,16 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         String tx_Onclick = jsonObject.getString("tx");
                                         intent.putExtra("keyValue", "B");
                                         intent.putExtra("listType", typeDele);
+                                        intent.putExtra("tx_hash", tx_hash1);
+                                        intent.putExtra("isIsmine", is_mine);
+                                        intent.putExtra("dataTime", date);
                                         intent.putExtra("txCreatTrsaction", tx_Onclick);
                                         startActivity(intent);
 
                                     } else {
                                         intent.putExtra("tx_hash", tx_hash1);
+                                        intent.putExtra("isIsmine", is_mine);
+                                        intent.putExtra("dataTime", date);
                                         intent.putExtra("keyValue", "B");
                                         intent.putExtra("listType", typeDele);
                                         startActivity(intent);

@@ -169,7 +169,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void initData() {
         viewPager = findViewById(R.id.viewPager);
         maintrsactionlistEvents = new ArrayList<>();
-//        dataListName = new ArrayList<>();
         //Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
         recy_data.setAdapter(trsactionlistAdapter);
@@ -225,19 +224,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     for (int i = 0; i < walletnameList.size(); i++) {
                         String name = walletnameList.get(i).getName();
                         walletType = walletnameList.get(i).getType();
-                        //switch wallet
-//                    dataListName.add(name);
-//                        try {
-//                            Daemon.commands.callAttr("load_wallet", walletnameList.get(0).getName());
-//                            Daemon.commands.callAttr("select_wallet", walletnameList.get(0).getName());
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                            return;
-//                        }
-                        if (i != 0) {
-                            fragmentList.add(new WheelViewpagerFragment(name, walletType));
-                        } else {
+                        if (i == 0) {
                             fragmentList.add(new WheelViewpagerFragment(name, walletType, true));
+                        } else {
+                            fragmentList.add(new WheelViewpagerFragment(name, walletType));
                         }
 
                     }
@@ -249,7 +239,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
 
                 }
-            }else{
+            } else {
                 fragmentList.add(new AddViewFragment());
                 viewPager.setOffscreenPageLimit(4);
                 viewPager.setPageMargin(40);
@@ -399,22 +389,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
                                 tx_hash1 = jsonObject.getString("tx_hash");
                                 is_mine = jsonObject.getBoolean("is_mine");
+                                date = jsonObject.getString("date");
                                 Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
                                 if (typeDele.equals("tx")) {
                                     String tx_Onclick = jsonObject.getString("tx");
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("isIsmine", is_mine);
-                                    intent.putExtra("strWalletName", strNames);
                                     intent.putExtra("strwalletType", strType);
                                     intent.putExtra("listType", typeDele);
+                                    intent.putExtra("dataTime", date);
                                     intent.putExtra("txCreatTrsaction", tx_Onclick);
                                     startActivity(intent);
 
                                 } else {
                                     intent.putExtra("tx_hash", tx_hash1);
                                     intent.putExtra("isIsmine", is_mine);
-                                    intent.putExtra("strWalletName", strNames);
+                                    intent.putExtra("dataTime", date);
                                     intent.putExtra("strwalletType", strType);
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("listType", typeDele);

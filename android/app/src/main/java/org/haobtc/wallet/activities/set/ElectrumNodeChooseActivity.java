@@ -80,6 +80,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
         if (get_server_list != null) {
             SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
             String get_server = get_server_list.toString();
+            Log.i("get_server_list", "get_server_list: "+get_server);
             Map<String, Object> jsonToMap = JSONObject.parseObject(get_server);
             Set<String> keySets = jsonToMap.keySet();
             Iterator<String> ki = keySets.iterator();
@@ -148,7 +149,9 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                         Daemon.commands.callAttr("set_server", edit_ip.getText().toString(), edit_port.getText().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Log.e("printStackTrace", "printStackTrace: "+e.getMessage());
+                        if (e.getMessage().contains("ValueError")){
+                            mToast(getString(R.string.ipOrportWrong));
+                        }
                         return;
                     }
                     electrumList.clear();

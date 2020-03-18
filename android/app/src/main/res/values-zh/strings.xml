@@ -241,7 +241,6 @@
     <string name="public_address">公钥地址</string>
     <string name="make_aname">起个名字标记一下</string>
     <string name="set_bixinkey">设置BixinKEY数</string>
-    <string name="need_band3">需绑定3个BixinKEY，可使用任一BixinKEY授权发币设置多备份可防止单个BixinKEY丢失后，数字资产丢失</string>
     <string name="blue_toose">蓝牙连接</string>
     <string name="nfc_line">NFC连接</string>
     <string name="have_bixinkey">共管人没有BixinKEY？</string>
@@ -427,5 +426,14 @@
     <string name="set_to_Bixinkey">设置到BixinKEY</string>
     <string name="send_shortcut_access">发币快捷通道</string>
     <string name="please_input_walletname">请输入钱包名称</string>
+    <string name="import_wallet">导入钱包</string>
+    <string name="cancled">已取消</string>
+    <string name="choose_import_wallet">选择要导入的钱包</string>
+    <string name="key_check">已通过BixinKEY搜索到包含BixinKEY公钥的钱包，请选择并导入</string>
+    <string name="confirm_import">确认导入</string>
+    <string name="need_band3">需绑定*个BixinKEY，可使用任一BixinKEY授权发币设置多备份可防止单个BixinKEY丢失后，数字资产丢失</string>
+    <string name="ipOrportWrong">IP或端口号格式输入不正确</string>
+    <string name="braodcast_succse">广播成功</string>
+
 
 </resources>

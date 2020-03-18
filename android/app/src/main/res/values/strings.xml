@@ -241,7 +241,6 @@
     <string name="public_address">Public address</string>
     <string name="make_aname">Set a name as remark</string>
     <string name="set_bixinkey">Set number of BixinKEYs</string>
-    <string name="need_band3">Needs to associate 3 BixinKEYs</string>
     <string name="blue_toose">Bluetooth connection</string>
     <string name="nfc_line">NFC connection</string>
     <string name="have_bixinkey">Mutual managers do not own BixinKEY?</string>
@@ -407,11 +406,11 @@
     <string name="reading">Read public key</string>
     <string name="reading_exception">BixinKEY Read error</string>
     <string name="select_ble_device">Select Bluetooth device to connect</string>
-    <string name="tip_ble">Please turn on bixinkey and get close to your phone</string>
+    <string name="tip_ble">Please turn on BixinKEY and get close to your phone</string>
     <string name="reading_dot">Read public key...</string>
     <string name="warning">The necessary permissions of this app are denied, which may affect your normal use</string>
     <string name="ble_device_connecting">Bluetooth device connecting</string>
-    <string name="tip_ble_bonding">Please open bixinkey to confirm the pairing code</string>
+    <string name="tip_ble_bonding">Please open BixinKEY to confirm the pairing code</string>
     <string name="confirm_pub">Confirm public key</string>
     <string name="str_0_00">0.00</string>
     <string name="input_backup_wallet">Import backup Wallet</string>
@@ -447,5 +446,14 @@
     <string name="set_to_Bixinkey">Set to BixinKEY</string>
     <string name="send_shortcut_access">Currency express channel</string>
     <string name="please_input_walletname">Please enter the wallet name</string>
+    <string name="import_wallet">导入钱包</string>
+    <string name="cancled">已取消</string>
+    <string name="choose_import_wallet">选择要导入的钱包</string>
+    <string name="key_check">已通过BixinKEY搜索到包含BixinKEY公钥的钱包，请选择并导入</string>
+    <string name="confirm_import">确认导入</string>
+    <string name="need_band3">Needs to associate 3 BixinKEYs,You can use any bixinkey authorized issuing currency to set up multiple backups to prevent the loss of digital assets after the loss of a single bixinkey</string>
+    <string name="ipOrportWrong">IP或端口号格式输入不正确</string>
+    <string name="braodcast_succse">广播成功</string>
+
 
 </resources>

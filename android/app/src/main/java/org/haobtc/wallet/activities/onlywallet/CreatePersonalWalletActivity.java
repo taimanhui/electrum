@@ -212,7 +212,7 @@ public class CreatePersonalWalletActivity extends BaseActivity {
             Daemon.commands.callAttr("set_multi_wallet_info", strWalletName, 1, n);
         } catch (Exception e) {
             e.printStackTrace();
-
+            return;
         }
         if (n > 1) {
             Intent intent = new Intent(CreatePersonalWalletActivity.this, CreateOnlyChooseActivity.class);
@@ -291,7 +291,7 @@ public class CreatePersonalWalletActivity extends BaseActivity {
                 Daemon.commands.callAttr("select_wallet", walletName);
                 Log.i("skjhdjdjhhhhhhhhhj", "111111111: ");
             } catch (Exception e) {
-                Log.i("skjhdjdjhhhhhhhhhj", "222222222: ");
+                Log.i("skjhdjdjhhhhhhhhhj", "222222222: "+e.getMessage());
                 e.printStackTrace();
                 return;
             }
