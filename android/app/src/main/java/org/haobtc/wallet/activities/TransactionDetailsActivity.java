@@ -39,6 +39,7 @@ import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,11 +50,11 @@ import java.util.concurrent.FutureTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.futureTask;
-import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.executorService;
-import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.isNFC;
 
 import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.executorService;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.futureTask;
+import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.isNFC;
 
 public class TransactionDetailsActivity extends BaseActivity {
 
@@ -114,10 +115,14 @@ public class TransactionDetailsActivity extends BaseActivity {
     TextView tetGrive;
     @BindView(R.id.tet_addSpeed)
     TextView tetAddSpeed;
+    @BindView(R.id.lin_fee)
+    LinearLayout linFee;
+    @BindView(R.id.lin_payAddress)
+    LinearLayout linPayAddress;
     private String keyValue;
     private String tx_hash;
     private String listType;
-    private String rowTrsation;
+    private String publicTrsation;
     private String jsondef_get;
     private GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
     private String rowtx;
@@ -128,7 +133,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     private boolean aBoolean;
     private String strNewfee;
     private String strwalletType;
-    private String strWalletName;
     private SharedPreferences preferences;
     private String txid;
     private boolean canBroadcast;
@@ -145,6 +149,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private boolean pinCached;
     private boolean isActive;
     private boolean ready;
+    private String dataTime;
 
     @Override
     public int getLayoutId() {
@@ -162,22 +167,19 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (!TextUtils.isEmpty(intent.getStringExtra("signed_raw_tx"))) {
             signedRawTx = intent.getStringExtra("signed_raw_tx");
         } else {
-            rowTrsation = intent.getStringExtra("txCreatTrsaction");
+            publicTrsation = intent.getStringExtra("txCreatTrsaction");
             keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
             tx_hash = intent.getStringExtra("tx_hash");
             listType = intent.getStringExtra("listType");
             strParse = intent.getStringExtra("strParse");
-            strWalletName = intent.getStringExtra("strWalletName");
+            dataTime = intent.getStringExtra("dataTime");
             strwalletType = intent.getStringExtra("strwalletType");
-            isIsmine = intent.getBooleanExtra("isIsmine", false);
+            isIsmine = intent.getBooleanExtra("isIsmine", false);//isIsmine -->recevid or send
+            tetTrsactionTime.setText(dataTime);
         }
 
-
-        Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   rowTrsation -- : " + rowTrsation);
+        Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   isIsmine -- : " + isIsmine);
     }
-
-    //029a5002de1703279f256bb09c09c6d8fdf8f784b762c26fa6d5f7f9b5de7d6a
-    //d186e6b87e3c8779172b2fdec31602f8811b279674e36f688132f1ca1d36ec1c
 
     @Override
     public void initData() {
@@ -186,9 +188,10 @@ public class TransactionDetailsActivity extends BaseActivity {
             signedRawTx = "";
             return;
         }
+        //isIsmine -->recevid or send
         if (isIsmine) {
             tvInTb2.setText(R.string.sendetail);
-            tetAddSpeed.setVisibility(View.VISIBLE);
+            linFee.setVisibility(View.VISIBLE);
             try {
                 get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
                 Log.i("get_rbf_status", "___________: " + get_rbf_status.toString());
@@ -198,12 +201,9 @@ public class TransactionDetailsActivity extends BaseActivity {
             }
             if (get_rbf_status != null) {
                 aBoolean = get_rbf_status.toBoolean();
-
             }
-//            }
-
         } else {
-            tetAddSpeed.setVisibility(View.GONE);
+            linFee.setVisibility(View.GONE);
             tvInTb2.setText(R.string.recevid);
         }
         if (!TextUtils.isEmpty(keyValue)) {
@@ -212,7 +212,12 @@ public class TransactionDetailsActivity extends BaseActivity {
                 mCreataSuccsesCheck();
             } else if (keyValue.equals("B")) {
                 if (listType.equals("history")) {
-                    tvInTb2.setText(R.string.recevid);
+                    //isIsmine -->recevid or send
+                    if (isIsmine) {
+                        tvInTb2.setText(R.string.sendetail);
+                    } else {
+                        tvInTb2.setText(R.string.recevid);
+                    }
                     //histry trsaction detail
                     trsactionDetail();
 
@@ -226,7 +231,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                     mCreataSuccsesCheck();
 
                 }
-
             }
         }
     }
@@ -253,10 +257,10 @@ public class TransactionDetailsActivity extends BaseActivity {
     //creat succses check
     private void mCreataSuccsesCheck() {
         //get trsaction list content
-        if (!TextUtils.isEmpty(rowTrsation)) {
+        if (!TextUtils.isEmpty(publicTrsation)) {
             PyObject def_get_tx_info_from_raw = null;
             try {
-                def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowTrsation);
+                def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", publicTrsation);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -264,9 +268,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 jsondef_get = def_get_tx_info_from_raw.toString();
                 jsonDetailData(jsondef_get);
             }
-
         }
-
     }
 
     //intent ->histry or create
@@ -395,7 +397,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             //trsaction hash and time
             linTractionHash.setVisibility(View.VISIBLE);
-            linTractionTime.setVisibility(View.VISIBLE);
+            linTractionTime.setVisibility(View.GONE);
         } else if (tx_status.contains("confirmations")) {//Confirmed
             tetState.setText(R.string.completed);
             sigTrans.setText(R.string.check_trsaction);
@@ -422,6 +424,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             linTractionHash.setVisibility(View.VISIBLE);
             linTractionTime.setVisibility(View.VISIBLE);
         } else if (tx_status.contains("Unsigned")) {//unsigned
+            linPayAddress.setVisibility(View.VISIBLE);
             tetState.setText(R.string.unsigned);
             sigTrans.setText(R.string.signature_trans);
         } else if (tx_status.contains("Signed") || tx_status.contains("Local") || canBroadcast) {//signed
@@ -448,7 +451,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             //text color
 //            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
         }
-
     }
 
     private Runnable runnable = this::gotoConfirmOnHardware;
@@ -522,11 +524,12 @@ public class TransactionDetailsActivity extends BaseActivity {
     //Radio broadcast
     private void braodcastTrsaction() {
         String signedRowTrsation = preferences.getString("signedRowtrsation", "");
+        Log.i("braodcastTrsact", "braodcastTrsaction: " + signedRowTrsation);
         try {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
+            EventBus.getDefault().post(new FirstEvent("22"));
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
-            EventBus.getDefault().post(new FirstEvent("22"));
             imgProgressone.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
@@ -535,7 +538,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             //trsaction hash and time
             linTractionHash.setVisibility(View.VISIBLE);
-            linTractionTime.setVisibility(View.VISIBLE);
+            mToast(getString(R.string.braodcast_succse));
             Log.i("signedRowTrsation", "-------: ");
         } catch (Exception e) {
             e.printStackTrace();
@@ -555,20 +558,22 @@ public class TransactionDetailsActivity extends BaseActivity {
             try {
                 PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rowtx, strPassword);
                 if (sign_tx != null) {
-
                     Log.i("sign_txkkkkkkk", "sign_tx: " + sign_tx);
-                    rowTrsation = sign_tx.toString();
-//                    tx_hash = sign_tx.toString();
-                    edit.putString("signedRowtrsation", rowTrsation);
+                    Gson gson = new Gson();
+                    GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(sign_tx.toString(), GetnewcreatTrsactionListBean.class);
+                    publicTrsation = trsactionListBean.getTx();
+                    edit.putString("signedRowtrsation", publicTrsation);
                     edit.apply();
-                    mCreataSuccsesCheck();
+                    jsonDetailData(sign_tx.toString());
+                    alertDialog.dismiss();
                     EventBus.getDefault().post(new FirstEvent("22"));
 
                 }
-                alertDialog.dismiss();
             } catch (Exception e) {
                 Log.i("sign_txkkkkkkk", "+++++++++++= " + e.getMessage());
-                mToast(getResources().getString(R.string.sign_failed));
+                if (e.getMessage().contains("Incorrect password")) {
+                    mToast(getResources().getString(R.string.wrong_pass));
+                }
                 e.printStackTrace();
             }
 
@@ -631,13 +636,13 @@ public class TransactionDetailsActivity extends BaseActivity {
             String strNewTX = create_bump_fee.toString();
             Gson gson = new Gson();
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
-            rowTrsation = addspeedNewtrsactionBean.getNewTx();
+            publicTrsation = addspeedNewtrsactionBean.getNewTx();
 
 //            tx_hash = addspeedNewtrsactionBean.getNewTx();
-            edit.putString("signedRowtrsation", rowTrsation);
+            edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
-            EventBus.getDefault().post(new FirstEvent("22"));
+//            EventBus.getDefault().post(new FirstEvent("22"));
             alertDialog.dismiss();
         }
     }
@@ -747,6 +752,13 @@ public class TransactionDetailsActivity extends BaseActivity {
                 isActive = data.getBooleanExtra("isActive", false);
             }
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }
 

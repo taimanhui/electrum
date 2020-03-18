@@ -438,6 +438,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             Daemon.commands.callAttr("set_multi_wallet_info", strWalletname, strUp1, strUp2);
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
         cardViewOne.setVisibility(View.GONE);
         button.setVisibility(View.GONE);
@@ -448,7 +449,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
         bnAddKey.setVisibility(View.VISIBLE);
         relTwoNext1.setVisibility(View.VISIBLE);
         tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
-        bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getResources().getString(R.string.next), strInditor2));
+        bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getResources().getString(R.string.next), strInditor1));
 
         bnCompleteAddCosigner.setEnabled(false);
 
@@ -598,6 +599,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             } catch (Exception e) {
                 Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
+                return;
             }
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             addBixinKeyEvent.setKeyname(strBixinname);
@@ -610,7 +612,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
 
-            int cosignerNum = Integer.parseInt(strInditor2);
+            int cosignerNum = Integer.parseInt(strInditor1);
             bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
 
             if (addEventsDatas.size() == cosignerNum) {
@@ -710,6 +712,7 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             } catch (Exception e) {
                 Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
+                return;
             }
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             addBixinKeyEvent.setKeyname(strBixinname);
@@ -722,9 +725,9 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
 
-            int cosignerNum = Integer.parseInt(strInditor2);
+            int cosignerNum = Integer.parseInt(strInditor1);
             bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
-
+            dialogFragment.dismiss();
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));

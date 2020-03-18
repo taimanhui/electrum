@@ -91,7 +91,7 @@
                 android:layout_below="@id/ln"
                 android:layout_marginTop="@dimen/dp_21"
                 android:gravity="center"
-                android:text="@string/prompt_touch"
+                android:text="@string/bixinkey_fit"
                 android:visibility="visible"/>
 
             <FrameLayout

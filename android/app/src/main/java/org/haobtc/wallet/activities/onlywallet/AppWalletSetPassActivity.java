@@ -92,12 +92,12 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     myDialog.dismiss();
                     return;
                 }
-//                boolean passType = isPassType(strPass1);
-//                if (!passType) {
-//                    mToast(getResources().getString(R.string.passtype_wrong));
-//                    myDialog.dismiss();
-//                    return;
-//                }
+                boolean passType = isPassType(strPass1);
+                if (!passType) {
+                    mToast(getResources().getString(R.string.passtype_wrong));
+                    myDialog.dismiss();
+                    return;
+                }
                 if (!TextUtils.isEmpty(strSeed)) {
                     try {
                         Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));

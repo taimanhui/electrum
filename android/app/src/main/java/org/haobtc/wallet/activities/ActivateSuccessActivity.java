@@ -41,9 +41,9 @@ public class ActivateSuccessActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bn_back:
-               Intent intent = new Intent(this, CreateWalletActivity.class);
-               startActivity(intent);
-
+                Intent intent = new Intent(this, CreateWalletActivity.class);
+                startActivity(intent);
+                finish();
         }
     }
 }

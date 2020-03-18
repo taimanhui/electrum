@@ -213,6 +213,7 @@ public class WheelViewpagerFragment extends Fragment {
     public void getWalletMsg() {
         try {
             select_wallet = Daemon.commands.callAttr("select_wallet", name);
+            EventBus.getDefault().post(new FirstEvent("22"));
         } catch (Exception e) {
             Log.i("select_wallet", "--------- " + e.getMessage());
             e.printStackTrace();
