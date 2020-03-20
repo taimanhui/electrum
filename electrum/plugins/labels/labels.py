@@ -37,12 +37,12 @@ class LabelsPlugin(BasePlugin):
         self.get_wallet_loop = asyncio.get_event_loop()
 
     def encode(self, wallet, msg):
-        password, iv, wallet_id, xpubkeys = self.wallets[wallet]
+        password, iv, wallet_id, wallet_type, xpubkeys = self.wallets[wallet]
         encrypted = aes_encrypt_with_iv(password, iv, msg.encode('utf8'))
         return base64.b64encode(encrypted).decode()
 
     def decode(self, wallet, message):
-        password, iv, wallet_id, xpubkeys = self.wallets[wallet]
+        password, iv, wallet_id, wallet_type, xpubkeys = self.wallets[wallet]
         decoded = base64.b64decode(message)
         decrypted = aes_decrypt_with_iv(password, iv, decoded)
         return decrypted.decode('utf8')
@@ -113,7 +113,7 @@ class LabelsPlugin(BasePlugin):
             bundle_list = []
             for value in wallet_data[4]:
                 bundle_list.append(value)
-                bundle["xpubs"] = json.dumps(bundle_list)
+            bundle["xpubs"] = json.dumps(bundle_list)
 
             await self.do_post("/wallet", bundle)
 
@@ -126,27 +126,20 @@ class LabelsPlugin(BasePlugin):
         if response["Walltes"] is None:
             self.logger.info('no wallets info')
             return
+        out = []
         result = {}
         for wallet in response["Walltes"]:
             try:
-                xpubId = wallet['xpubId']
-                walletId = wallet['WalletId']
-                xpubs = wallet['Xpubs']
-                walletType = wallet['WalletType']
+                result['xpubId'] = wallet['xpubId']
+                result['walletId'] = wallet['WalletId']
+                result['xpubs'] = wallet['Xpubs']
+                result['walletType'] = wallet['WalletType']
             except:
                 continue
-            wallet_list = [walletType, xpubs]
-            try:
-                #json.dumps(walletType)
-                json.dumps(walletId)
-                json.dumps(wallet_list)
-            except:
-                self.logger.info(f'error: no json {xpubs}')
-                continue
-            result[walletId] = wallet_list
+            out.append(result)
         self.logger.info(f"received {len(response)} wallets")
-        print("wallet info is %s---" %result)
-        return result
+        print("wallet info is %s---" %json.dumps(out))
+        return json.dumps(out)
 
     @ignore_exceptions
     @log_exceptions

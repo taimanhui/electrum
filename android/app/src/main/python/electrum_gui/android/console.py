@@ -439,6 +439,16 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.load_wallet(self.wallet, wallet_type)
         self.wizard = None
 
+    def import_create_hw_wallet(self, name, m, n, xpubs):
+        try:
+            print("xpubs==========%s" %xpubs)
+            self.set_multi_wallet_info(name, m, n)
+            xpubs_list = json.loads(xpubs)
+            for xpub in xpubs_list:
+                self.add_xpub(xpub)
+            self.create_multi_wallet(name)
+        except BaseException as e:
+            raise e
     ############
     def get_wallet_info_from_server(self, xpub):
         try:
@@ -1139,6 +1149,16 @@ class AndroidCommands(commands.Commands):
     def reset_pin(self):
         client = self.get_client()
         client.set_pin(True)
+
+    def toggle_passphrash(self):
+        client = self.get_client()
+        client.toggle_passphrase()
+
+    def get_passphrase_status(self, path='nfc'):
+        self.client = None
+        self.path = ''
+        client = self.get_client(path=path)
+        return client.features.passphrase_protection
 
     def get_client(self, path='nfc', ui=CustomerUI()) -> 'TrezorClientBase':
         if self.client is not None and self.path == path:
