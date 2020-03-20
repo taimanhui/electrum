@@ -18,9 +18,10 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="320dp"
-            android:background="@color/pin_back_color" />
-
+            android:layout_height="370dp"
+            android:paddingTop="@dimen/dp_60"
+            android:background="@color/pin_back_color"
+            android:src="@drawable/touch_again" />
 
         <TextView
             android:layout_width="match_parent"
@@ -98,8 +99,8 @@
     <ImageView
         android:id="@+id/img_back"
         android:layout_width="@dimen/dp_50"
-        android:layout_marginTop="@dimen/dp_5"
         android:layout_height="@dimen/dp_40"
+        android:layout_marginTop="@dimen/dp_5"
         android:layout_marginEnd="15.3dp"
         android:padding="8dp"
         android:src="@drawable/back" />

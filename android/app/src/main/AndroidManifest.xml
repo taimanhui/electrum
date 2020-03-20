@@ -12,7 +12,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- <uses-permission -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <!-- // used in android 9+
+    <!--
+ // used in android 9+
         <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -36,7 +37,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.onlywallet.ChooseHistryWalletActivity"/>
+        <activity android:name=".activities.set.VerificationSuccessActivity"/>
+        <activity android:name=".activities.sign.SignActivity" />
+        <activity android:name=".activities.onlywallet.ChooseHistryWalletActivity" />
         <activity android:name=".activities.set.NoSecretPaymentActivity" />
         <activity android:name=".activities.set.fixpin.ConfirmPincodeActivity" />
         <activity android:name=".activities.set.UpgradeFinishedActivity" />
@@ -105,7 +108,7 @@
         <activity android:name=".activities.LanguageSettingActivity" />
         <activity android:name=".activities.ServerSettingActivity" />
         <activity android:name=".activities.TransactionsSettingActivity" />
-        <activity android:name=".activities.ServiceOnlineActivity" />
+        <activity android:name=".activities.VerificationKEYActivity" />
         <activity android:name=".activities.AboutActivity" />
         <activity android:name=".activities.SendOne2OneMainPageActivity" />
         <activity android:name=".activities.SignaturePageActivity" />
@@ -158,6 +161,7 @@
         <activity android:name=".activities.ShareOtherActivity" />
         <activity android:name=".activities.GuideActivity" />
         <activity android:name=".activities.PinSettingActivity" />
+        <activity android:name="dr.android.fileselector.FileSelectActivity" />
         <activity android:name=".activities.CreateWalletSuccessfulActivity" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"

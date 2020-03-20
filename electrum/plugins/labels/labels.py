@@ -121,6 +121,7 @@ class LabelsPlugin(BasePlugin):
         try:
             response = await self.do_get("/wallets/%s" % xpub)
             print("--111112222 response=%s" %response)
+            return response
         except Exception as e:
             raise ErrorConnectingServer(e) from e
         if response["Walltes"] is None:

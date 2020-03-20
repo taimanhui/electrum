@@ -148,7 +148,7 @@ public class ImportHistoryWalletActivity extends BaseActivity {
                     e.printStackTrace();
                 }
                 // todo: get xpub
-                CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", new Kwarg("_type", "p2wpkh")));
+                CustomerDialogFragment.futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
                 new Thread(CustomerDialogFragment.futureTask).start();
                 if (pinCached) {
                     try {
@@ -212,7 +212,7 @@ public class ImportHistoryWalletActivity extends BaseActivity {
                     } catch (ExecutionException | TimeoutException | InterruptedException e) {
                         dialogFragment.showReadingFailedDialog();
                         if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                            Toast.makeText(this, "PIN码输入有误，请重新输入", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.PINiswrong), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }

@@ -39,8 +39,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/dkkljknl"
-        android:paddingBottom="90dp"
-        android:background="@color/bk_page">
+        android:background="@color/bk_page"
+        android:paddingBottom="90dp">
 
 
         <androidx.cardview.widget.CardView
@@ -129,6 +129,9 @@
                         android:layout_marginStart="@dimen/dp_20"
                         android:layout_weight="1"
                         android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/file"
+                        android:paddingStart="13dp"
+                        android:paddingEnd="13dp"
                         android:singleLine="true"
                         android:text="@string/import_file"
                         android:textAllCaps="false"

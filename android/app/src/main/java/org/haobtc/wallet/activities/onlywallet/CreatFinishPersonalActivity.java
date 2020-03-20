@@ -1,39 +1,35 @@
 package org.haobtc.wallet.activities.onlywallet;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.encode.CodeCreator;
-
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
-import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -75,6 +71,31 @@ public class CreatFinishPersonalActivity extends BaseActivity {
         tetWalletname.setText(walletNames);
 
     }
+
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    try {
+                        Daemon.commands.callAttr("create_multi_wallet", walletNames);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        myDialog.dismiss();
+                        String message = e.getMessage();
+                        if ("BaseException: file already exists at path".equals(message)) {
+                            mToast(getResources().getString(R.string.changewalletname));
+                        }
+                        return;
+                    }
+                    myDialog.dismiss();
+                    mIntent(MainActivity.class);
+                    break;
+            }
+        }
+    };
 
     @Override
     public void initData() {
@@ -126,19 +147,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
                 break;
             case R.id.bn_complete_add_cosigner:
                 myDialog.show();
-                try {
-                    Daemon.commands.callAttr("create_multi_wallet", walletNames);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    myDialog.dismiss();
-                    String message = e.getMessage();
-                    if ("BaseException: file already exists at path".equals(message)) {
-                        mToast(getResources().getString(R.string.changewalletname));
-                    }
-                    return;
-                }
-                myDialog.dismiss();
-                mIntent(MainActivity.class);
+                handler.sendEmptyMessage(1);
                 break;
         }
     }

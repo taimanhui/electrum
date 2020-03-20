@@ -306,7 +306,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            this.finish();
+            finish();
             return true;
         } else if (id == R.id.action_fileselect_ok) {
             onClickOkBtn();
@@ -360,7 +360,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                 Intent intent = new Intent();
                 intent.putStringArrayListExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS, fileList);
                 setResult(Activity.RESULT_OK, intent);
-                this.finish();
+                finish();
             }
 
         } else if (mSelectorMode == FileSelectConstant.SELECTOR_MODE_FOLDER) {
@@ -380,7 +380,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                 Intent intent = new Intent();
                 intent.putExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS, fileList);
                 setResult(Activity.RESULT_OK, intent);
-                this.finish();
+                finish();
             }
         }
     }
@@ -393,7 +393,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
     public void backOrExit() {
         String folderPath = mFolderPath_tv.getText().toString();// 当前节点
         if (folderPath.equals(mSelectorRootPathName)) {
-            this.finish();
+            finish();
         } else if (isFileOnClickShowOk) {
             folderPath = SdCardUtil.replaceLocalNameWithAbsPath(folderPath);
             if (rootPaths.contains(folderPath)) {

@@ -1,36 +1,48 @@
 package org.haobtc.wallet.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.event.AddBixinKeyEvent;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class ImportHistryWalletAdapter extends RecyclerView.Adapter<ImportHistryWalletAdapter.myViewHolder> {
     private Context context;
-    private ArrayList<String> strings;
-    private int mSelectedPos = -1;
+    private ArrayList<AddBixinKeyEvent> xpubList;
+    private List<Boolean> isClicks;
 
-    public ImportHistryWalletAdapter(Context context, ArrayList<String> strings) {
+    public ImportHistryWalletAdapter(Context context, ArrayList<AddBixinKeyEvent> xpubList) {
         this.context = context;
-        this.strings = strings;
+        this.xpubList = xpubList;
+        isClicks = new ArrayList<>();
+        for (int i = 0; i < xpubList.size(); i++) {
+            isClicks.add(false);
+        }
+//        isClicks.set(0,true);
     }
 
     public class myViewHolder extends RecyclerView.ViewHolder {
-        TextView tet_walletname;
-        CheckBox chkbox_wallet;
+        TextView tet_walletname,tet_AddBixinkey;
+        ImageView img_wallet;
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
             tet_walletname = itemView.findViewById(R.id.tet_walletname);
-            chkbox_wallet = itemView.findViewById(R.id.chkbox_wallet);
+            tet_AddBixinkey = itemView.findViewById(R.id.tet_AddBixinkey);
+            img_wallet = itemView.findViewById(R.id.img_wallet);
         }
     }
 
@@ -43,31 +55,37 @@ public class ImportHistryWalletAdapter extends RecyclerView.Adapter<ImportHistry
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tet_walletname.setText(strings.get(position));
-        holder.chkbox_wallet.setChecked(mSelectedPos == position);
-        holder.chkbox_wallet.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(context, position+"", Toast.LENGTH_SHORT).show();
-                if (mSelectedPos != position) {
-                    holder.chkbox_wallet.setChecked(true);
-                    if (mSelectedPos != -1) {
-                        notifyItemChanged(mSelectedPos, 0);
+        holder.tet_walletname.setText(xpubList.get(position).getKeyname());
+        holder.tet_AddBixinkey.setText(xpubList.get(position).getKeyaddress());
+        if(onItemClickListener!=null) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = holder.getLayoutPosition(); // 1
+                    for(int i = 0; i <isClicks.size();i++){
+                        isClicks.set(i,false);
                     }
-                    mSelectedPos = position;
+                    isClicks.set(position,true);
+                    notifyDataSetChanged();
+                    onItemClickListener.onItemClick(position); // 2
                 }
-            }
-        });
+            });
+        }
+        //5、记录要更改属性的控件
+        holder.itemView.setTag(holder.img_wallet);
+        //6、判断改变属性
+        if(isClicks.get(position)){
+            holder.img_wallet.setBackground(context.getDrawable(R.drawable.checkbox));
+        }else{
+            holder.img_wallet.setBackground(context.getDrawable(R.drawable.nocheckbox));
+        }
 
-    }
-    public int getSelectedPos(){
-        return mSelectedPos;
     }
 
     @Override
     public int getItemCount() {
-        if (strings != null) {
-            return strings.size();
+        if (xpubList != null) {
+            return xpubList.size();
         } else {
             return 0;
         }

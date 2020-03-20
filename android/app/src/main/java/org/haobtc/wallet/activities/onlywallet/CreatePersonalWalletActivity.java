@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.onlywallet;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.chaquo.python.Kwarg;
@@ -39,6 +42,7 @@ import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
+import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +89,9 @@ public class CreatePersonalWalletActivity extends BaseActivity {
     private String walletName;
     private boolean isInit;
     private boolean ready;
+    private MyDialog myDialog;
+    private EditText edit_bixinName;
+    private Dialog dialogBtoms;
 
     @Override
     public int getLayoutId() {
@@ -94,6 +101,8 @@ public class CreatePersonalWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        myDialog = MyDialog.showDialog(CreatePersonalWalletActivity.this);
+
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         defaultName = preferences.getInt("defaultName", 0);
@@ -240,9 +249,9 @@ public class CreatePersonalWalletActivity extends BaseActivity {
     private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub) {
         //set see view
         View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        dialogBtoms = new Dialog(context, R.style.dialog);
 
-        EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
+        edit_bixinName = view.findViewById(R.id.edit_keyName);
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
@@ -268,43 +277,8 @@ public class CreatePersonalWalletActivity extends BaseActivity {
             }
         });
         view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
-            String strBixinname = edit_bixinName.getText().toString();
-            String strSweep = textView.getText().toString();
-            walletName = editWalletNameSetting.getText().toString();
-            if (TextUtils.isEmpty(strBixinname)) {
-                mToast(getString(R.string.input_name));
-                return;
-            }
-            if (TextUtils.isEmpty(strSweep)) {
-                mToast(getString(R.string.input_public_address));
-                return;
-            }
-            try {
-                //add
-                Daemon.commands.callAttr("add_xpub", strSweep);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-            try {
-                Daemon.commands.callAttr("load_wallet", walletName);
-                Daemon.commands.callAttr("select_wallet", walletName);
-                Log.i("skjhdjdjhhhhhhhhhj", "111111111: ");
-            } catch (Exception e) {
-                Log.i("skjhdjdjhhhhhhhhhj", "222222222: "+e.getMessage());
-                e.printStackTrace();
-                return;
-            }
-            edit.putInt("defaultName", walletNameNum);
-            edit.apply();
-            Intent intent = new Intent(CreatePersonalWalletActivity.this, CreatFinishPersonalActivity.class);
-            intent.putExtra("walletNames", walletName);
-            intent.putExtra("flagTag", "personal");
-            intent.putExtra("strBixinname", strBixinname);
-            startActivity(intent);
-
-            dialogBtoms.cancel();
-            dialogFragment.dismiss();
+            myDialog.show();
+            handler.sendEmptyMessage(1);
 
         });
 
@@ -312,7 +286,6 @@ public class CreatePersonalWalletActivity extends BaseActivity {
         view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
             dialogBtoms.cancel();
         });
-
 
         dialogBtoms.setContentView(view);
         Window window = dialogBtoms.getWindow();
@@ -452,7 +425,6 @@ public class CreatePersonalWalletActivity extends BaseActivity {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 Log.i("CODED_CONTENT", "content=----: " + content);
-//                edit_sweep.setText(content);
             }
         } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
@@ -460,4 +432,47 @@ public class CreatePersonalWalletActivity extends BaseActivity {
             }
         }
     }
+
+    @SuppressLint("HandlerLeak")
+    Handler handler =new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+                    String strBixinname = edit_bixinName.getText().toString();
+                    String strSweep = textView.getText().toString();
+                    walletName = editWalletNameSetting.getText().toString();
+                    if (TextUtils.isEmpty(strBixinname)) {
+                        mToast(getString(R.string.input_name));
+                        return;
+                    }
+                    if (TextUtils.isEmpty(strSweep)) {
+                        mToast(getString(R.string.input_public_address));
+                        return;
+                    }
+                    try {
+                        //add
+                        Daemon.commands.callAttr("add_xpub", strSweep);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    edit.putInt("defaultName", walletNameNum);
+                    edit.apply();
+                    myDialog.dismiss();
+                    Intent intent = new Intent(CreatePersonalWalletActivity.this, CreatFinishPersonalActivity.class);
+                    intent.putExtra("walletNames", walletName);
+                    intent.putExtra("flagTag", "personal");
+                    intent.putExtra("strBixinname", strBixinname);
+                    startActivity(intent);
+
+                    dialogBtoms.cancel();
+                    dialogFragment.dismiss();
+                    break;
+            }
+        }
+    };
+
 }

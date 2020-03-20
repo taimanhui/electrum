@@ -627,7 +627,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void confirmedSpeed() {
         PyObject create_bump_fee = null;
         try {
-            create_bump_fee = Daemon.commands.callAttr("create_bump_fee", tx_hash, newFeerate, false);
+            create_bump_fee = Daemon.commands.callAttr("create_bump_fee", tx_hash, newFeerate);
         } catch (Exception e) {
             e.printStackTrace();
         }

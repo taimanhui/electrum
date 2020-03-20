@@ -46,6 +46,8 @@ import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.onlywallet.CreateOnlyChooseActivity;
 import org.haobtc.wallet.activities.onlywallet.CreatePersonalWalletActivity;
+import org.haobtc.wallet.activities.set.UpgradeBixinKEYActivity;
+import org.haobtc.wallet.activities.set.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.set.recovery_set.Backup_recoveryActivity;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
@@ -112,7 +114,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         @Override
         public void onLeScan(final BleDevice device, int rssi, byte[] scanRecord) {
             synchronized (mBle.getLocker()) {
-                Log.i(TAG, "BLE Device Find====" +device.getBleName());
+                Log.i(TAG, "BLE Device Find====" + device.getBleName());
                 Activity activity = getActivity();
                 if (activity != null) {
                     getActivity().runOnUiThread(() -> adapter.add(device));
@@ -157,13 +159,13 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                 e.printStackTrace();
                 dismiss();
             }
-            if (ManyWalletTogetherActivity.TAG.equals(tag) || CreatePersonalWalletActivity.TAG.equals(tag)|| CreateOnlyChooseActivity.TAG.equals(tag)) {
+            if (ManyWalletTogetherActivity.TAG.equals(tag) || CreatePersonalWalletActivity.TAG.equals(tag) || CreateOnlyChooseActivity.TAG.equals(tag)) {
                 dialogFragment = showReadingDialog();
                 // todo: get xpub
                 Log.i(TAG, "java ==== get_xpub_from_hw");
                 if (CreatePersonalWalletActivity.TAG.equals(tag)) {
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth",new Kwarg("_type", "p2wpkh")));
-                }else{
+                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth", new Kwarg("_type", "p2wpkh")));
+                } else {
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
                 }
                 executorService.submit(futureTask);
@@ -208,6 +210,16 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wallet_recovery", extras));
                     executorService.submit(futureTask);
                 }
+
+            } else if (VersionUpgradeActivity.TAG.equals(tag)) {
+                Intent intent = new Intent(getActivity(), UpgradeBixinKEYActivity.class);
+                intent.putExtra("way", "nfc");
+                if ("hardware".equals(extras)) {
+                    intent.putExtra("tag", 1);
+                } else if ("ble".equals(extras)) {
+                    intent.putExtra("tag", 2);
+                }
+                startActivity(intent);
 
             }
 
@@ -261,7 +273,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
                 }
                 boolean isNotify = false;
                 if (notify != null) {
-                  isNotify =   Arrays.equals(notify.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    isNotify = Arrays.equals(notify.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 }
                 if (isNotify) {
                     new Handler().postDelayed(() -> dealWithBusiness(), isBonded ? 3000 : 1000);
@@ -327,17 +339,18 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         @Override
         public void run() {
             if (BleDeviceRecyclerViewAdapter.device.getBondState() == BluetoothDevice.BOND_BONDED) {
-               if (BleDeviceRecyclerViewAdapter.mBleDevice.isConnected()) {
-                   connectCallback.onReady(BleDeviceRecyclerViewAdapter.mBleDevice);
-               } else {
-                   mBle.connect(BleDeviceRecyclerViewAdapter.mBleDevice, connectCallback);
-               }
+                if (BleDeviceRecyclerViewAdapter.mBleDevice.isConnected()) {
+                    connectCallback.onReady(BleDeviceRecyclerViewAdapter.mBleDevice);
+                } else {
+                    mBle.connect(BleDeviceRecyclerViewAdapter.mBleDevice, connectCallback);
+                }
             } else {
                 BleDeviceRecyclerViewAdapter.device.createBond();
                 isBonded = true;
             }
         }
     };
+
     private void showConnecting() {
         Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
             if (fragment == null) {
@@ -378,7 +391,7 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     }
 
     private void setNotify(BleDevice device) {
-        /*连接成功后，设置通知*/
+        /*Set up notifications when the connection is successful*/
         mBle.startNotify(device, new BleNotiftCallback<BleDevice>() {
             @Override
             public void onChanged(BleDevice device, BluetoothGattCharacteristic characteristic) {
@@ -410,7 +423,6 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
         }
         return isInitialized;
     }
-
 
     public ReadingPubKeyDialogFragment showReadingDialog() {
         getChildFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
@@ -528,10 +540,10 @@ public class CustomerDialogFragment extends DialogFragment implements View.OnCli
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            Toast.makeText(getContext(), "需要打开蓝牙才能正常使用此通讯方式", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.open_bluetooth), Toast.LENGTH_LONG).show();
         } else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
             refreshDeviceList(true);
-        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) { // 蓝牙激活
+        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) { // Bluetooth activation
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
                 if (isActive) {

@@ -451,6 +451,7 @@
                             android:textSize="@dimen/sp_12" />
 
                         <Button
+                            android:id="@+id/btnRecommendFee"
                             android:layout_width="70dp"
                             android:layout_height="match_parent"
                             android:background="@drawable/blue_strok"
