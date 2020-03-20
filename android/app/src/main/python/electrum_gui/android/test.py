@@ -22,30 +22,30 @@ from console import AndroidCommands
 import time
 util.setup_thread_excepthook()
 print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
-#constants.set_testnet()
-constants.set_regtest()
+constants.set_testnet()
+#constants.set_regtest()
 print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
 testcommond = AndroidCommands()
 testcommond.start()
 testcommond.set_syn_server(True)
-#name = 'hahahahhahh777' #2-2 multi wallet
+name = 'hahahahhahh777' #2-2 multi wallet
 #name = 'hahahahhahh333' #1-N wallet
 #name = 'hahahahhahh888' #1-1 wallet
-name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
-password = "111111"
-#password = "None"
+#name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
+#password = "111111"
+password = "None"
 #test hardware
 #testcommond.get_xpub_from_hw()
 
 # #create_wallet 2-N HW wallet
-#
+
 # m = 2
 # n = 2
-# xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+#xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
 # #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
 # #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
-# xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+#xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
 # testcommond.delete_wallet(name)
 # testcommond.set_multi_wallet_info(name,m,n)
 # testcommond.add_xpub(xpub1)
@@ -58,13 +58,19 @@ password = "111111"
 # # print("after num ===== %s" % ret)
 # testcommond.create_multi_wallet(name)
 
+# ### test import create hardware wallets
+# m = 2
+# n = 2
+# xpubs = ["Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm", "Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"]
+# testcommond.delete_wallet(name)
+# testcommond.import_create_hw_wallet(name, m, n, json.dumps(xpubs))
 
 # time.sleep(5)
-# data1 = testcommond.get_wallet_info_from_server(xpub1)
-# print("data 1 = %s" %data1)
+#data1 = testcommond.get_wallet_info_from_server(xpub1)
+#print("data 1 = %s" %data1)
 # data2 =testcommond.get_wallet_info_from_server(xpub2)
 # print("data 2 = %s" %data2)
-# time.sleep(100000000)
+#time.sleep(100000000)
 #create_wallet 1-N HW wallet
 
 # m = 1
@@ -98,10 +104,10 @@ password = "111111"
 
 #name = "test1wwtest"
 #password = "111"
-testcommond.delete_wallet(name)
-# # #seed = testcommond.create(name, password)
+#testcommond.delete_wallet(name)
+# # # #seed = testcommond.create(name, password)
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
-testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
+#testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
 #ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 #print("=======ret1 = %s" %ret)
 # ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41v1111111111111111")
@@ -115,6 +121,18 @@ testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf
 list = testcommond.list_wallets()
 print("3333333333-list = %s" %list)
 
+##test hardware
+ret = testcommond.is_initialized(path="udp")
+if not ret:
+    testcommond.init(path="udp")
+pass_ret = testcommond.get_passphrase_status(path="udp")
+if not pass_ret:
+    testcommond.toggle_passphrase(path="udp")
+
+
+ret = testcommond.get_passphrase_status()
+print("hw== --------%s" %ret)
+time.sleep(10000)
 
 testcommond.set_currency("CNY")
 #testcommond.set_currency("None")
@@ -142,11 +160,17 @@ print("before data ====%s" %data)
 
 #data = testcommond.set_server("39.97.224.50", "51002")
 data = testcommond.get_server_list()
-print("server_list data =====%s" %data)
+print("before server_list data =====%s" %data)
+#data = testcommond.set_server("39.97.224.50", "51002")
+data = testcommond.set_server("tn.not.fyi", "55002")
+
+data = testcommond.get_server_list()
+print("after server_list data =====%s" %data)
 #data = testcommond.set_server("11111", "51002")
 
-# data = testcommond.get_default_server()
-# print("after data ====%s" %data)
+data = testcommond.get_default_server()
+print("after data ====%s" %data)
+#time.sleep(1000)
 
 data = testcommond.get_currencies()
 print("currencies = %s" %data)
@@ -231,8 +255,8 @@ if not flag:
         testcommond.broadcast_tx(sig)
 elif flag:
     all_output = []
-    output_info = {'bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p':'0.1'}
-    #output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+    #output_info = {'bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p':'0.1'}
+    output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
     #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
     #output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
     all_output.append(output_info)

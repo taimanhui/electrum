@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,12 +41,10 @@ import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
-import org.haobtc.wallet.adapter.MyPagerAdapter;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.Daemon;
@@ -99,6 +96,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private ArrayList<AddressEvent> walletnameList;
     private String walletType;
     private String strType;
+    private TextView testHidewallet;
 
     @Override
     public int getLayoutId() {
@@ -140,6 +138,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         textView = findViewById(R.id.textView_more);
         tetNone = findViewById(R.id.tet_None);
         refreshLayout = findViewById(R.id.smart_RefreshLayout);
+        testHidewallet = findViewById(R.id.testHideWallet);
         imageViewSweep.setOnClickListener(this);
         imageViewSetting.setOnClickListener(this);
         textView.setOnClickListener(this);
@@ -231,8 +230,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         }
 
                     }
-                    //trsaction list data
-                    downMainListdata();
                     fragmentList.add(new AddViewFragment());
                     viewPager.setOffscreenPageLimit(4);
                     viewPager.setPageMargin(40);

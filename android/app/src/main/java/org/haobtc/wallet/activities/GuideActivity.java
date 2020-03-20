@@ -48,7 +48,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
-        edit.putBoolean("JumpOr",true);
+        edit.putBoolean("JumpOr", true);
         edit.apply();
 
         viewPager = findViewById(R.id.vp);
@@ -91,16 +91,13 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     private void currency() {
         try {
             Daemon.commands.callAttr("set_currency", "CNY");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        try {
             Daemon.commands.callAttr("set_base_uint", "mBTC");
+            Daemon.commands.callAttr("set_unconf", true);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
+        edit.putBoolean("set_unconf", true);
         edit.putString("base_unit", "mBTC");
         edit.apply();
     }

@@ -439,6 +439,16 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.load_wallet(self.wallet, wallet_type)
         self.wizard = None
 
+    def import_create_hw_wallet(self, name, m, n, xpubs):
+        try:
+            print("xpubs==========%s" %xpubs)
+            self.set_multi_wallet_info(name, m, n)
+            xpubs_list = json.loads(xpubs)
+            for xpub in xpubs_list:
+                self.add_xpub(xpub)
+            self.create_multi_wallet(name)
+        except BaseException as e:
+            raise e
     ############
     def get_wallet_info_from_server(self, xpub):
         try:
@@ -1140,6 +1150,16 @@ class AndroidCommands(commands.Commands):
         client = self.get_client()
         client.set_pin(True)
 
+    def toggle_passphrash(self):
+        client = self.get_client()
+        client.toggle_passphrase()
+
+    def get_passphrase_status(self, path='nfc'):
+        self.client = None
+        self.path = ''
+        client = self.get_client(path=path)
+        return client.features.passphrase_protection
+
     def get_client(self, path='nfc', ui=CustomerUI()) -> 'TrezorClientBase':
         if self.client is not None and self.path == path:
             return self.client
@@ -1436,6 +1456,77 @@ class AndroidCommands(commands.Commands):
             wallets_dir = join(util.user_dir(), "wallets")
             util.make_dir(wallets_dir)
             return util.standardize_path(join(wallets_dir, name))
+
+    def firmware_update(
+                self,
+                filename,
+                path,
+                fingerprint=None,
+                skip_check=True,
+                raw=False,
+                dry_run=False,
+        ):
+            """
+            Upload new firmware to device.
+            Note : Device must be in bootloader mode.
+            """
+            client = self.get_client(path)
+            if not dry_run and not client.features.bootloader_mode:
+                raise BaseException("Please switch your device to bootloader mode.")
+
+            f = client.features
+            bootloader_onev2 = f.major_version == 1 and f.minor_version >= 8
+
+            if filename:
+                try:
+                    with open(filename, "rb") as file:
+                        data = file.read()
+                except IOError as e:
+                    raise BaseException(e)
+            else:
+                raise BaseException("Please Give The File Name")
+
+            if not raw and not skip_check:
+                try:
+                    version, fw = firmware.parse(data)
+                except Exception as e:
+                    raise BaseException(e)
+
+                trezorctl.validate_firmware(version, fw, fingerprint)
+                if (
+                        bootloader_onev2
+                        and version == firmware.FirmwareFormat.TREZOR_ONE
+                        and not fw.embedded_onev2
+                ):
+                    raise BaseException("Firmware is too old for your device. Aborting.")
+                elif not bootloader_onev2 and version == firmware.FirmwareFormat.TREZOR_ONE_V2:
+                    raise BaseException("You need to upgrade to bootloader 1.8.0 first.")
+
+                if f.major_version not in trezorctl.ALLOWED_FIRMWARE_FORMATS:
+                    raise BaseException("trezorctl doesn't know your device version. Aborting.")
+                elif version not in trezorctl.ALLOWED_FIRMWARE_FORMATS[f.major_version]:
+                    raise BaseException("Firmware does not match your device, aborting.")
+
+            if not raw:
+                # special handling for embedded-OneV2 format:
+                # for bootloader < 1.8, keep the embedding
+                # for bootloader 1.8.0 and up, strip the old OneV1 header
+                if bootloader_onev2 and data[:4] == b"TRZR" and data[256: 256 + 4] == b"TRZF":
+                    print("Extracting embedded firmware image (fingerprint may change).")
+                    data = data[256:]
+
+            if dry_run:
+                print("Dry run. Not uploading firmware to device.")
+            else:
+                try:
+                    if f.major_version == 1 and f.firmware_present is not False:
+                        # Trezor One does not send ButtonRequest
+                        print("Please confirm the action on your Trezor device")
+                    return firmware.update(client.client, data)
+                except exceptions.Cancelled:
+                    print("Update aborted on device.")
+                except exceptions.TrezorException as e:
+                    raise BaseException("Update failed: {}".format(e))
 
 
 all_commands = commands.known_commands.copy()

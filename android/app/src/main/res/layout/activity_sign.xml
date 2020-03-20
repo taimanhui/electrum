@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:orientation="vertical"
+    tools:context=".activities.sign.SignActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/signature"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bk_page">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/white_tuo"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/radio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginTop="@dimen/dp_14"
+                android:layout_marginBottom="@dimen/dp_5"
+                android:orientation="horizontal">
+
+
+                <RadioButton
+                    android:id="@+id/radio_ble"
+                    android:layout_width="@dimen/dp_70"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/dp_20"
+                    android:button="@null"
+                    android:checked="true"
+                    android:drawableBottom="@drawable/src_qiye"
+                    android:gravity="center"
+                    android:text="@string/sign_trsaction"
+                    android:textColor="@drawable/textcolor"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
+                <RadioButton
+                    android:id="@+id/radio_nfc"
+                    android:layout_width="@dimen/dp_70"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:button="@null"
+                    android:drawableBottom="@drawable/src_qiye"
+                    android:gravity="center"
+                    android:text="@string/sign_message"
+                    android:textColor="@drawable/textcolor"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_10"
+                android:text="@string/input_message"
+                android:textColor="@color/graytext_color"
+                android:textSize="@dimen/sp_12" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <EditText
+                    android:id="@+id/editTrsactionTest"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/dp_21"
+                    android:layout_marginTop="@dimen/dp_14"
+                    android:layout_marginEnd="@dimen/dp_21"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/input_tsaction_text"
+                    android:textColor="#b3b3b3"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btn_import_file"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginBottom="@dimen/dp_16"
+                        android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/file"
+                        android:paddingStart="13dp"
+                        android:paddingEnd="@dimen/dp_10"
+                        android:text="@string/import_file"
+                        android:textAllCaps="false"
+                        android:textColor="@color/button_bk"
+                        android:textSize="15sp" />
+                    <Button
+                        android:id="@+id/btn_sweep"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:layout_marginBottom="@dimen/dp_16"
+                        android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/saoyisao"
+                        android:paddingStart="@dimen/dp_18"
+                        android:paddingEnd="@dimen/dp_10"
+                        android:text="@string/sweep"
+                        android:textAllCaps="false"
+                        android:textColor="@color/button_bk"
+                        android:textSize="15sp" />
+                    <Button
+                        android:id="@+id/pasteSignTrsaction"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:layout_marginBottom="@dimen/dp_16"
+                        android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/zhantie"
+                        android:paddingStart="26.8dp"
+                        android:paddingEnd="24dp"
+                        android:text="@string/paste"
+                        android:textAllCaps="false"
+                        android:textColor="@color/button_bk"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/editSignMsg"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/dp_21"
+                    android:layout_marginTop="@dimen/dp_14"
+                    android:layout_marginEnd="@dimen/dp_21"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/input_sign_msg"
+                    android:textColor="#b3b3b3"
+                    android:textSize="15sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/pasteSignMsg"
+                        android:layout_width="100dp"
+                        android:layout_height="36dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:layout_marginBottom="@dimen/dp_16"
+                        android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/zhantie"
+                        android:paddingStart="26.8dp"
+                        android:paddingEnd="24dp"
+                        android:text="@string/paste"
+                        android:textAllCaps="false"
+                        android:textColor="@color/button_bk"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_toUpgrade"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="37dp"
+            android:background="@drawable/button_bk"
+            android:text="@string/confirm"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_14" />
+
+    </RelativeLayout>
+
+</LinearLayout>

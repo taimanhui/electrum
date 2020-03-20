@@ -30,7 +30,7 @@
         android:layout_below="@+id/snkdfnksjndkjsd"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/dp_40"
-        android:text="@string/fit_key"
+        android:text="@string/fit_key_warning"
         android:textColor="@color/text_color"
         android:textSize="22sp" />
 

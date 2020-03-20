@@ -434,6 +434,27 @@
     <string name="need_band3">需绑定*个BixinKEY，可使用任一BixinKEY授权发币设置多备份可防止单个BixinKEY丢失后，数字资产丢失</string>
     <string name="ipOrportWrong">IP或端口号格式输入不正确</string>
     <string name="braodcast_succse">广播成功</string>
+    <string name="please_import_wallet">请选择要导入的钱包</string>
+    <string name="no_import_wallet">暂无可导入的钱包</string>
+    <string name="sign_trsaction">签名交易</string>
+    <string name="sign_message">签名消息</string>
+    <string name="input_message">可输入任何信息获取签名后的消息</string>
+    <string name="input_sign_msg">输入待签名的消息</string>
+    <string name="verification_key">BixinKEY防伪验证</string>
+    <string name="connection_success">设备连接成功</string>
+    <string name="sign_success">获取防伪签名成功</string>
+    <string name="submit_verification">正在提交防伪验证</string>
+    <string name="verifying_pass">防伪验证通过</string>
+    <string name="verifying_firmware">BixinKey为币信官方出产，固件为BixinKey官方固件</string>
+    <string name="verifying_fail">防伪验证失败</string>
+    <string name="verifying_overtime">防伪验证超时</string>
+    <string name="contact_service">BixinKey可能被篡改，请联系销售方处理</string>
+    <string name="verifying_retry">防伪验证超时，请再试一次</string>
+    <string name="open_bluetooth">需要打开蓝牙才能正常使用此通讯方式</string>
+    <string name="confirm_NFC_pattern">请确认硬件处于NFC模式</string>
+    <string name="input_tsaction_text">输入交易报文</string>
+    <string name="PINiswrong">PIN码输入有误，请重新输入</string>
+    <string name="hide_wallet_tips">隐藏钱包不存储交易记录</string>
 
 
 </resources>

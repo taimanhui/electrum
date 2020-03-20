@@ -24,9 +24,10 @@
                 android:layout_marginTop="@dimen/dp_15"
                 tools:text="xiaomi的钱包 (1-3)" />
 
-            <CheckBox
-                android:id="@+id/chkbox_wallet"
-                android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/img_wallet"
+                android:src="@drawable/nocheckbox"
+                android:layout_width="@dimen/dp_20"
                 android:layout_height="@dimen/dp_20"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/dp_15" />

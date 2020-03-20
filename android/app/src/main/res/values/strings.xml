@@ -446,14 +446,35 @@
     <string name="set_to_Bixinkey">Set to BixinKEY</string>
     <string name="send_shortcut_access">Currency express channel</string>
     <string name="please_input_walletname">Please enter the wallet name</string>
-    <string name="import_wallet">导入钱包</string>
-    <string name="cancled">已取消</string>
-    <string name="choose_import_wallet">选择要导入的钱包</string>
-    <string name="key_check">已通过BixinKEY搜索到包含BixinKEY公钥的钱包，请选择并导入</string>
-    <string name="confirm_import">确认导入</string>
-    <string name="need_band3">Needs to associate 3 BixinKEYs,You can use any bixinkey authorized issuing currency to set up multiple backups to prevent the loss of digital assets after the loss of a single bixinkey</string>
-    <string name="ipOrportWrong">IP或端口号格式输入不正确</string>
-    <string name="braodcast_succse">广播成功</string>
+    <string name="import_wallet">Import Wallet</string>
+    <string name="cancled">Cancelled</string>
+    <string name="choose_import_wallet">Select wallet to import</string>
+    <string name="key_check">Wallet containing Bixinkey public key has been searched through Bixinkey, please select and import</string>
+    <string name="confirm_import">Confirm import</string>
+    <string name="need_band3">Needs to associate 3 BixinKEYs,You can use any Bixinkey authorized issuing currency to set up multiple backups to prevent the loss of digital assets after the loss of a single Bixinkey</string>
+    <string name="ipOrportWrong">Incorrect IP or port number format</string>
+    <string name="braodcast_succse">Broadcast success</string>
+    <string name="please_import_wallet">Please select the wallet to import</string>
+    <string name="no_import_wallet">No wallet to import</string>
+    <string name="sign_trsaction">Sign transaction</string>
+    <string name="sign_message">Sign message</string>
+    <string name="input_message">You can enter any information to get the signed message</string>
+    <string name="input_sign_msg">Enter message to sign</string>
+    <string name="verification_key">Bixinkey security verification</string>
+    <string name="connection_success">Device connected successfully</string>
+    <string name="sign_success">Security signature obtained successfully</string>
+    <string name="submit_verification">Submitting security verification</string>
+    <string name="verifying_pass">Anti counterfeiting verification passed</string>
+    <string name="verifying_firmware">Bixinkey is the official production of coin and letter, and the firmware is the official firmware of Bixinkey</string>
+    <string name="verifying_fail">防伪验证失败</string>
+    <string name="verifying_overtime">Security verification timeout</string>
+    <string name="contact_service">BixinKey may be tampered, please contact the seller for handling</string>
+    <string name="verifying_retry">Security verification timeout, please try again</string>
+    <string name="open_bluetooth">需要打开蓝牙才能正常使用此通讯方式</string>
+    <string name="confirm_NFC_pattern">请确认硬件处于NFC模式</string>
+    <string name="input_tsaction_text">输入交易报文</string>
+    <string name="PINiswrong">PIN码输入有误，请重新输入</string>
+    <string name="hide_wallet_tips">隐藏钱包不存储交易记录</string>
 
 
 </resources>

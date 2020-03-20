@@ -70,24 +70,18 @@
             android:text="@string/key_check"
             android:textColor="@color/text" />
 
-        <RadioGroup
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recl_importWallet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/sp_16"
+            android:layout_marginBottom="65dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/histrywallet_item">
 
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recl_importWallet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/sp_16"
-                android:layout_marginBottom="65dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/histrywallet_item">
-
-            </androidx.recyclerview.widget.RecyclerView>
-        </RadioGroup>
+        </androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>
 
     <RelativeLayout
@@ -101,7 +95,8 @@
             android:layout_width="343dp"
             android:layout_height="@dimen/dp_40"
             android:layout_centerInParent="true"
-            android:background="@drawable/little_radio_blue"
+            android:enabled="false"
+            android:background="@drawable/little_radio_qian"
             android:text="@string/confirm_import"
             android:textAllCaps="false"
             android:textColor="@android:color/white">

@@ -135,7 +135,6 @@
                     android:text="@string/transaction_records"
                     android:textColor="#494949"
                     android:textSize="@dimen/text_size"
-
                     android:textStyle="bold" />
 
                 <TextView
@@ -154,17 +153,6 @@
                 android:layout_height="@dimen/dp_1"
                 android:layout_marginTop="49.5dp"
                 android:background="@color/separation_line" />
-
-            <TextView
-                android:id="@+id/tet_noneData"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="50.5dp"
-                android:gravity="center"
-                android:text="@string/no_records"
-                android:textColor="#888787"
-                android:textSize="15sp"
-                android:visibility="gone" />
 
             <com.scwang.smartrefresh.layout.SmartRefreshLayout
                 android:id="@+id/smart_RefreshLayout"
@@ -187,9 +175,7 @@
 
                     </org.haobtc.wallet.utils.SlideRecyclerView>
 
-
             </com.scwang.smartrefresh.layout.SmartRefreshLayout>
-
 
             <TextView
                 android:id="@+id/tet_None"
@@ -198,6 +184,16 @@
                 android:layout_marginTop="50.5dp"
                 android:gravity="center"
                 android:text="@string/no_records"
+                android:textColor="@color/light_text"
+                android:textSize="@dimen/text_size"
+                android:visibility="gone" />
+            <TextView
+                android:id="@+id/testHideWallet"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_200"
+                android:layout_marginTop="50.5dp"
+                android:gravity="center"
+                android:text="@string/hide_wallet_tips"
                 android:textColor="@color/light_text"
                 android:textSize="@dimen/text_size"
                 android:visibility="gone" />

@@ -1,12 +1,17 @@
 package org.haobtc.wallet.activities.onlywallet.mnemonic_word;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
 
 import com.chaquo.python.Kwarg;
 
@@ -127,6 +132,19 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
 
         return m.matches();
     }
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+
+                    break;
+            }
+        }
+    };
+
 }
 
 

@@ -65,6 +65,7 @@ import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     @BindView(R.id.edit_changeMoney)
@@ -81,6 +82,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     TextView tetWalletTable;
     @BindView(R.id.tet_strunit)
     TextView tetStrunit;
+    @BindView(R.id.btnRecommendFee)
+    Button btnRecommendFee;
     private LinearLayout selectSend;
     private ImageView selectSigNum, buttonSweep;
     private EditText editTextComments, editAddress;
@@ -120,6 +123,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private int screenHeight;
     private String base_unit;
     private String strUnit;
+    private Button btnRecommend;
+    private String strFeemontAs;
 
     @Override
     public int getLayoutId() {
@@ -145,6 +150,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         buttonSweep = findViewById(R.id.bn_sweep_one2noe);
         buttonPaste = findViewById(R.id.bn_paste_one2one);
         imgBack = findViewById(R.id.img_back);
+        btnRecommend = findViewById(R.id.btnRecommendFee);
+        btnRecommend.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         tetamount.addTextChangedListener(this);
         init();
@@ -268,11 +275,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             String strFee = get_default_fee_status.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
             if (strFee.contains("sat/byte")) {
-                String strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
+                strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "");
 
-                tetMoneye.setText(strFeemontAs);
                 intmaxFee = Integer.parseInt(strMax);//fee
                 seekBar.setMax(intmaxFee);
                 seekBar.setProgress(intmaxFee);
@@ -602,6 +608,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 break;
             case R.id.img_back:
                 finish();
+                break;
+            case R.id.btnRecommendFee:
+                mToast(strFeemontAs);
                 break;
         }
     }

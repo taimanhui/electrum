@@ -14,6 +14,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,12 +30,11 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
@@ -42,8 +42,6 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.encode.CodeCreator;
-
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
@@ -52,13 +50,11 @@ import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
-import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.haobtc.wallet.utils.MyDialog;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -70,11 +66,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
 import static org.haobtc.wallet.activities.TouchHardwareActivity.FROM;
 import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
 import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.futureTask;
@@ -147,14 +141,12 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
     private EditText edit_sweep;
     private TextView textView;
     private ArrayList<AddBixinKeyEvent> addEventsDatas;
-    private PyObject is_valiad_xpub;
     private String strInditor2;
     private String strInditor1;
     private MyDialog myDialog;
     private PyObject walletAddressShowUi;
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
-    private final String FIRST_RUN = "is_first_run";
     private boolean executable = true;
     private String tag;
     private CustomerDialogFragment dialogFragment;
@@ -185,7 +177,6 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
         editWalletname.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
 
     }
-
 
     @Override
     public void initData() {
@@ -308,47 +299,13 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
                 showPopupAddCosigner1();
                 break;
             case R.id.btn_Finish:
-                EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 finishAffinity();
                 break;
             case R.id.bn_complete_add_cosigner:
                 myDialog.show();
-                String strWalletname = editWalletname.getText().toString();
-                strInditor1 = tvIndicator.getText().toString();
-                strInditor2 = tvIndicatorTwo.getText().toString();
-                try {
-                    Daemon.commands.callAttr("create_multi_wallet", strWalletname);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    myDialog.dismiss();
-                    String message = e.getMessage();
-                    if ("BaseException: file already exists at path".equals(message)) {
-                        mToast(getResources().getString(R.string.changewalletname));
-                    }
-                    return;
-                }
-                myDialog.dismiss();
-                edit.putInt("defaultName",walletNameNum);
-                edit.apply();
-                //Generate QR code
-                mGeneratecode();
-                cardViewOne.setVisibility(View.GONE);
-                button.setVisibility(View.GONE);
-                imgProgree1.setVisibility(View.GONE);
-                imgProgree2.setVisibility(View.GONE);
-                imgProgree3.setVisibility(View.VISIBLE);
-                reclBinxinKey.setVisibility(View.GONE);
-                bnAddKey.setVisibility(View.GONE);
-                relTwoNext1.setVisibility(View.GONE);
-                relFinish.setVisibility(View.VISIBLE);
-                tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-                cardViewThree.setVisibility(View.VISIBLE);
-                relFinish.setVisibility(View.VISIBLE);
-                cardThreePublic.setVisibility(View.VISIBLE);
-                tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
-                tetManyKey.setText(String.format("%s%s%s", getResources().getString(R.string.is_use), strInditor1, getResources().getString(R.string.the_only_bixinkey)));
+                handler.sendEmptyMessage(1);
                 break;
             case R.id.tet_Preservation:
                 rxPermissions
@@ -954,5 +911,52 @@ public class ManyWalletTogetherActivity extends BaseActivity implements TextWatc
         }
 
     }
+
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+                    String strWalletname = editWalletname.getText().toString();
+                    strInditor1 = tvIndicator.getText().toString();
+                    strInditor2 = tvIndicatorTwo.getText().toString();
+                    try {
+                        Daemon.commands.callAttr("create_multi_wallet", strWalletname);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        myDialog.dismiss();
+                        String message = e.getMessage();
+                        if ("BaseException: file already exists at path".equals(message)) {
+                            mToast(getResources().getString(R.string.changewalletname));
+                        }
+                        return;
+                    }
+                    edit.putInt("defaultName",walletNameNum);
+                    edit.apply();
+                    //Generate QR code
+                    mGeneratecode();
+                    myDialog.dismiss();
+                    cardViewOne.setVisibility(View.GONE);
+                    button.setVisibility(View.GONE);
+                    imgProgree1.setVisibility(View.GONE);
+                    imgProgree2.setVisibility(View.GONE);
+                    imgProgree3.setVisibility(View.VISIBLE);
+                    reclBinxinKey.setVisibility(View.GONE);
+                    bnAddKey.setVisibility(View.GONE);
+                    relTwoNext1.setVisibility(View.GONE);
+                    relFinish.setVisibility(View.VISIBLE);
+                    tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+                    cardViewThree.setVisibility(View.VISIBLE);
+                    relFinish.setVisibility(View.VISIBLE);
+                    cardThreePublic.setVisibility(View.VISIBLE);
+                    tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
+                    tetManyKey.setText(String.format("%s%s%s", getResources().getString(R.string.is_use), strInditor1, getResources().getString(R.string.the_only_bixinkey)));
+                    break;
+            }
+        }
+    };
+
 }
 

@@ -154,42 +154,56 @@ public class WheelViewpagerFragment extends Fragment {
     public void refreshList() {
         if (personce.equals("standard")) {
             String strScrollPass = preferences.getString(name, "");
-            Log.i("refreshList", "---: " + strScrollPass);
+            boolean haveCreateNopass = preferences.getBoolean("haveCreateNopass", false);
+            Log.i("haveCreateNopass", "refreshList:++ " + haveCreateNopass);
             if (TextUtils.isEmpty(strScrollPass)) {
-                View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.input_wallet_pass, null, false);
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(view1).create();
-                EditText str_pass = view1.findViewById(R.id.edit_password);
-                view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-                    String strPassword = str_pass.getText().toString();
-                    if (TextUtils.isEmpty(strPassword)) {
-                        Toast.makeText(getActivity(), getResources().getString(R.string.please_input_pass), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                if (haveCreateNopass) {
+                    //No password is required for the newly created Wallet
                     try {
-                        Daemon.commands.callAttr("load_wallet", name, new Kwarg("password", strPassword));
+                        Daemon.commands.callAttr("load_wallet", name);
                         getWalletMsg();
-                        EventBus.getDefault().post(new FirstEvent("22"));
-                        edit.putString(name, strPassword);
-                        edit.apply();
-                        alertDialog.dismiss();
                     } catch (Exception e) {
-                        if (e.getMessage().toString().contains("Incorrect password")) {
-                            Toast.makeText(getActivity(), getResources().getString(R.string.wrong_pass), Toast.LENGTH_SHORT).show();
-                        }
                         e.printStackTrace();
                     }
+                    edit.putBoolean("haveCreateNopass", false);
+                    edit.apply();
+                } else {
+                    //
+                    View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.input_wallet_pass, null, false);
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(view1).create();
+                    EditText str_pass = view1.findViewById(R.id.edit_password);
+                    view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
+                        String strPassword = str_pass.getText().toString();
+                        if (TextUtils.isEmpty(strPassword)) {
+                            Toast.makeText(getActivity(), getResources().getString(R.string.please_input_pass), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        try {
+                            Daemon.commands.callAttr("load_wallet", name, new Kwarg("password", strPassword));
+                            getWalletMsg();
+                            edit.putString(name, strPassword);
+                            edit.apply();
+                            alertDialog.dismiss();
+                        } catch (Exception e) {
+                            if (e.getMessage().contains("Incorrect password")) {
+                                Toast.makeText(getActivity(), getResources().getString(R.string.wrong_pass), Toast.LENGTH_SHORT).show();
+                            }
+                            e.printStackTrace();
+                        }
 
-                });
-                view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
-                    Toast.makeText(getActivity(), getResources().getString(R.string.msg_get_wrong), Toast.LENGTH_SHORT).show();
-                    walletBlance.setText("");
-                    tetCny.setText("");
-                    tetFiat.setText("");
-                    EventBus.getDefault().post(new FirstEvent("33"));
-                    alertDialog.dismiss();
-                });
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.show();
+                    });
+                    view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.msg_get_wrong), Toast.LENGTH_SHORT).show();
+                        walletBlance.setText("");
+                        tetCny.setText("");
+                        tetFiat.setText("");
+                        EventBus.getDefault().post(new FirstEvent("33"));
+                        alertDialog.dismiss();
+                    });
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.show();
+                }
+
             } else {
                 try {
                     Daemon.commands.callAttr("load_wallet", name, new Kwarg("password", strScrollPass));
@@ -213,13 +227,13 @@ public class WheelViewpagerFragment extends Fragment {
     public void getWalletMsg() {
         try {
             select_wallet = Daemon.commands.callAttr("select_wallet", name);
-            EventBus.getDefault().post(new FirstEvent("22"));
         } catch (Exception e) {
             Log.i("select_wallet", "--------- " + e.getMessage());
             e.printStackTrace();
         }
 
         if (select_wallet != null) {
+            EventBus.getDefault().post(new FirstEvent("22"));
             String toString = select_wallet.toString();
             Log.i("select_wallet", "select_wallet+++: " + toString);
             Gson gson = new Gson();
@@ -266,7 +280,7 @@ public class WheelViewpagerFragment extends Fragment {
                 if (msgVote.contains("unconfirmed")) {
                     String unconfirmed = jsonObject.getString("unconfirmed");
                     tetFiat.setText(String.format("%s%s", unconfirmed, getResources().getString(R.string.unconfirm)));
-                }else{
+                } else {
                     tetFiat.setText("");
                 }
 

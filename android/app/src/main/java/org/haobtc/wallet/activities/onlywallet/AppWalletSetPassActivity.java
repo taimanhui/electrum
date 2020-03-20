@@ -1,8 +1,11 @@
 package org.haobtc.wallet.activities.onlywallet;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
@@ -42,6 +47,8 @@ public class AppWalletSetPassActivity extends BaseActivity {
     private String strpyObject;
     private MyDialog myDialog;
     private int defaultName;
+    private String strPass1;
+
 
     @Override
     public int getLayoutId() {
@@ -75,7 +82,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                 break;
             case R.id.btn_setPin:
                 myDialog.show();
-                String strPass1 = edtPass1.getText().toString();
+                strPass1 = edtPass1.getText().toString();
                 String strPass2 = edtPass2.getText().toString();
                 if (TextUtils.isEmpty(strPass1)) {
                     mToast(getResources().getString(R.string.set_pass));
@@ -99,68 +106,10 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     return;
                 }
                 if (!TextUtils.isEmpty(strSeed)) {
-                    try {
-                        Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));
-                        //load wallet
-//                        try {
-//                            Daemon.commands.callAttr("load_wallet", strName);
-//                            Daemon.commands.callAttr("select_wallet", strName);
-//                            Log.i("skjhdjdjhhhhhhhhhj", "111111111: ");
-//                        } catch (Exception e) {
-//                            Log.i("skjhdjdjhhhhhhhhhj", "222222222: ");
-//                            e.printStackTrace();
-//                            return;
-//                        }
-                        myDialog.dismiss();
-                        Intent intent = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
-                        intent.putExtra("strSeed", strSeed);
-                        intent.putExtra("strName", strName);
-                        intent.putExtra("strPass1", strPass1);
-                        startActivity(intent);
-                    } catch (Exception e) {
-                        myDialog.dismiss();
-                        e.printStackTrace();
-                        if (e.getMessage().contains("path is exist")) {
-                            mToast(getResources().getString(R.string.changewalletname));
-                        }
-                        return;
-                        //local taste noodle trial level soda mobile orchard amazing bean gossip library
-                    }
+                    handler.sendEmptyMessage(1);
+
                 } else {
-                    try {
-                        PyObject pyObject = Daemon.commands.callAttr("create", strName, strPass1);
-                        strpyObject = pyObject.toString();
-                        if (!TextUtils.isEmpty(strpyObject)) {
-                            //load wallet
-//                            try {
-//                                Daemon.commands.callAttr("load_wallet", strName);
-//                                Daemon.commands.callAttr("select_wallet", strName);
-//                                Log.i("skjhdjdjhhhhhhhhhj", "3333333333: ");
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                                myDialog.dismiss();
-//                                Log.i("skjhdjdjhhhhhhhhhj", "444444444: ");
-//                                return;
-//                            }
-                            edit.putString("strSeed", strpyObject);
-                            edit.apply();
-                            myDialog.dismiss();
-                            Intent intent = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
-                            intent.putExtra("strSeed", strpyObject);
-                            intent.putExtra("strName", strName);
-                            intent.putExtra("strPass1", strPass1);
-                            startActivity(intent);
-                        } else {
-                            myDialog.dismiss();
-                        }
-                    } catch (Exception e) {
-                        myDialog.dismiss();
-                        e.printStackTrace();
-                        if (e.getMessage().contains("path is exist")) {
-                            mToast(getResources().getString(R.string.changewalletname));
-                        }
-                        return;
-                    }
+                    handler.sendEmptyMessage(2);
                 }
                 int walletNameNum = defaultName + 1;
                 edit.putInt("defaultName", walletNameNum);
@@ -178,5 +127,65 @@ public class AppWalletSetPassActivity extends BaseActivity {
 
         return m.matches();
     }
+
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+                    try {
+                        Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));
+
+                    } catch (Exception e) {
+                        myDialog.dismiss();
+                        e.printStackTrace();
+                        if (e.getMessage().contains("path is exist")) {
+                            mToast(getResources().getString(R.string.changewalletname));
+                        }
+                        return;
+                        //local taste noodle trial level soda mobile orchard amazing bean gossip library
+                    }
+                    edit.putBoolean("haveCreateNopass",true);
+                    edit.apply();
+                    myDialog.dismiss();
+                    Intent intent = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
+                    intent.putExtra("strSeed", strSeed);
+                    intent.putExtra("strName", strName);
+                    intent.putExtra("strPass1", strPass1);
+                    startActivity(intent);
+                    break;
+                case 2:
+                    PyObject pyObject = null;
+                    try {
+                        pyObject = Daemon.commands.callAttr("create", strName, strPass1);
+
+                    } catch (Exception e) {
+                        myDialog.dismiss();
+                        e.printStackTrace();
+                        if (e.getMessage().contains("path is exist")) {
+                            mToast(getResources().getString(R.string.changewalletname));
+                        }
+                        return;
+                    }
+                    strpyObject = pyObject.toString();
+                    if (!TextUtils.isEmpty(strpyObject)) {
+                        edit.putString("strSeed", strpyObject);
+                        edit.putBoolean("haveCreateNopass",true);
+                        edit.apply();
+                        myDialog.dismiss();
+                        Intent intent1 = new Intent(AppWalletSetPassActivity.this, RemeberMnemonicWordActivity.class);
+                        intent1.putExtra("strSeed", strpyObject);
+                        intent1.putExtra("strName", strName);
+                        intent1.putExtra("strPass1", strPass1);
+                        startActivity(intent1);
+                    } else {
+                        myDialog.dismiss();
+                    }
+                    break;
+            }
+        }
+    };
 
 }

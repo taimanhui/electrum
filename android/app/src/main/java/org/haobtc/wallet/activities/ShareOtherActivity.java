@@ -181,13 +181,13 @@ public class ShareOtherActivity extends BaseActivity {
                 String strOpen = tetOpen.getText().toString();
                 if (strOpen.equals(getResources().getString(R.string.spin_open))) {
                     LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
-                    linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+                    linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     tetTrsactionText.setLayoutParams(linearParams1);
                     tetOpen.setText(getResources().getString(R.string.retract));
 
                 } else {
                     LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
-                    linearParams1.height = 200;;
+                    linearParams1.height = 200;
                     tetTrsactionText.setLayoutParams(linearParams1);
                     tetOpen.setText(getResources().getString(R.string.spin_open));
                 }
@@ -247,7 +247,7 @@ public class ShareOtherActivity extends BaseActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.i("printException", "show---"+e.getMessage());
+                Log.i("printException", "show---" + e.getMessage());
                 mToast(getResources().getString(R.string.downloadfail));
             }
 
