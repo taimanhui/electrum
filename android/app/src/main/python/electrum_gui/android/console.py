@@ -121,7 +121,7 @@ class AndroidCommands(commands.Commands):
         self.wallet = None
         self.client = None
         self.path = ''
-        self.local_wallet_info = self.config.get("all_wallet_type_info", {})
+        self.update_local_wallet_info()
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
                          'status', 'new_transaction', 'verified']
@@ -148,6 +148,18 @@ class AndroidCommands(commands.Commands):
         t.start()
 
     # BEGIN commands from the argparse interface.
+    def update_local_wallet_info(self):
+        self.local_wallet_info = self.config.get("all_wallet_type_info", {})
+        print(f"before wallet = {self.local_wallet_info}")
+        new_wallet_info = {}
+        name_wallets = ([name for name in os.listdir(self._wallet_path())])
+        for name, type in self.local_wallet_info.items():
+            if name_wallets.__contains__(name):
+                new_wallet_info[name] = type
+        self.local_wallet_info = new_wallet_info
+        self.config.set_key('all_wallet_type_info', self.local_wallet_info)
+        print(f"after wallet = {self.local_wallet_info}")
+
     def is_valiad_xpub(self, xpub):
         return keystore.is_bip32_key(xpub)
 
@@ -413,24 +425,25 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return self.wizard.get_cosigner_num()
 
-    def create_multi_wallet(self, name):
+    def create_multi_wallet(self, name, hide_type=False):
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             path = self._wallet_path(name)
             print("console:create_multi_wallet:path = %s---------" % path)
-            storage, db = self.wizard.create_storage(path=path, password = '')
+            storage, db = self.wizard.create_storage(path=path, password = '', hide_type=hide_type)
         except Exception as e:
             raise BaseException(e)
         if storage:
             wallet = Wallet(db, storage, config=self.config)
+            wallet.hide_type = hide_type
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
             wallet_type = "%s-%s" % (self.m, self.n)
             self.local_wallet_info[name] = wallet_type
             self.config.set_key('all_wallet_type_info', self.local_wallet_info)
-            if self.wallet:
-                self.close_wallet()
+            # if self.wallet:
+            #     self.close_wallet()
             self.wallet = wallet
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
@@ -439,14 +452,14 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.load_wallet(self.wallet, wallet_type)
         self.wizard = None
 
-    def import_create_hw_wallet(self, name, m, n, xpubs):
+    def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False):
         try:
             print("xpubs==========%s" %xpubs)
             self.set_multi_wallet_info(name, m, n)
             xpubs_list = json.loads(xpubs)
             for xpub in xpubs_list:
                 self.add_xpub(xpub)
-            self.create_multi_wallet(name)
+            self.create_multi_wallet(name, hide_type=hide_type)
         except BaseException as e:
             raise e
     ############
@@ -1150,8 +1163,8 @@ class AndroidCommands(commands.Commands):
         client = self.get_client()
         client.set_pin(True)
 
-    def toggle_passphrash(self):
-        client = self.get_client()
+    def toggle_passphrash(self, path='nfc'):
+        client = self.get_client(path)
         client.toggle_passphrase()
 
     def get_passphrase_status(self, path='nfc'):
@@ -1174,6 +1187,10 @@ class AndroidCommands(commands.Commands):
         self.path = path
         return client
 
+    def is_encrypted_with_hw_device(self):
+        ret = self.wallet.storage.is_encrypted_with_hw_device()
+        print(f"hw device....{ret}")
+
     # def get_feature(self):
     #     client = self.get_client()
     #     return client.features
@@ -1188,11 +1205,11 @@ class AndroidCommands(commands.Commands):
         client = self.get_client(path=path)
         return client.features.pin_cached
 
-    def get_xpub_from_hw(self, path='nfc', _type='p2wsh'):
+    def get_xpub_from_hw(self, path='nfc', _type='p2wsh', is_creating=True):
         client = self.get_client(path=path)
         derivation = bip44_derivation(0)
         try:
-            xpub = client.get_xpub(derivation, _type)
+            xpub = client.get_xpub(derivation, _type, creating=is_creating)
         except Exception as e:
             raise BaseException(e)
         return xpub
@@ -1399,10 +1416,13 @@ class AndroidCommands(commands.Commands):
 
     def list_wallets(self):
         """List available wallets"""
-        name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
-        print("console.list_wallets is %s................" %name_wallets)
+        name_wallets = list([name for name in os.listdir(self._wallet_path())])
+        hide_wallets = list(name[name.rfind('/')+1:] for name in self.daemon._wallets)
+        all_wallets = sorted(set(name_wallets + hide_wallets))
+        print(f"all wallets = {all_wallets}")
+        print(f"local_wallet info === {self.local_wallet_info}")
         out = []
-        for name in name_wallets:
+        for name in all_wallets:
             name_info = {}
             name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else 'unknow'
             out.append(name_info)

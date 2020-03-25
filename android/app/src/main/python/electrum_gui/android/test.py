@@ -28,13 +28,13 @@ print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.t
 
 testcommond = AndroidCommands()
 testcommond.start()
-testcommond.set_syn_server(True)
-name = 'hahahahhahh777' #2-2 multi wallet
+testcommond.set_syn_server(False)
+#name = 'hahahahhahh777' #2-2 multi wallet
 #name = 'hahahahhahh333' #1-N wallet
 #name = 'hahahahhahh888' #1-1 wallet
 #name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
 #password = "111111"
-password = "None"
+#password = "None"
 #test hardware
 #testcommond.get_xpub_from_hw()
 
@@ -91,14 +91,37 @@ password = "None"
 # n = 1
 # #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
 # #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB' #VPUB
-# xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+# #xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+# xpub1='vpub5VxonJZpLHH6neqseFJi21U4xFbFkwPoQ2yXK5MoyHkJUbsHcyL7zz9Kd5x8qwZT8ab1uuDvkv67z8Ab7GAwBUudTH7NKZybPsJN4TQRgPs'
 # #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
 # #xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-# testcommond.delete_wallet(name)
+# #testcommond.delete_wallet(name)
 # testcommond.set_multi_wallet_info(name,m,n)
 # testcommond.add_xpub(xpub1)
 # #testcommond.add_xpub(xpub2)
 # testcommond.create_multi_wallet(name)
+
+
+name = ""
+pasword = 111111
+m = 1
+n = 1
+xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+for i in range(1,5):
+    name = "test_wallet"+str(i)
+    testcommond.set_multi_wallet_info(name,m,n)
+    testcommond.add_xpub(xpub1)
+    testcommond.create_multi_wallet(name, hide_type=True)
+
+for i in range(1,3):
+    name = "test_wallet"
+    testcommond.set_multi_wallet_info(name,m,n)
+    testcommond.add_xpub(xpub1)
+    testcommond.create_multi_wallet(name, hide_type=True)
+
+ret = testcommond.list_wallets()
+print(f"--------wallet info-------=%s {ret}")
+time.sleep(10000)
 
 ## create software wallet by create seed
 
@@ -121,18 +144,18 @@ password = "None"
 list = testcommond.list_wallets()
 print("3333333333-list = %s" %list)
 
-##test hardware
-ret = testcommond.is_initialized(path="udp")
-if not ret:
-    testcommond.init(path="udp")
-pass_ret = testcommond.get_passphrase_status(path="udp")
-if not pass_ret:
-    testcommond.toggle_passphrase(path="udp")
-
-
-ret = testcommond.get_passphrase_status()
-print("hw== --------%s" %ret)
-time.sleep(10000)
+# ##test hardware
+# ret = testcommond.is_initialized(path="udp")
+# if not ret:
+#     testcommond.init(path="udp")
+# pass_ret = testcommond.get_passphrase_status(path="udp")
+# if not pass_ret:
+#     testcommond.toggle_passphrase(path="udp")
+#
+#
+# ret = testcommond.get_passphrase_status()
+# print("hw== --------%s" %ret)
+# time.sleep(10000)
 
 testcommond.set_currency("CNY")
 #testcommond.set_currency("None")
@@ -140,11 +163,15 @@ testcommond.set_currency("CNY")
 testcommond.get_all_wallet_type_info()
 data = testcommond.get_wallet_type(name)
 print("11111111111 %s type is %s" %(name, data))
+time.sleep(5)
 testcommond.load_wallet(name, password)
 data = testcommond.select_wallet(name)
 print("select data ============%s" %data)
 time.sleep(5)
 testcommond.set_use_change(False)
+
+# ret = testcommond.is_encrypted_with_hw_device()
+# print(f"--------------hw device? = {ret}")
 #testcommond.delete_wallet(name)
 # testcommond.load_wallet(name)
 #
