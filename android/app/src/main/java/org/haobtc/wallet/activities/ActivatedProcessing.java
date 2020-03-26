@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
+import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
@@ -49,17 +49,17 @@ public class ActivatedProcessing extends BaseActivity {
         Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
         textViewConnect.setCompoundDrawables(drawableStart, null, null, null);
         while (isNfc) {
-            if (!TextUtils.isEmpty(CustomerDialogFragment.pin)) {
-                CustomerDialogFragment.customerUI.put("pin", CustomerDialogFragment.pin);
+            if (!TextUtils.isEmpty(CommunicationModeSelector.pin)) {
+                CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
                 break;
             }
         }
 
         textViewPIN.setCompoundDrawables(drawableStart, null, null, null);
         while (true) {
-            int state = CustomerDialogFragment.customerUI.callAttr("get_state").toInt();
+            int state = CommunicationModeSelector.customerUI.callAttr("get_state").toInt();
             if (state == 1) {
-                CustomerDialogFragment.customerUI.put("state", 0);
+                CommunicationModeSelector.customerUI.put("state", 0);
                 textViewProcess.setCompoundDrawables(drawableStart, null, null, null);
                 new Handler().postDelayed(this::startNewPage, 500);
                 break;

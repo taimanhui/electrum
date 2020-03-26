@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -14,10 +13,9 @@ import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.set.BlockChooseActivity;
-import org.haobtc.wallet.activities.set.ElectrumNodeChooseActivity;
-import org.haobtc.wallet.activities.set.QuetationChooseActivity;
-import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.activities.settings.BlockChooseActivity;
+import org.haobtc.wallet.activities.settings.ElectrumNodeChooseActivity;
+import org.haobtc.wallet.activities.settings.QuotationServerActivity;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.List;
@@ -119,7 +117,7 @@ public class ServerSettingActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.rel_quotationChoose:
-                mIntent(QuetationChooseActivity.class);
+                mIntent(QuotationServerActivity.class);
                 break;
             case R.id.rel_blockChoose:
                 mIntent(BlockChooseActivity.class);

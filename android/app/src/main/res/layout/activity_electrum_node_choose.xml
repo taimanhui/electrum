@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
     android:orientation="vertical"
-    tools:context=".activities.set.ElectrumNodeChooseActivity">
+    tools:context=".activities.settings.ElectrumNodeChooseActivity">
 
 
     <RelativeLayout

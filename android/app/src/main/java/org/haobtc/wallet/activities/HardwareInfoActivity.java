@@ -1,13 +1,12 @@
 package org.haobtc.wallet.activities;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.set.VersionUpgradeActivity;
+import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

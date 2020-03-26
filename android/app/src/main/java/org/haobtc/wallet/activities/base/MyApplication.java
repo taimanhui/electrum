@@ -15,6 +15,9 @@ public class MyApplication extends Application {
     private static final String PRIMARY_SERVICE =      "00000001-0000-1000-8000-00805f9b34fb";//"6e400001-b5a3-f393-e0a9-e50e24dcca9e";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC =  "00000003-0000-1000-8000-00805f9b34fb";//
+    /*private static final String  OTA_SERVICE = "8ec90002-f315-4f60-9fb8-838830daea50";
+    private static final String OTA_WRITE_CHARACTERISTIC = "8ec90001-f315-4f60-9fb8-838830daea50";*/
+
 
     @Override
     public void onCreate() {
@@ -35,7 +38,7 @@ public class MyApplication extends Application {
     }
     // init ble
     private void initBle() {
-        Ble.options().setLogBleEnable(true)//Set whether to print Bluetooth log
+        Ble.options().setLogBleEnable(false)//Set whether to print Bluetooth log
                 .setThrowBleException(true)//Set whether to throw Bluetooth exception
                 .setLogTAG("AndroidBLE")//Set global Bluetooth operation log TAG
                 .setAutoConnect(false)//Set whether to connect automatically

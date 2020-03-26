@@ -1,21 +1,15 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chaquo.python.PyObject;
-
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.set.recovery_set.ConfirmBackupActivity;
-import org.haobtc.wallet.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

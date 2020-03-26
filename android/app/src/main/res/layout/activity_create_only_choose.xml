@@ -7,7 +7,7 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     android:background="@color/button_bk_ddake"
-    tools:context=".activities.onlywallet.CreateOnlyChooseActivity">
+    tools:context=".activities.personalwallet.PersonalMultiSigWalletCreator">
 
 
     <RelativeLayout

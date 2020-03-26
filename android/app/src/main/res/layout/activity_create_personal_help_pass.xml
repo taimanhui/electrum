@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
     android:orientation="vertical"
-    tools:context=".activities.onlywallet.mnemonic_word.CreatePersonalHelpPassActivity">
+    tools:context=".activities.personalwallet.mnemonic_word.CreatePersonalHelpPassActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

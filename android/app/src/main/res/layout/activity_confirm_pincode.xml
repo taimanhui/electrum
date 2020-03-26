@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
     android:layout_centerHorizontal="true"
-    tools:context=".activities.set.fixpin.ConfirmPincodeActivity">
+    tools:context=".activities.settings.fixpin.ConfirmPincodeActivity">
 
     <RelativeLayout
         android:id="@+id/snkdfnksjndkjsd"

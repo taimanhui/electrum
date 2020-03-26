@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.set.VerificationSuccessActivity;
+import org.haobtc.wallet.activities.settings.VerificationSuccessActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

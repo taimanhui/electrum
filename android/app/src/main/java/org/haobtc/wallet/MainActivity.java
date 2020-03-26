@@ -1,8 +1,12 @@
 package org.haobtc.wallet;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,6 +21,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.azhon.appupdate.config.UpdateConfiguration;
+import com.azhon.appupdate.listener.OnButtonClickListener;
+import com.azhon.appupdate.listener.OnDownloadListener;
+import com.azhon.appupdate.manager.DownloadManager;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
@@ -53,6 +61,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -60,43 +69,31 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener, OnButtonClickListener, OnDownloadListener {
 
-    private ImageView imageViewSweep, imageViewSetting;
-    private TextView textView;
     private ViewPager viewPager;
-    private final String FIRST_RUN = "is_first_run";
     SharedPreferences sharedPreferences;
     public static Python py;
     private RecyclerView recy_data;
-    private TextView btnAddmoney;
     //remeber first back time
     private long firstTime = 0;
     private MyDialog myDialog;
     private int mCurrentPosition = 0;
     private TextView tetNone;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
-    private String tx_hash;
     private String date;
-    private String amount;
     private boolean is_mine;
-    private String confirmations;
     private JSONArray jsonArray;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private List<Fragment> fragmentList;
     private boolean jumpOr;
-    private PyObject parse_qr;
-    private String txCreatTrsaction;
     private MaindowndatalistAdapetr trsactionlistAdapter;
-    private int sendAmount = 0;
-    private String message = "";
     private String strNames;
     private SmartRefreshLayout refreshLayout;
     private ArrayList<AddressEvent> walletnameList;
-    private String walletType;
     private String strType;
-    private TextView testHidewallet;
+    private DownloadManager manager;
 
     @Override
     public int getLayoutId() {
@@ -109,6 +106,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         SharedPreferences.Editor edit = sharedPreferences.edit();
         //FIRST_RUN,if frist run
+        String FIRST_RUN = "is_first_run";
         edit.putBoolean(FIRST_RUN, true);
         edit.apply();
         //Eventbus register
@@ -131,14 +129,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void init() {
         myDialog = MyDialog.showDialog(MainActivity.this);
         rxPermissions = new RxPermissions(this);
-        imageViewSweep = findViewById(R.id.img_sweep);
-        btnAddmoney = findViewById(R.id.tet_Addmoney);
+        ImageView imageViewSweep = findViewById(R.id.img_sweep);
+        TextView btnAddmoney = findViewById(R.id.tet_Addmoney);
         recy_data = findViewById(R.id.recy_data);
-        imageViewSetting = findViewById(R.id.img_setting);
-        textView = findViewById(R.id.textView_more);
+        ImageView imageViewSetting = findViewById(R.id.img_setting);
+        TextView textView = findViewById(R.id.textView_more);
         tetNone = findViewById(R.id.tet_None);
         refreshLayout = findViewById(R.id.smart_RefreshLayout);
-        testHidewallet = findViewById(R.id.testHideWallet);
+        TextView testHidewallet = findViewById(R.id.testHideWallet);
         imageViewSweep.setOnClickListener(this);
         imageViewSetting.setOnClickListener(this);
         textView.setOnClickListener(this);
@@ -149,7 +147,60 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         //wallet name and balance list
         walletnameList = new ArrayList<>();
+        attemptUpdate();
+    }
+    public static int getVersionCode(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        }
+    }
+    private void attemptUpdate() {
+        // todo: 通过服务器获取最新版本的版本信息
+        int versionCode = getVersionCode(this);
+        String url = "https://f29addac654be01c67d351d1b4282d53.dd.cdntips.com/imtt.dd.qq.com/16891/DC501F04BBAA458C9DC33008EFED5E7F.apk?mkey=5d6d132d73c4febb&f=0c2f&fsname=com.estrongs.android.pop_4.2.0.2.1_10027.apk&csr=1bbd&cip=115.196.216.78&proto=https";
+        UpdateConfiguration configuration = new UpdateConfiguration()
+                //输出错误日志
+                .setEnableLog(true)
+                //设置自定义的下载
+                //.setHttpManager()
+                //下载完成自动跳动安装页面
+                .setJumpInstallPage(true)
+                //设置对话框背景图片 (图片规范参照demo中的示例图)
+                //.setDialogImage(R.drawable.ic_dialog)
+                //设置按钮的颜色
+                //.setDialogButtonColor(getColor(R.color.butotn_back))
+                //设置对话框强制更新时进度条和文字的颜色
+                //.setDialogProgressBarColor(Color.parseColor("#E743DA"))
+                //设置按钮的文字颜色
+                .setDialogButtonTextColor(Color.WHITE)
+                //设置是否显示通知栏进度
+                .setShowNotification(true)
+                //设置是否提示后台下载toast
+                .setShowBgdToast(true)
+                //设置强制更新
+                .setForcedUpgrade(false)
+                //设置对话框按钮的点击监听
+                .setButtonClickListener(this)
+                //设置下载过程的监听
+                .setOnDownloadListener(this);
 
+        manager = DownloadManager.getInstance(this);
+        manager.setApkName("BixinKEY.apk")
+                .setApkUrl(url)
+                .setSmallIcon(R.drawable.app_icon)
+                .setShowNewerToast(false)
+                .setConfiguration(configuration)
+                .setApkVersionCode(versionCode + 1)
+                .setApkVersionName("2.1.8")
+                .setApkSize("20.4")
+                .setApkDescription(getString(R.string.introduce_detials))
+//                .setApkMD5("DC501F04BBAA458C9DC33008EFED5E7F")
+                .download();
     }
 
     private void initCreatWallet() {
@@ -222,7 +273,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     strType = walletnameList.get(0).getType();
                     for (int i = 0; i < walletnameList.size(); i++) {
                         String name = walletnameList.get(i).getName();
-                        walletType = walletnameList.get(i).getType();
+                        String walletType = walletnameList.get(i).getType();
                         if (i == 0) {
                             fragmentList.add(new WheelViewpagerFragment(name, walletType, true));
                         } else {
@@ -340,13 +391,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
                 String type = jsonObject.getString("type");
-                tx_hash = jsonObject.getString("tx_hash");
-                amount = jsonObject.getString("amount");
+                String tx_hash = jsonObject.getString("tx_hash");
+                String amount = jsonObject.getString("amount");
                 is_mine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
                 date = jsonObject.getString("date");
                 String tx_status = jsonObject.getString("tx_status");
                 if (type.equals("history")) {
-                    confirmations = jsonObject.getString("confirmations");
+                    String confirmations = jsonObject.getString("confirmations");
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
                     maintrsactionlistEvent.setDate(date);
@@ -358,7 +409,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
 
-                    txCreatTrsaction = jsonObject.getString("tx");
+                    String txCreatTrsaction = jsonObject.getString("tx");
                     String invoice_id = jsonObject.getString("invoice_id");//delete use
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
@@ -529,6 +580,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 Log.i("ddddd", "onActivityResult: " + content);
                 //bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
                 if (!TextUtils.isEmpty(content)) {
+                    PyObject parse_qr;
                     try {
                         parse_qr = Daemon.commands.callAttr("parse_pr", content);
 
@@ -548,8 +600,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
-                                sendAmount = listData.getAmount();
-                                message = listData.getMessage();
+                                int sendAmount = listData.getAmount();
+                                String message = listData.getMessage();
 
                                 //address  -->  intent  send  activity
                                 Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
@@ -605,5 +657,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (trsactionlistAdapter != null) {
             trsactionlistAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onButtonClick(int id) {
+
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void downloading(int max, int progress) {
+
+    }
+
+    @Override
+    public void done(File apk) {
+        manager.release();
+    }
+
+    @Override
+    public void cancel() {
+
+    }
+
+    @Override
+    public void error(Exception e) {
+
     }
 }

@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +30,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
-import org.haobtc.wallet.activities.onlywallet.CheckWalletDetailActivity;
+import org.haobtc.wallet.activities.personalwallet.WalletDetailsActivity;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -144,7 +143,7 @@ public class WheelViewpagerFragment extends Fragment {
             startActivity(intent);
         });
         conlayBback.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), CheckWalletDetailActivity.class);
+            Intent intent = new Intent(getActivity(), WalletDetailsActivity.class);
             intent.putExtra("wallet_name", name);
             startActivity(intent);
         });

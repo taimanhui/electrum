@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
     android:gravity="center_horizontal"
-    tools:context=".activities.set.UpgradeFinishedActivity">
+    tools:context=".activities.settings.UpgradeFinishedActivity">
 
     <RelativeLayout
         android:id="@+id/snkdfnksjndkjsd"

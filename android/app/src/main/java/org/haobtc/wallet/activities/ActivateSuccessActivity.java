@@ -7,7 +7,6 @@ import android.widget.Button;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

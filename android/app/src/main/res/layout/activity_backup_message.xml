@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
     android:orientation="vertical"
-    tools:context=".activities.set.recovery_set.BackupMessageActivity">
+    tools:context=".activities.settings.recovery_set.BackupMessageActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
-import org.haobtc.wallet.activities.CreateWalletPageActivity;
-import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -5,15 +5,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.wallet.BuildConfig;
@@ -21,13 +18,10 @@ import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.GuideActivity;
-import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
 import java.lang.ref.WeakReference;
-
-import cn.com.heaton.blelibrary.ble.Ble;
 
 public class LunchActivity extends BaseActivity {
     private final String FIRST_RUN = "is_first_run";
@@ -57,7 +51,11 @@ public class LunchActivity extends BaseActivity {
             Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
             Daemon.daemonWeakReference = new WeakReference<>(new Daemon());
             Daemon.commands.callAttr("set_callback_fun", Daemon.daemonWeakReference.get());
-            initPermissions();
+            try {
+                initPermissions();
+            } catch (Exception ignored) {
+
+            }
         }
     };
     private void initPermissions() {

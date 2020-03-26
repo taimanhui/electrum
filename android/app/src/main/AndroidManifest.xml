@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- <uses-permission -->
+    <!--used for app auto update-->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <!--
@@ -37,43 +39,41 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.set.VerificationSuccessActivity"/>
-        <activity android:name=".activities.sign.SignActivity" />
-        <activity android:name=".activities.onlywallet.ChooseHistryWalletActivity" />
-        <activity android:name=".activities.set.NoSecretPaymentActivity" />
-        <activity android:name=".activities.set.fixpin.ConfirmPincodeActivity" />
-        <activity android:name=".activities.set.UpgradeFinishedActivity" />
-        <activity android:name=".activities.set.UpgradeBixinKEYActivity" />
-        <activity android:name=".activities.onlywallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity" />
-        <activity android:name=".activities.onlywallet.mnemonic_word.CreatePersonalHelpPassActivity" />
-        <activity android:name=".activities.onlywallet.mnemonic_word.CreateHelpWordWalletActivity" />
+        <activity android:name=".activities.personalwallet.ChooseHistryWalletActivity"/>
+        <activity android:name=".activities.settings.ConfidentialPaymentSettings" />
+        <activity android:name=".activities.settings.fixpin.ConfirmPincodeActivity" />
+        <activity android:name=".activities.settings.UpgradeFinishedActivity" />
+        <activity android:name=".activities.settings.UpgradeBixinKEYActivity" />
+        <activity android:name=".activities.personalwallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity" />
+        <activity android:name=".activities.personalwallet.mnemonic_word.CreatePersonalHelpPassActivity" />
+        <activity android:name=".activities.personalwallet.mnemonic_word.CreateHelpWordWalletActivity" />
         <activity android:name=".activities.transaction.CheckChainDetailWebActivity" />
-        <activity android:name=".activities.set.BlockChooseActivity" />
-        <activity android:name=".activities.onlywallet.CheckWalletDetailActivity" />
-        <activity android:name=".activities.set.QuetationChooseActivity" />
-        <activity android:name=".activities.onlywallet.ImportHistoryWalletActivity" />
-        <activity android:name=".activities.set.ElectrumNodeChooseActivity" />
-        <activity android:name=".activities.onlywallet.AppWalletCreateFinishActivity" />
-        <activity android:name=".activities.onlywallet.VerificationMnemonicWordActivity" />
-        <activity android:name=".activities.onlywallet.mnemonic_word.MnemonicWordActivity" />
-        <activity android:name=".activities.set.recovery_set.ConfirmBackupActivity" />
-        <activity android:name=".activities.onlywallet.RemeberMnemonicWordActivity" />
-        <activity android:name=".activities.onlywallet.AppWalletSetPassActivity" />
-        <activity android:name=".activities.onlywallet.CreatAppWalletActivity" />
-        <activity android:name=".activities.set.recovery_set.BackupMessageActivity" />
-        <activity android:name=".activities.set.recovery_set.Backup_recoveryActivity" />
-        <activity android:name=".activities.set.recovery_set.RecoverySetActivity" />
-        <activity android:name=".activities.set.fixpin.FitBixinKEYActivity" />
-        <activity android:name=".activities.set.fixpin.InputNewPINActivity" />
-        <activity android:name=".activities.set.fixpin.InputOldPINActivity" />
-        <activity android:name=".activities.set.BixinKeyMessageActivity" />
-        <activity android:name=".activities.set.SomemoreActivity" />
-        <activity android:name=".activities.set.CurrencyActivity" />
-        <activity android:name=".activities.set.BixinKEYMenageActivity" />
-        <activity android:name=".activities.onlywallet.CreatFinishPersonalActivity" />
-        <activity android:name=".activities.onlywallet.CreateOnlyChooseActivity" />
-        <activity android:name=".activities.onlywallet.CreatePersonalWalletActivity" />
-        <activity android:name=".activities.manywallet.ManyWalletTogetherActivity">
+        <activity android:name=".activities.settings.BlockChooseActivity" />
+        <activity android:name=".activities.personalwallet.WalletDetailsActivity" />
+        <activity android:name=".activities.settings.QuotationServerActivity" />
+        <activity android:name=".activities.personalwallet.ImportHistoryWalletActivity" />
+        <activity android:name=".activities.settings.ElectrumNodeChooseActivity" />
+        <activity android:name=".activities.personalwallet.AppWalletCreateFinishActivity" />
+        <activity android:name=".activities.personalwallet.ImportMnemonicActivity" />
+        <activity android:name=".activities.personalwallet.mnemonic_word.MnemonicWordActivity" />
+        <activity android:name=".activities.settings.recovery_set.ConfirmBackupActivity" />
+        <activity android:name=".activities.personalwallet.MnemonicActivity" />
+        <activity android:name=".activities.personalwallet.AppWalletSetPassActivity" />
+        <activity android:name=".activities.personalwallet.CreatAppWalletActivity" />
+        <activity android:name=".activities.settings.recovery_set.BackupMessageActivity" />
+        <activity android:name=".activities.settings.recovery_set.BackupRecoveryActivity" />
+        <activity android:name=".activities.settings.recovery_set.RecoverySetActivity" />
+        <activity android:name=".activities.settings.fixpin.FitBixinKEYActivity" />
+        <activity android:name=".activities.settings.fixpin.InputNewPINActivity" />
+        <activity android:name=".activities.settings.fixpin.InputOldPINActivity" />
+        <activity android:name=".activities.settings.BixinKeyMessageActivity" />
+        <activity android:name=".activities.settings.HardwareDetailsActivity" />
+        <activity android:name=".activities.settings.CurrencyActivity" />
+        <activity android:name=".activities.settings.BixinKEYMenageActivity" />
+        <activity android:name=".activities.personalwallet.CreatFinishPersonalActivity" />
+        <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" />
+        <activity android:name=".activities.personalwallet.SingleSigWalletCreator" />
+        <activity android:name=".activities.jointwallet.MultiSigWalletCreator">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
             </intent-filter>
@@ -92,7 +92,11 @@
         </activity>
         <activity android:name=".entries.FsActivity" />
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".activities.base.LunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -100,7 +104,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.set.VersionUpgradeActivity" />
+        <activity android:name=".activities.settings.VersionUpgradeActivity" />
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.TransactionRecordsActivity" />
         <activity android:name=".activities.HardwareInfoActivity" />
@@ -157,12 +161,14 @@
         </activity>
         <activity android:name=".activities.ActivateSuccessActivity" />
         <activity android:name=".activities.CoSignerAddActivity" />
-        <activity android:name=".activities.set.AgreementActivity" />
+        <activity android:name=".activities.settings.AgreementActivity" />
         <activity android:name=".activities.ShareOtherActivity" />
         <activity android:name=".activities.GuideActivity" />
         <activity android:name=".activities.PinSettingActivity" />
         <activity android:name="dr.android.fileselector.FileSelectActivity" />
-        <activity android:name=".activities.CreateWalletSuccessfulActivity" /> <!-- aotusize -->
+        <activity android:name=".activities.CreateWalletSuccessfulActivity" />
+        <activity android:name=".activities.settings.VerificationSuccessActivity" />
+        <activity android:name=".activities.sign.SignActivity" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />

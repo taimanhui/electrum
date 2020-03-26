@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
-    tools:context=".activities.set.recovery_set.RecoverySetActivity">
+    tools:context=".activities.settings.recovery_set.RecoverySetActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

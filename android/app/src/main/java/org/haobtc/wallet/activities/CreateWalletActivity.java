@@ -2,19 +2,17 @@ package org.haobtc.wallet.activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.manywallet.ManyWalletTogetherActivity;
-import org.haobtc.wallet.activities.onlywallet.CreatAppWalletActivity;
-import org.haobtc.wallet.activities.onlywallet.CreatePersonalWalletActivity;
-import org.haobtc.wallet.activities.onlywallet.ImportHistoryWalletActivity;
-import org.haobtc.wallet.activities.onlywallet.mnemonic_word.MnemonicWordActivity;
+import org.haobtc.wallet.activities.jointwallet.MultiSigWalletCreator;
+import org.haobtc.wallet.activities.personalwallet.CreatAppWalletActivity;
+import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
+import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
+import org.haobtc.wallet.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,10 +61,10 @@ public class CreateWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.lin_personal_walt:
-                mIntent(CreatePersonalWalletActivity.class);
+                mIntent(SingleSigWalletCreator.class);
                 break;
             case R.id.bn_import_wallet:
-                mIntent(ManyWalletTogetherActivity.class);
+                mIntent(MultiSigWalletCreator.class);
                 break;
             case R.id.lin_input_histry:
                 mIntent(ImportHistoryWalletActivity.class);

@@ -1,15 +1,14 @@
 package org.haobtc.wallet.activities;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.set.BixinKEYMenageActivity;
-import org.haobtc.wallet.activities.set.CurrencyActivity;
-import org.haobtc.wallet.activities.set.recovery_set.Backup_recoveryActivity;
+import org.haobtc.wallet.activities.settings.BixinKEYMenageActivity;
+import org.haobtc.wallet.activities.settings.CurrencyActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,7 +56,7 @@ public class SettingActivity extends BaseActivity {
                 mIntent(BixinKEYMenageActivity.class);
                 break;
             case R.id.tetBuckup:
-                mIntent(Backup_recoveryActivity.class);
+                mIntent(BackupRecoveryActivity.class);
                 break;
             case R.id.tet_language:
                 mIntent(LanguageSettingActivity.class);

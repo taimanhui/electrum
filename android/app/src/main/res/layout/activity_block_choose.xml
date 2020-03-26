@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/button_bk_ddake"
-    tools:context=".activities.set.BlockChooseActivity">
+    tools:context=".activities.settings.BlockChooseActivity">
 
     <RelativeLayout
         android:background="@color/button_bk_ddake"

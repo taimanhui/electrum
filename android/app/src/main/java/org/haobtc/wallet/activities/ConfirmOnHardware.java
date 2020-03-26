@@ -13,7 +13,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
+import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.adapter.HardwareAdapter;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
@@ -99,7 +98,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         handler.postDelayed(()-> {
             String result = "";
             try {
-                result = CustomerDialogFragment.futureTask.get(50, TimeUnit.SECONDS).toString();
+                result = CommunicationModeSelector.futureTask.get(50, TimeUnit.SECONDS).toString();
                 imageViewSigning.setImageResource(R.drawable.chenggong);
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();

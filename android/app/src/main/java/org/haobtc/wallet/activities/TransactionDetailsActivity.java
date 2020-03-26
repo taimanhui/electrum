@@ -29,32 +29,33 @@ import com.google.gson.JsonSyntaxException;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.manywallet.CustomerDialogFragment;
+import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.wallet.bean.AddspeedBean;
 import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
-import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.REQUEST_ACTIVE;
-import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.executorService;
-import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.futureTask;
-import static org.haobtc.wallet.activities.manywallet.CustomerDialogFragment.isNFC;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 
 public class TransactionDetailsActivity extends BaseActivity {
 
@@ -124,14 +125,12 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String listType;
     private String publicTrsation;
     private String jsondef_get;
-    private GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
     private String rowtx;
     private String strParse;
     private String language;
     private boolean isIsmine;
     private PyObject get_rbf_status;
     private boolean aBoolean;
-    private String strNewfee;
     private String strwalletType;
     private SharedPreferences preferences;
     private String txid;
@@ -139,17 +138,13 @@ public class TransactionDetailsActivity extends BaseActivity {
     private SharedPreferences.Editor edit;
     private String newFeerate;
     private AlertDialog alertDialog;
-    private String tx_status;
     private String amount, fee;
     ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr;
     private boolean executable = true;
     private String pin = "";
     public static String signedRawTx;
-    private CustomerDialogFragment customerDialogFragment;
-    private boolean pinCached;
     private boolean isActive;
     private boolean ready;
-    private String dataTime;
 
     @Override
     public int getLayoutId() {
@@ -172,7 +167,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             tx_hash = intent.getStringExtra("tx_hash");
             listType = intent.getStringExtra("listType");
             strParse = intent.getStringExtra("strParse");
-            dataTime = intent.getStringExtra("dataTime");
+            String dataTime = intent.getStringExtra("dataTime");
             strwalletType = intent.getStringExtra("strwalletType");
             isIsmine = intent.getBooleanExtra("isIsmine", false);//isIsmine -->recevid or send
             tetTrsactionTime.setText(dataTime);
@@ -275,6 +270,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String jsondef_get) {
         Log.i("jsonDetailData", "jsonDetail==== " + jsondef_get);
+        GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
         try {
             Gson gson = new Gson();
             getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
@@ -287,7 +283,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         amount = getnewcreatTrsactionListBean.getAmount();
         fee = getnewcreatTrsactionListBean.getFee();
         String description = getnewcreatTrsactionListBean.getDescription();
-        tx_status = getnewcreatTrsactionListBean.getTxStatus();
+        String tx_status = getnewcreatTrsactionListBean.getTxStatus();
         output_addr = getnewcreatTrsactionListBean.getOutputAddr();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
         txid = getnewcreatTrsactionListBean.getTxid();
@@ -517,8 +513,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void showCustomerDialog() {
         List<Runnable> runnables = new ArrayList<>();
         runnables.add(runnable);
-        customerDialogFragment = new CustomerDialogFragment(TAG, runnables, rowtx);
-        customerDialogFragment.show(getSupportFragmentManager(), "");
+        CommunicationModeSelector chooseCommunicationWayDialogFragment = new CommunicationModeSelector(TAG, runnables, rowtx);
+        chooseCommunicationWayDialogFragment.show(getSupportFragmentManager(), "");
     }
 
     //Radio broadcast
@@ -596,7 +592,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 e.printStackTrace();
             }
             if (get_rbf_fee_info != null) {
-                strNewfee = get_rbf_fee_info.toString();
+                String strNewfee = get_rbf_fee_info.toString();
                 Log.i("strNewfee", "--------: " + strNewfee);
                 View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
                 alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
@@ -647,16 +643,16 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
-    private boolean isInitialized() throws Exception {
-        boolean isInitialized = false;
+    private HardwareFeatures getFeatures() throws Exception {
+        String feature;
         try {
-            System.out.println("call is_initialized =====");
-            isInitialized = Daemon.commands.callAttr("is_initialized").toBoolean();
-        } catch (Exception e) {
+            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
+            return new Gson().fromJson(feature, HardwareFeatures.class);
+        } catch (ExecutionException | InterruptedException e) {
+            Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             throw e;
         }
-        return isInitialized;
     }
 
     @Override
@@ -680,23 +676,25 @@ public class TransactionDetailsActivity extends BaseActivity {
             executable = false;
         }
         if (ready) {
-            CustomerDialogFragment.customerUI.put("pin", pin);
+            CommunicationModeSelector.customerUI.put("pin", pin);
             gotoConfirmOnHardware();
             ready = false;
         }
+        HardwareFeatures features;
         try {
-            boolean isInit = isInitialized();
-            if (isInit) {
-                pinCached = Daemon.commands.callAttr("get_pin_status").toBoolean();
-                System.out.println("java pin cashed===" + pinCached);
-                // todo: get sgin
+            features = getFeatures();
+        } catch (Exception e) {
+            return;
+        }
+        boolean isInit = features.isInitialized();
+        if (isInit) {
+            boolean pinCached = features.isPinCached();
                 futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
                 executorService.submit(futureTask);
                 if (pinCached) {
                     gotoConfirmOnHardware();
                 }
             } else {
-                // todo: Initialized
                 if (isActive) {
                     executorService.execute(() -> {
                         try {
@@ -710,9 +708,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                     startActivityForResult(intent1, REQUEST_ACTIVE);
                 }
             }
-        } catch (Exception e) {
-            Toast.makeText(this, "communication error, get firmware info error", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
@@ -723,22 +718,22 @@ public class TransactionDetailsActivity extends BaseActivity {
                 pin = data.getStringExtra("pin");
                 int tag = data.getIntExtra("tag", 0);
                 switch (tag) {
-                    case CustomerDialogFragment.PIN_NEW_FIRST: // 激活
+                    case CommunicationModeSelector.PIN_NEW_FIRST: // 激活
                         // ble 激活
-                        if (CustomerDialogFragment.isActive) {
-                            CustomerDialogFragment.customerUI.put("pin", pin);
-                            CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
-                            CustomerDialogFragment.isActive = false;
+                        if (CommunicationModeSelector.isActive) {
+                            CommunicationModeSelector.customerUI.put("pin", pin);
+                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                            CommunicationModeSelector.isActive = false;
                         } else if (isActive) {
                             // nfc 激活
-                            CustomerDialogFragment.pin = pin;
-                            CustomerDialogFragment.handler.sendEmptyMessage(CustomerDialogFragment.SHOW_PROCESSING);
+                            CommunicationModeSelector.pin = pin;
+                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
                             isActive = false;
                         }
                         break;
-                    case CustomerDialogFragment.PIN_CURRENT: // 签名
+                    case CommunicationModeSelector.PIN_CURRENT: // 签名
                         if (!isNFC) { // ble
-                            CustomerDialogFragment.customerUI.put("pin", pin);
+                            CommunicationModeSelector.customerUI.put("pin", pin);
                             gotoConfirmOnHardware();
                         } else { // nfc
                             ready = true;
@@ -757,7 +752,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
     }
 }
