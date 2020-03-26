@@ -233,6 +233,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self.config = config
         assert self.config is not None, "config must not be None"
         self.db = db
+        self.hide_type=False
         self.storage = storage
         # load addresses needs to be called before constructor for sanity checks
         db.load_addresses(self.wallet_type)
@@ -261,7 +262,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self.lnworker = LNWallet(self, ln_xprv) if ln_xprv else None
 
     def save_db(self):
-        if self.storage:
+        if self.storage and not self.hide_type:
             self.db.write(self.storage)
 
     def save_backup(self):
