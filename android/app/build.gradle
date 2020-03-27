@@ -192,6 +192,8 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.1.70.android'
     // app internal update
     implementation 'com.azhon:appupdateX:2.8.0'
+    // dfu
+    implementation 'no.nordicsemi.android:dfu:1.10.1'
 
 }
 repositories {

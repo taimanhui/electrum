@@ -811,7 +811,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 if (pinCached) {
                    getResult();
                 }
-                showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
             } else {
                 if (isActive) {
                     executorService.execute(

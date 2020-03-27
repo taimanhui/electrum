@@ -13,6 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
@@ -25,6 +28,7 @@ import org.haobtc.wallet.utils.NfcUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 
 public class UpgradeBixinKEYActivity extends BaseActivity {
 
@@ -49,8 +53,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected void onPreExecute() {
             // todo: 下载升级文件
+            progressUpgrade.setIndeterminate(true);
             tetUpgradeTest.setText(getString(R.string.upgradeing));
-
         }
 
         @SuppressLint("SdCardPath")
@@ -58,31 +62,15 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         protected Void doInBackground(String... params) {
             PyObject progress = Global.py.getModule("trezorlib.transport.protocol");
             progress.put("PROCESS_REPORTER", this);
-            switch (tag) {
-                case 1: // 固件
-                    try {
-                        Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/trezor.bin", params[0]);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        cancel(true);
-                    }
-                    break;
-                case 2: // 蓝牙
-                    try {
-                        Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/ble.bin", params[0], "ble");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        cancel(true);
-                    }
-                    break;
+            if (tag == 1) { // 固件
+                try {
+                    Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/trezor.bin", params[0]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    cancel(true);
+                }
             }
             return null;
-        }
-
-        private void showPromptMessage() {
-            UpgradeBixinKEYActivity.this.runOnUiThread(() -> {
-                Toast.makeText(UpgradeBixinKEYActivity.this, "请确认硬件处于BootLoader模式", Toast.LENGTH_SHORT).show();
-            });
         }
 
         @Override
@@ -104,7 +92,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             showPromptMessage();
         }
     }
-
+    private void showPromptMessage() {
+        UpgradeBixinKEYActivity.this.runOnUiThread(() -> {
+            Toast.makeText(UpgradeBixinKEYActivity.this, "请确认硬件处于BootLoader模式", Toast.LENGTH_SHORT).show();
+        });
+    }
     @Override
     public int getLayoutId() {
         return R.layout.activity_upgrade_bixin_key;
@@ -120,7 +112,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     @Override
     public void initData() {
         mTask = new MyTask();
-        registerReceiver(receiver, new IntentFilter(EXECUTE_TASK));
         if ("bluetooth".equals(getIntent().getStringExtra("way"))) {
             mTask.execute("bluetooth");
         }
@@ -131,6 +122,10 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
             if (EXECUTE_TASK.equals(intent.getAction())) {
                 mTask.execute("nfc");
+            } else if (VersionUpgradeActivity.UPDATE_PROCESS.equals(intent.getAction())) {
+                int percent = intent.getIntExtra("process", 0);
+                progressUpgrade.setProgress(percent);
+                tetUpgradeNum.setText(String.format("%s%%", String.valueOf(percent)));
             }
         }
     };
@@ -145,6 +140,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (tag == 2) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(VersionUpgradeActivity.UPDATE_PROCESS));
+            progressUpgrade.setIndeterminate(true);
+        }
+        registerReceiver(receiver, new IntentFilter(EXECUTE_TASK));
         if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
             // enable nfc discovery for the app
             Log.i("NFC", "为本App启用NFC感应");
@@ -160,12 +160,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
             Log.i("NFC", "禁用本App的NFC感应");
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+        if (tag == 2) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        }
         mTask = null;
         unregisterReceiver(receiver);
     }
+
 }

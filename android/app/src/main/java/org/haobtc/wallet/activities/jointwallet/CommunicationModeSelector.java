@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.jointwallet;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -53,6 +54,7 @@ import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
 import org.haobtc.wallet.fragment.BluetoothFragment;
@@ -82,6 +84,8 @@ import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import no.nordicsemi.android.dfu.DfuServiceController;
+import no.nordicsemi.android.dfu.DfuServiceInitiator;
 
 
 public class CommunicationModeSelector extends DialogFragment implements View.OnClickListener {
@@ -213,10 +217,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                             intent.putExtra("way", "bluetooth");
                             if ("hardware".equals(extras)) {
                                 intent.putExtra("tag", 1);
+                                startActivity(intent);
                             } else if ("ble".equals(extras)) {
-                                intent.putExtra("tag", 2);
+                                dfu();
                             }
-                            startActivity(intent);
                         } else {
                             dealWithBusiness();
                         }
@@ -280,11 +284,24 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             Log.e(TAG, String.format("连接设备==%s超时", device.getBleName()));
         }
     };
+    @SuppressLint("SdCardPath")
+    private void dfu() {
+        final DfuServiceInitiator starter = new DfuServiceInitiator(Ble.getInstance().getConnetedDevices().get(0).getBleAddress());
+        /*
+        调用此方法使Nordic nrf52832进入bootloader模式
+*/      starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
+        starter.setZip(null, "/sdcard/Android/data/org.haobtc.wallet/files/ble.zip");
+        DfuServiceInitiator.createDfuNotificationChannel(Objects.requireNonNull(getContext()));
+        starter.start(getContext(), DfuService.class);
+    }
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             Log.i(TAG, "receive broadcast===" + action);
+            if (BleDeviceRecyclerViewAdapter.device == null) {
+                return;
+            }
             if (fragment == null && BleDeviceRecyclerViewAdapter.device.getBondState() == BluetoothDevice.BOND_BONDING) {
                 fragment = new BluetoothConnectingFragment();
                 getChildFragmentManager().beginTransaction().replace(R.id.ble_device, fragment).commitNow();
@@ -327,7 +344,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
                 }
                 executorService.submit(futureTask);
-                if (pinCached) {
+                if (pinCached && !HideWalletActivity.TAG.equals(tag)) {
                     try {
                         xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
                         Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
@@ -624,9 +641,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     break;
                 case PASS_NEW_PASSPHRASS:
                     //Set password
-                    Log.e("PASS_CUCCER", "handleMessage: " + PASS_NEW_PASSPHRASS);
                     Intent intent4 = new Intent(fragmentActivity, HideWalletSetPassActivity.class);
-                    intent4.putExtra("pin", PASS_NEW_PASSPHRASS);
                     fragmentActivity.startActivityForResult(intent4, PASSPHRASS_INPUT);
                     break;
             }

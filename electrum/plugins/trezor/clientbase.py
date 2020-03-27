@@ -267,7 +267,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
                     "access the bitcoins in the wallet.").format(self.device)
         else:
             msg = _("Enter the passphrase to unlock this wallet:")
-        passphrase = self.handler.get_passphrase(msg, self.creating_wallet)
+        passphrase = self.handler.get_passphrase(msg)
         if passphrase is None:
             raise Cancelled
         passphrase = bip39_normalize_passphrase(passphrase)

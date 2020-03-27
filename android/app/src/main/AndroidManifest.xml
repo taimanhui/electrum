@@ -172,13 +172,17 @@
         <activity android:name=".activities.settings.VerificationSuccessActivity" />
         <activity android:name=".activities.sign.SignActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity" />
-        <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" /> <!-- aotusize -->
+        <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator"/>
+        <activity android:name=".dfu.NotificationActivity" />
+        <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />
         <meta-data
             android:name="design_height_in_dp"
             android:value="640" />
+
+        <service android:name=".dfu.service.DfuService" />
     </application>
 
 </manifest>

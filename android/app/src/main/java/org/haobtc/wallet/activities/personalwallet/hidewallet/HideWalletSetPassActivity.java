@@ -27,7 +27,6 @@ public class HideWalletSetPassActivity extends BaseActivity {
     EditText editOldPass;
     @BindView(R.id.bn_next)
     Button bnNext;
-    private int tag;
 
     @Override
     public int getLayoutId() {
@@ -37,7 +36,6 @@ public class HideWalletSetPassActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        tag = getIntent().getIntExtra("pin", 0);
     }
 
     @Override
@@ -67,8 +65,7 @@ public class HideWalletSetPassActivity extends BaseActivity {
                     return;
                 }
                 Intent intent = new Intent();
-                intent.putExtra("pin", editNewPass.getText().toString());
-                intent.putExtra("tag", tag);
+                intent.putExtra("passphrase", editNewPass.getText().toString());
                 setResult(Activity.RESULT_OK, intent);
                 finish();
                 break;

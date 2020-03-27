@@ -11,6 +11,9 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.chaquo.python.PyObject;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -22,6 +25,9 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import no.nordicsemi.android.dfu.DfuProgressListener;
+import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
+import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 
 public class VersionUpgradeActivity extends BaseActivity {
@@ -41,6 +47,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     public String pin = "";
     public final static String TAG = VersionUpgradeActivity.class.getSimpleName();
     private int checkWitch = 1;
+    public static final String UPDATE_PROCESS = "org.haobtc.wallet.activities.settings.percent";
 
     @Override
     public int getLayoutId() {
@@ -121,7 +128,6 @@ public class VersionUpgradeActivity extends BaseActivity {
             PyObject nfcHandler = nfc.get("NFCHandle");
             nfcHandler.put("device", tags);
             Intent intent1 = new Intent(this, UpgradeBixinKEYActivity.class);
-            //intent1.putExtra("way", "nfc");
             switch (checkWitch) {
                 case 1:
                     intent1.putExtra("tag", 1);
@@ -136,5 +142,53 @@ public class VersionUpgradeActivity extends BaseActivity {
             new Handler().postDelayed(() -> sendBroadcast(intent2), 1000);
 
         }
+    }
+    private final DfuProgressListener dfuProgressListener = new DfuProgressListenerAdapter() {
+        @Override
+        public void onDfuCompleted(@NonNull String deviceAddress) {
+            super.onDfuCompleted(deviceAddress);
+            mIntent(UpgradeFinishedActivity.class);
+        }
+
+        @Override
+        public void onDfuProcessStarted(@NonNull String deviceAddress) {
+            super.onDfuProcessStarted(deviceAddress);
+        }
+        Intent intent;
+        @Override
+        public void onDfuProcessStarting(@NonNull String deviceAddress) {
+            super.onDfuProcessStarting(deviceAddress);
+            if (intent == null) {
+                intent = new Intent(VersionUpgradeActivity.this, UpgradeBixinKEYActivity.class);
+                intent.putExtra("tag", 2);
+                startActivity(intent);
+            }
+        }
+
+        @Override
+        public void onDfuAborted(@NonNull String deviceAddress) {
+            super.onDfuAborted(deviceAddress);
+        }
+
+        @Override
+        public void onProgressChanged(@NonNull String deviceAddress, int percent, float speed, float avgSpeed, int currentPart, int partsTotal) {
+            super.onProgressChanged(deviceAddress, percent, speed, avgSpeed, currentPart, partsTotal);
+            Intent intent = new Intent();
+            intent.setAction(UPDATE_PROCESS);
+            intent.putExtra("process", percent);
+            LocalBroadcastManager.getInstance(VersionUpgradeActivity.this).sendBroadcast(intent);
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+            DfuServiceListenerHelper.registerProgressListener(this, dfuProgressListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DfuServiceListenerHelper.unregisterProgressListener(this, dfuProgressListener);
     }
 }

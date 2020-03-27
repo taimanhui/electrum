@@ -36,6 +36,7 @@ import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
@@ -96,19 +97,13 @@ public class HideWalletActivity extends BaseActivity {
     }
 
     private void mCustomerUI() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
         customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
         try {
             customerUI.callAttr("set_pass_state", 1);
             Log.i("customerUI", "icustomerUI");
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-//            }
-//        }).start();
     }
 
     @OnClick({R.id.img_backCreat, R.id.btnNext})
@@ -207,15 +202,15 @@ public class HideWalletActivity extends BaseActivity {
     }
     private void getResult() {
         try {
-//            ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
+            ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
             xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
-//            dialog.dismiss();
+            dialog.dismiss();
             showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
                 mToast(getString(R.string.pin_wrong));
             } else {
-//                dialogFragment.showReadingFailedDialog();
+               dialogFragment.showReadingFailedDialog();
             }
         }
     }
@@ -258,6 +253,12 @@ public class HideWalletActivity extends BaseActivity {
             return;
         }
         boolean isInit = features.isInitialized();
+        boolean passphrase = features.isPassphraseProtection();
+        if (!passphrase) {
+            dialogFragment.dismiss();
+            mlToast("当前硬件状态不支持隐藏钱包");
+            return;
+        }
         if (isInit) {
             // todo: get xpub
             if (!status) {//status -->get_xpub_from_hw Only once
@@ -328,9 +329,8 @@ public class HideWalletActivity extends BaseActivity {
             }
         } else if (requestCode == CommunicationModeSelector.PASSPHRASS_INPUT && resultCode == Activity.RESULT_OK) {
             if (data != null) {
-                hideWalletpass = data.getStringExtra("pin");
+                hideWalletpass = data.getStringExtra("passphrase");
 
-                Log.i("jinxiaoinisdaihduias", "ssssssssssssss: " + hideWalletpass);
                 CommunicationModeSelector.customerUI.callAttr("get_pass_state");
                 //Enter password to create hidden Wallet
                 if (!isNFC) {
