@@ -67,6 +67,13 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
                 if (input.length() > 19) {
                     Toast.makeText(CreateHelpWordWalletActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
                 }
+                if (TextUtils.isEmpty(s)){
+                    bnMultiNext.setEnabled(false);
+                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
+                }else{
+                    bnMultiNext.setEnabled(true);
+                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
+                }
             }
 
             @Override

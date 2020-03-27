@@ -44,7 +44,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     private int tag;
     public static final String EXECUTE_TASK = "org.haobtc.wallet.activities.settings.EXECUTE_TASK";
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
-    public class MyTask extends AsyncTask<String, Long, Void> {
+
+    public class MyTask extends AsyncTask<String, Object, Void> {
         @Override
         protected void onPreExecute() {
             // todo: 下载升级文件
@@ -55,16 +56,17 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @SuppressLint("SdCardPath")
         @Override
         protected Void doInBackground(String... params) {
-            PyObject progress =Global.py.getModule("trezorlib.transport.protocol");
+            PyObject progress = Global.py.getModule("trezorlib.transport.protocol");
             progress.put("PROCESS_REPORTER", this);
             switch (tag) {
                 case 1: // 固件
                     try {
-                        Daemon.commands.callAttr("firmware_update","/sdcard/Android/data/org.haobtc.wallet/files/trezor.bin", params[0]);
+                        Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/trezor.bin", params[0]);
                     } catch (Exception e) {
                         e.printStackTrace();
                         cancel(true);
                     }
+                    break;
                 case 2: // 蓝牙
                     try {
                         Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/ble.bin", params[0], "ble");
@@ -72,6 +74,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                         e.printStackTrace();
                         cancel(true);
                     }
+                    break;
             }
             return null;
         }
@@ -83,7 +86,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         }
 
         @Override
-        protected void onProgressUpdate(Long... progresses) {
+        protected void onProgressUpdate(Object... progresses) {
             progressUpgrade.setProgress(Integer.parseInt(((progresses[0]).toString())));
             tetUpgradeNum.setText(String.format("%s%%", String.valueOf(progresses[0])));
 
@@ -122,6 +125,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             mTask.execute("bluetooth");
         }
     }
+
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -130,6 +134,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             }
         }
     };
+
     @OnClick({R.id.img_back, R.id.imgdhksjks, R.id.tet_test})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {

@@ -67,7 +67,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
             case R.id.tet_Preservation:
                 boolean toGallery = saveBitmap(bitmap);
                 if (toGallery) {
-                    mToast(getResources().getString(R.string.preservationbitmappic));
+                    mToast(getString(R.string.preservationbitmappic));
                 } else {
                     Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
                 }

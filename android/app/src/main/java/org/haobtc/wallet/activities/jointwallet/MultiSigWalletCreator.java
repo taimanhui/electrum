@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -30,11 +31,13 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
@@ -42,6 +45,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.encode.CodeCreator;
+
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
@@ -56,6 +60,7 @@ import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.haobtc.wallet.utils.MyDialog;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -67,6 +72,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -131,6 +137,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     RecyclerView reclPublicPerson;
     @BindView(R.id.btn_Finish)
     Button btnFinish;
+    @BindView(R.id.testseekNum)
+    TextView testseekNum;
     private Dialog dialogBtom;
     public String pin = "";
     public static final String TAG = MultiSigWalletCreator.class.getSimpleName();
@@ -191,8 +199,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         seekBarFee.setProgress(2);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBarFee.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
+            private int moveProgress;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
+                moveProgress = progress;
                 String indicatorText = String.valueOf(progress);
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
@@ -227,6 +238,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+//                seekBarNum.setMax(moveProgress);
+//                testseekNum.setText(String.valueOf(moveProgress));
                 tvIndicator.setVisibility(View.VISIBLE);
 
             }
@@ -308,7 +321,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                             if (granted) { // Always true pre-M
                                 boolean toGallery = saveBitmap(bitmap);
                                 if (toGallery) {
-                                    mToast(getResources().getString(R.string.preservationbitmappic));
+                                    mToast(getString(R.string.preservationbitmappic));
                                 } else {
                                     Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
                                 }
@@ -400,7 +413,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         bnAddKey.setVisibility(View.VISIBLE);
         relTwoNext1.setVisibility(View.VISIBLE);
         tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
-        bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getResources().getString(R.string.next), strInditor1));
+        bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getString(R.string.next), strInditor1));
 
         bnCompleteAddCosigner.setEnabled(false);
 
@@ -563,7 +576,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
 
             int cosignerNum = Integer.parseInt(strInditor1);
-            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
 
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
@@ -584,7 +597,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                             addEventsDatas.remove(position);
                             addBixinKeyAdapter.notifyDataSetChanged();
                             bnAddKey.setVisibility(View.VISIBLE);
-                            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+                            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
 
                             bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
                             bnCompleteAddCosigner.setEnabled(false);
@@ -696,7 +709,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                         addEventsDatas.remove(position);
                         addBixinKeyAdapter.notifyDataSetChanged();
                         bnAddKey.setVisibility(View.VISIBLE);
-                        bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getResources().getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+                        bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
 
                         bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
                         bnCompleteAddCosigner.setEnabled(false);
@@ -741,6 +754,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             throw e;
         }
     }
+
     private void getResult() {
         try {
             ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
@@ -749,7 +763,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                mToast(getResources().getString(R.string.pin_wrong));
+                mToast(getString(R.string.pin_wrong));
             } else {
                 dialogFragment.showReadingFailedDialog();
             }
@@ -797,7 +811,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 if (pinCached) {
                    getResult();
                 }
-
+                showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
             } else {
                 if (isActive) {
                     executorService.execute(
@@ -807,13 +821,12 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                            }
-                    );
-                } else {
-                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                    startActivityForResult(intent1, REQUEST_ACTIVE);
-                }
+                            });
+            } else {
+                Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                startActivityForResult(intent1, REQUEST_ACTIVE);
             }
+        }
     }
 
     @Override
@@ -875,6 +888,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         String indication = tvIndicator.getText().toString();
         String indication2 = tvIndicatorTwo.getText().toString();
         if (!TextUtils.isEmpty(s.toString())) {
+            if (s.length()>13){
+                editWalletname.setTextSize(13);
+            }else{
+                editWalletname.setTextSize(15);
+            }
             if (Integer.parseInt(indication) != 0) {
                 if (Integer.parseInt(indication2) != 0) {
                     button.setEnabled(true);
@@ -895,11 +913,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     }
 
     @SuppressLint("HandlerLeak")
-    Handler handler = new Handler(){
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 1:
                     String strWalletname = editWalletname.getText().toString();
                     strInditor1 = tvIndicator.getText().toString();
@@ -911,11 +929,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                         myDialog.dismiss();
                         String message = e.getMessage();
                         if ("BaseException: file already exists at path".equals(message)) {
-                            mToast(getResources().getString(R.string.changewalletname));
+                            mToast(getString(R.string.changewalletname));
                         }
                         return;
                     }
-                    edit.putInt("defaultName",walletNameNum);
+                    edit.putInt("defaultName", walletNameNum);
                     edit.apply();
                     //Generate QR code
                     mGeneratecode();
@@ -934,7 +952,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     relFinish.setVisibility(View.VISIBLE);
                     cardThreePublic.setVisibility(View.VISIBLE);
                     tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
-                    tetManyKey.setText(String.format("%s%s%s", getResources().getString(R.string.is_use), strInditor1, getResources().getString(R.string.the_only_bixinkey)));
+                    tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getResources().getString(R.string.the_only_bixinkey)));
                     break;
             }
         }

@@ -12,6 +12,7 @@ import org.haobtc.wallet.activities.jointwallet.MultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.CreatAppWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
+import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 
 import butterknife.BindView;
@@ -31,6 +32,8 @@ public class CreateWalletActivity extends BaseActivity {
     LinearLayout bnCreateWallet;
     @BindView(R.id.lin_input_helpWord)
     LinearLayout linInputHelpWord;
+    @BindView(R.id.linHideWallet)
+    LinearLayout linHideWallet;
     //remeber first back time
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
@@ -54,7 +57,7 @@ public class CreateWalletActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.lin_input_histry, R.id.bn_create_wallet, R.id.lin_input_helpWord})
+    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.lin_input_histry, R.id.bn_create_wallet, R.id.lin_input_helpWord,R.id.linHideWallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_backCreat:
@@ -70,11 +73,13 @@ public class CreateWalletActivity extends BaseActivity {
                 mIntent(ImportHistoryWalletActivity.class);
                 break;
             case R.id.bn_create_wallet:
-//                mIntent(CreateWalletPageActivity.class);
                 mIntent(CreatAppWalletActivity.class);
                 break;
             case R.id.lin_input_helpWord:
                 mIntent(MnemonicWordActivity.class);
+                break;
+            case R.id.linHideWallet:
+                mIntent(HideWalletActivity.class);
                 break;
 
         }

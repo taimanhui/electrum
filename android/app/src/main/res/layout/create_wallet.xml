@@ -131,9 +131,42 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="79dp"
-                android:layout_marginEnd="11dp"
+                android:layout_marginEnd="5.5dp"
                 android:layout_weight="1"
                 android:layout_marginStart="@dimen/dp_10"
+                android:background="@color/button_bk_ddake"
+                app:cardCornerRadius="@dimen/corner_radius">
+
+                <LinearLayout
+                    android:id="@+id/linHideWallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="@dimen/dp_40"
+                        android:layout_height="@dimen/dp_40"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:src="@drawable/daoru" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_10"
+                        android:text="@string/hide_wallet"
+                        android:textColor="#494949"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="79dp"
+                android:layout_marginEnd="@dimen/dp_10"
+                android:layout_weight="1"
+                android:layout_marginStart="5.5dp"
                 android:background="@color/button_bk_ddake"
                 app:cardCornerRadius="@dimen/corner_radius">
 
@@ -160,14 +193,6 @@
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:visibility="invisible" />
 
 
         </LinearLayout>

@@ -42,7 +42,6 @@ public class PinSettingActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(this);
-        edtPwd.setInputType(InputType.TYPE_NULL);
         keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
         tag = getIntent().getIntExtra("pin", 0);
         switch (tag) {

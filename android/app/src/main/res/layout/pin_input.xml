@@ -24,6 +24,19 @@
             android:src="@drawable/back"
             android:contentDescription="@string/back" />
 
+        <TextView
+            android:id="@+id/testTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/create_hide_wallet"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+
     </RelativeLayout>
 
     <LinearLayout

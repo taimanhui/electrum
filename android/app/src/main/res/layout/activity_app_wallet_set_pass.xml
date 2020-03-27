@@ -67,7 +67,7 @@
                     android:layout_height="59.5dp"
                     android:layout_marginStart="@dimen/dp_16"
                     android:gravity="center_vertical"
-                    android:text="@string/creat_app_wallet"
+                    android:text="@string/setwallet_pass"
                     android:textColor="@color/text_color"
                     android:textSize="18sp" />
 

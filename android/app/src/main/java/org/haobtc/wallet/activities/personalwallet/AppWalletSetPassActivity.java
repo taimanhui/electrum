@@ -82,23 +82,23 @@ public class AppWalletSetPassActivity extends BaseActivity {
                 strPass1 = edtPass1.getText().toString();
                 String strPass2 = edtPass2.getText().toString();
                 if (TextUtils.isEmpty(strPass1)) {
-                    mToast(getResources().getString(R.string.set_pass));
+                    mToast(getString(R.string.set_pass));
                     myDialog.dismiss();
                     return;
                 }
                 if (TextUtils.isEmpty(strPass2)) {
-                    mToast(getResources().getString(R.string.set_pass_second));
+                    mToast(getString(R.string.set_pass_second));
                     myDialog.dismiss();
                     return;
                 }
                 if (!strPass1.equals(strPass2)) {
-                    mToast(getResources().getString(R.string.two_different_pass));
+                    mToast(getString(R.string.two_different_pass));
                     myDialog.dismiss();
                     return;
                 }
                 boolean passType = isPassType(strPass1);
                 if (!passType) {
-                    mToast(getResources().getString(R.string.passtype_wrong));
+                    mToast(getString(R.string.passtype_wrong));
                     myDialog.dismiss();
                     return;
                 }
@@ -138,7 +138,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                         myDialog.dismiss();
                         e.printStackTrace();
                         if (e.getMessage().contains("path is exist")) {
-                            mToast(getResources().getString(R.string.changewalletname));
+                            mToast(getString(R.string.changewalletname));
                         }
                         return;
                         //local taste noodle trial level soda mobile orchard amazing bean gossip library
@@ -160,7 +160,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                         myDialog.dismiss();
                         e.printStackTrace();
                         if (e.getMessage().contains("path is exist")) {
-                            mToast(getResources().getString(R.string.changewalletname));
+                            mToast(getString(R.string.changewalletname));
                         }
                         return;
                     }

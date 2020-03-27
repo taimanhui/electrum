@@ -46,7 +46,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
                 webHeckChain.setVisibility(View.VISIBLE);
                 linNonet.setVisibility(View.GONE);
             } else {
-                mToast(getResources().getString(R.string.net_dont_use));
+                mToast(getString(R.string.net_dont_use));
                 nets = 4;
                 webHeckChain.setVisibility(View.GONE);
                 linNonet.setVisibility(View.VISIBLE);
@@ -148,7 +148,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             message.what = 99;
             handler.sendMessage(message);
         } else {
-            Toast.makeText(this, getResources().getString(R.string.net_dont_use), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.net_dont_use), Toast.LENGTH_SHORT).show();
             message.what = 100;
             handler.sendMessage(message);
         }

@@ -94,7 +94,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                     }
                     edit.putBoolean("set_rbf", true);
                     edit.apply();
-                    mToast(getResources().getString(R.string.set_success));
+                    mToast(getString(R.string.set_success));
                 } else {
                     try {
                         Daemon.commands.callAttr("set_rbf", false);
@@ -118,7 +118,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                     }
                     edit.putBoolean("set_unconf", true);
                     edit.apply();
-                    mToast(getResources().getString(R.string.set_success));
+                    mToast(getString(R.string.set_success));
                 } else {
                     try {
                         Daemon.commands.callAttr("set_unconf", false);
@@ -142,7 +142,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                     }
                     edit.putBoolean("set_use_change", true);
                     edit.apply();
-                    mToast(getResources().getString(R.string.set_success));
+                    mToast(getString(R.string.set_success));
                 } else {
                     try {
                         Daemon.commands.callAttr("set_use_change", false);
@@ -221,7 +221,7 @@ public class TransactionsSettingActivity extends BaseActivity {
         switchNoConfirm.setChecked(true);
         switchFind.setChecked(false);
         myDialog.dismiss();
-        mToast(getResources().getString(R.string.recovery_succse));
+        mToast(getString(R.string.recovery_succse));
 
     }
 

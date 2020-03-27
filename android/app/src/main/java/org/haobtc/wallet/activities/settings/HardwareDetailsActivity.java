@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.settings.fixpin.InputOldPINActivity;
+import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 
 import butterknife.BindView;
@@ -17,6 +17,7 @@ import butterknife.OnClick;
 
 public class HardwareDetailsActivity extends BaseActivity {
 
+    private static final String TAG = HardwareDetailsActivity.class.getSimpleName();
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.tet_keyName)
@@ -37,6 +38,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     LinearLayout linOnckFive;
     @BindView(R.id.tetKeyname)
     TextView tetKeyname;
+    private CommunicationModeSelector dialogFragment;
 
     @Override
     public int getLayoutId() {
@@ -70,7 +72,9 @@ public class HardwareDetailsActivity extends BaseActivity {
                 mIntent(VersionUpgradeActivity.class);
                 break;
             case R.id.lin_OnckThree:
-                mIntent(InputOldPINActivity.class);
+                dialogFragment = new CommunicationModeSelector(TAG, null, "");
+                dialogFragment.show(getSupportFragmentManager(), "");
+//                mIntent(InputOldPINActivity.class);
                 break;
             case R.id.lin_OnckFour:
                 mIntent(ConfidentialPaymentSettings.class);

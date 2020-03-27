@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- <uses-permission -->
-    <!--used for app auto update-->
+    <!-- used for app auto update -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -39,7 +39,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.personalwallet.ChooseHistryWalletActivity"/>
+        <activity android:name=".activities.personalwallet.hidewallet.HideWalletActivity" />
+        <activity android:name=".activities.sign.CheckSignActivity" />
+        <activity android:name=".activities.personalwallet.ChooseHistryWalletActivity" />
         <activity android:name=".activities.settings.ConfidentialPaymentSettings" />
         <activity android:name=".activities.settings.fixpin.ConfirmPincodeActivity" />
         <activity android:name=".activities.settings.UpgradeFinishedActivity" />
@@ -71,7 +73,6 @@
         <activity android:name=".activities.settings.CurrencyActivity" />
         <activity android:name=".activities.settings.BixinKEYMenageActivity" />
         <activity android:name=".activities.personalwallet.CreatFinishPersonalActivity" />
-        <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" />
         <activity android:name=".activities.personalwallet.SingleSigWalletCreator" />
         <activity android:name=".activities.jointwallet.MultiSigWalletCreator">
             <intent-filter>
@@ -94,7 +95,7 @@
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity android:name=".activities.base.LunchActivity">
@@ -140,7 +141,6 @@
         <activity android:name=".activities.ConfirmOnHardware" />
         <activity android:name=".activities.CreateWalletActivity" />
         <activity android:name=".activities.ImportWalletPageActivity" />
-        <activity android:name=".activities.CreateWalletPageActivity" />
         <activity android:name=".activities.PublicKeyInputEditActivity" />
         <activity android:name=".activities.SelectMultiSigWalletActivity" />
         <activity
@@ -160,7 +160,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.ActivateSuccessActivity" />
-        <activity android:name=".activities.CoSignerAddActivity" />
         <activity android:name=".activities.settings.AgreementActivity" />
         <activity android:name=".activities.ShareOtherActivity" />
         <activity android:name=".activities.GuideActivity" />
@@ -168,7 +167,10 @@
         <activity android:name="dr.android.fileselector.FileSelectActivity" />
         <activity android:name=".activities.CreateWalletSuccessfulActivity" />
         <activity android:name=".activities.settings.VerificationSuccessActivity" />
-        <activity android:name=".activities.sign.SignActivity" /> <!-- aotusize -->
+        <activity android:name=".activities.sign.SignActivity" />
+        <activity android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity" />
+        <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator"/>
+        <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />

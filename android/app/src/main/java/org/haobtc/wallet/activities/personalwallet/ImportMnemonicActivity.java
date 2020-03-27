@@ -61,7 +61,6 @@ public class ImportMnemonicActivity extends BaseActivity {
     private String strRemeber = "";
     private String strPass1;
     private final String FIRST_RUN = "is_first_run";
-    private SharedPreferences.Editor edit;
     private MyDialog myDialog;
     private String strName;
 
@@ -74,7 +73,7 @@ public class ImportMnemonicActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        edit = preferences.edit();
+        SharedPreferences.Editor edit = preferences.edit();
         myDialog = MyDialog.showDialog(ImportMnemonicActivity.this);
         Intent intent = getIntent();
         String strSeeds = intent.getStringExtra("strSeeds");
@@ -86,7 +85,6 @@ public class ImportMnemonicActivity extends BaseActivity {
         for (int i = 0; i < wordsList.length; i++) {
             strings.add(wordsList[i]);
         }
-
 
         List<String> randomList = createRandomList(strings, 12);
 
@@ -123,7 +121,7 @@ public class ImportMnemonicActivity extends BaseActivity {
 
     private void helpWord(String strWord) {
         if (strWord.equals(strRemeber)) {
-            mToast(getResources().getString(R.string.have_word));
+            mToast(getString(R.string.have_word));
         } else {
             strRemeber = strWord;
             if (TextUtils.isEmpty(editOne.getText().toString())) {
@@ -155,7 +153,6 @@ public class ImportMnemonicActivity extends BaseActivity {
 
             }
         }
-
     }
 
     private void helpWordOk() {
@@ -173,21 +170,19 @@ public class ImportMnemonicActivity extends BaseActivity {
         String streleven = editEleven.getText().toString();
         String strtwelve = editTwelve.getText().toString();
 
-
         String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
-
 
         try {
             Daemon.commands.callAttr("check_seed", strNewseed, strPass1);
             Intent intent = new Intent(this, AppWalletCreateFinishActivity.class);
-            intent.putExtra("strName",strName);
+            intent.putExtra("strName", strName);
             myDialog.dismiss();
             startActivity(intent);
         } catch (Exception e) {
             myDialog.dismiss();
-            if (e.getMessage().contains("pair seed failed")){
+            if (e.getMessage().contains("pair seed failed")) {
                 mToast(getString(R.string.helpword_wrong));
-            }else{
+            } else {
                 mToast(getString(R.string.improt_wrong));
             }
             e.printStackTrace();
@@ -200,7 +195,6 @@ public class ImportMnemonicActivity extends BaseActivity {
 
     }
 
-
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -209,5 +203,4 @@ public class ImportMnemonicActivity extends BaseActivity {
                 break;
         }
     }
-
 }

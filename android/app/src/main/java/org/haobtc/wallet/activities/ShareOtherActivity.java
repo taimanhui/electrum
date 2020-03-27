@@ -66,12 +66,7 @@ public class ShareOtherActivity extends BaseActivity {
     TextView tetBigMessage;
     private RxPermissions rxPermissions;
     private String rowTrsaction;
-    static private int openfileDialogId = 0;
     private Bitmap bitmap;
-    //add read write peimission
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private boolean toGallery;
     private Dialog dialogBtom;
     private String rowTx;

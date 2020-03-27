@@ -3,8 +3,6 @@ package org.haobtc.wallet.activities.jointwallet;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
@@ -48,6 +46,8 @@ import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.personalwallet.PersonalMultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
+import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
+import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
@@ -92,7 +92,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public static final int SHOW_PROCESSING = 7;
     public static final int PIN_CURRENT = 1;
     public static final int PIN_NEW_FIRST = 2;
+    public static final int PASS_CUCCER = 3;
+    public static final int PASS_NEW_PASSPHRASS = 6;
     private static final int REQUEST_ENABLE_BT = 1;
+    public static final int PASSPHRASS_INPUT = 8;
     public static volatile String pin = "";
     public static PyObject pyHandler, customerUI;
     public static MyHandler handler;
@@ -295,7 +298,6 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     }
                 }
             }
-
         }
     };
     public CommunicationModeSelector(String tag, @Nullable List<Runnable> runnables, String extra) {
@@ -315,10 +317,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         boolean isInit = features.isInitialized();
         if (isInit) {
             boolean pinCached = features.isPinCached();
-            if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)) {
+            if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)) {
                 dialogFragment = showReadingDialog();
                 Log.i(TAG, "java ==== get_xpub_from_hw");
-                if (SingleSigWalletCreator.TAG.equals(tag)) {
+                if (SingleSigWalletCreator.TAG.equals(tag)||HideWalletActivity.TAG.equals(tag)) {
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth", new Kwarg("_type", "p2wpkh")));
                 } else {
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
@@ -618,6 +620,14 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 case SHOW_PROCESSING:
                     Intent intent2 = new Intent(fragmentActivity, ActivatedProcessing.class);
                     fragmentActivity.startActivity(intent2);
+                    break;
+                case PASS_NEW_PASSPHRASS:
+                    //Set password
+                    Log.e("PASS_CUCCER", "handleMessage: " + PASS_NEW_PASSPHRASS);
+                    Intent intent4 = new Intent(fragmentActivity, HideWalletSetPassActivity.class);
+                    intent4.putExtra("pin", PASS_NEW_PASSPHRASS);
+                    fragmentActivity.startActivityForResult(intent4, PASSPHRASS_INPUT);
+                    break;
             }
         }
     }

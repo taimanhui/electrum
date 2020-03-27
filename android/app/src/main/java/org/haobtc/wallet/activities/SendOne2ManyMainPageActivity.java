@@ -120,7 +120,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         //To many people Coin making
         strmapBtc = intent.getStringExtra("strmapBtc");
         walletName.setText(wallet_name);
-        addressCount.setText(String.format("%s %s", String.valueOf(addressNum), getResources().getString(R.string.to_num)));
+        addressCount.setText(String.format("%s %s", String.valueOf(addressNum), getString(R.string.to_num)));
         tvAmount.setText(String.format("%s BTC", totalAmount));
         //InputMaxTextNum
         setEditTextComments();
@@ -268,7 +268,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                     Log.i("CreatTransaction", "m-------: " + mktx);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    mToast(getResources().getString(R.string.changeaddress));
+                    mToast(getString(R.string.changeaddress));
                     return;
                 }
                 if (mktx != null) {

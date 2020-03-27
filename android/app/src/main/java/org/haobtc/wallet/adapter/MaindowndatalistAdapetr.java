@@ -61,7 +61,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 helper.setText(R.id.tet_zt, R.string.alreadychoose);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF6182F5"));
-                tetview.setBackground(mContext.getResources().getDrawable(R.drawable.gray_tuocircle));
+                tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
             } else {
                 String tx_status = item.getTx_status();
                 if ("Signed".equals(tx_status)||"Local".equals(tx_status)) {
@@ -74,13 +74,13 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                     helper.setText(R.id.tet_zt, R.string.transaction_waitting);
                     TextView tetview = helper.getView(R.id.tet_zt);
                     tetview.setTextColor(Color.parseColor("#FFF26A3A"));
-                    tetview.setBackground(mContext.getResources().getDrawable(R.drawable.orange_circle));
+                    tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
                 } else if ("Partially signed".contains(tx_status)) {
                     //new creat trsaction
                     helper.setText(R.id.tet_zt, R.string.partsigned);
                     TextView tetview = helper.getView(R.id.tet_zt);
                     tetview.setTextColor(Color.parseColor("#FFF26A3A"));
-                    tetview.setBackground(mContext.getResources().getDrawable(R.drawable.orange_circle));
+                    tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
                 }else if ("Unconfirmed".contains(tx_status)){
                     helper.setText(R.id.tet_zt, R.string.waitchoose);
                 }

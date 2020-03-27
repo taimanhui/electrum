@@ -42,9 +42,9 @@ public class LunchActivity extends BaseActivity {
         @Override
         public void handleMessage(@NonNull Message msg) {
             Global.py = Python.getInstance();
-            if (BuildConfig.net_type.equals(getResources().getString(R.string.TestNet))) {
+            if (BuildConfig.net_type.equals(getString(R.string.TestNet))) {
                 Global.py.getModule("electrum.constants").callAttr("set_testnet");
-            } else if (BuildConfig.net_type.equals(getResources().getString(R.string.RegTest))) {
+            } else if (BuildConfig.net_type.equals(getString(R.string.RegTest))) {
                 Global.py.getModule("electrum.constants").callAttr("set_regtest");
             }
             Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");

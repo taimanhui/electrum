@@ -109,7 +109,7 @@ public class MnemonicWordActivity extends BaseActivity {
                 break;
             case R.id.lin_Bitype:
                 if (dataListName == null || dataListName.size() == 0) {
-                    mToast(getResources().getString(R.string.none_wallet));
+                    mToast(getString(R.string.none_wallet));
                     return;
                 }
                 showDialogs(MnemonicWordActivity.this, R.layout.selectwallet_item);
@@ -129,17 +129,17 @@ public class MnemonicWordActivity extends BaseActivity {
                 String strtwelve = editTwelve.getText().toString();
                 Log.i("newWallet_name", "newWallet_name: " + newWallet_type);
                 if (dataListName == null || dataListName.size() == 0) {
-                    mToast(getResources().getString(R.string.none_wallet));
+                    mToast(getString(R.string.none_wallet));
                     return;
                 }
                 if (TextUtils.isEmpty(newWallet_type)) {
-                    mToast(getResources().getString(R.string.please_selectwallet));
+                    mToast(getString(R.string.please_selectwallet));
                     return;
                 }
                 if ((TextUtils.isEmpty(strone) || TextUtils.isEmpty(strtwo) || TextUtils.isEmpty(strthree) || TextUtils.isEmpty(strfour))
                         || TextUtils.isEmpty(strfive) || TextUtils.isEmpty(strsix) || TextUtils.isEmpty(strseven) || TextUtils.isEmpty(streight)
                         || TextUtils.isEmpty(strnine) || TextUtils.isEmpty(strten) || TextUtils.isEmpty(streleven) || TextUtils.isEmpty(strtwelve)) {
-                    mToast(getResources().getString(R.string._12_help_word));
+                    mToast(getString(R.string._12_help_word));
                     return;
                 }
                 String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;

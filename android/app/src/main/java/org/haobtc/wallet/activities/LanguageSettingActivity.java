@@ -50,8 +50,8 @@ public class LanguageSettingActivity extends BaseActivity {
     @Override
     public void initData() {
         if (language.equals("English")) {
-            radioEnglish.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-            radioChineseasy.setTextColor(getResources().getColor(R.color.text_color1));
+            radioEnglish.setTextColor(getColor(R.color.button_bk_disableok));
+            radioChineseasy.setTextColor(getColor(R.color.text_color1));
         }
 
     }

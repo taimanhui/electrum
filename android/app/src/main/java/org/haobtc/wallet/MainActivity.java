@@ -164,29 +164,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         int versionCode = getVersionCode(this);
         String url = "https://f29addac654be01c67d351d1b4282d53.dd.cdntips.com/imtt.dd.qq.com/16891/DC501F04BBAA458C9DC33008EFED5E7F.apk?mkey=5d6d132d73c4febb&f=0c2f&fsname=com.estrongs.android.pop_4.2.0.2.1_10027.apk&csr=1bbd&cip=115.196.216.78&proto=https";
         UpdateConfiguration configuration = new UpdateConfiguration()
-                //输出错误日志
                 .setEnableLog(true)
-                //设置自定义的下载
                 //.setHttpManager()
-                //下载完成自动跳动安装页面
                 .setJumpInstallPage(true)
-                //设置对话框背景图片 (图片规范参照demo中的示例图)
-                //.setDialogImage(R.drawable.ic_dialog)
-                //设置按钮的颜色
-                //.setDialogButtonColor(getColor(R.color.butotn_back))
-                //设置对话框强制更新时进度条和文字的颜色
-                //.setDialogProgressBarColor(Color.parseColor("#E743DA"))
-                //设置按钮的文字颜色
                 .setDialogButtonTextColor(Color.WHITE)
-                //设置是否显示通知栏进度
                 .setShowNotification(true)
-                //设置是否提示后台下载toast
                 .setShowBgdToast(true)
-                //设置强制更新
                 .setForcedUpgrade(false)
-                //设置对话框按钮的点击监听
                 .setButtonClickListener(this)
-                //设置下载过程的监听
                 .setOnDownloadListener(this);
 
         manager = DownloadManager.getInstance(this);
@@ -489,7 +474,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     e.printStackTrace();
                                 }
                             } else {
-                                mToast(getResources().getString(R.string.delete_unBroad));
+                                mToast(getString(R.string.delete_unBroad));
                             }
 
                             break;
@@ -617,7 +602,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 intent.putExtra("listType", "scan");
                                 startActivity(intent);
                             } else {
-                                mToast(getResources().getString(R.string.address_wrong));
+                                mToast(getString(R.string.address_wrong));
                             }
 
 

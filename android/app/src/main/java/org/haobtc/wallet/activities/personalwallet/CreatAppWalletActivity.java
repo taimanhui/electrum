@@ -2,7 +2,10 @@ package org.haobtc.wallet.activities.personalwallet;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CreatAppWalletActivity extends BaseActivity {
+public class CreatAppWalletActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -43,6 +46,7 @@ public class CreatAppWalletActivity extends BaseActivity {
     public void initData() {
         int walletNameNum = defaultName+1;
         tetSetWalletName.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
+        tetSetWalletName.addTextChangedListener(this);
 
     }
 
@@ -55,7 +59,7 @@ public class CreatAppWalletActivity extends BaseActivity {
             case R.id.btn_setPin:
                 String strWalletName = tetSetWalletName.getText().toString();
                 if (TextUtils.isEmpty(strWalletName)){
-                    mToast(getResources().getString(R.string.set_wallet));
+                    mToast(getString(R.string.set_wallet));
                     return;
                 }
                 Intent intent = new Intent(CreatAppWalletActivity.this, AppWalletSetPassActivity.class);
@@ -63,5 +67,26 @@ public class CreatAppWalletActivity extends BaseActivity {
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (TextUtils.isEmpty(s)){
+            btnSetPin.setEnabled(false);
+            btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
+        }else{
+            btnSetPin.setEnabled(true);
+            btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }

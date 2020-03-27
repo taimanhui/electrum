@@ -79,19 +79,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 1:
-                    try {
-                        Daemon.commands.callAttr("create_multi_wallet", walletNames);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        myDialog.dismiss();
-                        String message = e.getMessage();
-                        if ("BaseException: file already exists at path".equals(message)) {
-                            mToast(getResources().getString(R.string.changewalletname));
-                        }
-                        return;
-                    }
-                    myDialog.dismiss();
-                    mIntent(MainActivity.class);
+
                     break;
             }
         }
@@ -100,6 +88,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     @Override
     public void initData() {
         keyList = new ArrayList<>();
+        //get wallet QR code
         mGeneratecode();
         //all bixinkey
         checkAllBixinkey();
@@ -140,14 +129,13 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             case R.id.tet_Preservation:
                 boolean toGallery = saveBitmap(bitmap);
                 if (toGallery) {
-                    mToast(getResources().getString(R.string.preservationbitmappic));
+                    mToast(getString(R.string.preservationbitmappic));
                 } else {
                     Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.bn_complete_add_cosigner:
-                myDialog.show();
-                handler.sendEmptyMessage(1);
+                mIntent(MainActivity.class);
                 break;
         }
     }
@@ -155,6 +143,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     private void mGeneratecode() {
         PyObject walletAddressShowUi = null;
         try {
+            Daemon.commands.callAttr("select_wallet", walletNames);
             walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();

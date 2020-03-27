@@ -132,7 +132,7 @@ public class WalletDetailsActivity extends BaseActivity {
             try {
                 Daemon.commands.callAttr("delete_wallet", wallet_name);
                 EventBus.getDefault().post(new FirstEvent("11"));
-                mToast(getResources().getString(R.string.delete_succse));
+                mToast(getString(R.string.delete_succse));
                 finish();
             } catch (Exception e) {
                 Log.i("delete_wallet", "===========: "+e.getMessage());

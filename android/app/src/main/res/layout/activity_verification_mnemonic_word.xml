@@ -58,7 +58,7 @@
                     android:layout_height="59.5dp"
                     android:layout_marginStart="@dimen/dp_16"
                     android:gravity="center_vertical"
-                    android:text="@string/backups_wallet"
+                    android:text="@string/check_word"
                     android:textColor="@color/text_color"
                     android:textSize="18sp" />
 

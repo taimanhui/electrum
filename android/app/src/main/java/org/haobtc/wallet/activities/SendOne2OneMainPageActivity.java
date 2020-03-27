@@ -170,6 +170,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 } else {
                     //getFeerate
                     getFeerate();
+                    //button to gray or blue
+                    changeButton();
                 }
             }
         });
@@ -181,6 +183,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 } else {
                     //getFeerate
                     getFeerate();
+                    //button to gray or blue
+                    changeButton();
                 }
             }
         });
@@ -211,12 +215,25 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     } else {
                         //getFeerate
                         getFeerate();
+                        //button to gray or blue
+                        changeButton();
                     }
                 }
             }
         };
         //Register layout change monitoring
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(mLayoutChangeListener);
+    }
+
+    //button to gray or blue
+    private void changeButton() {
+        if (!TextUtils.isEmpty(editAddress.getText().toString()) && !TextUtils.isEmpty(tetamount.getText().toString())) {
+            buttonCreate.setEnabled(true);
+            buttonCreate.setBackground(getDrawable(R.drawable.button_bk));
+        } else {
+            buttonCreate.setEnabled(false);
+            buttonCreate.setBackground(getDrawable(R.drawable.button_bk_grey));
+        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -278,7 +295,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "");
-
+//                tetMoneye.setText(strFeemontAs);
                 intmaxFee = Integer.parseInt(strMax);//fee
                 seekBar.setMax(intmaxFee);
                 seekBar.setProgress(intmaxFee);
@@ -576,7 +593,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     return;
                 }
                 if (walletmoney == 1) {
-                    mToast(getResources().getString(R.string.wallet_insufficient));
+                    mToast(getString(R.string.wallet_insufficient));
                     return;
                 }
                 //creatTrnsaction
@@ -603,6 +620,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         editAddress.setText(data.getItemAt(0).getText());
                         //getFeerate
                         getFeerate();
+                        //button to gray or blue
+                        changeButton();
                     }
                 }
                 break;
@@ -636,10 +655,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             e.printStackTrace();
             Log.i("CreatTransaction", "mCrea-----  " + e.getMessage());
             if (e.getMessage().contains("Insufficient funds")) {
-//                mToast(getResources().getString(R.string.insufficient));
-                mToast(getResources().getString(R.string.fee_toohigh));
+//                mToast(getString(R.string.insufficient));
+                mToast(getString(R.string.fee_toohigh));
             } else if (e.getMessage().contains("invalid bitcoin address")) {
-                mToast(getResources().getString(R.string.changeaddress));
+                mToast(getString(R.string.changeaddress));
             }
 
             return;
@@ -692,6 +711,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     }
                     //getFeerate
                     getFeerate();
+                    //button to gray or blue
+                    changeButton();
 
                 }
             }
@@ -764,10 +785,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 BigDecimal bigDecimal = new BigDecimal(21000000);
                 int mathMax = bignum1.compareTo(bigDecimal);
                 if (mathMax == 1) {
-                    mToast(getResources().getString(R.string.sendMore));
+                    mToast(getString(R.string.sendMore));
                 } else {
                     if (math == 1) {
-                        mToast(getResources().getString(R.string.wallet_insufficient));
+                        mToast(getString(R.string.wallet_insufficient));
                         //walletmoney == 1  ->  Sorry, your credit is running low
                         walletmoney = 1;
                     } else if (math == -1 || math == 0) {

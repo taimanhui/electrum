@@ -455,6 +455,15 @@
     <string name="input_tsaction_text">输入交易报文</string>
     <string name="PINiswrong">PIN码输入有误，请重新输入</string>
     <string name="hide_wallet_tips">隐藏钱包不存储交易记录</string>
+    <string name="check_word">验证助记词</string>
+    <string name="hide_wallet">隐藏钱包</string>
+    <string name="create_hide_wallet">创建隐藏钱包</string>
+    <string name="hide_wallet_know_tips">隐藏钱包不在APP记录任何数据，使用时需使用BixinKEY链接，并使用专用PIN码解锁</string>
+    <string name="hide_wallet_benefit">隐藏钱包将帮助您更好的隐藏资产状况</string>
+    <string name="create_hide_wallet_tips">创建隐藏钱包，需使用已激活的BixinKEY</string>
+    <string name="hide_wallet_is">什么是隐藏钱包？</string>
+    <string name="set_hidewallet_pass">设置隐藏钱包的密码</string>
+    <string name="bluetooth_abnormal">蓝牙连接异常</string>
 
 
 </resources>

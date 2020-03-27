@@ -105,7 +105,7 @@ public class AppWalletCreateFinishActivity extends BaseActivity {
                             if (granted) { // Always true pre-M
                                 boolean toGallery = saveBitmap(bitmap);
                                 if (toGallery) {
-                                    mToast(getResources().getString(R.string.preservationbitmappic));
+                                    mToast(getString(R.string.preservationbitmappic));
                                 } else {
                                     Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
                                 }

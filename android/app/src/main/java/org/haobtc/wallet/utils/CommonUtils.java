@@ -38,7 +38,7 @@ public class CommonUtils {
             if (pf.getName().equals("mSelectionDivider")) {
                 pf.setAccessible(true);
                 try {
-                    pf.set(numberPicker, new ColorDrawable(appCompatActivity.getResources().getColor(R.color.separation_line)));
+                    pf.set(numberPicker, new ColorDrawable(appCompatActivity.getColor(R.color.separation_line)));
                 } catch (IllegalArgumentException | Resources.NotFoundException | IllegalAccessException e) {
                     e.printStackTrace();
                 }

@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,6 +45,7 @@ import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+import org.haobtc.wallet.utils.MyDialog;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -83,28 +87,66 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     private CommunicationModeSelector dialogFragment;
     public static final String TAG = PersonalMultiSigWalletCreator.class.getSimpleName();
     private String walletNames;
+    private int walletNameNum;
     private ArrayList<AddBixinKeyEvent> addEventsDatas;
     private boolean ready;
+    private SharedPreferences.Editor edit;
+    private MyDialog myDialog;
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    try {
+                        Daemon.commands.callAttr("create_multi_wallet", walletNames);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        myDialog.dismiss();
+                        String message = e.getMessage();
+                        if ("BaseException: file already exists at path".equals(message)) {
+                            mToast(getString(R.string.changewalletname));
+                        }
+                        return;
+                    }
+                    edit.putInt("defaultName", walletNameNum);
+                    edit.apply();
+                    myDialog.dismiss();
+                    Intent intent = new Intent(PersonalMultiSigWalletCreator.this, CreatFinishPersonalActivity.class);
+                    intent.putExtra("walletNames", walletNames);
+                    intent.putExtra("flagTag", "onlyChoose");
+                    intent.putExtra("strBixinlist", (Serializable) addEventsDatas);
+                    startActivity(intent);
+                    break;
 
+            }
+        }
+    };
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_create_only_choose;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
+        myDialog = MyDialog.showDialog(this);
         Intent intent = getIntent();
         sigNum = intent.getIntExtra("sigNum", 0);
         walletNames = intent.getStringExtra("walletNames");
+        walletNameNum = intent.getIntExtra("walletNameNum", 0);
         init();
 
     }
 
     @SuppressLint("DefaultLocale")
     private void init() {
-        tetPersonalNum.setText(String.format("%s(0/%d)", getResources().getString(R.string.creat_personal), sigNum));
+        tetPersonalNum.setText(String.format("%s(0/%d)", getString(R.string.creat_personal), sigNum));
     }
 
     @Override
@@ -131,6 +173,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 break;
         }
     }
+
     private Runnable runnable2 = () -> showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
 
     private void showPopupAddCosigner1() {
@@ -312,6 +355,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
         }
 
     }
+
     private void getResult() {
         try {
             ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
@@ -320,12 +364,13 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                mToast(getResources().getString(R.string.pin_wrong));
+                mToast(getString(R.string.pin_wrong));
             } else {
                 dialogFragment.showReadingFailedDialog();
             }
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

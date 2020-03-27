@@ -207,7 +207,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         e.printStackTrace();
                                     }
                                 } else {
-                                    mToast(getResources().getString(R.string.delete_unBroad));
+                                    mToast(getString(R.string.delete_unBroad));
                                 }
                                 break;
                         }

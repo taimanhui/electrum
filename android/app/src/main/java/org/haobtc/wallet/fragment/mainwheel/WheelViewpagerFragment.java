@@ -174,7 +174,7 @@ public class WheelViewpagerFragment extends Fragment {
                     view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
                         String strPassword = str_pass.getText().toString();
                         if (TextUtils.isEmpty(strPassword)) {
-                            Toast.makeText(getActivity(), getResources().getString(R.string.please_input_pass), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.please_input_pass), Toast.LENGTH_SHORT).show();
                             return;
                         }
                         try {
@@ -185,14 +185,14 @@ public class WheelViewpagerFragment extends Fragment {
                             alertDialog.dismiss();
                         } catch (Exception e) {
                             if (e.getMessage().contains("Incorrect password")) {
-                                Toast.makeText(getActivity(), getResources().getString(R.string.wrong_pass), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(),getString(R.string.wrong_pass), Toast.LENGTH_SHORT).show();
                             }
                             e.printStackTrace();
                         }
 
                     });
                     view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
-                        Toast.makeText(getActivity(), getResources().getString(R.string.msg_get_wrong), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.msg_get_wrong), Toast.LENGTH_SHORT).show();
                         walletBlance.setText("");
                         tetCny.setText("");
                         tetFiat.setText("");
@@ -278,7 +278,7 @@ public class WheelViewpagerFragment extends Fragment {
                 }
                 if (msgVote.contains("unconfirmed")) {
                     String unconfirmed = jsonObject.getString("unconfirmed");
-                    tetFiat.setText(String.format("%s%s", unconfirmed, getResources().getString(R.string.unconfirm)));
+                    tetFiat.setText(String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
                 } else {
                     tetFiat.setText("");
                 }

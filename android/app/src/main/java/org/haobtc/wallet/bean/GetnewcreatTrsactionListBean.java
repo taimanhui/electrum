@@ -10,16 +10,17 @@ public class GetnewcreatTrsactionListBean implements Serializable{
 
 
     /**
-     * txid : 5e4503a857eb0c89ccf0f0a60f35e0a964ed057efa2de0594eebda1fb160d4ad
+     * txid : a3099793e594bff4c70ca24259060c9c2478f433642eca8660e923cab7e2d2af
      * can_broadcast : false
-     * amount : 0 mBTC
-     * fee : 0.001 mBTC
-     * description : 明天会更好
+     * amount : -0.0001 mBTC (-0.00 CNY)
+     * fee : 0.2538 mBTC (12.09 CNY)
+     * description : hello
      * tx_status : Unsigned
-     * sign_status : [0,2]
-     * output_addr : [{"addr":"bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r","amount":"0.0001 mBTC"},{"addr":"bcrt1q2tfva7ak5t0zkp80dpgjdyx8n9fqs0mregtcjuj39twck6eup7vqycfnw8","amount":"100000.1067 mBTC"}]
-     * cosigner : ["Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg","Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"]
-     * tx : 70736274ff0100fd2302020000000b7f863c1bf2b175be80895db2d857ee4183505f8d2c6705d37ece9d01fc8d320c0100000000fdffffff19f1208bb1a4cd3b9f7780e17b277066dfe0cda9df0acc1cca2ca667a402d3190000000000fdffffffc1d534e912affdb7adf3f1bbc0038cf572e49c4d882d4c1595b9a0000022020392952503489544bca7417275720a5fe98ba94d8bc69fd899b99d3894bc30406c0cbc21edd1010000000000000000
+     * sign_status : [0,1]
+     * output_addr : [{"addr":"bcrt1qcln8zm4wcp2ukfhfshllpwykyteceh4u7hpujg","amount":"0.0001 mBTC (0.00 CNY)"},{"addr":"bcrt1qn8mv7u8lsrts98zl756xz9h5cjp7sx6x0lna56","amount":"1.7461 mBTC (83.21 CNY)"}]
+     * input_addr : [{"addr":"bcrt1qn8mv7u8lsrts98zl756xz9h5cjp7sx6x0lna56"}]
+     * cosigner : ["vpub5ZqDEs4NETZbJ2tc45AwG1ZiQNAzcZHCqY2fxav5kvherpCaniMzXnD4zqaiZ8guR1UVDfBTHzo2cyvUWAShhboWi8a3KZfRjzDoXztypLA"]
+     * tx : 70736274ff01007102000000016b032478b5af107c634b75e9a2a49125075ec364b3ac719ff3bbe57fe06fabbd0100000000fdffffff020a00000000000000160014c7e6716eaec055cb26e985fff0b89622f38cdebc12aa02000000000016001499f6cf70ff80d7029c5ff5346116f4c483e81b46000000000001011f400d03000000000016001499f6cf70ff80d7029c5ff5346116f4c483e81b462206036c9b8c0a67d90a6e2dd65d2945c5dde55a66789136e697d004fd4dce39abc55b0c39ac059c000000000000000000002202036c9b8c0a67d90a6e2dd65d2945c5dde55a66789136e697d004fd4dce39abc55b0c39ac059c000000000000000000
      */
 
     @SerializedName("txid")
@@ -40,6 +41,8 @@ public class GetnewcreatTrsactionListBean implements Serializable{
     private List<Integer> signStatus;
     @SerializedName("output_addr")
     private ArrayList<OutputAddrBean> outputAddr;
+    @SerializedName("input_addr")
+    private List<InputAddrBean> inputAddr;
     @SerializedName("cosigner")
     private List<String> cosigner;
 
@@ -115,6 +118,14 @@ public class GetnewcreatTrsactionListBean implements Serializable{
         this.outputAddr = outputAddr;
     }
 
+    public List<InputAddrBean> getInputAddr() {
+        return inputAddr;
+    }
+
+    public void setInputAddr(List<InputAddrBean> inputAddr) {
+        this.inputAddr = inputAddr;
+    }
+
     public List<String> getCosigner() {
         return cosigner;
     }
@@ -123,10 +134,10 @@ public class GetnewcreatTrsactionListBean implements Serializable{
         this.cosigner = cosigner;
     }
 
-    public static class OutputAddrBean implements Serializable {
+    public static class OutputAddrBean implements Serializable{
         /**
-         * addr : bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r
-         * amount : 0.0001 mBTC
+         * addr : bcrt1qcln8zm4wcp2ukfhfshllpwykyteceh4u7hpujg
+         * amount : 0.0001 mBTC (0.00 CNY)
          */
 
         @SerializedName("addr")
@@ -148,6 +159,23 @@ public class GetnewcreatTrsactionListBean implements Serializable{
 
         public void setAmount(String amount) {
             this.amount = amount;
+        }
+    }
+
+    public static class InputAddrBean {
+        /**
+         * addr : bcrt1qn8mv7u8lsrts98zl756xz9h5cjp7sx6x0lna56
+         */
+
+        @SerializedName("addr")
+        private String addr;
+
+        public String getAddr() {
+            return addr;
+        }
+
+        public void setAddr(String addr) {
+            this.addr = addr;
         }
     }
 }

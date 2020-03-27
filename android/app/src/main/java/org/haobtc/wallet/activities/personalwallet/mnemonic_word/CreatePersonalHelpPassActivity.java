@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,7 +57,55 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         type = intent.getStringExtra("newWallet_type");
         seed = intent.getStringExtra("strNewseed");
         name = intent.getStringExtra("strnewWalletname");
+        inits();
 
+    }
+
+    private void inits() {
+        edtPass1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s) && !TextUtils.isEmpty(edtPass2.getText().toString())) {
+                    btnSetPin.setEnabled(true);
+                    btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
+                }else{
+                    btnSetPin.setEnabled(false);
+                    btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        edtPass2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s) && !TextUtils.isEmpty(edtPass1.getText().toString())) {
+                    btnSetPin.setEnabled(true);
+                    btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
+                }else{
+                    btnSetPin.setEnabled(false);
+                    btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -80,24 +130,24 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         String strPass1 = edtPass1.getText().toString();
         String strPass2 = edtPass2.getText().toString();
         if (TextUtils.isEmpty(strPass1)) {
-            mToast(getResources().getString(R.string.set_pass));
+            mToast(getString(R.string.set_pass));
             myDialog.dismiss();
             return;
         }
         if (TextUtils.isEmpty(strPass2)) {
-            mToast(getResources().getString(R.string.set_pass_second));
+            mToast(getString(R.string.set_pass_second));
             myDialog.dismiss();
             return;
         }
         if (!strPass1.equals(strPass2)) {
-            mToast(getResources().getString(R.string.two_different_pass));
+            mToast(getString(R.string.two_different_pass));
             myDialog.dismiss();
             return;
         }
         boolean passType = isPassType(strPass1);
         Log.i("passType", "passType: " + passType);
         if (!passType) {
-            mToast(getResources().getString(R.string.passtype_wrong));
+            mToast(getString(R.string.passtype_wrong));
             myDialog.dismiss();
             return;
         }
@@ -108,7 +158,7 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
             myDialog.dismiss();
             e.printStackTrace();
             if (e.getMessage().contains("path is exist")) {
-                mToast(getResources().getString(R.string.changewalletname));
+                mToast(getString(R.string.changewalletname));
             }
             return;
         }
@@ -130,12 +180,13 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
 
         return m.matches();
     }
+
     @SuppressLint("HandlerLeak")
-    Handler handler = new Handler(){
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 1:
 
                     break;
