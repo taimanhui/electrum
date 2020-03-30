@@ -741,6 +741,8 @@ class Network(Logger):
         except BaseException as e:
             self.logger.info(f"couldn't launch iface {server} -- {repr(e)}")
             await interface.close()
+            #print(f"could not launch iface {server} --- {repr(e)}")
+            #self.trigger_callback('set_server_status', server)
             return
         else:
             with self.interfaces_lock:
@@ -754,7 +756,10 @@ class Network(Logger):
             await self.switch_to_interface(server)
 
         self._add_recent_server(server)
+        self.trigger_callback('set_server_status', server)
+        #print(f"add_recent_server..................{server}")
         self.trigger_callback('network_updated')
+
 
     def check_interface_against_healthy_spread_of_connected_servers(self, iface_to_check) -> bool:
         # main interface is exempt. this makes switching servers easier

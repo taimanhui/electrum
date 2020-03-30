@@ -130,7 +130,7 @@ class AndroidCommands(commands.Commands):
         self.update_local_wallet_info()
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
-                         'status', 'new_transaction', 'verified']
+                         'status', 'new_transaction', 'verified', 'set_server_status']
             self.network.register_callback(self.on_network_event, interests)
             self.network.register_callback(self.on_fee, ['fee'])
             self.network.register_callback(self.on_fee_histogram, ['fee_histogram'])
@@ -296,6 +296,8 @@ class AndroidCommands(commands.Commands):
             self.update_wallet()
         elif event == 'verified':
             self.update_wallet()
+        elif event == 'set_server_status':
+            self.callbackIntent.onCallback("set_server_status", args[0])
 
     def timer_action(self):
         self.update_wallet()
@@ -509,6 +511,7 @@ class AndroidCommands(commands.Commands):
             all_output_add = json.loads(outputs)
             outputs_addrs = self.parse_output(outputs)
             coins = self.wallet.get_spendable_coins(domain=None)
+            print(f"coins=========={coins}")
             fee_per_kb = 1000 * Decimal(feerate)
             from functools import partial
             fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
@@ -666,6 +669,20 @@ class AndroidCommands(commands.Commands):
             text += ' (%s)'%x
         return text
 
+    ##proxy
+    def set_proxy(self, proxy_mode, proxy_host, proxy_port, proxy_user, proxy_password):
+        net_params = self.network.get_parameters()
+        proxy = None
+        if(proxy_mode != "" and proxy_host != "" and proxy_port != "" and proxy_user != "" and proxy_password != ""):
+            proxy = {'mode': str(proxy_mode).lower(),
+                 'host': str(proxy_host.text()),
+                 'port': str(proxy_port.text()),
+                 'user': str(proxy_user.text()),
+                 'password': str(proxy_password.text())}
+
+        net_params = net_params._replace(proxy=proxy)
+        self.network.run_from_another_thread(self.network.set_parameters(net_params))
+
     ##qr api
     def get_raw_tx_from_qr_data(self, data):
         from electrum.util import bh2u
@@ -704,9 +721,9 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         tx_details = self.wallet.get_tx_info(tx)
         if 'Partially signed' in tx_details.status:
-            r = len(self.wallet.get_keystores())
+            r = len(tx.inputs())
             temp_s, temp_r = tx.signature_count()
-            s, r = temp_s/r, temp_r/r
+            s, r = int(temp_s / r), int(temp_r / r)
         elif 'Unsigned' in tx_details.status:
             s = 0
             r = len(self.wallet.get_keystores())

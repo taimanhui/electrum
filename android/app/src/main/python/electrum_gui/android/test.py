@@ -22,8 +22,8 @@ from console import AndroidCommands
 import time
 util.setup_thread_excepthook()
 print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
-constants.set_testnet()
-#constants.set_regtest()
+#constants.set_testnet()
+constants.set_regtest()
 print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
 testcommond = AndroidCommands()
@@ -32,20 +32,21 @@ testcommond.set_syn_server(False)
 #name = 'hahahahhahh777' #2-2 multi wallet
 #name = 'hahahahhahh333' #1-N wallet
 #name = 'hahahahhahh888' #1-1 wallet
-#name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
-#password = "111111"
+name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
+password = "111111"
 #password = "None"
 #test hardware
 #testcommond.get_xpub_from_hw()
 
 # #create_wallet 2-N HW wallet
-
+#
 # m = 2
 # n = 2
-#xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
+# xpub1='Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX'
+# #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
 # #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB'
 # #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
-#xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
+# xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
 # testcommond.delete_wallet(name)
 # testcommond.set_multi_wallet_info(name,m,n)
 # testcommond.add_xpub(xpub1)
@@ -102,26 +103,26 @@ testcommond.set_syn_server(False)
 # testcommond.create_multi_wallet(name)
 
 
-name = ""
-pasword = 111111
-m = 1
-n = 1
-xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
-for i in range(1,5):
-    name = "test_wallet"+str(i)
-    testcommond.set_multi_wallet_info(name,m,n)
-    testcommond.add_xpub(xpub1)
-    testcommond.create_multi_wallet(name, hide_type=True)
-
-for i in range(1,3):
-    name = "test_wallet"
-    testcommond.set_multi_wallet_info(name,m,n)
-    testcommond.add_xpub(xpub1)
-    testcommond.create_multi_wallet(name, hide_type=True)
-
-ret = testcommond.list_wallets()
-print(f"--------wallet info-------=%s {ret}")
-time.sleep(10000)
+# name = ""
+# pasword = 111111
+# m = 1
+# n = 1
+# xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+# for i in range(1,5):
+#     name = "test_wallet"+str(i)
+#     testcommond.set_multi_wallet_info(name,m,n)
+#     testcommond.add_xpub(xpub1)
+#     testcommond.create_multi_wallet(name, hide_type=True)
+#
+# for i in range(1,3):
+#     name = "test_wallet"
+#     testcommond.set_multi_wallet_info(name,m,n)
+#     testcommond.add_xpub(xpub1)
+#     testcommond.create_multi_wallet(name, hide_type=True)
+#
+# ret = testcommond.list_wallets()
+# print(f"--------wallet info-------=%s {ret}")
+# time.sleep(10000)
 
 ## create software wallet by create seed
 
@@ -189,7 +190,7 @@ print("before data ====%s" %data)
 data = testcommond.get_server_list()
 print("before server_list data =====%s" %data)
 #data = testcommond.set_server("39.97.224.50", "51002")
-data = testcommond.set_server("tn.not.fyi", "55002")
+#data = testcommond.set_server("tn.not.fyi", "55002")
 
 data = testcommond.get_server_list()
 print("after server_list data =====%s" %data)
@@ -227,7 +228,7 @@ print("after get exchange amount = %s" % data)
 # testcommond.broadcast_tx(sign_tx)
 #testcommond.clear_invoices()
 
-testcommond.set_use_change(False)
+testcommond.set_use_change(True)
 testcommond.set_unconf(False)
 
 # testinfo = testcommond.get_all_tx_list(None)
@@ -246,11 +247,11 @@ if not flag:
     sign_list = []
     for i in [1, 2]:
         print("i=%s------------" %i)
-        all_output = []
-        output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2': '0.001'}
+        all_utput = []
+        #output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2': '0.001'}
         # output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
         # output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
-        # output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
+        output_info = {'bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p':'1'}
         all_output.append(output_info)
         # all_output.append(output_info1)
         output_str = json.dumps(all_output)
@@ -274,17 +275,18 @@ if not flag:
         testinfo = testcommond.get_all_tx_list(None)
         print("testinfo  sign= %s------------" % testinfo)
         data = json.loads(testinfo)
-        sign_list.append(sign_tx)
+        sign = json.loads(sign_tx)
+        sign_list.append(sign['tx'])
     data = testcommond.get_default_server()
     print("broadcast data ====%s" % data)
-    time.sleep(5)
+    time.sleep(10)
     for sig in sign_list:
         testcommond.broadcast_tx(sig)
 elif flag:
     all_output = []
     #output_info = {'bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p':'0.1'}
-    output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
-    #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
+    #output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
+    output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
     #output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
     all_output.append(output_info)
     #all_output.append(output_info1)
