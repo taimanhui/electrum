@@ -31,6 +31,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.personalwallet.WalletDetailsActivity;
+import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -41,7 +42,7 @@ import org.json.JSONObject;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class WheelViewpagerFragment extends Fragment {
+public class WheelViewpagerFragment extends Fragment implements View.OnClickListener {
 
     private TextView wallet_card_name;
     private TextView walletpersonce;
@@ -66,6 +67,7 @@ public class WheelViewpagerFragment extends Fragment {
 
     private TextView tetFiat;
     private ConstraintLayout conlayBback;
+    private Button btnRight;
 
 
     public WheelViewpagerFragment(String name, String personce) {
@@ -99,6 +101,7 @@ public class WheelViewpagerFragment extends Fragment {
         tetFiat = view.findViewById(R.id.tet_fiat);
         btnLeft = view.findViewById(R.id.wallet_card_bn1);
         btncenetr = view.findViewById(R.id.wallet_card_bn2);
+        btnRight = view.findViewById(R.id.wallet_card_bn3);
         btn_appWallet = view.findViewById(R.id.app_wallet);
         tetCny = view.findViewById(R.id.tet_Cny);
         conlayBback = view.findViewById(R.id.conlay_back);
@@ -112,41 +115,36 @@ public class WheelViewpagerFragment extends Fragment {
     }
 
     private void init() {
+        btnLeft.setOnClickListener(this);
+        btncenetr.setOnClickListener(this);
+        btnRight.setOnClickListener(this);
+        conlayBback.setOnClickListener(this);
         wallet_card_name.setText(name);
-        if (!TextUtils.isEmpty(personce)) {
-            if (personce.equals("standard")) {
-                btn_appWallet.setVisibility(View.VISIBLE);
-                walletpersonce.setVisibility(View.GONE);
-                conlayBback.setBackground(getResources().getDrawable(R.drawable.home_gray_bg));
-                btnLeft.setBackground(getResources().getDrawable(R.drawable.text_tou_back_blue));
-                btncenetr.setBackground(getResources().getDrawable(R.drawable.text_tou_back_blue));
-            } else {
-                String of = personce.replaceAll("of", "/");
-                walletpersonce.setText(of);
-                conlayBback.setBackground(getResources().getDrawable(R.drawable.home_bg));
-                btnLeft.setBackground(getResources().getDrawable(R.drawable.button_bk_small));
-                btncenetr.setBackground(getResources().getDrawable(R.drawable.button_bk_small));
+        if (getActivity()!=null){
+            if (!TextUtils.isEmpty(personce)) {
+                if (personce.equals("standard")) {
+                    btn_appWallet.setVisibility(View.VISIBLE);
+                    walletpersonce.setVisibility(View.GONE);
+                    conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_gray_bg));
+                    btnLeft.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
+                    btncenetr.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
+                    btnRight.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
+                } else {
+                    String of = personce.replaceAll("of", "/");
+                    walletpersonce.setText(of);
+                    conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_bg));
+                    btnLeft.setBackground(getActivity().getDrawable(R.drawable.button_bk_small));
+                    btncenetr.setBackground(getActivity().getDrawable(R.drawable.button_bk_small));
+                    btnRight.setBackground(getActivity().getDrawable(R.drawable.button_bk_small));
+                }
             }
         }
+
 
     }
 
     private void initdata() {
-        btnLeft.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
-            intent.putExtra("wallet_name", name);
-            intent.putExtra("wallet_type", personce);
-            startActivity(intent);
-        });
-        btncenetr.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), ReceivedPageActivity.class);
-            startActivity(intent);
-        });
-        conlayBback.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), WalletDetailsActivity.class);
-            intent.putExtra("wallet_name", name);
-            startActivity(intent);
-        });
+
 
     }
 
@@ -294,5 +292,32 @@ public class WheelViewpagerFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.conlay_back:
+                Intent intent = new Intent(getActivity(), WalletDetailsActivity.class);
+                intent.putExtra("wallet_name", name);
+                startActivity(intent);
+                break;
+            case R.id.wallet_card_bn1:
+                Intent intent1 = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
+                intent1.putExtra("wallet_name", name);
+                intent1.putExtra("wallet_type", personce);
+                startActivity(intent1);
+                break;
+            case R.id.wallet_card_bn2:
+                Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
+                startActivity(intent2);
+                break;
+            case R.id.wallet_card_bn3:
+                Intent intent3 = new Intent(getActivity(), SignActivity.class);
+                intent3.putExtra("personceType",personce);
+                startActivity(intent3);
+                break;
+
+        }
     }
 }

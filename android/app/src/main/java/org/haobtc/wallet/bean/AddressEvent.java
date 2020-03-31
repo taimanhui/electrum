@@ -5,6 +5,19 @@ public class AddressEvent {
     private String type;
     private String amount;
 
+    public AddressEvent() {
+    }
+
+    public AddressEvent(String name) {
+        this.name = name;
+    }
+
+    public AddressEvent(String name, String type, String amount) {
+        this.name = name;
+        this.type = type;
+        this.amount = amount;
+    }
+
     public String getAmount() {
         return amount;
     }

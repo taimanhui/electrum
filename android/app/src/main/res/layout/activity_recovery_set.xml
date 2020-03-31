@@ -148,6 +148,7 @@
         <Button
             android:id="@+id/btn_setPin"
             android:layout_width="300dp"
+            android:enabled="false"
             android:layout_height="50dp"
             android:background="@drawable/button_bk_grey"
             android:text="@string/confirm_recovery"

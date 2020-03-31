@@ -31,6 +31,19 @@
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
+        <TextView
+            android:id="@+id/textCheckSign"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_alignParentEnd="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:gravity="center"
+            android:text="@string/check_sign"
+            android:textColor="@color/button_bk_disableok"
+            android:textSize="@dimen/text_size" />
+
     </RelativeLayout>
 
     <RelativeLayout
@@ -58,7 +71,7 @@
 
 
                 <RadioButton
-                    android:id="@+id/radio_ble"
+                    android:id="@+id/radioSignTrsaction"
                     android:layout_width="@dimen/dp_70"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/dp_20"
@@ -72,7 +85,7 @@
                     android:textStyle="bold" />
 
                 <RadioButton
-                    android:id="@+id/radio_nfc"
+                    android:id="@+id/radioSignMsg"
                     android:layout_width="@dimen/dp_70"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dp_20"
@@ -86,19 +99,21 @@
 
             </RadioGroup>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_10"
-                android:text="@string/input_message"
-                android:textColor="@color/graytext_color"
-                android:textSize="@dimen/sp_12" />
-
             <LinearLayout
+                android:id="@+id/linSignTrsaction"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="visible">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:gravity="center_horizontal"
+                    android:text="@string/prompt_sig"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_12" />
 
                 <EditText
                     android:id="@+id/editTrsactionTest"
@@ -114,63 +129,87 @@
                     android:textColor="#b3b3b3"
                     android:textSize="15sp" />
 
+                <TextView
+                    android:id="@+id/tet_Error"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dp_40"
+                    android:layout_marginStart="@dimen/sp_16"
+                    android:text="@string/pin_input_again"
+                    android:textColor="#F26A3A"
+                    android:textSize="@dimen/sp_12"
+                    android:visibility="invisible" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="35dp"
+                    android:layout_marginBottom="@dimen/dp_16"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingEnd="@dimen/dp_16">
 
                     <Button
                         android:id="@+id/btn_import_file"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="@dimen/dp_16"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginBottom="@dimen/dp_16"
+                        android:layout_weight="1"
                         android:background="@color/paste_bk"
                         android:drawableStart="@drawable/file"
-                        android:paddingStart="13dp"
+                        android:maxLines="1"
+                        android:paddingStart="10dp"
                         android:paddingEnd="@dimen/dp_10"
                         android:text="@string/import_file"
                         android:textAllCaps="false"
                         android:textColor="@color/button_bk"
-                        android:textSize="15sp" />
+                        android:textSize="@dimen/sp_13" />
+
                     <Button
                         android:id="@+id/btn_sweep"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="@dimen/dp_16"
-                        android:layout_marginBottom="@dimen/dp_16"
+                        android:layout_weight="1"
                         android:background="@color/paste_bk"
                         android:drawableStart="@drawable/saoyisao"
-                        android:paddingStart="@dimen/dp_18"
+                        android:maxLines="1"
+                        android:paddingStart="@dimen/dp_16"
                         android:paddingEnd="@dimen/dp_10"
                         android:text="@string/sweep"
                         android:textAllCaps="false"
                         android:textColor="@color/button_bk"
-                        android:textSize="15sp" />
+                        android:textSize="@dimen/sp_13" />
+
                     <Button
                         android:id="@+id/pasteSignTrsaction"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:layout_marginBottom="@dimen/dp_16"
                         android:background="@color/paste_bk"
                         android:drawableStart="@drawable/zhantie"
-                        android:paddingStart="26.8dp"
-                        android:paddingEnd="24dp"
+                        android:maxLines="1"
+                        android:paddingStart="@dimen/dp_20"
+                        android:paddingEnd="@dimen/dp_16"
                         android:text="@string/paste"
                         android:textAllCaps="false"
                         android:textColor="@color/button_bk"
-                        android:textSize="15sp" />
+                        android:textSize="@dimen/sp_13" />
                 </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
-                android:visibility="gone"
+                android:id="@+id/linSignMsg"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:gravity="center_horizontal"
+                    android:text="@string/input_message"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_12" />
 
                 <EditText
                     android:id="@+id/editSignMsg"
@@ -186,37 +225,52 @@
                     android:textColor="#b3b3b3"
                     android:textSize="15sp" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="35dp"
+                    android:layout_marginBottom="@dimen/dp_16"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingEnd="@dimen/dp_16">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:layout_weight="1" />
 
                     <Button
                         android:id="@+id/pasteSignMsg"
-                        android:layout_width="100dp"
-                        android:layout_height="36dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:layout_marginBottom="@dimen/dp_16"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
                         android:background="@color/paste_bk"
                         android:drawableStart="@drawable/zhantie"
-                        android:paddingStart="26.8dp"
-                        android:paddingEnd="24dp"
+                        android:paddingStart="@dimen/dp_20"
+                        android:paddingEnd="@dimen/dp_16"
                         android:text="@string/paste"
                         android:textAllCaps="false"
                         android:textColor="@color/button_bk"
-                        android:textSize="16sp" />
-                </RelativeLayout>
+                        android:textSize="@dimen/sp_13" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_toUpgrade"
+            android:id="@+id/btnConfirm"
             android:layout_width="300dp"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="37dp"
-            android:background="@drawable/button_bk"
+            android:background="@drawable/button_bk_grey"
+            android:enabled="false"
             android:text="@string/confirm"
             android:textAllCaps="false"
             android:textColor="@android:color/white"

@@ -804,7 +804,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     //get fee num
     private void getFeerate() {
-        Log.i("getFeerate", "g-----------");
         straddress = editAddress.getText().toString();
         strAmount = tetamount.getText().toString();
         strComment = editTextComments.getText().toString();
@@ -814,6 +813,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             pramas.put(straddress, strAmount);
             arrayList.add(pramas);
             String strPramas = new Gson().toJson(arrayList);
+            Log.i("get_fee_by_feerate", "---------: " + strPramas);
+            Log.i("get_fee_by_feerate", "---------: " + strComment);
+            Log.i("get_fee_by_feerate", "---------: " + intmaxFee);
             PyObject get_fee_by_feerate = null;
             try {
                 get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
@@ -831,10 +833,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 tetMoneye.setText(String.format("%ssat", String.valueOf(fee)));
 
             }
-
         }
     }
-
 }
 
 

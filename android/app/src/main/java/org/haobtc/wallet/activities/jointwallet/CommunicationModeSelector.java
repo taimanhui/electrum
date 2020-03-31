@@ -51,6 +51,7 @@ import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassA
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
+import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
@@ -339,7 +340,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                         dismiss();
                     }
                 }
-            } else if (TransactionDetailsActivity.TAG.equals(tag)) {
+            } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)) {
                 Log.i(TAG, "java ==== sign_tx");
                 futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", extras));
                 executorService.submit(futureTask);

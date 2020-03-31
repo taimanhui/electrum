@@ -247,7 +247,7 @@ if not flag:
     sign_list = []
     for i in [1, 2]:
         print("i=%s------------" %i)
-        all_utput = []
+        all_output = []
         #output_info = {'tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2': '0.001'}
         # output_info1 = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
         # output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}

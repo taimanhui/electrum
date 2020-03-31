@@ -69,6 +69,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                     helper.setText(R.id.tet_zt, R.string.wait_broadcast);
                     TextView tetview = helper.getView(R.id.tet_zt);
                     tetview.setTextColor(Color.parseColor("#FF838383"));
+                    tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
                 } else if ("Unsigned".equals(tx_status)) {
                     //new creat trsaction
                     helper.setText(R.id.tet_zt, R.string.transaction_waitting);
@@ -83,6 +84,9 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                     tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
                 }else if ("Unconfirmed".contains(tx_status)){
                     helper.setText(R.id.tet_zt, R.string.waitchoose);
+                    TextView tetview = helper.getView(R.id.tet_zt);
+                    tetview.setTextColor(Color.parseColor("#FF838383"));
+                    tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
                 }
             }
         }

@@ -91,14 +91,11 @@ public class MnemonicWordActivity extends BaseActivity {
     }
 
     private void payAddressMore() {
-
-        AddressEvent addressEvent = new AddressEvent();
-        addressEvent.setName("bitpie");
-        addressEvent.setName("cobo");
-        addressEvent.setName("trezor");
-        addressEvent.setName("ledger");
-        addressEvent.setName("electrum");
-        dataListName.add(addressEvent);
+        dataListName.add(new AddressEvent("bitpie"));
+        dataListName.add(new AddressEvent("cobo"));
+        dataListName.add(new AddressEvent("trezor"));
+        dataListName.add(new AddressEvent("ledger"));
+        dataListName.add(new AddressEvent("electrum"));
     }
 
     @OnClick({R.id.img_back, R.id.lin_Bitype, R.id.btn_setPin})

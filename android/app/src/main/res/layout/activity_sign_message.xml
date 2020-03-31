@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activities.sign.CheckSignActivity">
+    tools:context=".activities.sign.SignMessageActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -26,8 +26,21 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:text="@string/checksigning"
+            android:text="@string/signature"
             android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+        <TextView
+            android:id="@+id/textCheckSign"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_alignParentEnd="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:gravity="center"
+            android:text="@string/check_sign"
+            android:textColor="@color/button_bk_disableok"
             android:textSize="@dimen/text_size" />
 
     </RelativeLayout>
@@ -53,16 +66,36 @@
                 android:paddingEnd="@dimen/text_margin"
                 android:paddingBottom="@dimen/dp_20">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/dp_21"
-                    android:layout_marginTop="@dimen/dp_19"
-                    android:ellipsize="middle"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:text="@string/original_msg"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/text_size" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_21"
+                        android:layout_marginTop="@dimen/dp_19"
+                        android:ellipsize="middle"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/original_msg"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
+
+                    <TextView
+                        android:id="@+id/testCopyMsg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_21"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="@dimen/dp_19"
+                        android:ellipsize="middle"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/copyMsg"
+                        android:textColor="@color/button_bk"
+                        android:textSize="@dimen/sp_13"
+                        android:visibility="gone" />
+                </RelativeLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -80,6 +113,7 @@
                         android:ellipsize="end"
                         android:hint="@string/input_address"
                         android:singleLine="true"
+                        android:textColor="@color/text"
                         android:textSize="@dimen/text_size" />
 
                     <ImageView
@@ -102,16 +136,36 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/dp_21"
-                    android:layout_marginTop="@dimen/dp_19"
-                    android:ellipsize="middle"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:text="@string/sign_address"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/text_size" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_21"
+                        android:layout_marginTop="@dimen/dp_19"
+                        android:ellipsize="middle"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/sign_address"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
+
+                    <TextView
+                        android:id="@+id/testCopyAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_21"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="@dimen/dp_19"
+                        android:ellipsize="middle"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/copyAddress"
+                        android:textColor="@color/button_bk"
+                        android:textSize="@dimen/sp_13"
+                        android:visibility="gone" />
+                </RelativeLayout>
+
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -131,7 +185,7 @@
                         android:paddingTop="@dimen/dp_16"
                         android:paddingEnd="@dimen/dp_10"
                         android:paddingBottom="@dimen/dp_10"
-                        android:textColor="@color/graytext_color"
+                        android:textColor="@color/text"
                         android:textSize="@dimen/sp_15" />
 
                     <Button
@@ -154,16 +208,37 @@
 
                 </RelativeLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/dp_21"
-                    android:layout_marginTop="@dimen/dp_19"
-                    android:ellipsize="middle"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:text="@string/signed_msg"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/text_size" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_21"
+                        android:layout_marginTop="@dimen/dp_19"
+                        android:ellipsize="middle"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/signed_msg"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
+
+                    <TextView
+                        android:id="@+id/testCopySignedMsg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_21"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="@dimen/dp_19"
+                        android:ellipsize="middle"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/copySignedMsg"
+                        android:textColor="@color/button_bk"
+                        android:textSize="@dimen/sp_13"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -171,38 +246,19 @@
                     android:layout_marginTop="@dimen/dp_10"
                     android:background="@color/little_circle_color">
 
-                    <EditText
-                        android:id="@+id/editInputSignedMsg"
+                    <TextView
+                        android:id="@+id/checkSignedMsg"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/dp_45"
                         android:background="@null"
                         android:gravity="top"
-                        android:hint="@string/input_signed_msg"
+                        android:hint="@string/comfirmed_check"
                         android:paddingStart="@dimen/dp_10"
                         android:paddingTop="@dimen/dp_16"
                         android:paddingEnd="@dimen/dp_10"
                         android:paddingBottom="@dimen/dp_10"
-                        android:textColor="@color/graytext_color"
+                        android:textColor="@color/text"
                         android:textSize="@dimen/sp_15" />
-
-                    <Button
-                        android:id="@+id/pasteSignedMsg"
-                        android:layout_width="80dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:layout_marginBottom="@dimen/dp_16"
-                        android:background="@color/paste_bk"
-                        android:drawableStart="@drawable/zhantie"
-                        android:maxLines="1"
-                        android:paddingStart="@dimen/dp_14"
-                        android:paddingEnd="@dimen/dp_14"
-                        android:text="@string/paste"
-                        android:textAllCaps="false"
-                        android:textColor="@color/button_bk"
-                        android:textSize="@dimen/sp_12" />
 
                 </RelativeLayout>
 
@@ -221,4 +277,5 @@
                 android:textSize="@dimen/sp_14" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
 </LinearLayout>

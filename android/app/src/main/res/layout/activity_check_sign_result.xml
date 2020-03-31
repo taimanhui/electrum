@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
-    tools:context=".activities.settings.VerificationSuccessActivity">
+    tools:context=".activities.sign.CheckSignResultActivity">
 
     <RelativeLayout
         android:id="@+id/snkdfnksjndkjsd"
@@ -38,7 +38,7 @@
         android:layout_below="@+id/imgStatus"
         android:layout_marginTop="@dimen/dp_30"
         android:gravity="center_horizontal"
-        android:text="@string/verifying_pass"
+        android:text="@string/sign_checked"
         android:textColor="@color/text_color"
         android:textSize="@dimen/sp_18" />
 
@@ -51,7 +51,7 @@
         android:gravity="center_horizontal"
         android:textColor="@color/graytext_color"
         android:textSize="@dimen/sp_13"
-        android:text="@string/verifying_firmware" />
+        android:text="@string/agreement_msg" />
 
     <Button
         android:id="@+id/btn_finish"

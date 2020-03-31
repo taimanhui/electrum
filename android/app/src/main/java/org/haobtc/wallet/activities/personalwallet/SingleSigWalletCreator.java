@@ -447,6 +447,18 @@ public class SingleSigWalletCreator extends BaseActivity {
                         return;
                     }
 
+                    try {
+                        Daemon.commands.callAttr("create_multi_wallet", walletName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        myDialog.dismiss();
+                        String message = e.getMessage();
+                        if ("BaseException: file already exists at path".equals(message)) {
+                            mToast(getString(R.string.changewalletname));
+                        }
+                        return;
+                    }
+
                     edit.putInt("defaultName", walletNameNum);
                     edit.apply();
                     myDialog.dismiss();

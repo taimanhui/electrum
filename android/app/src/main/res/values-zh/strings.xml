@@ -464,6 +464,34 @@
     <string name="hide_wallet_is">什么是隐藏钱包？</string>
     <string name="set_hidewallet_pass">设置隐藏钱包的密码</string>
     <string name="bluetooth_abnormal">蓝牙连接异常</string>
+    <string name="check_sign">验签</string>
+    <string name="checksigning">验证签名</string>
+    <string name="original_msg">原始消息</string>
+    <string name="sign_address">签名地址</string>
+    <string name="inputPublickey">输入地址</string>
+    <string name="signed_msg">签名后消息</string>
+    <string name="input_signed_msg">输入签名后消息</string>
+    <string name="comfirmed_check">确认后可查看</string>
+    <string name="inputSignMsg">请输入待签名消息</string>
+    <string name="copyMsg">复制消息</string>
+    <string name="copyAddress">复制地址</string>
+    <string name="copySignedMsg">复制签名后消息</string>
+    <string name="inputWalletPass">请输入钱包密码</string>
+    <string name="sign_checked">签名核实完成</string>
+    <string name="agreement_msg">签名信息与公钥原始信息一致</string>
+    <string name="sign_check_fail">签名核实失败</string>
+    <string name="agent_server">代理服务器</string>
+    <string name="agent_tips">币信冷钱包使用Electrum开源分布式服务器进行交易广播，和链上信息获取</string>
+    <string name="useAgent_hideIP">使用代理服务器隐藏真实IP</string>
+    <string name="add_agentserver">添加代理服务器</string>
+    <string name="edit_agent">编辑代理服务器</string>
+    <string name="node_type">节点类型</string>
+    <string name="node_name">节点名称</string>
+    <string name="agent_IP_address">代理 IP 地址</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="select_node_type">选择节点类型</string>
+    <string name="set_finish">设置完成</string>
 
 
 </resources>

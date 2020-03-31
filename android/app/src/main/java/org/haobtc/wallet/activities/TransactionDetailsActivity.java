@@ -145,6 +145,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     public static String signedRawTx;
     private boolean isActive;
     private boolean ready;
+    private String signTransction;
 
     @Override
     public int getLayoutId() {
@@ -166,6 +167,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
             tx_hash = intent.getStringExtra("tx_hash");
             listType = intent.getStringExtra("listType");
+            signTransction = intent.getStringExtra("signTransction");//from SignActivity
             strParse = intent.getStringExtra("strParse");
             String dataTime = intent.getStringExtra("dataTime");
             strwalletType = intent.getStringExtra("strwalletType");
@@ -226,6 +228,8 @@ public class TransactionDetailsActivity extends BaseActivity {
                     mCreataSuccsesCheck();
 
                 }
+            } else if (keyValue.equals("Sign")) {
+                jsonDetailData(signTransction);
             }
         }
     }
@@ -275,6 +279,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             Gson gson = new Gson();
             getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
 
+
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
             return;
@@ -286,22 +291,30 @@ public class TransactionDetailsActivity extends BaseActivity {
         String tx_status = getnewcreatTrsactionListBean.getTxStatus();
         output_addr = getnewcreatTrsactionListBean.getOutputAddr();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
+        List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr = getnewcreatTrsactionListBean.getInputAddr();
         txid = getnewcreatTrsactionListBean.getTxid();
         rowtx = getnewcreatTrsactionListBean.getTx();
         canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
+        edit.putString("signedRowtrsation", rowtx);
+        edit.apply();
+        if (inputAddr.size() != 0) {
+            String addrInput = inputAddr.get(0).getAddr();
+            tetPayAddress.setText(addrInput);
+        }
         //trsaction hash
         tetTrsactionHash.setText(txid);
         //input address num
         int size = output_addr.size();
-
         if (language.equals("English")) {
             tetAddressNum.setText(String.format("%s%d", getResources().getString(R.string.wait), size));
         } else {
             tetAddressNum.setText(String.format("%s%d%s", getResources().getString(R.string.wait), size, getResources().getString(R.string.ge)));
         }
-        //output_address
-        String addr = output_addr.get(0).getAddr();
-        tetGetMoneyaddress.setText(addr);
+        if (size != 0) {
+            //output_address
+            String addr = output_addr.get(0).getAddr();
+            tetGetMoneyaddress.setText(addr);
+        }
         if (signStatus != null) {
             Integer integer = signStatus.get(0);
             Integer integer1 = signStatus.get(1);
@@ -523,7 +536,6 @@ public class TransactionDetailsActivity extends BaseActivity {
         Log.i("braodcastTrsact", "braodcastTrsaction: " + signedRowTrsation);
         try {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
-            EventBus.getDefault().post(new FirstEvent("22"));
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
@@ -534,6 +546,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
             //trsaction hash and time
             linTractionHash.setVisibility(View.VISIBLE);
+            EventBus.getDefault().post(new FirstEvent("22"));
             mToast(getString(R.string.braodcast_succse));
             Log.i("signedRowTrsation", "-------: ");
         } catch (Exception e) {
@@ -555,11 +568,11 @@ public class TransactionDetailsActivity extends BaseActivity {
                 PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rowtx, strPassword);
                 if (sign_tx != null) {
                     Log.i("sign_txkkkkkkk", "sign_tx: " + sign_tx);
-                    Gson gson = new Gson();
-                    GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(sign_tx.toString(), GetnewcreatTrsactionListBean.class);
-                    publicTrsation = trsactionListBean.getTx();
-                    edit.putString("signedRowtrsation", publicTrsation);
-                    edit.apply();
+//                    Gson gson = new Gson();
+//                    GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(sign_tx.toString(), GetnewcreatTrsactionListBean.class);
+//                    publicTrsation = trsactionListBean.getTx();
+//                    edit.putString("signedRowtrsation", publicTrsation);
+//                    edit.apply();
                     jsonDetailData(sign_tx.toString());
                     alertDialog.dismiss();
                     EventBus.getDefault().post(new FirstEvent("22"));
@@ -571,6 +584,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                     mToast(getResources().getString(R.string.wrong_pass));
                 }
                 e.printStackTrace();
+                return;
             }
 
         });
@@ -689,25 +703,25 @@ public class TransactionDetailsActivity extends BaseActivity {
         boolean isInit = features.isInitialized();
         if (isInit) {
             boolean pinCached = features.isPinCached();
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
-                executorService.submit(futureTask);
-                if (pinCached) {
-                    gotoConfirmOnHardware();
-                }
-            } else {
-                if (isActive) {
-                    executorService.execute(() -> {
-                        try {
-                            Daemon.commands.callAttr("init");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-                } else {
-                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                    startActivityForResult(intent1, REQUEST_ACTIVE);
-                }
+            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
+            executorService.submit(futureTask);
+            if (pinCached) {
+                gotoConfirmOnHardware();
             }
+        } else {
+            if (isActive) {
+                executorService.execute(() -> {
+                    try {
+                        Daemon.commands.callAttr("init");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            } else {
+                Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                startActivityForResult(intent1, REQUEST_ACTIVE);
+            }
+        }
     }
 
     @Override
@@ -749,10 +763,5 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
-    }
 }
 
