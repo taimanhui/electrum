@@ -24,7 +24,6 @@ import org.haobtc.wallet.utils.Global;
 import java.lang.ref.WeakReference;
 
 public class LunchActivity extends BaseActivity {
-    private final String FIRST_RUN = "is_first_run";
     private  RxPermissions rxPermissions;
 
     @Override
@@ -84,6 +83,7 @@ public class LunchActivity extends BaseActivity {
         judgeLanguage(language);
 
         boolean jumpOr = preferences.getBoolean("JumpOr", false);
+        String FIRST_RUN = "is_first_run";
         if (preferences.getBoolean(FIRST_RUN, false)) {
             Intent intent = new Intent(LunchActivity.this, MainActivity.class);
             startActivity(intent);

@@ -24,7 +24,6 @@ public class AboutActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
     }
 

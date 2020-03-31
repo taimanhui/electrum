@@ -40,10 +40,6 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;
 
-    private SharedPreferences preferences;
-    private final String FIRST_RUN = "is_first_run";
-    private SharedPreferences.Editor edit;
-    private String strCode;
     private PyObject walletAddressShowUi;
 
     @Override
@@ -54,10 +50,6 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(CreateWalletSuccessfulActivity.this);
-        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        edit = preferences.edit();
-
-
     }
 
     @Override
@@ -75,7 +67,7 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
             e.printStackTrace();
         }
         if (walletAddressShowUi!=null){
-            strCode = walletAddressShowUi.toString();
+            String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qr_data = getCodeAddressBean.getQr_data();

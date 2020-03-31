@@ -78,7 +78,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     //remeber first back time
     private long firstTime = 0;
     private MyDialog myDialog;
-    private int mCurrentPosition = 0;
     private TextView tetNone;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private String date;
@@ -136,7 +135,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         TextView textView = findViewById(R.id.textView_more);
         tetNone = findViewById(R.id.tet_None);
         refreshLayout = findViewById(R.id.smart_RefreshLayout);
-        TextView testHidewallet = findViewById(R.id.testHideWallet);
         imageViewSweep.setOnClickListener(this);
         imageViewSetting.setOnClickListener(this);
         textView.setOnClickListener(this);
@@ -168,6 +166,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 //.setHttpManager()
                 .setJumpInstallPage(true)
                 .setDialogButtonTextColor(Color.WHITE)
+                .setDialogButtonColor(getColor(R.color.button_bk))
+                .setDialogImage(R.drawable.blue_backgraound)
                 .setShowNotification(true)
                 .setShowBgdToast(true)
                 .setForcedUpgrade(false)
@@ -299,7 +299,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 Log.i("onPageSelected", "pos__ " + position);
                 if (position == (fragmentList.size() - 1)) {
                     Log.i("onPageSelected", "名字为空");
-                    mCurrentPosition = position;
                 } else {
                     strNames = walletnameList.get(position).getName();
                     strType = walletnameList.get(position).getType();
@@ -314,7 +313,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
                             //trsaction list data
                             downMainListdata();
-                            mCurrentPosition = position;
                         }
                     }, 350);
                 }

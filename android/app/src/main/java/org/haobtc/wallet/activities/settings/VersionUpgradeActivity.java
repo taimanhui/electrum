@@ -147,6 +147,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         @Override
         public void onDfuCompleted(@NonNull String deviceAddress) {
             super.onDfuCompleted(deviceAddress);
+            CommunicationModeSelector.isDfu = false;
             mIntent(UpgradeFinishedActivity.class);
         }
 

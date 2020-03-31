@@ -34,9 +34,6 @@ public class CreateWalletActivity extends BaseActivity {
     LinearLayout linInputHelpWord;
     @BindView(R.id.linHideWallet)
     LinearLayout linHideWallet;
-    //remeber first back time
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor edit;
 
 
     @Override
@@ -47,9 +44,6 @@ public class CreateWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        edit = preferences.edit();
-
     }
 
     @Override

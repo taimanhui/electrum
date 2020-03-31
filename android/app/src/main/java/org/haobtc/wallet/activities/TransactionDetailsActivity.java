@@ -145,7 +145,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     public static String signedRawTx;
     private boolean isActive;
     private boolean ready;
-    private String signTransction;
+    private CommunicationModeSelector modeSelector;
 
     @Override
     public int getLayoutId() {
@@ -167,7 +167,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
             tx_hash = intent.getStringExtra("tx_hash");
             listType = intent.getStringExtra("listType");
-            signTransction = intent.getStringExtra("signTransction");//from SignActivity
             strParse = intent.getStringExtra("strParse");
             String dataTime = intent.getStringExtra("dataTime");
             strwalletType = intent.getStringExtra("strwalletType");
@@ -228,8 +227,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                     mCreataSuccsesCheck();
 
                 }
-            } else if (keyValue.equals("Sign")) {
-                jsonDetailData(signTransction);
             }
         }
     }
@@ -279,7 +276,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             Gson gson = new Gson();
             getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
 
-
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
             return;
@@ -291,30 +287,22 @@ public class TransactionDetailsActivity extends BaseActivity {
         String tx_status = getnewcreatTrsactionListBean.getTxStatus();
         output_addr = getnewcreatTrsactionListBean.getOutputAddr();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
-        List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr = getnewcreatTrsactionListBean.getInputAddr();
         txid = getnewcreatTrsactionListBean.getTxid();
         rowtx = getnewcreatTrsactionListBean.getTx();
         canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
-        edit.putString("signedRowtrsation", rowtx);
-        edit.apply();
-        if (inputAddr.size() != 0) {
-            String addrInput = inputAddr.get(0).getAddr();
-            tetPayAddress.setText(addrInput);
-        }
         //trsaction hash
         tetTrsactionHash.setText(txid);
         //input address num
         int size = output_addr.size();
+
         if (language.equals("English")) {
-            tetAddressNum.setText(String.format("%s%d", getResources().getString(R.string.wait), size));
+            tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
         } else {
-            tetAddressNum.setText(String.format("%s%d%s", getResources().getString(R.string.wait), size, getResources().getString(R.string.ge)));
+            tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
         }
-        if (size != 0) {
-            //output_address
-            String addr = output_addr.get(0).getAddr();
-            tetGetMoneyaddress.setText(addr);
-        }
+        //output_address
+        String addr = output_addr.get(0).getAddr();
+        tetGetMoneyaddress.setText(addr);
         if (signStatus != null) {
             Integer integer = signStatus.get(0);
             Integer integer1 = signStatus.get(1);
@@ -358,9 +346,9 @@ public class TransactionDetailsActivity extends BaseActivity {
         //input address num
         int size = outputAddr.size();
         if (language.equals("English")) {
-            tetAddressNum.setText(String.format("%s%d", getResources().getString(R.string.wait), size));
+            tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
         } else {
-            tetAddressNum.setText(String.format("%s%d%s", getResources().getString(R.string.wait), size, getResources().getString(R.string.ge)));
+            tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
         }
         //output_address
         String addr = outputAddr.get(0).getAddr();
@@ -401,9 +389,9 @@ public class TransactionDetailsActivity extends BaseActivity {
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
             //text color
-//            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-            tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-            tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+//            tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
+            tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+            tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
             //trsaction hash and time
             linTractionHash.setVisibility(View.VISIBLE);
             linTractionTime.setVisibility(View.GONE);
@@ -420,15 +408,15 @@ public class TransactionDetailsActivity extends BaseActivity {
             BigDecimal bigDecimal = new BigDecimal(100);
             int mathMax = bignum1.compareTo(bigDecimal);
             if (mathMax == 1) {
-                tetConfirm.setText(String.format("%s%s", getResources().getString(R.string.confirmnum), ">100"));
+                tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), ">100"));
             } else {
-                tetConfirm.setText(String.format("%s%s", getResources().getString(R.string.confirmnum), strConfirl));
+                tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), strConfirl));
             }
 
             //text color
-//            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-            tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-            tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+//            tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
+            tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+            tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
             //trsaction hash and time
             linTractionHash.setVisibility(View.VISIBLE);
             linTractionTime.setVisibility(View.VISIBLE);
@@ -446,8 +434,8 @@ public class TransactionDetailsActivity extends BaseActivity {
             imgProgressthree.setVisibility(View.VISIBLE);
             imgProgressfour.setVisibility(View.GONE);
             //text color
-//            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-            tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+//            tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
+            tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
 
         } else if (tx_status.contains("Partially signed")) {//you are signer
             tetState.setText(R.string.you_are_signed);
@@ -458,7 +446,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.GONE);
             //text color
-//            tetTrtwo.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+//            tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
         }
     }
 
@@ -489,17 +477,17 @@ public class TransactionDetailsActivity extends BaseActivity {
                 break;
             case R.id.sig_trans:
                 String strBtncontent = sigTrans.getText().toString();
-                if (strBtncontent.equals(getResources().getString(R.string.forWord_orther))) {
+                if (strBtncontent.equals(getString(R.string.forWord_orther))) {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
                     intent1.putExtra("rowTrsaction", tx_hash);
                     intent1.putExtra("rowTx", rowtx);
                     startActivity(intent1);
 
-                } else if (strBtncontent.equals(getResources().getString(R.string.broadcast))) {
+                } else if (strBtncontent.equals(getString(R.string.broadcast))) {
                     //bradcast trsaction
                     braodcastTrsaction();
 
-                } else if (strBtncontent.equals(getResources().getString(R.string.check_trsaction))) {
+                } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
                     Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
                     intent1.putExtra("checkTxid", txid);
                     startActivity(intent1);
@@ -526,8 +514,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void showCustomerDialog() {
         List<Runnable> runnables = new ArrayList<>();
         runnables.add(runnable);
-        CommunicationModeSelector chooseCommunicationWayDialogFragment = new CommunicationModeSelector(TAG, runnables, rowtx);
-        chooseCommunicationWayDialogFragment.show(getSupportFragmentManager(), "");
+        modeSelector = new CommunicationModeSelector(TAG, runnables, rowtx);
+        modeSelector.show(getSupportFragmentManager(), "");
     }
 
     //Radio broadcast
@@ -536,17 +524,17 @@ public class TransactionDetailsActivity extends BaseActivity {
         Log.i("braodcastTrsact", "braodcastTrsaction: " + signedRowTrsation);
         try {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
+            EventBus.getDefault().post(new FirstEvent("22"));
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
             //text color
-            tetTrthree.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-            tetTrfore.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+            tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+            tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
             //trsaction hash and time
             linTractionHash.setVisibility(View.VISIBLE);
-            EventBus.getDefault().post(new FirstEvent("22"));
             mToast(getString(R.string.braodcast_succse));
             Log.i("signedRowTrsation", "-------: ");
         } catch (Exception e) {
@@ -561,18 +549,18 @@ public class TransactionDetailsActivity extends BaseActivity {
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
             String strPassword = str_pass.getText().toString();
             if (TextUtils.isEmpty(strPassword)) {
-                mToast(getResources().getString(R.string.please_input_pass));
+                mToast(getString(R.string.please_input_pass));
                 return;
             }
             try {
                 PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rowtx, strPassword);
                 if (sign_tx != null) {
                     Log.i("sign_txkkkkkkk", "sign_tx: " + sign_tx);
-//                    Gson gson = new Gson();
-//                    GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(sign_tx.toString(), GetnewcreatTrsactionListBean.class);
-//                    publicTrsation = trsactionListBean.getTx();
-//                    edit.putString("signedRowtrsation", publicTrsation);
-//                    edit.apply();
+                    Gson gson = new Gson();
+                    GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(sign_tx.toString(), GetnewcreatTrsactionListBean.class);
+                    publicTrsation = trsactionListBean.getTx();
+                    edit.putString("signedRowtrsation", publicTrsation);
+                    edit.apply();
                     jsonDetailData(sign_tx.toString());
                     alertDialog.dismiss();
                     EventBus.getDefault().post(new FirstEvent("22"));
@@ -581,10 +569,9 @@ public class TransactionDetailsActivity extends BaseActivity {
             } catch (Exception e) {
                 Log.i("sign_txkkkkkkk", "+++++++++++= " + e.getMessage());
                 if (e.getMessage().contains("Incorrect password")) {
-                    mToast(getResources().getString(R.string.wrong_pass));
+                    mToast(getString(R.string.wrong_pass));
                 }
                 e.printStackTrace();
-                return;
             }
 
         });
@@ -616,7 +603,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 Gson gson = new Gson();
                 AddspeedBean addspeedBean = gson.fromJson(strNewfee, AddspeedBean.class);
                 newFeerate = addspeedBean.getNewFeerate();
-                tetNewfee.setText(String.format("%s  %s", getResources().getString(R.string.speed_fee), newFeerate));
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee), newFeerate));
                 img_Cancle.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
@@ -628,7 +615,7 @@ public class TransactionDetailsActivity extends BaseActivity {
 
 
         } else {
-            mToast(getResources().getString(R.string.dontRBF));
+            mToast(getString(R.string.dontRBF));
         }
 
     }
@@ -703,25 +690,25 @@ public class TransactionDetailsActivity extends BaseActivity {
         boolean isInit = features.isInitialized();
         if (isInit) {
             boolean pinCached = features.isPinCached();
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
-            executorService.submit(futureTask);
-            if (pinCached) {
-                gotoConfirmOnHardware();
-            }
-        } else {
-            if (isActive) {
-                executorService.execute(() -> {
-                    try {
-                        Daemon.commands.callAttr("init");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
+                executorService.submit(futureTask);
+                if (pinCached) {
+                    gotoConfirmOnHardware();
+                }
             } else {
-                Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                startActivityForResult(intent1, REQUEST_ACTIVE);
+                if (isActive) {
+                    executorService.execute(() -> {
+                        try {
+                            Daemon.commands.callAttr("init");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                } else {
+                    Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
+                    startActivityForResult(intent1, REQUEST_ACTIVE);
+                }
             }
-        }
     }
 
     @Override
@@ -763,5 +750,18 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ButterKnife.bind(this);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (modeSelector != null) {
+            modeSelector.dismiss();
+        }
+    }
 }
 

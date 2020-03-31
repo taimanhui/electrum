@@ -55,13 +55,10 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private Button btncenetr;
     private PyObject select_wallet;
     private TextView tetCny;
-    private PyObject pyObject;
-    private CardView card_view;
     private TextView btn_appWallet;
     //    private Button btnright;
 
     private boolean isFirst = false;
-    private String strSeed;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
 
@@ -93,8 +90,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         EventBus.getDefault().register(this);
         preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
-        strSeed = preferences.getString("strSeed", "");
-        String strScrollName = preferences.getString(name, "");
         wallet_card_name = view.findViewById(R.id.wallet_card_name);
         walletpersonce = view.findViewById(R.id.wallet_card_tv2);
         walletBlance = view.findViewById(R.id.wallet_card_tv4);
@@ -105,7 +100,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         btn_appWallet = view.findViewById(R.id.app_wallet);
         tetCny = view.findViewById(R.id.tet_Cny);
         conlayBback = view.findViewById(R.id.conlay_back);
-        card_view = view.findViewById(R.id.wallet_card);
         init();
         initdata();
 

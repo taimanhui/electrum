@@ -79,7 +79,7 @@ public class ShareOtherActivity extends BaseActivity {
     @Override
     public void initView() {
 //        getPermission(ShareOtherActivity.this);
-        // TODO: add setContentView(...) invocation
+
         ButterKnife.bind(this);
         Intent intent = getIntent();
         rowTrsaction = intent.getStringExtra("rowTrsaction");
@@ -133,7 +133,7 @@ public class ShareOtherActivity extends BaseActivity {
                             if (granted) { // Always true pre-M
                                 toGallery = saveBitmap(bitmap);
                                 if (toGallery) {
-                                    mToast(getResources().getString(R.string.preservationbitmappic));
+                                    mToast(getString(R.string.preservationbitmappic));
                                 } else {
                                     Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
                                 }
@@ -174,17 +174,17 @@ public class ShareOtherActivity extends BaseActivity {
                 break;
             case R.id.tet_open:
                 String strOpen = tetOpen.getText().toString();
-                if (strOpen.equals(getResources().getString(R.string.spin_open))) {
+                if (strOpen.equals(getString(R.string.spin_open))) {
                     LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
                     linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     tetTrsactionText.setLayoutParams(linearParams1);
-                    tetOpen.setText(getResources().getString(R.string.retract));
+                    tetOpen.setText(getString(R.string.retract));
 
                 } else {
                     LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) tetTrsactionText.getLayoutParams();
                     linearParams1.height = 200;
                     tetTrsactionText.setLayoutParams(linearParams1);
-                    tetOpen.setText(getResources().getString(R.string.spin_open));
+                    tetOpen.setText(getString(R.string.spin_open));
                 }
 
                 break;
@@ -238,12 +238,12 @@ public class ShareOtherActivity extends BaseActivity {
 
             try {
                 commands.callAttr("save_tx_to_file", fullFilename, rowTx);
-                mToast(getResources().getString(R.string.downloadsuccse));
+                mToast(getString(R.string.downloadsuccse));
 
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.i("printException", "show---" + e.getMessage());
-                mToast(getResources().getString(R.string.downloadfail));
+                mToast(getString(R.string.downloadfail));
             }
 
             dialogBtom.cancel();

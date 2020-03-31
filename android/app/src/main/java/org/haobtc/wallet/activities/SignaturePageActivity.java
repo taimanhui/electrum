@@ -52,7 +52,6 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     ImageView imgBack;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-    private PyObject is_valiad_xpub;
 
     @Override
     public int getLayoutId() {
@@ -61,11 +60,11 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
+
         ButterKnife.bind(this);
         rxPermissions = new RxPermissions(this);
         buttonConfirm.setEnabled(false);
-        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+        buttonConfirm.setBackground(getDrawable(R.drawable.button_bk_grey));
         editTextRaw.addTextChangedListener(this);
 
 
@@ -160,7 +159,7 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, getResources().getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -178,6 +177,7 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
         Log.i("CharSequence", "------------ " + strRaw);
         if (!TextUtils.isEmpty(strRaw)) {
             try {
+                PyObject is_valiad_xpub;
                 try {
                     is_valiad_xpub = Daemon.commands.callAttr("is_valiad_xpub", strRaw);
                 } catch (Exception e) {
@@ -189,11 +189,11 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
                     if (strValiad.equals("False")) {
                         tetError.setVisibility(View.VISIBLE);
                         buttonConfirm.setEnabled(false);
-                        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                        buttonConfirm.setBackground(getDrawable(R.drawable.button_bk_grey));
                     } else {
                         tetError.setVisibility(View.INVISIBLE);
                         buttonConfirm.setEnabled(true);
-                        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                        buttonConfirm.setBackground(getDrawable(R.drawable.button_bk));
                     }
 
                 }
@@ -201,14 +201,14 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
                 e.printStackTrace();
                 tetError.setVisibility(View.VISIBLE);
                 buttonConfirm.setEnabled(false);
-                buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                buttonConfirm.setBackground(getDrawable(R.drawable.button_bk_grey));
 
             }
 
         } else {
             tetError.setVisibility(View.INVISIBLE);
             buttonConfirm.setEnabled(false);
-            buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+            buttonConfirm.setBackground(getDrawable(R.drawable.button_bk_grey));
         }
 
     }

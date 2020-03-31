@@ -29,9 +29,7 @@ import butterknife.OnClick;
  * splash
  * */
 public class GuideActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
-    @BindView(R.id.img_back)
-    ImageView imgBack;
-    private ViewPager viewPager;
+
     private List<View> viewList = new ArrayList<>();
     private ImageView[] dots;
     private int[] ids = {R.id.iv1, R.id.iv2};
@@ -44,14 +42,13 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         edit.putBoolean("JumpOr", true);
         edit.apply();
 
-        viewPager = findViewById(R.id.vp);
+        ViewPager viewPager = findViewById(R.id.vp);
         LayoutInflater inflater = LayoutInflater.from(this);
         viewList.add(inflater.inflate(R.layout.boot_page_item1, null));
         viewList.add(inflater.inflate(R.layout.boot_page_item2, null));
@@ -84,7 +81,6 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     @Override
     public void initData() {
         initDots();
-        initCallback();
         currency();
     }
 
@@ -109,16 +105,6 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         }
     }
 
-    private void initCallback() {
-        //How to process received messages
-        new Handler(arg0 -> {
-            //intent
-            startNewPage();
-            return false;
-        }).sendEmptyMessageDelayed(0, 3000);
-
-    }
-
     private void startNewPage() {
         Intent intent = new Intent(this, CreateWalletActivity.class);
         startActivity(intent);
@@ -141,7 +127,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
                 dots[i].setImageResource(R.drawable.boot_page_greydot);
             }
         }
-
+        new Handler().postDelayed(this::startNewPage, 3000);
     }
 
     @Override
@@ -149,12 +135,4 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
 
     }
 
-    @OnClick({R.id.img_back})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
-        }
-    }
 }

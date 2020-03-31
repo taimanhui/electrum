@@ -89,13 +89,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     TextView tvIndicator;
     private ArrayList<AddressEvent> dataListName;
     private Dialog dialogBtom;
-    private RecyclerView recyPayaddress;
     private ChoosePayAddressAdapetr choosePayAddressAdapetr;
     private String wallet_name;
     private double pro;
     private String strmapBtc;
-    private PyObject mktx;
-    private SharedPreferences.Editor edit;
     private List addressList;
     private int intmaxFee;
     private String waletType;
@@ -106,10 +103,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
     @SuppressLint("CommitPrefEdits")
     public void initView() {
-        // TODO: add setContentView(...) invocation
+
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
         Intent intent = getIntent();
         addressList = (List) getIntent().getSerializableExtra("listdetail");
         wallet_name = intent.getStringExtra("wallet_name");
@@ -242,6 +237,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
     @OnClick({R.id.lin_chooseAddress, R.id.linearLayout10, R.id.img_feeSelect, R.id.img_back, R.id.create_trans_one2many})
     public void onViewClicked(View view) {
+        PyObject mktx;
         switch (view.getId()) {
             case R.id.lin_chooseAddress:
                 //check wallet
@@ -357,7 +353,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             walletName.setText(wallet_name);
             dialogBtom.cancel();
         });
-        recyPayaddress = view.findViewById(R.id.recy_payAdress);
+        RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
         recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2ManyMainPageActivity.this));
         choosePayAddressAdapetr = new ChoosePayAddressAdapetr(SendOne2ManyMainPageActivity.this, dataListName);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);

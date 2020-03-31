@@ -121,6 +121,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     private ReadingPubKeyDialogFragment dialogFragment;
     private BluetoothFragment bleFragment;
     private boolean isBonded;
+    public static volatile boolean isDfu;
 
     private final BleWriteCallback<BleDevice> writeCallBack = new BleWriteCallback<BleDevice>() {
 
@@ -213,9 +214,9 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 if (isNotify) {
                     new Handler().postDelayed(() -> {
                         if (VersionUpgradeActivity.TAG.equals(tag)) {
-                            Intent intent = new Intent(getActivity(), UpgradeBixinKEYActivity.class);
-                            intent.putExtra("way", "bluetooth");
                             if ("hardware".equals(extras)) {
+                                Intent intent = new Intent(getActivity(), UpgradeBixinKEYActivity.class);
+                                intent.putExtra("way", "bluetooth");
                                 intent.putExtra("tag", 1);
                                 startActivity(intent);
                             } else if ("ble".equals(extras)) {
@@ -247,6 +248,9 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             super.onConnectException(device, errorCode);
             Log.e(TAG, String.format("连接异常，异常状态码: %d", errorCode));
             isErrorOccurred = true;
+            if (isDfu) {
+                return;
+            }
             switch (errorCode) {
                 case 2523:
                     Activity activity = getActivity();
@@ -286,13 +290,21 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     };
     @SuppressLint("SdCardPath")
     private void dfu() {
-        final DfuServiceInitiator starter = new DfuServiceInitiator(Ble.getInstance().getConnetedDevices().get(0).getBleAddress());
+        List<BleDevice> devices = Ble.getInstance().getConnetedDevices();
+        if (devices.size() == 0) {
+            Log.d(TAG, "没有已连接设备");
+            dismiss();
+            return;
+        }
+        final DfuServiceInitiator starter = new DfuServiceInitiator(devices.get(0).getBleAddress());
+        starter.setDeviceName(devices.get(0).getBleName());
         /*
         调用此方法使Nordic nrf52832进入bootloader模式
 */      starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
         starter.setZip(null, "/sdcard/Android/data/org.haobtc.wallet/files/ble.zip");
         DfuServiceInitiator.createDfuNotificationChannel(Objects.requireNonNull(getContext()));
         starter.start(getContext(), DfuService.class);
+        isDfu = true;
     }
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override

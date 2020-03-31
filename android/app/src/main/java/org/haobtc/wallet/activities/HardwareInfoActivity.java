@@ -29,7 +29,6 @@ public class HardwareInfoActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
 
     }
@@ -43,13 +42,13 @@ public class HardwareInfoActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_Serial:
-                mToast(getResources().getString(R.string.no_serialnumber));
+                mToast(getString(R.string.no_serialnumber));
                 break;
             case R.id.tet_versonUp:
                 mIntent(VersionUpgradeActivity.class);
                 break;
             case R.id.id_2:
-                mToast(getResources().getString(R.string.no_address));
+                mToast(getString(R.string.no_address));
                 break;
             case R.id.img_back:
                 finish();

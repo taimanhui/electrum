@@ -75,6 +75,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
         @Override
         protected void onProgressUpdate(Object... progresses) {
+            progressUpgrade.setIndeterminate(false);
             progressUpgrade.setProgress(Integer.parseInt(((progresses[0]).toString())));
             tetUpgradeNum.setText(String.format("%s%%", String.valueOf(progresses[0])));
 
@@ -124,6 +125,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 mTask.execute("nfc");
             } else if (VersionUpgradeActivity.UPDATE_PROCESS.equals(intent.getAction())) {
                 int percent = intent.getIntExtra("process", 0);
+                progressUpgrade.setIndeterminate(false);
                 progressUpgrade.setProgress(percent);
                 tetUpgradeNum.setText(String.format("%s%%", String.valueOf(percent)));
             }

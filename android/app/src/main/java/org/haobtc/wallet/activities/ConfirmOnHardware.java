@@ -186,7 +186,11 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             default:
                 dialog.dismiss();
         }
-
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
+    }
 }

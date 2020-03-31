@@ -28,18 +28,13 @@ public class MessageManagerActivity extends BaseActivity {
     TextView bnPaste;
     @BindView(R.id.btn_Recovery1)
     Button btnRecovery1;
-    private String stfRecovery;
 
     public int getLayoutId() {
         return R.layout.layout;
     }
 
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
-        Intent intent = getIntent();
-        stfRecovery = intent.getStringExtra("stfRecovery");
-
     }
 
     @Override
@@ -61,24 +56,9 @@ public class MessageManagerActivity extends BaseActivity {
             case R.id.btn_Recovery1:
                 String strBackuptext = editText.getText().toString();
                 if (TextUtils.isEmpty(strBackuptext)){
-                    mToast(getResources().getString(R.string.please_clode_text));
+                    mToast(getString(R.string.please_clode_text));
                     return;
                 }
-//                PyObject recovery_wallet = null;
-//                try {
-//                    recovery_wallet = Daemon.commands.callAttr("recovery_wallet", stfRecovery);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                if (recovery_wallet != null) {
-//                    boolean aBoolean = recovery_wallet.toBoolean();
-//                    Log.i("aBoolean", "aBoolean: "+aBoolean);
-//                    if (aBoolean){
-//                        mToast(getResources().getString(R.string.recovery_succse));
-//                    }
-//                }
-
-//                mIntent(ConfirmBackupActivity.class);
                 break;
         }
     }

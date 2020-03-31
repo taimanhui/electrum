@@ -211,17 +211,17 @@ public class CurrencyActivity extends BaseActivity {
                 break;
             case R.id.tet_CheckAll:
                 String strOpen = tetCheckAll.getText().toString();
-                if (strOpen.equals(getResources().getString(R.string.check_all))) {
+                if (strOpen.equals(getString(R.string.check_all))) {
                     RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
                     linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
                     reclCnyTable.setLayoutParams(linearParams1);
-                    tetCheckAll.setText(getResources().getString(R.string.retract));
+                    tetCheckAll.setText(getString(R.string.retract));
 
                 } else {
                     RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
                     linearParams1.height = 530;;
                     reclCnyTable.setLayoutParams(linearParams1);
-                    tetCheckAll.setText(getResources().getString(R.string.check_all));
+                    tetCheckAll.setText(getString(R.string.check_all));
                 }
                 break;
         }

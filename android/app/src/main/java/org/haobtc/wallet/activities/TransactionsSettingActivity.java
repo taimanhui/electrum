@@ -46,7 +46,7 @@ public class TransactionsSettingActivity extends BaseActivity {
     }
 
     public void initView() {
-        // TODO: add setContentView(...) invocation
+
         ButterKnife.bind(this);
         myDialog = MyDialog.showDialog(TransactionsSettingActivity.this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);

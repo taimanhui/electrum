@@ -38,10 +38,6 @@ import butterknife.OnClick;
 public class TransactionRecordsActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
     @BindView(R.id.recy_jylist)
     RecyclerView recyJylist;
-    //    @BindView(R.id.spi_BTC)
-//    AppCompatSpinner spiBTC;
-//    @BindView(R.id.spi_ZT)
-//    AppCompatSpinner spiZT;
     @BindView(R.id.tet_None)
     TextView tetNone;
     @BindView(R.id.img_backTrsa)
@@ -53,17 +49,9 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
-    private SharedPreferences preferences;
-    //    private int haveSelectBTC = 0;
-//    private int haveSelectState = 0;
     private String strChoose = "send";
-    //    private String strChoosestate;
-    private String tx_hash;
     private String date;
-    private String amount;
     private boolean is_mine;
-    private String confirmations;
-    private String txCreatTrsaction;
 
     public int getLayoutId() {
         return R.layout.transaction_records;
@@ -71,7 +59,6 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
 
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         radioGroup.setOnCheckedChangeListener(this);
     }
 
@@ -125,13 +112,14 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
                 String type = jsonObject.getString("type");
-                tx_hash = jsonObject.getString("tx_hash");
-                amount = jsonObject.getString("amount");
+                //    private String strChoosestate;
+                String tx_hash = jsonObject.getString("tx_hash");
+                String amount = jsonObject.getString("amount");
                 is_mine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
                 date = jsonObject.getString("date");
                 String tx_status = jsonObject.getString("tx_status");
                 if (type.equals("history")) {
-                    confirmations = jsonObject.getString("confirmations");
+                    String confirmations = jsonObject.getString("confirmations");
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
                     maintrsactionlistEvent.setDate(date);
@@ -143,7 +131,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
 
-                    txCreatTrsaction = jsonObject.getString("tx");
+                    String txCreatTrsaction = jsonObject.getString("tx");
                     String invoice_id = jsonObject.getString("invoice_id");//delete use
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);

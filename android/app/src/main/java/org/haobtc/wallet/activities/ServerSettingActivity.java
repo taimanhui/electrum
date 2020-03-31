@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -14,7 +13,6 @@ import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.settings.AgentServerActivity;
 import org.haobtc.wallet.activities.settings.BlockChooseActivity;
 import org.haobtc.wallet.activities.settings.ElectrumNodeChooseActivity;
 import org.haobtc.wallet.activities.settings.QuotationServerActivity;
@@ -57,9 +55,9 @@ public class ServerSettingActivity extends BaseActivity {
 
     private void inits() {
         boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
-        if (set_syn_server) {
+        if (set_syn_server){
             switchCynchronez.setChecked(true);
-        } else {
+        }else{
             switchCynchronez.setChecked(false);
         }
     }
@@ -75,22 +73,22 @@ public class ServerSettingActivity extends BaseActivity {
         switchCynchronez.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+                if (isChecked){
                     try {
-                        Daemon.commands.callAttr("set_syn_server", true);
+                        Daemon.commands.callAttr("set_syn_server",true);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    edit.putBoolean("set_syn_server", true);
+                    edit.putBoolean("set_syn_server",true);
                     edit.apply();
-                    mToast(getResources().getString(R.string.set_success));
-                } else {
+                    mToast(getString(R.string.set_success));
+                }else{
                     try {
-                        Daemon.commands.callAttr("set_syn_server", false);
+                        Daemon.commands.callAttr("set_syn_server",false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    edit.putBoolean("set_syn_server", false);
+                    edit.putBoolean("set_syn_server",false);
                     edit.apply();
                 }
             }
@@ -112,7 +110,7 @@ public class ServerSettingActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.img_back, R.id.rel_quotationChoose, R.id.rel_blockChoose, R.id.rel_Electrum_Choose, R.id.relAgent_Choose})
+    @OnClick({R.id.img_back, R.id.rel_quotationChoose, R.id.rel_blockChoose, R.id.rel_Electrum_Choose})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -127,9 +125,7 @@ public class ServerSettingActivity extends BaseActivity {
             case R.id.rel_Electrum_Choose:
                 mIntent(ElectrumNodeChooseActivity.class);
                 break;
-            case R.id.relAgent_Choose:
-                mIntent(AgentServerActivity.class);
-                break;
         }
     }
+
 }

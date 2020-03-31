@@ -131,14 +131,14 @@ public class SingleSigWalletCreator extends BaseActivity {
                 if (!TextUtils.isEmpty(s.toString())) {
                     if (Integer.parseInt(indication) != 0) {
                         bnMultiNext.setEnabled(true);
-                        bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                        bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
                     } else {
                         bnMultiNext.setEnabled(false);
-                        bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                        bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
                     }
                 } else {
                     bnMultiNext.setEnabled(false);
-                    bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
                 }
             }
         });
@@ -164,15 +164,15 @@ public class SingleSigWalletCreator extends BaseActivity {
                 if (progress != 0) {
                     if (!TextUtils.isEmpty(walletName)) {
                         bnMultiNext.setEnabled(true);
-                        bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk));
+                        bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
                     } else {
                         bnMultiNext.setEnabled(false);
-                        bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                        bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
                     }
 
                 } else {
                     bnMultiNext.setEnabled(false);
-                    bnMultiNext.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
                 }
 
             }
@@ -209,11 +209,11 @@ public class SingleSigWalletCreator extends BaseActivity {
         String indication = tvIndicator.getText().toString();
         int n = Integer.parseInt(indication);
         if (TextUtils.isEmpty(strWalletName)) {
-            mToast(getResources().getString(R.string.set_wallet));
+            mToast(getString(R.string.set_wallet));
             return;
         }
         if (n == 0) {
-            mToast(getResources().getString(R.string.set_bixinkey_num));
+            mToast(getString(R.string.set_bixinkey_num));
             return;
         }
 
@@ -370,7 +370,7 @@ public class SingleSigWalletCreator extends BaseActivity {
             showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                mToast(getResources().getString(R.string.pin_wrong));
+                mToast(getString(R.string.pin_wrong));
             } else {
                 dialogFragment.showReadingFailedDialog();
             }

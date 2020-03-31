@@ -95,7 +95,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private EditText tetamount;
-    private RecyclerView recyPayaddress;
     private List<AddressEvent> dataListName;
     private ChoosePayAddressAdapetr choosePayAddressAdapetr;
     private String straddress;
@@ -104,13 +103,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String wallet_name;
     private TextView textView;
     private double pro;
-    private Gson gson;
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor edit;
     private String wallet_amount;
     private PyObject get_wallets_list;
-    private PyObject mktx;
-    private ImageView imgBack;
     private int walletmoney = 0;
     private int catorText;
     private PyObject pyObject;
@@ -123,7 +117,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private int screenHeight;
     private String base_unit;
     private String strUnit;
-    private Button btnRecommend;
     private String strFeemontAs;
 
     @Override
@@ -133,10 +126,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         base_unit = preferences.getString("base_unit", "mBTC");
         strUnit = preferences.getString("cny_strunit", "CNY");
-        edit = preferences.edit();
         selectSend = findViewById(R.id.llt_select_wallet);
         tetMoneye = findViewById(R.id.tet_Money);
         tetamount = findViewById(R.id.amount);
@@ -149,8 +141,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         buttonCreate = findViewById(R.id.create_trans_one2one);
         buttonSweep = findViewById(R.id.bn_sweep_one2noe);
         buttonPaste = findViewById(R.id.bn_paste_one2one);
-        imgBack = findViewById(R.id.img_back);
-        btnRecommend = findViewById(R.id.btnRecommendFee);
+        ImageView imgBack = findViewById(R.id.img_back);
+        Button btnRecommend = findViewById(R.id.btnRecommendFee);
         btnRecommend.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         tetamount.addTextChangedListener(this);
@@ -485,7 +477,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             tetWalletname.setText(wallet_name);
             dialogBtom.cancel();
         });
-        recyPayaddress = view.findViewById(R.id.recy_payAdress);
+        RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
 
 //        recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2OneMainPageActivity.this));
         choosePayAddressAdapetr = new ChoosePayAddressAdapetr(SendOne2OneMainPageActivity.this, dataListName);
@@ -648,6 +640,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
         Log.i("CreatTransaction", "strPramas: " + strPramas);
 
+        PyObject mktx;
         try {
             mktx = Daemon.commands.callAttr("mktx", strPramas, strComment);
 
@@ -666,7 +659,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         Log.i("CreatTransaction", "mCreatTransaction: " + mktx);
         if (mktx != null) {
             String jsonObj = mktx.toString();
-            gson = new Gson();
+            Gson gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             String beanTx = getAddressBean.getTx();
             if (beanTx != null) {

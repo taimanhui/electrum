@@ -30,7 +30,6 @@ public class LanguageSettingActivity extends BaseActivity {
     TextView radioJapanese;
     @BindView(R.id.img_back)
     ImageView imgBack;
-    private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private String language;
 
@@ -39,9 +38,9 @@ public class LanguageSettingActivity extends BaseActivity {
     }
 
     public void initView() {
-        // TODO: add setContentView(...) invocation
+
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         language = preferences.getString("language", "");
         edit = preferences.edit();
 
@@ -66,8 +65,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 mTextChinese();
                 edit.putString("language", "Chinese");
                 edit.apply();
-                radioEnglish.setTextColor(getResources().getColor(R.color.text_color1));
-                radioChineseasy.setTextColor(getResources().getColor(R.color.button_bk_disableok));
+                radioEnglish.setTextColor(getColor(R.color.text_color1));
+                radioChineseasy.setTextColor(getColor(R.color.button_bk_disableok));
                 refreshSelf();
                 break;
             case R.id.radio_character:
@@ -76,8 +75,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 mTextEnglish();
                 edit.putString("language", "English");
                 edit.apply();
-                radioEnglish.setTextColor(getResources().getColor(R.color.button_bk_disableok));
-                radioChineseasy.setTextColor(getResources().getColor(R.color.text_color1));
+                radioEnglish.setTextColor(getColor(R.color.button_bk_disableok));
+                radioChineseasy.setTextColor(getColor(R.color.text_color1));
                 refreshSelf();
                 break;
             case R.id.radio_Korean:

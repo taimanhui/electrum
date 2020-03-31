@@ -51,18 +51,13 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     TextView byteCount;
     private Button buttonNext;
     private EditText editTextAddress, editTextAmount;
-    private LinearLayout buttonAdd;
-    private TextView buttonPaste, textViewTotal;
-    private ImageView buttonSweep;
+    private TextView textViewTotal;
     private RecyclerView recyclerView;
     private static final int REQUEST_CODE = 0;
     private RxPermissions rxPermissions;
-    private String straddress;
-    private String strSmount;
     private List<SendMoreAddressEvent> sendMoreAddressList;
     private String wallet_name;
     private BigDecimal totalAmount;
-    private ImageView imgBack;
     private Map<String, String> pramasBtc;
     private ArrayList<Map<String, String>> mapsBtc;
     private String strmapBtc;
@@ -73,25 +68,25 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     }
 
     public void initView() {
-        // TODO: add setContentView(...) invocation
+
         ButterKnife.bind(this);
         rxPermissions = new RxPermissions(this);
-        buttonAdd = findViewById(R.id.lin_add_to);
-        buttonSweep = findViewById(R.id.bn_sweep_2many);
-        buttonPaste = findViewById(R.id.bn_paste_2many);
+        LinearLayout buttonAdd = findViewById(R.id.lin_add_to);
+        ImageView buttonSweep = findViewById(R.id.bn_sweep_2many);
+        TextView buttonPaste = findViewById(R.id.bn_paste_2many);
         buttonNext = findViewById(R.id.bn_send2many_next);
         editTextAddress = findViewById(R.id.edit_address_2many);
         editTextAmount = findViewById(R.id.edit_amount_2many);
         textViewTotal = findViewById(R.id.total);
         recyclerView = findViewById(R.id.recycler_add_to);
-        imgBack = findViewById(R.id.img_back);
+        ImageView imgBack = findViewById(R.id.img_back);
         buttonAdd.setOnClickListener(this);
         buttonSweep.setOnClickListener(this);
         buttonPaste.setOnClickListener(this);
         buttonNext.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         buttonNext.setEnabled(false);
-        buttonNext.setBackground(getResources().getDrawable(R.color.button_bk_grey));
+        buttonNext.setBackground(getDrawable(R.color.button_bk_grey));
         editTextAmount.addTextChangedListener(this);
 
         init();
@@ -170,7 +165,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                 String bigAmont = String.valueOf(totalAmount);
                 int size = sendMoreAddressList.size();
                 if (size == 0) {
-                    mToast(getResources().getString(R.string.pleas_add_outputAdrs));
+                    mToast(getString(R.string.pleas_add_outputAdrs));
                 } else {
                     Intent intent = new Intent(this, SendOne2ManyMainPageActivity.class);
                     intent.putExtra("listdetail", (Serializable) sendMoreAddressList);
@@ -214,14 +209,14 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
 
     @SuppressLint("DefaultLocale")
     private void addressList() {
-        straddress = editTextAddress.getText().toString();
-        strSmount = editTextAmount.getText().toString();
+        String straddress = editTextAddress.getText().toString();
+        String strSmount = editTextAmount.getText().toString();
         if (TextUtils.isEmpty(straddress)) {
-            mToast(getResources().getString(R.string.please_input_address));
+            mToast(getString(R.string.please_input_address));
             return;
         }
         if (TextUtils.isEmpty(strSmount)) {
-            mToast(getResources().getString(R.string.please_input_amount));
+            mToast(getString(R.string.please_input_amount));
             return;
         }
         SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
@@ -247,7 +242,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         editTextAmount.setText("");
         editContext.setText("");
         buttonNext.setEnabled(true);
-        buttonNext.setBackground(getResources().getDrawable(R.color.button_bk));
+        buttonNext.setBackground(getDrawable(R.color.button_bk));
         SendmoreAddressAdapter sendmoreAddressAdapter = new SendmoreAddressAdapter(Send2ManyActivity.this, sendMoreAddressList);
         recyclerView.setAdapter(sendmoreAddressAdapter);
         sendmoreAddressAdapter.setmOnDeleteItemClickListener(new SendmoreAddressAdapter.OnItemDeleteClickListener() {
@@ -267,7 +262,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                 if (sendMoreAddressList.size() == 0) {
                     textViewTotal.setText(String.format("%d", 0));
                     buttonNext.setEnabled(false);
-                    buttonNext.setBackground(getResources().getDrawable(R.color.button_bk_grey));
+                    buttonNext.setBackground(getDrawable(R.color.button_bk_grey));
                 } else {
                     totalAmount = new BigDecimal("0");
                     for (int i = 0; i < sendMoreAddressList.size(); i++) {
@@ -321,7 +316,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
             BigDecimal bigDecimal = new BigDecimal(21000000);
             int mathMax = bignum1.compareTo(bigDecimal);
             if (mathMax == 1) {
-                mToast(getResources().getString(R.string.sendMore));
+                mToast(getString(R.string.sendMore));
             }
         }
 

@@ -951,7 +951,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     relFinish.setVisibility(View.VISIBLE);
                     cardThreePublic.setVisibility(View.VISIBLE);
                     tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
-                    tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getResources().getString(R.string.the_only_bixinkey)));
+                    tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getString(R.string.the_only_bixinkey)));
                     break;
             }
         }

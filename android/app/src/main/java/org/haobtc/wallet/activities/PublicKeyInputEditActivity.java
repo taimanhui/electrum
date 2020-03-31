@@ -45,7 +45,7 @@ public class PublicKeyInputEditActivity extends BaseActivity {
     }
 
     public void initView() {
-        // TODO: add setContentView(...) invocation
+
         ButterKnife.bind(this);
         rxPermissions = new RxPermissions(this);
 

@@ -99,9 +99,9 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                 FileSelectConstant.SELECTOR_MODE_FILE);
         String keyFile = getIntent().getStringExtra("keyFile");
         if (keyFile.equals("1")){
-            btnPrevation.setText(getResources().getString(R.string.comfirm));
+            btnPrevation.setText(getString(R.string.comfirm));
         }else{
-            btnPrevation.setText(getResources().getString(R.string.preservations));
+            btnPrevation.setText(getString(R.string.preservations));
         }
 
         mSelectorIsMultiple = getIntent().getBooleanExtra(FileSelectConstant.SELECTOR_IS_MULTIPLE, false);
@@ -355,7 +355,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                 }
             }
             if (fileList.isEmpty()) {
-                Toast.makeText(this, getResources().getString(R.string.nochoose), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.nochoose), Toast.LENGTH_SHORT).show();
             } else {
                 Intent intent = new Intent();
                 intent.putStringArrayListExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS, fileList);
@@ -375,7 +375,7 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
             }
 
             if (fileList.isEmpty()) {
-                Toast.makeText(this, getResources().getString(R.string.nochoosepath), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.nochoosepath), Toast.LENGTH_SHORT).show();
             } else {
                 Intent intent = new Intent();
                 intent.putExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS, fileList);

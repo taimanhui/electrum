@@ -22,7 +22,6 @@ public class VerificationSuccessActivity extends BaseActivity {
     TextView testContent;
     @BindView(R.id.btn_finish)
     Button btnFinish;
-    private int status = 0;
 
     @Override
     public int getLayoutId() {
@@ -37,6 +36,7 @@ public class VerificationSuccessActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        int status = 0;
         switch (status) {
             case 0:
                 imgStatus.setImageDrawable(getDrawable(R.drawable.tongguo));

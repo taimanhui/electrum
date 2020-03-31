@@ -49,8 +49,6 @@ public class ReceivedPageActivity extends BaseActivity {
     ImageView imgBack;
     private Bitmap bitmap;
     private RxPermissions rxPermissions;
-    private long mMillis;
-
     @Override
     public int getLayoutId() {
         return R.layout.address_info;
@@ -58,7 +56,7 @@ public class ReceivedPageActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
+
         ButterKnife.bind(this);
         rxPermissions = new RxPermissions(this);
     }
@@ -116,10 +114,10 @@ public class ReceivedPageActivity extends BaseActivity {
                                     Intent imageIntent = new Intent(Intent.ACTION_SEND);
                                     imageIntent.setType("image/jpeg");
                                     imageIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
-                                    startActivity(Intent.createChooser(imageIntent, getResources().getString(R.string.share)));
+                                    startActivity(Intent.createChooser(imageIntent, getString(R.string.share)));
 
                                 }else{
-                                    mToast(getResources().getString(R.string.pictrue_fail));
+                                    mToast(getString(R.string.pictrue_fail));
                                 }
 
                             } else { // Oups permission denied

@@ -33,7 +33,6 @@ public class DeatilMoreAddressActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
         Intent intent = getIntent();
         jsondef_get = intent.getStringExtra("jsondef_get");
