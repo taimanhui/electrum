@@ -69,7 +69,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener, OnButtonClickListener, OnDownloadListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
 
     private ViewPager viewPager;
     SharedPreferences sharedPreferences;
@@ -92,7 +92,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private SmartRefreshLayout refreshLayout;
     private ArrayList<AddressEvent> walletnameList;
     private String strType;
-    private DownloadManager manager;
 
     @Override
     public int getLayoutId() {
@@ -145,48 +144,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         //wallet name and balance list
         walletnameList = new ArrayList<>();
-        attemptUpdate();
     }
-    public static int getVersionCode(Context context) {
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 1;
-        }
-    }
-    private void attemptUpdate() {
-        // todo: 通过服务器获取最新版本的版本信息
-        int versionCode = getVersionCode(this);
-        String url = "https://f29addac654be01c67d351d1b4282d53.dd.cdntips.com/imtt.dd.qq.com/16891/DC501F04BBAA458C9DC33008EFED5E7F.apk?mkey=5d6d132d73c4febb&f=0c2f&fsname=com.estrongs.android.pop_4.2.0.2.1_10027.apk&csr=1bbd&cip=115.196.216.78&proto=https";
-        UpdateConfiguration configuration = new UpdateConfiguration()
-                .setEnableLog(true)
-                //.setHttpManager()
-                .setJumpInstallPage(true)
-                .setDialogButtonTextColor(Color.WHITE)
-                .setDialogButtonColor(getColor(R.color.button_bk))
-                .setDialogImage(R.drawable.blue_backgraound)
-                .setShowNotification(true)
-                .setShowBgdToast(true)
-                .setForcedUpgrade(false)
-                .setButtonClickListener(this)
-                .setOnDownloadListener(this);
 
-        manager = DownloadManager.getInstance(this);
-        manager.setApkName("BixinKEY.apk")
-                .setApkUrl(url)
-                .setSmallIcon(R.drawable.app_icon)
-                .setShowNewerToast(false)
-                .setConfiguration(configuration)
-                .setApkVersionCode(versionCode + 1)
-                .setApkVersionName("2.1.8")
-                .setApkSize("20.4")
-                .setApkDescription(getString(R.string.introduce_detials))
-//                .setApkMD5("DC501F04BBAA458C9DC33008EFED5E7F")
-                .download();
-    }
+
 
     private void initCreatWallet() {
         Intent intent = new Intent(this, CreateWalletActivity.class);
@@ -209,7 +169,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         recy_data.setAdapter(trsactionlistAdapter);
         if (jumpOr) {
             //Rolling Wallet
-            mWheelplanting();
+            new Handler().postDelayed(this::mWheelplanting, 10);
         }
     }
 
@@ -492,7 +452,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     public void mInitState() {
         ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0.2f).navigationBarColor(R.color.button_bk_ddake).init();
-
     }
 
     @Override
@@ -640,35 +599,5 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (trsactionlistAdapter != null) {
             trsactionlistAdapter.notifyDataSetChanged();
         }
-    }
-
-    @Override
-    public void onButtonClick(int id) {
-
-    }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void downloading(int max, int progress) {
-
-    }
-
-    @Override
-    public void done(File apk) {
-        manager.release();
-    }
-
-    @Override
-    public void cancel() {
-
-    }
-
-    @Override
-    public void error(Exception e) {
-
     }
 }

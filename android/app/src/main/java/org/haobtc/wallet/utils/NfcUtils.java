@@ -22,21 +22,21 @@ public class NfcUtils {
     public static PendingIntent mPendingIntent;
     public static String[][] mTechList;
 
-    public static void nfc(FragmentActivity activity) {
-        mNfcAdapter = nfcCheck(activity);
+    public static void nfc(FragmentActivity activity, boolean promote) {
+        mNfcAdapter = nfcCheck(activity, promote);
         nfcInit(activity);
     }
 
     /**
      * check if NFC enabled
      */
-    private static NfcAdapter nfcCheck(FragmentActivity activity) {
+    private static NfcAdapter nfcCheck(FragmentActivity activity, boolean promote) {
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         if (mNfcAdapter == null) {
             Toast.makeText(activity, "设备不支持NFC功能!", Toast.LENGTH_SHORT).show();
             return null;
         } else {
-            if (!mNfcAdapter.isEnabled()) {
+            if (!mNfcAdapter.isEnabled() && promote) {
                 isToSet(activity);
             } else {
                 Toast.makeText(activity, "NFC功能已打开!", Toast.LENGTH_SHORT).show();

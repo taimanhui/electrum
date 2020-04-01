@@ -392,10 +392,8 @@
     <string name="_BTC">BTC</string>
     <string name="mbtc_0_001_btc">mBTC=0.001BTC</string>
     <string name="sat_0_00000001_btc">sat=0.00000001BTC</string>
-    <string name="text_little_num">0</string>
     <string name="begin_num1">1</string>
     <string name="text_5">5</string>
-    <string name="text_big_num">15</string>
     <string name="btc_c">BTC</string>
     <string name="cny">CNY</string>
     <string name="TestNet">TestNet</string>
@@ -515,6 +513,9 @@
     <string name="set_finish">设置完成</string>
     <string name="confirm_hardware_msg">请在硬件上确认</string>
     <string name="nowallet_import">暂无可导入钱包</string>
-
+    <string name="signature_need_min">2</string>
+    <string name="cosinger_number_min">2</string>
+    <string name="signature_need_max">15</string>
+    <string name="number_1">1</string>
 
 </resources>

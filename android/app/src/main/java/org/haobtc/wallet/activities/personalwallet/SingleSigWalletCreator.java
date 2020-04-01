@@ -151,17 +151,15 @@ public class SingleSigWalletCreator extends BaseActivity {
     }
 
     private void seekbarLatoutup() {
-        seekBarNum.setProgress(1);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
                 walletName = editWalletNameSetting.getText().toString();
-                String indicatorText = String.valueOf(progress);
+                String indicatorText = String.valueOf(progress+1);
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
-                if (progress != 0) {
                     if (!TextUtils.isEmpty(walletName)) {
                         bnMultiNext.setEnabled(true);
                         bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
@@ -169,12 +167,6 @@ public class SingleSigWalletCreator extends BaseActivity {
                         bnMultiNext.setEnabled(false);
                         bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
                     }
-
-                } else {
-                    bnMultiNext.setEnabled(false);
-                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }
-
             }
 
             @Override

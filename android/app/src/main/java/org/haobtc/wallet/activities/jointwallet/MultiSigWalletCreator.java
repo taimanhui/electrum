@@ -151,7 +151,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     private String strInditor1;
     private MyDialog myDialog;
     private PyObject walletAddressShowUi;
-    private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private boolean executable = true;
     private CommunicationModeSelector dialogFragment;
@@ -169,7 +168,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         int defaultName = preferences.getInt("defaultName", 0);
         edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
@@ -196,15 +195,12 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     }
 
     private void seekbarLatoutup() {
-        seekBarFee.setProgress(2);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBarFee.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
-            private int moveProgress;
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                moveProgress = progress;
-                String indicatorText = String.valueOf(progress);
+                String indicatorText = String.valueOf(progress+2);
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
@@ -238,8 +234,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-//                seekBarNum.setMax(moveProgress);
-//                testseekNum.setText(String.valueOf(moveProgress));
                 tvIndicator.setVisibility(View.VISIBLE);
 
             }
@@ -248,12 +242,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     }
 
     private void seekbarLatoutdown() {
-        seekBarNum.setProgress(1);
         RelativeLayout.LayoutParams paramsTwo = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                String indicatorText = String.valueOf(progress);
+                String indicatorText = String.valueOf(progress+2);
                 tvIndicatorTwo.setText(indicatorText);
                 paramsTwo.leftMargin = (int) indicatorOffset;
                 tvIndicatorTwo.setLayoutParams(paramsTwo);

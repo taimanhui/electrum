@@ -147,7 +147,7 @@
                         android:id="@+id/seek_bar_num"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_30"
-                        android:max="5"
+                        android:max="4"
                         android:overScrollMode="never"
                         android:thumb="@drawable/white_clrcle" />
 
@@ -164,7 +164,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
-                        android:text="@string/text_little_num"
+                        android:text="@string/number_1"
                         android:textColor="@color/text_0"
                         android:textSize="12sp" />
 
@@ -186,7 +186,7 @@
                         android:gravity="center_horizontal"
                         android:textColor="#6182f5"
                         android:textSize="12sp"
-                        android:text="@string/text_little_num" />
+                        android:text="@string/number_1" />
 
                 </RelativeLayout>
 

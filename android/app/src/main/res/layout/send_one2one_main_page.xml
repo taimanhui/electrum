@@ -427,7 +427,6 @@
                             android:maxLines="1"
                             android:paddingStart="@dimen/dp_8"
                             android:paddingEnd="@dimen/dp_8"
-                            android:text="@string/text_little_num"
                             android:textColor="#6182f5"
                             android:textSize="12sp"
                             android:visibility="gone" />

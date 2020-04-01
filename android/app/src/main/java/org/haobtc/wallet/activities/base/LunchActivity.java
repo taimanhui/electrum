@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities.base;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +10,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.chaquo.python.Python;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.MainActivity;
@@ -24,7 +22,6 @@ import org.haobtc.wallet.utils.Global;
 import java.lang.ref.WeakReference;
 
 public class LunchActivity extends BaseActivity {
-    private  RxPermissions rxPermissions;
 
     @Override
     public int getLayoutId() {
@@ -33,7 +30,6 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initView() {
-      rxPermissions = new RxPermissions(this);
     }
 
     @SuppressLint("HandlerLeak")
@@ -50,26 +46,9 @@ public class LunchActivity extends BaseActivity {
             Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
             Daemon.daemonWeakReference = new WeakReference<>(new Daemon());
             Daemon.commands.callAttr("set_callback_fun", Daemon.daemonWeakReference.get());
-            try {
-                initPermissions();
-            } catch (Exception ignored) {
-
-            }
+            init();
         }
     };
-    private void initPermissions() {
-        rxPermissions
-                .request(Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.CAMERA)
-                .subscribe(granted -> {
-                    if (granted) {
-                        init();
-                    }
-                }).dispose();
-    }
 
     @Override
     protected void onResume() {

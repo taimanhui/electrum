@@ -1,5 +1,8 @@
 package org.haobtc.wallet.bean;
 
+import androidx.annotation.NonNull;
+
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -24,6 +27,7 @@ public class HardwareFeatures {
      * unfinished_backup : false
      * no_backup : false
      * capabilities : [1,2,5,7,8,10,12,14]
+     * ble_name :
      */
 
     @SerializedName("vendor")
@@ -62,6 +66,8 @@ public class HardwareFeatures {
     private boolean noBackup;
     @SerializedName("capabilities")
     private List<Integer> capabilities;
+    @SerializedName("ble_name")
+    private String bleName;
 
     public String getVendor() {
         return vendor;
@@ -205,5 +211,18 @@ public class HardwareFeatures {
 
     public void setCapabilities(List<Integer> capabilities) {
         this.capabilities = capabilities;
+    }
+
+    public void setBleName(String bleName) {
+        this.bleName = bleName;
+    }
+    public String getBleName() {
+        return bleName;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

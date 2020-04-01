@@ -47,7 +47,7 @@ public class TouchHardwareActivity extends BaseActivity {
     @Override
     public void initData() {
 
-        NfcUtils.nfc(this);
+        NfcUtils.nfc(this, true);
         // use in udp
         if (NfcUtils.mNfcAdapter == null || !NfcUtils.mNfcAdapter.isEnabled()) {
             boolean isInitialized = true;

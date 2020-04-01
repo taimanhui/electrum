@@ -69,7 +69,7 @@ public class ActivatedProcessing extends BaseActivity {
 
     @Override
     public void initData() {
-        NfcUtils.nfc(this);
+        NfcUtils.nfc(this, false);
 
     }
 

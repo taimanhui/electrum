@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.jointwallet;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -11,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +41,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ActivatedProcessing;
@@ -85,6 +88,7 @@ import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import io.reactivex.internal.schedulers.RxThreadFactory;
 import no.nordicsemi.android.dfu.DfuServiceController;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 
@@ -123,6 +127,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     private BluetoothFragment bleFragment;
     private boolean isBonded;
     public static volatile boolean isDfu;
+    private RxPermissions permissions;
 
     private final BleWriteCallback<BleDevice> writeCallBack = new BleWriteCallback<BleDevice>() {
 
@@ -226,7 +231,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                         } else {
                             dealWithBusiness();
                         }
-                    }, isBonded ? 3000 : 1000);
+                    }, isBonded ? 3000 : 1600);
                     break;
                 } else {
                     setNotify(BleDeviceRecyclerViewAdapter.mBleDevice);
@@ -258,6 +263,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     if (activity != null) {
                         activity.runOnUiThread(() -> Toast.makeText(getContext(), "蓝牙链接异常", Toast.LENGTH_LONG).show());
                     }
+                    dismiss();
                     break;
                 case 133:
                     mBle.disconnect(device);
@@ -270,6 +276,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     if (activity1 != null) {
                         activity1.runOnUiThread(() -> Toast.makeText(getContext(), "蓝牙连接失败", Toast.LENGTH_LONG).show());
                     }
+                    dismiss();
                     break;
                 default:
                     dismiss();
@@ -287,6 +294,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         public void onConnectTimeOut(BleDevice device) {
             super.onConnectTimeOut(device);
             Log.e(TAG, String.format("连接设备==%s超时", device.getBleName()));
+            dismiss();
         }
     };
     @SuppressLint("SdCardPath")
@@ -384,10 +392,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("backup_wallet"));
                     executorService.submit(futureTask);
                     try {
-                        String privateKey = futureTask.get().toString();
+                        String privateKey = futureTask.get(20, TimeUnit.SECONDS).toString();
                         Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toast.makeText(getActivity(), String.format("backup successful: %s", privateKey), Toast.LENGTH_SHORT).show());
                         dismiss();
-                    } catch (ExecutionException | InterruptedException e) {
+                    } catch (ExecutionException | InterruptedException | TimeoutException e) {
                         e.printStackTrace();
                     }
                 } else {
@@ -440,9 +448,19 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     private HardwareFeatures getFeatures() throws Exception {
         String feature;
         try {
-            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature", "bluetooth")).get().toString();
-            return new Gson().fromJson(feature, HardwareFeatures.class);
-        } catch (ExecutionException | InterruptedException e) {
+            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", "bluetooth"));
+            executorService.submit(futureTask);
+            feature = futureTask.get(5, TimeUnit.SECONDS).toString();
+            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
+            SharedPreferences devices = Objects.requireNonNull(getActivity()).getSharedPreferences("devices", Context.MODE_PRIVATE);
+            if (!devices.contains(features.getDeviceId())) {
+                String bleName = Ble.getInstance().getConnetedDevices().get(0).getBleName();
+                features.setBleName(bleName);
+                feature =  features.toString();
+                devices.edit().putString(features.getDeviceId(), feature).apply();
+            }
+            return features;
+        } catch (ExecutionException | InterruptedException  | TimeoutException e) {
             Toast.makeText(getContext(), "communication error", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             throw e;
@@ -459,6 +477,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public void showReadingFailedDialog() {
         ReadingPubKeyFailedDialogFragment fragment = new ReadingPubKeyFailedDialogFragment();
         fragment.setRunnable(retry);
+        fragment.setActivity(getActivity());
         fragment.show(getChildFragmentManager(), "");
     }
 
@@ -494,20 +513,28 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
         handler = MyHandler.getInstance(getActivity());
         customerUI.put("handler", handler);
-        NfcUtils.nfc(getActivity());
+        NfcUtils.nfc(getActivity(), true);
         if (!MultiSigWalletCreator.TAG.equals(tag)) {
             relativeLayout.setVisibility(View.GONE);
         }
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             switch (checkedId) {
                 case R.id.radio_ble:
-                    group.check(R.id.radio_ble);
                     frameLayout.setVisibility(View.VISIBLE);
                     imageView.setVisibility(View.GONE);
                     textView.setVisibility(View.GONE);
-                    turnOnBlueTooth();
-                    refreshDeviceList(true);
                     getChildFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
+                    permissions = new RxPermissions(this);permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
+                            granted -> {
+                                if (granted) {
+                                    group.check(R.id.radio_ble);
+                                    turnOnBlueTooth();
+                                    refreshDeviceList(true);
+                                } else {
+                                   Toast.makeText(getContext(), "蓝牙需要使用定位权限", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                    ).dispose();
                     break;
                 case R.id.radio_nfc:
                     group.check(R.id.radio_nfc);

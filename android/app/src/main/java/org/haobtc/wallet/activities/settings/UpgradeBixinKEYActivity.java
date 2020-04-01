@@ -107,7 +107,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         tag = getIntent().getIntExtra("tag", 0);
-        NfcUtils.nfc(this);
+        NfcUtils.nfc(this, false);
     }
 
     @Override
