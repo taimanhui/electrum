@@ -45,6 +45,7 @@ import org.haobtc.wallet.activities.ActivatedProcessing;
 import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
+import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.PersonalMultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
@@ -347,7 +348,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         boolean isInit = features.isInitialized();
         if (isInit) {
             boolean pinCached = features.isPinCached();
-            if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)) {
+            if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
                 dialogFragment = showReadingDialog();
                 Log.i(TAG, "java ==== get_xpub_from_hw");
                 if (SingleSigWalletCreator.TAG.equals(tag)||HideWalletActivity.TAG.equals(tag)) {

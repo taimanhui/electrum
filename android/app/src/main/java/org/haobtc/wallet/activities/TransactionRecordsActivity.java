@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,12 +10,15 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
@@ -35,7 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class TransactionRecordsActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class TransactionRecordsActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener, OnRefreshListener {
     @BindView(R.id.recy_jylist)
     RecyclerView recyJylist;
     @BindView(R.id.tet_None)
@@ -48,10 +50,14 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     RadioButton radioTwo;
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
+    @BindView(R.id.smart_RefreshLayout)
+    SmartRefreshLayout refreshLayout;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private String strChoose = "send";
     private String date;
     private boolean is_mine;
+    private MaindowndatalistAdapetr trsactionlistAdapter;
+
 
     public int getLayoutId() {
         return R.layout.transaction_records;
@@ -60,11 +66,18 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     public void initView() {
         ButterKnife.bind(this);
         radioGroup.setOnCheckedChangeListener(this);
+        refreshLayout.setEnableLoadMore(false);
+        refreshLayout.setEnableRefresh(true);
+        refreshLayout.setOnRefreshListener(this);
     }
 
     public void initData() {
         maintrsactionlistEvents = new ArrayList<>();
+        //Binder Adapter
+        trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
+        recyJylist.setAdapter(trsactionlistAdapter);
         mTransactionrecordSend(strChoose);
+
     }
 
     private void mTransactionrecordSend(String sends) {
@@ -90,6 +103,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
             if (TextUtils.isEmpty(strHistory) || strHistory.length() == 2) {
                 tetNone.setVisibility(View.VISIBLE);
                 recyJylist.setVisibility(View.GONE);
+                refreshLayout.finishRefresh();
             } else {
                 tetNone.setVisibility(View.GONE);
                 recyJylist.setVisibility(View.VISIBLE);
@@ -98,6 +112,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
             }
 
         } else {
+            refreshLayout.finishRefresh();
             tetNone.setVisibility(View.VISIBLE);
             recyJylist.setVisibility(View.GONE);
         }
@@ -106,6 +121,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
+        refreshLayout.finishRefresh();
         try {
             JSONArray jsonArray = new JSONArray(strHistory);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -143,12 +159,6 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                     maintrsactionlistEvent.setInvoice_id(invoice_id);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
-
-                //Binder Adapter
-                recyJylist.setLayoutManager(new LinearLayoutManager(TransactionRecordsActivity.this));
-                MaindowndatalistAdapetr trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
-                recyJylist.setAdapter(trsactionlistAdapter);
-
                 trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                     @Override
                     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
@@ -220,18 +230,34 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        switch (checkedId){
+        switch (checkedId) {
             case R.id.radio_one:
                 strChoose = "send";
                 maintrsactionlistEvents.clear();
                 mTransactionrecordSend(strChoose);
+                if (trsactionlistAdapter != null) {
+                    trsactionlistAdapter.notifyDataSetChanged();
+                }
 
                 break;
             case R.id.radio_two:
                 strChoose = "receive";
                 maintrsactionlistEvents.clear();
                 mTransactionrecordSend(strChoose);
+                if (trsactionlistAdapter != null) {
+                    trsactionlistAdapter.notifyDataSetChanged();
+                }
                 break;
+        }
+    }
+
+    @Override
+    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        maintrsactionlistEvents.clear();
+        //trsaction list data
+        mTransactionrecordSend(strChoose);
+        if (trsactionlistAdapter != null) {
+            trsactionlistAdapter.notifyDataSetChanged();
         }
     }
 }

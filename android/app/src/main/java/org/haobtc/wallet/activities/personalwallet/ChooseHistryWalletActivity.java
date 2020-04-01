@@ -2,30 +2,26 @@ package org.haobtc.wallet.activities.personalwallet;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.text.TextUtils;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ImportHistryWalletAdapter;
 import org.haobtc.wallet.bean.ImportHistryWalletBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
-import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -43,6 +39,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     RecyclerView reclImportWallet;
     @BindView(R.id.btn_Finish)
     Button btnFinish;
+    @BindView(R.id.test_no_wallet)
+    TextView testNoWallet;
     private String histry_xpub;
     private ArrayList<AddBixinKeyEvent> xpubList;
     private boolean chooseWallet = false;
@@ -59,7 +57,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         histry_xpub = intent.getStringExtra("histry_xpub");
-        Log.i("histry_xpub", "initView: "+histry_xpub);
+        Log.i("histry_xpub", "initView: " + histry_xpub);
 
     }
 
@@ -77,7 +75,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
             infoFromServer = Daemon.commands.callAttr("get_wallet_info_from_server", histry_xpub);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("infoFromServer", "Exception: "+e.getMessage());
+            Log.i("infoFromServer", "Exception: " + e.getMessage());
         }
         if (infoFromServer != null) {
             String strfromServer = infoFromServer.toString();
@@ -106,8 +104,10 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                         walletType = xpubList.get(position).getKeyname();
                     }
                 });
+            } else {
+
             }
-        }else{
+        } else {
             mToast(getString(R.string.no_import_wallet));
         }
     }
@@ -125,7 +125,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     }
 
     private void setWalletnameDialog() {
-        if (chooseWallet){
+        if (chooseWallet) {
             View view1 = LayoutInflater.from(ChooseHistryWalletActivity.this).inflate(R.layout.set_walletname, null, false);
             AlertDialog alertDialog = new AlertDialog.Builder(ChooseHistryWalletActivity.this).setView(view1).create();
             EditText walletName = view1.findViewById(R.id.inputName);
@@ -140,7 +140,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
             });
             alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.show();
-        }else{
+        } else {
             mToast(getString(R.string.please_import_wallet));
         }
 
@@ -148,19 +148,26 @@ public class ChooseHistryWalletActivity extends BaseActivity {
 
     private void importWallet(String wallet_name) {
         //signum
-        String strsigNum=walletType.substring(0, walletType.indexOf("-"));
+        String strsigNum = walletType.substring(0, walletType.indexOf("-"));
         int sigNum = Integer.parseInt(strsigNum);
         //public  num
-        String strpubNum = walletType.substring(walletType.indexOf("-")+1);
+        String strpubNum = walletType.substring(walletType.indexOf("-") + 1);
         int pubNum = Integer.parseInt(strpubNum);
 
         try {
-            Daemon.commands.callAttr("import_create_hw_wallet",wallet_name,sigNum,pubNum,keyaddress);
+            Daemon.commands.callAttr("import_create_hw_wallet", wallet_name, sigNum, pubNum, keyaddress);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
         mIntent(MainActivity.class);
 
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

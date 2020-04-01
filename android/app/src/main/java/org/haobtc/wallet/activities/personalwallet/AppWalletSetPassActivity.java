@@ -96,12 +96,6 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     myDialog.dismiss();
                     return;
                 }
-                boolean passType = isPassType(strPass1);
-                if (!passType) {
-                    mToast(getString(R.string.passtype_wrong));
-                    myDialog.dismiss();
-                    return;
-                }
                 if (!TextUtils.isEmpty(strSeed)) {
                     handler.sendEmptyMessage(1);
 
@@ -116,15 +110,6 @@ public class AppWalletSetPassActivity extends BaseActivity {
         }
     }
 
-    //judge mobile is wrong or right
-    public boolean isPassType(String mobiles) {
-        Pattern p = Pattern
-                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
-        Matcher m = p.matcher(mobiles);
-
-        return m.matches();
-    }
-
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler(){
         @Override
@@ -134,6 +119,8 @@ public class AppWalletSetPassActivity extends BaseActivity {
                 case 1:
                     try {
                         Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));
+                        Daemon.commands.callAttr("load_wallet", strName);
+                        Daemon.commands.callAttr("select_wallet", strName);
                     } catch (Exception e) {
                         myDialog.dismiss();
                         e.printStackTrace();
@@ -156,6 +143,8 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     PyObject pyObject = null;
                     try {
                         pyObject = Daemon.commands.callAttr("create", strName, strPass1);
+                        Daemon.commands.callAttr("load_wallet", strName);
+                        Daemon.commands.callAttr("select_wallet", strName);
                     } catch (Exception e) {
                         myDialog.dismiss();
                         e.printStackTrace();

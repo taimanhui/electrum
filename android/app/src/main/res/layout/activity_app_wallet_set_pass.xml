@@ -113,16 +113,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_10"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:gravity="center_horizontal"
-            android:textColor="#b3b3b3"
-            android:textSize="12sp"
-            android:text="@string/input_pass_format1" />
 
         <Button
             android:id="@+id/btn_setPin"

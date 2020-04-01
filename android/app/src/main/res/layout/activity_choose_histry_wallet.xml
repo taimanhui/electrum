@@ -76,12 +76,22 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginEnd="@dimen/sp_16"
+            android:visibility="visible"
             android:layout_marginBottom="65dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="3"
             tools:listitem="@layout/histrywallet_item">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/test_no_wallet"
+            android:text="@string/nowallet_import"
+            android:visibility="gone"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"/>
+
     </LinearLayout>
 
     <RelativeLayout

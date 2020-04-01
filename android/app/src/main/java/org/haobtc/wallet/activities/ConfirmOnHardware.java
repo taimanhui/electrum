@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,10 @@ import butterknife.ButterKnife;
 
 public class ConfirmOnHardware extends BaseActivity implements View.OnClickListener {
     public static final String TAG = "org.haobtc.wallet.activities.ConfirmOnHardware";
+    @BindView(R.id.linBitcoin)
+    LinearLayout linBitcoin;
+    @BindView(R.id.testConfirmMsg)
+    TextView testConfirmMsg;
     private Dialog dialog;
     private View view;
     private ImageView imageViewCancel, imageViewSigning, imageBack;
@@ -74,11 +79,14 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 sendMoreAddressEvent.setInputAmount(amount);
                 addressEventList.add(sendMoreAddressEvent);
             }
-            Log.i("addressEventList", "-----: "+ addressEventList);
+            Log.i("addressEventList", "-----: " + addressEventList);
             tetPayAddress.setText(totalAmount);
             tetFeeNum.setText(fee);
             HardwareAdapter hardwareAdapter = new HardwareAdapter(addressEventList);
             reclMsg.setAdapter(hardwareAdapter);
+        } else {
+            linBitcoin.setVisibility(View.GONE);
+            testConfirmMsg.setText(getString(R.string.confirm_hardware_msg));
         }
     }
 
@@ -95,27 +103,27 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         window.setWindowAnimations(R.style.AnimBottom);
         dialog.show();
         Handler handler = new Handler();
-        handler.postDelayed(()-> {
+        handler.postDelayed(() -> {
             String result = "";
             try {
                 result = CommunicationModeSelector.futureTask.get(50, TimeUnit.SECONDS).toString();
                 imageViewSigning.setImageResource(R.drawable.chenggong);
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
-                Toast.makeText(this,"获取签名异常",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "获取签名异常", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 showPopupSignFailed();
                 return;
             } catch (TimeoutException e) {
                 e.printStackTrace();
-                Toast.makeText(this,"签名超时",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "签名超时", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
                 showPopupSignTimeout();
                 return;
             }
             Handler handler1 = new Handler();
             String finalResult = result;
-            handler1.postDelayed(()->{
+            handler1.postDelayed(() -> {
                 if (!TextUtils.isEmpty(finalResult)) {
                     Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
                     intent1.putExtra(TouchHardwareActivity.FROM, TAG);
@@ -123,7 +131,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                     startActivity(intent1);
                     dialog.dismiss();
                 }
-            },1000);
+            }, 1000);
 
         }, 500);
     }
@@ -192,5 +200,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     protected void onRestart() {
         super.onRestart();
         finish();
+
     }
 }

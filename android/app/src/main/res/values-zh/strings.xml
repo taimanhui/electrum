@@ -492,6 +492,8 @@
     <string name="password">密码</string>
     <string name="select_node_type">选择节点类型</string>
     <string name="set_finish">设置完成</string>
+    <string name="confirm_hardware_msg">请在硬件上确认</string>
+    <string name="nowallet_import">暂无可导入钱包</string>
 
 
 </resources>

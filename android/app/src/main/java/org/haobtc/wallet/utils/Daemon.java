@@ -24,8 +24,10 @@ public class Daemon {
         Log.i("onCallback", "=================="+event +"   ============================    "+ msg);
         if (event.equals("update_status")){
             EventBus.getDefault().post(new SecondEvent(msg));
-        }else{
+        }else if (event.equals("update_history")){
             EventBus.getDefault().post(new FirstEvent("22"));
+        }else if (event.equals("set_server_status")){
+            Log.i("onCallback", "自定义节点添加+++++++++++++++++++++++    "+ msg);
         }
 
     }

@@ -126,16 +126,27 @@
             android:elevation="@dimen/dp_4"
             app:cardCornerRadius="@dimen/corner_radius">
 
-            <org.haobtc.wallet.utils.SlideRecyclerView
-                android:id="@+id/recy_jylist"
-                android:name="com.example.myapplication1.ItemFragment2"
+            <com.scwang.smartrefresh.layout.SmartRefreshLayout
+                android:id="@+id/smart_RefreshLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="4"
-                tools:listitem="@layout/fragment_item_trans">
+                android:layout_height="match_parent">
 
-            </org.haobtc.wallet.utils.SlideRecyclerView>
+                <com.scwang.smartrefresh.layout.header.ClassicsHeader
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <org.haobtc.wallet.utils.SlideRecyclerView
+                    android:id="@+id/recy_jylist"
+                    android:name="com.example.myapplication1.ItemFragment2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="4"
+                    tools:listitem="@layout/fragment_item_trans">
+
+                </org.haobtc.wallet.utils.SlideRecyclerView>
+
+            </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
             <TextView
                 android:id="@+id/tet_None"

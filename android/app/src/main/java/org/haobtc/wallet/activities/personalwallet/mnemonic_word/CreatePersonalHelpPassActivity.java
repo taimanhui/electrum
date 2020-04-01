@@ -1,19 +1,13 @@
 package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
 
 import com.chaquo.python.Kwarg;
 
@@ -21,9 +15,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -144,13 +135,6 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
             myDialog.dismiss();
             return;
         }
-        boolean passType = isPassType(strPass1);
-        Log.i("passType", "passType: " + passType);
-        if (!passType) {
-            mToast(getString(R.string.passtype_wrong));
-            myDialog.dismiss();
-            return;
-        }
         try {
             Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed));
 
@@ -171,29 +155,6 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         }
         mIntent(CreateInputHelpWordWalletSuccseActivity.class);
     }
-
-    //judge mobile is wrong or right
-    public boolean isPassType(String mobiles) {
-        Pattern p = Pattern
-                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
-        Matcher m = p.matcher(mobiles);
-
-        return m.matches();
-    }
-
-    @SuppressLint("HandlerLeak")
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-
-                    break;
-            }
-        }
-    };
-
 }
 
 

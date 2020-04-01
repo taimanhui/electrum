@@ -814,6 +814,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
             } catch (Exception e) {
                 e.printStackTrace();
+                if (e.getMessage().contains("invalid bitcoin address")){
+                    mToast(getString(R.string.changeaddress));
+                }
                 return;
             }
             Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);

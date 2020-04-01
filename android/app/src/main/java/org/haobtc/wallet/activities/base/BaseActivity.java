@@ -129,6 +129,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         return m.matches();
     }
 
+    //judge pass type  must have Punctuation、Case letters、num、At least 8.
+    public boolean isPassType(String mobiles) {
+        Pattern p = Pattern
+                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
+        Matcher m = p.matcher(mobiles);
+
+        return m.matches();
+    }
+
     //get versionCode
     public int getLocalVersion(Context ctx) {
         int localVersion = 0;
