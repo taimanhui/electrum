@@ -24,8 +24,6 @@ from electrum.wallet import (Standard_Wallet,
 from electrum.bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
 from electrum import mnemonic
 from electrum.address_synchronizer import TX_HEIGHT_LOCAL, TX_HEIGHT_FUTURE
-#from android.preference import PreferenceManager
-from electrum.commands import satoshis
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
 from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 from electrum import ecc
@@ -105,11 +103,18 @@ class Help:
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
-    def __init__(self):
-        loop, stop_loop, loop_thread = create_and_start_event_loop()#TODO:close loop
+    def __init__(self, config=None, user_dir=None):
+        self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()#TODO:close loop
         config_options = {}
         config_options['auto_connect'] = True
-        self.config = simple_config.SimpleConfig(config_options)
+        if config is None:
+            self.config = simple_config.SimpleConfig(config_options)
+        else:
+            self.config = config
+        if user_dir is None:
+            self.user_dir = util.user_dir()
+        else:
+            self.user_dir = user_dir
         fd = daemon.get_file_descriptor(self.config)
         if not fd:
             raise BaseException("Daemon already running")  # Same wording as in daemon.py.
@@ -154,6 +159,10 @@ class AndroidCommands(commands.Commands):
         t.start()
 
     # BEGIN commands from the argparse interface.
+    def stop_loop(self):
+        self.asyncio_loop.call_soon_threadsafe(self._stop_loop.set_result, 1)
+        self._loop_thread.join(timeout=1)
+
     def update_local_wallet_info(self):
         try:
             self.local_wallet_info = self.config.get("all_wallet_type_info", {})
@@ -451,10 +460,11 @@ class AndroidCommands(commands.Commands):
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
             wallet_type = "%s-%s" % (self.m, self.n)
-            self.local_wallet_info[name] = wallet_type
-            self.config.set_key('all_wallet_type_info', self.local_wallet_info)
-            # if self.wallet:
-            #     self.close_wallet()
+            if not hide_type:
+                self.local_wallet_info[name] = wallet_type
+                self.config.set_key('all_wallet_type_info', self.local_wallet_info)
+            if self.wallet:
+                self.close_wallet()
             self.wallet = wallet
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
@@ -1389,24 +1399,33 @@ class AndroidCommands(commands.Commands):
 
     def list_wallets(self):
         """List available wallets"""
-        name_wallets = list([name for name in os.listdir(self._wallet_path())])
-        hide_wallets = list(name[name.rfind('/')+1:] for name in self.daemon._wallets)
-        all_wallets = sorted(set(name_wallets + hide_wallets))
-        print(f"all wallets = {all_wallets}")
-        print(f"local_wallet info === {self.local_wallet_info}")
+        name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
+        #all_wallets = sorted(set(name_wallets + hide_wallets))
+        #hide_wallets = list(name[name.rfind('/')+1:] for name in self.daemon._wallets)
+        #all_wallets = sorted(set(name_wallets + hide_wallets))
+        #print(f"all wallets = {all_wallets}")
+        #print(f"local_wallet info === {self.local_wallet_info}")
         out = []
-        for name in all_wallets:
+        for name in name_wallets:
             name_info = {}
             name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else 'unknow'
             out.append(name_info)
         return json.dumps(out)
 
+    def delete_wallet_from_deamon(self, name):
+        try:
+            self._assert_daemon_running()
+            self.daemon.delete_wallet(name)
+        except BaseException as e:
+            raise BaseException(e)
+
     def delete_wallet(self, name=None):
         """Delete a wallet"""
         try:
-            r = self.daemon.delete_wallet(self._wallet_path(name))
-            self.local_wallet_info.pop(name)
-            self.config.set_key('all_wallet_type_info', self.local_wallet_info)
+            self.delete_wallet_from_deamon(self._wallet_path(name))
+            if self.local_wallet_info.__contains__(name):
+                self.local_wallet_info.pop(name)
+                self.config.set_key('all_wallet_type_info', self.local_wallet_info)
             #os.remove(self._wallet_path(name))
         except Exception as e:
             raise BaseException(e)
@@ -1434,7 +1453,7 @@ class AndroidCommands(commands.Commands):
                 raise ValueError("No wallet selected")
             return self.wallet.storage.path
         else:
-            wallets_dir = join(util.user_dir(), "wallets")
+            wallets_dir = join(self.user_dir, "wallets")
             util.make_dir(wallets_dir)
             return util.standardize_path(join(wallets_dir, name))
 

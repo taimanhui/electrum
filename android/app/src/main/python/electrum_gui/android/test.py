@@ -20,7 +20,7 @@ _logger = get_logger(__name__)
 from console import AndroidCommands
 
 import time
-util.setup_thread_excepthook()
+#util.setup_thread_excepthook()
 print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 constants.set_testnet()
 #constants.set_regtest()
@@ -32,7 +32,8 @@ testcommond.set_syn_server(False)
 #name = 'hahahahhahh777' #2-2 multi wallet
 #name = 'hahahahhahh333' #1-N wallet
 #name = 'hahahahhahh888' #1-1 wallet
-name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
+#name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
+name = "test_hide_wallet"
 password = "111111"
 #password = "None"
 #test hardware
@@ -107,32 +108,33 @@ password = "111111"
 # #data2 =testcommond.get_wallet_info_from_server(xpub2)
 # #print("data 2 = %s" %data2)
 # time.sleep(100000000)
-# name = ""
-# pasword = 111111
-# m = 1
-# n = 1
-# xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
-# for i in range(1,5):
-#     name = "test_wallet"+str(i)
-#     testcommond.set_multi_wallet_info(name,m,n)
-#     testcommond.add_xpub(xpub1)
-#     testcommond.create_multi_wallet(name, hide_type=True)
-#
-# for i in range(1,3):
-#     name = "test_wallet"
-#     testcommond.set_multi_wallet_info(name,m,n)
-#     testcommond.add_xpub(xpub1)
-#     testcommond.create_multi_wallet(name, hide_type=True)
-#
-# ret = testcommond.list_wallets()
-# print(f"--------wallet info-------=%s {ret}")
-# time.sleep(10000)
+
+
+name = ""
+pasword = 111111
+m = 1
+n = 1
+xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+name = "test_wallet"
+for i in range(1,2):
+    testcommond.set_multi_wallet_info(name,m,n)
+    testcommond.add_xpub(xpub1)
+    testcommond.create_multi_wallet(name, hide_type=True)
+
+ret = testcommond.list_wallets()
+print(f"--------before wallet info-------=%s {ret}")
+
+testcommond.delete_wallet(name)
+ret = testcommond.list_wallets()
+print(f"--------after wallet info-------=%s {ret}")
+
+time.sleep(10000)
 
 ## create software wallet by create seed
 
 #name = "test1wwtest"
 #password = "111"
-testcommond.delete_wallet(name)
+#testcommond.delete_wallet(name)
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion', bip39_derivation="m/84'/0'/0'")
 #seed = testcommond.create(name, password, bip39_derivation="")
 #print(f"new seed---------{seed}")
@@ -140,7 +142,7 @@ testcommond.delete_wallet(name)
 
 # ret = testcommond.is_seed("rocket omit review divert bomb brief mushroom family fatal limb goose lion")
 # ret1 = testcommond.is_seed("wls")
-testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
+#testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
 #testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
 #ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 #print("=======ret1 = %s" %ret)
