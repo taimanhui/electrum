@@ -155,22 +155,29 @@ class AndroidCommands(commands.Commands):
 
     # BEGIN commands from the argparse interface.
     def update_local_wallet_info(self):
-        self.local_wallet_info = self.config.get("all_wallet_type_info", {})
-        print(f"before wallet = {self.local_wallet_info}")
-        new_wallet_info = {}
-        name_wallets = ([name for name in os.listdir(self._wallet_path())])
-        for name, type in self.local_wallet_info.items():
-            if name_wallets.__contains__(name):
-                new_wallet_info[name] = type
-        self.local_wallet_info = new_wallet_info
-        self.config.set_key('all_wallet_type_info', self.local_wallet_info)
-        print(f"after wallet = {self.local_wallet_info}")
+        try:
+            self.local_wallet_info = self.config.get("all_wallet_type_info", {})
+            new_wallet_info = {}
+            name_wallets = ([name for name in os.listdir(self._wallet_path())])
+            for name, type in self.local_wallet_info.items():
+                if name_wallets.__contains__(name):
+                    new_wallet_info[name] = type
+            self.local_wallet_info = new_wallet_info
+            self.config.set_key('all_wallet_type_info', self.local_wallet_info)
+        except BaseException as e:
+            raise e
 
     def is_valiad_xpub(self, xpub):
-        return keystore.is_bip32_key(xpub)
+        try:
+            return keystore.is_bip32_key(xpub)
+        except BaseException as e:
+            raise e
 
     def on_fee(self, event, *arg):
-        self.fee_status = self.config.get_fee_status()
+        try:
+            self.fee_status = self.config.get_fee_status()
+        except BaseException as e:
+            raise e
 
     def on_fee_histogram(self, *args):
         self.update_history()
@@ -192,8 +199,6 @@ class AndroidCommands(commands.Commands):
             print("network is ========offline")
             status = _("Offline")
         elif self.network.is_connected():
-            #print("network is ========connect")
-            #out['wallet_type'] = self.wallet.wallet_type
             self.num_blocks = self.network.get_local_height()
             server_height = self.network.get_server_height()
             server_lag = self.num_blocks - server_height
@@ -242,9 +247,12 @@ class AndroidCommands(commands.Commands):
         #self.parent.need_update.set()
 
     def save_tx_to_file(self, path, tx):
-        print("save_tx_to_file in.....")
-        with open(path, 'w') as f:
-            f.write(tx)
+        try:
+            print("save_tx_to_file in.....")
+            with open(path, 'w') as f:
+                f.write(tx)
+        except IOError as e:
+            raise BaseException(e)
 
     def get_wallet_info(self):
         wallet_info = {}
@@ -336,12 +344,8 @@ class AndroidCommands(commands.Commands):
     def get_wallet_type(self, name):
         return self.local_wallet_info.get(name)
 
-    def get_all_wallet_type_info(self):
-        print("all type info == %s" % self.local_wallet_info)
-
     def load_wallet(self, name, password=None):
         """Load a wallet"""
-        print("console.load_wallet_by_name in....")
         try:
             self._assert_daemon_running()
         except Exception as e:
@@ -351,7 +355,7 @@ class AndroidCommands(commands.Commands):
         if not wallet:
             storage = WalletStorage(path)
             if not storage.file_exists():
-                raise BaseException("not find file %s" %path)
+                raise BaseException("Not find file %s" %path)
             if storage.is_encrypted():
                 if not password:
                     raise BaseException(util.InvalidPassword())
@@ -382,7 +386,6 @@ class AndroidCommands(commands.Commands):
 
     ##set callback##############################
     def set_callback_fun(self, callbackIntent):
-        print("self.callbackIntent =%s" %callbackIntent)
         self.callbackIntent = callbackIntent
 
     #craete multi wallet##############################
@@ -470,11 +473,15 @@ class AndroidCommands(commands.Commands):
             self.create_multi_wallet(name, hide_type=hide_type)
         except BaseException as e:
             raise e
+
     ############
     def get_wallet_info_from_server(self, xpub):
         try:
             if self.label_flag:
-                return self.label_plugin.pull(xpub)
+                Vpub_data = json.loads(self.label_plugin.pull(xpub))
+                vpub = self.kifkey_change_from_p2wsh_to_p2wpkh(xpub)
+                vpub_data = json.loads(self.label_plugin.pull(vpub))
+                return json.dumps(Vpub_data + vpub_data)
         except BaseException as e:
             raise e
 
@@ -562,45 +569,6 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def get_wallets_list_info(self):
-        try:
-            self._assert_daemon_running()
-        except Exception as e:
-            raise BaseException(e)
-        wallet_info_map = {}
-        wallets = self.list_wallets()
-        wallet_info = []
-        for i in wallets:
-            print("---------name=%s" %i)
-            self.load_wallet(i, '111111')
-            data = self.select_wallet(i)
-
-
-            # path = self._wallet_path(i)
-            # wallet = self.daemon.get_wallet(path)
-            # print("--------name = %s" % i)
-            # if not wallet:
-            #     storage = WalletStorage(path)
-            #     if not storage.file_exists():
-            #         raise BaseException("not find file %s" %path)
-            #
-            #     try:
-            #         #wallet = Standard_Wallet(storage, config=self.config)
-            #         wallet = Wallet(storage, config=self.config)
-            #     except Exception as e:
-            #        # wallet = Standard_Wallet(storage, config=self.config)
-            #         raise BaseException(e)
-            # c, u, x = wallet.get_balance()
-            # info = {
-            #     "wallet_type": wallet.wallet_type,
-            #     "balance": self.format_amount_and_units(c),
-            #     "name": i
-            # }
-            wallet_info.append(json.loads(data))
-            wallet_info_map['wallets'] = wallet_info
-            print("----wallet_info = %s ............" % wallet_info_map)
-        return json.dumps(wallet_info_map)
-
     def format_amount(self, x, is_diff=False, whitespaces=False):
         return util.format_satoshis(x, self.num_zeros, self.decimal_point, is_diff=is_diff, whitespaces=whitespaces)
 
@@ -671,34 +639,46 @@ class AndroidCommands(commands.Commands):
 
     ##proxy
     def set_proxy(self, proxy_mode, proxy_host, proxy_port, proxy_user, proxy_password):
-        net_params = self.network.get_parameters()
-        proxy = None
-        if(proxy_mode != "" and proxy_host != "" and proxy_port != "" and proxy_user != "" and proxy_password != ""):
-            proxy = {'mode': str(proxy_mode).lower(),
-                 'host': str(proxy_host.text()),
-                 'port': str(proxy_port.text()),
-                 'user': str(proxy_user.text()),
-                 'password': str(proxy_password.text())}
+        try:
+            net_params = self.network.get_parameters()
+            proxy = None
+            if(proxy_mode != "" and proxy_host != "" and proxy_port != "" and proxy_user != "" and proxy_password != ""):
+                proxy = {'mode': str(proxy_mode).lower(),
+                     'host': str(proxy_host),
+                     'port': str(proxy_port),
+                     'user': str(proxy_user),
+                     'password': str(proxy_password)}
 
-        net_params = net_params._replace(proxy=proxy)
-        self.network.run_from_another_thread(self.network.set_parameters(net_params))
+            net_params = net_params._replace(proxy=proxy)
+            self.network.run_from_another_thread(self.network.set_parameters(net_params))
+        except BaseException as e:
+            raise e
 
     ##qr api
     def get_raw_tx_from_qr_data(self, data):
-        from electrum.util import bh2u
-        return bh2u(base_decode(data, None, base=43))
+        try:
+            from electrum.util import bh2u
+            return bh2u(base_decode(data, None, base=43))
+        except BaseException as e:
+            raise e
 
     def get_qr_data_from_raw_tx(self, raw_tx):
-        from electrum.bitcoin import base_encode, bfh
-        text = bfh(raw_tx)
-        return base_encode(text, base=43)
+        try:
+            from electrum.bitcoin import base_encode, bfh
+            text = bfh(raw_tx)
+            return base_encode(text, base=43)
+        except BaseException as e:
+            raise e
 
     def recover_tx_info(self, tx):
-        tx = tx_from_any(bytes.fromhex(tx))
-        temp_tx = copy.deepcopy(tx)
-        temp_tx.deserialize()
-        temp_tx.add_info_from_wallet(self.wallet)
-        return temp_tx
+        try:
+            tx = tx_from_any(bytes.fromhex(tx))
+            temp_tx = copy.deepcopy(tx)
+            temp_tx.deserialize()
+            temp_tx.add_info_from_wallet(self.wallet)
+            return temp_tx
+        except BaseException as e:
+            raise e
 
     ## get tx info from raw_tx
     def get_tx_info_from_raw(self, raw_tx):
@@ -709,8 +689,6 @@ class AndroidCommands(commands.Commands):
             tx = None
             raise BaseException(e)
         data = {}
-        # if not isinstance(tx, PartialTransaction):
-        #     tx = PartialTransaction.from_tx(tx)
         data = self.get_details_info(tx)
         return data
 
@@ -813,7 +791,10 @@ class AndroidCommands(commands.Commands):
     ##get history
     def get_all_tx_list(self, search_type=None):
         history_data = []
-        history_info = self.get_history_tx()
+        try:
+            history_info = self.get_history_tx()
+        except BaseException as e:
+            raise e
         history_dict = json.loads(history_info)
         if search_type is None:
             history_data = history_dict
@@ -831,96 +812,6 @@ class AndroidCommands(commands.Commands):
             i['type'] = 'history'
             data = self.get_tx_info(i['tx_hash'])
             i['tx_status'] = json.loads(data)['tx_status']
-            all_data.append(i)
-        return json.dumps(all_data)
-
-    def get_all_tx_list_old(self, tx_status=None, history_status=None):#tobe optimization
-        tx_data = []
-        history_data = []
-        if (tx_status is None or tx_status == 'send') and (history_status == None or history_status == 'tobesign' or history_status == 'tobebroadcast'):
-            invoices = self.wallet.get_invoices()
-            for invoice in invoices:
-                tx_json = self.get_tx_info_from_raw(invoice['tx'])
-                tx_dict = json.loads(tx_json)
-                temp_tx_data = {}
-                temp_tx_data['tx_hash'] = tx_dict['txid']
-                temp_tx_data['date'] = util.format_time(invoice['time']) if invoice['time'] else _("unknown")
-                temp_tx_data['amount'] = tx_dict['amount']
-                print("amount------%s fee======%s temp_tx_data=%s" %(tx_dict['amount'], tx_dict['fee'],temp_tx_data['amount']))
-                temp_tx_data['message'] = tx_dict['description']
-                temp_tx_data['is_mine'] = True
-                temp_tx_data['tx_status'] = tx_dict["tx_status"]
-                temp_tx_data['invoice_id'] = invoice['id']
-                temp_tx_data['tx'] = invoice['tx']
-                print("invoice====%s type=%s" % (invoice['tx'], type(invoice['tx'])))
-                tx_data.append(temp_tx_data)
-
-        if history_status is None and tx_status is None:
-            history_data_json = self.get_history_tx()
-            history_data = json.loads(history_data_json)
-        elif tx_status is None and history_status is not None:
-            if history_status == 'tobeconfirm':
-                print("")
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    con_num = info['confirmations']
-                    if info['confirmations'] <= 0:
-                        history_data.append(info)
-            elif history_status == 'confirmed':
-                print("")
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if info['confirmations'] > 0:
-                        history_data.append(info)
-        elif history_status is None and tx_status is not None:
-            if tx_status == 'send':
-                print("")
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if info['is_mine']:
-                        history_data.append(info)
-            elif tx_status == 'receive':
-                print("")
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if not info['is_mine']:
-                        history_data.append(info)
-        elif tx_status == 'send':
-            if history_status == 'tobeconfirm':
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if info['is_mine'] and info['confirmations'] <= 0:
-                        history_data.append(info)
-            elif history_status == 'confirmed':
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if info['is_mine'] and info['confirmations'] > 0:
-                        history_data.append(info)
-        elif tx_status == 'receive':
-            if history_status == 'tobeconfirm':
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if not info['is_mine'] and info['confirmations'] <= 0:
-                        history_data.append(info)
-            elif history_status == 'confirmed':
-                history_info = self.get_history_tx()
-                history_dict = json.loads(history_info)
-                for info in history_dict:
-                    if not info['is_mine'] and info['confirmations'] > 0:
-                        history_data.append(info)
-        all_data = []
-        for tx in tx_data:
-            tx['type'] = 'tx'
-            all_data.append(tx)
-        for i in history_data:
-            i['type'] = 'history'
             all_data.append(i)
         return json.dumps(all_data)
 
@@ -989,23 +880,19 @@ class AndroidCommands(commands.Commands):
 
     ##save tx to file
     def save_tx_to_file(self, path, tx):
-        print("FILE==:save_tx_to_file in..... %s" % path)
         try:
             if tx is None:
                 raise BaseException("tx is empty")
             tx = tx_from_any(tx)
             if isinstance(tx, PartialTransaction):
                 tx.finalize_psbt()
-            print("FILE==:path = %s" % path)
             if tx.is_complete():  # network tx hex
                 with open(path, "w+") as f:
                     network_tx_hex = tx.serialize_to_network()
-                    print("FILE==:TXN")
                     f.write(network_tx_hex + '\n')
             else:  # if partial: PSBT bytes
                 assert isinstance(tx, PartialTransaction)
                 with open(path, "wb+") as f:
-                    print("FILE==:PSBT")
                     f.write(tx.serialize_as_bytes())
         except Exception as e:
             raise BaseException(e)
@@ -1015,8 +902,7 @@ class AndroidCommands(commands.Commands):
             with open(path, "rb") as f:
                 file_content = f.read()
         except (ValueError, IOError, os.error) as reason:
-            raise BaseException("Electrum was unable to open your transaction file")
-        print("FILE== file info = %s" % file_content)
+            raise BaseException("BiXin was unable to open your transaction file")
         tx = tx_from_any(file_content)
         return tx.serialize_as_bytes().hex()
 
@@ -1040,10 +926,7 @@ class AndroidCommands(commands.Commands):
             tx = self.recover_tx_info(text)
         except Exception as e:
             tx = None
-            raise Exception(e)
-        # if tx:
-        #     if not isinstance(tx, PartialTransaction):
-        #         tx = PartialTransaction.from_tx(tx)
+            raise BaseException(e)
 
         data = self.get_details_info(tx)
         return data
@@ -1054,16 +937,15 @@ class AndroidCommands(commands.Commands):
         try:
             add_data = self.parse_address(data)
             add_status_flag = True
-        except Exception as e:
-            print("parse_pr...............error address")
+        except BaseException as e:
             add_status_flag = False
 
         try:
             tx_data = self.parse_tx(data)
             tx_status_flag = True
-        except Exception as e:
-            print("parse_pr...............error tx")
+        except BaseException as e:
             tx_status_flag = False
+
         out_data = {}
         if(add_status_flag):
             out_data['type'] = 1
@@ -1130,7 +1012,7 @@ class AndroidCommands(commands.Commands):
             raise e
 
     def verify_message(self, address, message, signature):
-        address  = address.strip()
+        address = address.strip()
         message = message.strip().encode('utf-8')
         if not bitcoin.is_address(address):
             raise BaseException('Invalid Bitcoin address.')
@@ -1157,8 +1039,6 @@ class AndroidCommands(commands.Commands):
                 self.do_save(sign_tx)
             except:
                 pass
-            #self.update_invoices(old_tx, sign_tx.serialize_as_bytes().hex())
-            #return sign_tx
             return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
         except BaseException as e:
             raise BaseException(e)
@@ -1209,6 +1089,7 @@ class AndroidCommands(commands.Commands):
         self.client = client
         self.path = path
         return client
+
     def is_encrypted_with_hw_device(self):
         ret = self.wallet.storage.is_encrypted_with_hw_device()
         print(f"hw device....{ret}")
@@ -1315,7 +1196,18 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise BaseException(e)
 
-    def create(self, name, password, seed=None, passphrase="", bip39_derivation=None,
+    def kifkey_change_from_p2wsh_to_p2wpkh(self, xpub):
+        try:
+            bip32node = BIP32Node.from_xkey(xpub)
+            BIP32Node.set_type("p2wpkh")
+            return bip32node.to_xpub()
+        except BaseException as e:
+            raise e
+
+    def is_seed(self, x):
+        return mnemonic.is_seed(x)
+
+    def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
@@ -1338,7 +1230,7 @@ class AndroidCommands(commands.Commands):
                 ks = keystore.from_master_key(master)
             else:
                 if seed is None:
-                    seed = mnemonic.Mnemonic('en').make_seed(seed_type='segwit')
+                    seed = mnemonic.Mnemonic('en').make_seed(seed_type=seed_type)
                     new_seed = seed
                     print("Your wallet generation seed is:\n\"%s\"" % seed)
                     print("seed type = %s" %type(seed))
@@ -1395,9 +1287,6 @@ class AndroidCommands(commands.Commands):
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
             return False
-        # tx_data = json.loads(self.get_details_info(tx))
-        # fee = tx_data['fee'].split(" ")[0]
-        # fee = self.get_amount(fee)
         txid = tx.txid()
         assert txid
         fee = self.wallet.get_tx_fee(txid)
@@ -1405,10 +1294,8 @@ class AndroidCommands(commands.Commands):
             raise BaseException("Can't bump fee: unknown fee for original transaction.")
         tx_size = tx.estimated_size()
         old_fee_rate = fee / tx_size  # sat/vbyte
-        #data = max(old_fee_rate * 1.5, old_fee_rate + 1)
         new_rate = Decimal(max(old_fee_rate * 1.5, old_fee_rate + 1)).quantize(Decimal('0.0'))
         ret_data = {
-            #'current_fee': self.format_amount(fee) + ' ' + self.base_unit(),
             'current_feerate': self.format_fee_rate(1000 * old_fee_rate),
             'new_feerate': str(new_rate),
         }
@@ -1523,18 +1410,6 @@ class AndroidCommands(commands.Commands):
             #os.remove(self._wallet_path(name))
         except Exception as e:
             raise BaseException(e)
-
-    # def unit_test(self):
-    #     """Run all unit tests. Expect failures with functionality not present on Android,
-    #     such as Trezor.
-    #     """
-    #     suite = unittest.defaultTestLoader.loadTestsFromNames(
-    #         tests.__name__ + "." + info.name
-    #         for info in pkgutil.iter_modules(tests.__path__)
-    #         if info.name.startswith("test_"))
-    #     unittest.TextTestRunner(verbosity=2).run(suite)
-
-    # END commands which only exist here.
 
     def _assert_daemon_running(self):
         if not self.daemon_running:

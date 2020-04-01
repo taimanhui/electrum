@@ -1495,6 +1495,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         tmp_tx = copy.deepcopy(tx)
         tmp_tx.add_info_from_wallet(self, include_xpubs_and_full_paths=True)
         # sign. start with ready keystores.
+        sig_num = 0
         for k in sorted(self.get_keystores(), key=lambda ks: ks.ready_to_sign(), reverse=True):
             try:
                 if k.can_sign(tmp_tx):
@@ -1502,8 +1503,12 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             except InvalidPassword as e:
                 raise BaseException(e)
             except Exception as e:
-                #raise BaseException(e)
+                sig_num += 1
                 continue
+
+        if sig_num == len(self.get_keystores()):
+            raise BaseException("Sign failed, May be BiXin cannot pair with your device")
+
         # remove sensitive info; then copy back details from temporary tx
         tmp_tx.remove_xpubs_and_bip32_paths()
         tx.combine_with_other_psbt(tmp_tx)

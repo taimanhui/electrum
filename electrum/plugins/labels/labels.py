@@ -8,7 +8,7 @@ from typing import Union
 import base64
 
 from electrum.plugin import BasePlugin, hook
-from electrum.crypto import aes_encrypt_with_iv, aes_decrypt_with_iv
+from electrum.crypto import aes_encrypt_with_iv, aes_decrypt_with_iv, EncodeAES_bytes, DecodeAES_bytes
 from electrum.i18n import _
 from electrum.util import log_exceptions, ignore_exceptions, make_aiohttp_session
 from electrum.network import Network
@@ -44,6 +44,21 @@ class LabelsPlugin(BasePlugin):
     def decode(self, wallet, message):
         password, iv, wallet_id, wallet_type, xpubkeys = self.wallets[wallet]
         decoded = base64.b64decode(message)
+        decrypted = aes_decrypt_with_iv(password, iv, decoded)
+        return decrypted.decode('utf8')
+
+    def encode_xpub(self, xpub, msg):
+        mpk = xpub.encode('ascii')
+        password = hashlib.sha1(mpk).hexdigest()[:32].encode('ascii')
+        iv = hashlib.sha256(password).digest()[:16]
+        encrypted = aes_encrypt_with_iv(password, iv, msg.encode('utf8'))
+        return base64.b64encode(encrypted).decode()
+
+    def decode_xpub(self, xpub, message):
+        decoded = base64.b64decode(message)
+        mpk = xpub.encode('ascii')
+        password = hashlib.sha1(mpk).hexdigest()[:32].encode('ascii')
+        iv = hashlib.sha256(password).digest()[:16]
         decrypted = aes_decrypt_with_iv(password, iv, decoded)
         return decrypted.decode('utf8')
 
@@ -107,23 +122,27 @@ class LabelsPlugin(BasePlugin):
         for xpub in wallet_data[4]:
            # xpubId = self.encode(wallet, xpub)
             bundle = {"xpubs": "",
-                      "xpubId": xpub,
+                      "xpubId": xpub,#self.encode_xpub(xpub, xpub),
                       "walletId": wallet_id,
-                      "walletType": wallet_data[3]}
+                      "walletType": self.encode_xpub(xpub, wallet_data[3])}
             bundle_list = []
             for value in wallet_data[4]:
                 bundle_list.append(value)
-            bundle["xpubs"] = json.dumps(bundle_list)
+            bundle["xpubs"] = self.encode_xpub(xpub, json.dumps(bundle_list))
 
             await self.do_post("/wallet", bundle)
 
     async def pull_thread(self, xpub):
         try:
+            #en_xpub = self.encode_xpub(xpub, xpub)
+            #print(f"en....xpub={en_xpub}")
             response = await self.do_get("/wallets/%s" % xpub)
             print("--111112222 response=%s" %response)
-            return response
         except Exception as e:
             raise ErrorConnectingServer(e) from e
+        # if response['Error'] is not None:
+        #     raise BaseException(response)
+
         if response["Walltes"] is None:
             self.logger.info('no wallets info')
             return
@@ -131,10 +150,10 @@ class LabelsPlugin(BasePlugin):
         result = {}
         for wallet in response["Walltes"]:
             try:
-                result['xpubId'] = wallet['xpubId']
+                result['xpubId'] = wallet['xpubId']#self.decode_xpub(xpub, wallet['xpubId'])
                 result['walletId'] = wallet['WalletId']
-                result['xpubs'] = wallet['Xpubs']
-                result['walletType'] = wallet['WalletType']
+                result['xpubs'] = self.decode_xpub(xpub, wallet['Xpubs'])
+                result['walletType'] = self.decode_xpub(xpub, wallet['WalletType'])
             except:
                 continue
             out.append(result)

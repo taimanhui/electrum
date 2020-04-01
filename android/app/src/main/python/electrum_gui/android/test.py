@@ -22,8 +22,8 @@ from console import AndroidCommands
 import time
 util.setup_thread_excepthook()
 print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
-#constants.set_testnet()
-constants.set_regtest()
+constants.set_testnet()
+#constants.set_regtest()
 print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
 testcommond = AndroidCommands()
@@ -66,12 +66,7 @@ password = "111111"
 # testcommond.delete_wallet(name)
 # testcommond.import_create_hw_wallet(name, m, n, json.dumps(xpubs))
 
-# time.sleep(5)
-#data1 = testcommond.get_wallet_info_from_server(xpub1)
-#print("data 1 = %s" %data1)
-# data2 =testcommond.get_wallet_info_from_server(xpub2)
-# print("data 2 = %s" %data2)
-#time.sleep(100000000)
+
 #create_wallet 1-N HW wallet
 
 # m = 1
@@ -93,16 +88,25 @@ password = "111111"
 # #xpub1 ="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
 # #xpub1 = 'Vpub5gDbMdhhmWWW9Y5tr6VU8Mc7JPghZhzv4d73ruD6eiSogEf8kuJywXiyHf3xGEt4jRAUdwTbtjn7LaDUiJpDsHzwT9Gs4KbD1bZNJP4NmeB' #VPUB
 # #xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
-# xpub1='vpub5VxonJZpLHH6neqseFJi21U4xFbFkwPoQ2yXK5MoyHkJUbsHcyL7zz9Kd5x8qwZT8ab1uuDvkv67z8Ab7GAwBUudTH7NKZybPsJN4TQRgPs'
+# #xpub1='vpub5VxonJZpLHH6neqseFJi21U4xFbFkwPoQ2yXK5MoyHkJUbsHcyL7zz9Kd5x8qwZT8ab1uuDvkv67z8Ab7GAwBUudTH7NKZybPsJN4TQRgPs'
+# xpub1='vpub5W57PoJjW6PoZ65CLLqgxjjt8vxL5KGufpwqR7wbf1WCy8nxeb4KFuo3U1MbHHD6VSjSqDeNUazqo51uJBoKfe1iXgW4hbSpYidqojx8gZw'
 # #xpub2 = 'Vpub5g2mF4j2rRtTwdiQjBrqdLiyRKSeRwbEgThABnbCd8kJtPCrfQkdDuJFAfxJrHGH7Hz5fjEx1nwzMoci11hmFaB1Qed9oTfu9Z6BvonP9Qa'
 # #xpub2 ="Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"
-# #testcommond.delete_wallet(name)
+# testcommond.delete_wallet(name)
 # testcommond.set_multi_wallet_info(name,m,n)
 # testcommond.add_xpub(xpub1)
 # #testcommond.add_xpub(xpub2)
 # testcommond.create_multi_wallet(name)
+# #testcommond.kifkey_change_from_p2wsh_to_p2wpkh("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 
-
+# xpub1='Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg'
+# xpub2='Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX'
+# time.sleep(5)
+# data1 = testcommond.get_wallet_info_from_server(xpub1)
+# print("data 1 = %s" %data1)
+# #data2 =testcommond.get_wallet_info_from_server(xpub2)
+# #print("data 2 = %s" %data2)
+# time.sleep(100000000)
 # name = ""
 # pasword = 111111
 # m = 1
@@ -128,9 +132,15 @@ password = "111111"
 
 #name = "test1wwtest"
 #password = "111"
-#testcommond.delete_wallet(name)
-# # # #seed = testcommond.create(name, password)
-#testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
+testcommond.delete_wallet(name)
+#testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion', bip39_derivation="m/84'/0'/0'")
+#seed = testcommond.create(name, password, bip39_derivation="")
+#print(f"new seed---------{seed}")
+
+
+# ret = testcommond.is_seed("rocket omit review divert bomb brief mushroom family fatal limb goose lion")
+# ret1 = testcommond.is_seed("wls")
+testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
 #testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
 #ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 #print("=======ret1 = %s" %ret)
@@ -161,7 +171,6 @@ print("3333333333-list = %s" %list)
 testcommond.set_currency("CNY")
 #testcommond.set_currency("None")
 #load_wallet
-testcommond.get_all_wallet_type_info()
 data = testcommond.get_wallet_type(name)
 print("11111111111 %s type is %s" %(name, data))
 time.sleep(5)
@@ -170,7 +179,7 @@ data = testcommond.select_wallet(name)
 print("select data ============%s" %data)
 time.sleep(5)
 testcommond.set_use_change(False)
-
+#time.sleep(10000)
 # ret = testcommond.is_encrypted_with_hw_device()
 # print(f"--------------hw device? = {ret}")
 #testcommond.delete_wallet(name)
@@ -229,7 +238,11 @@ print("after get exchange amount = %s" % data)
 #testcommond.clear_invoices()
 
 testcommond.set_use_change(True)
-testcommond.set_unconf(False)
+testcommond.set_unconf(True)
+
+#
+add = testcommond.parse_pr("bitcoin:tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2?amount=5&message=test")
+print("addr = %s--------" %add)
 
 # testinfo = testcommond.get_all_tx_list(None)
 # print("testinfo  sign= %s------------" %testinfo)
@@ -285,8 +298,8 @@ if not flag:
 elif flag:
     all_output = []
     #output_info = {'bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p':'0.1'}
-    #output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.05'}
-    output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
+    output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.005'}
+    #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
     #output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
     all_output.append(output_info)
     #all_output.append(output_info1)
@@ -391,12 +404,12 @@ elif flag:
     testinfo = testcommond.get_all_tx_list(None)
     print("uncomfired testinfo  sign= %s------------" % testinfo)
     data = json.loads(testinfo)
-    for tx_info in data:
-        data_hash = tx_info['tx_hash']
-        #print("i = %s type(%s)" %(i,type(i)))
-        #data_hash = data[i]['tx_hash']
-        data = testcommond.get_tx_info(data_hash)
-        print("uncomfired ----hash info sign[%s] = %s-===========" % (data_hash, data))
+    # for tx_info in data:
+    #     data_hash = tx_info['tx_hash']
+    #     #print("i = %s type(%s)" %(i,type(i)))
+    #     #data_hash = data[i]['tx_hash']
+    #     data = testcommond.get_tx_info(data_hash)
+    #     print("uncomfired ----hash info sign[%s] = %s-===========" % (data_hash, data))
 
     # data_hash = '176d7aad5fbe1d9d616d91db391b19aeaf970d22481eae2327039cbf4e295b6e'
     # data = testcommond.get_tx_info(data_hash)
@@ -418,9 +431,9 @@ data = testcommond.get_wallet_address_show_UI()
 #
 # qr_data = json.loads(data)
 # print("qr_addr = %s------------" % qr_data['qr_data'])
-#
-add = testcommond.parse_pr("bitcoin:tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe?amount=5&message=test")
-print("addr = %s--------" %add)
+# #
+# add = testcommond.parse_pr("bitcoin:tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2?amount=5&message=test")
+# print("addr = %s--------" %add)
 # #get_history_tx
 #
 # ##get_all_tx_list
