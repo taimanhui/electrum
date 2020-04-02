@@ -53,4 +53,10 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 break;
         }
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
+    }
 }

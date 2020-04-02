@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/pin_back_color"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    tools:context=".activities.settings.fixpin.FitBixinKEYActivity">
+    tools:context=".activities.settings.fixpin.ChangePinProcessingActivity">
 
 
     <LinearLayout
@@ -40,59 +39,31 @@
             android:text="@string/tip_tips"
             android:textColor="#b1b7c5"
             android:textSize="12sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/verify_pin_state"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginStart="135dp"
+            android:layout_marginTop="22dp"
+            android:drawableStart="@drawable/chenggong"
+            android:drawablePadding="@dimen/corner_radius"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:text="@string/verify_pin"
+            android:textColor="@color/text"
+            android:textSize="@dimen/smaller_text_size" />
 
-            <LinearLayout
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pin_sussce"
-                    android:textColor="#494949"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/pin_setting_state"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_5"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="135dp"
+            android:text="@string/pin_seted"
+            android:drawableStart="@drawable/jinxingzhong"
+            android:drawablePadding="@dimen/corner_radius"
+            android:textColor="@color/text"
+            android:textSize="@dimen/smaller_text_size"/>
 
-            <LinearLayout
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pin_seted"
-                    android:textColor="#494949"
-                    android:textSize="13sp" />
-            </LinearLayout>
-        </LinearLayout>
 
     </LinearLayout>
 

@@ -10,6 +10,7 @@ import java.util.List;
 public class HardwareFeatures {
     /**
      * vendor : trezor.io
+     * bootloader_mode:
      * major_version : 1
      * minor_version : 8
      * patch_version : 4
@@ -68,6 +69,8 @@ public class HardwareFeatures {
     private List<Integer> capabilities;
     @SerializedName("ble_name")
     private String bleName;
+    @SerializedName("bootloader_mode")
+    private boolean bootloaderMode;
 
     public String getVendor() {
         return vendor;
@@ -218,6 +221,14 @@ public class HardwareFeatures {
     }
     public String getBleName() {
         return bleName;
+    }
+
+    public boolean isBootloaderMode() {
+        return bootloaderMode;
+    }
+
+    public void setBootloaderMode(boolean bootloaderMode) {
+        this.bootloaderMode = bootloaderMode;
     }
 
     @NonNull

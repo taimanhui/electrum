@@ -33,6 +33,7 @@ from trezorlib import (
     exceptions,
     firmware,
     protobuf,
+    messages,
 )
 from trezorlib.cli import trezorctl
 from electrum.wallet_db import WalletDB
@@ -1072,9 +1073,21 @@ class AndroidCommands(commands.Commands):
         CustomerUI.state = 1
         return response
 
-    def reset_pin(self):
-        client = self.get_client()
-        client.set_pin(True)
+    def reset_pin(self, path='nfc') -> int:
+        client = self.get_client(path)
+        resp = client.set_pin(False)
+        if resp == "PIN changed":
+            return 1
+        else:
+            return 0
+
+    def wipe_device(self, path='nfc') -> int:
+        client = self.get_client(path)
+        resp = client.wipe_device()
+        if resp == "Device wiped":
+            return 1
+        else:
+            return 0
 
     def toggle_passphrash(self, path='nfc'):
         client = self.get_client(path)

@@ -20,7 +20,7 @@ public class ConfirmPincodeActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_confirm_pincode;
+        return R.layout.change_pin_successful;
     }
 
     @Override

@@ -17,17 +17,23 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
 
+import java.util.concurrent.ExecutionException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 
 
 public class UpgradeBixinKEYActivity extends BaseActivity {
@@ -49,6 +55,19 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     public static final String EXECUTE_TASK = "org.haobtc.wallet.activities.settings.EXECUTE_TASK";
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
 
+    private boolean isBootloaderMode() throws Exception {
+        String feature;
+        try {
+            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
+            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
+            return features.isBootloaderMode();
+
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
     public class MyTask extends AsyncTask<String, Object, Void> {
         @Override
         protected void onPreExecute() {
@@ -64,10 +83,17 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             progress.put("PROCESS_REPORTER", this);
             if (tag == 1) { // 固件
                 try {
-                    Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/trezor.bin", params[0]);
+                    boolean ready = isBootloaderMode();
+                    if (ready) {
+                        Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/trezor.bin", params[0]);
+                    } else {
+                        showPromptMessage();
+                        cancel(true);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     cancel(true);
+                    showErrorMessage();
                 }
             }
             return null;
@@ -90,12 +116,16 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected void onCancelled() {
             tetUpgradeTest.setText(getString(R.string.cancled));
-            showPromptMessage();
         }
     }
     private void showPromptMessage() {
         UpgradeBixinKEYActivity.this.runOnUiThread(() -> {
             Toast.makeText(UpgradeBixinKEYActivity.this, "请确认硬件处于BootLoader模式", Toast.LENGTH_SHORT).show();
+        });
+    }
+    private void showErrorMessage() {
+        UpgradeBixinKEYActivity.this.runOnUiThread(() -> {
+            Toast.makeText(UpgradeBixinKEYActivity.this, "升级失败,将在2秒内退出此界面", Toast.LENGTH_SHORT).show();
         });
     }
     @Override

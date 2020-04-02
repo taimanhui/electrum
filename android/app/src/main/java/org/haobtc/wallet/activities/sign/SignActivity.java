@@ -369,7 +369,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         String feature;
         try {
             feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
-            return new Gson().fromJson(feature, HardwareFeatures.class);
+            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
+            if (features.isBootloaderMode()) {
+                throw new Exception("bootloader mode");
+            }
+            return features;
+
         } catch (ExecutionException | InterruptedException e) {
             Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -406,9 +411,13 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         try {
             features = getFeatures();
         } catch (Exception e) {
+            if ("bootloader mode".equals(e.getMessage())) {
+                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+            }
+            finish();
             return;
         }
-        boolean isInit = features.isInitialized();
+            boolean isInit = features.isInitialized();
         if (isInit) {
             boolean pinCached = features.isPinCached();
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", strTest));

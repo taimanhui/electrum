@@ -146,7 +146,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_setPin"
+            android:id="@+id/reset_device"
             android:layout_width="300dp"
             android:enabled="false"
             android:layout_height="50dp"

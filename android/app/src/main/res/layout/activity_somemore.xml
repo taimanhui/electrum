@@ -136,7 +136,7 @@
                 android:background="@color/separation_line" />
 
             <LinearLayout
-                android:id="@+id/lin_OnckThree"
+                android:id="@+id/change_pin"
                 android:layout_width="match_parent"
                 android:layout_height="59.5dp"
                 android:background="@color/button_bk_ddake">
@@ -216,7 +216,7 @@
                 android:background="@color/separation_line" />
 
             <LinearLayout
-                android:id="@+id/lin_OnckFive"
+                android:id="@+id/wipe_device"
                 android:layout_width="match_parent"
                 android:layout_height="59.5dp"
                 android:background="@color/button_bk_ddake">

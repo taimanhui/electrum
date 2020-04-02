@@ -438,7 +438,7 @@
     <string name="please_inputPort">Please enter the port number</string>
     <string name="add_finished">Add success</string>
     <string name="upgradeed">Upgraded to v1.2</string>
-    <string name="please_confirmKEY">Please confirm the letter pin code on BixinKEY</string>
+    <string name="please_confirmKEY">Please confirm the newer pin code on BixinKEY</string>
     <string name="hours_24">24 hour limit</string>
     <string name="no_need_PIN">No PIN required</string>
     <string name="no_need_hardware">No hardware confirmation required</string>
@@ -519,5 +519,9 @@
     <string name="number_1">1</string>
     <string name="read_pk_failed">抱歉! 读取失败了，不妨再试试！！！</string>
     <string name="timeout_error">抱歉！读取公钥超时，不妨再试试！！</string>
+    <string name="clean_setting">设置已清除</string>
+    <string name="clean_private_key">正在清除私钥</string>
+    <string name="reset_device_successful">BixinKEY已恢复出厂设置</string>
+    <string name="bootloader_mode">硬件当前处于bootloader模式，不支持此类操作</string>
 
 </resources>

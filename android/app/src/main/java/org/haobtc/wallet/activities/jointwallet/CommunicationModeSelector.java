@@ -44,8 +44,10 @@ import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.ResetDeviceSuccessActivity;
 import org.haobtc.wallet.activities.ActivatedProcessing;
 import org.haobtc.wallet.activities.PinSettingActivity;
+import org.haobtc.wallet.activities.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
@@ -53,9 +55,12 @@ import org.haobtc.wallet.activities.personalwallet.PersonalMultiSigWalletCreator
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
+import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
+import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.dfu.service.DfuService;
@@ -88,8 +93,6 @@ import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
-import io.reactivex.internal.schedulers.RxThreadFactory;
-import no.nordicsemi.android.dfu.DfuServiceController;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 
 
@@ -110,7 +113,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public static PyObject pyHandler, customerUI;
     public static MyHandler handler;
     public static FutureTask<PyObject> futureTask;
-    public static ExecutorService executorService = Executors.newSingleThreadExecutor();
+    public static ExecutorService executorService = Executors.newCachedThreadPool();
     public static String xpub;
     public static volatile boolean isActive = false;
     public static volatile boolean isNFC;
@@ -228,6 +231,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                             } else if ("ble".equals(extras)) {
                                 dfu();
                             }
+                        } else if (HardwareDetailsActivity.TAG.equals(tag)) {
+                            dealWithChangePin();
+                        } else if (RecoverySetActivity.TAG.equals(tag)) {
+                            dealWithWipeDevice();
                         } else {
                             dealWithBusiness();
                         }
@@ -344,13 +351,29 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         this.runnables = runnables;
         this.extras = extra;
     }
+    private void dealWithChangePin() {
+            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("reset_pin", "bluetooth"));
+            executorService.submit(futureTask);
 
+    }
+    private void dealWithWipeDevice() {
+        futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wipe_device", "bluetooth"));
+        executorService.submit(futureTask);
+        Intent intent = new Intent(getActivity(), ResetDeviceProcessing.class);
+        Objects.requireNonNull(getActivity()).startActivity(intent);
+
+    }
     private void dealWithBusiness() {
         HardwareFeatures features;
         try {
             features = getFeatures();
         } catch (Exception e) {
-            dismiss();
+            if ("bootloader mode".equals(e.getMessage())) {
+                Toast.makeText(getContext(), R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+                dismiss();
+            } else {
+                showReadingFailedDialog(R.string.read_pk_failed);
+            }
             return;
         }
         boolean isInit = features.isInitialized();
@@ -450,8 +473,11 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         try {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", "bluetooth"));
             executorService.submit(futureTask);
-            feature = futureTask.get(5, TimeUnit.SECONDS).toString();
+            feature = futureTask.get(20, TimeUnit.SECONDS).toString();
             HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
+            if (features.isBootloaderMode()) {
+                throw new Exception("bootloader mode");
+            }
             SharedPreferences devices = Objects.requireNonNull(getActivity()).getSharedPreferences("devices", Context.MODE_PRIVATE);
             if (!devices.contains(features.getDeviceId())) {
                 String bleName = Ble.getInstance().getConnetedDevices().get(0).getBleName();

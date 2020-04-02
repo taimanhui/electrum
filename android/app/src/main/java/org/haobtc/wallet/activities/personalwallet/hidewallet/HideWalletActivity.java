@@ -193,7 +193,12 @@ public class HideWalletActivity extends BaseActivity {
         String feature;
         try {
             feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
-            return new Gson().fromJson(feature, HardwareFeatures.class);
+            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
+            if (features.isBootloaderMode()) {
+                throw new Exception("bootloader mode");
+            }
+            return features;
+
         } catch (ExecutionException | InterruptedException e) {
             Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -250,9 +255,13 @@ public class HideWalletActivity extends BaseActivity {
         try {
             features = getFeatures();
         } catch (Exception e) {
+            if ("bootloader mode".equals(e.getMessage())) {
+                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+            }
+            finish();
             return;
         }
-        boolean isInit = features.isInitialized();
+            boolean isInit = features.isInitialized();
         boolean passphrase = features.isPassphraseProtection();
         if (!passphrase) {
             dialogFragment.dismiss();

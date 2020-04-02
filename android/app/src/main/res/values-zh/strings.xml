@@ -419,7 +419,7 @@
     <string name="please_inputPort">请输入端口号</string>
     <string name="add_finished">添加成功</string>
     <string name="upgradeed">已升级至v1.2</string>
-    <string name="please_confirmKEY">请在BixinKEY上确认信PIN码</string>
+    <string name="please_confirmKEY">请在BixinKEY上确认新PIN码</string>
     <string name="hours_24">24小时限额</string>
     <string name="no_need_PIN">不需要PIN码</string>
     <string name="no_need_hardware">不需要硬件确认交易</string>
