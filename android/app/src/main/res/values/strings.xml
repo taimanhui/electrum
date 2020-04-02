@@ -517,5 +517,7 @@
     <string name="cosinger_number_min">2</string>
     <string name="signature_need_max">15</string>
     <string name="number_1">1</string>
+    <string name="read_pk_failed">抱歉! 读取失败了，不妨再试试！！！</string>
+    <string name="timeout_error">抱歉！读取公钥超时，不妨再试试！！</string>
 
 </resources>

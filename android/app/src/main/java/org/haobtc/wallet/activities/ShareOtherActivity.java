@@ -254,7 +254,7 @@ public class ShareOtherActivity extends BaseActivity {
         dialogBtom.setCanceledOnTouchOutside(false);
         Window window = dialogBtom.getWindow();
         //Set pop-up size
-        window.setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         //set locate
         window.setGravity(Gravity.BOTTOM);
         //set animal

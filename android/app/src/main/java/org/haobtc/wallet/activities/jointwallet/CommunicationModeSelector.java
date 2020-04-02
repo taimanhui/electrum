@@ -237,7 +237,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     setNotify(BleDeviceRecyclerViewAdapter.mBleDevice);
                 }
                 if (Duration.between(begin, Instant.now()).toMillis() > 10000) {
-                    showReadingFailedDialog();
+                    showReadingFailedDialog(R.string.timeout_error);
                     break;
                 }
                 if (isErrorOccurred) {
@@ -372,7 +372,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                         dialogFragment.dismiss();
                     } catch (ExecutionException | InterruptedException e) {
                         dialogFragment.dismiss();
-                        showReadingFailedDialog();
+                        showReadingFailedDialog(R.string.read_pk_failed);
                     } catch (TimeoutException e) {
                         e.printStackTrace();
                         dismiss();
@@ -474,8 +474,8 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         return fragment;
     }
 
-    public void showReadingFailedDialog() {
-        ReadingPubKeyFailedDialogFragment fragment = new ReadingPubKeyFailedDialogFragment();
+    public void showReadingFailedDialog(int error) {
+        ReadingPubKeyFailedDialogFragment fragment = new ReadingPubKeyFailedDialogFragment(error);
         fragment.setRunnable(retry);
         fragment.setActivity(getActivity());
         fragment.show(getChildFragmentManager(), "");

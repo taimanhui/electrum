@@ -194,9 +194,9 @@ public class ImportHistoryWalletActivity extends BaseActivity {
             finish();
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                mToast(getString(R.string.pin_wrong));
+                dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
             } else {
-                dialogFragment.showReadingFailedDialog();
+                dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
             }
         }
     }

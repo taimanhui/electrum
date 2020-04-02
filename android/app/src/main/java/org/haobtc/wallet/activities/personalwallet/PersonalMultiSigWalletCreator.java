@@ -364,9 +364,9 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                mToast(getString(R.string.pin_wrong));
+                dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
             } else {
-                dialogFragment.showReadingFailedDialog();
+                dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
             }
         }
     }
