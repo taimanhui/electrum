@@ -25,7 +25,6 @@ public class NumKeyboardUtil {
         keyboardView.setEnabled(true);
         keyboardView.setPreviewEnabled(false);
         keyboardView.setOnKeyboardActionListener(listener);
-//        keyboardView.setBackgroundColor(Color.parseColor("#f1f1f1"));
 
     }
 

@@ -3,11 +3,8 @@ package org.haobtc.wallet.activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,7 +15,6 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
 
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,25 +65,6 @@ public class PinSettingActivity extends BaseActivity {
             keyboardUtil.showKeyboard();
             return false;
         });
-
-        edtPwd.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                // If the system keyboard is in pop-up state, hide it first
-                try {
-                    ((InputMethodManager) Objects.requireNonNull(getSystemService(INPUT_METHOD_SERVICE)))
-                            .hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus())
-                                            .getWindowToken(),
-                                    InputMethodManager.HIDE_NOT_ALWAYS);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    keyboardUtil.showKeyboard();
-                }
-            } else {
-                keyboardUtil.hideKeyboard();
-            }
-        });
-
     }
 
     @Override

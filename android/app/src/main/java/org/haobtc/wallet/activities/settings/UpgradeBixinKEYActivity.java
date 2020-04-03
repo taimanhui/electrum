@@ -58,7 +58,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     private boolean isBootloaderMode() throws Exception {
         String feature;
         try {
-            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
+            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature", "bluetooth")).get().toString();
             HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
             return features.isBootloaderMode();
 

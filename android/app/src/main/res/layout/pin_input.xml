@@ -76,6 +76,7 @@
                 android:id="@+id/trader_pwd_set_pwd_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:focusable="false"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginEnd="@dimen/dp_30"
                 android:background="@android:color/white"
