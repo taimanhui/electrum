@@ -41,6 +41,7 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,6 +121,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     LinearLayout linFee;
     @BindView(R.id.lin_payAddress)
     LinearLayout linPayAddress;
+    @BindView(R.id.linearSignStatus)
+    LinearLayout linearSignStatus;
     private String keyValue;
     private String tx_hash;
     private String listType;
@@ -147,6 +150,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private boolean ready;
     private CommunicationModeSelector modeSelector;
     private String signTransction;
+    private boolean set_rbf;
 
     @Override
     public int getLayoutId() {
@@ -160,6 +164,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         language = preferences.getString("language", "");
+        set_rbf = preferences.getBoolean("set_rbf", false);//rbf transaction
         Intent intent = getIntent();
         if (!TextUtils.isEmpty(intent.getStringExtra("signed_raw_tx"))) {
             signedRawTx = intent.getStringExtra("signed_raw_tx");
@@ -190,11 +195,12 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (isIsmine) {
             tvInTb2.setText(R.string.sendetail);
             linFee.setVisibility(View.VISIBLE);
+            if (set_rbf){
+                tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
+            }
             try {
                 get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
-                Log.i("get_rbf_status", "___________: " + get_rbf_status.toString());
             } catch (Exception e) {
-                Log.i("get_rbf_status", "++++++++++: " + e.getMessage());
                 e.printStackTrace();
             }
             if (get_rbf_status != null) {
@@ -202,6 +208,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             }
         } else {
             linFee.setVisibility(View.GONE);
+            linearSignStatus.setVisibility(View.GONE);
             tvInTb2.setText(R.string.recevid);
         }
         if (!TextUtils.isEmpty(keyValue)) {
@@ -213,18 +220,26 @@ public class TransactionDetailsActivity extends BaseActivity {
                     //isIsmine -->recevid or send
                     if (isIsmine) {
                         tvInTb2.setText(R.string.sendetail);
+                        if (set_rbf){
+                            tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
+                        }
                     } else {
+                        linearSignStatus.setVisibility(View.GONE);
                         tvInTb2.setText(R.string.recevid);
                     }
                     //histry trsaction detail
                     trsactionDetail();
 
                 } else if (listType.equals("scan")) {
+                    linearSignStatus.setVisibility(View.GONE);
                     tvInTb2.setText(R.string.recevid);
                     scanDataDetailMessage();
 
                 } else {
                     tvInTb2.setText(R.string.sendetail);
+                    if (set_rbf){
+                        tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
+                    }
                     //creat succses
                     mCreataSuccsesCheck();
 
@@ -279,13 +294,10 @@ public class TransactionDetailsActivity extends BaseActivity {
         try {
             Gson gson = new Gson();
             getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
-
-
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
             return;
         }
-
         amount = getnewcreatTrsactionListBean.getAmount();
         fee = getnewcreatTrsactionListBean.getFee();
         String description = getnewcreatTrsactionListBean.getDescription();
@@ -325,7 +337,12 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
-            textView14.setText(amount);
+            String strTitle = tvInTb2.getText().toString();
+            if (strTitle.equals(getString(R.string.sendetail))) {
+                textView14.setText(String.format("-%s", amount));
+            } else if (strTitle.equals(getString(R.string.recevid))) {
+                textView14.setText(String.format("+%s", amount));
+            }
         }
         //Miner's fee
         if (!TextUtils.isEmpty(fee)) {
@@ -376,7 +393,12 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
-            textView14.setText(amount);
+            String strTitle = tvInTb2.getText().toString();
+            if (strTitle.equals(getString(R.string.sendetail))) {
+                textView14.setText(String.format("-%s", amount));
+            } else if (strTitle.equals(getString(R.string.recevid))) {
+                textView14.setText(String.format("+%s", amount));
+            }
         }
         //Miner's fee
         if (!TextUtils.isEmpty(fee)) {
@@ -467,14 +489,15 @@ public class TransactionDetailsActivity extends BaseActivity {
     private Runnable runnable = this::gotoConfirmOnHardware;
 
     private void gotoConfirmOnHardware() {
+        String strPayAddress = tetPayAddress.getText().toString();
         Log.i("jsdhujbejnfksndml", "output_addr: " + output_addr);
         Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", output_addr);
-        bundle.putString("amount", amount);
+        bundle.putString("pay_address", strPayAddress);
         bundle.putString("fee", fee);
         intentCon.putExtra("outputs", bundle);
-        startActivity(intentCon);
+        startActivityForResult(intentCon, 1);
     }
 
     @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans})
@@ -515,8 +538,10 @@ public class TransactionDetailsActivity extends BaseActivity {
                 }
                 break;
             case R.id.lin_getMoreaddress:
+                //transaction detail or create success
                 Intent intent1 = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
-                intent1.putExtra("jsondef_get", jsondef_get);
+                intent1.putExtra("jsondef_get", (Serializable) output_addr);
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent1);
                 break;
             case R.id.tet_addSpeed:
@@ -781,5 +806,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             modeSelector.dismiss();
         }
     }
+
 }
 

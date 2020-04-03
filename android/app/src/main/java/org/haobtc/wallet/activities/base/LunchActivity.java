@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.chaquo.python.Python;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.MainActivity;
@@ -23,6 +24,8 @@ import java.lang.ref.WeakReference;
 
 public class LunchActivity extends BaseActivity {
 
+    private SharedPreferences preferences;
+
     @Override
     public int getLayoutId() {
         return R.layout.activity_lunch;
@@ -30,7 +33,12 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initView() {
-    }
+
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putBoolean("haveCreateNopass", false);//No password is required to create app wallet for the first time
+        edit.apply();
+   }
 
     @SuppressLint("HandlerLeak")
     private Handler nHandler = new Handler() {
@@ -57,7 +65,6 @@ public class LunchActivity extends BaseActivity {
     }
 
     private void init() {
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String language = preferences.getString("language", "");
         judgeLanguage(language);
 

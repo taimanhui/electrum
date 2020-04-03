@@ -46,6 +46,7 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
@@ -55,6 +56,7 @@ import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -945,6 +947,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     cardThreePublic.setVisibility(View.VISIBLE);
                     tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
                     tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getString(R.string.the_only_bixinkey)));
+                    EventBus.getDefault().post(new FirstEvent("11"));
                     break;
             }
         }

@@ -35,11 +35,13 @@ import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -463,6 +465,7 @@ public class SingleSigWalletCreator extends BaseActivity {
                     edit.putInt("defaultName", walletNameNum);
                     edit.apply();
                     myDialog.dismiss();
+                    EventBus.getDefault().post(new FirstEvent("11"));
                     Intent intent = new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
                     intent.putExtra("walletNames", walletName);
                     intent.putExtra("flagTag", "personal");

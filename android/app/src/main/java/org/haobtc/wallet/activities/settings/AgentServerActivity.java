@@ -202,7 +202,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         strUsername = editUsername.getText().toString();
         strPass = editPass.getText().toString();
 
-        if (TextUtils.isEmpty(strAgentIP) || TextUtils.isEmpty(strPort) || TextUtils.isEmpty(strUsername) || TextUtils.isEmpty(strPass) || TextUtils.isEmpty(strNodetype)) {
+        if (TextUtils.isEmpty(strAgentIP) || TextUtils.isEmpty(strPort) || TextUtils.isEmpty(strNodetype)) {
             btnConfirm.setEnabled(false);
             btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
 

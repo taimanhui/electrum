@@ -55,9 +55,9 @@ public class TransactionsSettingActivity extends BaseActivity {
     }
 
     private void init() {
-        boolean set_use_change = preferences.getBoolean("set_use_change", false);
-        boolean set_unconf = preferences.getBoolean("set_unconf", false);
         boolean set_rbf = preferences.getBoolean("set_rbf", false);
+        boolean set_unconf = preferences.getBoolean("set_unconf", false);
+        boolean set_use_change = preferences.getBoolean("set_use_change", false);
         if (set_rbf) {
             switchRbf.setChecked(true);
         } else {

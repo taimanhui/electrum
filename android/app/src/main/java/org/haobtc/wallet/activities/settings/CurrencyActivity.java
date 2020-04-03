@@ -83,8 +83,11 @@ public class CurrencyActivity extends BaseActivity {
             case "mBTC":
                 radioOnearray[1].setChecked(true);
                 break;
-            case "sat":
+            case "bits":
                 radioOnearray[2].setChecked(true);
+                break;
+            case "sat":
+                radioOnearray[3].setChecked(true);
                 break;
         }
 
@@ -114,6 +117,16 @@ public class CurrencyActivity extends BaseActivity {
                         break;
                     case R.id.btn_btcThree:
                         try {
+                            Daemon.commands.callAttr("set_base_uint", "bits");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                        edit.putString("base_unit", "bits");
+                        edit.apply();
+                        break;
+                    case R.id.btn_btcFour:
+                        try {
                             Daemon.commands.callAttr("set_base_uint", "sat");
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -135,22 +148,19 @@ public class CurrencyActivity extends BaseActivity {
         List<PyObject> pyObjects;
         try {
             get_currencies = Daemon.commands.callAttr("get_currencies");
-            pyObjects = get_currencies.asList();
 
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("set_currency", "set_base_unit:==== " + e.getMessage());
             return;
         }
-//        listCNY.add("人民币（CNY）");
-//        listCNY.add("美元（USD）");
-//        listCNY.add("韩元（KMR）");
         listCNY.add(new CNYBean("人民币（CNY）", false));
         listCNY.add(new CNYBean("美元（USD）", false));
         listCNY.add(new CNYBean("韩元（KMR）", false));
         if (get_currencies != null) {
+            pyObjects = get_currencies.asList();
             for (int i = 0; i < pyObjects.size(); i++) {
-                if (!pyObjects.get(i).equals("CNY") && !pyObjects.get(i).equals("USD") && !pyObjects.get(i).equals("KMR")) {
+                if (!pyObjects.get(i).toString().equals("CNY") && !pyObjects.get(i).toString().equals("USD") && !pyObjects.get(i).toString().equals("KMR")) {
                     listCNY.add(new CNYBean(String.valueOf(pyObjects.get(i)), false));
                 }
             }
@@ -194,7 +204,6 @@ public class CurrencyActivity extends BaseActivity {
                         edit.putString("cny_strunit", listCNY.get(pos).getName());
                     }
                     EventBus.getDefault().post(new FirstEvent("22"));
-//                    Log.i(TAG, "ItemClick: ");
                     edit.putInt("cny_unit", pos);
                     edit.apply();
                 }
@@ -203,7 +212,7 @@ public class CurrencyActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.img_back,R.id.tet_CheckAll})
+    @OnClick({R.id.img_back, R.id.tet_CheckAll})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -213,13 +222,13 @@ public class CurrencyActivity extends BaseActivity {
                 String strOpen = tetCheckAll.getText().toString();
                 if (strOpen.equals(getString(R.string.check_all))) {
                     RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
-                    linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+                    linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     reclCnyTable.setLayoutParams(linearParams1);
                     tetCheckAll.setText(getString(R.string.retract));
 
                 } else {
                     RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
-                    linearParams1.height = 530;;
+                    linearParams1.height = 530;
                     reclCnyTable.setLayoutParams(linearParams1);
                     tetCheckAll.setText(getString(R.string.check_all));
                 }

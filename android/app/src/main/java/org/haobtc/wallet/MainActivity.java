@@ -54,6 +54,7 @@ import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
+import org.haobtc.wallet.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
@@ -92,7 +93,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private SmartRefreshLayout refreshLayout;
     private ArrayList<AddressEvent> walletnameList;
     private String strType;
-
+    private int scrollPos = 0;//scrollPos --> recyclerview position != The last one || second to last
     @Override
     public int getLayoutId() {
         return R.layout.main_activity;
@@ -187,6 +188,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             viewPager.setPageMargin(40);
             viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
             //trsaction list data
+            tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
             return;
@@ -226,6 +228,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         }
 
                     }
+                    fragmentList.add(new CheckHideWalletFragment());
                     fragmentList.add(new AddViewFragment());
                     viewPager.setOffscreenPageLimit(4);
                     viewPager.setPageMargin(40);
@@ -233,11 +236,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                 }
             } else {
+                fragmentList.add(new CheckHideWalletFragment());
                 fragmentList.add(new AddViewFragment());
                 viewPager.setOffscreenPageLimit(4);
                 viewPager.setPageMargin(40);
                 viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
                 //trsaction list data
+                tetNone.setText(getString(R.string.no_records));
                 tetNone.setVisibility(View.VISIBLE);
                 recy_data.setVisibility(View.GONE);
             }
@@ -256,9 +261,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onPageSelected(int position) {
+                scrollPos = position;
                 Log.i("onPageSelected", "pos__ " + position);
-                if (position == (fragmentList.size() - 1)) {
+                if (position == (fragmentList.size() - 1) || position == (fragmentList.size() - 2)) {
                     Log.i("onPageSelected", "名字为空");
+                    if (position == (fragmentList.size() - 1)) {
+                        tetNone.setText(getString(R.string.no_records));
+                        tetNone.setVisibility(View.VISIBLE);
+                        recy_data.setVisibility(View.GONE);
+                    } else {
+                        tetNone.setText(getString(R.string.hide_wallet_tips));
+                        tetNone.setVisibility(View.VISIBLE);
+                        recy_data.setVisibility(View.GONE);
+                    }
+
                 } else {
                     strNames = walletnameList.get(position).getName();
                     strType = walletnameList.get(position).getType();
@@ -296,12 +312,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             e.printStackTrace();
             myDialog.dismiss();
             refreshLayout.finishRefresh();
+            tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
             Log.i("downMainListdata", "downMaina===: " + e.getMessage());
             return;
         }
-        myDialog.dismiss();
         //get transaction list
         if (get_history_tx != null) {
             tetNone.setVisibility(View.GONE);
@@ -310,6 +326,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
+                myDialog.dismiss();
+                tetNone.setText(getString(R.string.no_records));
                 tetNone.setVisibility(View.VISIBLE);
                 recy_data.setVisibility(View.GONE);
             } else {
@@ -318,7 +336,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
 
         } else {
+            myDialog.dismiss();
             refreshLayout.finishRefresh();
+            tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
         }
@@ -495,12 +515,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             mWheelplanting();
 
         } else if (msgVote.equals("22")) {
-            maintrsactionlistEvents.clear();
-            //trsaction list data
-            downMainListdata();
-            trsactionlistAdapter.notifyDataSetChanged();
-
+            if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
+                maintrsactionlistEvents.clear();
+                //trsaction list data
+                downMainListdata();
+                trsactionlistAdapter.notifyDataSetChanged();
+            }
         } else if (msgVote.equals("33")) {
+            tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
         }

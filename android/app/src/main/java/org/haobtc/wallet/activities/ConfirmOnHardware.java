@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -68,7 +69,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         ArrayList<SendMoreAddressEvent> addressEventList = new ArrayList<>();
         Bundle bundle = getIntent().getBundleExtra("outputs");
         if (bundle != null) {
-            String totalAmount = bundle.getString("amount");
+            String payAddress = bundle.getString("pay_address");
             String fee = bundle.getString("fee");
             ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputs = (ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean>) bundle.getSerializable("output");
             for (GetnewcreatTrsactionListBean.OutputAddrBean output : outputs) {
@@ -80,7 +81,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 addressEventList.add(sendMoreAddressEvent);
             }
             Log.i("addressEventList", "-----: " + addressEventList);
-            tetPayAddress.setText(totalAmount);
+            tetPayAddress.setText(payAddress);
             tetFeeNum.setText(fee);
             HardwareAdapter hardwareAdapter = new HardwareAdapter(addressEventList);
             reclMsg.setAdapter(hardwareAdapter);
@@ -163,20 +164,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         imageViewCancel.setOnClickListener(this);
         button.setOnClickListener(this);
     }
-
-    private void showPopupSignException() {
-        view = LayoutInflater.from(this).inflate(R.layout.signature_exception_popupwindow, null);
-        imageViewCancel = view.findViewById(R.id.cancel_sign_exception);
-        dialog = new Dialog(this, R.style.dialog);
-        dialog.setContentView(view);
-        Window window = dialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.BOTTOM);
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialog.show();
-        imageViewCancel.setOnClickListener(this);
-    }
-
 
     @Override
     public void onClick(View v) {

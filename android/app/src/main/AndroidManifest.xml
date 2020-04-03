@@ -14,10 +14,6 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <!--
- // used in android 9+
-        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <uses-feature android:name="android.hardware.camera" />
@@ -172,10 +168,10 @@
         <activity android:name=".activities.settings.VerificationSuccessActivity" />
         <activity android:name=".activities.sign.SignActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity" />
-        <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator"/>
-        <activity android:name=".dfu.NotificationActivity" />
         <activity android:name=".activities.ResetDeviceProcessing" />
         <activity android:name=".ResetDeviceSuccessActivity" />
+        <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" />
+        <activity android:name=".dfu.NotificationActivity" />
         <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"

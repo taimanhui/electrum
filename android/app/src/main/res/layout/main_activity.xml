@@ -54,7 +54,7 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="230dp"
             android:layout_marginTop="?attr/actionBarSize"
             android:background="@android:color/white"
             android:clipChildren="false"
@@ -65,7 +65,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
                 android:paddingStart="@dimen/text_margin"
                 android:paddingEnd="@dimen/text_margin">
 
@@ -115,7 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="325dp"
+            android:layout_marginTop="295dp"
             android:layout_marginEnd="@dimen/layout_margin"
             android:layout_marginBottom="@dimen/dp_19"
             app:cardCornerRadius="@dimen/corner_radius"
@@ -184,16 +184,6 @@
                 android:layout_marginTop="50.5dp"
                 android:gravity="center"
                 android:text="@string/no_records"
-                android:textColor="@color/light_text"
-                android:textSize="@dimen/text_size"
-                android:visibility="gone" />
-            <TextView
-                android:id="@+id/testHideWallet"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_200"
-                android:layout_marginTop="50.5dp"
-                android:gravity="center"
-                android:text="@string/hide_wallet_tips"
                 android:textColor="@color/light_text"
                 android:textSize="@dimen/text_size"
                 android:visibility="gone" />

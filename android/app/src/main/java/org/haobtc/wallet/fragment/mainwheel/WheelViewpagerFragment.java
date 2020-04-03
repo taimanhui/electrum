@@ -65,6 +65,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private TextView tetFiat;
     private ConstraintLayout conlayBback;
     private Button btnRight;
+    private String strCNY;
+    private String substring;
 
 
     public WheelViewpagerFragment(String name, String personce) {
@@ -114,7 +116,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         btnRight.setOnClickListener(this);
         conlayBback.setOnClickListener(this);
         wallet_card_name.setText(name);
-        if (getActivity()!=null){
+        if (getActivity() != null) {
             if (!TextUtils.isEmpty(personce)) {
                 if (personce.equals("standard")) {
                     btn_appWallet.setVisibility(View.VISIBLE);
@@ -148,18 +150,15 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             boolean haveCreateNopass = preferences.getBoolean("haveCreateNopass", false);
             Log.i("haveCreateNopass", "refreshList:++ " + haveCreateNopass);
             if (TextUtils.isEmpty(strScrollPass)) {
-                if (haveCreateNopass) {
-                    //No password is required for the newly created Wallet
+                if (haveCreateNopass) {//No password is required for the newly created Wallet
                     try {
                         Daemon.commands.callAttr("load_wallet", name);
                         getWalletMsg();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    edit.putBoolean("haveCreateNopass", false);
-                    edit.apply();
                 } else {
-                    //
+                    //input password
                     View view1 = LayoutInflater.from(getActivity()).inflate(R.layout.input_wallet_pass, null, false);
                     AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(view1).create();
                     EditText str_pass = view1.findViewById(R.id.edit_password);
@@ -177,7 +176,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                             alertDialog.dismiss();
                         } catch (Exception e) {
                             if (e.getMessage().contains("Incorrect password")) {
-                                Toast.makeText(getActivity(),getString(R.string.wrong_pass), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.wrong_pass), Toast.LENGTH_SHORT).show();
                             }
                             e.printStackTrace();
                         }
@@ -238,13 +237,15 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             wallet_card_name.setText(name);
             if (!TextUtils.isEmpty(balanceC)) {
                 if (balanceC.contains("(")) {
-                    String substring = balanceC.substring(0, balanceC.indexOf("("));
+                    substring = balanceC.substring(0, balanceC.indexOf("("));
                     Log.e("substring", "substring: " + substring);
                     Log.e("substring", "balanceC: " + balanceC);
 
                     walletBlance.setText(substring);
-                    String strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
-                    tetCny.setText(String.format("≈ %s", strCNY));
+                    strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
+                    if (!TextUtils.isEmpty(strCNY)){
+                        tetCny.setText(String.format("≈ %s", strCNY));
+                    }
                 } else {
                     walletBlance.setText(balanceC);
                 }
@@ -266,7 +267,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 }
                 if (msgVote.contains("fiat")) {
                     String fiat = jsonObject.getString("fiat");
-                    tetCny.setText(fiat);
+                    tetCny.setText(String.format("≈ %s", fiat));
                 }
                 if (msgVote.contains("unconfirmed")) {
                     String unconfirmed = jsonObject.getString("unconfirmed");
@@ -290,7 +291,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.conlay_back:
                 Intent intent = new Intent(getActivity(), WalletDetailsActivity.class);
                 intent.putExtra("wallet_name", name);
@@ -300,6 +301,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 Intent intent1 = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
                 intent1.putExtra("wallet_name", name);
                 intent1.putExtra("wallet_type", personce);
+                intent1.putExtra("strNowBtc",substring);
+                intent1.putExtra("strNowCny",strCNY);
                 startActivity(intent1);
                 break;
             case R.id.wallet_card_bn2:
@@ -308,7 +311,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.wallet_card_bn3:
                 Intent intent3 = new Intent(getActivity(), SignActivity.class);
-                intent3.putExtra("personceType",personce);
+                intent3.putExtra("personceType", personce);
                 startActivity(intent3);
                 break;
 

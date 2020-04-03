@@ -190,11 +190,11 @@
                             android:textSize="15sp" />
 
                         <TextView
-                            android:id="@+id/textView27"
+                            android:id="@+id/testNowCanUse"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_10"
-                            android:text="@string/mbtc_cny"
+                            tools:text="可用 100mBTC = 5400.02CNY"
                             android:textColor="@color/graytext_color"
                             android:textSize="@dimen/sp_12"
                             app:layout_constraintBottom_toBottomOf="parent"

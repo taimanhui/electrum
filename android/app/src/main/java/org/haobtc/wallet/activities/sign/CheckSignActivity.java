@@ -8,19 +8,21 @@ import android.content.Intent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.utils.Daemon;
 
 import butterknife.BindView;
@@ -57,7 +59,28 @@ public class CheckSignActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        //get sign address
+        mGeneratecode();
+    }
 
+    //get sign address
+    private void mGeneratecode() {
+        PyObject walletAddressShowUi = null;
+        try {
+            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (walletAddressShowUi != null) {
+            String strCode = walletAddressShowUi.toString();
+            Log.i("strCode", "mGenerate--: " + strCode);
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            String strinputAddress = getCodeAddressBean.getAddr();
+            editInputPublicKey.setText(strinputAddress);
+
+        }
     }
 
     @OnClick({R.id.img_back, R.id.sweepAddress, R.id.pasteAddress, R.id.pastePublicKey, R.id.pasteSignedMsg, R.id.btnConfirm})
@@ -103,20 +126,20 @@ public class CheckSignActivity extends BaseActivity {
             verify_message = Daemon.commands.callAttr("verify_message", strAddress, strMsg, strSigned);
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Invalid Bitcoin address")){
+            if (e.getMessage().contains("Invalid Bitcoin address")) {
                 mToast(getString(R.string.changeaddress));
             }
         }
-        if (verify_message!=null){
+        if (verify_message != null) {
             boolean verify = verify_message.toBoolean();
-            if (verify){
+            if (verify) {
                 Intent intent = new Intent(CheckSignActivity.this, CheckSignResultActivity.class);
-                intent.putExtra("verify",verify);
+                intent.putExtra("verify", verify);
                 startActivity(intent);
                 finish();
-            }else{
+            } else {
                 Intent intent = new Intent(CheckSignActivity.this, CheckSignResultActivity.class);
-                intent.putExtra("verify",verify);
+                intent.putExtra("verify", verify);
                 startActivity(intent);
                 finish();
             }

@@ -89,10 +89,19 @@
                     android:layout_marginEnd="@dimen/dp_10"
                     android:background="@color/line_color" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:layout_below="@+id/dnfjndjfns"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_marginTop="178.5dp"
+                    android:layout_marginEnd="@dimen/dp_10"
+                    android:background="@color/line_color" />
+
                 <RadioGroup
                     android:id="@+id/radio_one"
                     android:layout_width="match_parent"
-                    android:layout_height="177dp"
+                    android:layout_height="236dp"
                     android:layout_below="@+id/jhjhkjhk"
                     android:orientation="vertical"
                     android:paddingStart="@dimen/dp_16"
@@ -112,12 +121,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="59dp"
                         android:button="@null"
-                        android:text="@string/mbtc_0_001_btc"
+                        android:text="@string/bits_btc"
                         android:textColor="@drawable/textcolor"
                         android:textSize="15sp" />
 
                     <RadioButton
                         android:id="@+id/btn_btcThree"
+                        android:layout_width="match_parent"
+                        android:layout_height="59dp"
+                        android:button="@null"
+                        android:text="@string/mbtc_0_001_btc"
+                        android:textColor="@drawable/textcolor"
+                        android:textSize="15sp" />
+
+                    <RadioButton
+                        android:id="@+id/btn_btcFour"
                         android:layout_width="match_parent"
                         android:layout_height="59dp"
                         android:button="@null"
@@ -152,30 +170,32 @@
                     android:id="@+id/recl_cnyTable"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:layout_marginBottom="@dimen/dp_10"
                     android:layout_below="@+id/uyuerbfjhb"
+                    android:layout_marginBottom="@dimen/dp_10"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="3"
                     tools:listitem="@layout/cny_item">
 
                 </androidx.recyclerview.widget.RecyclerView>
+
                 <View
                     android:id="@+id/msjdhkjskdj"
                     android:layout_width="match_parent"
-                    android:layout_below="@+id/recl_cnyTable"
                     android:layout_height="@dimen/dp_1"
+                    android:layout_below="@+id/recl_cnyTable"
                     android:layout_marginStart="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_10"
                     android:background="@color/line_color" />
+
                 <TextView
                     android:id="@+id/tet_CheckAll"
-                    android:layout_below="@+id/msjdhkjskdj"
-                    android:text="@string/check_all"
-                    android:gravity="center"
-                    android:textSize="15sp"
-                    android:textColor="@color/button_bk_disableok"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_50"/>
+                    android:layout_height="@dimen/dp_50"
+                    android:layout_below="@+id/msjdhkjskdj"
+                    android:gravity="center"
+                    android:text="@string/check_all"
+                    android:textColor="@color/button_bk_disableok"
+                    android:textSize="15sp" />
             </RelativeLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

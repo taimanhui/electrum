@@ -43,6 +43,7 @@ import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.ResetDeviceSuccessActivity;
 import org.haobtc.wallet.activities.ActivatedProcessing;
@@ -64,6 +65,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.dfu.service.DfuService;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
 import org.haobtc.wallet.fragment.BluetoothFragment;
@@ -94,6 +96,8 @@ import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
+
+import static org.haobtc.wallet.activities.sign.SignActivity.strinputAddress;
 
 
 public class CommunicationModeSelector extends DialogFragment implements View.OnClickListener {
@@ -389,6 +393,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 }
                 executorService.submit(futureTask);
                 if (pinCached && !HideWalletActivity.TAG.equals(tag)) {
+                    //get xpub
                     try {
                         xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
                         Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
@@ -401,9 +406,14 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                         dismiss();
                     }
                 }
-            } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)) {
+            } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
                 Log.i(TAG, "java ==== sign_tx");
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", extras));
+                if ( SignActivity.TAG1.equals(tag)){
+                    //TODO: password
+                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_message", strinputAddress, extras,pin));
+                }else{
+                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", extras));
+                }
                 executorService.submit(futureTask);
                 if (pinCached) {
                     Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
@@ -702,6 +712,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     fragmentActivity.startActivityForResult(intent1, PIN_REQUEST);
                     break;
                 case SHOW_PROCESSING:
+                    EventBus.getDefault().post(new FirstEvent("33"));
                     Intent intent2 = new Intent(fragmentActivity, ActivatedProcessing.class);
                     fragmentActivity.startActivity(intent2);
                     break;

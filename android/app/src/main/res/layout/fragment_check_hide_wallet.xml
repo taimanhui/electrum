@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.mainwheel.AddViewFragment">
+    tools:context=".fragment.mainwheel.CheckHideWalletFragment">
 
+    <!-- TODO: Update blank fragment layout -->
     <androidx.cardview.widget.CardView
         android:id="@+id/wallet_card_add"
         android:layout_width="300dp"
@@ -25,9 +26,11 @@
                 android:layout_width="50dp"
                 android:layout_height="@dimen/dp_50"
                 android:layout_marginTop="48dp"
+                android:padding="@dimen/dp_15"
                 android:layout_centerHorizontal="true"
                 android:contentDescription="@string/add"
-                android:src="@drawable/tianjiakapian" />
+                android:background="@drawable/gray_circle"
+                android:src="@drawable/lock" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -35,8 +38,8 @@
                 android:layout_below="@+id/img_Addmoney"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/dp_16"
-                android:text="@string/add_wallet"
-                android:textColor="#b1b7c5"
+                android:text="@string/check_hide_wallet"
+                android:textColor="@color/text_0"
                 android:textSize="13sp" />
 
         </RelativeLayout>

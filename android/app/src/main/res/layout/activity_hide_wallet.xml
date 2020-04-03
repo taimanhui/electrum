@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context=".activities.onlywallet.hidewallet.HideWalletActivity">
+    tools:context=".activities.personalwallet.hidewallet.HideWalletActivity">
 
     <RelativeLayout
         android:id="@+id/RelativeLayout"
@@ -23,6 +23,7 @@
             android:src="@drawable/back" />
 
         <TextView
+            android:id="@+id/testCheckHidewallet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -86,6 +87,7 @@
                 android:textSize="@dimen/sp_13" />
 
             <TextView
+                android:id="@+id/testCheckTips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center|start"

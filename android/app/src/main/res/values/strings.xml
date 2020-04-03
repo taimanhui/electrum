@@ -251,7 +251,6 @@
     <string name="unconfirm">(unconfirmed)</string>
     <string name="get_bi_address">Receiving address</string>
     <string name="get_bi_num">Number to receive</string>
-    <string name="mbtc_cny">Available 100mBTC = 5400.02CNY</string>
     <string name="introduce_choose">Remark (optional)</string>
     <string name="slowly">Slow</string>
     <string name="quikly">Fast</string>
@@ -386,11 +385,12 @@
     <string name="input_pass_format1">Password must be at least 8 digits, and can only and must contain uppercase letters, lowercase letters, numbers and standard symbols</string>
     <string name="intput_pass_format2">This wallet does not keep any information of the wallet. The password has no way to find it. Please remember the wallet password</string>
     <string name="helpword_wrong">Error in mnemonic input, please check and change</string>
-    <string name="zero_three">0/2</string>
+    <string name="zero_three">1/1</string>
     <string name="_1_0_0">1.0.0</string>
     <string name="lnbcdfd4fdsk">aksdhkjdakjldkajsliieihdihsdkjsjda</string>
     <string name="_BTC">BTC</string>
     <string name="mbtc_0_001_btc">mBTC=0.001BTC</string>
+    <string name="bits_btc">bits=0.0000001BTC</string>
     <string name="sat_0_00000001_btc">sat=0.00000001BTC</string>
     <string name="begin_num1">1</string>
     <string name="text_5">5</string>
@@ -486,8 +486,8 @@
     <string name="check_sign">验签</string>
     <string name="checksigning">验证签名</string>
     <string name="original_msg">原始消息</string>
-    <string name="sign_address">签名地址</string>
-    <string name="inputPublickey">输入地址</string>
+    <string name="sign_address">公钥</string>
+    <string name="inputPublickey">输入公钥</string>
     <string name="signed_msg">签名后消息</string>
     <string name="input_signed_msg">输入签名后消息</string>
     <string name="comfirmed_check">确认后可查看</string>
@@ -524,4 +524,9 @@
     <string name="reset_device_successful">BixinKEY已恢复出厂设置</string>
     <string name="bootloader_mode">硬件当前处于bootloader模式，不支持此类操作</string>
 
+    <string name="check_hide_wallet">点击查看隐藏钱包</string>
+    <string name="checkHideWallet">查看隐藏钱包</string>
+    <string name="checkWalletTips">查看隐藏钱包，需使用已激活的BixinKEY</string>
+    <string name="onclickCheck">点击查看</string>
+    <string name="canUse">可用</string>
 </resources>

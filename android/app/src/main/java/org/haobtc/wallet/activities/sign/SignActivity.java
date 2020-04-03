@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,23 +34,31 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ConfirmOnHardware;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,6 +73,7 @@ import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector
 public class SignActivity extends BaseActivity implements TextWatcher, RadioGroup.OnCheckedChangeListener {
 
     public static final String TAG = SignActivity.class.getSimpleName();
+    public static final String TAG1 = "SIGN_MESSAGE";
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.radio_group)
@@ -102,6 +112,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private boolean ready;
     private String strRaw;
     private String strSoftMsg;
+    public static String strinputAddress;
 
     @Override
     public int getLayoutId() {
@@ -147,7 +158,27 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Override
     public void initData() {
+        //get sign address
+        mGeneratecode();
+    }
 
+    //get sign address
+    private void mGeneratecode() {
+        PyObject walletAddressShowUi = null;
+        try {
+            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (walletAddressShowUi != null) {
+            String strCode = walletAddressShowUi.toString();
+            Log.i("strCode", "mGenerate--: " + strCode);
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            strinputAddress = getCodeAddressBean.getAddr();
+
+        }
     }
 
     @Override
@@ -164,33 +195,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     public void afterTextChanged(Editable s) {
         strRaw = editTrsactionTest.getText().toString();
         if (!TextUtils.isEmpty(strRaw)) {
-//            try {
-//                try {
-//                    is_valiad_xpub = Daemon.commands.callAttr("is_valiad_xpub", strRaw);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    return;
-//                }
-//                if (is_valiad_xpub != null) {
-//                    String strValiad = is_valiad_xpub.toString();
-//                    if (strValiad.equals("False")) {
-//                        tetError.setVisibility(View.VISIBLE);
-//                        buttonConfirm.setEnabled(false);
-//                        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
-//                    } else {
-//                        tetError.setVisibility(View.INVISIBLE);
-//                        buttonConfirm.setEnabled(true);
-//                        buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
-//                    }
-//
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                tetError.setVisibility(View.VISIBLE);
-//                buttonConfirm.setEnabled(false);
-//                buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
-//
-//            }
             buttonConfirm.setEnabled(true);
             buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
         } else {
@@ -281,10 +285,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 } else { //Hardware wallet signature
                     if (signWhich) { //sign trsaction
                         strTest = editTrsactionTest.getText().toString();
-                        showCustomerDialog(strTest);
+                        showCustomerDialog(strTest, TAG);
                     } else {//sign message
                         strTest = editSignMsg.getText().toString();
-                        showCustomerDialog(strTest);
+                        showCustomerDialog(strTest, TAG1);
                     }
 
                 }
@@ -302,14 +306,13 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         EditText str_pass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
             String strPassword = str_pass.getText().toString();
-            strRaw = editTrsactionTest.getText().toString();
             if (TextUtils.isEmpty(strPassword)) {
                 mToast(getString(R.string.please_input_pass));
                 return;
             }
             PyObject sign_message = null;
             try {
-                sign_message = Daemon.commands.callAttr("sign_tx", strRaw, strPassword);
+                sign_message = Daemon.commands.callAttr("sign_tx", strTest, strPassword);
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
@@ -336,23 +339,37 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     }
 
-    private void showCustomerDialog(String signMsg) {
+    private void showCustomerDialog(String signMsg, String tag) {
         List<Runnable> runnables = new ArrayList<>();
         runnables.add(runnable);
-        CommunicationModeSelector chooseCommunicationWayDialogFragment = new CommunicationModeSelector(TAG, runnables, signMsg);
+        CommunicationModeSelector chooseCommunicationWayDialogFragment = new CommunicationModeSelector(tag, runnables, signMsg);
         chooseCommunicationWayDialogFragment.show(getSupportFragmentManager(), "");
     }
 
     private Runnable runnable = this::gotoConfirmOnHardware;
 
     private void gotoConfirmOnHardware() {
-        Intent intentCon = new Intent(SignActivity.this, ConfirmOnHardware.class);
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("output", output_addr);
-//        bundle.putString("amount", amount);
-//        bundle.putString("fee", fee);
-//        intentCon.putExtra("outputs", bundle);
-        startActivity(intentCon);
+        if (signWhich) {
+            Intent intentCon = new Intent(SignActivity.this, ConfirmOnHardware.class);
+            startActivity(intentCon);
+        } else {
+            strSoftMsg = editSignMsg.getText().toString();
+            String signedMsg = null;
+            try {
+                signedMsg = futureTask.get(10, TimeUnit.SECONDS).toString();
+                Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
+                intentMsg.putExtra("signMsg", strSoftMsg);
+                intentMsg.putExtra("signAddress", strinputAddress);
+                intentMsg.putExtra("signedFinish", signedMsg);
+                startActivity(intentMsg);
+                finish();
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                e.printStackTrace();
+                if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+                    mToast(getString(R.string.pin_wrong));
+                }
+            }
+        }
     }
 
     public void pasteMessage(EditText editString) {
@@ -420,8 +437,14 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             boolean isInit = features.isInitialized();
         if (isInit) {
             boolean pinCached = features.isPinCached();
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", strTest));
+            if (signWhich) {
+                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", strTest));
+            } else {
+                //TODO: password
+                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_message", strinputAddress, strTest, pin));
+            }
             executorService.submit(futureTask);
+
             if (pinCached) {
                 gotoConfirmOnHardware();
             }

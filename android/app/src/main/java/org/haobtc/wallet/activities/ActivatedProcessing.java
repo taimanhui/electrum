@@ -38,9 +38,9 @@ public class ActivatedProcessing extends BaseActivity {
         textViewPIN = findViewById(R.id.pin_setting_state);
         textViewProcess = findViewById(R.id.activate_state);
         if (Ble.getInstance().getConnetedDevices().size() != 0) {
-            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().startsWith("BixinKEY")){
+            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().startsWith("BixinKEY")) {
                 new Handler().postDelayed(() -> processingState(false)
-                , 10);
+                        , 10);
             }
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -106,7 +106,7 @@ public class ActivatedProcessing extends BaseActivity {
     private void startNewPage() {//TODO:
         Intent intent = new Intent(this, ActivateSuccessActivity.class);
         startActivity(intent);
-
+        finish();
     }
 
     @Override

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -17,11 +18,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.utils.Daemon;
 
 import butterknife.BindView;
@@ -32,16 +36,13 @@ public class SignMessageActivity extends BaseActivity {
 
     @BindView(R.id.editInputAddress)
     EditText editInputAddress;
-    @BindView(R.id.editInputPublicKey)
-    EditText editInputPublicKey;
+
     @BindView(R.id.checkSignedMsg)
     TextView checkSignedMsg;
     @BindView(R.id.btnConfirm)
     Button btnConfirm;
     @BindView(R.id.testCopyMsg)
     TextView testCopyMsg;
-    @BindView(R.id.testCopyAddress)
-    TextView testCopyAddress;
     @BindView(R.id.testCopySignedMsg)
     TextView testCopySignedMsg;
     private RxPermissions rxPermissions;
@@ -57,20 +58,41 @@ public class SignMessageActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-    }
-
-    @Override
-    public void initData() {
         Intent intent = getIntent();
         strSignMsg = intent.getStringExtra("strSignMsg");
         rxPermissions = new RxPermissions(this);
         TextChange textChange = new TextChange();
         editInputAddress.addTextChangedListener(textChange);
-        editInputPublicKey.addTextChangedListener(textChange);
         editInputAddress.setText(strSignMsg);
     }
 
-    @OnClick({R.id.img_back, R.id.textCheckSign, R.id.sweepAddress, R.id.pasteAddress, R.id.pastePublicKey, R.id.testCopyMsg, R.id.testCopyAddress, R.id.testCopySignedMsg, R.id.btnConfirm})
+    @Override
+    public void initData() {
+        //get sign address
+        mGeneratecode();
+
+    }
+
+    //get sign address
+    private void mGeneratecode() {
+        PyObject walletAddressShowUi = null;
+        try {
+            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (walletAddressShowUi != null) {
+            String strCode = walletAddressShowUi.toString();
+            Log.i("strCode", "mGenerate--: " + strCode);
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            strinputAddress = getCodeAddressBean.getAddr();
+
+        }
+    }
+
+    @OnClick({R.id.img_back, R.id.textCheckSign, R.id.sweepAddress, R.id.pasteAddress, R.id.testCopyMsg, R.id.testCopySignedMsg, R.id.btnConfirm})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -96,17 +118,9 @@ public class SignMessageActivity extends BaseActivity {
                 //paste
                 pasteMessage(editInputAddress);
                 break;
-            case R.id.pastePublicKey:
-                //paste
-                pasteMessage(editInputPublicKey);
-                break;
             case R.id.testCopyMsg:
                 //copy
                 copyContent(editInputAddress);
-                break;
-            case R.id.testCopyAddress:
-                //copy
-                copyContent(editInputPublicKey);
                 break;
             case R.id.testCopySignedMsg:
                 //copy
@@ -130,9 +144,9 @@ public class SignMessageActivity extends BaseActivity {
 
     //sign message
     private void toSignMsg() {
-        if (btnConfirm.getText().toString().equals(getString(R.string.confirm))){
+        if (btnConfirm.getText().toString().equals(getString(R.string.confirm))) {
             signDialog();
-        }else{
+        } else {
             finish();
         }
     }
@@ -143,7 +157,6 @@ public class SignMessageActivity extends BaseActivity {
         EditText str_pass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
             String strPassword = str_pass.getText().toString();
-            strinputAddress = editInputAddress.getText().toString();
             if (TextUtils.isEmpty(strPassword)) {
                 mToast(getString(R.string.please_input_pass));
                 return;
@@ -205,8 +218,7 @@ public class SignMessageActivity extends BaseActivity {
     //judge button status
     private void buttonColorStatus() {
         strinputAddress = editInputAddress.getText().toString();
-        String strInputPublicKey = editInputPublicKey.getText().toString();
-        if (TextUtils.isEmpty(strinputAddress) || TextUtils.isEmpty(strInputPublicKey)) {
+        if (TextUtils.isEmpty(strinputAddress)) {
             btnConfirm.setEnabled(false);
             btnConfirm.setBackground(getDrawable(R.drawable.button_bk_grey));
             if (!TextUtils.isEmpty(strinputAddress)) {
@@ -214,16 +226,10 @@ public class SignMessageActivity extends BaseActivity {
             } else {
                 testCopyMsg.setVisibility(View.GONE);
             }
-            if (!TextUtils.isEmpty(strInputPublicKey)) {
-                testCopyAddress.setVisibility(View.VISIBLE);
-            } else {
-                testCopyAddress.setVisibility(View.GONE);
-            }
         } else {
             btnConfirm.setEnabled(true);
             btnConfirm.setBackground(getDrawable(R.drawable.button_bk));
             testCopyMsg.setVisibility(View.VISIBLE);
-            testCopyAddress.setVisibility(View.VISIBLE);
         }
 
     }

@@ -1,12 +1,14 @@
 package org.haobtc.wallet.activities.personalwallet.hidewallet;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -30,15 +32,22 @@ import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +63,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
 
 public class HideWalletActivity extends BaseActivity {
 
@@ -66,6 +75,10 @@ public class HideWalletActivity extends BaseActivity {
     ImageView imgBackCreat;
     @BindView(R.id.btnNext)
     Button btnNext;
+    @BindView(R.id.testCheckHidewallet)
+    TextView testCheckHidewallet;
+    @BindView(R.id.testCheckTips)
+    TextView testCheckTips;
     private boolean executable = true;
     private boolean ready;
     private boolean isActive;
@@ -78,22 +91,60 @@ public class HideWalletActivity extends BaseActivity {
     private TextView textView;
     private boolean status;
     private String hideWalletpass;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_hide_wallet;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
+        Intent intent = getIntent();
+        String hidewallet = intent.getStringExtra("hidewallet");
+        if (!TextUtils.isEmpty(hidewallet)) {
+            if (hidewallet.equals("check")) {
+                testCheckHidewallet.setText(getString(R.string.checkHideWallet));
+                testCheckTips.setText(getString(R.string.checkWalletTips));
+                btnNext.setText(getString(R.string.onclickCheck));
+            }
+        }
 
     }
 
     @Override
     public void initData() {
-        mCustomerUI();
 
+    }
+
+
+    @OnClick({R.id.img_backCreat, R.id.btnNext})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_backCreat:
+                finish();
+                break;
+            case R.id.btnNext:
+                mCustomerUI();
+                String strBtnTest = btnNext.getText().toString();
+                if (strBtnTest.equals(getString(R.string.onclickCheck))) {
+                    edit.putString("createOrcheck", "check");
+                } else {
+                    edit.putString("createOrcheck", "create");
+                }
+                edit.apply();
+                List<Runnable> runnables = new ArrayList<>();
+                runnables.add(null);
+                runnables.add(runnable2);
+                dialogFragment = new CommunicationModeSelector(TAG, runnables, "");
+                dialogFragment.show(getSupportFragmentManager(), "");
+                break;
+        }
     }
 
     private void mCustomerUI() {
@@ -103,22 +154,6 @@ public class HideWalletActivity extends BaseActivity {
             Log.i("customerUI", "icustomerUI");
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    @OnClick({R.id.img_backCreat, R.id.btnNext})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_backCreat:
-                finish();
-                break;
-            case R.id.btnNext:
-                List<Runnable> runnables = new ArrayList<>();
-                runnables.add(null);
-                runnables.add(runnable2);
-                dialogFragment = new CommunicationModeSelector(TAG, runnables, "");
-                dialogFragment.show(getSupportFragmentManager(), "");
-                break;
         }
     }
 
@@ -164,12 +199,16 @@ public class HideWalletActivity extends BaseActivity {
             Log.i("import_create_hw_wallet", "strBixinname: " + strBixinname);
             Log.i("import_create_hw_wallet", "strXpub: " + strXpub);
             try {
-                Daemon.commands.callAttr("import_create_hw_wallet", strBixinname, 1, 1, strXpub,new Kwarg("hide_type",true));
+                Daemon.commands.callAttr("import_create_hw_wallet", strBixinname, 1, 1, strXpub, new Kwarg("hide_type", true));
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
-            mIntent(MainActivity.class);
+            dialogBtoms.cancel();
+            dialogFragment.dismiss();
+            Intent intent = new Intent(HideWalletActivity.this, CheckHideWalletActivity.class);
+            intent.putExtra("hideWalletName", strBixinname);
+            startActivity(intent);
         });
 
         //cancel dialog
@@ -205,6 +244,7 @@ public class HideWalletActivity extends BaseActivity {
             throw e;
         }
     }
+
     private void getResult() {
         try {
             ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
@@ -216,6 +256,7 @@ public class HideWalletActivity extends BaseActivity {
                 dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
             } else {
                dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
+
             }
         }
     }
@@ -351,6 +392,21 @@ public class HideWalletActivity extends BaseActivity {
                 }
 
             }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+        CommunicationModeSelector.customerUI.callAttr("get_pass_state");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(FirstEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if (msgVote.equals("33")) {
+            dialogFragment.dismiss();
         }
     }
 }

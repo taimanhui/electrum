@@ -65,7 +65,6 @@ import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     @BindView(R.id.edit_changeMoney)
@@ -84,6 +83,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     TextView tetStrunit;
     @BindView(R.id.btnRecommendFee)
     Button btnRecommendFee;
+    @BindView(R.id.testNowCanUse)
+    TextView testNowCanUse;
     private LinearLayout selectSend;
     private ImageView selectSigNum, buttonSweep;
     private EditText editTextComments, editAddress;
@@ -247,7 +248,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         waletType = intent.getStringExtra("wallet_type");
         String sendAdress = intent.getStringExtra("sendAdress");
         String sendmessage = intent.getStringExtra("sendmessage");
-
+        String strNowBtc = intent.getStringExtra("strNowBtc");
+        String strNowCny = intent.getStringExtra("strNowCny");
+        testNowCanUse.setText(String.format("%s%s=%s", getString(R.string.canUse), strNowBtc, strNowCny));
         tetWalletname.setText(wallet_name);
         int sendamount = intent.getIntExtra("sendamount", 0);
         editAddress.setText(sendAdress);
@@ -667,7 +670,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
                 intent.putExtra("keyValue", "A");
-
+                intent.putExtra("isIsmine", true);
                 intent.putExtra("strwalletType", waletType);
                 intent.putExtra("txCreatTrsaction", beanTx);
                 startActivity(intent);
@@ -806,16 +809,13 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             pramas.put(straddress, strAmount);
             arrayList.add(pramas);
             String strPramas = new Gson().toJson(arrayList);
-            Log.i("get_fee_by_feerate", "---------: " + strPramas);
-            Log.i("get_fee_by_feerate", "---------: " + strComment);
-            Log.i("get_fee_by_feerate", "---------: " + intmaxFee);
             PyObject get_fee_by_feerate = null;
             try {
                 get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
             } catch (Exception e) {
                 e.printStackTrace();
-                if (e.getMessage().contains("invalid bitcoin address")){
-                    mToast(getString(R.string.changeaddress));
+                if (e.getMessage().contains("invalid bitcoin address")) {
+                    Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG).show();
                 }
                 return;
             }
@@ -831,6 +831,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             }
         }
     }
+
 }
 
 

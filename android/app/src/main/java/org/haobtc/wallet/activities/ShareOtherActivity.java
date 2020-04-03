@@ -70,6 +70,7 @@ public class ShareOtherActivity extends BaseActivity {
     private boolean toGallery;
     private Dialog dialogBtom;
     private String rowTx;
+    private String strCode;
 
     @Override
     public int getLayoutId() {
@@ -84,7 +85,7 @@ public class ShareOtherActivity extends BaseActivity {
         Intent intent = getIntent();
         rowTrsaction = intent.getStringExtra("rowTrsaction");
         rowTx = intent.getStringExtra("rowTx");
-        Log.i("rowTrsaction", "init----: " + rowTrsaction);
+        Log.i("rowTrsaction", "init----: " + rowTx);
         rxPermissions = new RxPermissions(this);
 
 
@@ -97,13 +98,13 @@ public class ShareOtherActivity extends BaseActivity {
 
             PyObject get_qr_data_from_raw_tx = null;
             try {
-                get_qr_data_from_raw_tx = Daemon.commands.callAttr("get_qr_data_from_raw_tx", rowTrsaction);
+                get_qr_data_from_raw_tx = Daemon.commands.callAttr("get_qr_data_from_raw_tx", rowTx);
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
             if (get_qr_data_from_raw_tx != null) {
-                String strCode = get_qr_data_from_raw_tx.toString();
+                strCode = get_qr_data_from_raw_tx.toString();
                 Log.i("strCode", "onView: " + strCode);
                 if (!TextUtils.isEmpty(strCode)) {
                     if (strCode.length() >= 150) {
@@ -113,7 +114,6 @@ public class ShareOtherActivity extends BaseActivity {
                         bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
                         imgOrcode.setImageBitmap(bitmap);
                     }
-
                 }
             }
         }
@@ -131,14 +131,14 @@ public class ShareOtherActivity extends BaseActivity {
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                toGallery = saveBitmap(bitmap);
-                                if (toGallery) {
-                                    mToast(getString(R.string.preservationbitmappic));
-                                } else {
-                                    Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
+                                if (bitmap != null) {
+                                    toGallery = saveBitmap(bitmap);
+                                    if (toGallery) {
+                                        mToast(getString(R.string.preservationbitmappic));
+                                    } else {
+                                        Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-
-
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
                             }

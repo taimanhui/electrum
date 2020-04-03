@@ -98,11 +98,11 @@
                         android:layout_weight="1"
                         android:gravity="center|start"
                         android:text="@string/use_unconfirmed"
-                        android:textColor="@color/text" />
+                        android:textColor="@color/text"
+                        tools:ignore="NestedWeights" />
 
                     <Switch
                         android:id="@+id/switch_noConfirm"
-                        android:checked="true"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:thumb="@drawable/switch_custom_thumb_selector"
@@ -130,7 +130,8 @@
                         android:layout_weight="1"
                         android:gravity="center|start"
                         android:text="@string/use_change"
-                        android:textColor="@color/text" />
+                        android:textColor="@color/text"
+                        tools:ignore="NestedWeights" />
 
                     <Switch
                         android:id="@+id/switch_find"
