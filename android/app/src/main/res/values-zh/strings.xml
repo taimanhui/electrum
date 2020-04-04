@@ -495,8 +495,7 @@
     <string name="nowallet_import">暂无可导入钱包</string>
     <string name="timeout_error">抱歉！读取公钥超时，不妨再试试！！</string>
     <string name="check_hide_wallet">点击查看隐藏钱包</string>
-    <string name="checkHideWallet">查看隐藏钱包</string>
-    <string name="checkWalletTips">查看隐藏钱包，需使用已激活的BixinKEY</string>
-    <string name="onclickCheck">点击查看</string>
-    <string name="canUse">可用</string>
+    <string name="check_wallet_tips">查看隐藏钱包，需使用已激活的BixinKEY</string>
+    <string name="onclick_check">点击查看</string>
+    <string name="useable">可用</string>
 </resources>

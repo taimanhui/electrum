@@ -53,19 +53,9 @@
         <item name="android:windowEnterAnimation">@anim/push_bottom_in</item>
         <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
     </style>
-    <style name="LunchTheme" parent="AppTheme">
-        <item name="android:windowNoTitle">true</item>
-        <!--下面这句如果你加上觉得好看就加，不好看就不加咯-->
-        <!--        <item name="android:navigationBarColor">@android:color/transparent</item>-->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowBackground">@drawable/splashimg</item>
-    </style>
-    <!--解决APP启动白屏问题   需把targetSdkVersion 改为27以下，否则无法启动APP-->
-    <style name="AppThemesing" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:screenOrientation">portrait</item>
+    <!--解决APP启动白屏问题-->
+    <style name="LunchTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
 

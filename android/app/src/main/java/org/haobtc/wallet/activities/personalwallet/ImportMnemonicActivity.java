@@ -1,8 +1,6 @@
 package org.haobtc.wallet.activities.personalwallet;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,6 +18,7 @@ import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,8 +71,6 @@ public class ImportMnemonicActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor edit = preferences.edit();
         myDialog = MyDialog.showDialog(ImportMnemonicActivity.this);
         Intent intent = getIntent();
         String strSeeds = intent.getStringExtra("strSeeds");
@@ -82,9 +79,7 @@ public class ImportMnemonicActivity extends BaseActivity {
         String[] wordsList = strSeeds.split(" ");
 
         ArrayList<String> strings = new ArrayList<>();
-        for (int i = 0; i < wordsList.length; i++) {
-            strings.add(wordsList[i]);
-        }
+        Collections.addAll(strings, wordsList);
 
         List<String> randomList = createRandomList(strings, 12);
 
@@ -197,10 +192,8 @@ public class ImportMnemonicActivity extends BaseActivity {
 
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
+        if (view.getId() == R.id.img_back) {
+            finish();
         }
     }
 }

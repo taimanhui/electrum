@@ -356,7 +356,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             strSoftMsg = editSignMsg.getText().toString();
             String signedMsg = null;
             try {
-                signedMsg = futureTask.get(10, TimeUnit.SECONDS).toString();
+                signedMsg = futureTask.get(30, TimeUnit.SECONDS).toString();
                 Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
                 intentMsg.putExtra("signMsg", strSoftMsg);
                 intentMsg.putExtra("signAddress", strinputAddress);
@@ -367,6 +367,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 e.printStackTrace();
                 if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
                     mToast(getString(R.string.pin_wrong));
+                } else {
+                    finish();
                 }
             }
         }

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -35,19 +34,15 @@ import com.yzq.zxinglibrary.common.Constant;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +58,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
@@ -85,7 +81,6 @@ public class HideWalletActivity extends BaseActivity {
     // new version code
     public String pin = "";
     private CommunicationModeSelector dialogFragment;
-    private PyObject customerUI;
     private Dialog dialogBtoms;
     private EditText edit_bixinName;
     private TextView textView;
@@ -109,9 +104,9 @@ public class HideWalletActivity extends BaseActivity {
         String hidewallet = intent.getStringExtra("hidewallet");
         if (!TextUtils.isEmpty(hidewallet)) {
             if (hidewallet.equals("check")) {
-                testCheckHidewallet.setText(getString(R.string.checkHideWallet));
-                testCheckTips.setText(getString(R.string.checkWalletTips));
-                btnNext.setText(getString(R.string.onclickCheck));
+                testCheckHidewallet.setText(getString(R.string.check_hide_wallet));
+                testCheckTips.setText(getString(R.string.check_wallet_tips));
+                btnNext.setText(getString(R.string.onclick_check));
             }
         }
 
@@ -130,9 +125,8 @@ public class HideWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btnNext:
-                mCustomerUI();
                 String strBtnTest = btnNext.getText().toString();
-                if (strBtnTest.equals(getString(R.string.onclickCheck))) {
+                if (strBtnTest.equals(getString(R.string.onclick_check))) {
                     edit.putString("createOrcheck", "check");
                 } else {
                     edit.putString("createOrcheck", "create");
@@ -147,15 +141,6 @@ public class HideWalletActivity extends BaseActivity {
         }
     }
 
-    private void mCustomerUI() {
-        customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
-        try {
-            customerUI.callAttr("set_pass_state", 1);
-            Log.i("customerUI", "icustomerUI");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private Runnable runnable2 = () -> showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
 
@@ -283,9 +268,9 @@ public class HideWalletActivity extends BaseActivity {
             executable = false;
         }
         if (ready) {//
-            CommunicationModeSelector.customerUI.put("pin", pin);
+            customerUI.put("pin", pin);
             if (!TextUtils.isEmpty(hideWalletpass)) {
-                CommunicationModeSelector.customerUI.put("passphrase", hideWalletpass);
+                customerUI.put("passphrase", hideWalletpass);
                 hideWalletpass = "";
                 getResult();
             }
@@ -312,6 +297,7 @@ public class HideWalletActivity extends BaseActivity {
         if (isInit) {
             // todo: get xpub
             if (!status) {//status -->get_xpub_from_hw Only once
+                customerUI.callAttr("set_pass_state", 1);
                 futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", new Kwarg("_type", "p2wpkh")));
                 executorService.submit(futureTask);
             }
@@ -346,7 +332,7 @@ public class HideWalletActivity extends BaseActivity {
                     case CommunicationModeSelector.PIN_NEW_FIRST: // activation
                         // ble activation
                         if (CommunicationModeSelector.isActive) {
-                            CommunicationModeSelector.customerUI.put("pin", pin);
+                            customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
                             CommunicationModeSelector.isActive = false;
                         } else if (isActive) {
@@ -358,8 +344,7 @@ public class HideWalletActivity extends BaseActivity {
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // create
                         if (!isNFC) { // ble
-                            CommunicationModeSelector.customerUI.put("pin", pin);
-//                            new Handler().postDelayed(this::getResult, (long) 0.2);
+                            customerUI.put("pin", pin);
                         } else { // nfc
                             ready = true;
                             status = true;
@@ -380,11 +365,9 @@ public class HideWalletActivity extends BaseActivity {
         } else if (requestCode == CommunicationModeSelector.PASSPHRASS_INPUT && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 hideWalletpass = data.getStringExtra("passphrase");
-
-                CommunicationModeSelector.customerUI.callAttr("get_pass_state");
                 //Enter password to create hidden Wallet
                 if (!isNFC) {
-                    CommunicationModeSelector.customerUI.put("passphrase", hideWalletpass);
+                    customerUI.put("passphrase", hideWalletpass);
                     new Handler().postDelayed(this::getResult, (long) 0.2);
                 } else {
                     ready = true;
@@ -399,7 +382,6 @@ public class HideWalletActivity extends BaseActivity {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        CommunicationModeSelector.customerUI.callAttr("get_pass_state");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

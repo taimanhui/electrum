@@ -17,7 +17,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.bean.CNYBean;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ElectrumListAdapter extends RecyclerView.Adapter<ElectrumListAdapter.myViewHolder> {
     private Context context;

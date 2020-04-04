@@ -1,16 +1,11 @@
 package org.haobtc.wallet.activities.base;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 
-import com.chaquo.python.Python;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.MainActivity;
@@ -20,7 +15,6 @@ import org.haobtc.wallet.activities.GuideActivity;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
-import java.lang.ref.WeakReference;
 
 public class LunchActivity extends BaseActivity {
 
@@ -33,36 +27,11 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initView() {
-
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         SharedPreferences.Editor edit = preferences.edit();
         edit.putBoolean("haveCreateNopass", false);//No password is required to create app wallet for the first time
         edit.apply();
    }
-
-    @SuppressLint("HandlerLeak")
-    private Handler nHandler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            Global.py = Python.getInstance();
-            if (BuildConfig.net_type.equals(getString(R.string.TestNet))) {
-                Global.py.getModule("electrum.constants").callAttr("set_testnet");
-            } else if (BuildConfig.net_type.equals(getString(R.string.RegTest))) {
-                Global.py.getModule("electrum.constants").callAttr("set_regtest");
-            }
-            Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
-            Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
-            Daemon.daemonWeakReference = new WeakReference<>(new Daemon());
-            Daemon.commands.callAttr("set_callback_fun", Daemon.daemonWeakReference.get());
-            init();
-        }
-    };
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        nHandler.sendEmptyMessageDelayed(0, 100);
-    }
 
     private void init() {
         String language = preferences.getString("language", "");
@@ -115,6 +84,19 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        new Handler().postDelayed(() -> {
+            if (BuildConfig.net_type.equals(getString(R.string.TestNet))) {
+                Global.py.getModule("electrum.constants").callAttr("set_testnet");
+            } else if (BuildConfig.net_type.equals(getString(R.string.RegTest))) {
+                Global.py.getModule("electrum.constants").callAttr("set_regtest");
+            }
+            Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
+            Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
+            Daemon.commands = Global.guiConsole.callAttr("AndroidCommands");
+            Daemon.commands.callAttr("start");
+            Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());
+            init();
+        }, 100);
 
     }
 }

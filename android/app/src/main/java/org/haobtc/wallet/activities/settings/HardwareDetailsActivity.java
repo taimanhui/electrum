@@ -4,26 +4,30 @@ import android.app.Activity;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import butterknife.BindView;
@@ -119,6 +123,21 @@ public class HardwareDetailsActivity extends BaseActivity {
             dealWithBusiness(intent);
         }
     }
+    private boolean isInitialized() throws Exception {
+        String feature;
+        try {
+            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
+            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
+            if (features.isBootloaderMode()) {
+                throw new Exception("bootloader mode");
+            }
+            return features.isInitialized();
+        } catch (ExecutionException | InterruptedException e) {
+            Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            throw e;
+        }
+    }
     private void dealWithBusiness(Intent intent) {
         if (executable) {
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -133,8 +152,24 @@ public class HardwareDetailsActivity extends BaseActivity {
         } else if (done) {
             startActivity(new Intent(this, ChangePinProcessingActivity.class));
         } else {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("reset_pin"));
-            executorService.submit(futureTask);
+            boolean isInit;
+            try {
+                isInit = isInitialized();
+            } catch (Exception e) {
+                e.printStackTrace();
+                if ("bootloader mode".equals(e.getMessage())) {
+                    Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+                }
+                finish();
+                return;
+            }
+            if (isInit) {
+                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("reset_pin", "bluetooth"));
+                executorService.submit(futureTask);
+            } else {
+                Toast.makeText(this, R.string.wallet_un_activated_pin, Toast.LENGTH_LONG).show();
+                finish();
+            }
         }
     }
     @Override
@@ -168,31 +203,7 @@ public class HardwareDetailsActivity extends BaseActivity {
             }
         }
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // enable nfc discovery for the app
-            System.out.println("为本App启用NFC感应");
-            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        }
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // disable nfc discovery for the app
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-            System.out.println("禁用本App的NFC感应");
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        NfcUtils.mNfcAdapter = null;
-    }
     @Override
     protected void onRestart() {
         super.onRestart();

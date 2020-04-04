@@ -1,7 +1,5 @@
 package org.haobtc.wallet.activities;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;

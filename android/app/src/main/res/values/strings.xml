@@ -524,9 +524,11 @@
     <string name="reset_device_successful">BixinKEY已恢复出厂设置</string>
     <string name="bootloader_mode">硬件当前处于bootloader模式，不支持此类操作</string>
 
-    <string name="check_hide_wallet">点击查看隐藏钱包</string>
-    <string name="checkHideWallet">查看隐藏钱包</string>
-    <string name="checkWalletTips">查看隐藏钱包，需使用已激活的BixinKEY</string>
-    <string name="onclickCheck">点击查看</string>
-    <string name="canUse">可用</string>
+    <string name="check_hide_wallet">查看隐藏钱包</string>
+    <string name="check_wallet_tips">查看隐藏钱包，需使用已激活的BixinKEY</string>
+    <string name="onclick_check">点击查看</string>
+    <string name="useable">可用</string>
+    <string name="wallet_un_activated">钱包未激活，不需要恢复出厂设置</string>
+    <string name="wallet_un_activated_pin">钱包未激活，不能修改PIN码</string>
+
 </resources>

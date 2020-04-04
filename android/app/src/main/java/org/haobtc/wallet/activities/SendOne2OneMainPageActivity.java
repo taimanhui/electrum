@@ -158,9 +158,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         editAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-
-                } else {
+                if (!hasFocus) {
                     //getFeerate
                     getFeerate();
                     //button to gray or blue
@@ -171,9 +169,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         tetamount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-
-                } else {
+                if (!hasFocus) {
                     //getFeerate
                     getFeerate();
                     //button to gray or blue
@@ -187,9 +183,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private void registerKeyBoard() {
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
-        int width = metric.widthPixels;
-        int height = metric.heightPixels;
-        screenHeight = height;
+        screenHeight = metric.heightPixels;
         mIsSoftKeyboardShowing = false;
         mLayoutChangeListener = new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -204,8 +198,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
                 if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
                     mIsSoftKeyboardShowing = isKeyboardShowing;
-                    if (mIsSoftKeyboardShowing) {
-                    } else {
+                    if (!mIsSoftKeyboardShowing) {
                         //getFeerate
                         getFeerate();
                         //button to gray or blue
@@ -250,7 +243,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         String sendmessage = intent.getStringExtra("sendmessage");
         String strNowBtc = intent.getStringExtra("strNowBtc");
         String strNowCny = intent.getStringExtra("strNowCny");
-        testNowCanUse.setText(String.format("%s%s=%s", getString(R.string.canUse), strNowBtc, strNowCny));
+        testNowCanUse.setText(String.format("%s%s=%s", getString(R.string.useable), strNowBtc, strNowCny));
         tetWalletname.setText(wallet_name);
         int sendamount = intent.getIntExtra("sendamount", 0);
         editAddress.setText(sendAdress);
@@ -349,7 +342,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     if (!s.toString().substring(1, 2).equals(".")) {
                         tetMoneye.setText(s.subSequence(0, 1));
                         tetMoneye.setSelection(1);
-                        return;
                     }
                 }
 
@@ -780,14 +772,14 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 //if math = 1 -> bignum2
                 BigDecimal bigDecimal = new BigDecimal(21000000);
                 int mathMax = bignum1.compareTo(bigDecimal);
-                if (mathMax == 1) {
+                if (mathMax > 0) {
                     mToast(getString(R.string.sendMore));
                 } else {
-                    if (math == 1) {
+                    if (math > 0) {
                         mToast(getString(R.string.wallet_insufficient));
                         //walletmoney == 1  ->  Sorry, your credit is running low
                         walletmoney = 1;
-                    } else if (math == -1 || math == 0) {
+                    } else {
                         walletmoney = 0;
                     }
                 }

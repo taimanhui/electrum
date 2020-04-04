@@ -611,7 +611,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                     mToast(getString(R.string.wrong_pass));
                 }
                 e.printStackTrace();
-                return;
             }
 
         });

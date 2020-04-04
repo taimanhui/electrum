@@ -1,11 +1,19 @@
 package org.haobtc.wallet.activities.base;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
+import org.haobtc.wallet.BuildConfig;
+import org.haobtc.wallet.R;
+import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.Global;
+
+import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 import cn.com.heaton.blelibrary.ble.Ble;
@@ -15,8 +23,6 @@ public class MyApplication extends Application {
     private static final String PRIMARY_SERVICE =      "00000001-0000-1000-8000-00805f9b34fb";//"6e400001-b5a3-f393-e0a9-e50e24dcca9e";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC =  "00000003-0000-1000-8000-00805f9b34fb";//
-    /*private static final String  OTA_SERVICE = "8ec90002-f315-4f60-9fb8-838830daea50";
-    private static final String OTA_WRITE_CHARACTERISTIC = "8ec90001-f315-4f60-9fb8-838830daea50";*/
 
 
     @Override
@@ -57,6 +63,6 @@ public class MyApplication extends Application {
         if (!Python.isStarted()) {
             Python.start(new AndroidPlatform(mInstance));
         }
-
+        Global.py = Python.getInstance();
     }
 }

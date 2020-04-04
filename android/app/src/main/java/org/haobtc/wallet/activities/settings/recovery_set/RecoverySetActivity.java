@@ -9,18 +9,22 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import butterknife.BindView;
@@ -42,7 +46,6 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
     @BindView(R.id.checkbox_Know)
     CheckBox checkboxKnow;
     public static final String TAG = RecoverySetActivity.class.getSimpleName();
-    private CommunicationModeSelector dialogFragment;
     private boolean executable = true;
 
     @Override
@@ -77,7 +80,7 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
     }
 
     private void showPopupAddCosigner1() {
-        dialogFragment = new CommunicationModeSelector(TAG, null, "");
+        CommunicationModeSelector dialogFragment = new CommunicationModeSelector(TAG, null, "");
         dialogFragment.show(getSupportFragmentManager(), "");
     }
 
@@ -101,7 +104,21 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
             processingState(intent);
         }
     }
-
+    private boolean isInitialized() throws Exception {
+        String feature;
+        try {
+            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
+            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
+            if (features.isBootloaderMode()) {
+                throw new Exception("bootloader mode");
+            }
+            return features.isInitialized();
+        } catch (ExecutionException | InterruptedException e) {
+            Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            throw e;
+        }
+    }
     private void processingState(Intent intent) {
         if (executable) {
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -110,30 +127,28 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
             nfcHandler.put("device", tags);
             executable = false;
         }
-        futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wipe_device"));
-        executorService.submit(futureTask);
-        startActivity(new Intent(this, ResetDeviceProcessing.class));
+        boolean isInit;
+        try {
+            isInit = isInitialized();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if ("bootloader mode".equals(e.getMessage())) {
+                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+            }
+            finish();
+            return;
+        }
+        if (isInit) {
+            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wipe_device"));
+            executorService.submit(futureTask);
+            startActivity(new Intent(this, ResetDeviceProcessing.class));
+        } else {
+            Toast.makeText(this, R.string.wallet_un_activated, Toast.LENGTH_LONG).show();
+            finish();
+        }
+
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // enable nfc discovery for the app
-            System.out.println("为本App启用NFC感应");
-            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // disable nfc discovery for the app
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-            System.out.println("禁用本App的NFC感应");
-        }
-    }
 
     @Override
     protected void onDestroy() {

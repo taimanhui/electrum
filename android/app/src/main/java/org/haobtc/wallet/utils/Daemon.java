@@ -14,12 +14,20 @@ import java.lang.ref.WeakReference;
 public class Daemon {
     public static PyObject commands = null;
     public static PyObject network = null;
-    public static WeakReference<Daemon> daemonWeakReference;
-    static {
-        commands = Global.guiConsole.callAttr("AndroidCommands");
-        commands.callAttr("start");
-    }
+    private static Daemon daemon;
 
+    private Daemon() {
+    }
+    public static Daemon getInstance() {
+        if (daemon == null) {
+            synchronized (Daemon.class) {
+                if (daemon  == null) {
+                    daemon = new Daemon();
+                }
+            }
+        }
+        return daemon;
+    }
     public void onCallback(String event, String msg) {
         Log.i("onCallback", "=================="+event +"   ============================    "+ msg);
         if (event.equals("update_status")){

@@ -45,7 +45,6 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.ResetDeviceSuccessActivity;
 import org.haobtc.wallet.activities.ActivatedProcessing;
 import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.ResetDeviceProcessing;
@@ -59,7 +58,6 @@ import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassA
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
-import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
@@ -356,17 +354,49 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         this.extras = extra;
     }
     private void dealWithChangePin() {
+        HardwareFeatures features;
+        try {
+            features = getFeatures();
+        } catch (Exception e) {
+            if ("bootloader mode".equals(e.getMessage())) {
+                Toast.makeText(getContext(), R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+                dismiss();
+            }
+            return;
+        }
+        if (features.isInitialized()) {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("reset_pin", "bluetooth"));
             executorService.submit(futureTask);
+        } else {
+            Toast.makeText(getActivity(), R.string.wallet_un_activated_pin, Toast.LENGTH_LONG).show();
+            dismiss();
+        }
+
 
     }
+
     private void dealWithWipeDevice() {
-        futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wipe_device", "bluetooth"));
-        executorService.submit(futureTask);
-        Intent intent = new Intent(getActivity(), ResetDeviceProcessing.class);
-        Objects.requireNonNull(getActivity()).startActivity(intent);
-
+        HardwareFeatures features;
+        try {
+            features = getFeatures();
+        } catch (Exception e) {
+            if ("bootloader mode".equals(e.getMessage())) {
+                Toast.makeText(getContext(), R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+                dismiss();
+            }
+            return;
+        }
+        if (features.isInitialized()) {
+            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wipe_device", "bluetooth"));
+            executorService.submit(futureTask);
+            Intent intent = new Intent(getActivity(), ResetDeviceProcessing.class);
+            Objects.requireNonNull(getActivity()).startActivity(intent);
+        } else {
+            Toast.makeText(getActivity(), R.string.wallet_un_activated, Toast.LENGTH_LONG).show();
+            dismiss();
+        }
     }
+
     private void dealWithBusiness() {
         HardwareFeatures features;
         try {
@@ -386,7 +416,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
                 dialogFragment = showReadingDialog();
                 Log.i(TAG, "java ==== get_xpub_from_hw");
-                if (SingleSigWalletCreator.TAG.equals(tag)||HideWalletActivity.TAG.equals(tag)) {
+                if (SingleSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag)) {
+                    if (HideWalletActivity.TAG.equals(tag)) {
+                        customerUI.callAttr("set_pass_state", 1);
+                    }
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth", new Kwarg("_type", "p2wpkh")));
                 } else {
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
@@ -407,7 +440,6 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     }
                 }
             } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
-                Log.i(TAG, "java ==== sign_tx");
                 if ( SignActivity.TAG1.equals(tag)){
                     //TODO: password
                     futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_message", strinputAddress, extras,pin));

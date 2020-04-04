@@ -12,13 +12,12 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import org.haobtc.wallet.utils.MyDialog;
+import org.haobtc.wallet.R;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -32,15 +31,15 @@ import java.util.regex.Pattern;
 
 public abstract class BaseActivity extends AppCompatActivity {
     private String strUTF8;
-    private Bitmap bitmap;
     private String filed1utf;
-    private String nowTime;
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutId());
+        if (getLayoutId() != R.layout.activity_lunch) {
+            setContentView(getLayoutId());
+        }
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); //Disable horizontal screen
         mBinitState();
         initView();
@@ -116,8 +115,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public String mGetNowDatetime() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date curDate = new Date(System.currentTimeMillis());
-        nowTime = formatter.format(curDate);
-        return nowTime;
+        return formatter.format(curDate);
     }
 
     //judge mobile is wrong or right
@@ -180,8 +178,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         options.inJustDecodeBounds = true;
         options.inSampleSize = 2;
         options.inJustDecodeBounds = false;
-        bitmap = BitmapFactory.decodeFile(imgPath, options);
-        return bitmap;
+        return BitmapFactory.decodeFile(imgPath, options);
 
     }
 
@@ -189,12 +186,10 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Set transparent immersion bar
      */
     public void mInitState() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //transparent immersion bar
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //Transparent navigation bar will cause virtual buttons to disappear (for example, Huawei)
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
+        //transparent immersion bar
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //Transparent navigation bar will cause virtual buttons to disappear (for example, Huawei)
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
 
     /**
@@ -202,12 +197,10 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public void mWhiteinitState() {
 //        LinearLayout top_manger=findViewById(R.id.top_manger);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            //透明状态栏
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //透明状态栏
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 //            //透明导航栏
 
-        }
     }
 
     /**
@@ -218,11 +211,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
         //other one write
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            getWindow().setStatusBarColor(Color.WHITE);
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().setStatusBarColor(Color.WHITE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
     }
 
@@ -233,8 +224,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         // Want to convert to the currency format of the specified country 
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.CHINA);
         // Return the string type of the converted currency 
-        String numString = format.format(numDouble);
-        return numString;
+        return format.format(numDouble);
     }
 
 }

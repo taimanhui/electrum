@@ -177,21 +177,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             progressUpgrade.setIndeterminate(true);
         }
         registerReceiver(receiver, new IntentFilter(EXECUTE_TASK));
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // enable nfc discovery for the app
-            Log.i("NFC", "为本App启用NFC感应");
-            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // disable nfc discovery for the app
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-            Log.i("NFC", "禁用本App的NFC感应");
-        }
         if (tag == 2) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         }
