@@ -35,10 +35,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -50,6 +50,7 @@ import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
+import org.haobtc.wallet.activities.personalwallet.ChooseHistryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.PersonalMultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
@@ -61,9 +62,12 @@ import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
 import org.haobtc.wallet.fragment.BluetoothFragment;
@@ -98,7 +102,7 @@ import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import static org.haobtc.wallet.activities.sign.SignActivity.strinputAddress;
 
 
-public class CommunicationModeSelector extends DialogFragment implements View.OnClickListener {
+public class CommunicationModeSelector extends DialogFragment implements View.OnClickListener, BusinessAsyncTask.Helper {
 
     // private static final int PIN_New_SECOND = 3;
     public static final String TAG = "BLE";
@@ -107,7 +111,6 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public static final int SHOW_PROCESSING = 7;
     public static final int PIN_CURRENT = 1;
     public static final int PIN_NEW_FIRST = 2;
-    public static final int PASS_CUCCER = 3;
     public static final int PASS_NEW_PASSPHRASS = 6;
     private static final int REQUEST_ENABLE_BT = 1;
     public static final int PASSPHRASS_INPUT = 8;
@@ -133,6 +136,9 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     private boolean isBonded;
     public static volatile boolean isDfu;
     private RxPermissions permissions;
+    private static final String COMMUNICATION_MODE_BLE = "bluetooth";
+    public static final String COMMUNICATION_MODE_NFC = "nfc";
+
 
     private final BleWriteCallback<BleDevice> writeCallBack = new BleWriteCallback<BleDevice>() {
 
@@ -168,6 +174,9 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void run() {
+            if (isNFC) {
+                return;
+            }
             if (BleDeviceRecyclerViewAdapter.device.getBondState() == BluetoothDevice.BOND_BONDED) {
                 if (BleDeviceRecyclerViewAdapter.mBleDevice.isConnected()) {
                     connectCallback.onReady(BleDeviceRecyclerViewAdapter.mBleDevice);
@@ -227,7 +236,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                         if (VersionUpgradeActivity.TAG.equals(tag)) {
                             if ("hardware".equals(extras)) {
                                 Intent intent = new Intent(getActivity(), UpgradeBixinKEYActivity.class);
-                                intent.putExtra("way", "bluetooth");
+                                intent.putExtra("way", COMMUNICATION_MODE_BLE);
                                 intent.putExtra("tag", 1);
                                 startActivity(intent);
                             } else if ("ble".equals(extras)) {
@@ -365,8 +374,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             return;
         }
         if (features.isInitialized()) {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("reset_pin", "bluetooth"));
-            executorService.submit(futureTask);
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.CHANGE_PIN, COMMUNICATION_MODE_BLE);
         } else {
             Toast.makeText(getActivity(), R.string.wallet_un_activated_pin, Toast.LENGTH_LONG).show();
             dismiss();
@@ -387,8 +395,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             return;
         }
         if (features.isInitialized()) {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wipe_device", "bluetooth"));
-            executorService.submit(futureTask);
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, COMMUNICATION_MODE_BLE);
             Intent intent = new Intent(getActivity(), ResetDeviceProcessing.class);
             Objects.requireNonNull(getActivity()).startActivity(intent);
         } else {
@@ -405,78 +412,38 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             if ("bootloader mode".equals(e.getMessage())) {
                 Toast.makeText(getContext(), R.string.bootloader_mode, Toast.LENGTH_LONG).show();
                 dismiss();
-            } else {
-                showReadingFailedDialog(R.string.read_pk_failed);
             }
             return;
         }
         boolean isInit = features.isInitialized();
         if (isInit) {
-            boolean pinCached = features.isPinCached();
             if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
-                dialogFragment = showReadingDialog();
-                Log.i(TAG, "java ==== get_xpub_from_hw");
                 if (SingleSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag)) {
                     if (HideWalletActivity.TAG.equals(tag)) {
                         customerUI.callAttr("set_pass_state", 1);
                     }
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth", new Kwarg("_type", "p2wpkh")));
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, COMMUNICATION_MODE_BLE, "p2wpkh");
                 } else {
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", "bluetooth"));
-                }
-                executorService.submit(futureTask);
-                if (pinCached && !HideWalletActivity.TAG.equals(tag)) {
-                    //get xpub
-                    try {
-                        xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
-                        Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
-                        dialogFragment.dismiss();
-                    } catch (ExecutionException | InterruptedException e) {
-                        dialogFragment.dismiss();
-                        showReadingFailedDialog(R.string.read_pk_failed);
-                    } catch (TimeoutException e) {
-                        e.printStackTrace();
-                        dismiss();
-                    }
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_BLE);
                 }
             } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
-                if ( SignActivity.TAG1.equals(tag)){
-                    //TODO: password
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_message", strinputAddress, extras,pin));
+                if ( SignActivity.TAG1.equals(tag)) {
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras);
                 }else{
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", extras));
-                }
-                executorService.submit(futureTask);
-                if (pinCached) {
-                    Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
-                    dismiss();
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras);
                 }
             } else if (BackupRecoveryActivity.TAG.equals(tag)) {
                 if (TextUtils.isEmpty(extras)) {
                     Log.i(TAG, "java ==== backup");
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("backup_wallet"));
-                    executorService.submit(futureTask);
-                    try {
-                        String privateKey = futureTask.get(20, TimeUnit.SECONDS).toString();
-                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> Toast.makeText(getActivity(), String.format("backup successful: %s", privateKey), Toast.LENGTH_SHORT).show());
-                        dismiss();
-                    } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                        e.printStackTrace();
-                    }
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, COMMUNICATION_MODE_BLE);
                 } else {
-                    Log.i(TAG, "java ==== recovery");
-                    futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wallet_recovery", extras));
-                    executorService.submit(futureTask);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, COMMUNICATION_MODE_BLE, extras);
                 }
-
             }
-
         } else {
             Intent intent = new Intent(getContext(), WalletUnActivatedActivity.class);
             startActivityForResult(intent, REQUEST_ACTIVE);
         }
-
-
     }
 
     private void showConnecting() {
@@ -513,9 +480,9 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     private HardwareFeatures getFeatures() throws Exception {
         String feature;
         try {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", "bluetooth"));
+            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", COMMUNICATION_MODE_BLE));
             executorService.submit(futureTask);
-            feature = futureTask.get(20, TimeUnit.SECONDS).toString();
+            feature = futureTask.get(10, TimeUnit.SECONDS).toString();
             HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
             if (features.isBootloaderMode()) {
                 throw new Exception("bootloader mode");
@@ -529,7 +496,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             }
             return features;
         } catch (ExecutionException | InterruptedException  | TimeoutException e) {
-            Toast.makeText(getContext(), "communication error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "未能获取到设备信息, 请稍后再尝试！！", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             throw e;
         }
@@ -667,13 +634,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
                 if (isActive) {
-                    executorService.execute(() -> {
-                        try {
-                            Daemon.commands.callAttr("init", "bluetooth");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
+                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_BLE);
                 }
             }
         }
@@ -708,6 +669,71 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         super.onDestroy();
         MyHandler.myHandler = null;
         Objects.requireNonNull(getActivity()).unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onPreExecute() {
+        if (isActive) {
+            return;
+        }
+        if(MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
+            // 获取公钥之前需完成的工作
+            dialogFragment = showReadingDialog();
+        } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
+            Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
+        }
+    }
+
+    @Override
+    public void onException(Exception e) {
+        dialogFragment.dismiss();
+        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+            showReadingFailedDialog(R.string.pin_wrong);
+        } else {
+            showReadingFailedDialog(R.string.read_pk_failed);
+        }
+    }
+
+    @Override
+    public void onResult(String s) {
+        if (dialogFragment != null) {
+            dialogFragment.dismiss();
+        }
+        if (isActive) {
+            EventBus.getDefault().post(new ResultEvent(s));
+            isActive = false;
+            return;
+        }
+        if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
+            // todo: 获取公钥
+            xpub = s;
+            if (ImportHistoryWalletActivity.TAG.equals(tag)) {
+                Intent intent1 = new Intent(getActivity(), ChooseHistryWalletActivity.class);
+                intent1.putExtra("histry_xpub", xpub);
+                startActivity(intent1);
+            } else {
+                Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
+            }
+        } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
+            EventBus.getDefault().post(new SignResultEvent(s));
+            // 获取签名后的动作
+        } else if (BackupRecoveryActivity.TAG.equals(tag)) {
+            if (TextUtils.isEmpty(extras)) {
+                // TODO: 获取加密后的私钥
+            } else {
+                // todo: 恢复结果
+            }
+        } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag)) {
+            EventBus.getDefault().post(new ResultEvent(s));
+        }
+    }
+
+    @Override
+    public void onCancelled() {
+        Activity activity = getActivity();
+        if (activity != null) {
+           activity.runOnUiThread(() -> Toast.makeText(getActivity(), "当前任务以取消", Toast.LENGTH_SHORT).show());
+        }
     }
 
     public static class MyHandler extends Handler {

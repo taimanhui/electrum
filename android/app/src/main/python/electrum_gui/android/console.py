@@ -1002,7 +1002,7 @@ class AndroidCommands(commands.Commands):
         self.wallet.use_change = status_change
 
     #####sign message###########
-    def sign_message(self, address, message, password):
+    def sign_message(self, address, message, password=None):
         try:
             self._assert_wallet_isvalid()
             address  = address.strip()
@@ -1070,8 +1070,10 @@ class AndroidCommands(commands.Commands):
             response = client.reset_device()
         except Exception as e:
             raise BaseException(e)
-        CustomerUI.state = 1
-        return response
+        if response == "Device successfully initialized":
+            return 1
+        else:
+            return 0
 
     def reset_pin(self, path='nfc') -> int:
         client = self.get_client(path)

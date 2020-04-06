@@ -15,13 +15,16 @@ import androidx.annotation.Nullable;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
@@ -34,12 +37,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 
-public class HardwareDetailsActivity extends BaseActivity {
+public class HardwareDetailsActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
     public static final String TAG = HardwareDetailsActivity.class.getSimpleName();
     @BindView(R.id.img_back)
@@ -67,6 +71,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     private boolean ready;
     private boolean done;
     private String pin;
+    public static boolean dismiss;
 
     @Override
     public int getLayoutId() {
@@ -84,7 +89,7 @@ public class HardwareDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        NfcUtils.nfc(this, false);
+
     }
 
     @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device})
@@ -164,8 +169,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 return;
             }
             if (isInit) {
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("reset_pin", "bluetooth"));
-                executorService.submit(futureTask);
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.CHANGE_PIN, COMMUNICATION_MODE_NFC);
             } else {
                 Toast.makeText(this, R.string.wallet_un_activated_pin, Toast.LENGTH_LONG).show();
                 finish();
@@ -205,10 +209,30 @@ public class HardwareDetailsActivity extends BaseActivity {
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-        if (dialogFragment != null) {
+    protected void onResume() {
+        super.onResume();
+        if (dialogFragment != null && dismiss) {
             dialogFragment.dismiss();
         }
+    }
+
+    @Override
+    public void onPreExecute() {
+
+    }
+
+    @Override
+    public void onException(Exception e) {
+
+    }
+
+    @Override
+    public void onResult(String s) {
+        EventBus.getDefault().post(new ResultEvent(s));
+    }
+
+    @Override
+    public void onCancelled() {
+
     }
 }

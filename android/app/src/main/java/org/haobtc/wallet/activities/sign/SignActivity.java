@@ -42,6 +42,7 @@ import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
@@ -70,7 +71,7 @@ import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 
-public class SignActivity extends BaseActivity implements TextWatcher, RadioGroup.OnCheckedChangeListener {
+public class SignActivity extends BaseActivity implements TextWatcher, RadioGroup.OnCheckedChangeListener, BusinessAsyncTask.Helper {
 
     public static final String TAG = SignActivity.class.getSimpleName();
     public static final String TAG1 = "SIGN_MESSAGE";
@@ -423,7 +424,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
         if (ready) {
             CommunicationModeSelector.customerUI.put("pin", pin);
-            gotoConfirmOnHardware();
             ready = false;
         }
         HardwareFeatures features;
@@ -438,17 +438,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
             boolean isInit = features.isInitialized();
         if (isInit) {
-            boolean pinCached = features.isPinCached();
             if (signWhich) {
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", strTest));
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, strTest);
             } else {
-                //TODO: password
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_message", strinputAddress, strTest, pin));
-            }
-            executorService.submit(futureTask);
-
-            if (pinCached) {
-                gotoConfirmOnHardware();
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, strTest);
             }
         } else {
             if (isActive) {
@@ -479,18 +472,16 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         if (CommunicationModeSelector.isActive) {
                             CommunicationModeSelector.customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            CommunicationModeSelector.isActive = false;
+
                         } else if (isActive) {
                             // nfc 激活
                             CommunicationModeSelector.pin = pin;
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            isActive = false;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 签名
                         if (!isNFC) { // ble
                             CommunicationModeSelector.customerUI.put("pin", pin);
-                            gotoConfirmOnHardware();
                         } else { // nfc
                             ready = true;
                         }
@@ -531,5 +522,24 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 Toast.makeText(this, getResources().getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    @Override
+    public void onPreExecute() {
+        gotoConfirmOnHardware();
+    }
+
+    @Override
+    public void onException(Exception e) {
+
+    }
+
+    @Override
+    public void onResult(String s) {
+
+    }
+
+    @Override
+    public void onCancelled() {
+
     }
 }

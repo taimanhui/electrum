@@ -53,10 +53,12 @@ import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -78,12 +80,14 @@ import java.util.concurrent.TimeoutException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
-public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
+public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, BusinessAsyncTask.Helper {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -141,7 +145,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     Button btnFinish;
     @BindView(R.id.testseekNum)
     TextView testseekNum;
-    private Dialog dialogBtom;
     public String pin = "";
     public static final String TAG = MultiSigWalletCreator.class.getSimpleName();
     private RxPermissions rxPermissions;
@@ -414,35 +417,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
     }
 
-    private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        dialogBtom = new Dialog(context, R.style.dialog);
-
-        view.findViewById(R.id.text_input_publickey_by_hand).setOnClickListener(v -> {
-            showInputDialogs(MultiSigWalletCreator.this, R.layout.bixinkey_input);
-            dialogBtom.cancel();
-            showInputDialogs(MultiSigWalletCreator.this, R.layout.bixinkey_input);
-
-        });
-
-
-        //cancel dialog
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-
-
-        dialogBtom.setContentView(view);
-        Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
-    }
 
     private void showInputDialogs(Context context, @LayoutRes int resource) {
         //set see view
@@ -755,20 +729,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         }
     }
 
-    private void getResult() {
-        try {
-            ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
-            xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
-            dialog.dismiss();
-            showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
-            } else {
-                dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
-            }
-        }
-    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -793,7 +753,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         }
         if (ready) {
             CommunicationModeSelector.customerUI.put("pin", pin);
-            getResult();
             ready = false;
             return;
         }
@@ -809,22 +768,10 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         }
         boolean isInit = features.isInitialized();
         if (isInit) {
-            boolean pinCached = features.isPinCached();
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
-                executorService.submit(futureTask);
-                if (pinCached) {
-                   getResult();
-                }
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
             } else {
                 if (isActive) {
-                    executorService.execute(
-                            () -> {
-                                try {
-                                    Daemon.commands.callAttr("init");
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            });
+                   new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -845,18 +792,15 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                         if (CommunicationModeSelector.isActive) {
                             CommunicationModeSelector.customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            CommunicationModeSelector.isActive = false;
                         } else if (isActive) {
                             // nfc 激活
                             CommunicationModeSelector.pin = pin;
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            isActive = false;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 创建
                            if (!isNFC) { // ble
                                CommunicationModeSelector.customerUI.put("pin", pin);
-                               new Handler().postDelayed(this::getResult, (long) 0.2);
                            } else { // nfc
                               ready = true;
                            }
@@ -920,47 +864,78 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    String strWalletname = editWalletname.getText().toString();
-                    strInditor1 = tvIndicator.getText().toString();
-                    strInditor2 = tvIndicatorTwo.getText().toString();
-                    try {
-                        Daemon.commands.callAttr("create_multi_wallet", strWalletname);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        myDialog.dismiss();
-                        String message = e.getMessage();
-                        if ("BaseException: file already exists at path".equals(message)) {
-                            mToast(getString(R.string.changewalletname));
-                        }
-                        return;
-                    }
-                    edit.putInt("defaultName", walletNameNum);
-                    edit.apply();
-                    //Generate QR code
-                    mGeneratecode();
+            if (msg.what == 1) {
+                String strWalletname = editWalletname.getText().toString();
+                strInditor1 = tvIndicator.getText().toString();
+                strInditor2 = tvIndicatorTwo.getText().toString();
+                try {
+                    Daemon.commands.callAttr("create_multi_wallet", strWalletname);
+                } catch (Exception e) {
+                    e.printStackTrace();
                     myDialog.dismiss();
-                    cardViewOne.setVisibility(View.GONE);
-                    button.setVisibility(View.GONE);
-                    imgProgree1.setVisibility(View.GONE);
-                    imgProgree2.setVisibility(View.GONE);
-                    imgProgree3.setVisibility(View.VISIBLE);
-                    reclBinxinKey.setVisibility(View.GONE);
-                    bnAddKey.setVisibility(View.GONE);
-                    relTwoNext1.setVisibility(View.GONE);
-                    relFinish.setVisibility(View.VISIBLE);
-                    tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
-                    cardViewThree.setVisibility(View.VISIBLE);
-                    relFinish.setVisibility(View.VISIBLE);
-                    cardThreePublic.setVisibility(View.VISIBLE);
-                    tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
-                    tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getString(R.string.the_only_bixinkey)));
-                    EventBus.getDefault().post(new FirstEvent("11"));
-                    break;
+                    String message = e.getMessage();
+                    if ("BaseException: file already exists at path".equals(message)) {
+                        mToast(getString(R.string.changewalletname));
+                    }
+                    return;
+                }
+                edit.putInt("defaultName", walletNameNum);
+                edit.apply();
+                //Generate QR code
+                mGeneratecode();
+                myDialog.dismiss();
+                cardViewOne.setVisibility(View.GONE);
+                button.setVisibility(View.GONE);
+                imgProgree1.setVisibility(View.GONE);
+                imgProgree2.setVisibility(View.GONE);
+                imgProgree3.setVisibility(View.VISIBLE);
+                reclBinxinKey.setVisibility(View.GONE);
+                bnAddKey.setVisibility(View.GONE);
+                relTwoNext1.setVisibility(View.GONE);
+                relFinish.setVisibility(View.VISIBLE);
+                tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+                cardViewThree.setVisibility(View.VISIBLE);
+                relFinish.setVisibility(View.VISIBLE);
+                cardThreePublic.setVisibility(View.VISIBLE);
+                tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
+                tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getString(R.string.the_only_bixinkey)));
+                EventBus.getDefault().post(new FirstEvent("11"));
             }
         }
     };
+    private ReadingPubKeyDialogFragment readingPubKey;
+    @Override
+    public void onPreExecute() {
+        if (!isActive) {
+            readingPubKey = dialogFragment.showReadingDialog();
+        }
+    }
 
+    @Override
+    public void onException(Exception e) {
+        readingPubKey.dismiss();
+        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+            dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
+        } else {
+            dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
+        }
+    }
+
+    @Override
+    public void onResult(String s) {
+        if (isActive) {
+            EventBus.getDefault().post(new ResultEvent(s));
+            isActive = false;
+            return;
+        }
+        readingPubKey.dismiss();
+        xpub = s;
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+    }
+
+    @Override
+    public void onCancelled() {
+        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
+    }
 }
 

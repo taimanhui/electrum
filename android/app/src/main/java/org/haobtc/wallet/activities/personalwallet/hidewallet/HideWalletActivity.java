@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,7 +28,6 @@ import androidx.annotation.Nullable;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,8 +36,10 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -49,22 +49,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
 
-public class HideWalletActivity extends BaseActivity {
+public class HideWalletActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
     public static final String TAG = HideWalletActivity.class.getSimpleName();
     @BindView(R.id.img_backCreat)
@@ -230,22 +227,6 @@ public class HideWalletActivity extends BaseActivity {
         }
     }
 
-    private void getResult() {
-        try {
-            ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
-            xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
-            dialog.dismiss();
-            showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
-            } else {
-               dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
-
-            }
-        }
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -272,7 +253,6 @@ public class HideWalletActivity extends BaseActivity {
             if (!TextUtils.isEmpty(hideWalletpass)) {
                 customerUI.put("passphrase", hideWalletpass);
                 hideWalletpass = "";
-                getResult();
             }
             ready = false;
             return;
@@ -287,33 +267,25 @@ public class HideWalletActivity extends BaseActivity {
             finish();
             return;
         }
-            boolean isInit = features.isInitialized();
-        boolean passphrase = features.isPassphraseProtection();
-        if (!passphrase) {
-            dialogFragment.dismiss();
-            mlToast("当前硬件状态不支持隐藏钱包");
-            return;
-        }
+        boolean isInit = features.isInitialized();
+
         if (isInit) {
+            boolean passphrase = features.isPassphraseProtection();
+            if (!passphrase) {
+                dialogFragment.dismiss();
+                mlToast("当前硬件状态不支持隐藏钱包");
+                return;
+            }
             // todo: get xpub
             if (!status) {//status -->get_xpub_from_hw Only once
                 customerUI.callAttr("set_pass_state", 1);
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", new Kwarg("_type", "p2wpkh")));
-                executorService.submit(futureTask);
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, COMMUNICATION_MODE_NFC, "p2wpkh");
             }
 
         } else {
             // todo: Initialized
             if (isActive) {
-                executorService.execute(
-                        () -> {
-                            try {
-                                Daemon.commands.callAttr("init");
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                );
+               new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -334,12 +306,11 @@ public class HideWalletActivity extends BaseActivity {
                         if (CommunicationModeSelector.isActive) {
                             customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            CommunicationModeSelector.isActive = false;
+
                         } else if (isActive) {
                             // nfc activation
                             CommunicationModeSelector.pin = pin;
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            isActive = false;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // create
@@ -353,11 +324,6 @@ public class HideWalletActivity extends BaseActivity {
                     default:
                 }
             }
-        } else if (requestCode == 0 && resultCode == RESULT_OK) {
-            if (data != null) {
-                String content = data.getStringExtra(Constant.CODED_CONTENT);
-//                edit_sweep.setText(content);
-            }
         } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) { // nfc and ble activation
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
@@ -368,7 +334,6 @@ public class HideWalletActivity extends BaseActivity {
                 //Enter password to create hidden Wallet
                 if (!isNFC) {
                     customerUI.put("passphrase", hideWalletpass);
-                    new Handler().postDelayed(this::getResult, (long) 0.2);
                 } else {
                     ready = true;
                     status = true;
@@ -390,5 +355,39 @@ public class HideWalletActivity extends BaseActivity {
         if (msgVote.equals("33")) {
             dialogFragment.dismiss();
         }
+    }
+    private ReadingPubKeyDialogFragment readingPubKey;
+    @Override
+    public void onPreExecute() {
+        if(!isActive) {
+            readingPubKey = dialogFragment.showReadingDialog();
+        }
+    }
+
+    @Override
+    public void onException(Exception e) {
+        readingPubKey.dismiss();
+        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+            dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
+        } else {
+            dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
+        }
+    }
+
+    @Override
+    public void onResult(String s) {
+        if (isActive) {
+            EventBus.getDefault().post(new ResultEvent(s));
+            isActive = false;
+            return;
+        }
+        readingPubKey.dismiss();
+        xpub = s;
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+    }
+
+    @Override
+    public void onCancelled() {
+        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
     }
 }

@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,9 +38,8 @@ public class ConfirmPincodeActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                finish();
-                break;
             case R.id.btn_finish:
+                HardwareDetailsActivity.dismiss = true;
                 finish();
                 break;
         }

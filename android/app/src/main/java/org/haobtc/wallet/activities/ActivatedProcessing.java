@@ -10,10 +10,14 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.os.Handler;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
@@ -26,7 +30,7 @@ import cn.com.heaton.blelibrary.ble.Ble;
 public class ActivatedProcessing extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;
-    private TextView  textViewPIN, textViewProcess;
+    private TextView textViewProcess;
 
     public int getLayoutId() {
         return R.layout.activing_process;
@@ -35,37 +39,10 @@ public class ActivatedProcessing extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        textViewPIN = findViewById(R.id.pin_setting_state);
         textViewProcess = findViewById(R.id.activate_state);
-        if (Ble.getInstance().getConnetedDevices().size() != 0) {
-            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().startsWith("BixinKEY")) {
-                new Handler().postDelayed(() -> processingState(false)
-                        , 10);
-            }
-        }
+        EventBus.getDefault().register(this);
+        // 设置沉浸式状态栏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    }
-
-    private void processingState(boolean isNfc) {
-        Drawable drawableStart = getDrawable(R.drawable.chenggong);
-        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        while (isNfc) {
-            if (!TextUtils.isEmpty(CommunicationModeSelector.pin)) {
-                CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
-                break;
-            }
-        }
-
-        textViewPIN.setCompoundDrawables(drawableStart, null, null, null);
-        while (true) {
-            int state = CommunicationModeSelector.customerUI.callAttr("get_state").toInt();
-            if (state == 1) {
-                CommunicationModeSelector.customerUI.put("state", 0);
-                textViewProcess.setCompoundDrawables(drawableStart, null, null, null);
-                new Handler().postDelayed(this::startNewPage, 500);
-                break;
-            }
-        }
     }
 
     @Override
@@ -81,9 +58,6 @@ public class ActivatedProcessing extends BaseActivity {
             // enable nfc discovery for the app
             System.out.println("为本App启用NFC感应");
             NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        } else {
-            // use in udp
-            new Handler().postDelayed(() -> processingState(false), 100);
         }
     }
 
@@ -101,12 +75,7 @@ public class ActivatedProcessing extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         NfcUtils.mNfcAdapter = null;
-    }
-
-    private void startNewPage() {//TODO:
-        Intent intent = new Intent(this, ActivateSuccessActivity.class);
-        startActivity(intent);
-        finish();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -116,23 +85,28 @@ public class ActivatedProcessing extends BaseActivity {
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            processingState(true);
+            CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
         }
     }
-
-
-    @OnClick({R.id.img_back})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
+    @Subscribe
+    public void onEventMainThread(ResultEvent resultEvent) {
+        switch (resultEvent.getResult()) {
+            case "1":
+                Drawable drawableStart = getDrawable(R.drawable.chenggong);
+                Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+                textViewProcess.setCompoundDrawables(drawableStart, null, null, null);
+                startActivity(new Intent(this, ActivateSuccessActivity.class));
                 finish();
                 break;
+            case "0":
+                Toast.makeText(this, "设备激活失败", Toast.LENGTH_LONG).show();
+                finish();
         }
     }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        finish();
+    @OnClick({R.id.img_back})
+    public void onViewClicked(View view) {
+        if (view.getId() == R.id.img_back) {
+            finish();
+        }
     }
 }

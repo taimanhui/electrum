@@ -14,11 +14,14 @@ import android.widget.Toast;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
@@ -31,11 +34,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 
 
-public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
+public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, BusinessAsyncTask.Helper {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -139,8 +143,7 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
             return;
         }
         if (isInit) {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("wipe_device"));
-            executorService.submit(futureTask);
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, COMMUNICATION_MODE_NFC);
             startActivity(new Intent(this, ResetDeviceProcessing.class));
         } else {
             Toast.makeText(this, R.string.wallet_un_activated, Toast.LENGTH_LONG).show();
@@ -159,5 +162,24 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
     protected void onRestart() {
         super.onRestart();
         finish();
+    }
+
+    @Override
+    public void onPreExecute() {
+
+    }
+
+    @Override
+    public void onException(Exception e) {
+    }
+
+    @Override
+    public void onResult(String s) {
+        EventBus.getDefault().post(new ResultEvent(s));
+    }
+
+    @Override
+    public void onCancelled() {
+
     }
 }

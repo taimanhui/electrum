@@ -6,11 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -26,13 +24,15 @@ import androidx.annotation.Nullable;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-import com.yzq.zxinglibrary.common.Constant;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -42,21 +42,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
 
-public class ImportHistoryWalletActivity extends BaseActivity {
+public class ImportHistoryWalletActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
     public static final String TAG = ImportHistoryWalletActivity.class.getSimpleName();
     @BindView(R.id.img_back)
@@ -68,6 +65,7 @@ public class ImportHistoryWalletActivity extends BaseActivity {
     private boolean executable = true;
     public String pin = "";
     private boolean isActive;
+    private boolean active;
     private boolean ready;
     private Dialog dialogBtoms;
     private EditText edit_bixinName;
@@ -188,24 +186,6 @@ public class ImportHistoryWalletActivity extends BaseActivity {
         }
     }
 
-    private void getResult() {
-        try {
-            ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
-            xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
-            dialog.dismiss();
-            Intent intent1 = new Intent(ImportHistoryWalletActivity.this, ChooseHistryWalletActivity.class);
-            intent1.putExtra("histry_xpub", xpub);
-            startActivity(intent1);
-            finish();
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
-            } else {
-                dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
-            }
-        }
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -223,7 +203,6 @@ public class ImportHistoryWalletActivity extends BaseActivity {
             }
             if (ready) {
                 CommunicationModeSelector.customerUI.put("pin", pin);
-                getResult();
                 ready = false;
             }
             HardwareFeatures features;
@@ -238,22 +217,10 @@ public class ImportHistoryWalletActivity extends BaseActivity {
             }
             boolean isInit = features.isInitialized();
             if (isInit) {
-                boolean pinCached = features.isPinCached();
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw"));
-                executorService.submit(futureTask);
-                if (pinCached) {
-                    getResult();
-                }
-
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
             } else {
                 if (isActive) {
-                    executorService.execute(() -> {
-                        try {
-                            Daemon.commands.callAttr("init");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
+                   new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
                 } else {
                     Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                     startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -277,18 +244,16 @@ public class ImportHistoryWalletActivity extends BaseActivity {
                         if (CommunicationModeSelector.isActive) {
                             CommunicationModeSelector.customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            CommunicationModeSelector.isActive = false;
+
                         } else if (isActive) {
                             // nfc 激活
                             CommunicationModeSelector.pin = pin;
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            isActive = false;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 创建
                         if (!isNFC) { // ble
                             CommunicationModeSelector.customerUI.put("pin", pin);
-                            new Handler().postDelayed(this::getResult, (long) 0.2);
                         } else { // nfc
                             ready = true;
                         }
@@ -296,16 +261,48 @@ public class ImportHistoryWalletActivity extends BaseActivity {
                     default:
                 }
             }
-        } else if (requestCode == 0 && resultCode == RESULT_OK) {
-            if (data != null) {
-                String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("CODED_CONTENT", "content=----: " + content);
-            }
-        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
+        }  else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
             }
         }
+    }
+    private ReadingPubKeyDialogFragment readingPubKey;
+    @Override
+    public void onPreExecute() {
+        if (!isActive) {
+            readingPubKey = dialogFragment.showReadingDialog();
+        }
+    }
+
+    @Override
+    public void onException(Exception e) {
+        readingPubKey.dismiss();
+        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+            dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
+        } else {
+            dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
+        }
+    }
+
+    @Override
+    public void onResult(String s) {
+        if (isActive) {
+            EventBus.getDefault().post(new ResultEvent(s));
+            isActive = false;
+            return;
+        }
+        readingPubKey.dismiss();
+        xpub = s;
+        Intent intent1 = new Intent(ImportHistoryWalletActivity.this, ChooseHistryWalletActivity.class);
+        intent1.putExtra("histry_xpub", xpub);
+        startActivity(intent1);
+        finish();
+    }
+
+    @Override
+    public void onCancelled() {
+        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
     }
 
 }

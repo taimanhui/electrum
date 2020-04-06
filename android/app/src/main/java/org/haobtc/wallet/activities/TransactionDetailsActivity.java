@@ -32,12 +32,16 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.AddspeedBean;
 import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SignFailedEvent;
+import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
@@ -47,18 +51,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 
-public class TransactionDetailsActivity extends BaseActivity {
+public class TransactionDetailsActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
     @BindView(R.id.img_progressone)
     ImageView imgProgressone;
@@ -443,7 +446,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             BigDecimal bignum1 = new BigDecimal(strConfirl);
             BigDecimal bigDecimal = new BigDecimal(100);
             int mathMax = bignum1.compareTo(bigDecimal);
-            if (mathMax == 1) {
+            if (mathMax > 0) {
                 tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), ">100"));
             } else {
                 tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), strConfirl));
@@ -595,11 +598,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                 PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rowtx, strPassword);
                 if (sign_tx != null) {
                     Log.i("sign_txkkkkkkk", "sign_tx: " + sign_tx);
-//                    Gson gson = new Gson();
-//                    GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(sign_tx.toString(), GetnewcreatTrsactionListBean.class);
-//                    publicTrsation = trsactionListBean.getTx();
-//                    edit.putString("signedRowtrsation", publicTrsation);
-//                    edit.apply();
                     jsonDetailData(sign_tx.toString());
                     alertDialog.dismiss();
                     EventBus.getDefault().post(new FirstEvent("22"));
@@ -722,7 +720,6 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         if (ready) {
             CommunicationModeSelector.customerUI.put("pin", pin);
-            gotoConfirmOnHardware();
             ready = false;
         }
         HardwareFeatures features;
@@ -737,21 +734,10 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         boolean isInit = features.isInitialized();
         if (isInit) {
-            boolean pinCached = features.isPinCached();
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("sign_tx", rowtx));
-            executorService.submit(futureTask);
-            if (pinCached) {
-                gotoConfirmOnHardware();
-            }
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, rowtx);
         } else {
             if (isActive) {
-                executorService.execute(() -> {
-                    try {
-                        Daemon.commands.callAttr("init");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+               new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -772,18 +758,16 @@ public class TransactionDetailsActivity extends BaseActivity {
                         if (CommunicationModeSelector.isActive) {
                             CommunicationModeSelector.customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            CommunicationModeSelector.isActive = false;
+
                         } else if (isActive) {
                             // nfc 激活
                             CommunicationModeSelector.pin = pin;
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            isActive = false;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 签名
                         if (!isNFC) { // ble
                             CommunicationModeSelector.customerUI.put("pin", pin);
-                            gotoConfirmOnHardware();
                         } else { // nfc
                             ready = true;
                         }
@@ -806,5 +790,31 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onPreExecute() {
+        if (!isActive) {
+            gotoConfirmOnHardware();
+        }
+    }
+
+    @Override
+    public void onException(Exception e) {
+        EventBus.getDefault().post(new SignFailedEvent(e));
+    }
+
+    @Override
+    public void onResult(String s) {
+        if (isActive) {
+            EventBus.getDefault().post(new ResultEvent(s));
+            isActive = false;
+            return;
+        }
+        EventBus.getDefault().post(new SignResultEvent(s));
+    }
+
+    @Override
+    public void onCancelled() {
+
+    }
 }
 

@@ -15,8 +15,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
@@ -48,40 +51,24 @@ public class ChangePinProcessingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         NfcUtils.nfc(this, false);
-        if (Ble.getInstance().getConnetedDevices().size() != 0) {
-            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().startsWith("BixinKEY")){
-                new Handler().postDelayed(() -> processingState(false)
-                        , 10);
-            }
-        }
+        EventBus.getDefault().register(this);
     }
-
-
-    private void processingState(boolean isNfc) {
-        Drawable drawableStart = getDrawable(R.drawable.chenggong);
-        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        while (isNfc) {
-            if (!TextUtils.isEmpty(CommunicationModeSelector.pin)) {
-                CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
+    @Subscribe
+    public void onEventMainThread(ResultEvent resultEvent) {
+        switch (resultEvent.getResult()) {
+            case "1":
+                Drawable drawableStart = getDrawable(R.drawable.chenggong);
+                Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+                pinSettingState.setCompoundDrawables(drawableStart, null, null, null);
+                startActivity(new Intent(this, ConfirmPincodeActivity.class));
+                finish();
                 break;
-            }
-        }
-        try {
-            int result = futureTask.get(60, TimeUnit.SECONDS).toInt();
-            if (result == 1) {
-               pinSettingState.setCompoundDrawables(drawableStart, null, null, null);
-               new Handler().postDelayed(() -> startActivity(new Intent(this, ConfirmPincodeActivity.class)), 2);
-            } else {
+            case "0":
                 Toast.makeText(this, "PIN码重置失败", Toast.LENGTH_LONG).show();
                 finish();
-            }
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            Toast.makeText(this, "PIN码重置失败", Toast.LENGTH_LONG).show();
-            Log.e(TAG, "PIN码重置失败" + e.getMessage());
-            finish();
         }
-    }
 
+    }
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -89,7 +76,7 @@ public class ChangePinProcessingActivity extends AppCompatActivity {
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            processingState(true);
+            CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
         }
     }
     @OnClick(R.id.img_back)
@@ -123,11 +110,6 @@ public class ChangePinProcessingActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         NfcUtils.mNfcAdapter = null;
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        finish();
+        EventBus.getDefault().unregister(this);
     }
 }

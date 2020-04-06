@@ -11,8 +11,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.event.CancelEvent;
+import org.haobtc.wallet.utils.Global;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +59,8 @@ public class HideWalletSetPassActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
+                // EventBus.getDefault().post(new CancelEvent());
+                Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
                 finish();
                 break;
             case R.id.bn_next:

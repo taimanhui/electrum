@@ -40,8 +40,10 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -61,13 +63,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
 
-public class SingleSigWalletCreator extends BaseActivity {
+public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyncTask.Helper {
 
 
     @BindView(R.id.img_backCreat)
@@ -325,7 +328,6 @@ public class SingleSigWalletCreator extends BaseActivity {
             }
             if (ready) {
                 CommunicationModeSelector.customerUI.put("pin", pin);
-                getResult();
                 ready = false;
                 return;
             }
@@ -341,13 +343,7 @@ public class SingleSigWalletCreator extends BaseActivity {
             }
             boolean isInit = features.isInitialized();
             if (isInit) {
-                boolean pinCached = features.isPinCached();
-                futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_xpub_from_hw", new Kwarg("_type", "p2wpkh")));
-                executorService.submit(futureTask);
-                if (pinCached) {
-                   getResult();
-                }
-
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, COMMUNICATION_MODE_NFC, "p2wpkh");
             } else {
                 if (isActive) {
                     executorService.execute(() -> {
@@ -365,20 +361,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         }
 
     }
-    private void getResult() {
-        try {
-            ReadingPubKeyDialogFragment dialog = dialogFragment.showReadingDialog();
-            xpub = futureTask.get(40, TimeUnit.SECONDS).toString();
-            dialog.dismiss();
-            showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
-            } else {
-                dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
-            }
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -393,18 +375,16 @@ public class SingleSigWalletCreator extends BaseActivity {
                         if (CommunicationModeSelector.isActive) {
                             CommunicationModeSelector.customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            CommunicationModeSelector.isActive = false;
+
                         } else if (isActive) {
                             // nfc 激活
                             CommunicationModeSelector.pin = pin;
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                            isActive = false;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 创建
                         if (!isNFC) { // ble
                             CommunicationModeSelector.customerUI.put("pin", pin);
-                            new Handler().postDelayed(this::getResult, (long) 0.2);
                         } else { // nfc
                             ready = true;
                         }
@@ -476,7 +456,43 @@ public class SingleSigWalletCreator extends BaseActivity {
                     dialogFragment.dismiss();
                     break;
             }
+
         }
     };
+
+    private ReadingPubKeyDialogFragment readingPubKey;
+    @Override
+    public void onPreExecute() {
+        if (!isActive) {
+            readingPubKey = dialogFragment.showReadingDialog();
+        }
+    }
+
+    @Override
+    public void onException(Exception e) {
+        readingPubKey.dismiss();
+        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+            dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
+        } else {
+            dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
+        }
+    }
+
+    @Override
+    public void onResult(String s) {
+        if (isActive) {
+            EventBus.getDefault().post(new ResultEvent(s));
+            isActive = false;
+            return;
+        }
+        readingPubKey.dismiss();
+        xpub = s;
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+    }
+
+    @Override
+    public void onCancelled() {
+        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
+    }
 
 }
