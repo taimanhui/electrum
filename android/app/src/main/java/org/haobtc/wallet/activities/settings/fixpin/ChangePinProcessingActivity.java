@@ -76,7 +76,10 @@ public class ChangePinProcessingActivity extends AppCompatActivity {
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
+            if (!TextUtils.isEmpty(CommunicationModeSelector.pin)) {
+                CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
+                CommunicationModeSelector.pin = "";
+            }
         }
     }
     @OnClick(R.id.img_back)

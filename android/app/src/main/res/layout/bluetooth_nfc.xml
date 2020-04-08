@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/ln"
                 android:layout_marginTop="@dimen/dp_30"
-                android:visibility="visible"/>
+                android:visibility="gone"/>
             <RelativeLayout
                 android:id="@+id/input_layout"
                 android:layout_width="match_parent"

@@ -3,12 +3,10 @@ package org.haobtc.wallet.activities;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.os.Handler;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +23,6 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.com.heaton.blelibrary.ble.Ble;
 
 public class ActivatedProcessing extends BaseActivity {
     @BindView(R.id.img_back)
@@ -85,7 +82,10 @@ public class ActivatedProcessing extends BaseActivity {
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
+            if (!TextUtils.isEmpty(CommunicationModeSelector.pin)) {
+                CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
+                CommunicationModeSelector.pin = "";
+            }
         }
     }
     @Subscribe

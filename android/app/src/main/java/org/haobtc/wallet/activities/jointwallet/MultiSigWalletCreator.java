@@ -802,6 +802,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                            if (!isNFC) { // ble
                                CommunicationModeSelector.customerUI.put("pin", pin);
                            } else { // nfc
+                               if (readingPubKey != null) {
+                                   readingPubKey.dismiss();
+                               }
                               ready = true;
                            }
                            break;
@@ -928,8 +931,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
             isActive = false;
             return;
         }
-        readingPubKey.dismiss();
-        xpub = s;
+        if (readingPubKey != null) {
+            readingPubKey.dismiss();
+        }        xpub = s;
         showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
     }
 

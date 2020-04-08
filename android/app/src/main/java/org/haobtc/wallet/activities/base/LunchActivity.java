@@ -92,7 +92,10 @@ public class LunchActivity extends BaseActivity {
             }
             Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
             Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
-            Daemon.commands = Global.guiConsole.callAttr("AndroidCommands");
+            try {
+                Daemon.commands = Global.guiConsole.callAttr("AndroidCommands");
+            } catch (Exception ignored) {
+            }
             Daemon.commands.callAttr("start");
             Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());
             init();

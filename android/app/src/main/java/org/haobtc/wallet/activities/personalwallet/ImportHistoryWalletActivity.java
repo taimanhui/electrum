@@ -255,6 +255,9 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
                         if (!isNFC) { // ble
                             CommunicationModeSelector.customerUI.put("pin", pin);
                         } else { // nfc
+                            if (readingPubKey != null) {
+                                readingPubKey.dismiss();
+                            }
                             ready = true;
                         }
                         break;
@@ -292,8 +295,9 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
             isActive = false;
             return;
         }
-        readingPubKey.dismiss();
-        xpub = s;
+        if (readingPubKey != null) {
+            readingPubKey.dismiss();
+        }        xpub = s;
         Intent intent1 = new Intent(ImportHistoryWalletActivity.this, ChooseHistryWalletActivity.class);
         intent1.putExtra("histry_xpub", xpub);
         startActivity(intent1);

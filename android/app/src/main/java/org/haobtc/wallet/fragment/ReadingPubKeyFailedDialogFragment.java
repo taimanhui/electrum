@@ -19,6 +19,7 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 
 import java.util.Objects;
 
@@ -44,7 +45,9 @@ public class ReadingPubKeyFailedDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_reading_exception, container, false);
         view.findViewById(R.id.cancel_sign_fail).setOnClickListener((v) -> dismiss());
         view.findViewById(R.id.retry).setOnClickListener((v) -> {
-            activity.runOnUiThread(runnable);
+            if (!CommunicationModeSelector.isNFC) {
+                activity.runOnUiThread(runnable);
+            }
             dismiss();
         });
         TextView errorMessage = view.findViewById(R.id.error_message);

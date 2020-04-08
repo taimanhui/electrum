@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -55,10 +56,10 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     public static final String EXECUTE_TASK = "org.haobtc.wallet.activities.settings.EXECUTE_TASK";
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
 
-    private boolean isBootloaderMode() throws Exception {
+    private boolean isBootloaderMode(String way) throws Exception {
         String feature;
         try {
-            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature", "bluetooth")).get().toString();
+            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature", way)).get().toString();
             HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
             return features.isBootloaderMode();
 
@@ -83,7 +84,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             progress.put("PROCESS_REPORTER", this);
             if (tag == 1) { // 固件
                 try {
-                    boolean ready = isBootloaderMode();
+                    boolean ready = isBootloaderMode(params[0]);
                     if (ready) {
                         Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/trezor.bin", params[0]);
                     } else {

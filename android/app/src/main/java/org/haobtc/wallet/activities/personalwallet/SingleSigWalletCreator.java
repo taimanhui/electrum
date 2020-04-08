@@ -346,13 +346,7 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, COMMUNICATION_MODE_NFC, "p2wpkh");
             } else {
                 if (isActive) {
-                    executorService.execute(() -> {
-                        try {
-                            Daemon.commands.callAttr("init");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
+                   new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
                 } else {
                     Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                     startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -386,6 +380,9 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
                         if (!isNFC) { // ble
                             CommunicationModeSelector.customerUI.put("pin", pin);
                         } else { // nfc
+                            if (readingPubKey != null) {
+                                readingPubKey.dismiss();
+                            }
                             ready = true;
                         }
                         break;
@@ -485,7 +482,9 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
             isActive = false;
             return;
         }
-        readingPubKey.dismiss();
+        if (readingPubKey != null) {
+            readingPubKey.dismiss();
+        }
         xpub = s;
         showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
     }

@@ -317,6 +317,9 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
                         if (!isNFC) { // ble
                             customerUI.put("pin", pin);
                         } else { // nfc
+                            if (readingPubKey != null) {
+                                readingPubKey.dismiss();
+                            }
                             ready = true;
                             status = true;
                         }
@@ -381,8 +384,9 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
             isActive = false;
             return;
         }
-        readingPubKey.dismiss();
-        xpub = s;
+        if (readingPubKey != null) {
+            readingPubKey.dismiss();
+        }        xpub = s;
         showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
     }
 
