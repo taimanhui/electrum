@@ -19,10 +19,13 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chaquo.python.PyObject;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.bean.AddressEvent;
+import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
 
@@ -140,15 +143,29 @@ public class MnemonicWordActivity extends BaseActivity {
                     return;
                 }
                 String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
-
-                Intent intent = new Intent(MnemonicWordActivity.this, CreateHelpWordWalletActivity.class);
-                intent.putExtra("newWallet_type", newWallet_type);
-                intent.putExtra("strNewseed",strNewseed);
-                startActivity(intent);
-
-
+                judgeSeedorrectC(strNewseed);
                 break;
 
+        }
+    }
+
+    private void judgeSeedorrectC(String newSeed) {
+        PyObject is_seed = null;
+        try {
+            is_seed = Daemon.commands.callAttr("is_seed", newSeed);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (is_seed!=null){
+            boolean isSeed = is_seed.toBoolean();
+            if (isSeed){
+                Intent intent = new Intent(MnemonicWordActivity.this, CreateHelpWordWalletActivity.class);
+                intent.putExtra("newWallet_type", newWallet_type);
+                intent.putExtra("strNewseed",newSeed);
+                startActivity(intent);
+            }else{
+                mToast(getString(R.string.helpword_wrong));
+            }
         }
     }
 

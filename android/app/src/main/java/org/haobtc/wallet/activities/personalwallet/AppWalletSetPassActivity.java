@@ -40,7 +40,6 @@ public class AppWalletSetPassActivity extends BaseActivity {
     EditText edtPass2;
     private String strName;
     private SharedPreferences.Editor edit;
-    private String strSeed;
     private String strpyObject;
     private MyDialog myDialog;
     private int defaultName;
@@ -52,12 +51,12 @@ public class AppWalletSetPassActivity extends BaseActivity {
         return R.layout.activity_app_wallet_set_pass;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
-        strSeed = preferences.getString("strSeed", "");
         defaultName = preferences.getInt("defaultName", 0);
         Intent intent = getIntent();
         strName = intent.getStringExtra("strName");
@@ -96,12 +95,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     myDialog.dismiss();
                     return;
                 }
-                if (!TextUtils.isEmpty(strSeed)) {
-                    handler.sendEmptyMessage(1);
-
-                } else {
-                    handler.sendEmptyMessage(2);
-                }
+                handler.sendEmptyMessage(1);
                 int walletNameNum = defaultName + 1;
                 edit.putInt("defaultName", walletNameNum);
                 edit.apply();
@@ -111,35 +105,12 @@ public class AppWalletSetPassActivity extends BaseActivity {
     }
 
     @SuppressLint("HandlerLeak")
-    Handler handler = new Handler(){
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case 1:
-                    try {
-                        Daemon.commands.callAttr("create", strName, strPass1, new Kwarg("seed", strSeed));
-                        Daemon.commands.callAttr("load_wallet", strName);
-                        Daemon.commands.callAttr("select_wallet", strName);
-                    } catch (Exception e) {
-                        myDialog.dismiss();
-                        e.printStackTrace();
-                        if (e.getMessage().contains("path is exist")) {
-                            mToast(getString(R.string.changewalletname));
-                        }
-                        return;
-                        //local taste noodle trial level soda mobile orchard amazing bean gossip library
-                    }
-                    edit.putBoolean("haveCreateNopass",true);
-                    edit.apply();
-                    myDialog.dismiss();
-                    Intent intent = new Intent(AppWalletSetPassActivity.this, MnemonicActivity.class);
-                    intent.putExtra("strSeed", strSeed);
-                    intent.putExtra("strName", strName);
-                    intent.putExtra("strPass1", strPass1);
-                    startActivity(intent);
-                    break;
-                case 2:
                     PyObject pyObject = null;
                     try {
                         pyObject = Daemon.commands.callAttr("create", strName, strPass1);
@@ -155,8 +126,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     }
                     strpyObject = pyObject.toString();
                     if (!TextUtils.isEmpty(strpyObject)) {
-                        edit.putString("strSeed", strpyObject);
-                        edit.putBoolean("haveCreateNopass",true);
+                        edit.putBoolean("haveCreateNopass", true);
                         edit.apply();
                         myDialog.dismiss();
                         Intent intent1 = new Intent(AppWalletSetPassActivity.this, MnemonicActivity.class);

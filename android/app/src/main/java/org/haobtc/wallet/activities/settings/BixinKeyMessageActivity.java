@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.settings;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -14,20 +15,12 @@ import butterknife.OnClick;
 
 public class BixinKeyMessageActivity extends BaseActivity {
 
-    @BindView(R.id.img_back)
-    ImageView imgBack;
     @BindView(R.id.tet_keyName)
     TextView tetKeyName;
-    @BindView(R.id.lin_OnckOne)
-    LinearLayout linOnckOne;
     @BindView(R.id.tet_code)
     TextView tetCode;
-    @BindView(R.id.lin_OnckTwo)
-    LinearLayout linOnckTwo;
     @BindView(R.id.tet_Bluetoose)
     TextView tetBluetoose;
-    @BindView(R.id.lin_OnckThree)
-    LinearLayout linOnckThree;
 
     @Override
     public int getLayoutId() {
@@ -37,6 +30,12 @@ public class BixinKeyMessageActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        String bleName = intent.getStringExtra("bleName");
+        String device_id = intent.getStringExtra("device_id");
+        tetKeyName.setText(bleName);
+        tetCode.setText(device_id);
+        tetBluetoose.setText(bleName);
     }
 
     @Override
@@ -44,18 +43,10 @@ public class BixinKeyMessageActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.lin_OnckThree})
+    @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
-            case R.id.lin_OnckOne:
-                break;
-            case R.id.lin_OnckTwo:
-                break;
-            case R.id.lin_OnckThree:
-                break;
+        if (view.getId() == R.id.img_back) {
+            finish();
         }
     }
 }

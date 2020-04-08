@@ -498,4 +498,6 @@
     <string name="check_wallet_tips">查看隐藏钱包，需使用已激活的BixinKEY</string>
     <string name="onclick_check">点击查看</string>
     <string name="useable">可用</string>
+    <string name="checkHideWallet">查看隐藏钱包</string>
+
 </resources>

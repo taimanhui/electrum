@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -147,6 +148,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     public void onEventMainThread(SignFailedEvent failedEvent) {
         showPopupSignFailed();
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

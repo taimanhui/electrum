@@ -77,6 +77,7 @@ public class LunchActivity extends BaseActivity {
 
     private void initCreatWallet() {
         Intent intent = new Intent(LunchActivity.this, CreateWalletActivity.class);
+        intent.putExtra("intentWhere","lunch");
         startActivity(intent);
         finish();
 

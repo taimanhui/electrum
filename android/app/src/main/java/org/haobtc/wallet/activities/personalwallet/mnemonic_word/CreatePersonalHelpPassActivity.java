@@ -1,6 +1,10 @@
 package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -8,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
 
 import com.chaquo.python.Kwarg;
 
@@ -34,20 +40,26 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
     private String type;
     private String seed;
     private String name;
+    private int walletNameNum;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_create_personal_help_pass;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
         myDialog = MyDialog.showDialog(CreatePersonalHelpPassActivity.this);
         Intent intent = getIntent();
         type = intent.getStringExtra("newWallet_type");
         seed = intent.getStringExtra("strNewseed");
         name = intent.getStringExtra("strnewWalletname");
+        walletNameNum = intent.getIntExtra("walletNameNum", 0);
         inits();
 
     }
@@ -64,7 +76,7 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 if (!TextUtils.isEmpty(s) && !TextUtils.isEmpty(edtPass2.getText().toString())) {
                     btnSetPin.setEnabled(true);
                     btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
-                }else{
+                } else {
                     btnSetPin.setEnabled(false);
                     btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
                 }
@@ -86,7 +98,7 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 if (!TextUtils.isEmpty(s) && !TextUtils.isEmpty(edtPass1.getText().toString())) {
                     btnSetPin.setEnabled(true);
                     btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
-                }else{
+                } else {
                     btnSetPin.setEnabled(false);
                     btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
                 }
@@ -112,10 +124,23 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 break;
             case R.id.btn_setPin:
                 myDialog.show();
-                improtWallet();
+                handler.sendEmptyMessage(1);
                 break;
         }
     }
+
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 1:
+                    improtWallet();
+                    break;
+            }
+        }
+    };
 
     private void improtWallet() {
         String strPass1 = edtPass1.getText().toString();
@@ -137,7 +162,6 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         }
         try {
             Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed));
-
         } catch (Exception e) {
             myDialog.dismiss();
             e.printStackTrace();
@@ -146,15 +170,20 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
             }
             return;
         }
+        edit.putInt("defaultName", walletNameNum);
+        edit.apply();
         try {
             Daemon.commands.callAttr("load_wallet", name);
             Daemon.commands.callAttr("select_wallet", name);
         } catch (Exception e) {
+            myDialog.dismiss();
             e.printStackTrace();
             return;
         }
+        myDialog.dismiss();
         mIntent(CreateInputHelpWordWalletSuccseActivity.class);
     }
+
 }
 
 

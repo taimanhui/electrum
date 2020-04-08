@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -32,6 +33,8 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
     Button bnMultiNext;
     private String newWallet_type;
     private String strNewseed;
+    private int defaultName;
+    private int walletNameNum;
 
     @Override
     public int getLayoutId() {
@@ -41,6 +44,8 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        defaultName = preferences.getInt("defaultName", 0);//default wallet name
         Intent intent = getIntent();
         newWallet_type = intent.getStringExtra("newWallet_type");
         strNewseed = intent.getStringExtra("strNewseed");
@@ -53,6 +58,8 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
     }
 
     private void setEditTextComments() {
+        walletNameNum = defaultName + 1;
+        editWalletNameSetting.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
         editWalletNameSetting.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -97,6 +104,7 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
                 Intent intent = new Intent(CreateHelpWordWalletActivity.this, CreatePersonalHelpPassActivity.class);
                 intent.putExtra("newWallet_type", newWallet_type);
                 intent.putExtra("strNewseed",strNewseed);
+                intent.putExtra("walletNameNum",walletNameNum);
                 intent.putExtra("strnewWalletname",strWalletname);
                 startActivity(intent);
                 break;

@@ -2,13 +2,14 @@ package org.haobtc.wallet.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ScanCheckDetailBean {
+public class ScanCheckDetailBean implements Serializable {
 
     /**
      * type : 2
-     * data : {"txid":"090f7f6e09b73580af01b54e71ec4a6ad550cd2cac294c572be8b9fe74bb952b","can_broadcast":false,"amount":"0 mBTC","fee":"0.01 mBTC","description":"","tx_status":"Unsigned","sign_status":[0,2],"output_addr":[{"addr":"bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r","amount":"0.01 mBTC"},{"addr":"bcrt1qng4x9xgz4ffxhgp38jh5adp7ssu6jd7jkplq5zh3wdw66mzadr7sfprk96","amount":"9.98 mBTC"}],"cosigner":["Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg","Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"],"tx":"70736274ff010089020000000120f4dd69233e0659b0fb786ad9f1b73c78da5feb89262cf633cc9c2352ad5c770100000000fdffffff02e8030000000000002200209f2f1060a8d7ddf0019b4fae87d022ff257e74b9db40d592a29ca0b1d0e7d07a703a0f00000000002200209a2a629902aa526ba0313caf4eb43e8439a937d2b07e0a0af1735dad6c5d68fd544c19000001012b40420f0000000000220020a9ec03eaa11691158d4214abc47137256639e39d115ca65714f4f4aec303eeee010547522102a4b60ee8a4d8c2eff95b8ddc0ba3f0025d3092e744448b13a34dfd191bbaaf0fb7a78d194e3fdbcfcae49bd7f5ca87d90cbc21edd1010000000200000000"}
+     * data : {"txid":"c1ef796131b8c3b788f5866cbc6fe1a3d32f53afb6537ad8a3ea6a0568dbf022","can_broadcast":false,"amount":"unknown mBTC (No data CNY)","fee":"0.499 mBTC (24.51 CNY)","description":"","tx_status":"Unsigned","sign_status":[0,1],"output_addr":[{"addr":"bcrt1qdrmh0nlkkw9hvdztaglqd8tp54fk5f3zv4nnqm","amount":"2 mBTC (98.25 CNY)"},{"addr":"bcrt1qxvf50hdmx34qp74qrkutm6ux04g5yjl84ypknt","amount":"4.501 mBTC (221.11 CNY)"}],"input_addr":[{"addr":"bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p"},{"addr":"bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p"},{"addr":"bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p"}],"cosigner":["vpub5UMJom5zg1vX1C1fgWVwYViUkdbcrzKNB33UEMNAJZw5Kk57He2N8JRkHn2m9wsiLA45axMgXq8d82AA4t4c3jiWanafD4DbrcMvLPRFn2E"],"tx":"70736274ff0100c3020000000398a1c1eb8096df63472022b45c80509509bea8374d405fa36e1ae0be9cc65c110000000000fdffffff67af07075480580039a35cbd88395829b17179609c6656704bc80ae2fad0b0a00000000000fdffffffef99143e7cba589ca6e42b7cc9b39c342066b00d7e683910648e33f654be26cd0100000000fdffffff02400d03000000000016001468f777cff6b38b76344bea3e069d61a5536a262234de060000000000160014331347ddbb346a00faa01db8bdeb867d51424be7d93600000001011fa0860100000000001600140522cb3b223339cc905b4367893c3e383b7446942206037f4e0eaf45aa391cd57b44cc48db5a26e0db66402a15a75c8ab2eb793a8823c40c20ef87f100000000000000000001011f20a10700000000001600140522cb3b223339cc905b4367893c3e383b7446942206037f4e0eaf45aa391cd57b44cc48db5a26e0db66402a15a75c8ab2eb793a8823c40c20ef87f100000000000000000001011fa0860100000000001600140522cb3b223339cc905b4367893c3e383b7446942206037f4e0eaf45aa391cd57b44cc48db5a26e0db66402a15a75c8ab2eb793a8823c40c20ef87f1000000000000000000220203088d555e00cea703149436f8add1f9c67f6af7299a57cc9ab3adb7b497f76cc50c20ef87f1000000000200000000220202ef80d2fcee593aae704dfd10ae237bf43e0251933a933b4e00b2fdb070b55c310c20ef87f1010000000d00000000"}
      */
 
     @SerializedName("type")
@@ -34,16 +35,17 @@ public class ScanCheckDetailBean {
 
     public static class DataBean {
         /**
-         * txid : 090f7f6e09b73580af01b54e71ec4a6ad550cd2cac294c572be8b9fe74bb952b
+         * txid : c1ef796131b8c3b788f5866cbc6fe1a3d32f53afb6537ad8a3ea6a0568dbf022
          * can_broadcast : false
-         * amount : 0 mBTC
-         * fee : 0.01 mBTC
+         * amount : unknown mBTC (No data CNY)
+         * fee : 0.499 mBTC (24.51 CNY)
          * description :
          * tx_status : Unsigned
-         * sign_status : [0,2]
-         * output_addr : [{"addr":"bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r","amount":"0.01 mBTC"},{"addr":"bcrt1qng4x9xgz4ffxhgp38jh5adp7ssu6jd7jkplq5zh3wdw66mzadr7sfprk96","amount":"9.98 mBTC"}]
-         * cosigner : ["Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg","Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"]
-         * tx : 70736274ff010089020000000120f4dd69233e0659b0fb786ad9f1b73c78da5feb89262cf633cc9c2352ad5c770100000000fdffffff02e8030000000000002200209f2f1060a8d7ddf0019b4fae87d022ff257e74b9db40d592a29ca0b1d0e7d07a703a0f00000000002200209a2a629902aa526ba0313caf4eb43e8439a937d2b07e0a0af1735dad6c5d68fd544c19000001012b40420f0000000000220020a9ec03eaa11691158d4214abc47137256639e39d115ca65714f4f4aec303eeee010547522102a4b60ee8a4d8c2eff95b8ddc0ba3f0025d3092e744448b13a34dfd191bbaaf0fb7a78d194e3fdbcfcae49bd7f5ca87d90cbc21edd1010000000200000000
+         * sign_status : [0,1]
+         * output_addr : [{"addr":"bcrt1qdrmh0nlkkw9hvdztaglqd8tp54fk5f3zv4nnqm","amount":"2 mBTC (98.25 CNY)"},{"addr":"bcrt1qxvf50hdmx34qp74qrkutm6ux04g5yjl84ypknt","amount":"4.501 mBTC (221.11 CNY)"}]
+         * input_addr : [{"addr":"bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p"},{"addr":"bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p"},{"addr":"bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p"}]
+         * cosigner : ["vpub5UMJom5zg1vX1C1fgWVwYViUkdbcrzKNB33UEMNAJZw5Kk57He2N8JRkHn2m9wsiLA45axMgXq8d82AA4t4c3jiWanafD4DbrcMvLPRFn2E"]
+         * tx : 70736274ff0100c3020000000398a1c1eb8096df63472022b45c80509509bea8374d405fa36e1ae0be9cc65c110000000000fdffffff67af07075480580039a35cbd88395829b17179609c6656704bc80ae2fad0b0a00000000000fdffffffef99143e7cba589ca6e42b7cc9b39c342066b00d7e683910648e33f654be26cd0100000000fdffffff02400d03000000000016001468f777cff6b38b76344bea3e069d61a5536a262234de060000000000160014331347ddbb346a00faa01db8bdeb867d51424be7d93600000001011fa0860100000000001600140522cb3b223339cc905b4367893c3e383b7446942206037f4e0eaf45aa391cd57b44cc48db5a26e0db66402a15a75c8ab2eb793a8823c40c20ef87f100000000000000000001011f20a10700000000001600140522cb3b223339cc905b4367893c3e383b7446942206037f4e0eaf45aa391cd57b44cc48db5a26e0db66402a15a75c8ab2eb793a8823c40c20ef87f100000000000000000001011fa0860100000000001600140522cb3b223339cc905b4367893c3e383b7446942206037f4e0eaf45aa391cd57b44cc48db5a26e0db66402a15a75c8ab2eb793a8823c40c20ef87f1000000000000000000220203088d555e00cea703149436f8add1f9c67f6af7299a57cc9ab3adb7b497f76cc50c20ef87f1000000000200000000220202ef80d2fcee593aae704dfd10ae237bf43e0251933a933b4e00b2fdb070b55c310c20ef87f1010000000d00000000
          */
 
         @SerializedName("txid")
@@ -64,6 +66,8 @@ public class ScanCheckDetailBean {
         private List<Integer> signStatus;
         @SerializedName("output_addr")
         private List<OutputAddrBean> outputAddr;
+        @SerializedName("input_addr")
+        private List<InputAddrBean> inputAddr;
         @SerializedName("cosigner")
         private List<String> cosigner;
 
@@ -139,6 +143,14 @@ public class ScanCheckDetailBean {
             this.outputAddr = outputAddr;
         }
 
+        public List<InputAddrBean> getInputAddr() {
+            return inputAddr;
+        }
+
+        public void setInputAddr(List<InputAddrBean> inputAddr) {
+            this.inputAddr = inputAddr;
+        }
+
         public List<String> getCosigner() {
             return cosigner;
         }
@@ -147,10 +159,10 @@ public class ScanCheckDetailBean {
             this.cosigner = cosigner;
         }
 
-        public static class OutputAddrBean {
+        public static class OutputAddrBean implements Serializable {
             /**
-             * addr : bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r
-             * amount : 0.01 mBTC
+             * addr : bcrt1qdrmh0nlkkw9hvdztaglqd8tp54fk5f3zv4nnqm
+             * amount : 2 mBTC (98.25 CNY)
              */
 
             @SerializedName("addr")
@@ -172,6 +184,23 @@ public class ScanCheckDetailBean {
 
             public void setAmount(String amount) {
                 this.amount = amount;
+            }
+        }
+
+        public static class InputAddrBean implements Serializable {
+            /**
+             * addr : bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p
+             */
+
+            @SerializedName("addr")
+            private String addr;
+
+            public String getAddr() {
+                return addr;
+            }
+
+            public void setAddr(String addr) {
+                this.addr = addr;
             }
         }
     }

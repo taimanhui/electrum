@@ -76,13 +76,13 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                     TextView tetview = helper.getView(R.id.tet_zt);
                     tetview.setTextColor(Color.parseColor("#FFF26A3A"));
                     tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
-                } else if ("Partially signed".contains(tx_status)) {
+                } else if (tx_status.contains("Partially signed")) {
                     //new creat trsaction
-                    helper.setText(R.id.tet_zt, R.string.partsigned);
+                    helper.setText(R.id.tet_zt, R.string.transaction_waitting);
                     TextView tetview = helper.getView(R.id.tet_zt);
                     tetview.setTextColor(Color.parseColor("#FFF26A3A"));
                     tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
-                }else if ("Unconfirmed".contains(tx_status)){
+                }else if (tx_status.contains("Unconfirmed")){
                     helper.setText(R.id.tet_zt, R.string.waitchoose);
                     TextView tetview = helper.getView(R.id.tet_zt);
                     tetview.setTextColor(Color.parseColor("#FF838383"));

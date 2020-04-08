@@ -109,6 +109,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
 
     private void startNewPage() {
         Intent intent = new Intent(this, CreateWalletActivity.class);
+        intent.putExtra("intentWhere","guide");
         startActivity(intent);
         finish();
     }

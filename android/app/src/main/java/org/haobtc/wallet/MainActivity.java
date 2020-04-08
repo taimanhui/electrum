@@ -1,6 +1,7 @@
 package org.haobtc.wallet;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -37,6 +39,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -69,6 +72,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
+
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
 
@@ -94,11 +99,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private ArrayList<AddressEvent> walletnameList;
     private String strType;
     private int scrollPos = 0;//scrollPos --> recyclerview position != The last one || second to last
+    PyObject get_wallets_list_info = null;
+
     @Override
     public int getLayoutId() {
         return R.layout.main_activity;
     }
-
 
     @Override
     public void initView() {
@@ -147,8 +153,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         walletnameList = new ArrayList<>();
     }
 
-
-
     private void initCreatWallet() {
         Intent intent = new Intent(this, CreateWalletActivity.class);
         startActivity(intent);
@@ -165,39 +169,40 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void initData() {
         viewPager = findViewById(R.id.viewPager);
         maintrsactionlistEvents = new ArrayList<>();
+        fragmentList = new ArrayList<>();
         //Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
         recy_data.setAdapter(trsactionlistAdapter);
         if (jumpOr) {
             //Rolling Wallet
-            new Handler().postDelayed(this::mWheelplanting, 10);
+            mWheelplanting();
         }
     }
 
     private void mWheelplanting() {
-        fragmentList = new ArrayList<>();
         walletnameList.clear();
-        PyObject get_wallets_list_info = null;
-        try {
-            get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("mWheelplanting", "mWheelplanting:==== " + e.getMessage());
-            fragmentList.add(new AddViewFragment());
-            viewPager.setOffscreenPageLimit(4);
-            viewPager.setPageMargin(40);
-            viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-            //trsaction list data
-            tetNone.setText(getString(R.string.no_records));
-            tetNone.setVisibility(View.VISIBLE);
-            recy_data.setVisibility(View.GONE);
-            return;
-        }
+        fragmentList.clear();
+        //wallet list
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                //wallet list
+                try {
+                    get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    addwalletFragment();
+                    return;
+                }
+                mainhandler.sendEmptyMessage(1);
+            }
+        });
+    }
 
+    private void showWalletList() {
         if (get_wallets_list_info != null && get_wallets_list_info.size() != 0) {
             String toStrings = get_wallets_list_info.toString();
             if (toStrings.length() != 2) {
-                Log.i("get_wallets_list_info", "mjavaBean-----: " + toStrings);
                 com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
                 for (int i = 0; i < jsons.size(); i++) {
                     Map jsonToMap = (Map) jsons.get(i);
@@ -214,7 +219,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }
                 }
                 Log.i("mWheelplanting", "mWheelplanting: " + walletnameList.toString());
-
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();
@@ -226,29 +230,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         } else {
                             fragmentList.add(new WheelViewpagerFragment(name, walletType));
                         }
-
                     }
-                    fragmentList.add(new CheckHideWalletFragment());
                     fragmentList.add(new AddViewFragment());
+                    fragmentList.add(new CheckHideWalletFragment());
                     viewPager.setOffscreenPageLimit(4);
                     viewPager.setPageMargin(40);
                     viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-
+                }else{
+                    addwalletFragment();
                 }
-            } else {
-                fragmentList.add(new CheckHideWalletFragment());
-                fragmentList.add(new AddViewFragment());
-                viewPager.setOffscreenPageLimit(4);
-                viewPager.setPageMargin(40);
-                viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-                //trsaction list data
-                tetNone.setText(getString(R.string.no_records));
-                tetNone.setVisibility(View.VISIBLE);
-                recy_data.setVisibility(View.GONE);
             }
         }
         //scroll
         viewPagerScroll();
+    }
+
+    //no wallet show fragment
+    private void addwalletFragment() {
+        fragmentList.add(new AddViewFragment());
+        fragmentList.add(new CheckHideWalletFragment());
+        viewPager.setOffscreenPageLimit(4);
+        viewPager.setPageMargin(40);
+        viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+        //trsaction list data
+        tetNone.setText(getString(R.string.no_records));
+        tetNone.setVisibility(View.VISIBLE);
+        recy_data.setVisibility(View.GONE);
     }
 
     //viewPagerScroll
@@ -263,14 +270,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             public void onPageSelected(int position) {
                 scrollPos = position;
                 Log.i("onPageSelected", "pos__ " + position);
+                Log.i("onPageSelected", "pos+++++++ " + (fragmentList.size() - 1));
                 if (position == (fragmentList.size() - 1) || position == (fragmentList.size() - 2)) {
                     Log.i("onPageSelected", "名字为空");
                     if (position == (fragmentList.size() - 1)) {
-                        tetNone.setText(getString(R.string.no_records));
+                        tetNone.setText(getString(R.string.hide_wallet_tips));
                         tetNone.setVisibility(View.VISIBLE);
                         recy_data.setVisibility(View.GONE);
                     } else {
-                        tetNone.setText(getString(R.string.hide_wallet_tips));
+                        tetNone.setText(getString(R.string.no_records));
                         tetNone.setVisibility(View.VISIBLE);
                         recy_data.setVisibility(View.GONE);
                     }
@@ -334,7 +342,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 //show trsaction list
                 showTrsactionlist(strHistory);
             }
-
         } else {
             myDialog.dismiss();
             refreshLayout.finishRefresh();
@@ -371,8 +378,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     maintrsactionlistEvent.setTx_status(tx_status);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
-
-                    String txCreatTrsaction = jsonObject.getString("tx");
                     String invoice_id = jsonObject.getString("invoice_id");//delete use
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
@@ -423,7 +428,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     startActivity(intent);
                                 }
 
-
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -454,17 +458,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             } else {
                                 mToast(getString(R.string.delete_unBroad));
                             }
-
                             break;
                     }
                 }
             });
-
         } catch (JSONException e) {
             Log.e("sndkjnskjn", "type++++: " + e.getMessage());
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -500,8 +501,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.tet_Addmoney:
                 Intent intent6 = new Intent(MainActivity.this, CreateWalletActivity.class);
+                intent6.putExtra("intentWhere", "main");
                 startActivity(intent6);
-
                 break;
 
         }
@@ -513,7 +514,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (msgVote.equals("11")) {
             //Rolling Wallet
             mWheelplanting();
-
         } else if (msgVote.equals("22")) {
             if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
                 maintrsactionlistEvents.clear();
@@ -566,7 +566,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 String address = listData.getAddress();
                                 int sendAmount = listData.getAmount();
                                 String message = listData.getMessage();
-
                                 //address  -->  intent  send  activity
                                 Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
                                 intent.putExtra("sendAdress", address);
@@ -583,12 +582,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             } else {
                                 mToast(getString(R.string.address_wrong));
                             }
-
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
             }
@@ -622,4 +618,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             trsactionlistAdapter.notifyDataSetChanged();
         }
     }
+
+    @SuppressLint("HandlerLeak")
+    Handler mainhandler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    showWalletList();
+                    break;
+            }
+        }
+    };
+
 }

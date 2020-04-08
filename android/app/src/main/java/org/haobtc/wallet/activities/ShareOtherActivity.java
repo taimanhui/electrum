@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -8,6 +9,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 
 import com.chaquo.python.PyObject;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -31,6 +36,7 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -44,6 +50,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.utils.Daemon.commands;
 
 public class ShareOtherActivity extends BaseActivity {
@@ -71,6 +78,7 @@ public class ShareOtherActivity extends BaseActivity {
     private Dialog dialogBtom;
     private String rowTx;
     private String strCode;
+    PyObject get_qr_data_from_raw_tx = null;
 
     @Override
     public int getLayoutId() {
@@ -96,26 +104,20 @@ public class ShareOtherActivity extends BaseActivity {
         //or code
         if (!TextUtils.isEmpty(rowTrsaction)) {
 
-            PyObject get_qr_data_from_raw_tx = null;
-            try {
-                get_qr_data_from_raw_tx = Daemon.commands.callAttr("get_qr_data_from_raw_tx", rowTx);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-            if (get_qr_data_from_raw_tx != null) {
-                strCode = get_qr_data_from_raw_tx.toString();
-                Log.i("strCode", "onView: " + strCode);
-                if (!TextUtils.isEmpty(strCode)) {
-                    if (strCode.length() >= 150) {
-                        tetBigMessage.setVisibility(View.VISIBLE);
-                        imgOrcode.setVisibility(View.GONE);
-                    } else {
-                        bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
-                        imgOrcode.setImageBitmap(bitmap);
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    //Sub thread
+                    try {
+                        get_qr_data_from_raw_tx = Daemon.commands.callAttr("get_qr_data_from_raw_tx", rowTx);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
                     }
+                    mainhandler.sendEmptyMessage(1);
                 }
-            }
+            });
+
         }
 
         tetTrsactionText.setText(rowTx);
@@ -278,5 +280,29 @@ public class ShareOtherActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("HandlerLeak")
+    Handler mainhandler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    if (get_qr_data_from_raw_tx != null) {
+                        strCode = get_qr_data_from_raw_tx.toString();
+                        Log.i("strCode", "onView: " + strCode);
+                        if (!TextUtils.isEmpty(strCode)) {
+                            if (strCode.length() >= 150) {
+                                tetBigMessage.setVisibility(View.VISIBLE);
+                                imgOrcode.setVisibility(View.GONE);
+                            } else {
+                                bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
+                                imgOrcode.setImageBitmap(bitmap);
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+    };
 }
 

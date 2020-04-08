@@ -763,6 +763,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" mBTC"));
                 } else if (wallet_amount.contains("sat")) {
                     strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" sat"));
+                } else if (wallet_amount.contains("bits")) {
+                    strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" bits"));
                 } else {
                     strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" BTC"));
                 }

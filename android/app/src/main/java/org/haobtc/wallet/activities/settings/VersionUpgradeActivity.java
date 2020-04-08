@@ -32,8 +32,6 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class VersionUpgradeActivity extends BaseActivity {
 
-    @BindView(R.id.img_back)
-    ImageView imgBack;
     @BindView(R.id.btn_toUpgrade)
     Button btnToUpgrade;
     @BindView(R.id.tet_firmware)
@@ -57,6 +55,11 @@ public class VersionUpgradeActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        String firmwareVersion = intent.getStringExtra("firmwareVersion");
+        String bleVerson = intent.getStringExtra("bleVerson");
+        tetFirmware.setText(firmwareVersion);
+        tetBluetooth.setText(bleVerson);
 
     }
 

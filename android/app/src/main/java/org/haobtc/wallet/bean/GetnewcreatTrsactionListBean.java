@@ -162,7 +162,7 @@ public class GetnewcreatTrsactionListBean implements Serializable{
         }
     }
 
-    public static class InputAddrBean {
+    public static class InputAddrBean implements Serializable{
         /**
          * addr : bcrt1qn8mv7u8lsrts98zl756xz9h5cjp7sx6x0lna56
          */

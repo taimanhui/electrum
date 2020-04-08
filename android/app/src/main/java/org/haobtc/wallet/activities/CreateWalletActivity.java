@@ -1,5 +1,8 @@
 package org.haobtc.wallet.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +35,7 @@ public class CreateWalletActivity extends BaseActivity {
     LinearLayout linInputHelpWord;
     @BindView(R.id.linHideWallet)
     LinearLayout linHideWallet;
+    private String intentWhere;
 
 
     @Override
@@ -42,6 +46,8 @@ public class CreateWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        intentWhere = intent.getStringExtra("intentWhere");
     }
 
     @Override
@@ -49,11 +55,15 @@ public class CreateWalletActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.lin_input_histry, R.id.bn_create_wallet, R.id.lin_input_helpWord,R.id.linHideWallet})
+    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.lin_input_histry, R.id.bn_create_wallet, R.id.lin_input_helpWord, R.id.linHideWallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_backCreat:
-                finish();
+                if (intentWhere.equals("main")) {
+                    finish();
+                } else {
+                    System.exit(0);
+                }
                 break;
             case R.id.lin_personal_walt:
                 mIntent(SingleSigWalletCreator.class);

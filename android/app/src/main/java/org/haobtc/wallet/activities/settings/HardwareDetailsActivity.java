@@ -64,14 +64,16 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     LinearLayout linOnckFour;
     @BindView(R.id.wipe_device)
     LinearLayout wipe_device;
-    @BindView(R.id.tetKeyname)
-    TextView tetKeyname;
     private CommunicationModeSelector dialogFragment;
     private boolean executable = true;
     private boolean ready;
     private boolean done;
     private String pin;
     public static boolean dismiss;
+    private String bleName;
+    private String firmwareVersion;
+    private String device_id;
+    private String bleVerson;
 
     @Override
     public int getLayoutId() {
@@ -81,10 +83,19 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     @Override
     public void initView() {
         ButterKnife.bind(this);
+
+        inits();
+    }
+
+    private void inits() {
         Intent intent = getIntent();
-        String keyListItem = intent.getStringExtra("keyListItem");
-        tetKeyName.setText(keyListItem);
-        tetKeyname.setText(String.format("%s%s", keyListItem, getString(R.string.settings)));
+        bleName = intent.getStringExtra("bleName");
+        firmwareVersion = intent.getStringExtra("firmwareVersion");
+        bleVerson = intent.getStringExtra("bleVerson");
+        device_id = intent.getStringExtra("device_id");
+        tetKeyName.setText(bleName);
+        tetCode.setText(firmwareVersion);
+
     }
 
     @Override
@@ -99,10 +110,16 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 finish();
                 break;
             case R.id.lin_OnckOne:
-                mIntent(BixinKeyMessageActivity.class);
+                Intent intent = new Intent(HardwareDetailsActivity.this, BixinKeyMessageActivity.class);
+                intent.putExtra("bleName",bleName);
+                intent.putExtra("device_id",device_id);
+                startActivity(intent);
                 break;
             case R.id.lin_OnckTwo:
-                mIntent(VersionUpgradeActivity.class);
+                Intent intentVersion = new Intent(HardwareDetailsActivity.this, VersionUpgradeActivity.class);
+                intentVersion.putExtra("firmwareVersion",firmwareVersion);
+                intentVersion.putExtra("bleVerson",bleVerson);
+                startActivity(intentVersion);
                 break;
             case R.id.change_pin:
                 dialogFragment = new CommunicationModeSelector(TAG, null, "");
