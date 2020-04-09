@@ -172,6 +172,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             customerUI.put("pin", pin);
             ready = false;
         } else if (done) {
+            customerUI.put("pin", pin);
             startActivity(new Intent(this, ChangePinProcessingActivity.class));
         } else {
             boolean isInit;
@@ -225,13 +226,13 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         }
     }
 
-    @Override
+/*    @Override
     protected void onResume() {
         super.onResume();
         if (dialogFragment != null && dismiss) {
             dialogFragment.dismiss();
         }
-    }
+    }*/
 
     @Override
     public void onPreExecute() {

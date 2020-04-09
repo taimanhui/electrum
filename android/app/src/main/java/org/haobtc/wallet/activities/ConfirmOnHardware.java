@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.HardwareAdapter;
@@ -29,6 +31,7 @@ import org.haobtc.wallet.event.SignFailedEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +44,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     TextView testConfirmMsg;
     private Dialog dialog;
     private View view;
-    private ImageView imageViewCancel, imageViewSigning, imageBack;
+    private ImageView imageViewCancel;
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.tet_payAddress)
@@ -50,6 +53,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     TextView tetFeeNum;
     @BindView(R.id.recl_Msg)
     RecyclerView reclMsg;
+    private TextView signSuccess;
 
     public int getLayoutId() {
         return R.layout.confirm_on_hardware;
@@ -93,7 +97,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     private void showPopupSignProcessing() {
         view = LayoutInflater.from(this).inflate(R.layout.touch_process_popupwindow, null);
         imageViewCancel = view.findViewById(R.id.cancel_touch);
-        imageViewSigning = view.findViewById(R.id.imageView_signing);
+        signSuccess = view.findViewById(R.id.sign_success);
         imageViewCancel.setOnClickListener(this);
         dialog = new Dialog(this, R.style.dialog);
         dialog.setContentView(view);
@@ -109,12 +113,12 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         imageViewCancel = view.findViewById(R.id.cancel_sign_fail);
         dialog = new Dialog(this, R.style.dialog);
         dialog.setContentView(view);
+        imageViewCancel.setOnClickListener(this);
         Window window = dialog.getWindow();
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.BOTTOM);
         window.setWindowAnimations(R.style.AnimBottom);
         dialog.show();
-        imageViewCancel.setOnClickListener(this);
     }
 
     private void showPopupSignTimeout() {
@@ -123,18 +127,23 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         imageViewCancel = view.findViewById(R.id.cancel_sign_timeout);
         dialog = new Dialog(this, R.style.dialog);
         dialog.setContentView(view);
+        imageViewCancel.setOnClickListener(this);
+        button.setOnClickListener(this);
         Window window = dialog.getWindow();
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.BOTTOM);
         window.setWindowAnimations(R.style.AnimBottom);
         dialog.show();
-        imageViewCancel.setOnClickListener(this);
-        button.setOnClickListener(this);
     }
 
-    @Subscribe
-    public void onEventMainThread(SignResultEvent resultEvent) {
-        imageViewSigning.setImageResource(R.drawable.chenggong);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSignSuccessful(SignResultEvent resultEvent) {
+        if (dialog == null) {
+            showPopupSignProcessing();
+        }
+        Drawable drawableStart = getDrawable(R.drawable.chenggong);
+        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+        signSuccess.setCompoundDrawables(drawableStart, null, null, null);
         String signedRaw = resultEvent.getSignedRaw();
             if (!TextUtils.isEmpty(signedRaw)) {
                 Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
@@ -142,10 +151,14 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 intent1.putExtra("signed_raw_tx", signedRaw);
                 startActivity(intent1);
                 dialog.dismiss();
+                finish();
             }
     }
-    @Subscribe
-    public void onEventMainThread(SignFailedEvent failedEvent) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSignFailed(SignFailedEvent failedEvent) {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
         showPopupSignFailed();
     }
 
@@ -167,11 +180,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        finish();
-    }
 
     @Override
     protected void onDestroy() {

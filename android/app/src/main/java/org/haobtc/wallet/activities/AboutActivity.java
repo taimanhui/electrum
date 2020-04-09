@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.AsyncPlayer;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -12,6 +13,7 @@ import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnButtonClickListener;
 import com.azhon.appupdate.listener.OnDownloadListener;
 import com.azhon.appupdate.manager.DownloadManager;
+import com.azhon.appupdate.utils.ApkUtil;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -45,19 +47,9 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     public void initData() {
 
     }
-    public static int getVersionCode(Context context) {
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 1;
-        }
-    }
     private void attemptUpdate() {
         // todo: 通过服务器获取最新版本的版本信息
-        int versionCode = getVersionCode(this);
+        int versionCode = ApkUtil.getVersionCode(this);
         String url = "https://key.bixin.com/bixinkey.apk";
         UpdateConfiguration configuration = new UpdateConfiguration()
                 .setEnableLog(true)

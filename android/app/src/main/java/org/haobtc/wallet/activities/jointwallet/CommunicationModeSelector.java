@@ -429,7 +429,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
                 if ( SignActivity.TAG1.equals(tag)) {
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras);
-                }else{
+                }else {
+                    if (features.isPinCached()) {
+                        Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
+                    }
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras);
                 }
             } else if (BackupRecoveryActivity.TAG.equals(tag)) {
@@ -679,9 +682,9 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         if(MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
             // 获取公钥之前需完成的工作
             dialogFragment = showReadingDialog();
-        } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
+        } /*else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
             Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
-        }
+        }*/
     }
 
     @Override

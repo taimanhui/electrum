@@ -10,10 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.event.CancelEvent;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;

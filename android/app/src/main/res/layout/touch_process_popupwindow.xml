@@ -22,6 +22,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_14"
                 android:text="@string/touch_again"
+                android:textStyle="bold"
+                android:textSize="@dimen/big_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -30,8 +32,7 @@
                 android:id="@+id/cancel_touch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_14"
-                android:layout_marginEnd="@dimen/text_margin"
+                android:padding="@dimen/dp_16"
                 android:contentDescription="@string/close"
                 app:srcCompat="@drawable/close_big_black"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +53,7 @@
                 android:layout_height="160dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="37dp"
-                app:srcCompat="@drawable/touch_again"
+                android:background="@drawable/touch_again"
                 android:contentDescription="@string/touch_again"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -65,77 +66,53 @@
                 android:layout_marginTop="@dimen/layout_margin"
                 android:text="@string/touch_again"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/imageView5" />
 
 
-            <ImageView
-                android:id="@+id/imageView_pin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="148dp"
-                android:layout_marginTop="@dimen/text_margin"
-                android:contentDescription="@string/success"
-                app:srcCompat="@drawable/chenggong"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imageView_connect" />
-
             <TextView
                 android:id="@+id/textView34"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/corner_radius"
                 android:layout_marginTop="@dimen/layout_margin"
+                android:drawableStart="@drawable/chenggong"
+                android:drawablePadding="@dimen/corner_radius"
                 android:text="@string/connect"
                 android:textColor="@color/text"
                 android:textSize="@dimen/smaller_text_size"
-                app:layout_constraintStart_toEndOf="@id/imageView_connect"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/textView32"
                 app:layout_constraintTop_toBottomOf="@id/textView32" />
 
-            <ImageView
-                android:id="@+id/imageView_connect"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="150dp"
-                android:layout_marginTop="@dimen/layout_margin"
-                android:contentDescription="@string/success"
-                app:srcCompat="@drawable/chenggong"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textView32" />
 
             <TextView
                 android:id="@+id/verify_pin_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
+                android:drawableStart="@drawable/chenggong"
+                android:drawablePadding="@dimen/corner_radius"
                 android:text="@string/verify_pin"
                 android:textColor="@color/text"
+                android:textStyle="bold"
                 android:textSize="@dimen/smaller_text_size"
-                app:layout_constraintStart_toEndOf="@id/imageView_pin"
+                app:layout_constraintStart_toStartOf="@id/textView32"
                 app:layout_constraintTop_toBottomOf="@id/textView34" />
 
-            <ImageView
-                android:id="@+id/imageView_signing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="148dp"
-                android:layout_marginTop="@dimen/text_margin"
-                android:contentDescription="@string/success"
-                app:srcCompat="@drawable/jinxingzhong"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imageView_pin" />
-
             <TextView
+                android:id="@+id/sign_success"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/corner_radius"
                 android:layout_marginTop="12dp"
+                android:drawableStart="@drawable/jinxingzhong"
+                android:drawablePadding="@dimen/corner_radius"
                 android:text="@string/sign_successful"
                 android:textColor="@color/text"
                 android:textSize="@dimen/smaller_text_size"
-                app:layout_constraintStart_toEndOf="@id/imageView_signing"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/textView32"
                 app:layout_constraintTop_toBottomOf="@id/verify_pin_state" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

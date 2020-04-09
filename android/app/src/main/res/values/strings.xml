@@ -39,7 +39,7 @@
     <string name="pin_setting">Set Pin code</string>
     <string name="pin_setting_first">Please set safety password for your cold wallet</string>
     <string name="confirm_pin">Please re-enter the safety password you set</string>
-    <string name="touch_again">Make hareware wallet touch phone again</string>
+    <string name="touch_again">Make hareware wallet touch with phone</string>
     <string name="connect">Hardware connection success</string>
     <string name="set_pin_processinfo">Pin code set successfully</string>
     <string name="activing_processinfo">Activating device</string>

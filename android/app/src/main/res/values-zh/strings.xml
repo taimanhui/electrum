@@ -39,7 +39,7 @@
     <string name="pin_setting">设置PIN码</string>
     <string name="pin_setting_first">请为你的冷钱包设置安全密码</string>
     <string name="confirm_pin">请再次次输入您设置的安全密码</string>
-    <string name="touch_again">将硬件重新贴合</string>
+    <string name="touch_again">请保持与硬件贴合</string>
     <string name="connect">链接硬件成功</string>
     <string name="set_pin_processinfo">设置PIN码成功</string>
     <string name="activing_processinfo">激活设备中</string>
