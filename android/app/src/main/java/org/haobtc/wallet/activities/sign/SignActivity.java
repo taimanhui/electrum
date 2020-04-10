@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -470,9 +471,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         boolean isInit = features.isInitialized();
         if (isInit) {
             if (signWhich) {
-                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, strTest);
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, strTest);
             } else {
-                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, strTest);
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, strTest);
             }
         } else {
             if (isActive) {
@@ -572,7 +573,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Override
     public void onException(Exception e) {
-
+        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
+            ready = false;
+        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        }
     }
 
     @Override

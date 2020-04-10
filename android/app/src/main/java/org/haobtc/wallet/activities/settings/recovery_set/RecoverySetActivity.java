@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.settings.recovery_set;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -143,7 +144,7 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
             return;
         }
         if (isInit) {
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, COMMUNICATION_MODE_NFC);
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.WIPE_DEVICE, COMMUNICATION_MODE_NFC);
             startActivity(new Intent(this, ResetDeviceProcessing.class));
         } else {
             Toast.makeText(this, R.string.wallet_un_activated, Toast.LENGTH_LONG).show();

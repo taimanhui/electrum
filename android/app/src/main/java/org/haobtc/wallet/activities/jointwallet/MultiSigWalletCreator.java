@@ -12,7 +12,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Bundle;
+import android.nfc.tech.IsoDep;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -73,9 +74,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -83,10 +81,9 @@ import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
 public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, BusinessAsyncTask.Helper {
 
     @BindView(R.id.img_back)
@@ -768,10 +765,10 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         }
         boolean isInit = features.isInitialized();
         if (isInit) {
-                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
             } else {
                 if (isActive) {
-                   new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
+                   new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -917,7 +914,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
     @Override
     public void onException(Exception e) {
         readingPubKey.dismiss();
-        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
+            ready = false;
+        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
         } else {
             dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);

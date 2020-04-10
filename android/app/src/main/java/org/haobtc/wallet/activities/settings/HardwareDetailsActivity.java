@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -187,7 +188,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 return;
             }
             if (isInit) {
-                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.CHANGE_PIN, COMMUNICATION_MODE_NFC);
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.CHANGE_PIN, COMMUNICATION_MODE_NFC);
             } else {
                 Toast.makeText(this, R.string.wallet_un_activated_pin, Toast.LENGTH_LONG).show();
                 finish();
@@ -241,7 +242,11 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     @Override
     public void onException(Exception e) {
-
+        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
+            ready = false;
+        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+            dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
+        }
     }
 
     @Override

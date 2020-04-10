@@ -384,7 +384,7 @@ public final class BleRequestImpl<T extends BleDevice> {
             connectWrapperCallback.onConnectionChanged(bleDevice);
         }
         // We want to directly connect to the device, so we are setting the autoConnect parameter to false
-        BluetoothGatt bluetoothGatt = device.connectGatt(context, false, gattCallback, BluetoothDevice.TRANSPORT_AUTO, BluetoothDevice.PHY_LE_1M_MASK);
+        BluetoothGatt bluetoothGatt = device.connectGatt(context, false, gattCallback, BluetoothDevice.TRANSPORT_AUTO, BluetoothDevice.PHY_LE_2M_MASK);
         if (bluetoothGatt != null) {
             gattHashMap.put(address, bluetoothGatt);
             BleLog.d(TAG, "Trying to create a new connection.");

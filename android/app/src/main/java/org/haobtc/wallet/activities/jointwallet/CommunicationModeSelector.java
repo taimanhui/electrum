@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -375,7 +376,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             return;
         }
         if (features.isInitialized()) {
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.CHANGE_PIN, COMMUNICATION_MODE_BLE);
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.CHANGE_PIN, COMMUNICATION_MODE_BLE);
         } else {
             Toast.makeText(getActivity(), R.string.wallet_un_activated_pin, Toast.LENGTH_LONG).show();
             dismiss();
@@ -396,7 +397,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             return;
         }
         if (features.isInitialized()) {
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, COMMUNICATION_MODE_BLE);
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.WIPE_DEVICE, COMMUNICATION_MODE_BLE);
             Intent intent = new Intent(getActivity(), ResetDeviceProcessing.class);
             Objects.requireNonNull(getActivity()).startActivity(intent);
         } else {
@@ -423,25 +424,25 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     if (HideWalletActivity.TAG.equals(tag)) {
                         customerUI.callAttr("set_pass_state", 1);
                     }
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, COMMUNICATION_MODE_BLE, "p2wpkh");
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, COMMUNICATION_MODE_BLE, "p2wpkh");
                 } else {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_BLE);
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_BLE);
                 }
             } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
                 if ( SignActivity.TAG1.equals(tag)) {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras);
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras);
                 }else {
                     if (features.isPinCached()) {
                         Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
                     }
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras);
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, extras);
                 }
             } else if (BackupRecoveryActivity.TAG.equals(tag)) {
                 if (TextUtils.isEmpty(extras)) {
                     Log.i(TAG, "java ==== backup");
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, COMMUNICATION_MODE_BLE);
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.BACK_UP, COMMUNICATION_MODE_BLE);
                 } else {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, COMMUNICATION_MODE_BLE, extras);
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.RECOVER, COMMUNICATION_MODE_BLE, extras);
                 }
             }
         } else {
@@ -644,7 +645,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
                 if (isActive) {
-                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_BLE);
+                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_BLE);
                 }
             }
         }

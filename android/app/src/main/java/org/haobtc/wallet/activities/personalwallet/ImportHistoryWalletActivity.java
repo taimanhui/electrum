@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -217,10 +218,10 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
             }
             boolean isInit = features.isInitialized();
             if (isInit) {
-                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
             } else {
                 if (isActive) {
-                   new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
+                   new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
                 } else {
                     Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                     startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -281,7 +282,9 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
     @Override
     public void onException(Exception e) {
         readingPubKey.dismiss();
-        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
+            ready = false;
+        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
         } else {
             dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);

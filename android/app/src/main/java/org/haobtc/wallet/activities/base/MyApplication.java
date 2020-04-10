@@ -1,19 +1,12 @@
 package org.haobtc.wallet.activities.base;
 
 import android.app.Application;
-import android.os.Handler;
-import android.os.HandlerThread;
-
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
-import org.haobtc.wallet.BuildConfig;
-import org.haobtc.wallet.R;
-import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
-import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 import cn.com.heaton.blelibrary.ble.Ble;

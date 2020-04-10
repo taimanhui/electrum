@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -742,10 +743,10 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             if (features.isPinCached()) {
                 gotoConfirmOnHardware();
             }
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, rowtx);
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, rowtx);
         } else {
             if (isActive) {
-               new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
+               new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -798,7 +799,11 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
 
     @Override
     public void onException(Exception e) {
-        EventBus.getDefault().post(new SignFailedEvent(e));
+        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
+            ready = false;
+        } else {
+            EventBus.getDefault().post(new SignFailedEvent(e));
+        }
     }
 
     @Override

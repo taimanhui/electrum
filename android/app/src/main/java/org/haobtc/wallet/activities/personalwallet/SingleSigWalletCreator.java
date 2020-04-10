@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -343,10 +344,10 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
             }
             boolean isInit = features.isInitialized();
             if (isInit) {
-                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, COMMUNICATION_MODE_NFC, "p2wpkh");
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, COMMUNICATION_MODE_NFC, "p2wpkh");
             } else {
                 if (isActive) {
-                   new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
+                   new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
                 } else {
                     Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                     startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -406,52 +407,50 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
-                case 1:
-                    String strBixinname = edit_bixinName.getText().toString();
-                    String strSweep = textView.getText().toString();
-                    walletName = editWalletNameSetting.getText().toString();
-                    if (TextUtils.isEmpty(strBixinname)) {
-                        mToast(getString(R.string.input_name));
-                        return;
-                    }
-                    if (TextUtils.isEmpty(strSweep)) {
-                        mToast(getString(R.string.input_public_address));
-                        return;
-                    }
-                    try {
-                        //add
-                        Daemon.commands.callAttr("add_xpub", strSweep);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return;
-                    }
+            if (msg.what == 1) {
+                String strBixinname = edit_bixinName.getText().toString();
+                String strSweep = textView.getText().toString();
+                walletName = editWalletNameSetting.getText().toString();
+                if (TextUtils.isEmpty(strBixinname)) {
+                    mToast(getString(R.string.input_name));
+                    return;
+                }
+                if (TextUtils.isEmpty(strSweep)) {
+                    mToast(getString(R.string.input_public_address));
+                    return;
+                }
+                try {
+                    //add
+                    Daemon.commands.callAttr("add_xpub", strSweep);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
 
-                    try {
-                        Daemon.commands.callAttr("create_multi_wallet", walletName);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        myDialog.dismiss();
-                        String message = e.getMessage();
-                        if ("BaseException: file already exists at path".equals(message)) {
-                            mToast(getString(R.string.changewalletname));
-                        }
-                        return;
-                    }
-
-                    edit.putInt("defaultName", walletNameNum);
-                    edit.apply();
+                try {
+                    Daemon.commands.callAttr("create_multi_wallet", walletName);
+                } catch (Exception e) {
+                    e.printStackTrace();
                     myDialog.dismiss();
-                    EventBus.getDefault().post(new FirstEvent("11"));
-                    Intent intent = new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
-                    intent.putExtra("walletNames", walletName);
-                    intent.putExtra("flagTag", "personal");
-                    intent.putExtra("strBixinname", strBixinname);
-                    startActivity(intent);
+                    String message = e.getMessage();
+                    if ("BaseException: file already exists at path".equals(message)) {
+                        mToast(getString(R.string.changewalletname));
+                    }
+                    return;
+                }
 
-                    dialogBtoms.cancel();
-                    dialogFragment.dismiss();
-                    break;
+                edit.putInt("defaultName", walletNameNum);
+                edit.apply();
+                myDialog.dismiss();
+                EventBus.getDefault().post(new FirstEvent("11"));
+                Intent intent = new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
+                intent.putExtra("walletNames", walletName);
+                intent.putExtra("flagTag", "personal");
+                intent.putExtra("strBixinname", strBixinname);
+                startActivity(intent);
+
+                dialogBtoms.cancel();
+                dialogFragment.dismiss();
             }
 
         }
@@ -468,7 +467,9 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
     @Override
     public void onException(Exception e) {
         readingPubKey.dismiss();
-        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
+            ready = false;
+        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
         } else {
             dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);

@@ -1,6 +1,8 @@
 package org.haobtc.wallet.asynctask;
 
+import android.nfc.Tag;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -9,6 +11,7 @@ import org.haobtc.wallet.utils.Daemon;
 
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     private Helper helper;
+    private final static String TAG = BusinessAsyncTask.class.getSimpleName();
     public final static String GET_EXTEND_PUBLIC_KEY = "get_xpub_from_hw";
     public final static String GET_EXTEND_PUBLIC_KEY_SINGLE = "get_xpub_from_hw_single";
     public final static String  SIGN_TX = "sign_tx";
@@ -40,7 +43,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                  result = Daemon.commands.callAttr(strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0], strings[1], strings[2]).toString();
                 } catch (Exception e) {
                     cancel(true);
-                    helper.onException(e);
+                    onException(e);
                 }
                 break;
             case GET_EXTEND_PUBLIC_KEY:
@@ -53,11 +56,19 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                  result =  Daemon.commands.callAttr(strings[0], strings[1]).toString();
                 } catch (Exception e) {
                     cancel(true);
-                    helper.onException(e);
+                    onException(e);
                 }
                 break;
         }
         return result;
+    }
+    private void onException(Exception e) {
+        Log.e(TAG , e.getMessage() == null ? "unknown exception" : e.getMessage());
+      //  if ("BaseException: waiting passphrase timeout".equals(e.getMessage()) || "BaseException: waiting pin timeout".equals(e.getMessage())) {
+            // 操作超时，忽略！！！！！！
+       // } else {
+            helper.onException(e);
+      //  }
     }
 
     @Override
