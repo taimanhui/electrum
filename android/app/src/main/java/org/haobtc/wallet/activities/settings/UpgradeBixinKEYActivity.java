@@ -86,7 +86,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 try {
                     boolean ready = isBootloaderMode(params[0]);
                     if (ready) {
-                        Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/files/trezor.bin", params[0]);
+                        Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/cache/trezor.bin", params[0]);
                     } else {
                         showPromptMessage();
                         cancel(true);

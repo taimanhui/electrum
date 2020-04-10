@@ -18,6 +18,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
+            android:background="?attr/selectableItemBackground"
             android:src="@drawable/back" />
 
         <TextView
@@ -51,9 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:gravity="center_vertical"
-                android:paddingStart="@dimen/dp_16"
-                android:paddingEnd="@dimen/dp_16">
+                android:gravity="center_vertical">
 
                 <TextView
                     android:id="@+id/tet_bixinKey"
@@ -62,6 +61,9 @@
                     android:layout_weight="1"
                     android:drawableEnd="@drawable/jiantou"
                     android:gravity="center_vertical"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingEnd="@dimen/dp_16"
+                    android:background="?attr/selectableItemBackground"
                     android:text="@string/bixinkey_manage"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size" />
@@ -76,11 +78,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingEnd="@dimen/dp_16"
                     android:drawableEnd="@drawable/jiantou"
                     android:gravity="center_vertical"
                     android:text="@string/bixinkey_backups"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size"
+                    android:background="?attr/selectableItemBackground"
                     android:visibility="visible" />
 
                 <View
@@ -94,8 +99,11 @@
                     android:layout_height="@dimen/dp_0"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:paddingStart="@dimen/dp_16"
+                    android:paddingEnd="@dimen/dp_16"
                     android:drawableEnd="@drawable/jiantou"
                     android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:text="@string/verification_key"
                     android:textColor="@color/text" />
@@ -116,8 +124,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/text_margin"
-                android:layout_marginEnd="@dimen/text_margin"
                 android:orientation="vertical">
 
 
@@ -129,8 +135,11 @@
                     android:clickable="true"
                     android:drawableEnd="@drawable/jiantou"
                     android:focusable="true"
+                    android:paddingStart="@dimen/text_margin"
+                    android:paddingEnd="@dimen/text_margin"
                     android:gravity="center_vertical"
                     android:text="@string/language"
+                    android:background="?attr/selectableItemBackground"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size" />
 
@@ -145,10 +154,13 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:paddingStart="@dimen/text_margin"
+                    android:paddingEnd="@dimen/text_margin"
                     android:drawableEnd="@drawable/jiantou"
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:text="@string/legal_currency"
+                    android:background="?attr/selectableItemBackground"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size" />
 
@@ -167,8 +179,11 @@
                     android:drawableEnd="@drawable/jiantou"
                     android:focusable="true"
                     android:gravity="center_vertical"
+                    android:paddingStart="@dimen/text_margin"
+                    android:paddingEnd="@dimen/text_margin"
                     android:text="@string/server_setting"
                     android:textColor="@color/text"
+                    android:background="?attr/selectableItemBackground"
                     android:textSize="@dimen/text_size" />
 
                 <View
@@ -182,9 +197,12 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:background="?attr/selectableItemBackground"
                     android:drawableEnd="@drawable/jiantou"
                     android:focusable="true"
                     android:gravity="center_vertical"
+                    android:paddingStart="@dimen/text_margin"
+                    android:paddingEnd="@dimen/text_margin"
                     android:text="@string/transaction_setting"
                     android:textColor="@color/text"
                     android:textSize="@dimen/text_size" />
@@ -197,6 +215,9 @@
                 <RelativeLayout
                     android:id="@+id/bluetooth_set"
                     android:layout_width="match_parent"
+                    android:paddingStart="@dimen/text_margin"
+                    android:paddingEnd="@dimen/text_margin"
+                    android:background="?attr/selectableItemBackground"
                     android:layout_height="60dp">
 
                     <TextView
@@ -227,6 +248,9 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
+                    android:paddingStart="@dimen/text_margin"
+                    android:paddingEnd="@dimen/text_margin"
+                    android:background="?attr/selectableItemBackground"
                     android:layout_height="60dp">
 
                     <TextView

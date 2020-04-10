@@ -17,6 +17,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
+            android:background="?attr/selectableItemBackground"
             android:src="@drawable/back" />
 
         <TextView
@@ -126,6 +127,7 @@
                     <RelativeLayout
                         android:id="@+id/rel_quotationChoose"
                         android:layout_width="match_parent"
+                        android:background="?attr/selectableItemBackground"
                         android:layout_height="60dp">
 
                         <TextView
@@ -195,6 +197,7 @@
                     <RelativeLayout
                         android:id="@+id/rel_blockChoose"
                         android:layout_width="match_parent"
+                        android:background="?attr/selectableItemBackground"
                         android:layout_height="60dp">
 
                         <TextView
@@ -264,7 +267,8 @@
                     <RelativeLayout
                         android:id="@+id/rel_Electrum_Choose"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp">
+                        android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackground">
 
                         <TextView
                             android:id="@+id/textView3"
@@ -334,7 +338,8 @@
                     <RelativeLayout
                         android:id="@+id/relAgent_Choose"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp">
+                        android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackground">
 
                         <TextView
                             android:layout_width="match_parent"

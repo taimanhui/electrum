@@ -418,7 +418,7 @@
     <string name="please_inputPort">请输入端口号</string>
     <string name="add_finished">添加成功</string>
     <string name="upgradeed">已升级至v1.2</string>
-    <string name="please_confirmKEY">请在BixinKEY上确认新PIN码</string>
+    <string name="pin_change_success">PIN码修改成功</string>
     <string name="hours_24">24小时限额</string>
     <string name="no_need_PIN">不需要PIN码</string>
     <string name="no_need_hardware">不需要硬件确认交易</string>
@@ -497,7 +497,7 @@
     <string name="check_hide_wallet">点击查看隐藏钱包</string>
     <string name="check_wallet_tips">查看隐藏钱包，需使用已激活的BixinKEY</string>
     <string name="onclick_check">点击查看</string>
-    <string name="useable">可用</string>
+    <string name="usable">可用</string>
     <string name="checkHideWallet">查看隐藏钱包</string>
     <string name="verification">验证</string>
     <string name="bluetooth">蓝牙</string>
@@ -509,7 +509,7 @@
     <string name="clean_private_key">私钥已清除</string>
     <string name="btc_com">https://btc.com/</string>
     <string name="read_pk_failed">对不起，读取错误，请重试</string>
-    <string name="reset_device_successful">BixinKEY恢复出厂设置</string>
+    <string name="reset_device_successful">BixinKEY恢复出厂设置成功</string>
     <string name="wallet_un_activated">钱包未激活，不需要恢复出厂设置</string>
     <string name="wallet_un_activated_pin">钱包未激活，不需要修改PIN码</string>
     <string name="no_message">未能获取到设备信息, 请稍后再尝试！！</string>

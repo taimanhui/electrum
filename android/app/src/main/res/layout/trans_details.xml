@@ -119,6 +119,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="15.3dp"
                 android:padding="8dp"
+                android:background="?attr/selectableItemBackground"
                 android:src="@drawable/back" />
 
             <TextView
@@ -140,6 +141,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="5.3dp"
                 android:padding="8dp"
+                android:background="?attr/selectableItemBackground"
                 android:src="@drawable/share" />
         </RelativeLayout>
 
@@ -264,6 +266,7 @@
                         android:layout_marginEnd="@dimen/dp_5"
                         android:textColor="@color/light_text"
                         android:textSize="@dimen/sp_13"
+                        android:background="?attr/selectableItemBackground"
                         tools:text="@string/waitmoredres" />
 
                     <ImageView

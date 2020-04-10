@@ -23,6 +23,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:layout_gravity="end"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_marginEnd="15.3dp"
             android:padding="8dp"
             app:srcCompat="@drawable/back" />

@@ -124,6 +124,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
                 intent.putExtra("flagTag", "onlyChoose");
                 intent.putExtra("strBixinlist", (Serializable) addEventsDatas);
                 startActivity(intent);
+                finish();
             }
         }
     };
@@ -174,6 +175,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
                 intent.putExtra("flagTag", "onlyChoose");
                 intent.putExtra("strBixinlist", (Serializable) addEventsDatas);
                 startActivity(intent);
+                finish();
                 break;
         }
     }

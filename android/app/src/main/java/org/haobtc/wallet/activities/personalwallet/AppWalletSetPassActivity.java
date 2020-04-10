@@ -91,6 +91,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                         intent1.putExtra("strName", strName);
                         intent1.putExtra("strPass1", strPass1);
                         startActivity(intent1);
+                        finish();
                         try {
                             pyObject = Daemon.commands.callAttr("create", strName, strPass1);
                         } catch (Exception e) {

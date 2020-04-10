@@ -17,6 +17,7 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
+            android:background="?android:attr/selectableItemBackground"
             android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
@@ -194,6 +195,7 @@
                     android:layout_below="@+id/msjdhkjskdj"
                     android:gravity="center"
                     android:text="@string/check_all"
+                    android:background="?android:attr/selectableItemBackground"
                     android:textColor="@color/button_bk_disableok"
                     android:textSize="15sp" />
             </RelativeLayout>

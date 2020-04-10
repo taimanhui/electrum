@@ -60,6 +60,7 @@
                 android:layout_alignParentEnd="true"
                 android:contentDescription="@string/use_hardware"
                 android:padding="@dimen/dp_14"
+                android:background="?android:attr/selectableItemBackground"
                 android:src="@drawable/close_big_black"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -130,6 +131,7 @@
                     android:textColor="@color/onclick"
                     android:textSize="12sp"
                     android:textStyle="bold"
+                    android:background="?android:attr/selectableItemBackground"
                     android:text="@string/input_public_key"/>
                 <View
                     android:layout_width="73dp"

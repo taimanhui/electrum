@@ -192,6 +192,7 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
             Intent intent = new Intent(HideWalletActivity.this, CheckHideWalletActivity.class);
             intent.putExtra("hideWalletName", strBixinname);
             startActivity(intent);
+            finish();
         });
 
         //cancel dialog

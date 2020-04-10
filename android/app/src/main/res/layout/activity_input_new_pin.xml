@@ -17,6 +17,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="end"
             android:layout_marginEnd="15.3dp"
+            android:background="?android:attr/selectableItemBackground"
             android:padding="8dp"
             android:src="@drawable/back" />
 

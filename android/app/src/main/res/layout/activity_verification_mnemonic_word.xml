@@ -17,6 +17,7 @@
             android:id="@+id/img_back"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
             android:src="@drawable/back" />

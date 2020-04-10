@@ -107,6 +107,7 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
                 intent.putExtra("walletNameNum",walletNameNum);
                 intent.putExtra("strnewWalletname",strWalletname);
                 startActivity(intent);
+                finish();
                 break;
         }
     }

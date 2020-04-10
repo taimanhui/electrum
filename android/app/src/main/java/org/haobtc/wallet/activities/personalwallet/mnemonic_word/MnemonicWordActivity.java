@@ -163,6 +163,7 @@ public class MnemonicWordActivity extends BaseActivity {
                 intent.putExtra("newWallet_type", newWallet_type);
                 intent.putExtra("strNewseed",newSeed);
                 startActivity(intent);
+                finish();
             }else{
                 mToast(getString(R.string.helpword_wrong));
             }

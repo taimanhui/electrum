@@ -245,9 +245,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         String strNowCny = intent.getStringExtra("strNowCny");
         if (!TextUtils.isEmpty(strNowCny)){
             if (strNowCny.contains("≈")){
-                testNowCanUse.setText(String.format("%s%s%s", getString(R.string.useable), strNowBtc, strNowCny));
+                testNowCanUse.setText(String.format("%s%s%s", getString(R.string.usable), strNowBtc, strNowCny));
             }else{
-                testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.useable), strNowBtc, strNowCny));
+                testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
             }
         }
 

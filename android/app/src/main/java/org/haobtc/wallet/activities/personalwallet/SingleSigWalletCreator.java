@@ -196,7 +196,6 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
                 break;
             case R.id.bn_multi_next:
                 mCreatOnlyWallet();
-
                 break;
         }
     }
@@ -227,6 +226,7 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
             intent.putExtra("walletNameNum", walletNameNum);
             intent.putExtra("walletNames", strWalletName);
             startActivity(intent);
+            finish();
         } else {
             // new version code
             showPopupAddCosigner1();
@@ -448,7 +448,7 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
                 intent.putExtra("flagTag", "personal");
                 intent.putExtra("strBixinname", strBixinname);
                 startActivity(intent);
-
+                finish();
                 dialogBtoms.cancel();
                 dialogFragment.dismiss();
             }
@@ -492,6 +492,9 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
 
     @Override
     public void onCancelled() {
+        if (readingPubKey != null) {
+            readingPubKey.dismiss();
+        }
         Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
     }
 

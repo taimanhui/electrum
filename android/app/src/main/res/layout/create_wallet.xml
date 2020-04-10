@@ -19,6 +19,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
+            android:background="?attr/selectableItemBackground"
             android:src="@drawable/back" />
 
         <TextView
@@ -68,6 +69,7 @@
                     android:id="@+id/lin_personal_walt"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -100,6 +102,7 @@
                     android:id="@+id/bn_import_wallet"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -141,6 +144,7 @@
                     android:id="@+id/linHideWallet"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -175,6 +179,7 @@
                     android:id="@+id/lin_input_histry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -228,6 +233,7 @@
                     android:id="@+id/bn_create_wallet"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -259,6 +265,7 @@
                 <LinearLayout
                     android:id="@+id/lin_input_helpWord"
                     android:layout_width="match_parent"
+                    android:background="?attr/selectableItemBackground"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical">
 

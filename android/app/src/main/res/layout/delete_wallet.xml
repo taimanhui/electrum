@@ -33,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:gravity="center"
+            android:background="?attr/selectableItemBackground"
             android:text="@string/delete_thiswallet"
             android:textColor="@color/red_text"
             android:textSize="@dimen/sp_16" />
@@ -48,6 +49,7 @@
             android:layout_height="70dp"
             android:gravity="center"
             android:text="@string/cancel"
+            android:background="?attr/selectableItemBackground"
             android:textColor="@color/set_txt"
             android:textSize="@dimen/sp_16" />
 

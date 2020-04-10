@@ -19,6 +19,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
+            android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/back" />
 
         <TextView

@@ -44,6 +44,7 @@
                 android:paddingTop="@dimen/dp_12"
                 android:paddingBottom="@dimen/dp_12"
                 android:text="@string/cancel"
+                android:background="?attr/selectableItemBackground"
                 android:textColor="@color/text"
                 android:textSize="@dimen/sp_16" />
 
@@ -61,6 +62,7 @@
                 android:paddingTop="@dimen/dp_12"
                 android:paddingBottom="@dimen/dp_12"
                 android:text="@string/confirm"
+                android:background="?attr/selectableItemBackground"
                 android:textColor="@color/text"
                 android:textSize="@dimen/sp_16" />
 

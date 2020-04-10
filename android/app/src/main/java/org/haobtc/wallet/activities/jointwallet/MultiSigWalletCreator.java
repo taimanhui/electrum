@@ -932,12 +932,16 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         }
         if (readingPubKey != null) {
             readingPubKey.dismiss();
-        }        xpub = s;
+        }
+        xpub = s;
         showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
     }
 
     @Override
     public void onCancelled() {
+        if (readingPubKey != null) {
+            readingPubKey.dismiss();
+        }
         Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
     }
 }

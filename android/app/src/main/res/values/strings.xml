@@ -438,7 +438,7 @@
     <string name="please_inputPort">Please enter the port number</string>
     <string name="add_finished">Add success</string>
     <string name="upgradeed">Upgraded to v1.2</string>
-    <string name="please_confirmKEY">Please confirm the newer pin code on BixinKEY</string>
+    <string name="pin_change_success">PIN change successful</string>
     <string name="hours_24">24 hour limit</string>
     <string name="no_need_PIN">No PIN required</string>
     <string name="no_need_hardware">No hardware confirmation required</string>
@@ -526,7 +526,7 @@
     <string name="check_hide_wallet">Click to view hidden Wallet</string>
     <string name="check_wallet_tips">To view the hidden wallet, you need to use the activated BixinKEY</string>
     <string name="onclick_check">Click to view</string>
-    <string name="useable">available</string>
+    <string name="usable">available</string>
     <string name="wallet_un_activated">Wallet is not activated, no need to restore factory settings</string>
     <string name="wallet_un_activated_pin">Wallet is not activated, PIN code cannot be modified</string>
     <string name="checkHideWallet">View hidden Wallet</string>

@@ -81,11 +81,13 @@ public class MnemonicActivity extends BaseActivity {
                 intent1.putExtra("strPass1",strPass1);
                 intent1.putExtra("strName",strName);
                 startActivity(intent1);
+                finish();
                 break;
             case R.id.tet_jump:
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("strName",strName);
                 startActivity(intent);
+                finishAffinity();
                 break;
         }
     }

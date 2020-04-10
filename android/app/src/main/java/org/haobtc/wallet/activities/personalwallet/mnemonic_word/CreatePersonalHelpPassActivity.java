@@ -3,8 +3,6 @@ package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -13,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-
 import com.chaquo.python.Kwarg;
 
 import org.greenrobot.eventbus.EventBus;
@@ -22,7 +18,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.MyDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -124,6 +119,7 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 break;
             case R.id.btn_setPin:
                 mIntent(CreateInputHelpWordWalletSuccseActivity.class);
+                finish();
                 improtWallet();
                 break;
         }
@@ -170,7 +166,6 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 EventBus.getDefault().postSticky(new FirstEvent("createSinglePass"));
             }
         });
-
     }
 }
 

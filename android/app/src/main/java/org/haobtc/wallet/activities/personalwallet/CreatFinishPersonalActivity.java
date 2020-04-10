@@ -136,6 +136,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
                 break;
             case R.id.bn_complete_add_cosigner:
                 mIntent(MainActivity.class);
+                finishAffinity();
                 break;
         }
     }

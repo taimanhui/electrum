@@ -65,6 +65,8 @@ public class CreatAppWalletActivity extends BaseActivity implements TextWatcher 
                 Intent intent = new Intent(CreatAppWalletActivity.this, AppWalletSetPassActivity.class);
                 intent.putExtra("strName",strWalletName);
                 startActivity(intent);
+                finish();
+
                 break;
         }
     }

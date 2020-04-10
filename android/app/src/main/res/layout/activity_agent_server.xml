@@ -18,6 +18,7 @@
             android:id="@+id/img_back"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
@@ -119,6 +120,7 @@
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:paddingStart="@dimen/dp_16"
+                        android:background="?android:attr/selectableItemBackground"
                         android:text="@string/node_type"
                         android:textColor="@color/text"
                         tools:ignore="RtlSymmetry" />
