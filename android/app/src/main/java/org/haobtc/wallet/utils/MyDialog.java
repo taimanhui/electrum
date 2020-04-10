@@ -14,7 +14,7 @@ import org.haobtc.wallet.R;
 
 public class MyDialog extends Dialog {
     private Context context;
-    private  MyDialog dialog;
+    private static  MyDialog dialog;
     private ImageView ivProgress;
 
     public MyDialog(Context context) {
@@ -30,7 +30,7 @@ public class MyDialog extends Dialog {
 
     //check dialog
     public static MyDialog showDialog(Context context) {
-        MyDialog dialog = new MyDialog(context, R.style.MyDialog);//dialog style
+        dialog = new MyDialog(context, R.style.MyDialog);//dialog style
         dialog.setContentView(R.layout.dialog_layout);//dialog view file
 //        dialog.setCanceledOnTouchOutside(false);//onclick out don't close dialog
         return dialog;

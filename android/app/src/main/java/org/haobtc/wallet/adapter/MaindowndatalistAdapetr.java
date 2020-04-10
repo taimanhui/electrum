@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -38,7 +39,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
             if (amount.contains("(")) {
                 String substring = amount.substring(0, amount.indexOf("("));
                 helper.setText(R.id.tet_BTC, substring);
-            }else {
+            } else {
                 helper.setText(R.id.tet_BTC, amount);
             }
         }
@@ -51,46 +52,49 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
             helper.setText(R.id.tet_Time, item.getDate());
         }
 
+        LinearLayout linearDelete = helper.getView(R.id.linear_delete);// delete button
         //judge type
         String type = item.getType();
         if ("history".equals(type)) {
             //history
             String confirmations = item.getConfirmations();
+            String tx_status = item.getTx_status();
             int anInt = Integer.parseInt(confirmations);
-            if (anInt > 0) {
+            if (anInt > 0) {//Confirmed
                 helper.setText(R.id.tet_zt, R.string.alreadychoose);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF6182F5"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
-            } else {
-                String tx_status = item.getTx_status();
-                if ("Signed".equals(tx_status)||"Local".equals(tx_status)) {
-                    //new creat trsaction
-                    helper.setText(R.id.tet_zt, R.string.wait_broadcast);
-                    TextView tetview = helper.getView(R.id.tet_zt);
-                    tetview.setTextColor(Color.parseColor("#FF838383"));
-                    tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
-                } else if ("Unsigned".equals(tx_status)) {
-                    //new creat trsaction
-                    helper.setText(R.id.tet_zt, R.string.transaction_waitting);
-                    TextView tetview = helper.getView(R.id.tet_zt);
-                    tetview.setTextColor(Color.parseColor("#FFF26A3A"));
-                    tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
-                } else if (tx_status.contains("Partially signed")) {
-                    //new creat trsaction
-                    helper.setText(R.id.tet_zt, R.string.transaction_waitting);
-                    TextView tetview = helper.getView(R.id.tet_zt);
-                    tetview.setTextColor(Color.parseColor("#FFF26A3A"));
-                    tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
-                }else if (tx_status.contains("Unconfirmed")){
-                    helper.setText(R.id.tet_zt, R.string.waitchoose);
-                    TextView tetview = helper.getView(R.id.tet_zt);
-                    tetview.setTextColor(Color.parseColor("#FF838383"));
-                    tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
-                }
+                linearDelete.setVisibility(View.GONE);//hide delete button
+            } else if (tx_status.contains("Unconfirmed")) {//Unconfirmed
+                linearDelete.setVisibility(View.GONE);//hide delete button
+                helper.setText(R.id.tet_zt, R.string.waitchoose);
+                TextView tetview = helper.getView(R.id.tet_zt);
+                tetview.setTextColor(Color.parseColor("#FF838383"));
+                tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
+            } else if ("Unsigned".equals(tx_status)) {//Unsigned
+                //new creat trsaction
+                helper.setText(R.id.tet_zt, R.string.transaction_waitting);
+                TextView tetview = helper.getView(R.id.tet_zt);
+                tetview.setTextColor(Color.parseColor("#FFF26A3A"));
+                tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
+                linearDelete.setVisibility(View.VISIBLE);//hide delete button
+            } else if (tx_status.contains("Partially signed")) {
+                //new creat trsaction
+                helper.setText(R.id.tet_zt, R.string.transaction_waitting);
+                TextView tetview = helper.getView(R.id.tet_zt);
+                tetview.setTextColor(Color.parseColor("#FFF26A3A"));
+                tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
+                linearDelete.setVisibility(View.VISIBLE);//hide delete button
+            } else if ("Signed".equals(tx_status) || "Local".equals(tx_status)) {
+                //new creat trsaction
+                helper.setText(R.id.tet_zt, R.string.wait_broadcast);
+                TextView tetview = helper.getView(R.id.tet_zt);
+                tetview.setTextColor(Color.parseColor("#FF838383"));
+                tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
+                linearDelete.setVisibility(View.VISIBLE);//hide delete button
             }
         }
-
         helper.addOnClickListener(R.id.lin_Item);
         helper.addOnClickListener(R.id.txt_delete);
 

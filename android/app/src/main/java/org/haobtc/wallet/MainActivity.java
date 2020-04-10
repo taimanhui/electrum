@@ -92,7 +92,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private List<Fragment> fragmentList;
-    private boolean jumpOr;
     private MaindowndatalistAdapetr trsactionlistAdapter;
     private String strNames;
     private SmartRefreshLayout refreshLayout;
@@ -108,27 +107,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void initView() {
+        //Eventbus register
+        EventBus.getDefault().register(this);
         sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         SharedPreferences.Editor edit = sharedPreferences.edit();
         //FIRST_RUN,if frist run
         String FIRST_RUN = "is_first_run";
         edit.putBoolean(FIRST_RUN, true);
         edit.apply();
-        //Eventbus register
-        EventBus.getDefault().register(this);
-//        init();
-        jumpOr = sharedPreferences.getBoolean("JumpOr", false);
-        if (sharedPreferences.getBoolean(FIRST_RUN, false)) {
-            init();
-        } else {
-            if (jumpOr) {
-                //splash
-                initGuide();
-            } else {
-                //CreatWallet
-                initCreatWallet();
-            }
-        }
+        init();
     }
 
     private void init() {
@@ -136,6 +123,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         rxPermissions = new RxPermissions(this);
         ImageView imageViewSweep = findViewById(R.id.img_sweep);
         TextView btnAddmoney = findViewById(R.id.tet_Addmoney);
+        viewPager = findViewById(R.id.viewPager);
         recy_data = findViewById(R.id.recy_data);
         ImageView imageViewSetting = findViewById(R.id.img_setting);
         TextView textView = findViewById(R.id.textView_more);
@@ -153,30 +141,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         walletnameList = new ArrayList<>();
     }
 
-    private void initCreatWallet() {
-        Intent intent = new Intent(this, CreateWalletActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private void initGuide() {
-        Intent intent = new Intent(this, GuideActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
     @Override
     public void initData() {
-        viewPager = findViewById(R.id.viewPager);
         maintrsactionlistEvents = new ArrayList<>();
         fragmentList = new ArrayList<>();
         //Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
         recy_data.setAdapter(trsactionlistAdapter);
-        if (jumpOr) {
-            //Rolling Wallet
-            mWheelplanting();
-        }
+        //Rolling Wallet
+        mWheelplanting();
+
     }
 
     private void mWheelplanting() {
@@ -236,7 +210,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     viewPager.setOffscreenPageLimit(4);
                     viewPager.setPageMargin(40);
                     viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-                }else{
+                } else {
                     addwalletFragment();
                 }
             }
@@ -269,10 +243,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onPageSelected(int position) {
                 scrollPos = position;
-                Log.i("onPageSelected", "pos__ " + position);
-                Log.i("onPageSelected", "pos+++++++ " + (fragmentList.size() - 1));
                 if (position == (fragmentList.size() - 1) || position == (fragmentList.size() - 2)) {
-                    Log.i("onPageSelected", "名字为空");
                     if (position == (fragmentList.size() - 1)) {
                         tetNone.setText(getString(R.string.hide_wallet_tips));
                         tetNone.setVisibility(View.VISIBLE);
@@ -292,9 +263,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         @Override
                         public void run() {
                             //refresh only wallet
-                            if (fragmentList.size() - 1 != position) {
-                                ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
-                            }
+                            ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
                             //trsaction list data
                             downMainListdata();
                         }
@@ -610,12 +579,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        maintrsactionlistEvents.clear();
         //trsaction list data
         downMainListdata();
-        if (trsactionlistAdapter != null) {
-            trsactionlistAdapter.notifyDataSetChanged();
-        }
     }
 
     @SuppressLint("HandlerLeak")

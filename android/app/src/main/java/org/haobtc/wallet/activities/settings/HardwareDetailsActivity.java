@@ -18,7 +18,6 @@ import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
@@ -28,11 +27,9 @@ import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
-import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +38,6 @@ import butterknife.OnClick;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 
 public class HardwareDetailsActivity extends BaseActivity implements BusinessAsyncTask.Helper {

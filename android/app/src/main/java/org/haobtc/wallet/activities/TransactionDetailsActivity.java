@@ -127,6 +127,8 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     LinearLayout linPayAddress;
     @BindView(R.id.linearSignStatus)
     LinearLayout linearSignStatus;
+    @BindView(R.id.tet_payAddressNum)
+    TextView tetPayAddressNum;
     private String keyValue;
     private String tx_hash;
     private String listType;
@@ -155,6 +157,9 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     private CommunicationModeSelector modeSelector;
     private String signTransction;
     private boolean set_rbf;
+    private List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr;
+    private List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddrScan;
+    private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
 
     @Override
     public int getLayoutId() {
@@ -199,7 +204,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         if (isIsmine) {
             tvInTb2.setText(R.string.sendetail);
             linFee.setVisibility(View.VISIBLE);
-            if (set_rbf){
+            if (set_rbf) {
                 tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
             }
             try {
@@ -312,7 +317,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         String tx_status = getnewcreatTrsactionListBean.getTxStatus();
         output_addr = getnewcreatTrsactionListBean.getOutputAddr();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
-        List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr = getnewcreatTrsactionListBean.getInputAddr();
+        inputAddr = getnewcreatTrsactionListBean.getInputAddr();
         txid = getnewcreatTrsactionListBean.getTxid();
         rowtx = getnewcreatTrsactionListBean.getTx();
         canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
@@ -326,10 +331,12 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         tetTrsactionHash.setText(txid);
         //input address num
         int size = output_addr.size();
-        if ("English".equals(language)) {
+        if (language.equals("English")) {
             tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
+            tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddr.size()));
         } else {
             tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
+            tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddr.size(), getString(R.string.ge)));
         }
         if (size != 0) {
             //output_address
@@ -375,7 +382,8 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         String fee = scanListdata.getFee();
         String description = scanListdata.getDescription();
         String tx_status = scanListdata.getTxStatus();
-        List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddr = scanListdata.getOutputAddr();
+        inputAddrScan = scanListdata.getInputAddr();
+        outputAddrScan = scanListdata.getOutputAddr();
 
         List<Integer> signStatusMes = scanListdata.getSignStatus();
         String txid = scanListdata.getTxid();
@@ -383,14 +391,16 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         //trsaction hash
         tetTrsactionHash.setText(txid);
         //input address num
-        int size = outputAddr.size();
-        if ("English".equals(language)) {
+        int size = outputAddrScan.size();
+        if (language.equals("English")) {
             tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
+            tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddrScan.size()));
         } else {
             tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
+            tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddrScan.size(), getString(R.string.ge)));
         }
         //output_address
-        String addr = outputAddr.get(0).getAddr();
+        String addr = outputAddrScan.get(0).getAddr();
         tetGetMoneyaddress.setText(addr);
 
         if (signStatusMes != null) {
@@ -508,7 +518,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         startActivityForResult(intentCon, 1);
     }
 
-    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans})
+    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans,R.id.lin_payAddress})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -548,12 +558,26 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             case R.id.lin_getMoreaddress:
                 //transaction detail or create success
                 Intent intent1 = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
-                intent1.putExtra("jsondef_get", (Serializable) output_addr);
+                if (output_addr != null) {
+                    intent1.putExtra("jsondef_get", (Serializable) output_addr);
+                } else {
+                    intent1.putExtra("jsondef_getScan", (Serializable) outputAddrScan);
+                }
                 intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent1);
                 break;
             case R.id.tet_addSpeed:
                 ifHaveRbf();
+                break;
+            case R.id.lin_payAddress:
+                Intent intent2Pay = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
+                if (inputAddr != null) {
+                    intent2Pay.putExtra("payAddress", (Serializable) inputAddr);
+                } else {
+                    intent2Pay.putExtra("payAddressScan", (Serializable) inputAddrScan);
+                }
+                intent2Pay.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent2Pay);
                 break;
         }
     }
@@ -571,22 +595,22 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         Log.i("braodcastTrsact", "braodcastTrsaction: " + signedRowTrsation);
         try {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
-            tetState.setText(R.string.waitchoose);
-            sigTrans.setText(R.string.check_trsaction);
-            imgProgressone.setVisibility(View.GONE);
-            imgProgressthree.setVisibility(View.GONE);
-            imgProgressfour.setVisibility(View.VISIBLE);
-            //text color
-            tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
-            tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
-            //trsaction hash and time
-            linTractionHash.setVisibility(View.VISIBLE);
-            EventBus.getDefault().post(new FirstEvent("22"));
-            mToast(getString(R.string.braodcast_succse));
-            Log.i("signedRowTrsation", "-------: ");
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
+        tetState.setText(R.string.waitchoose);
+        sigTrans.setText(R.string.check_trsaction);
+        imgProgressone.setVisibility(View.GONE);
+        imgProgressthree.setVisibility(View.GONE);
+        imgProgressfour.setVisibility(View.VISIBLE);
+        //text color
+        tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+        tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
+        //trsaction hash and time
+        linTractionHash.setVisibility(View.VISIBLE);
+        EventBus.getDefault().post(new FirstEvent("22"));
+        mToast(getString(R.string.braodcast_succse));
     }
 
     private void signInputpassDialog() {
@@ -820,5 +844,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     public void onCancelled() {
 
     }
+
 }
 

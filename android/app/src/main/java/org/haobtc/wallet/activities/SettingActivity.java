@@ -3,7 +3,6 @@ package org.haobtc.wallet.activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,7 +14,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.settings.BixinKEYMenageActivity;
+import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
 import org.haobtc.wallet.activities.settings.BlueToothStatusActivity;
 import org.haobtc.wallet.activities.settings.CurrencyActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
@@ -81,7 +80,7 @@ public class SettingActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_bixinKey:
-                mIntent(BixinKEYMenageActivity.class);
+                mIntent(BixinKEYManageActivity.class);
                 break;
             case R.id.tetBuckup:
                 mIntent(BackupRecoveryActivity.class);

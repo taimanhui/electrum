@@ -406,7 +406,7 @@
     <string name="reading_exception">BixinKEY Read error</string>
     <string name="select_ble_device">Select Bluetooth device to connect</string>
     <string name="tip_ble">Please turn on BixinKEY and get close to your phone</string>
-    <string name="reading_dot">Read public key...</string>
+    <string name="reading_dot">Read public key…</string>
     <string name="warning">The necessary permissions of this app are denied, which may affect your normal use</string>
     <string name="ble_device_connecting">Bluetooth device connecting</string>
     <string name="tip_ble_bonding">Please open BixinKEY to confirm the pairing code</string>
@@ -532,8 +532,13 @@
     <string name="checkHideWallet">View hidden Wallet</string>
     <string name="verification">Verification</string>
     <string name="bluetooth">Bluetooth</string>
-    <string name="use_bluetooth_line">使用蓝牙连接BixinKEY</string>
-    <string name="bluetooth_tips">开启状态，可使用蓝牙与BixinKEY进行通信</string>
-    <string name="open">开</string>
+    <string name="use_bluetooth_line">Using Bluetooth to connect to BixinKEY</string>
+    <string name="bluetooth_tips">On status, can use Bluetooth to communicate with bixinkey</string>
+    <string name="open">Open</string>
+    <string name="no_message">Failed to get device information, please try again later!!</string>
+    <string name="blurtooth_need_permission">Bluetooth requires location permission</string>
+    <string name="task_cancle">Current task to cancel</string>
+    <string name="bluetooth_fail">Bluetooth connection failed</string>
+    <string name="default_key">Key</string>
 
 </resources>

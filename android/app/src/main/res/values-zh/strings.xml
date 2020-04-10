@@ -392,7 +392,7 @@
     <string name="reading_exception">BixinKEY读取错误</string>
     <string name="select_ble_device">选择蓝牙设备进行连接</string>
     <string name="tip_ble">请开启BixinKEY，并靠近手机</string>
-    <string name="reading_dot">读取公钥中...</string>
+    <string name="reading_dot">读取公钥中…</string>
     <string name="warning">本应用必要权限被拒绝，可能会影响您的正常使用</string>
     <string name="ble_device_connecting">蓝牙设备连接中</string>
     <string name="tip_ble_bonding">请开启BixinKEY, 确认配对码</string>
@@ -512,5 +512,9 @@
     <string name="reset_device_successful">BixinKEY恢复出厂设置</string>
     <string name="wallet_un_activated">钱包未激活，不需要恢复出厂设置</string>
     <string name="wallet_un_activated_pin">钱包未激活，不需要修改PIN码</string>
+    <string name="no_message">未能获取到设备信息, 请稍后再尝试！！</string>
+    <string name="blurtooth_need_permission">蓝牙需要使用定位权限</string>
+    <string name="task_cancle">当前任务以取消</string>
+    <string name="bluetooth_fail">蓝牙连接失败</string>
 
 </resources>

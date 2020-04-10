@@ -17,14 +17,18 @@ import androidx.annotation.NonNull;
 
 import com.chaquo.python.Kwarg;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 
 public class CreatePersonalHelpPassActivity extends BaseActivity {
 
@@ -36,8 +40,6 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
     EditText edtPass2;
     @BindView(R.id.btn_setPin)
     Button btnSetPin;
-    private MyDialog myDialog;
-    private String type;
     private String seed;
     private String name;
     private int walletNameNum;
@@ -54,9 +56,7 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
-        myDialog = MyDialog.showDialog(CreatePersonalHelpPassActivity.this);
         Intent intent = getIntent();
-        type = intent.getStringExtra("newWallet_type");
         seed = intent.getStringExtra("strNewseed");
         name = intent.getStringExtra("strnewWalletname");
         walletNameNum = intent.getIntExtra("walletNameNum", 0);
@@ -123,67 +123,55 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_setPin:
-                myDialog.show();
-                handler.sendEmptyMessage(1);
+                mIntent(CreateInputHelpWordWalletSuccseActivity.class);
+                improtWallet();
                 break;
         }
     }
 
-    @SuppressLint("HandlerLeak")
-    Handler handler = new Handler(){
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case 1:
-                    improtWallet();
-                    break;
-            }
-        }
-    };
 
     private void improtWallet() {
         String strPass1 = edtPass1.getText().toString();
         String strPass2 = edtPass2.getText().toString();
         if (TextUtils.isEmpty(strPass1)) {
             mToast(getString(R.string.set_pass));
-            myDialog.dismiss();
             return;
         }
         if (TextUtils.isEmpty(strPass2)) {
             mToast(getString(R.string.set_pass_second));
-            myDialog.dismiss();
             return;
         }
         if (!strPass1.equals(strPass2)) {
             mToast(getString(R.string.two_different_pass));
-            myDialog.dismiss();
             return;
         }
-        try {
-            Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed));
-        } catch (Exception e) {
-            myDialog.dismiss();
-            e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (e.getMessage().contains("path is exist")) {
+                        mToast(getString(R.string.changewalletname));
+                    }
+                    return;
+                }
+                edit.putBoolean("haveCreateNopass", true);
+                edit.putInt("defaultName", walletNameNum);
+                edit.apply();
+                try {
+                    Daemon.commands.callAttr("load_wallet", name);
+                    Daemon.commands.callAttr("select_wallet", name);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                EventBus.getDefault().postSticky(new FirstEvent("createSinglePass"));
             }
-            return;
-        }
-        edit.putInt("defaultName", walletNameNum);
-        edit.apply();
-        try {
-            Daemon.commands.callAttr("load_wallet", name);
-            Daemon.commands.callAttr("select_wallet", name);
-        } catch (Exception e) {
-            myDialog.dismiss();
-            e.printStackTrace();
-            return;
-        }
-        myDialog.dismiss();
-        mIntent(CreateInputHelpWordWalletSuccseActivity.class);
-    }
+        });
 
+    }
 }
 
 

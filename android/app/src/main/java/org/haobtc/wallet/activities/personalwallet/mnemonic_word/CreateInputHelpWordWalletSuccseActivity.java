@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -9,19 +10,28 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.adapter.HelpWordAdapter;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.MyDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,6 +50,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
     @BindView(R.id.btn_Finish)
     Button btnFinish;
     private Bitmap bitmap;
+    private MyDialog myDialog;
 
     @Override
     public int getLayoutId() {
@@ -49,13 +60,14 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
+        myDialog = MyDialog.showDialog(this);
 
     }
 
     @Override
     public void initData() {
-        //get Or code
-        mGeneratecode();
+        myDialog.show();
     }
 
     @OnClick({R.id.img_backCreat, R.id.tet_Preservation, R.id.btn_Finish})
@@ -84,11 +96,13 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
             walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
+            myDialog.dismiss();
             return;
         }
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
             Log.i("strCode", "mGenerate--: " + strCode);
+            myDialog.dismiss();
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qr_data = getCodeAddressBean.getQr_data();
@@ -115,4 +129,18 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(FirstEvent updataHint) {
+        String createSinglePass = updataHint.getMsg();
+        if (createSinglePass.equals("createSinglePass")) {
+            //get Or code
+            mGeneratecode();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

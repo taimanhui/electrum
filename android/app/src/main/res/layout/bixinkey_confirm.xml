@@ -81,6 +81,7 @@
                     android:hint="@string/make_aname"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_10"
+                    android:text="@string/default_key"
                     android:textColor="#494949"
                     android:textSize="15sp" />
 

@@ -212,6 +212,7 @@ public class TransactionsSettingActivity extends BaseActivity {
             Daemon.commands.callAttr("set_use_change", false);
         } catch (Exception e) {
             e.printStackTrace();
+            myDialog.dismiss();
             return;
         }
         edit.putBoolean("set_use_change", false);

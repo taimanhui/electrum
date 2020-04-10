@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
-    tools:context=".activities.settings.BixinKEYMenageActivity">
+    tools:context=".activities.settings.BixinKEYManageActivity">
 
     <LinearLayout
         android:background="@color/bk_page"
@@ -34,18 +34,6 @@
                 android:text="@string/bixinkey_manage"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
-
-            <TextView
-                android:id="@+id/tet_Add"
-                android:visibility="gone"
-                android:layout_width="64dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_alignParentEnd="true"
-                android:text="@string/add_"
-                android:textColor="@color/button_bk_disableok"
-                android:textSize="@dimen/text_size" />
-
 
         </RelativeLayout>
 

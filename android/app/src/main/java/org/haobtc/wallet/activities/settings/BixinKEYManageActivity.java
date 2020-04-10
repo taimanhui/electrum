@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,12 +23,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class BixinKEYMenageActivity extends BaseActivity {
+public class BixinKEYManageActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
-    @BindView(R.id.tet_Add)
-    TextView tetAdd;
     @BindView(R.id.recl_bixinKey_list)
     RecyclerView reclBixinKeyList;
     private List<HardwareFeatures> deviceValue;
@@ -62,7 +59,7 @@ public class BixinKEYMenageActivity extends BaseActivity {
                 @Override
                 public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                     String firmwareVersion = "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
-                    Intent intent = new Intent(BixinKEYMenageActivity.this, HardwareDetailsActivity.class);
+                    Intent intent = new Intent(BixinKEYManageActivity.this, HardwareDetailsActivity.class);
                     intent.putExtra("bleName", deviceValue.get(position).getBleName());
                     intent.putExtra("firmwareVersion", firmwareVersion);
                     intent.putExtra("bleVerson", "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getPatchVersion());
@@ -73,15 +70,10 @@ public class BixinKEYMenageActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.img_back, R.id.tet_Add})
+    @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
-            case R.id.tet_Add:
-
-                break;
+        if (view.getId() == R.id.img_back) {
+            finish();
         }
     }
 }

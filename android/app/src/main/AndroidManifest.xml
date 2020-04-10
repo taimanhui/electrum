@@ -71,7 +71,7 @@
         <activity android:name=".activities.settings.BixinKeyMessageActivity" />
         <activity android:name=".activities.settings.HardwareDetailsActivity" />
         <activity android:name=".activities.settings.CurrencyActivity" />
-        <activity android:name=".activities.settings.BixinKEYMenageActivity" />
+        <activity android:name=".activities.settings.BixinKEYManageActivity" />
         <activity android:name=".activities.personalwallet.CreatFinishPersonalActivity" />
         <activity android:name=".activities.personalwallet.SingleSigWalletCreator" />
         <activity android:name=".activities.jointwallet.MultiSigWalletCreator">

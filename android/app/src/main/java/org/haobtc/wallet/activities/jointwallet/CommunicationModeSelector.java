@@ -281,7 +281,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 case 2523:
                     Activity activity = getActivity();
                     if (activity != null) {
-                        activity.runOnUiThread(() -> Toast.makeText(getContext(), "蓝牙链接异常", Toast.LENGTH_LONG).show());
+                        activity.runOnUiThread(() -> Toast.makeText(getContext(), getString(R.string.bluetooth_abnormal), Toast.LENGTH_LONG).show());
                     }
                     dismiss();
                     break;
@@ -294,7 +294,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 case 2521:
                     Activity activity1 = getActivity();
                     if (activity1 != null) {
-                        activity1.runOnUiThread(() -> Toast.makeText(getContext(), "蓝牙连接失败", Toast.LENGTH_LONG).show());
+                        activity1.runOnUiThread(() -> Toast.makeText(getContext(), getString(R.string.bluetooth_fail), Toast.LENGTH_LONG).show());
                     }
                     dismiss();
                     break;
@@ -501,7 +501,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             }
             return features;
         } catch (ExecutionException | InterruptedException  | TimeoutException e) {
-            Toast.makeText(getContext(), "未能获取到设备信息, 请稍后再尝试！！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.no_message), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             throw e;
         }
@@ -577,7 +577,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                                     turnOnBlueTooth();
                                     refreshDeviceList(true);
                                 } else {
-                                   Toast.makeText(getContext(), "蓝牙需要使用定位权限", Toast.LENGTH_LONG).show();
+                                   Toast.makeText(getContext(), getString(R.string.blurtooth_need_permission), Toast.LENGTH_LONG).show();
                                 }
                             }
                     ).dispose();
@@ -743,7 +743,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public void onCancelled() {
         Activity activity = getActivity();
         if (activity != null) {
-           activity.runOnUiThread(() -> Toast.makeText(getActivity(), "当前任务以取消", Toast.LENGTH_SHORT).show());
+           activity.runOnUiThread(() -> Toast.makeText(getActivity(), getString(R.string.task_cancle), Toast.LENGTH_SHORT).show());
         }
     }
 
