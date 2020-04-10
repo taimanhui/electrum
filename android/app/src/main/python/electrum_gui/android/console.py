@@ -1412,9 +1412,7 @@ class AndroidCommands(commands.Commands):
             print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
             self.network.trigger_callback("wallet_updated", self.wallet)
 
-            name_info = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else 'unknow'
             info = {
-                "wallet_type": name_info.type,
                 "balance": self.format_amount_and_units(c),
                 "name": name
             }
