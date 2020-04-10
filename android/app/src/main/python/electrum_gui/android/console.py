@@ -4,6 +4,7 @@ import copy
 from code import InteractiveConsole
 import json
 import os
+import time
 from decimal import Decimal
 from os.path import exists, join
 import pkgutil
@@ -462,7 +463,10 @@ class AndroidCommands(commands.Commands):
             self.daemon.add_wallet(wallet)
             wallet_type = "%s-%s" % (self.m, self.n)
             if not hide_type:
-                self.local_wallet_info[name] = wallet_type
+                wallet_info = {}
+                wallet_info['type'] = wallet_type
+                wallet_info['time'] = time.time()
+                self.local_wallet_info[name] = wallet_info
                 self.config.set_key('all_wallet_type_info', self.local_wallet_info)
             if self.wallet:
                 self.close_wallet()
@@ -489,10 +493,12 @@ class AndroidCommands(commands.Commands):
     def get_wallet_info_from_server(self, xpub):
         try:
             if self.label_flag:
-                Vpub_data = json.loads(self.label_plugin.pull(xpub))
-                vpub = self.kifkey_change_from_p2wsh_to_p2wpkh(xpub)
-                vpub_data = json.loads(self.label_plugin.pull(vpub))
-                return json.dumps(Vpub_data + vpub_data)
+                Vpub_data = []
+                if xpub[0:3] == 'Vpub':
+                    Vpub_data = json.loads(self.label_plugin.pull(xpub))
+                    xpub = self.kifkey_change_from_p2wsh_to_p2wpkh(xpub)
+                vpub_data = json.loads(self.label_plugin.pull(xpub))
+                return json.dumps(Vpub_data + vpub_data if Vpub_data is not None else vpub_data)
         except BaseException as e:
             raise e
 
@@ -557,13 +563,9 @@ class AndroidCommands(commands.Commands):
     def mktx(self, outputs, message):
         try:
             self._assert_wallet_isvalid()
-            #outputs_addrs = self.parse_output(outputs)
-            #self.do_save(outputs_addrs, message, self.tx)
             tx = tx_from_any(self.tx)
             tx.deserialize()
             self.do_save(tx)
-            # if self.label_flag:
-            #     self.label_plugin.push(self.wallet)
         except Exception as e:
             raise BaseException(e)
 
@@ -636,6 +638,7 @@ class AndroidCommands(commands.Commands):
         self.base_unit = base_unit
         self.decimal_point = util.base_unit_name_to_decimal_point(self.base_unit)
         self.config.set_key('decimal_point', self.decimal_point, True)
+        self.update_status()
 
     def format_amount_and_units(self, amount):
         try:
@@ -653,7 +656,7 @@ class AndroidCommands(commands.Commands):
         try:
             net_params = self.network.get_parameters()
             proxy = None
-            if(proxy_mode != "" and proxy_host != "" and proxy_port != "" and proxy_user != "" and proxy_password != ""):
+            if(proxy_mode != "" and proxy_host != "" and proxy_port != "" and proxy_user != ""):
                 proxy = {'mode': str(proxy_mode).lower(),
                      'host': str(proxy_host),
                      'port': str(proxy_port),
@@ -922,7 +925,8 @@ class AndroidCommands(commands.Commands):
         data = data.strip()
         try:
             uri = util.parse_URI(data)
-            uri['amount'] = self.format_amount_and_units(uri['amount'])
+            if uri.__contains__('amount'):
+                uri['amount'] = self.format_amount_and_units(uri['amount'])
             return uri
         except Exception as e:
             raise Exception(e)
@@ -945,6 +949,7 @@ class AndroidCommands(commands.Commands):
     def parse_pr(self, data):
         add_status_flag = False
         tx_status_flag = False
+        add_data = {}
         try:
             add_data = self.parse_address(data)
             add_status_flag = True
@@ -1269,7 +1274,10 @@ class AndroidCommands(commands.Commands):
         wallet.start_network(self.daemon.network)
         wallet.save_db()
         self.daemon.add_wallet(wallet)
-        self.local_wallet_info[name] = 'standard'
+        wallet_info = {}
+        wallet_info['type'] = 'standard'
+        wallet_info['time'] = time.time()
+        self.local_wallet_info[name] = wallet_info
         self.config.set_key('all_wallet_type_info', self.local_wallet_info)
         # if self.label_flag:
         #     self.label_plugin.load_wallet(self.wallet, None)
@@ -1403,8 +1411,10 @@ class AndroidCommands(commands.Commands):
             print("console.select_wallet %s %s %s==============" %(c, u, x))
             print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
             self.network.trigger_callback("wallet_updated", self.wallet)
+
+            name_info = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else 'unknow'
             info = {
-                #"wallet_type": self.wallet.wallet_type,
+                "wallet_type": name_info.type,
                 "balance": self.format_amount_and_units(c),
                 "name": name
             }
@@ -1420,11 +1430,16 @@ class AndroidCommands(commands.Commands):
         #all_wallets = sorted(set(name_wallets + hide_wallets))
         #print(f"all wallets = {all_wallets}")
         #print(f"local_wallet info === {self.local_wallet_info}")
-        out = []
+        name_info = {}
         for name in name_wallets:
-            name_info = {}
-            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else 'unknow'
-            out.append(name_info)
+            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else {'type': 'unknow', 'time': time.time()}
+
+        name_info = sorted(name_info.items(), key=lambda item:item[1]['time'], reverse=True)
+        out = []
+        for key, value in name_info:
+            temp_info = {}
+            temp_info[key] = value['type']
+            out.append(temp_info)
         return json.dumps(out)
 
     def delete_wallet_from_deamon(self, name):

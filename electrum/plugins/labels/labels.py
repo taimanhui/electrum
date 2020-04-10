@@ -140,8 +140,8 @@ class LabelsPlugin(BasePlugin):
             print("--111112222 response=%s" %response)
         except Exception as e:
             raise ErrorConnectingServer(e) from e
-        # if response['Error'] is not None:
-        #     raise BaseException(response)
+        if response.__contains__('Error'):
+            raise BaseException(response)
 
         if response["Walltes"] is None:
             self.logger.info('no wallets info')
@@ -152,7 +152,7 @@ class LabelsPlugin(BasePlugin):
             try:
                 result['xpubId'] = wallet['xpubId']#self.decode_xpub(xpub, wallet['xpubId'])
                 result['walletId'] = wallet['WalletId']
-                result['xpubs'] = self.decode_xpub(xpub, wallet['Xpubs'])
+                result['xpubs'] = self.decode_xpub(xpub, wallet['Xpubs']).split(',')
                 result['walletType'] = self.decode_xpub(xpub, wallet['WalletType'])
             except:
                 continue

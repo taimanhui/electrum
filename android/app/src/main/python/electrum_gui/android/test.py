@@ -32,8 +32,8 @@ testcommond.set_syn_server(False)
 #name = 'hahahahhahh777' #2-2 multi wallet
 #name = 'hahahahhahh333' #1-N wallet
 #name = 'hahahahhahh888' #1-1 wallet
-#name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
-name = "test_hide_wallet"
+name = 'hahahahhahh999' #software wallet create seed:rocket omit review divert bomb brief mushroom family fatal limb goose lion
+#name = "test_hide_wallet"
 password = "111111"
 #password = "None"
 #test hardware
@@ -110,31 +110,31 @@ password = "111111"
 # time.sleep(100000000)
 
 
-name = ""
-pasword = 111111
-m = 1
-n = 1
-xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
-name = "test_wallet"
-for i in range(1,2):
-    testcommond.set_multi_wallet_info(name,m,n)
-    testcommond.add_xpub(xpub1)
-    testcommond.create_multi_wallet(name, hide_type=True)
-
-ret = testcommond.list_wallets()
-print(f"--------before wallet info-------=%s {ret}")
-
-testcommond.delete_wallet(name)
-ret = testcommond.list_wallets()
-print(f"--------after wallet info-------=%s {ret}")
-
-time.sleep(10000)
+# name = ""
+# pasword = 111111
+# m = 1
+# n = 1
+# xpub1 = 'vpub5VKWEPyGCYx8ixvWuS2VJHGJabeSMMKKkMTNwdwZGwcQ446DzVvhrQs3Ux6UhofAVx6VmMTV1XPcDQbiR5fGiotGcgATev8D7sHViURRbJi'
+# name = "test_wallet"
+# for i in range(1,2):
+#     testcommond.set_multi_wallet_info(name,m,n)
+#     testcommond.add_xpub(xpub1)
+#     testcommond.create_multi_wallet(name, hide_type=False)
+#
+# ret = testcommond.list_wallets()
+# print(f"--------before wallet info-------=%s {ret}")
+#
+# testcommond.delete_wallet(name)
+# ret = testcommond.list_wallets()
+# print(f"--------after wallet info-------=%s {ret}")
+#
+# time.sleep(10000)
 
 ## create software wallet by create seed
 
 #name = "test1wwtest"
 #password = "111"
-#testcommond.delete_wallet(name)
+testcommond.delete_wallet(name)
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion', bip39_derivation="m/84'/0'/0'")
 #seed = testcommond.create(name, password, bip39_derivation="")
 #print(f"new seed---------{seed}")
@@ -142,7 +142,7 @@ time.sleep(10000)
 
 # ret = testcommond.is_seed("rocket omit review divert bomb brief mushroom family fatal limb goose lion")
 # ret1 = testcommond.is_seed("wls")
-#testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
+testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
 #testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
 #ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 #print("=======ret1 = %s" %ret)
@@ -156,7 +156,7 @@ time.sleep(10000)
 
 list = testcommond.list_wallets()
 print("3333333333-list = %s" %list)
-
+time.sleep(10000)
 # ##test hardware
 # ret = testcommond.is_initialized(path="udp")
 # if not ret:
@@ -243,9 +243,12 @@ testcommond.set_use_change(True)
 testcommond.set_unconf(True)
 
 #
-add = testcommond.parse_pr("bitcoin:tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2?amount=5&message=test")
-print("addr = %s--------" %add)
-
+# add = testcommond.parse_pr("bitcoin:tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2?amount=5&message=test")
+# print("addr = %s--------" %add)
+# add = testcommond.parse_pr("bitcoin:tb1qdvzlw6z7lwr5cgxtglculx3p52su6jw7e9spv2")
+# print("after addr = %s--------" %add)
+#
+# time.sleep(10000)
 # testinfo = testcommond.get_all_tx_list(None)
 # print("testinfo  sign= %s------------" %testinfo)
 # data = json.loads(testinfo)
