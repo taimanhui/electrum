@@ -221,7 +221,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                     mCreataSuccsesCheck();
                     break;
                 case "B":
-                    if (listType.equals("history")) {
+                    if ("history".equals(listType)) {
                         //isIsmine -->recevid or send
                         if (isIsmine) {
                             tvInTb2.setText(R.string.sendetail);
@@ -235,7 +235,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                         //histry trsaction detail
                         trsactionDetail();
 
-                    } else if (listType.equals("scan")) {
+                    } else if ("scan".equals(listType)) {
                         linearSignStatus.setVisibility(View.GONE);
                         tvInTb2.setText(R.string.recevid);
                         scanDataDetailMessage();
@@ -325,7 +325,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         tetTrsactionHash.setText(txid);
         //input address num
         int size = output_addr.size();
-        if (language.equals("English")) {
+        if ("English".equals(language)) {
             tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
         } else {
             tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
@@ -383,7 +383,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         tetTrsactionHash.setText(txid);
         //input address num
         int size = outputAddr.size();
-        if (language.equals("English")) {
+        if ("English".equals(language)) {
             tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
         } else {
             tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
@@ -424,7 +424,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     //judge state
     private void judgeState(String tx_status) {
         //trsaction state
-        if (tx_status.equals("Unconfirmed")) {//Unconfirmed
+        if ("Unconfirmed".equals(tx_status)) {//Unconfirmed
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
@@ -536,7 +536,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                     intent1.putExtra("checkTxid", txid);
                     startActivity(intent1);
                 } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
-                    if (strwalletType.equals("standard")) {
+                    if ("standard".equals(strwalletType)) {
                         //sign input pass
                         signInputpassDialog();
                     } else {

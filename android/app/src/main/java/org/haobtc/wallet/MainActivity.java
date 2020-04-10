@@ -501,7 +501,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.tet_Addmoney:
                 Intent intent6 = new Intent(MainActivity.this, CreateWalletActivity.class);
-                intent6.putExtra("intentWhere", "main");
                 startActivity(intent6);
                 break;
 

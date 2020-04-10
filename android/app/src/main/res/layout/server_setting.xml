@@ -71,7 +71,6 @@
                         android:id="@+id/switch_cynchronez"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
                         android:thumb="@drawable/switch_custom_thumb_selector"
                         android:track="@drawable/switch_custom_track_selector" />
                 </LinearLayout>
@@ -130,7 +129,8 @@
                         android:layout_height="60dp">
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:focusable="true"
                             android:gravity="center_vertical"
@@ -144,15 +144,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_alignParentEnd="true"
+                            android:layout_marginStart="@dimen/dp_10"
+                            android:layout_toEndOf="@+id/textView"
                             android:drawableEnd="@drawable/jiantou"
                             android:drawablePadding="@dimen/dp_20"
+                            android:ellipsize="end"
                             android:focusable="true"
-                            android:gravity="center_vertical"
+                            android:gravity="center_vertical|end"
+                            android:maxLines="1"
                             android:paddingEnd="@dimen/dp_16"
-                            android:text="@string/btc_com"
                             android:textColor="@color/button_bk_disableok"
                             android:textSize="@dimen/sp_14"
-                            tools:ignore="RtlSymmetry" />
+                            tools:ignore="RtlSymmetry"
+                            tools:text="@string/btc_com" />
                     </RelativeLayout>
 
                     <View
@@ -194,7 +198,8 @@
                         android:layout_height="60dp">
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:id="@+id/textView2"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:focusable="true"
                             android:gravity="center_vertical"
@@ -204,13 +209,18 @@
                             tools:ignore="RtlSymmetry" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/testBlockcheck"
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_alignParentEnd="true"
+                            android:layout_marginStart="@dimen/dp_10"
+                            android:layout_toEndOf="@+id/textView2"
                             android:drawableEnd="@drawable/jiantou"
                             android:drawablePadding="@dimen/dp_20"
+                            android:ellipsize="end"
                             android:focusable="true"
-                            android:gravity="center_vertical"
+                            android:gravity="center_vertical|end"
+                            android:maxLines="1"
                             android:paddingEnd="@dimen/dp_16"
                             android:text="@string/btc_com"
                             android:textColor="@color/button_bk_disableok"
@@ -257,7 +267,8 @@
                         android:layout_height="60dp">
 
                         <TextView
-                            android:layout_width="match_parent"
+                            android:id="@+id/textView3"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:focusable="true"
                             android:gravity="center_vertical"
@@ -267,13 +278,18 @@
                             tools:ignore="RtlSymmetry" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/testElectrumNode"
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_alignParentEnd="true"
+                            android:layout_marginStart="@dimen/dp_10"
+                            android:layout_toEndOf="@+id/textView3"
                             android:drawableEnd="@drawable/jiantou"
                             android:drawablePadding="@dimen/dp_20"
+                            android:ellipsize="end"
                             android:focusable="true"
-                            android:gravity="center_vertical"
+                            android:gravity="center_vertical|end"
+                            android:maxLines="1"
                             android:paddingEnd="@dimen/dp_16"
                             android:textColor="@color/button_bk_disableok"
                             android:textSize="@dimen/sp_14"

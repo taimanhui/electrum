@@ -9,7 +9,7 @@
     <string name="transaction_setting">Transaction settings</string>
     <string name="service_online">Onling service</string>
     <string name="about">About terms of usage</string>
-    <string name="zh_simple">Chinese (Simplified)</string>
+    <string name="zh_simple">中文（简体）</string>
     <string name="zh_traditional">Chinese (Traditional)</string>
     <string name="en">English</string>
     <string name="korean">Korean</string>
@@ -530,5 +530,10 @@
     <string name="wallet_un_activated">Wallet is not activated, no need to restore factory settings</string>
     <string name="wallet_un_activated_pin">Wallet is not activated, PIN code cannot be modified</string>
     <string name="checkHideWallet">View hidden Wallet</string>
+    <string name="verification">Verification</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="use_bluetooth_line">使用蓝牙连接BixinKEY</string>
+    <string name="bluetooth_tips">开启状态，可使用蓝牙与BixinKEY进行通信</string>
+    <string name="open">开</string>
 
 </resources>

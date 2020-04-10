@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.QuetationChooseAdapter;
 import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -73,13 +75,16 @@ public class QuotationServerActivity extends BaseActivity {
         quetationChooseAdapter.setOnLisennorClick(new QuetationChooseAdapter.onLisennorClick() {
             @Override
             public void ItemClick(int pos) {
+                String exchangeName = exchangeList.get(pos).getName();
                 try {
-                    Daemon.commands.callAttr("set_exchange",exchangeList.get(pos));
+                    Daemon.commands.callAttr("set_exchange",exchangeName);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 edit.putInt("exChange",pos);
+                edit.putString("exchangeName",exchangeName);
                 edit.apply();
+                EventBus.getDefault().post(new FirstEvent("defaultServer"));
             }
         });
 

@@ -81,31 +81,29 @@ public class ChooseHistryWalletActivity extends BaseActivity {
             String strfromServer = infoFromServer.toString();
             Log.i("infoFromServer", "initData: " + infoFromServer);
             if (strfromServer.length() != 2) {
-                Gson gson = new Gson();
-                ImportHistryWalletBean importHistryWalletBean = gson.fromJson(strfromServer, ImportHistryWalletBean.class);
-                List<ImportHistryWalletBean.WalltesBean> walltes = importHistryWalletBean.getWalltes();
-                for (int i = 0; i < walltes.size(); i++) {
-                    String walletType = walltes.get(i).getWalletType();
-                    String xpubs = walltes.get(i).getXpubs();
-                    AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-                    addBixinKeyEvent.setKeyname(walletType);
-                    addBixinKeyEvent.setKeyaddress(xpubs);
-                    xpubList.add(addBixinKeyEvent);
-                }
-                ImportHistryWalletAdapter histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, xpubList);
-                reclImportWallet.setAdapter(histryWalletAdapter);
-                histryWalletAdapter.setOnItemClickListener(new ImportHistryWalletAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position) {
-                        btnFinish.setBackground(getDrawable(R.drawable.little_radio_blue));
-                        btnFinish.setEnabled(true);
-                        chooseWallet = true;
-                        keyaddress = xpubList.get(position).getKeyaddress();
-                        walletType = xpubList.get(position).getKeyname();
-                    }
-                });
-            } else {
-
+//                Gson gson = new Gson();
+//                ImportHistryWalletBean importHistryWalletBean = gson.fromJson(strfromServer, ImportHistryWalletBean.class);
+//                List<ImportHistryWalletBean.WalltesBean> walltes = importHistryWalletBean.getWalltes();
+//                for (int i = 0; i < walltes.size(); i++) {
+//                    String walletType = walltes.get(i).getWalletType();
+//                    String xpubs = walltes.get(i).getXpubs();
+//                    AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
+//                    addBixinKeyEvent.setKeyname(walletType);
+//                    addBixinKeyEvent.setKeyaddress(xpubs);
+//                    xpubList.add(addBixinKeyEvent);
+//                }
+//                ImportHistryWalletAdapter histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, xpubList);
+//                reclImportWallet.setAdapter(histryWalletAdapter);
+//                histryWalletAdapter.setOnItemClickListener(new ImportHistryWalletAdapter.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(int position) {
+//                        btnFinish.setBackground(getDrawable(R.drawable.little_radio_blue));
+//                        btnFinish.setEnabled(true);
+//                        chooseWallet = true;
+//                        keyaddress = xpubList.get(position).getKeyaddress();
+//                        walletType = xpubList.get(position).getKeyname();
+//                    }
+//                });
             }
         } else {
             mToast(getString(R.string.no_import_wallet));

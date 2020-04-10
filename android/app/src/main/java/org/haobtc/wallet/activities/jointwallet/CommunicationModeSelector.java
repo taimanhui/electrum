@@ -27,6 +27,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -534,15 +535,21 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ImageView imageViewCancel;
         View view = inflater.inflate(R.layout.bluetooth_nfc, null);
+        SharedPreferences preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        boolean bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);
         ImageView imageView = view.findViewById(R.id.touch_nfc);
         TextView textView = view.findViewById(R.id.text_prompt);
         FrameLayout frameLayout = view.findViewById(R.id.ble_device);
         RadioGroup radioGroup = view.findViewById(R.id.radio_group);
+        RadioButton radioBle = view.findViewById(R.id.radio_ble);
         imageViewCancel = view.findViewById(R.id.img_cancel);
         TextView textViewInputByHand = view.findViewById(R.id.text_input_publickey_by_hand);
         relativeLayout = view.findViewById(R.id.input_layout);
         textViewInputByHand.setOnClickListener(this);
         imageViewCancel.setOnClickListener(this);
+        if (!bluetoothStatus){
+            radioBle.setVisibility(View.GONE);
+        }
         mBle = Ble.getInstance();
         adapter = new BleDeviceRecyclerViewAdapter(this.getActivity());
         adapter.setConnectCallback(connectCallback);

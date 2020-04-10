@@ -267,7 +267,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 }
                 if (msgVote.contains("fiat")) {
                     String fiat = jsonObject.getString("fiat");
-                    tetCny.setText(String.format("≈ %s", fiat));
+                    if (!TextUtils.isEmpty(fiat)){
+                        tetCny.setText(String.format("≈ %s", fiat));
+                    }
                 }
                 if (msgVote.contains("unconfirmed")) {
                     String unconfirmed = jsonObject.getString("unconfirmed");

@@ -499,5 +499,10 @@
     <string name="onclick_check">点击查看</string>
     <string name="useable">可用</string>
     <string name="checkHideWallet">查看隐藏钱包</string>
+    <string name="verification">验证</string>
+    <string name="bluetooth">蓝牙</string>
+    <string name="use_bluetooth_line">使用蓝牙连接BixinKEY</string>
+    <string name="bluetooth_tips">开启状态，可使用蓝牙与BixinKEY进行通信</string>
+    <string name="open">开</string>
 
 </resources>

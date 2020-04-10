@@ -2,80 +2,54 @@ package org.haobtc.wallet.bean;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class ImportHistryWalletBean {
 
 
-    @SerializedName("Walltes")
-    private List<WalltesBean> Walltes;
+    /**
+     * xpubId : Vpub5kKD1ggSEaNt9MHbaoorY2r4xdBA57GvAfujHYxuqhpkDabmd6DRPWz45Zt1FFBdYzSz8y2aAZJLFpFsUvf7G7BHhQD27CgUvTy1U1P8jmD
+     * walletId : 0847a3e0cb364f581fc73a3eaf95a0141cc6a6b3b85d110afd983f0dc9f531d2
+     * xpubs : ["Vpub5kKD1ggSEaNt9MHbaoorY2r4xdBA57GvAfujHYxuqhpkDabmd6DRPWz45Zt1FFBdYzSz8y2aAZJLFpFsUvf7G7BHhQD27CgUvTy1U1P8jmD", "Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"]
+     * walletType : 2-2
+     */
 
-    public List<WalltesBean> getWalltes() {
-        return Walltes;
+    @SerializedName("xpubId")
+    private String xpubId;
+    @SerializedName("walletId")
+    private String walletId;
+    @SerializedName("xpubs")
+    private String xpubs;
+    @SerializedName("walletType")
+    private String walletType;
+
+    public String getXpubId() {
+        return xpubId;
     }
 
-    public void setWalltes(List<WalltesBean> Walltes) {
-        this.Walltes = Walltes;
+    public void setXpubId(String xpubId) {
+        this.xpubId = xpubId;
     }
 
-    public static class WalltesBean {
-        /**
-         * id : 5
-         * xpubId : Vpub5jfMA3ceJzUMo2kz6vS7ywiSs5VbgGJDT8eHchN5cc6sGDkJwSkJmqvXn4fRijAESoWiZE2Q78ErXjHucpdVFUUawU1tRgvBGjncALBNpXC
-         * WalletId : 41e7b5257ed79f40dcc82867db2cf8099bbdccb53268822c754c4a6bc9884384
-         * Xpubs : ["Vpub5jfMA3ceJzUMo2kz6vS7ywiSs5VbgGJDT8eHchN5cc6sGDkJwSkJmqvXn4fRijAESoWiZE2Q78ErXjHucpdVFUUawU1tRgvBGjncALBNpXC", "Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"]
-         * WalletType : 2-2
-         */
+    public String getWalletId() {
+        return walletId;
+    }
 
-        @SerializedName("id")
-        private int id;
-        @SerializedName("xpubId")
-        private String xpubId;
-        @SerializedName("WalletId")
-        private String WalletId;
-        @SerializedName("Xpubs")
-        private String Xpubs;
-        @SerializedName("WalletType")
-        private String WalletType;
+    public void setWalletId(String walletId) {
+        this.walletId = walletId;
+    }
 
-        public int getId() {
-            return id;
-        }
+    public String getXpubs() {
+        return xpubs;
+    }
 
-        public void setId(int id) {
-            this.id = id;
-        }
+    public void setXpubs(String xpubs) {
+        this.xpubs = xpubs;
+    }
 
-        public String getXpubId() {
-            return xpubId;
-        }
+    public String getWalletType() {
+        return walletType;
+    }
 
-        public void setXpubId(String xpubId) {
-            this.xpubId = xpubId;
-        }
-
-        public String getWalletId() {
-            return WalletId;
-        }
-
-        public void setWalletId(String WalletId) {
-            this.WalletId = WalletId;
-        }
-
-        public String getXpubs() {
-            return Xpubs;
-        }
-
-        public void setXpubs(String Xpubs) {
-            this.Xpubs = Xpubs;
-        }
-
-        public String getWalletType() {
-            return WalletType;
-        }
-
-        public void setWalletType(String WalletType) {
-            this.WalletType = WalletType;
-        }
+    public void setWalletType(String walletType) {
+        this.walletType = walletType;
     }
 }

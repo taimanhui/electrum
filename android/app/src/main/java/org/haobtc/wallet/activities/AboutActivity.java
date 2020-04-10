@@ -1,13 +1,10 @@
 package org.haobtc.wallet.activities;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.media.AsyncPlayer;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnButtonClickListener;
@@ -30,8 +27,11 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     ImageView imgBack;
     @BindView(R.id.attempt_update)
     RelativeLayout update;
+    @BindView(R.id.version_code)
+    TextView versionCodetext;
+    @BindView(R.id.update_version)
+    TextView updateVersion;
     private DownloadManager manager;
-
 
     @Override
     public int getLayoutId() {
@@ -45,10 +45,13 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
 
     @Override
     public void initData() {
-
+        String versionName = ApkUtil.getVersionName(this);
+        versionCodetext.setText(String.format("V%s", versionName));
+        updateVersion.setText(String.format("V%s", versionName));
     }
+
     private void attemptUpdate() {
-        // todo: 通过服务器获取最新版本的版本信息
+        // todo: Get the latest version information from the server
         int versionCode = ApkUtil.getVersionCode(this);
         String url = "https://key.bixin.com/bixinkey.apk";
         UpdateConfiguration configuration = new UpdateConfiguration()
@@ -89,6 +92,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
 
         }
     }
+
     @Override
     public void onButtonClick(int id) {
 
@@ -118,4 +122,5 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     public void error(Exception e) {
 
     }
+
 }

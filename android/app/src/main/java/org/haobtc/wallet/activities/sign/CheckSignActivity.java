@@ -55,32 +55,18 @@ public class CheckSignActivity extends BaseActivity {
         editInputAddress.addTextChangedListener(textChange);
         editInputPublicKey.addTextChangedListener(textChange);
         editInputSignedMsg.addTextChangedListener(textChange);
+        Intent intent = getIntent();
+        String strSignMsg = intent.getStringExtra("strSignMsg");
+        String strinputAddress = intent.getStringExtra("strinputAddress");
+        String signedMessage = intent.getStringExtra("signedMessage");
+        editInputAddress.setText(strSignMsg);
+        editInputPublicKey.setText(strinputAddress);
+        editInputSignedMsg.setText(signedMessage);
     }
 
     @Override
     public void initData() {
-        //get sign address
-        mGeneratecode();
-    }
 
-    //get sign address
-    private void mGeneratecode() {
-        PyObject walletAddressShowUi = null;
-        try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (walletAddressShowUi != null) {
-            String strCode = walletAddressShowUi.toString();
-            Log.i("strCode", "mGenerate--: " + strCode);
-            Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String strinputAddress = getCodeAddressBean.getAddr();
-            editInputPublicKey.setText(strinputAddress);
-
-        }
     }
 
     @OnClick({R.id.img_back, R.id.sweepAddress, R.id.pasteAddress, R.id.pastePublicKey, R.id.pasteSignedMsg, R.id.btnConfirm})
@@ -154,8 +140,6 @@ public class CheckSignActivity extends BaseActivity {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 editInputAddress.setText(content);
-                //judge button status
-                buttonColorStatus();
             }
         }
     }

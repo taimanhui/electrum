@@ -89,12 +89,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     Button pasteSignTrsaction;
     @BindView(R.id.editSignMsg)
     EditText editSignMsg;
-    @BindView(R.id.pasteSignMsg)
-    Button pasteSignMsg;
     @BindView(R.id.btnConfirm)
     Button buttonConfirm;
-    @BindView(R.id.tet_Error)
-    TextView tetError;
     @BindView(R.id.linSignTrsaction)
     LinearLayout linSignTrsaction;
     @BindView(R.id.linSignMsg)
@@ -199,7 +195,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             buttonConfirm.setEnabled(true);
             buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
         } else {
-            tetError.setVisibility(View.INVISIBLE);
             buttonConfirm.setEnabled(false);
             buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
         }
@@ -222,7 +217,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
     }
 
-    @OnClick({R.id.img_back, R.id.btn_import_file, R.id.btn_sweep, R.id.pasteSignTrsaction, R.id.pasteSignMsg, R.id.btnConfirm, R.id.textCheckSign})
+    @OnClick({R.id.img_back, R.id.btn_import_file, R.id.btn_sweep, R.id.pasteSignTrsaction, R.id.btnConfirm, R.id.textCheckSign})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -259,13 +254,14 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         }).dispose();
                 break;
             case R.id.pasteSignTrsaction:
-                pasteMessage(editTrsactionTest);
-                break;
-            case R.id.pasteSignMsg:
-                pasteMessage(editSignMsg);
+                if (signWhich) {
+                    pasteMessage(editTrsactionTest);
+                } else {
+                    pasteMessage(editSignMsg);
+                }
                 break;
             case R.id.btnConfirm:
-                if (personceType.equals("standard")) {//Software Wallet sign
+                if ("standard".equals(personceType)) {//Software Wallet sign
                     if (signWhich) { //sign trsaction
                         strSoftMsg = editTrsactionTest.getText().toString();
                         if (TextUtils.isEmpty(strSoftMsg)) {
@@ -273,15 +269,13 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                             return;
                         }
                         softwareSignTrsaction(strSoftMsg);
-                    } else {   //sign message
+                    } else { //sign message
                         strSoftMsg = editSignMsg.getText().toString();
                         if (TextUtils.isEmpty(strSoftMsg)) {
                             mToast(getString(R.string.inputSignMsg));
                             return;
                         }
-                        Intent intent = new Intent(SignActivity.this, SignMessageActivity.class);
-                        intent.putExtra("strSignMsg", strSoftMsg);
-                        startActivity(intent);
+                        signDialog();
                     }
                 } else { //Hardware wallet signature
                     if (signWhich) { //sign trsaction
@@ -291,14 +285,51 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         strTest = editSignMsg.getText().toString();
                         showCustomerDialog(strTest, TAG1);
                     }
-
                 }
-
                 break;
             case R.id.textCheckSign:
                 mIntent(CheckSignActivity.class);
                 break;
         }
+    }
+
+    private void signDialog() {
+        View view1 = LayoutInflater.from(SignActivity.this).inflate(R.layout.input_wallet_pass, null, false);
+        AlertDialog alertDialog = new AlertDialog.Builder(SignActivity.this).setView(view1).create();
+        EditText str_pass = view1.findViewById(R.id.edit_password);
+        view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
+            String strPassword = str_pass.getText().toString();
+            if (TextUtils.isEmpty(strPassword)) {
+                mToast(getString(R.string.please_input_pass));
+                return;
+            }
+            PyObject sign_message = null;
+            try {
+                sign_message = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, strPassword);
+            } catch (Exception e) {
+                if (e.getMessage().contains("Incorrect password")) {
+                    mToast(getString(R.string.wrong_pass));
+                }
+                alertDialog.dismiss();
+                e.printStackTrace();
+                return;
+            }
+            if (sign_message != null) {
+                String signedMessage = sign_message.toString();
+                Intent intent = new Intent(SignActivity.this, CheckSignActivity.class);
+                intent.putExtra("strSignMsg", strSoftMsg);
+                intent.putExtra("strinputAddress",strinputAddress);
+                intent.putExtra("signedMessage",signedMessage);
+                startActivity(intent);
+                alertDialog.dismiss();
+            }
+
+        });
+        view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+        alertDialog.show();
+
     }
 
     private void softwareSignTrsaction(String strTest) {
@@ -436,7 +467,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             finish();
             return;
         }
-            boolean isInit = features.isInitialized();
+        boolean isInit = features.isInitialized();
         if (isInit) {
             if (signWhich) {
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, strTest);
@@ -497,7 +528,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             //scan
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                editTrsactionTest.setText(content);
+                if (signWhich) {
+                    editTrsactionTest.setText(content);
+                } else {
+                    editSignMsg.setText(content);
+                }
+
             }
         } else if (requestCode == 1 && resultCode == RESULT_OK) {
             //import file
@@ -514,7 +550,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 if (read_tx_from_file != null) {
                     String readFile = read_tx_from_file.toString();
                     Log.i("readFile", "tx-------: " + readFile);
-                    editTrsactionTest.setText(readFile);
+                    if (signWhich) {
+                        editTrsactionTest.setText(readFile);
+                    } else {
+                        editSignMsg.setText(readFile);
+                    }
+
                 }
 
             } catch (Exception e) {
@@ -523,6 +564,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
         }
     }
+
     @Override
     public void onPreExecute() {
         gotoConfirmOnHardware();

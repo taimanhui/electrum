@@ -121,7 +121,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="59dp"
                         android:button="@null"
-                        android:text="@string/bits_btc"
+                        android:text="@string/mbtc_0_001_btc"
                         android:textColor="@drawable/textcolor"
                         android:textSize="15sp" />
 
@@ -130,7 +130,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="59dp"
                         android:button="@null"
-                        android:text="@string/mbtc_0_001_btc"
+                        android:text="@string/bits_btc"
                         android:textColor="@drawable/textcolor"
                         android:textSize="15sp" />
 

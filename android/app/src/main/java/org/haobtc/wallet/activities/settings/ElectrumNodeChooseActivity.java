@@ -15,10 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ElectrumListAdapter;
 import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -41,7 +43,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
     Button btnFinish;
     private PyObject get_server_list;
     private ArrayList<CNYBean> electrumList;
-    private int exChange;
+    private int electrumNode;
     private SharedPreferences.Editor edit;
     private ArrayList<SendMoreAddressEvent> addressEvents;
 
@@ -55,7 +57,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
-        exChange = preferences.getInt("exChange", 0);
+        electrumNode = preferences.getInt("electrumNode", 0);
 
     }
 
@@ -97,7 +99,9 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     }
                 }
             }
-            ElectrumListAdapter electrumListAdapter = new ElectrumListAdapter(ElectrumNodeChooseActivity.this, electrumList, exChange);
+            edit.putString("electrumTest",electrumList.get(0).getName());
+            edit.apply();
+            ElectrumListAdapter electrumListAdapter = new ElectrumListAdapter(ElectrumNodeChooseActivity.this, electrumList, electrumNode);
             reclNodeChose.setAdapter(electrumListAdapter);
             electrumListAdapter.setOnLisennorClick(new ElectrumListAdapter.onLisennorClick() {
                 @Override
@@ -107,8 +111,10 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    edit.putInt("exChange", pos);
+                    edit.putInt("electrumNode", pos);
+                    edit.putString("electrumTest",electrumList.get(pos).getName());
                     edit.apply();
+                    EventBus.getDefault().post(new FirstEvent("changeElectrumNode"));
                 }
             });
         }

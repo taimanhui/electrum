@@ -102,6 +102,8 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
+                        EventBus.getDefault().post(new FirstEvent("11"));
+                        EventBus.getDefault().post(new FirstEvent("22"));
                         edit.putString("base_unit", "BTC");
                         edit.apply();
                         break;
@@ -112,6 +114,8 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
+                        EventBus.getDefault().post(new FirstEvent("11"));
+                        EventBus.getDefault().post(new FirstEvent("22"));
                         edit.putString("base_unit", "mBTC");
                         edit.apply();
                         break;
@@ -122,6 +126,8 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
+                        EventBus.getDefault().post(new FirstEvent("11"));
+                        EventBus.getDefault().post(new FirstEvent("22"));
                         edit.putString("base_unit", "bits");
                         edit.apply();
                         break;
@@ -132,6 +138,8 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
+                        EventBus.getDefault().post(new FirstEvent("11"));
+                        EventBus.getDefault().post(new FirstEvent("22"));
                         edit.putString("base_unit", "sat");
                         edit.apply();
                         break;

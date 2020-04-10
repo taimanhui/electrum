@@ -243,7 +243,14 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         String sendmessage = intent.getStringExtra("sendmessage");
         String strNowBtc = intent.getStringExtra("strNowBtc");
         String strNowCny = intent.getStringExtra("strNowCny");
-        testNowCanUse.setText(String.format("%s%s=%s", getString(R.string.useable), strNowBtc, strNowCny));
+        if (!TextUtils.isEmpty(strNowCny)){
+            if (strNowCny.contains("≈")){
+                testNowCanUse.setText(String.format("%s%s%s", getString(R.string.useable), strNowBtc, strNowCny));
+            }else{
+                testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.useable), strNowBtc, strNowCny));
+            }
+        }
+
         tetWalletname.setText(wallet_name);
         int sendamount = intent.getIntExtra("sendamount", 0);
         editAddress.setText(sendAdress);

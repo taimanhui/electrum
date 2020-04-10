@@ -318,8 +318,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 Intent intent1 = new Intent(CheckHideWalletActivity.this, SendOne2OneMainPageActivity.class);
                 intent1.putExtra("wallet_name", hideWalletName);
                 intent1.putExtra("wallet_type", walletType);
-                intent1.putExtra("strNowBtc",substring);
-                intent1.putExtra("strNowCny",strCNY);
+                intent1.putExtra("strNowBtc",walletCardTv4.getText().toString());
+                intent1.putExtra("strNowCny",tetCny.getText().toString());
                 startActivity(intent1);
                 break;
             case R.id.wallet_card_bn2:

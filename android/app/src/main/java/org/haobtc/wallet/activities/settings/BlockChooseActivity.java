@@ -4,10 +4,13 @@ import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.QuetationChooseAdapter;
 import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.event.FirstEvent;
 
 import java.util.ArrayList;
 
@@ -54,6 +57,7 @@ public class BlockChooseActivity extends BaseActivity {
                 edit.putInt("setBlock",pos);
                 edit.putString("blockServerLine",blockList.get(pos).getName());
                 edit.apply();
+                EventBus.getDefault().post(new FirstEvent("block_check"));
             }
         });
     }

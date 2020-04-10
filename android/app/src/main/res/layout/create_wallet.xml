@@ -162,6 +162,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardHistryWallet"
                 android:layout_width="0dp"
                 android:layout_height="79dp"
                 android:layout_marginEnd="@dimen/dp_10"

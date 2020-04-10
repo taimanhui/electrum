@@ -90,6 +90,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
             Daemon.commands.callAttr("set_base_uint", "mBTC");
             Daemon.commands.callAttr("set_rbf", true);
             Daemon.commands.callAttr("set_unconf", true);
+            Daemon.commands.callAttr("set_syn_server", true);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -97,6 +98,8 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         edit.putBoolean("set_rbf", true);
         edit.putBoolean("set_unconf", true);
         edit.putString("base_unit", "mBTC");
+        edit.putBoolean("set_syn_server", true);//setting synchronize server
+        edit.putBoolean("bluetoothStatus",true);//open bluetooth
         edit.apply();
     }
 

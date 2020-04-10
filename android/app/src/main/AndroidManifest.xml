@@ -36,7 +36,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
-        <!--   Request external storage ->   android:requestLegacyExternalStorage="true"     -->
+        <activity android:name=".activities.settings.BlueToothStatusActivity"></activity>
+        <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->
         <activity android:name=".activities.settings.AgentServerActivity" />
         <activity android:name=".activities.sign.CheckSignResultActivity" />
         <activity android:name=".activities.sign.SignMessageActivity" />
@@ -97,7 +98,8 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.base.LunchActivity"
+        <activity
+            android:name=".activities.base.LunchActivity"
             android:theme="@style/LunchTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -174,7 +176,7 @@
         <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" />
         <activity android:name=".dfu.NotificationActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.CheckHideWalletActivity" />
-        <!-- aotusize -->
+        <activity android:name=".activities.sign.CheckSignMessageActivity" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />
