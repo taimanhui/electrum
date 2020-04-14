@@ -317,6 +317,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             dismiss();
         }
     };
+
     @SuppressLint("SdCardPath")
     private void dfu() {
         List<BleDevice> devices = Ble.getInstance().getConnetedDevices();
@@ -359,11 +360,13 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             }
         }
     };
+
     public CommunicationModeSelector(String tag, @Nullable List<Runnable> runnables, String extra) {
         this.tag = tag;
         this.runnables = runnables;
         this.extras = extra;
     }
+
     private void dealWithChangePin() {
         HardwareFeatures features;
         try {
@@ -419,7 +422,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         }
         boolean isInit = features.isInitialized();
         if (isInit) {
-            if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
+            if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
                 if (SingleSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag)) {
                     if (HideWalletActivity.TAG.equals(tag)) {
                         customerUI.callAttr("set_pass_state", 1);
@@ -428,10 +431,18 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 } else {
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_BLE);
                 }
-            } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
-                if ( SignActivity.TAG1.equals(tag)) {
+            } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag)) {
+                if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
+                    if (SignActivity.TAG3.equals(tag)) {
+                        //hide wallet sign message -->set_pass_state
+                        customerUI.callAttr("set_pass_state", 1);
+                    }
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras);
-                }else {
+                } else {
+                    if (SignActivity.TAG2.equals(tag)) {
+                        //hide wallet sign transaction -->set_pass_state
+                        customerUI.callAttr("set_pass_state", 1);
+                    }
                     if (features.isPinCached()) {
                         Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
                     }
@@ -469,6 +480,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 Log.e(TAG, "receive from hardware: " + CommonUtils.bytes2hex(characteristic.getValue()));
                 pyHandler.put("RESPONSE", characteristic.getValue());
             }
+
             @Override
             public void onNotifySuccess(BleDevice device) {
                 super.onNotifySuccess(device);
@@ -496,11 +508,11 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             if (!devices.contains(features.getDeviceId())) {
                 String bleName = Ble.getInstance().getConnetedDevices().get(0).getBleName();
                 features.setBleName(bleName);
-                feature =  features.toString();
+                feature = features.toString();
                 devices.edit().putString(features.getDeviceId(), feature).apply();
             }
             return features;
-        } catch (ExecutionException | InterruptedException  | TimeoutException e) {
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
             Toast.makeText(getContext(), getString(R.string.no_message), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             throw e;
@@ -548,7 +560,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         relativeLayout = view.findViewById(R.id.input_layout);
         textViewInputByHand.setOnClickListener(this);
         imageViewCancel.setOnClickListener(this);
-        if (!bluetoothStatus){
+        if (!bluetoothStatus) {
             radioBle.setVisibility(View.GONE);
         }
         mBle = Ble.getInstance();
@@ -570,14 +582,15 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     imageView.setVisibility(View.GONE);
                     textView.setVisibility(View.GONE);
                     getChildFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
-                    permissions = new RxPermissions(this);permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
+                    permissions = new RxPermissions(this);
+                    permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
                             granted -> {
                                 if (granted) {
                                     group.check(R.id.radio_ble);
                                     turnOnBlueTooth();
                                     refreshDeviceList(true);
                                 } else {
-                                   Toast.makeText(getContext(), getString(R.string.blurtooth_need_permission), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), getString(R.string.blurtooth_need_permission), Toast.LENGTH_LONG).show();
                                 }
                             }
                     ).dispose();
@@ -645,7 +658,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             if (data != null) {
                 isActive = data.getBooleanExtra("isActive", false);
                 if (isActive) {
-                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_BLE);
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_BLE);
                 }
             }
         }
@@ -687,7 +700,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         if (isActive) {
             return;
         }
-        if(MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
+        if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
             // 获取公钥之前需完成的工作
             dialogFragment = showReadingDialog();
         } /*else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
@@ -715,7 +728,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             isActive = false;
             return;
         }
-        if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag)|| HideWalletActivity.TAG.equals(tag)|| ImportHistoryWalletActivity.TAG.equals(tag)) {
+        if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
             // todo: 获取公钥
             xpub = s;
             if (ImportHistoryWalletActivity.TAG.equals(tag)) {
@@ -725,7 +738,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             } else {
                 Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
             }
-        } else if (TransactionDetailsActivity.TAG.equals(tag)|| SignActivity.TAG.equals(tag)|| SignActivity.TAG1.equals(tag)) {
+        } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag)) {
             EventBus.getDefault().post(new SignResultEvent(s));
             // 获取签名后的动作
         } else if (BackupRecoveryActivity.TAG.equals(tag)) {
@@ -743,7 +756,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public void onCancelled() {
         Activity activity = getActivity();
         if (activity != null) {
-           activity.runOnUiThread(() -> Toast.makeText(getActivity(), getString(R.string.task_cancle), Toast.LENGTH_SHORT).show());
+            activity.runOnUiThread(() -> Toast.makeText(getActivity(), getString(R.string.task_cancle), Toast.LENGTH_SHORT).show());
         }
     }
 

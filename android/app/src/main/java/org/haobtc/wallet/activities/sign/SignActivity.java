@@ -67,7 +67,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
 
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
@@ -76,6 +78,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     public static final String TAG = SignActivity.class.getSimpleName();
     public static final String TAG1 = "SIGN_MESSAGE";
+    public static final String TAG2 = "HARDWARE_SIGN_TRANSACTION";
+    public static final String TAG3 = "HARDWARE_SIGN_MESSAGE";
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.radio_group)
@@ -111,6 +115,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private String strRaw;
     private String strSoftMsg;
     public static String strinputAddress;
+    private String hide_phrass;
 
     @Override
     public int getLayoutId() {
@@ -122,6 +127,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         ButterKnife.bind(this);
         Intent intent = getIntent();
         personceType = intent.getStringExtra("personceType");
+        hide_phrass = intent.getStringExtra("hide_phrass");
         rxPermissions = new RxPermissions(this);
         editTrsactionTest.addTextChangedListener(this);
         radioGroup.setOnCheckedChangeListener(this);
@@ -280,11 +286,24 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                     }
                 } else { //Hardware wallet signature
                     if (signWhich) { //sign trsaction
-                        strTest = editTrsactionTest.getText().toString();
-                        showCustomerDialog(strTest, TAG);
+                        if (!TextUtils.isEmpty(hide_phrass)) {
+                            //hide wallet sign transaction -->set_pass_state
+                            strTest = editTrsactionTest.getText().toString();
+                            showCustomerDialog(strTest, TAG2);
+                        } else {
+                            strTest = editTrsactionTest.getText().toString();
+                            showCustomerDialog(strTest, TAG);
+                        }
                     } else {//sign message
-                        strTest = editSignMsg.getText().toString();
-                        showCustomerDialog(strTest, TAG1);
+                        if (!TextUtils.isEmpty(hide_phrass)) {
+                            //hide wallet sign message -->set_pass_state
+                            strTest = editSignMsg.getText().toString();
+                            showCustomerDialog(strTest, TAG3);
+                        } else {
+                            strTest = editSignMsg.getText().toString();
+                            showCustomerDialog(strTest, TAG1);
+                        }
+
                     }
                 }
                 break;
@@ -319,8 +338,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 String signedMessage = sign_message.toString();
                 Intent intent = new Intent(SignActivity.this, CheckSignActivity.class);
                 intent.putExtra("strSignMsg", strSoftMsg);
-                intent.putExtra("strinputAddress",strinputAddress);
-                intent.putExtra("signedMessage",signedMessage);
+                intent.putExtra("strinputAddress", strinputAddress);
+                intent.putExtra("signedMessage", signedMessage);
                 startActivity(intent);
                 alertDialog.dismiss();
             }
@@ -385,25 +404,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         if (signWhich) {
             Intent intentCon = new Intent(SignActivity.this, ConfirmOnHardware.class);
             startActivity(intentCon);
-        } else {
-            strSoftMsg = editSignMsg.getText().toString();
-            String signedMsg = null;
-            try {
-                signedMsg = futureTask.get(30, TimeUnit.SECONDS).toString();
-                Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
-                intentMsg.putExtra("signMsg", strSoftMsg);
-                intentMsg.putExtra("signAddress", strinputAddress);
-                intentMsg.putExtra("signedFinish", signedMsg);
-                startActivity(intentMsg);
-                finish();
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                e.printStackTrace();
-                if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-                    mToast(getString(R.string.pin_wrong));
-                } else {
-                    finish();
-                }
-            }
         }
     }
 
@@ -467,6 +467,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
             finish();
             return;
+        }
+        if (!TextUtils.isEmpty(hide_phrass)) {
+            customerUI.callAttr("set_pass_state", 1);
         }
         boolean isInit = features.isInitialized();
         if (isInit) {
@@ -576,12 +579,25 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
             ready = false;
         } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+            mToast(getString(R.string.pin_wrong));
+        } else if ("BaseException: Cannot sign messages with this type of address:p2ws".equals(e.getMessage())) {
+            mToast(getString(R.string.single_sign_only));
+        } else {
+            finish();
         }
     }
 
     @Override
     public void onResult(String s) {
-
+        Log.i("zsjbssajhdbejjdbskjbkn", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        strSoftMsg = editSignMsg.getText().toString();
+        String signedMsg = s;
+        Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
+        intentMsg.putExtra("signMsg", strSoftMsg);
+        intentMsg.putExtra("signAddress", strinputAddress);
+        intentMsg.putExtra("signedFinish", signedMsg);
+        startActivity(intentMsg);
+        finish();
     }
 
     @Override

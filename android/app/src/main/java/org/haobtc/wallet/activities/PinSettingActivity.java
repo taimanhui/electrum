@@ -95,7 +95,7 @@ public class PinSettingActivity extends BaseActivity {
                     setResult(Activity.RESULT_OK, intent);
                     finish();
                 } else {
-                    Toast.makeText(getBaseContext(), "the PIN's length less than 6", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), getString(R.string.pass_morethan_6), Toast.LENGTH_SHORT).show();
                 }
                 break;
         }

@@ -2,12 +2,8 @@ package org.haobtc.wallet;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -23,10 +19,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.azhon.appupdate.config.UpdateConfiguration;
-import com.azhon.appupdate.listener.OnButtonClickListener;
-import com.azhon.appupdate.listener.OnDownloadListener;
-import com.azhon.appupdate.manager.DownloadManager;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
@@ -39,13 +31,11 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.activities.CreateWalletActivity;
-import org.haobtc.wallet.activities.GuideActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
@@ -56,6 +46,7 @@ import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
@@ -65,7 +56,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -242,8 +232,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onPageSelected(int position) {
+                myDialog.show();
                 scrollPos = position;
                 if (position == (fragmentList.size() - 1) || position == (fragmentList.size() - 2)) {
+                    myDialog.dismiss();
                     if (position == (fragmentList.size() - 1)) {
                         tetNone.setText(getString(R.string.hide_wallet_tips));
                         tetNone.setVisibility(View.VISIBLE);
@@ -257,15 +249,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 } else {
                     strNames = walletnameList.get(position).getName();
                     strType = walletnameList.get(position).getType();
-                    myDialog.show();
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             //refresh only wallet
                             ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
-                            //trsaction list data
-                            downMainListdata();
                         }
                     }, 350);
                 }
@@ -280,7 +269,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void downMainListdata() {
         maintrsactionlistEvents.clear();
-        trsactionlistAdapter.notifyDataSetChanged();
         PyObject get_history_tx = null;
         try {
             //get transaction json
@@ -318,6 +306,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
         }
+        trsactionlistAdapter.notifyDataSetChanged();
 
     }
 
@@ -495,6 +484,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             recy_data.setVisibility(View.GONE);
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
+            Log.i("threadMode", "event: " + msgVote);
+            //Rolling Wallet
+            ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
+
+        }
+    }
+
 
     @Override
     public void onDestroy() {

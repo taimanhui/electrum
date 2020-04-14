@@ -87,9 +87,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wheel_viewpager, container, false);
-
-        //Eventbus register
-        EventBus.getDefault().register(this);
         preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         wallet_card_name = view.findViewById(R.id.wallet_card_name);
@@ -234,62 +231,86 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 String streplaceC = walletType.replaceAll("of", "/");
                 walletpersonce.setText(streplaceC);
             }
-            wallet_card_name.setText(name);
             if (!TextUtils.isEmpty(balanceC)) {
                 if (balanceC.contains("(")) {
                     substring = balanceC.substring(0, balanceC.indexOf("("));
                     Log.e("substring", "substring: " + substring);
                     Log.e("substring", "balanceC: " + balanceC);
 
+                    Log.i("getWalletMsgJXM", "substring:::"+substring);
                     walletBlance.setText(substring);
+
                     strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
-                    if (!TextUtils.isEmpty(strCNY)){
+                    if (!TextUtils.isEmpty(strCNY)) {
                         tetCny.setText(String.format("≈ %s", strCNY));
                     }
                 } else {
+                    Log.i("getWalletMsgJXM", "balanceC:::"+balanceC);
                     walletBlance.setText(balanceC);
                 }
             }
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(SecondEvent updataHint) {
-        String msgVote = updataHint.getMsg();
-        if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
-            Log.i("threadMode", "event: " + msgVote);
-            //Rolling Wallet
-            try {
-                JSONObject jsonObject = new JSONObject(msgVote);
-                if (msgVote.contains("balance")) {
-                    String balance = jsonObject.getString("balance");
-                    walletBlance.setText(balance);
-                }
-                if (msgVote.contains("fiat")) {
-                    String fiat = jsonObject.getString("fiat");
-                    if (!TextUtils.isEmpty(fiat)){
-                        tetCny.setText(String.format("≈ %s", fiat));
-                    }
-                }
-                if (msgVote.contains("unconfirmed")) {
-                    String unconfirmed = jsonObject.getString("unconfirmed");
-                    tetFiat.setText(String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
-                } else {
-                    tetFiat.setText("");
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+    public void setValue(String msgVote){
+        try {
+            JSONObject jsonObject = new JSONObject(msgVote);
+            if (msgVote.contains("balance")) {
+                String balance = jsonObject.getString("balance");
+                Log.i("getWalletMsgJXM", "event+substring:::"+balance);
+                walletBlance.setText(balance);
             }
-
+            if (msgVote.contains("fiat")) {
+                String fiat = jsonObject.getString("fiat");
+                if (!TextUtils.isEmpty(fiat)) {
+                    tetCny.setText(String.format("≈ %s", fiat));
+                }
+            }
+            if (msgVote.contains("unconfirmed")) {
+                String unconfirmed = jsonObject.getString("unconfirmed");
+                tetFiat.setText(String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
+            } else {
+                tetFiat.setText("");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void event(SecondEvent updataHint) {
+//        String msgVote = updataHint.getMsg();
+//
+//        if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
+//            Log.i("threadMode", "event: " + msgVote);
+//            //Rolling Wallet
+//            try {
+//                JSONObject jsonObject = new JSONObject(msgVote);
+//                if (msgVote.contains("balance")) {
+//                    String balance = jsonObject.getString("balance");
+//                    Log.i("getWalletMsgJXM", "event+substring:::"+balance);
+//                    walletBlance.setText(balance);
+//                }
+//                if (msgVote.contains("fiat")) {
+//                    String fiat = jsonObject.getString("fiat");
+//                    if (!TextUtils.isEmpty(fiat)) {
+//                        tetCny.setText(String.format("≈ %s", fiat));
+//                    }
+//                }
+//                if (msgVote.contains("unconfirmed")) {
+//                    String unconfirmed = jsonObject.getString("unconfirmed");
+//                    tetFiat.setText(String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
+//                } else {
+//                    tetFiat.setText("");
+//                }
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//    }
+
 
     @Override
     public void onClick(View v) {
@@ -303,8 +324,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 Intent intent1 = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
                 intent1.putExtra("wallet_name", name);
                 intent1.putExtra("wallet_type", personce);
-                intent1.putExtra("strNowBtc",substring);
-                intent1.putExtra("strNowCny",strCNY);
+                intent1.putExtra("strNowBtc", substring);
+                intent1.putExtra("strNowCny", strCNY);
                 startActivity(intent1);
                 break;
             case R.id.wallet_card_bn2:

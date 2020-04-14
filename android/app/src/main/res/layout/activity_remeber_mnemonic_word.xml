@@ -35,14 +35,14 @@
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:background="@color/bk_page"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bk_page">
 
         <LinearLayout
-            android:layout_marginBottom="@dimen/dp_10"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/dp_10"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -110,6 +110,27 @@
                         tools:listitem="@layout/creatwallet_help_word_item">
 
                     </androidx.recyclerview.widget.RecyclerView>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:layout_marginStart="@dimen/sp_16"
+                        android:layout_marginEnd="@dimen/sp_16"
+                        android:background="@color/separation_line" />
+
+                    <TextView
+                        android:id="@+id/text_copy_mnemonic"
+                        android:layout_width="match_parent"
+                        android:visibility="gone"
+                        android:layout_height="@dimen/dp_60"
+                        android:gravity="center"
+                        android:text="@string/copy_mnemonic" />
+
+                    <TextView
+                        android:id="@+id/text_all_word"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

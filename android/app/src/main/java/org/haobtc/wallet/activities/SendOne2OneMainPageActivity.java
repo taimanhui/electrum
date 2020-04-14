@@ -119,6 +119,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String base_unit;
     private String strUnit;
     private String strFeemontAs;
+    private String errorMessage = "";
 
     @Override
     public int getLayoutId() {
@@ -393,12 +394,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         });
     }
 
-    private void showPopupSelectFee() {
-        //Miner money
-        showSelectFeeDialogs(SendOne2OneMainPageActivity.this, R.layout.select_fee_popwindow);
-
-    }
-
     private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
         //set see view
         View view = View.inflate(context, resource, null);
@@ -481,7 +476,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         });
         RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
 
-//        recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2OneMainPageActivity.this));
         choosePayAddressAdapetr = new ChoosePayAddressAdapetr(SendOne2OneMainPageActivity.this, dataListName);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
         recyclerviewOnclick();
@@ -566,7 +560,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 break;
             case R.id.fee_select:
                 //Miner money
-//                showPopupSelectFee();
                 break;
             case R.id.tv_send2many:
                 Intent intent = new Intent(this, Send2ManyActivity.class);
@@ -636,12 +629,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         Map<String, String> pramas = new HashMap<>();
         pramas.put(straddress, strAmount);
         arrayList.add(pramas);
-        String strMinerFee = tetMoneye.getText().toString();
         strComment = editTextComments.getText().toString();
         String strPramas = new Gson().toJson(arrayList);
-
-        Log.i("CreatTransaction", "strPramas: " + strPramas);
-
         PyObject mktx;
         try {
             mktx = Daemon.commands.callAttr("mktx", strPramas, strComment);
@@ -650,12 +639,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             e.printStackTrace();
             Log.i("CreatTransaction", "mCrea-----  " + e.getMessage());
             if (e.getMessage().contains("Insufficient funds")) {
-//                mToast(getString(R.string.insufficient));
                 mToast(getString(R.string.fee_toohigh));
-            } else if (e.getMessage().contains("invalid bitcoin address")) {
+            } else {
                 mToast(getString(R.string.changeaddress));
             }
-
             return;
         }
         Log.i("CreatTransaction", "mCreatTransaction: " + mktx);
@@ -816,6 +803,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             } catch (Exception e) {
                 e.printStackTrace();
                 if (e.getMessage().contains("invalid bitcoin address")) {
+                    errorMessage = e.getMessage();
                     Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG).show();
                 }
                 return;

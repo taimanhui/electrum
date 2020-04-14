@@ -2,13 +2,14 @@ package org.haobtc.wallet.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class ImportHistryWalletBean {
 
-
     /**
-     * xpubId : Vpub5kKD1ggSEaNt9MHbaoorY2r4xdBA57GvAfujHYxuqhpkDabmd6DRPWz45Zt1FFBdYzSz8y2aAZJLFpFsUvf7G7BHhQD27CgUvTy1U1P8jmD
-     * walletId : 0847a3e0cb364f581fc73a3eaf95a0141cc6a6b3b85d110afd983f0dc9f531d2
-     * xpubs : ["Vpub5kKD1ggSEaNt9MHbaoorY2r4xdBA57GvAfujHYxuqhpkDabmd6DRPWz45Zt1FFBdYzSz8y2aAZJLFpFsUvf7G7BHhQD27CgUvTy1U1P8jmD", "Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"]
+     * xpubId : Vpub5jJrnF3Z5cLUA6Kj6NaV5yPkp1VqAKMj1N88GXvMy5qnyqYRLNTjmEivif7pDfHTRroaQSrDe3qubmT88a4SZRGzBUr71zq6ZkfWvdFbysK
+     * walletId : 4961b853a48b35a5d6c761676961ec2ae12bf9b3f83b744057e680dc1a837d31
+     * xpubs : ["[\"Vpub5jJrnF3Z5cLUA6Kj6NaV5yPkp1VqAKMj1N88GXvMy5qnyqYRLNTjmEivif7pDfHTRroaQSrDe3qubmT88a4SZRGzBUr71zq6ZkfWvdFbysK\""," \"Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg\"]"]
      * walletType : 2-2
      */
 
@@ -16,10 +17,10 @@ public class ImportHistryWalletBean {
     private String xpubId;
     @SerializedName("walletId")
     private String walletId;
-    @SerializedName("xpubs")
-    private String xpubs;
     @SerializedName("walletType")
     private String walletType;
+    @SerializedName("xpubs")
+    private List<String> xpubs;
 
     public String getXpubId() {
         return xpubId;
@@ -37,19 +38,19 @@ public class ImportHistryWalletBean {
         this.walletId = walletId;
     }
 
-    public String getXpubs() {
-        return xpubs;
-    }
-
-    public void setXpubs(String xpubs) {
-        this.xpubs = xpubs;
-    }
-
     public String getWalletType() {
         return walletType;
     }
 
     public void setWalletType(String walletType) {
         this.walletType = walletType;
+    }
+
+    public List<String> getXpubs() {
+        return xpubs;
+    }
+
+    public void setXpubs(List<String> xpubs) {
+        this.xpubs = xpubs;
     }
 }

@@ -352,10 +352,10 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         }
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
-            String strTitle = tvInTb2.getText().toString();
-            if (strTitle.equals(getString(R.string.sendetail))) {
-                textView14.setText(String.format("-%s", amount));
-            } else if (strTitle.equals(getString(R.string.recevid))) {
+            if (amount.contains("-")) {
+                String replaceAmont = amount.replace("-", "");
+                textView14.setText(String.format("-%s", replaceAmont));
+            } else {
                 textView14.setText(String.format("+%s", amount));
             }
         }
@@ -411,10 +411,10 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         }
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
-            String strTitle = tvInTb2.getText().toString();
-            if (strTitle.equals(getString(R.string.sendetail))) {
-                textView14.setText(String.format("-%s", amount));
-            } else if (strTitle.equals(getString(R.string.recevid))) {
+            if (amount.contains("-")) {
+                String replaceAmont = amount.replace("-", "");
+                textView14.setText(String.format("-%s", replaceAmont));
+            } else {
                 textView14.setText(String.format("+%s", amount));
             }
         }
@@ -429,7 +429,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             judgeState(tx_status);
         }
 
-
     }
 
     //judge state
@@ -439,11 +438,9 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             tetState.setText(R.string.waitchoose);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
-//            imgProgresstwo.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
             //text color
-//            tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
             tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
             tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
             //trsaction hash and time
@@ -453,7 +450,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             tetState.setText(R.string.completed);
             sigTrans.setText(R.string.check_trsaction);
             imgProgressone.setVisibility(View.GONE);
-//            imgProgresstwo.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.VISIBLE);
             //Number of judgment confirmation
@@ -467,8 +463,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), strConfirl));
             }
 
-            //text color
-//            tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
             tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
             tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
             //trsaction hash and time
@@ -484,23 +478,17 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             tetGrive.setVisibility(View.VISIBLE);
             //progress
             imgProgressone.setVisibility(View.GONE);
-//            imgProgresstwo.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.VISIBLE);
             imgProgressfour.setVisibility(View.GONE);
-            //text color
-//            tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
             tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
 
         } else if (tx_status.contains("Partially signed")) {//you are signer
             tetState.setText(R.string.you_are_signed);
             sigTrans.setText(R.string.forWord_orther);
             //progress
-            imgProgressone.setVisibility(View.GONE);
-//            imgProgresstwo.setVisibility(View.VISIBLE);
+            imgProgressone.setVisibility(View.VISIBLE);
             imgProgressthree.setVisibility(View.GONE);
             imgProgressfour.setVisibility(View.GONE);
-            //text color
-//            tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
         }
     }
 

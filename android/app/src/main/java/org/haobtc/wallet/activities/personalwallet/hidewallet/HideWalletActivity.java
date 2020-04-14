@@ -179,8 +179,6 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
                 return;
             }
             String strXpub = "[\"" + strSweep + "\"]";
-            Log.i("import_create_hw_wallet", "strBixinname: " + strBixinname);
-            Log.i("import_create_hw_wallet", "strXpub: " + strXpub);
             try {
                 Daemon.commands.callAttr("import_create_hw_wallet", strBixinname, 1, 1, strXpub, new Kwarg("hide_type", true));
             } catch (Exception e) {

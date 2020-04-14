@@ -23,6 +23,9 @@ import org.haobtc.wallet.adapter.ImportHistryWalletAdapter;
 import org.haobtc.wallet.bean.ImportHistryWalletBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.utils.Daemon;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,29 +84,34 @@ public class ChooseHistryWalletActivity extends BaseActivity {
             String strfromServer = infoFromServer.toString();
             Log.i("infoFromServer", "initData: " + infoFromServer);
             if (strfromServer.length() != 2) {
-//                Gson gson = new Gson();
-//                ImportHistryWalletBean importHistryWalletBean = gson.fromJson(strfromServer, ImportHistryWalletBean.class);
-//                List<ImportHistryWalletBean.WalltesBean> walltes = importHistryWalletBean.getWalltes();
-//                for (int i = 0; i < walltes.size(); i++) {
-//                    String walletType = walltes.get(i).getWalletType();
-//                    String xpubs = walltes.get(i).getXpubs();
-//                    AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-//                    addBixinKeyEvent.setKeyname(walletType);
-//                    addBixinKeyEvent.setKeyaddress(xpubs);
-//                    xpubList.add(addBixinKeyEvent);
-//                }
-//                ImportHistryWalletAdapter histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, xpubList);
-//                reclImportWallet.setAdapter(histryWalletAdapter);
-//                histryWalletAdapter.setOnItemClickListener(new ImportHistryWalletAdapter.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(int position) {
-//                        btnFinish.setBackground(getDrawable(R.drawable.little_radio_blue));
-//                        btnFinish.setEnabled(true);
-//                        chooseWallet = true;
-//                        keyaddress = xpubList.get(position).getKeyaddress();
-//                        walletType = xpubList.get(position).getKeyname();
-//                    }
-//                });
+                try {
+                    JSONArray jsonArray = new JSONArray(strfromServer);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        walletType = jsonObject.getString("walletType");
+                        String xpubs = jsonObject.getString("xpubs");
+                        AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
+                        addBixinKeyEvent.setKeyname(walletType);
+                        addBixinKeyEvent.setKeyaddress(xpubs);
+                        xpubList.add(addBixinKeyEvent);
+
+                        ImportHistryWalletAdapter histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, xpubList);
+                        reclImportWallet.setAdapter(histryWalletAdapter);
+                        histryWalletAdapter.setOnItemClickListener(new ImportHistryWalletAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(int position) {
+                                btnFinish.setBackground(getDrawable(R.drawable.little_radio_blue));
+                                btnFinish.setEnabled(true);
+                                chooseWallet = true;
+                                keyaddress = xpubList.get(position).getKeyaddress();
+                                walletType = xpubList.get(position).getKeyname();
+                            }
+                        });
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             mToast(getString(R.string.no_import_wallet));
@@ -151,21 +159,17 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         //public  num
         String strpubNum = walletType.substring(walletType.indexOf("-") + 1);
         int pubNum = Integer.parseInt(strpubNum);
-
+        Gson gson = new Gson();
+        String jsonKeyAddress = gson.toJson(keyaddress);
+        Log.i("jxm_import_creat_wallet", "================: "+keyaddress);
         try {
             Daemon.commands.callAttr("import_create_hw_wallet", wallet_name, sigNum, pubNum, keyaddress);
         } catch (Exception e) {
+            Log.i("jxm_import_creat_wallet", "importWallet:++ " + e.getMessage());
             e.printStackTrace();
             return;
         }
         mIntent(MainActivity.class);
-
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }

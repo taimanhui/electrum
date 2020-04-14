@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
@@ -14,9 +15,11 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -30,17 +33,20 @@ public class BixinKEYManageActivity extends BaseActivity {
     @BindView(R.id.recl_bixinKey_list)
     RecyclerView reclBixinKeyList;
     private List<HardwareFeatures> deviceValue;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_bixin_keymenage;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
         deviceValue = new ArrayList<>();
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+        edit = devices.edit();
         Map<String, ?> devicesAll = devices.getAll();
         //key
         for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
@@ -55,16 +61,25 @@ public class BixinKEYManageActivity extends BaseActivity {
         if (deviceValue != null) {
             BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
             reclBixinKeyList.setAdapter(bixinkeyManagerAdapter);
-            bixinkeyManagerAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            bixinkeyManagerAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
-                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                    String firmwareVersion = "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
-                    Intent intent = new Intent(BixinKEYManageActivity.this, HardwareDetailsActivity.class);
-                    intent.putExtra("bleName", deviceValue.get(position).getBleName());
-                    intent.putExtra("firmwareVersion", firmwareVersion);
-                    intent.putExtra("bleVerson", "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getPatchVersion());
-                    intent.putExtra("device_id", deviceValue.get(position).getDeviceId());
-                    startActivity(intent);
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    switch (view.getId()) {
+                        case R.id.relativeLayout_bixinkey:
+                            String firmwareVersion = "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
+                            Intent intent = new Intent(BixinKEYManageActivity.this, HardwareDetailsActivity.class);
+                            intent.putExtra("bleName", deviceValue.get(position).getBleName());
+                            intent.putExtra("firmwareVersion", firmwareVersion);
+                            intent.putExtra("bleVerson", "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getPatchVersion());
+                            intent.putExtra("device_id", deviceValue.get(position).getDeviceId());
+                            startActivity(intent);
+                            break;
+                        case R.id.linear_delete:
+                            String key_deviceId = deviceValue.get(position).getDeviceId();
+                            edit.remove(key_deviceId);
+                            edit.apply();
+                            break;
+                    }
                 }
             });
         }

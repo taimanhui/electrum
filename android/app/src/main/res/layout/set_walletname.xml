@@ -44,7 +44,6 @@
             android:layout_height="@dimen/dp_50"
             android:layout_marginStart="26dp"
             android:layout_marginTop="20dp"
-            android:inputType="textPassword"
             android:layout_marginEnd="26dp"
             android:background="@drawable/gray_tuo_6"
             android:hint="@string/input_here"

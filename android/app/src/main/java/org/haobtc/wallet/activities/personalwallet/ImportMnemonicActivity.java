@@ -59,7 +59,6 @@ public class ImportMnemonicActivity extends BaseActivity {
     TextView editTwelve;
     private String strRemeber = "";
     private String strPass1;
-    private final String FIRST_RUN = "is_first_run";
     private MyDialog myDialog;
     private String strName;
 

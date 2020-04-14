@@ -23,20 +23,20 @@ import androidx.recyclerview.widget.RecyclerView;
 public class SlideRecyclerView extends RecyclerView {
 
     private static final String TAG = "SlideRecyclerView";
-    private static final int INVALID_POSITION = -1;
-    private static final int INVALID_CHILD_WIDTH = -1;
-    private static final int SNAP_VELOCITY = 600;   // Minimum sliding speed
+    public static final int INVALID_POSITION = -1;
+    public static final int INVALID_CHILD_WIDTH = -1;
+    public static final int SNAP_VELOCITY = 600;   // Minimum sliding speed
 
-    private VelocityTracker mVelocityTracker;   // Speed Tracker
+    public VelocityTracker mVelocityTracker;   // Speed Tracker
     private int mTouchSlop; // Considered as the minimum distance of sliding (generally provided by the system)
     private Rect mTouchFrame;   // Rectangle range of child view
-    private Scroller mScroller;
-    private float mLastX;   // Record the last touch point x during sliding
+    public Scroller mScroller;
+    public float mLastX;   // Record the last touch point x during sliding
     private float mFirstX, mFirstY; // First touch range
-    private boolean mIsSlide;   // Slide subview or not
-    private ViewGroup mFlingView;   // Touch child view
-    private int mPosition;  // Location of the view touched
-    private int mMenuViewWidth;    // Menu button width
+    public boolean mIsSlide;   // Slide subview or not
+    public ViewGroup mFlingView;   // Touch child view
+    public int mPosition;  // Location of the view touched
+    public int mMenuViewWidth;    // Menu button width
 
     public SlideRecyclerView(Context context) {
         this(context, null);
@@ -161,7 +161,7 @@ public class SlideRecyclerView extends RecyclerView {
         return super.onTouchEvent(e);
     }
 
-    private void releaseVelocity() {
+    public void releaseVelocity() {
         if (mVelocityTracker != null) {
             mVelocityTracker.clear();
             mVelocityTracker.recycle();
@@ -169,7 +169,7 @@ public class SlideRecyclerView extends RecyclerView {
         }
     }
 
-    private void obtainVelocity(MotionEvent event) {
+    public void obtainVelocity(MotionEvent event) {
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
         }

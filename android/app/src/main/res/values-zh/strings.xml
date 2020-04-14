@@ -516,5 +516,8 @@
     <string name="blurtooth_need_permission">蓝牙需要使用定位权限</string>
     <string name="task_cancle">当前任务以取消</string>
     <string name="bluetooth_fail">蓝牙连接失败</string>
+    <string name="copy_mnemonic">复制助记词</string>
+    <string name="pass_morethan_6">密码不足6位</string>
+    <string name="single_sign_only">签名消息只支持单签</string>
 
 </resources>

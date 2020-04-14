@@ -540,5 +540,8 @@
     <string name="task_cancle">Current task to cancel</string>
     <string name="bluetooth_fail">Bluetooth connection failed</string>
     <string name="default_key">Key</string>
+    <string name="copy_mnemonic">Copy mnemonic</string>
+    <string name="pass_morethan_6">the PIN\'s length less than 6</string>
+    <string name="single_sign_only">Signature message only supports single signature</string>
 
 </resources>

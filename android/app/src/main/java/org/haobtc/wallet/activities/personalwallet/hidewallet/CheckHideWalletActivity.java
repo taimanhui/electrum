@@ -328,6 +328,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 break;
             case R.id.wallet_card_bn3:
                 Intent intent3 = new Intent(CheckHideWalletActivity.this, SignActivity.class);
+                intent3.putExtra("hide_phrass","hideWallet");
                 intent3.putExtra("personceType", walletType);
                 startActivity(intent3);
                 break;

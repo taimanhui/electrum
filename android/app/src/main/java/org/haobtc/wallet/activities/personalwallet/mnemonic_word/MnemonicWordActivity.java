@@ -1,9 +1,11 @@
 package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,6 +30,7 @@ import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,11 +71,12 @@ public class MnemonicWordActivity extends BaseActivity {
     EditText editTwelve;
     @BindView(R.id.btn_setPin)
     Button btnSetPin;
+    @BindView(R.id.text_paste)
+    TextView textPaste;
     private ArrayList<AddressEvent> dataListName;
     private ChoosePayAddressAdapetr choosePayAddressAdapetr;
     private String wallet_name;
     private String newWallet_type = "";
-    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -82,7 +86,6 @@ public class MnemonicWordActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
 
     }
 
@@ -101,7 +104,7 @@ public class MnemonicWordActivity extends BaseActivity {
         dataListName.add(new AddressEvent("electrum"));
     }
 
-    @OnClick({R.id.img_back, R.id.lin_Bitype, R.id.btn_setPin})
+    @OnClick({R.id.img_back, R.id.lin_Bitype, R.id.btn_setPin, R.id.text_paste})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -145,6 +148,35 @@ public class MnemonicWordActivity extends BaseActivity {
                 String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
                 judgeSeedorrectC(strNewseed);
                 break;
+            case R.id.text_paste:
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboard != null) {
+                    ClipData data = clipboard.getPrimaryClip();
+                    if (data != null && data.getItemCount() > 0) {
+                        CharSequence text = data.getItemAt(0).getText();
+                        if (!TextUtils.isEmpty(text.toString())) {
+                            String[] wordsList = text.toString().split(" ");
+                            ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
+                            if (wordList.size() == 12) {
+                                editOne.setText(wordList.get(0));
+                                editTwo.setText(wordList.get(1));
+                                editThree.setText(wordList.get(2));
+                                editFour.setText(wordList.get(3));
+                                editFive.setText(wordList.get(4));
+                                editSix.setText(wordList.get(5));
+                                editSeven.setText(wordList.get(6));
+                                editEight.setText(wordList.get(7));
+                                editNine.setText(wordList.get(8));
+                                editTen.setText(wordList.get(9));
+                                editEleven.setText(wordList.get(10));
+                                editTwelve.setText(wordList.get(11));
+                            }else{
+                                editOne.setText(text.toString());
+                            }
+                        }
+                    }
+                }
+                break;
 
         }
     }
@@ -156,12 +188,12 @@ public class MnemonicWordActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (is_seed!=null){
+        if (is_seed != null) {
             boolean isSeed = is_seed.toBoolean();
-            if (isSeed){
+            if (isSeed) {
                 Intent intent = new Intent(MnemonicWordActivity.this, CreateHelpWordWalletActivity.class);
                 intent.putExtra("newWallet_type", newWallet_type);
-                intent.putExtra("strNewseed",newSeed);
+                intent.putExtra("strNewseed", newSeed);
                 startActivity(intent);
                 finish();
             }else{
