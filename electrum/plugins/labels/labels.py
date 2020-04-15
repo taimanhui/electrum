@@ -152,7 +152,7 @@ class LabelsPlugin(BasePlugin):
             try:
                 result['xpubId'] = wallet['xpubId']#self.decode_xpub(xpub, wallet['xpubId'])
                 result['walletId'] = wallet['WalletId']
-                result['xpubs'] = [(i.strip()[1:-1])for i in (self.decode_xpub(xpub, wallet['Xpubs']))[1:-1].split(',')]
+                result['xpubs'] = self.decode_xpub(xpub, wallet['Xpubs'])
                 result['walletType'] = self.decode_xpub(xpub, wallet['WalletType'])
             except:
                 continue

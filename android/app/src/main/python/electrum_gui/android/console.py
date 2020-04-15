@@ -316,7 +316,8 @@ class AndroidCommands(commands.Commands):
         elif event == 'verified':
             self.update_wallet()
         elif event == 'set_server_status':
-            self.callbackIntent.onCallback("set_server_status", args[0])
+            if self.callbackIntent is not None:
+                self.callbackIntent.onCallback("set_server_status", args[0])
 
     def timer_action(self):
         self.update_wallet()
@@ -728,8 +729,9 @@ class AndroidCommands(commands.Commands):
             for i in tx.inputs():
                 in_info = {}
                 in_info['addr'] = i.address
-                in_list.append(in_info)
-
+                if not in_list.__contains__(in_info):
+                    in_list.append(in_info)
+        print(f"all in_list==========={in_list}")
         out_list = []
         for o in tx.outputs():
             address, value = o.address, o.value
@@ -737,10 +739,17 @@ class AndroidCommands(commands.Commands):
             out_info['addr'] = address
             out_info['amount'] = self.format_amount_and_units(value)
             out_list.append(out_info)
+
+        amount_str = ""
+        if tx_details.amount is None:
+            amount_str = "Transaction unrelated to your wallet"
+        elif tx_details.amount >= 0:
+            amount_str = self.format_amount_and_units(tx_details.amount)
+
         ret_data = {
             'txid':tx_details.txid,
             'can_broadcast':tx_details.can_broadcast,
-            'amount': self.format_amount_and_units(tx_details.amount),
+            'amount': amount_str,
             'fee': self.format_amount_and_units(tx_details.fee),
             'description':self.wallet.get_label(tx_details.txid),
             'tx_status':tx_details.status,#TODO:需要对应界面的几个状态
@@ -1060,8 +1069,17 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     ##connection with terzorlib#########################
-    def backup_wallet(self):
-        return "hello world"
+    def backup_wallet(self, path='nfc'):
+        print(f"hello world")
+        # client = self.get_client(path=path)
+        # try:
+        #     response = client.backup_device()
+        # except Exception as e:
+        #     raise BaseException(e)
+        # if response == "Device successfully backuped":
+        #     return 1
+        # else:
+        #     return 0
 
     def wallet_recovery(self, str):
         if str == "hello world":
