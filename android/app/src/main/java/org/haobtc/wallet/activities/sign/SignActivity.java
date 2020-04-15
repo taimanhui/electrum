@@ -120,6 +120,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private String hide_phrass;
     private SharedPreferences.Editor edit;
     private String hideWalletpass;
+    private boolean done;
 
     @Override
     public int getLayoutId() {
@@ -470,6 +471,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 hideWalletpass = "";
             }
             ready = false;
+            return;
+        } else if (done) {
+            customerUI.put("pin", pin);
+            done = false;
+            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+            return;
         }
         HardwareFeatures features;
         try {
@@ -494,13 +501,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
         } else {
             if (isActive) {
-                executorService.execute(() -> {
-                    try {
-                        Daemon.commands.callAttr("init");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -519,19 +520,17 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                     case CommunicationModeSelector.PIN_NEW_FIRST: // activation
                         // ble activation
                         if (CommunicationModeSelector.isActive) {
-                            CommunicationModeSelector.customerUI.put("pin", pin);
+                            customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
 
                         } else if (isActive) {
-                            // nfc activation
-                            CommunicationModeSelector.pin = pin;
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                            // nfc 激活
+                            done = true;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // sign
                         if (!isNFC) { // ble
-                            CommunicationModeSelector.customerUI.put("pin", pin);
-                            gotoConfirmOnHardware();
+                            customerUI.put("pin", pin);
                         } else { // nfc
                             ready = true;
                         }

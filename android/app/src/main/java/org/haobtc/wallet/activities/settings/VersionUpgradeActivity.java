@@ -1,20 +1,30 @@
 package org.haobtc.wallet.activities.settings;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbEndpoint;
+import android.hardware.usb.UsbInterface;
+import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.chaquo.python.PyObject;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
@@ -46,6 +56,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     public final static String TAG = VersionUpgradeActivity.class.getSimpleName();
     private int checkWitch = 1;
     public static final String UPDATE_PROCESS = "org.haobtc.wallet.activities.settings.percent";
+    CommunicationModeSelector dialog;
 
     @Override
     public int getLayoutId() {
@@ -63,9 +74,17 @@ public class VersionUpgradeActivity extends BaseActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void initData() {
         checkBoxClick();
+        UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        assert usbManager != null;
+        System.out.println("deveice size" + usbManager.getDeviceList().size());
+        usbManager.getDeviceList().entrySet().forEach(stringUsbDeviceEntry -> {
+            System.out.println("fonud device===" + stringUsbDeviceEntry.getValue().getDeviceName() + "====" + stringUsbDeviceEntry.getValue().getProductId()
+           + "=====" + stringUsbDeviceEntry.getValue().getProductName() + "===" + stringUsbDeviceEntry.getValue().getVendorId());
+        });
     }
 
     private void checkBoxClick() {
@@ -100,7 +119,6 @@ public class VersionUpgradeActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_toUpgrade:
-                CommunicationModeSelector dialog;
                 switch (checkWitch) {
                     case 0:
                         mToast(getString(R.string.please_choose_firmware));
@@ -143,6 +161,14 @@ public class VersionUpgradeActivity extends BaseActivity {
             Intent intent2 = new Intent();
             intent2.setAction(UpgradeBixinKEYActivity.EXECUTE_TASK);
             new Handler().postDelayed(() -> sendBroadcast(intent2), 1000);
+
+        } else if (action.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+            UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+            UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            assert device != null;
+            Toast.makeText(this, "productid===" + device.getProductId() + "venderid====" + device.getVendorId(), Toast.LENGTH_LONG).show();
+            device.getInterfaceCount();
+
 
         }
     }
@@ -187,7 +213,10 @@ public class VersionUpgradeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-            DfuServiceListenerHelper.registerProgressListener(this, dfuProgressListener);
+        DfuServiceListenerHelper.registerProgressListener(this, dfuProgressListener);
+        if (dialog != null) {
+            dialog.dismiss();
+        }
     }
 
     @Override
@@ -195,4 +224,24 @@ public class VersionUpgradeActivity extends BaseActivity {
         super.onDestroy();
         DfuServiceListenerHelper.unregisterProgressListener(this, dfuProgressListener);
     }
+    BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                if (device != null) {
+                    // call your method that cleans up and closes communication with the device
+                    UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                    device.getInterface(0);
+                    UsbInterface intf = device.getInterface(0);
+                    UsbEndpoint endpoint = intf.getEndpoint(0);
+                    UsbDeviceConnection connection = usbManager.openDevice(device);
+                    connection.close();
+                    /*connection.claimInterface(intf, forceClaim);
+                    connection.bulkTransfer(endpoint, bytes, bytes.length, TIMEOUT);*/
+                }
+            }
+        }
+    };
 }

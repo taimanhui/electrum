@@ -716,7 +716,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     @Override
     public void onException(Exception e) {
         dialogFragment.dismiss();
-        if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             showReadingFailedDialog(R.string.pin_wrong);
         } else {
             showReadingFailedDialog(R.string.read_pk_failed);

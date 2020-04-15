@@ -63,6 +63,7 @@ import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 
@@ -165,6 +166,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
     private String unrelatedTransaction;
     private Boolean aBoolean;
+    private boolean done;
 
     @Override
     public int getLayoutId() {
@@ -757,6 +759,12 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             CommunicationModeSelector.customerUI.put("pin", pin);
             gotoConfirmOnHardware();
             ready = false;
+            return;
+        } else if (done) {
+            customerUI.put("pin", pin);
+            done = false;
+            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+            return;
         }
         HardwareFeatures features;
         try {
@@ -800,8 +808,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
 
                         } else if (isActive) {
                             // nfc 激活
-                            CommunicationModeSelector.pin = pin;
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                            done = true;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 签名

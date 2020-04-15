@@ -1123,7 +1123,10 @@ class AndroidCommands(commands.Commands):
 
     def reset_pin(self, path='nfc') -> int:
         client = self.get_client(path)
-        resp = client.set_pin(False)
+        try:
+            resp = client.set_pin(False)
+        except Exception as e:
+            raise BaseException(e)
         if resp == "PIN changed":
             return 1
         else:

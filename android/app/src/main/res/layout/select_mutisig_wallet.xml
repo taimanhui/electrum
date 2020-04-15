@@ -28,7 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:text="@string/select_mutisig"
+            android:text="@string/select_multisig"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 

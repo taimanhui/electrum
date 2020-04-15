@@ -5,16 +5,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.nfc.Tag;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.chaquo.python.PyObject;
@@ -27,7 +26,7 @@ import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
-
+import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
@@ -80,21 +79,31 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @SuppressLint("SdCardPath")
         @Override
         protected Void doInBackground(String... params) {
-            PyObject progress = Global.py.getModule("trezorlib.transport.protocol");
-            progress.put("PROCESS_REPORTER", this);
+            PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
             if (tag == 1) { // 固件
                 try {
                     boolean ready = isBootloaderMode(params[0]);
                     if (ready) {
-                        Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/cache/trezor.bin", params[0]);
+                        protocol.put("PROCESS_REPORTER", this);
+                        File file = new File("/sdcard/Android/data/org.haobtc.wallet/cache/trezor.bin");
+                        if (file.exists()) {
+                            Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/cache/trezor.bin", params[0]);
+                        } else {
+                            showPromptMessage(R.string.file_not_exist);
+                        }
                     } else {
-                        showPromptMessage();
+                        showPromptMessage(R.string.not_bootloader_mode);
                         cancel(true);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    // clear state
+                    protocol.put("HTTP", false);
+                    protocol.put("OFFSET", 0);
+                    protocol.put("PROCESS_REPORTER", null);
                     cancel(true);
-                    showErrorMessage();
+                    showPromptMessage(R.string.update_failed);
+                    new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
                 }
             }
             return null;
@@ -119,14 +128,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             tetUpgradeTest.setText(getString(R.string.Cancelled));
         }
     }
-    private void showPromptMessage() {
+    private void showPromptMessage(@StringRes int id) {
         UpgradeBixinKEYActivity.this.runOnUiThread(() -> {
-            Toast.makeText(UpgradeBixinKEYActivity.this, "", Toast.LENGTH_SHORT).show();
-        });
-    }
-    private void showErrorMessage() {
-        UpgradeBixinKEYActivity.this.runOnUiThread(() -> {
-            Toast.makeText(UpgradeBixinKEYActivity.this, "升级失败,将在2秒内退出此界面", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UpgradeBixinKEYActivity.this, id, Toast.LENGTH_SHORT).show();
         });
     }
     @Override

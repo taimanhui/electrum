@@ -82,6 +82,7 @@ import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
@@ -164,7 +165,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
     private boolean ready;
     private int strUp1;
     private int strUp2;
-
+    private boolean done;
     @Override
     public int getLayoutId() {
         return R.layout.activity_many_wallet_together;
@@ -734,6 +735,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
             CommunicationModeSelector.customerUI.put("pin", pin);
             ready = false;
             return;
+        } else if (done) {
+            customerUI.put("pin", pin);
+            done = false;
+            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+            return;
         }
         HardwareFeatures features;
         try {
@@ -773,8 +779,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
                         } else if (isActive) {
                             // nfc 激活
-                            CommunicationModeSelector.pin = pin;
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                            done = true;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 创建
@@ -907,7 +912,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         readingPubKey.dismiss();
         if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
             ready = false;
-        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        } else if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
         } else {
             dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);

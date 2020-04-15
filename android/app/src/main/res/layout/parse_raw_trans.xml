@@ -150,7 +150,7 @@
                         android:paddingStart="13dp"
                         android:paddingEnd="13dp"
                         android:singleLine="true"
-                        android:text="@string/sweep"
+                        android:text="@string/scaning"
                         android:textAllCaps="false"
                         android:textColor="@color/button_bk" />
 

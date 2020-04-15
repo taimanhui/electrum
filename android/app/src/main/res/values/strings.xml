@@ -53,11 +53,11 @@
     <string name="method_two">Method 2: Enter public address</string>
     <string name="import_address">Enter public address</string>
     <string name="input_address">Please enter address</string>
-    <string name="sweep">Scan</string>
+    <string name="scaning">Scan</string>
     <string name="paste">Paste</string>
     <string name="confirm">Confirm</string>
     <string name="cosigner_num_select">Set co-signers</string>
-    <string name="select_mutisig">Select multi-sig wallet</string>
+    <string name="select_multisig">Select multi-sig wallet</string>
     <string name="wallet_name">Multi-sig wallet 1</string>
     <string name="create_multisig">Create multi-sig wallet</string>
     <string name="select">Please select</string>
@@ -550,5 +550,6 @@
     <string name="dont_support_hide">Hidden wallet is not supported in current hardware status</string>
     <string name="same_seed_have">Wallet created by this seed already exists</string>
     <string name="fail">Fail</string>
-
+    <string name="update_failed">Update failed, we would exit this page 2 second later</string>
+    <string name="file_not_exist">Update file not exist</string>
 </resources>

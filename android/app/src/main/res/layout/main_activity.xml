@@ -27,7 +27,7 @@
                 android:id="@+id/img_sweep"
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_40"
-                android:contentDescription="@string/sweep"
+                android:contentDescription="@string/scaning"
                 android:padding="8dp"
                 android:background="?attr/selectableItemBackground"
                 android:src="@drawable/soayisao" />

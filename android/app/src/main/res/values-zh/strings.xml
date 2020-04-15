@@ -53,11 +53,11 @@
     <string name="method_two">方式二：输入公钥地址</string>
     <string name="import_address">输入公钥地址</string>
     <string name="input_address">请输入地址</string>
-    <string name="sweep">扫一扫</string>
+    <string name="scaning">扫一扫</string>
     <string name="paste">粘贴</string>
     <string name="confirm">确认</string>
     <string name="cosigner_num_select">设置联署人</string>
-    <string name="select_mutisig">选择多签钱包</string>
+    <string name="select_multisig">选择多签钱包</string>
     <string name="wallet_name">多签钱包1</string>
     <string name="create_multisig">创建多签钱包</string>
     <string name="select">请选择</string>
@@ -525,5 +525,7 @@
     <string name="dont_support_hide">当前硬件状态不支持隐藏钱包</string>
     <string name="same_seed_have">已存在此seed创建的钱包</string>
     <string name="fail">失败</string>
+    <string name="update_failed">升级失败,将在2秒后退出此界面</string>
+    <string name="file_not_exist">升级文件不存在</string>
 
 </resources>

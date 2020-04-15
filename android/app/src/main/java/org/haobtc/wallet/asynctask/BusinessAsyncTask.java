@@ -1,12 +1,8 @@
 package org.haobtc.wallet.asynctask;
 
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.haobtc.wallet.event.CancelEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {

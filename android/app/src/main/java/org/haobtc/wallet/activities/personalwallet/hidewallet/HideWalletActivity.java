@@ -85,6 +85,7 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
     private boolean status;
     private String hideWalletpass;
     private SharedPreferences.Editor edit;
+    private boolean done;
 
     @Override
     public int getLayoutId() {
@@ -245,6 +246,11 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
             }
             ready = false;
             return;
+        } else if (done) {
+            customerUI.put("pin", pin);
+            done = false;
+            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+            return;
         }
         HardwareFeatures features;
         try {
@@ -298,8 +304,7 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
 
                         } else if (isActive) {
                             // nfc activation
-                            CommunicationModeSelector.pin = pin;
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                           done = true;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // create
@@ -363,7 +368,7 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
         if ("BaseException: waiting passphrase timeout".equals(e.getMessage()) || "BaseException: waiting pin timeout".equals(e.getMessage())) {
             ready = false;
             status = false;
-        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        } else if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
         } else {
             dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);

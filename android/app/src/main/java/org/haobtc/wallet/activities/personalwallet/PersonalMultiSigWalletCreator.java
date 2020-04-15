@@ -68,6 +68,7 @@ import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
@@ -98,6 +99,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
     private boolean ready;
     private SharedPreferences.Editor edit;
     private MyDialog myDialog;
+    private boolean done;
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @Override
@@ -324,6 +326,11 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
                 CommunicationModeSelector.customerUI.put("pin", pin);
                 ready = false;
                 return;
+            } else if (done) {
+                customerUI.put("pin", pin);
+                done = false;
+                CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                return;
             }
             HardwareFeatures features;
             try {
@@ -366,8 +373,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
 
                         } else if (isActive) {
                             // nfc 激活
-                            CommunicationModeSelector.pin = pin;
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                           done = true;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 创建
@@ -409,7 +415,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
         readingPubKey.dismiss();
         if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
             ready = false;
-        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        } else if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
         } else {
             dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);

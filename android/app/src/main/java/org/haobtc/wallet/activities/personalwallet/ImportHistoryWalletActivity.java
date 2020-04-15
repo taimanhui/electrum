@@ -50,6 +50,7 @@ import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
+import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
@@ -71,6 +72,7 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
     private Dialog dialogBtoms;
     private EditText edit_bixinName;
     private TextView textView;
+    private boolean done;
 
 
     @Override
@@ -203,8 +205,14 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
                 executable = false;
             }
             if (ready) {
-                CommunicationModeSelector.customerUI.put("pin", pin);
+                customerUI.put("pin", pin);
                 ready = false;
+                return;
+            } else if (done) {
+                customerUI.put("pin", pin);
+                done = false;
+                CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                return;
             }
             HardwareFeatures features;
             try {
@@ -248,8 +256,7 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
 
                         } else if (isActive) {
                             // nfc 激活
-                            CommunicationModeSelector.pin = pin;
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
+                            done = true;
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 创建
@@ -284,7 +291,7 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
         readingPubKey.dismiss();
         if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
             ready = false;
-        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        } else if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
         } else {
             dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);

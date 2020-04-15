@@ -20,10 +20,13 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
         android:name="android.hardware.nfc"
-        android:required="true" />
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false"/>
 
     <application
         android:name=".activities.base.MyApplication"
@@ -106,7 +109,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.settings.VersionUpgradeActivity" />
+        <activity android:name=".activities.settings.VersionUpgradeActivity">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/usb_device_filter" />
+        </activity>
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.TransactionRecordsActivity" />
         <activity android:name=".activities.HardwareInfoActivity" />

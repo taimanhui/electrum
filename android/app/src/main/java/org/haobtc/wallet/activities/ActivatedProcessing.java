@@ -2,8 +2,6 @@ package org.haobtc.wallet.activities;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.nfc.NfcAdapter;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -14,7 +12,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
@@ -49,45 +46,12 @@ public class ActivatedProcessing extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // enable nfc discovery for the app
-            System.out.println("为本App启用NFC感应");
-            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // disable nfc discovery for the app
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-            System.out.println("禁用本App的NFC感应");
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         NfcUtils.mNfcAdapter = null;
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        String action = intent.getAction(); // get the action of the coming intent
-        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
-                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
-                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            if (!TextUtils.isEmpty(CommunicationModeSelector.pin)) {
-                CommunicationModeSelector.customerUI.put("pin", CommunicationModeSelector.pin);
-                CommunicationModeSelector.pin = "";
-            }
-        }
-    }
     @Subscribe
     public void onEventMainThread(ResultEvent resultEvent) {
         switch (resultEvent.getResult()) {

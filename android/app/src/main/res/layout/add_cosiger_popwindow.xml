@@ -167,7 +167,7 @@
                     android:gravity="center"
                     android:paddingStart="17.8dp"
                     android:paddingEnd="17dp"
-                    android:text="@string/sweep"
+                    android:text="@string/scaning"
                     android:textColor="@color/button_bk"
                     android:textSize="16sp" />
 

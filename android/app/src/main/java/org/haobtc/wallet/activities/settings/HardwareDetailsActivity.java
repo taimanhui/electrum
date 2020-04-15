@@ -170,6 +170,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             ready = false;
         } else if (done) {
             customerUI.put("pin", pin);
+            done = false;
             startActivity(new Intent(this, ChangePinProcessingActivity.class));
         } else {
             boolean isInit;
@@ -240,7 +241,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     public void onException(Exception e) {
         if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
             ready = false;
-        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        } else if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
         }
     }

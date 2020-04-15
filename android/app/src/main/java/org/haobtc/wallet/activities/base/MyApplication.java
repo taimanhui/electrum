@@ -37,7 +37,7 @@ public class MyApplication extends Application {
     }
     // init ble
     private void initBle() {
-        Ble.options().setLogBleEnable(false)//Set whether to print Bluetooth log
+        Ble.options().setLogBleEnable(true)//Set whether to print Bluetooth log
                 .setThrowBleException(true)//Set whether to throw Bluetooth exception
                 .setLogTAG("AndroidBLE")//Set global Bluetooth operation log TAG
                 .setAutoConnect(false)//Set whether to connect automatically

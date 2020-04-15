@@ -203,7 +203,7 @@
                     android:maxLines="1"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_10"
-                    android:text="@string/sweep"
+                    android:text="@string/scaning"
                     android:textAllCaps="false"
                     android:textColor="@color/button_bk"
                     android:textSize="@dimen/sp_13" />
