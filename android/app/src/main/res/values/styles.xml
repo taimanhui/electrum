@@ -55,6 +55,8 @@
     </style>
     <!--解决APP启动白屏问题-->
     <style name="LunchTheme" parent="@style/AppTheme">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
