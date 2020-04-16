@@ -38,7 +38,7 @@
 
         </RelativeLayout>
 
-        <org.haobtc.wallet.utils.SlideRecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recl_bixinKey_list"
             android:layout_marginTop="@dimen/sp_16"
             android:layout_marginEnd="@dimen/dp_10"
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        </org.haobtc.wallet.utils.SlideRecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
 

@@ -49,6 +49,7 @@ import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SecondEvent;
+import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.json.JSONException;
@@ -571,7 +572,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Override
     public void onPreExecute() {
-        gotoConfirmOnHardware();
+        if (signWhich) {
+            gotoConfirmOnHardware();
+        }
     }
 
     @Override
@@ -589,15 +592,20 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Override
     public void onResult(String s) {
-        Log.i("zsjbssajhdbejjdbskjbkn", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        strSoftMsg = editSignMsg.getText().toString();
-        String signedMsg = s;
-        Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
-        intentMsg.putExtra("signMsg", strSoftMsg);
-        intentMsg.putExtra("signAddress", strinputAddress);
-        intentMsg.putExtra("signedFinish", signedMsg);
-        startActivity(intentMsg);
-        finish();
+        if (signWhich) {
+            EventBus.getDefault().post(new SignResultEvent(s));
+        } else {
+            Log.i("zsjbssajhdbejjdbskjbkn", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            strSoftMsg = editSignMsg.getText().toString();
+            String signedMsg = s;
+            Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
+            intentMsg.putExtra("signMsg", strSoftMsg);
+            intentMsg.putExtra("signAddress", strinputAddress);
+            intentMsg.putExtra("signedFinish", signedMsg);
+            startActivity(intentMsg);
+            finish();
+        }
+
     }
 
     @Override

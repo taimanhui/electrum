@@ -356,7 +356,11 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 String replaceAmont = amount.replace("-", "");
                 textView14.setText(String.format("-%s", replaceAmont));
             } else {
-                textView14.setText(String.format("+%s", amount));
+                if (isIsmine){
+                    textView14.setText(String.format("-%s", amount));
+                }else{
+                    textView14.setText(String.format("+%s", amount));
+                }
             }
         }
         //Miner's fee
@@ -415,7 +419,11 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 String replaceAmont = amount.replace("-", "");
                 textView14.setText(String.format("-%s", replaceAmont));
             } else {
-                textView14.setText(String.format("+%s", amount));
+                if (isIsmine){
+                    textView14.setText(String.format("-%s", amount));
+                }else{
+                    textView14.setText(String.format("+%s", amount));
+                }
             }
         }
         //Miner's fee
@@ -506,7 +514,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         startActivityForResult(intentCon, 1);
     }
 
-    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans,R.id.lin_payAddress})
+    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans, R.id.lin_payAddress})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -758,7 +766,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, rowtx);
         } else {
             if (isActive) {
-               new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);

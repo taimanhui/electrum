@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            android:elevation="@dimen/dp_4"
+            android:elevation="@dimen/dp_1"
             app:layout_constraintTop_toTopOf="parent"
             app:title="">
 
@@ -60,7 +60,7 @@
             android:layout_marginTop="?attr/actionBarSize"
             android:background="@android:color/white"
             android:clipChildren="false"
-            android:elevation="@dimen/dp_4"
+            android:elevation="@dimen/dp_1"
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -167,7 +167,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                    <org.haobtc.wallet.utils.SlideRecyclerView
+                    <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recy_data"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -176,7 +176,7 @@
                         tools:itemCount="4"
                         tools:listitem="@layout/fragment_item_trans">
 
-                    </org.haobtc.wallet.utils.SlideRecyclerView>
+                    </androidx.recyclerview.widget.RecyclerView>
 
             </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 

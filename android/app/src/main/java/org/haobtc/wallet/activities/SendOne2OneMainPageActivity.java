@@ -43,6 +43,7 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
@@ -50,9 +51,11 @@ import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
 import org.haobtc.wallet.bean.GetsendFeenumBean;
 import org.haobtc.wallet.bean.MainNewWalletBean;
+import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
+import org.json.JSONException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -244,10 +247,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         String sendmessage = intent.getStringExtra("sendmessage");
         String strNowBtc = intent.getStringExtra("strNowBtc");
         String strNowCny = intent.getStringExtra("strNowCny");
-        if (!TextUtils.isEmpty(strNowCny)){
-            if (strNowCny.contains("≈")){
+        if (!TextUtils.isEmpty(strNowCny)) {
+            if (strNowCny.contains("≈")) {
                 testNowCanUse.setText(String.format("%s%s%s", getString(R.string.usable), strNowBtc, strNowCny));
-            }else{
+            } else {
                 testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
             }
         }
@@ -394,55 +397,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         });
     }
 
-    private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        dialogBtom = new Dialog(context, R.style.dialog);
-        //Here you can set properties for each control as required
-        AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar_fee);
-        TextView textViewFee = view.findViewById(R.id.fee);
-        //SelectFee
-        seekBar.setOnSeekBarChangeListener(new AppCompatSeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                pro = (double) progress / 10000;
-                strContent = String.valueOf(pro);
-                textViewFee.setText(strContent);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-//                Toast.makeText(SendOne2OneMainPageActivity.this, "触碰SeekBar", Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-//                Toast.makeText(SendOne2OneMainPageActivity.this, "放开SeekBar", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-        //cancel dialog
-        view.findViewById(R.id.cancel_select_fee).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-        view.findViewById(R.id.bn_fee).setOnClickListener(v -> {
-            tetMoneye.setText(String.valueOf(pro));
-            dialogBtom.cancel();
-        });
-
-        dialogBtom.setContentView(view);
-        Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
-    }
-
     private void showPopupSelectWallet() {
         //check address
         showDialogs(SendOne2OneMainPageActivity.this, R.layout.select_send_wallet_popwindow);
@@ -583,8 +537,17 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     mToast(getString(R.string.wallet_insufficient));
                     return;
                 }
-                //creatTrnsaction
-                mCreatTransaction();
+                if (TextUtils.isEmpty(errorMessage)) {
+                    //creatTrnsaction
+                    mCreatTransaction();
+                } else {
+                    if (errorMessage.contains("invalid bitcoin address")) {
+                        Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG).show();
+                    } else if (errorMessage.contains("Insufficient funds")) {
+                        mToast(getString(R.string.insufficient));
+                    }
+                }
+
                 break;
             case R.id.bn_sweep_one2noe:
                 rxPermissions
@@ -683,19 +646,38 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("content", "on------: " + content);
+                Log.i("sendScanData", "on------: " + content);
                 if (!TextUtils.isEmpty(content)) {
-                    if (content.contains("bitcoin:")) {
-                        String replace = content.replaceAll("bitcoin:", "");
-                        editAddress.setText(replace);
-                    } else {
-                        editAddress.setText(content);
-                    }
-                    //getFeerate
-                    getFeerate();
-                    //button to gray or blue
-                    changeButton();
+                    PyObject parse_pr = Daemon.commands.callAttr("parse_pr", content);
+                    Log.i("sendScanData", "on------: " + parse_pr);
+                    if (!TextUtils.isEmpty(parse_pr.toString())) {
+                        try {
+                            org.json.JSONObject jsonObject = new org.json.JSONObject(parse_pr.toString());
+                            int type = jsonObject.getInt("type");
+                            Gson gson = new Gson();
+                            if (type == 1) {
+                                MainSweepcodeBean mainSweepcodeBean = gson.fromJson(parse_pr.toString(), MainSweepcodeBean.class);
+                                MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
+                                String address = listData.getAddress();
+                                int sendAmount = listData.getAmount();
+                                String message = listData.getMessage();
+                                editAddress.setText(address);
+                                if (!TextUtils.isEmpty(String.valueOf(sendAmount))) {
+                                    tetamount.setText(String.valueOf(sendAmount));
+                                }
+                                editTextComments.setText(message);
 
+                            } else {
+                                mToast(getString(R.string.address_wrong));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        //getFeerate
+                        getFeerate();
+                        //button to gray or blue
+                        changeButton();
+                    }
                 }
             }
         }
@@ -802,9 +784,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
             } catch (Exception e) {
                 e.printStackTrace();
+                errorMessage = e.getMessage();
                 if (e.getMessage().contains("invalid bitcoin address")) {
-                    errorMessage = e.getMessage();
                     Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG).show();
+                } else if (e.getMessage().contains("Insufficient funds")) {
+                    mToast(getString(R.string.insufficient));
                 }
                 return;
             }
@@ -814,7 +798,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 Gson gson = new Gson();
                 GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
                 int fee = getsendFeenumBean.getFee();
-
                 tetMoneye.setText(String.format("%ssat", String.valueOf(fee)));
 
             }

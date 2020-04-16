@@ -112,7 +112,7 @@ public class TransactionsSettingActivity extends BaseActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     try {
-                        Daemon.commands.callAttr("set_unconf", true);
+                        Daemon.commands.callAttr("set_unconf", false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -121,7 +121,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                     mToast(getString(R.string.set_success));
                 } else {
                     try {
-                        Daemon.commands.callAttr("set_unconf", false);
+                        Daemon.commands.callAttr("set_unconf", true);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -207,19 +207,20 @@ public class TransactionsSettingActivity extends BaseActivity {
 
     private void restoreSet() {
         try {
-            Daemon.commands.callAttr("set_rbf", false);
-            Daemon.commands.callAttr("set_unconf", true);
+            Daemon.commands.callAttr("set_rbf", true);
+            Daemon.commands.callAttr("set_unconf", false);
             Daemon.commands.callAttr("set_use_change", false);
         } catch (Exception e) {
             e.printStackTrace();
             myDialog.dismiss();
             return;
         }
+        edit.putBoolean("set_rbf", true);
         edit.putBoolean("set_use_change", false);
-        edit.putBoolean("set_unconf", true);
+        edit.putBoolean("set_unconf", false);
         edit.apply();
-        switchRbf.setChecked(false);
-        switchNoConfirm.setChecked(true);
+        switchRbf.setChecked(true);
+        switchNoConfirm.setChecked(false);
         switchFind.setChecked(false);
         myDialog.dismiss();
         mToast(getString(R.string.recovery_succse));

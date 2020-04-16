@@ -78,6 +78,10 @@ public class BixinKEYManageActivity extends BaseActivity {
                             String key_deviceId = deviceValue.get(position).getDeviceId();
                             edit.remove(key_deviceId);
                             edit.apply();
+                            deviceValue.remove(position);
+                            bixinkeyManagerAdapter.notifyItemChanged(position);
+                            bixinkeyManagerAdapter.notifyDataSetChanged();
+                            mToast(getString(R.string.delete_succse));
                             break;
                     }
                 }

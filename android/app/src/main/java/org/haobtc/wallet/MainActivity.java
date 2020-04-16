@@ -408,7 +408,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     maintrsactionlistEvents.remove(position);
                                     trsactionlistAdapter.notifyItemChanged(position);
                                     trsactionlistAdapter.notifyDataSetChanged();
-                                    downMainListdata();
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -455,6 +454,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.textView_more:
                 Intent intent2 = new Intent(this, TransactionRecordsActivity.class);
+                intent2.putExtra("strwalletType", strType);
                 startActivity(intent2);
                 break;
             case R.id.tet_Addmoney:

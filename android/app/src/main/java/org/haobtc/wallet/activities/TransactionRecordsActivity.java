@@ -57,6 +57,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     private String date;
     private boolean is_mine;
     private MaindowndatalistAdapetr trsactionlistAdapter;
+    private String strwalletType;
 
 
     public int getLayoutId() {
@@ -65,6 +66,8 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
 
     public void initView() {
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        strwalletType = intent.getStringExtra("strwalletType");
         radioGroup.setOnCheckedChangeListener(this);
         refreshLayout.setEnableLoadMore(false);
         refreshLayout.setEnableRefresh(true);
@@ -160,6 +163,10 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
                 trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+
+                    private boolean status;
+                    private String tx_hash1;
+
                     @Override
                     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                         String typeDele = maintrsactionlistEvents.get(position).getType();
@@ -174,6 +181,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         intent.putExtra("keyValue", "B");
                                         intent.putExtra("listType", typeDele);
                                         intent.putExtra("tx_hash", tx_hash1);
+                                        intent.putExtra("strwalletType", strwalletType);
                                         intent.putExtra("isIsmine", is_mine);
                                         intent.putExtra("dataTime", date);
                                         intent.putExtra("txCreatTrsaction", tx_Onclick);
@@ -182,6 +190,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                     } else {
                                         intent.putExtra("tx_hash", tx_hash1);
                                         intent.putExtra("isIsmine", is_mine);
+                                        intent.putExtra("strwalletType", strwalletType);
                                         intent.putExtra("dataTime", date);
                                         intent.putExtra("keyValue", "B");
                                         intent.putExtra("listType", typeDele);
@@ -192,10 +201,19 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                 }
                                 break;
                             case R.id.txt_delete:
-                                if ("tx".equals(typeDele)) {
-                                    String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
+                                try {
+                                    JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                    tx_hash1 = jsonObject.getString("tx_hash");
+                                    PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
+                                    status = get_remove_flag.toBoolean();
+                                    Log.i("onItemChildClick", "onItemCh==== " + status);
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                if (status) {
                                     try {
-                                        Daemon.commands.callAttr("delete_invoice", invoice_id);
+                                        Daemon.commands.callAttr("remove_local_tx", tx_hash1);
                                         maintrsactionlistEvents.remove(position);
                                         trsactionlistAdapter.notifyItemChanged(position);
                                         trsactionlistAdapter.notifyDataSetChanged();

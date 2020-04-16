@@ -65,34 +65,34 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF6182F5"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
-//                linearDelete.setVisibility(View.GONE);//hide delete button
-            } else if (tx_status.contains("Unconfirmed")) {//Unconfirmed
                 linearDelete.setVisibility(View.GONE);//hide delete button
+            } else if (tx_status.contains("Unconfirmed")) {//Unconfirmed
                 helper.setText(R.id.tet_zt, R.string.waitchoose);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF838383"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
+                linearDelete.setVisibility(View.GONE);//hide delete button
             } else if ("Unsigned".equals(tx_status)) {//Unsigned
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.transaction_waitting);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FFF26A3A"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
-//                linearDelete.setVisibility(View.VISIBLE);//hide delete button
+                linearDelete.setVisibility(View.VISIBLE);//hide delete button
             } else if (tx_status.contains("Partially signed")) {
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.transaction_waitting);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FFF26A3A"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
-//                linearDelete.setVisibility(View.VISIBLE);//hide delete button
+                linearDelete.setVisibility(View.VISIBLE);//hide delete button
             } else if ("Signed".equals(tx_status) || "Local".equals(tx_status)) {
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.wait_broadcast);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF838383"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
-//                linearDelete.setVisibility(View.VISIBLE);//hide delete button
+                linearDelete.setVisibility(View.VISIBLE);//hide delete button
             }
         }
         helper.addOnClickListener(R.id.lin_Item);

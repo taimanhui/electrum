@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
@@ -18,7 +19,6 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
@@ -33,7 +33,6 @@ import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
-import org.haobtc.wallet.utils.SlideRecyclerView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +56,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     @BindView(R.id.tet_Cny)
     TextView tetCny;
     @BindView(R.id.recy_data)
-    SlideRecyclerView recy_data;
+    RecyclerView recy_data;
     @BindView(R.id.smart_RefreshLayout)
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.tet_None)
