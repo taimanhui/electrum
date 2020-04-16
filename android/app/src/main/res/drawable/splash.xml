@@ -4,6 +4,7 @@
     <item android:drawable="@android:color/white"/>
     <item>
         <bitmap android:src="@drawable/splash1"
-            android:gravity="bottom|center_horizontal" />
+            android:gravity="bottom|center_horizontal"
+            android:mipMap="true"/>
     </item>
 </layer-list>

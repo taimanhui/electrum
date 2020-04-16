@@ -64,7 +64,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private String substring;
     private TextView walletCard;
 
+    public WheelViewpagerFragment() {
 
+    }
     public WheelViewpagerFragment(String name, String personce) {
         this.name = name;
         this.personce = personce;

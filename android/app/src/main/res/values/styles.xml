@@ -54,7 +54,7 @@
         <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
     </style>
     <!--解决APP启动白屏问题-->
-    <style name="LunchTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="LunchTheme" parent="@style/AppTheme">
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 

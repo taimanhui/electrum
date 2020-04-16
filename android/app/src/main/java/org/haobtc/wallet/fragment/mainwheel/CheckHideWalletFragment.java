@@ -7,15 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
 
 /**
- * A simple {@link Fragment} subclass.
+ * .
  */
-public class CheckHideWalletFragment extends Fragment {
+public class CheckHideWalletFragment extends WheelViewpagerFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,5 +34,8 @@ public class CheckHideWalletFragment extends Fragment {
                 startActivity(intent);
             }
         });
+    }
+    @Override
+    public void setValue(String msgVote) {
     }
 }

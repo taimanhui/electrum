@@ -98,6 +98,7 @@ public class LunchActivity extends BaseActivity {
             try {
                 Daemon.commands = Global.guiConsole.callAttr("AndroidCommands", new Kwarg("callback", Daemon.getInstance()));
             } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
             //Daemon.commands.callAttr("start", Daemon.getInstance());
             //Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());

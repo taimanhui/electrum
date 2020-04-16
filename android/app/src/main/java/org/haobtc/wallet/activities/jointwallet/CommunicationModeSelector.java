@@ -120,6 +120,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public static final int PASSPHRASS_INPUT = 8;
     public static volatile String pin = "";
     public static PyObject pyHandler, customerUI;
+    private PyObject ble;
     public static MyHandler handler;
     public static FutureTask<PyObject> futureTask;
     public static ExecutorService executorService = Executors.newCachedThreadPool();
@@ -149,6 +150,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         @Override
         public void onWriteSuccess(BleDevice device, BluetoothGattCharacteristic characteristic) {
             Log.d(TAG, "send successful:" + CommonUtils.bytes2hex(characteristic.getValue()));
+            ble.put("WRITE_SUCCESS", true);
         }
 
         @Override
@@ -319,6 +321,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             dismiss();
         }
     };
+
 
     @SuppressLint("SdCardPath")
     private void dfu() {
@@ -572,7 +575,8 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         adapter = new BleDeviceRecyclerViewAdapter(this.getActivity());
         adapter.setConnectCallback(connectCallback);
         bleFragment = new BluetoothFragment(adapter);
-        pyHandler = Global.py.getModule("trezorlib.transport.bluetooth").get("BlueToothHandler");
+        ble = Global.py.getModule("trezorlib.transport.bluetooth");
+        pyHandler = ble.get("BlueToothHandler");
         customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
         handler = MyHandler.getInstance(getActivity());
         customerUI.put("handler", handler);
