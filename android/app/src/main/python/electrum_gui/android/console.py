@@ -476,12 +476,17 @@ class AndroidCommands(commands.Commands):
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
             self.select_wallet(self.wallet_name)
             if self.label_flag:
-                self.label_plugin.load_wallet(self.wallet, wallet_type)
+                wallet_name = ""
+                if wallet_type[0:1] == '1':
+                    wallet_name = name
+                else:
+                    wallet_name = wallet_type
+                self.label_plugin.load_wallet(self.wallet, wallet_name)
         self.wizard = None
 
     def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False):
         try:
-            print("xpubs==========%s" %xpubs)
+            print(f"xpubs=========={m,n,xpubs}")
             self.set_multi_wallet_info(name, m, n)
             xpubs_list = json.loads(xpubs)
             for xpub in xpubs_list:
@@ -495,9 +500,9 @@ class AndroidCommands(commands.Commands):
         try:
             if self.label_flag:
                 Vpub_data = []
-                if xpub[0:3] == 'Vpub':
+                if xpub[0:4] == 'Vpub':
                     Vpub_data = json.loads(self.label_plugin.pull(xpub))
-                    xpub = self.kifkey_change_from_p2wsh_to_p2wpkh(xpub)
+                    xpub = BIP32Node.get_p2wpkh_from_p2wsh(xpub)
                 vpub_data = json.loads(self.label_plugin.pull(xpub))
                 return json.dumps(Vpub_data + vpub_data if Vpub_data is not None else vpub_data)
         except BaseException as e:
@@ -537,6 +542,9 @@ class AndroidCommands(commands.Commands):
             outputs_addrs = self.parse_output(outputs)
             coins = self.wallet.get_spendable_coins(domain=None)
             print(f"coins=========={coins}")
+            c, u, x = self.wallet.get_balance()
+            if not coins and self.config.get('confirmed_only', False):
+                raise BaseException("Please use unconfirmed coins")
             fee_per_kb = 1000 * Decimal(feerate)
             from functools import partial
             fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
@@ -743,7 +751,7 @@ class AndroidCommands(commands.Commands):
         amount_str = ""
         if tx_details.amount is None:
             amount_str = "Transaction unrelated to your wallet"
-        elif tx_details.amount >= 0:
+        else:
             amount_str = self.format_amount_and_units(tx_details.amount)
 
         ret_data = {
@@ -1244,14 +1252,6 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise BaseException(e)
 
-    def kifkey_change_from_p2wsh_to_p2wpkh(self, xpub):
-        try:
-            bip32node = BIP32Node.from_xkey(xpub)
-            BIP32Node.set_type("p2wpkh")
-            return bip32node.to_xpub()
-        except BaseException as e:
-            raise e
-
     def is_seed(self, x):
         return mnemonic.is_seed(x)
 
@@ -1420,8 +1420,8 @@ class AndroidCommands(commands.Commands):
                 self.wallet = self.daemon._wallets[self._wallet_path(name)]
 
             self.wallet.use_change = self.config.get('use_change', False)
-            import time
-            time.sleep(0.5)
+            # import time
+            # time.sleep(0.5)
             self.update_wallet()
             self.update_interfaces()
 

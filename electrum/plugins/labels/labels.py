@@ -147,8 +147,8 @@ class LabelsPlugin(BasePlugin):
             self.logger.info('no wallets info')
             return
         out = []
-        result = {}
         for wallet in response["Walltes"]:
+            result = {}
             try:
                 result['xpubId'] = wallet['xpubId']#self.decode_xpub(xpub, wallet['xpubId'])
                 result['walletId'] = wallet['WalletId']

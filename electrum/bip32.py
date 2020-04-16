@@ -153,8 +153,13 @@ class BIP32Node(NamedTuple):
                          child_number=child_number)
 
     @classmethod
-    def set_type(cls, xtype):
-        cls.xtype = xtype
+    def get_p2wpkh_from_p2wsh(cls, xpub):
+        old_type = cls.xtype
+        node = BIP32Node.from_xkey(xpub)
+        cls.xtype = 'p2wpkh'
+        vpub = node.to_xpub()
+        cls.xtype = old_type
+        return vpub
 
     @classmethod
     def from_rootseed(cls, seed: bytes, *, xtype: str) -> 'BIP32Node':
@@ -280,10 +285,8 @@ class BIP32Node(NamedTuple):
         # TODO cache this
         return hash_160(self.eckey.get_public_key_bytes(compressed=True))[0:4]
 
-
 def xpub_type(x):
     return BIP32Node.from_xkey(x).xtype
-
 
 def is_xpub(text):
     try:
