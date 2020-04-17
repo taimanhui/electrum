@@ -55,8 +55,8 @@ class MutiBase(Logger):
         self.seed_type = None
 
     def get_keystores_info(self):
-        print("=================mutiBase:get_keystores_info = %s" % self.keystores)
-        return self.keystores
+        return [k for k in map(lambda x: x.xpub, self.keystores)]
+
 
     def delete_xpub(self, xpub):
         find = False

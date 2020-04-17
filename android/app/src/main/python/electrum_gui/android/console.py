@@ -105,7 +105,7 @@ class Help:
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
-    def __init__(self, config=None, user_dir=None):
+    def __init__(self, config=None, user_dir=None, callback=None):
         self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()#TODO:close loop
         config_options = {}
         config_options['auto_connect'] = True
@@ -159,6 +159,9 @@ class AndroidCommands(commands.Commands):
         from threading import Timer
         t = Timer(5.0, self.timer_action)
         t.start()
+        if callback is not None:
+            self.set_callback_fun(callback)
+        self.start()
 
     # BEGIN commands from the argparse interface.
     def stop_loop(self):
@@ -170,9 +173,13 @@ class AndroidCommands(commands.Commands):
             self.local_wallet_info = self.config.get("all_wallet_type_info", {})
             new_wallet_info = {}
             name_wallets = ([name for name in os.listdir(self._wallet_path())])
-            for name, type in self.local_wallet_info.items():
+            for name, info in self.local_wallet_info.items():
                 if name_wallets.__contains__(name):
-                    new_wallet_info[name] = type
+                    if not info.__contains__('xpubs'):
+                        info['xpubs'] = []
+                    if not info.__contains__('seed'):
+                        info['seed'] = ""
+                    new_wallet_info[name] = info
             self.local_wallet_info = new_wallet_info
             self.config.set_key('all_wallet_type_info', self.local_wallet_info)
         except BaseException as e:
@@ -222,7 +229,7 @@ class AndroidCommands(commands.Commands):
             else:
                 c, u, x = self.wallet.get_balance()
                 text = _("Balance") + ": %s " % (self.format_amount_and_units(c))
-                out['balance'] = self.format_amount(c) + ' '+ self.base_unit
+                out['balance'] = self.format_amount(c)
                 out['fiat'] = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
                 if u:
                     out['unconfirmed'] = self.format_amount(u, is_diff=True).strip()
@@ -331,8 +338,8 @@ class AndroidCommands(commands.Commands):
         t1 = threading.Thread(target=self.daemon_action)
         t1.setDaemon(True)
         t1.start()
-        import time
-        time.sleep(1.0)
+        # import time
+        # time.sleep(1.0)
         print("parent thread")
 
     def status(self):
@@ -453,7 +460,11 @@ class AndroidCommands(commands.Commands):
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             path = self._wallet_path(name)
-            print("console:create_multi_wallet:path = %s---------" % path)
+            keystores = self.get_keystores_info()
+            print(f"keystores---------------{keystores}")
+            for key, value in self.local_wallet_info.items():
+                if value['xpubs'] == keystores:
+                    raise BaseException("The same xpubs have create wallet")
             storage, db = self.wizard.create_storage(path=path, password = '', hide_type=hide_type)
         except Exception as e:
             raise BaseException(e)
@@ -467,14 +478,16 @@ class AndroidCommands(commands.Commands):
                 wallet_info = {}
                 wallet_info['type'] = wallet_type
                 wallet_info['time'] = time.time()
+                wallet_info['xpubs'] = keystores
+                wallet_info['seed'] = ""
                 self.local_wallet_info[name] = wallet_info
                 self.config.set_key('all_wallet_type_info', self.local_wallet_info)
-            if self.wallet:
-                self.close_wallet()
+            # if self.wallet:
+            #     self.close_wallet()
             self.wallet = wallet
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
-            self.select_wallet(self.wallet_name)
+            #self.select_wallet(self.wallet_name)
             if self.label_flag:
                 wallet_name = ""
                 if wallet_type[0:1] == '1':
@@ -737,9 +750,9 @@ class AndroidCommands(commands.Commands):
             for i in tx.inputs():
                 in_info = {}
                 in_info['addr'] = i.address
+                print(f"-----------------{in_info}")
                 if not in_list.__contains__(in_info):
                     in_list.append(in_info)
-        print(f"all in_list==========={in_list}")
         out_list = []
         for o in tx.outputs():
             address, value = o.address, o.value
@@ -1255,6 +1268,12 @@ class AndroidCommands(commands.Commands):
     def is_seed(self, x):
         return mnemonic.is_seed(x)
 
+    def is_exist_seed(self, seed):
+        print(f"is exist seed...............{seed}")
+        for key, value in self.local_wallet_info.items():
+            if value['seed'] == seed:
+                raise BaseException("The same seed have create wallet")
+    
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
         """Create or restore a new wallet"""
@@ -1283,11 +1302,8 @@ class AndroidCommands(commands.Commands):
                     print("Your wallet generation seed is:\n\"%s\"" % seed)
                     print("seed type = %s" %type(seed))
                 ks = keystore.from_seed(seed, passphrase, False)
-
-            db.put('keystore', ks.dump())
-            #db.put('wallet_type', 'standard')
-            wallet = Standard_Wallet(db, storage, config=self.config)
-            #wallet = Wallet(db, storage, config=self.config)
+        db.put('keystore', ks.dump())
+        wallet = Standard_Wallet(db, storage, config=self.config)
         wallet.update_password(old_pw=None, new_pw=password, encrypt_storage=True)
         wallet.start_network(self.daemon.network)
         wallet.save_db()
@@ -1295,6 +1311,9 @@ class AndroidCommands(commands.Commands):
         wallet_info = {}
         wallet_info['type'] = 'standard'
         wallet_info['time'] = time.time()
+        wallet_info['xpubs'] = []
+        wallet_info['seed'] = seed
+        print(f"crate()-----------{wallet.get_keystore().xpub}")
         self.local_wallet_info[name] = wallet_info
         self.config.set_key('all_wallet_type_info', self.local_wallet_info)
         # if self.label_flag:
@@ -1322,7 +1341,7 @@ class AndroidCommands(commands.Commands):
             is_unconfirmed = height <= 0
             if tx:
                 # note: the current implementation of RBF *needs* the old tx fee
-                rbf = is_mine and self.rbf and fee is not None
+                rbf = is_mine and self.rbf and fee is not None and is_unconfirmed
                 if rbf:
                     return True
                 else:
@@ -1422,16 +1441,17 @@ class AndroidCommands(commands.Commands):
             self.wallet.use_change = self.config.get('use_change', False)
             # import time
             # time.sleep(0.5)
-            self.update_wallet()
-            self.update_interfaces()
+            # self.update_wallet()
+            # self.update_interfaces()
 
             c, u, x = self.wallet.get_balance()
             print("console.select_wallet %s %s %s==============" %(c, u, x))
             print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
             self.network.trigger_callback("wallet_updated", self.wallet)
 
+            fait = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None,
             info = {
-                "balance": self.format_amount_and_units(c),
+                "balance": self.format_amount(c) + ' (%s)'%fait,
                 "name": name
             }
             return json.dumps(info)
@@ -1448,7 +1468,7 @@ class AndroidCommands(commands.Commands):
         #print(f"local_wallet info === {self.local_wallet_info}")
         name_info = {}
         for name in name_wallets:
-            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else {'type': 'unknow', 'time': time.time()}
+            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else {'type': 'unknow', 'time': time.time(), 'xpubs': []}
 
         name_info = sorted(name_info.items(), key=lambda item:item[1]['time'], reverse=True)
         out = []

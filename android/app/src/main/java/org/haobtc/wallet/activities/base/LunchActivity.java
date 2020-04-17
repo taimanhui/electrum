@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 
 
+import com.chaquo.python.Kwarg;
 
 import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.MainActivity;
@@ -94,11 +96,11 @@ public class LunchActivity extends BaseActivity {
             Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
             Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
             try {
-                Daemon.commands = Global.guiConsole.callAttr("AndroidCommands");
+                Daemon.commands = Global.guiConsole.callAttr("AndroidCommands", new Kwarg("callback", Daemon.getInstance()));
             } catch (Exception ignored) {
             }
-            Daemon.commands.callAttr("start");
-            Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());
+            //Daemon.commands.callAttr("start", Daemon.getInstance());
+            //Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());
             init();
         }, 100);
 
