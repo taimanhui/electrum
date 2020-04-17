@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
@@ -117,6 +118,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private String strSoftMsg;
     public static String strinputAddress;
     private String hide_phrass;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
@@ -126,6 +128,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
         Intent intent = getIntent();
         personceType = intent.getStringExtra("personceType");
         hide_phrass = intent.getStringExtra("hide_phrass");
@@ -269,6 +273,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 }
                 break;
             case R.id.btnConfirm:
+                edit.putString("createOrcheck", "check");
+                edit.apply();
                 if ("standard".equals(personceType)) {//Software Wallet sign
                     if (signWhich) { //sign trsaction
                         strSoftMsg = editTrsactionTest.getText().toString();
@@ -304,7 +310,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                             strTest = editSignMsg.getText().toString();
                             showCustomerDialog(strTest, TAG1);
                         }
-
                     }
                 }
                 break;
@@ -469,11 +474,11 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             finish();
             return;
         }
-        if (!TextUtils.isEmpty(hide_phrass)) {
-            customerUI.callAttr("set_pass_state", 1);
-        }
         boolean isInit = features.isInitialized();
         if (isInit) {
+            if (!TextUtils.isEmpty(hide_phrass)) {
+                customerUI.callAttr("set_pass_state", 1);
+            }
             if (signWhich) {
                 new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, strTest);
             } else {

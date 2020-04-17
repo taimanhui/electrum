@@ -182,7 +182,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         walletnameList.add(addressEvent);
                     }
                 }
-                Log.i("mWheelplanting", "mWheelplanting: " + walletnameList.toString());
+                Log.i("mWheelplanting", "mWheelplanting: " + get_wallets_list_info.toString());
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();
@@ -547,6 +547,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 intent.putExtra("strParse", strParse);
                                 intent.putExtra("keyValue", "B");
                                 intent.putExtra("listType", "scan");
+                                intent.putExtra("strwalletType", strType);
                                 startActivity(intent);
                             } else {
                                 mToast(getString(R.string.address_wrong));

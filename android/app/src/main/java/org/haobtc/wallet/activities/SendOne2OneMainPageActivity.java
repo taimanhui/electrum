@@ -18,10 +18,12 @@ import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -49,6 +51,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
+import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.GetsendFeenumBean;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
@@ -77,7 +80,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     @BindView(R.id.tv_indicator)
     TextView tvIndicator;
     @BindView(R.id.lin_btcAddress)
-    LinearLayout linBtcAddress;
+    LinearLayout mRootView;
     @BindView(R.id.tet_Table)
     TextView tetTable;
     @BindView(R.id.tet_WalletTable)
@@ -94,8 +97,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private TextView bytesCount, buttonPaste;
     private Button buttonCreate;
     private Dialog dialogBtom;
-    private String strContent = "";
-    private EditText tetMoneye;
+    private TextView tetMoneye;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private EditText tetamount;
@@ -123,17 +125,20 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String strUnit;
     private String strFeemontAs;
     private String errorMessage = "";
+    private String wallet_type_to_sign;
 
     @Override
     public int getLayoutId() {
         return R.layout.send_one2one_main_page;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         base_unit = preferences.getString("base_unit", "mBTC");
         strUnit = preferences.getString("cny_strunit", "CNY");
+        wallet_type_to_sign = preferences.getString("wallet_type_to_sign", "");//1-n wallet  --> Direct signature and broadcast
         selectSend = findViewById(R.id.llt_select_wallet);
         tetMoneye = findViewById(R.id.tet_Money);
         tetamount = findViewById(R.id.amount);
@@ -267,7 +272,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             editTextComments.setText(String.format("%s", ""));
         }
 
-        tetMoneychange();
         //fee
         getFeeamont();
         //InputMaxTextNum
@@ -294,7 +298,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "");
-//                tetMoneye.setText(strFeemontAs);
                 intmaxFee = Integer.parseInt(strMax);//fee
                 seekBar.setMax(intmaxFee);
                 seekBar.setProgress(intmaxFee);
@@ -326,51 +329,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         });
     }
 
-    private void tetMoneychange() {
-        tetMoneye.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().contains(".")) {
-                    if (s.length() - 1 - s.toString().indexOf(".") > 7) {
-                        s = s.toString().subSequence(0,
-                                s.toString().indexOf(".") + 8);
-                        tetMoneye.setText(s);
-                        tetMoneye.setSelection(s.length());
-                    }
-                }
-                if (s.toString().trim().substring(0).equals(".")) {
-                    s = "0" + s;
-                    tetMoneye.setText(s);
-                    tetMoneye.setSelection(2);
-                }
-                if (s.toString().startsWith("0")
-                        && s.toString().trim().length() > 1) {
-                    if (!s.toString().substring(1, 2).equals(".")) {
-                        tetMoneye.setText(s.subSequence(0, 1));
-                        tetMoneye.setSelection(1);
-                    }
-                }
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String strMoney = tetMoneye.getText().toString();
-                if (TextUtils.isEmpty(strMoney)) {
-                    tetMoneye.setText("0");
-                }
-            }
-        });
-    }
-
     @Override
     public void initData() {
-
 
     }
 
@@ -615,6 +575,15 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             String beanTx = getAddressBean.getTx();
             if (beanTx != null) {
+//                if (wallet_type_to_sign.contains("1-")){
+//                    PyObject def_get_tx_info_from_raw = null;
+//                    try {
+//                        def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", beanTx);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }else{
                 EventBus.getDefault().post(new FirstEvent("22"));
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
@@ -623,6 +592,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 intent.putExtra("strwalletType", waletType);
                 intent.putExtra("txCreatTrsaction", beanTx);
                 startActivity(intent);
+//                }
+
             }
         }
 
@@ -762,7 +733,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     }
                 }
             }
-
         } else {
             editChangeMoney.setText("");
         }
@@ -802,6 +772,44 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
             }
         }
+    }
+
+    //Turn off soft keyboard, lose focus
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (isShouldHideInput(v, ev)) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    assert v != null;
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    /** here */
+                    mRootView.setClickable(true);
+                    mRootView.setFocusable(true);
+                    mRootView.setFocusableInTouchMode(true);
+                    mRootView.requestFocusFromTouch();
+                }
+            }
+            return super.dispatchTouchEvent(ev);
+        }
+        // Necessary, otherwise all components will not have TouchEvent
+        return getWindow().superDispatchTouchEvent(ev) || onTouchEvent(ev);
+    }
+
+    //Turn off soft keyboard, lose focus
+    public boolean isShouldHideInput(View v, MotionEvent event) {
+        if (v != null && (v instanceof EditText)) {
+            int[] leftTop = {0, 0};
+            v.getLocationInWindow(leftTop);
+            int left = leftTop[0];
+            int top = leftTop[1];
+            int bottom = top + v.getHeight();
+            int right = left + v.getWidth();
+            return !(event.getX() > left && event.getX() < right
+                    && event.getY() > top && event.getY() < bottom);
+        }
+        return false;
     }
 
 }

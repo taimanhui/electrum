@@ -160,6 +160,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     private List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr;
     private List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddrScan;
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
+    private String unrelatedTransaction;
 
     @Override
     public int getLayoutId() {
@@ -356,9 +357,9 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 String replaceAmont = amount.replace("-", "");
                 textView14.setText(String.format("-%s", replaceAmont));
             } else {
-                if (isIsmine){
+                if (isIsmine) {
                     textView14.setText(String.format("-%s", amount));
-                }else{
+                } else {
                     textView14.setText(String.format("+%s", amount));
                 }
             }
@@ -415,16 +416,18 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         }
         //Transfer accounts num
         if (!TextUtils.isEmpty(amount)) {
-            if (amount.contains("-")) {
-                String replaceAmont = amount.replace("-", "");
-                textView14.setText(String.format("-%s", replaceAmont));
-            } else {
-                if (isIsmine){
-                    textView14.setText(String.format("-%s", amount));
-                }else{
-                    textView14.setText(String.format("+%s", amount));
+            if (!"Transaction unrelated to your wallet".equals(amount)) {
+                if (amount.contains("-")) {
+                    String replaceAmont = amount.replace("-", "");
+                    textView14.setText(String.format("-%s", replaceAmont));
+                } else {
+                    textView14.setText(amount);
                 }
+            }else{
+                textView14.setText(amount);
+                unrelatedTransaction = amount;
             }
+
         }
         //Miner's fee
         if (!TextUtils.isEmpty(fee)) {
@@ -527,29 +530,34 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 startActivity(intent);
                 break;
             case R.id.sig_trans:
-                String strBtncontent = sigTrans.getText().toString();
-                if (strBtncontent.equals(getString(R.string.forWord_orther))) {
-                    Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
-                    intent1.putExtra("rowTrsaction", tx_hash);
-                    intent1.putExtra("rowTx", rowtx);
-                    startActivity(intent1);
+                if (TextUtils.isEmpty(unrelatedTransaction)){
+                    String strBtncontent = sigTrans.getText().toString();
+                    if (strBtncontent.equals(getString(R.string.forWord_orther))) {
+                        Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
+                        intent1.putExtra("rowTrsaction", tx_hash);
+                        intent1.putExtra("rowTx", rowtx);
+                        startActivity(intent1);
 
-                } else if (strBtncontent.equals(getString(R.string.broadcast))) {
-                    //bradcast trsaction
-                    braodcastTrsaction();
+                    } else if (strBtncontent.equals(getString(R.string.broadcast))) {
+                        //bradcast trsaction
+                        braodcastTrsaction();
 
-                } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
-                    Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
-                    intent1.putExtra("checkTxid", txid);
-                    startActivity(intent1);
-                } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
-                    if ("standard".equals(strwalletType)) {
-                        //sign input pass
-                        signInputpassDialog();
-                    } else {
-                        showCustomerDialog();
+                    } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
+                        Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
+                        intent1.putExtra("checkTxid", txid);
+                        startActivity(intent1);
+                    } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
+                        if ("standard".equals(strwalletType)) {
+                            //sign input pass
+                            signInputpassDialog();
+                        } else {
+                            showCustomerDialog();
+                        }
                     }
+                }else{
+                    mToast(getString(R.string.unrelated_transaction));
                 }
+
                 break;
             case R.id.lin_getMoreaddress:
                 //transaction detail or create success

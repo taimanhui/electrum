@@ -385,7 +385,7 @@
     <string name="input_pass_format1">Password must be at least 8 digits, and can only and must contain uppercase letters, lowercase letters, numbers and standard symbols</string>
     <string name="intput_pass_format2">This wallet does not keep any information of the wallet. The password has no way to find it. Please remember the wallet password</string>
     <string name="helpword_wrong">Error in mnemonic input, please check and change</string>
-    <string name="zero_three">1/1</string>
+    <string name="one_one">1–1</string>
     <string name="_1_0_0">1.0.0</string>
     <string name="lnbcdfd4fdsk">aksdhkjdakjldkajsliieihdihsdkjsjda</string>
     <string name="_BTC">BTC</string>
@@ -543,5 +543,6 @@
     <string name="copy_mnemonic">Copy mnemonic</string>
     <string name="pass_morethan_6">the PIN\'s length less than 6</string>
     <string name="single_sign_only">Signature message only supports single signature</string>
+    <string name="unrelated_transaction">This transaction is not related to the current Wallet</string>
 
 </resources>

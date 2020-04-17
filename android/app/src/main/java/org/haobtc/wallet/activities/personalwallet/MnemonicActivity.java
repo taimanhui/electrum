@@ -116,6 +116,8 @@ public class MnemonicActivity extends BaseActivity {
                 strings.add(wordsList[i]);
             }
             myDialog.dismiss();
+            btnSetPin.setEnabled(true);
+            btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
             reclHelpWord.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
             reclHelpWord.setAdapter(new HelpWordAdapter(strings));
         }

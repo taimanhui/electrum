@@ -47,21 +47,16 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private TextView wallet_card_name;
     private TextView walletpersonce;
     private TextView walletBlance;
-
     private String name;
     private String personce;
-    //    private String balance;
     private Button btnLeft;
     private Button btncenetr;
     private PyObject select_wallet;
     private TextView tetCny;
     private TextView btn_appWallet;
-    //    private Button btnright;
-
     private boolean isFirst = false;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
-
     private TextView tetFiat;
     private ConstraintLayout conlayBback;
     private Button btnRight;
@@ -72,14 +67,12 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     public WheelViewpagerFragment(String name, String personce) {
         this.name = name;
         this.personce = personce;
-//        this.balance = balance;
     }
 
     public WheelViewpagerFragment(String name, String personce, boolean isFirst) {
         this.isFirst = isFirst;
         this.name = name;
         this.personce = personce;
-//        this.balance = balance;
     }
 
     @Override
@@ -123,8 +116,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                     btncenetr.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
                     btnRight.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
                 } else {
-                    String of = personce.replaceAll("of", "/");
-                    walletpersonce.setText(of);
+                    walletpersonce.setText(personce);
                     conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_bg));
                     btnLeft.setBackground(getActivity().getDrawable(R.drawable.button_bk_small));
                     btncenetr.setBackground(getActivity().getDrawable(R.drawable.button_bk_small));
@@ -237,7 +229,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                     Log.e("substring", "substring: " + substring);
                     Log.e("substring", "balanceC: " + balanceC);
 
-                    Log.i("getWalletMsgJXM", "substring:::"+substring);
+                    Log.i("getWalletMsgJXM", "substring:::" + substring);
                     walletBlance.setText(substring);
 
                     strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
@@ -245,19 +237,19 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                         tetCny.setText(String.format("≈ %s", strCNY));
                     }
                 } else {
-                    Log.i("getWalletMsgJXM", "balanceC:::"+balanceC);
+                    Log.i("getWalletMsgJXM", "balanceC:::" + balanceC);
                     walletBlance.setText(balanceC);
                 }
             }
         }
     }
 
-    public void setValue(String msgVote){
+    public void setValue(String msgVote) {
         try {
             JSONObject jsonObject = new JSONObject(msgVote);
             if (msgVote.contains("balance")) {
                 String balance = jsonObject.getString("balance");
-                Log.i("getWalletMsgJXM", "event+substring:::"+balance);
+                Log.i("getWalletMsgJXM", "event+substring:::" + balance);
                 walletBlance.setText(balance);
             }
             if (msgVote.contains("fiat")) {
@@ -277,41 +269,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         }
     }
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void event(SecondEvent updataHint) {
-//        String msgVote = updataHint.getMsg();
-//
-//        if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
-//            Log.i("threadMode", "event: " + msgVote);
-//            //Rolling Wallet
-//            try {
-//                JSONObject jsonObject = new JSONObject(msgVote);
-//                if (msgVote.contains("balance")) {
-//                    String balance = jsonObject.getString("balance");
-//                    Log.i("getWalletMsgJXM", "event+substring:::"+balance);
-//                    walletBlance.setText(balance);
-//                }
-//                if (msgVote.contains("fiat")) {
-//                    String fiat = jsonObject.getString("fiat");
-//                    if (!TextUtils.isEmpty(fiat)) {
-//                        tetCny.setText(String.format("≈ %s", fiat));
-//                    }
-//                }
-//                if (msgVote.contains("unconfirmed")) {
-//                    String unconfirmed = jsonObject.getString("unconfirmed");
-//                    tetFiat.setText(String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
-//                } else {
-//                    tetFiat.setText("");
-//                }
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//    }
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -321,6 +278,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.wallet_card_bn1:
+                edit.putString("wallet_type_to_sign",personce);
+                edit.apply();
                 Intent intent1 = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
                 intent1.putExtra("wallet_name", name);
                 intent1.putExtra("wallet_type", personce);

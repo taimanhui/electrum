@@ -1,6 +1,8 @@
 package org.haobtc.wallet.activities.personalwallet.hidewallet;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -47,8 +49,6 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
 
     @BindView(R.id.wallet_card_name)
     TextView walletCardName;
-    @BindView(R.id.wallet_card_tv2)
-    TextView walletCardTv2;
     @BindView(R.id.wallet_card_tv4)
     TextView walletCardTv4;
     @BindView(R.id.tet_fiat)
@@ -72,15 +72,19 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     private String date;
     private String substring;
     private String strCNY;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_check_hide_wallet;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
         //Eventbus register
         EventBus.getDefault().register(this);
         myDialog = MyDialog.showDialog(CheckHideWalletActivity.this);
@@ -314,6 +318,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 finish();
                 break;
             case R.id.wallet_card_bn1:
+                edit.putString("wallet_type_to_sign",walletType);
+                edit.apply();
                 Intent intent1 = new Intent(CheckHideWalletActivity.this, SendOne2OneMainPageActivity.class);
                 intent1.putExtra("wallet_name", hideWalletName);
                 intent1.putExtra("wallet_type", walletType);

@@ -77,7 +77,7 @@
                     android:layout_marginEnd="26dp"
                     android:drawableStart="@drawable/rule_white"
                     android:drawablePadding="5dp"
-                    android:text="@string/zero_three"
+                    android:text="@string/one_one"
                     android:textColor="@android:color/white"
                     android:visibility="visible"
                     app:layout_constraintBaseline_toBaselineOf="@id/wallet_card_name"

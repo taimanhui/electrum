@@ -36,8 +36,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
-        <activity android:name=".activities.settings.BlueToothStatusActivity" />
-        <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->
+        <activity android:name=".activities.settings.BlueToothStatusActivity" /> <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->
         <activity android:name=".activities.settings.AgentServerActivity" />
         <activity android:name=".activities.sign.CheckSignResultActivity" />
         <activity android:name=".activities.sign.SignMessageActivity" />
