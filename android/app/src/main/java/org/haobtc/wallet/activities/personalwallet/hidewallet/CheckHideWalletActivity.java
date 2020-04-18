@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.personalwallet.hidewallet;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -61,6 +62,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.tet_None)
     TextView tetNone;
+    @BindView(R.id.wallet_card_tv3)
+    TextView walletCard;
     private String hideWalletName;
     private PyObject select_wallet;
     private String walletType;
@@ -73,6 +76,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     private String substring;
     private String strCNY;
     private SharedPreferences.Editor edit;
+    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -83,7 +87,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         //Eventbus register
         EventBus.getDefault().register(this);
@@ -94,6 +98,9 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     }
 
     private void inits() {
+        //get wallet unit
+        String base_unit = preferences.getString("base_unit", "");
+        walletCard.setText(String.format("%s（%s）", getString(R.string.balance), base_unit));
         walletCardName.setText(hideWalletName);
         refreshLayout.setEnableLoadMore(false);
         refreshLayout.setEnableRefresh(true);
@@ -134,7 +141,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                     Log.e("substring", "balanceC: " + balanceC);
                     walletCardTv4.setText(substring);
                     strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
-                    if (!TextUtils.isEmpty(strCNY)){
+                    if (!TextUtils.isEmpty(strCNY)) {
                         tetCny.setText(String.format("≈ %s", strCNY));
                     }
                 } else {
@@ -318,13 +325,13 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 finish();
                 break;
             case R.id.wallet_card_bn1:
-                edit.putString("wallet_type_to_sign",walletType);
+                edit.putString("wallet_type_to_sign", walletType);
                 edit.apply();
                 Intent intent1 = new Intent(CheckHideWalletActivity.this, SendOne2OneMainPageActivity.class);
                 intent1.putExtra("wallet_name", hideWalletName);
                 intent1.putExtra("wallet_type", walletType);
-                intent1.putExtra("strNowBtc",walletCardTv4.getText().toString());
-                intent1.putExtra("strNowCny",tetCny.getText().toString());
+                intent1.putExtra("strNowBtc", walletCardTv4.getText().toString());
+                intent1.putExtra("strNowCny", tetCny.getText().toString());
                 startActivity(intent1);
                 break;
             case R.id.wallet_card_bn2:
@@ -333,7 +340,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 break;
             case R.id.wallet_card_bn3:
                 Intent intent3 = new Intent(CheckHideWalletActivity.this, SignActivity.class);
-                intent3.putExtra("hide_phrass","hideWallet");
+                intent3.putExtra("hide_phrass", "hideWallet");
                 intent3.putExtra("personceType", walletType);
                 startActivity(intent3);
                 break;
@@ -360,27 +367,33 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
         String msgVote = updataHint.getMsg();
         if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
             Log.i("threadMode", "event: " + msgVote);
-            //Rolling Wallet
-            try {
-                JSONObject jsonObject = new JSONObject(msgVote);
-                if (msgVote.contains("balance")) {
-                    String balance = jsonObject.getString("balance");
-                    walletCardTv4.setText(balance);
-                }
-                if (msgVote.contains("fiat")) {
-                    String fiat = jsonObject.getString("fiat");
-                    tetCny.setText(fiat);
-                }
-                if (msgVote.contains("unconfirmed")) {
-                    String unconfirmed = jsonObject.getString("unconfirmed");
-                    tetFiat.setText(String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
-                } else {
-                    tetFiat.setText("");
-                }
+            if ("update_hide_transaction".equals(msgVote)){
+                //trsaction list data
+                downMainListdata();
+            }else{
+                //Rolling Wallet
+                try {
+                    JSONObject jsonObject = new JSONObject(msgVote);
+                    if (msgVote.contains("balance")) {
+                        String balance = jsonObject.getString("balance");
+                        walletCardTv4.setText(balance);
+                    }
+                    if (msgVote.contains("fiat")) {
+                        String fiat = jsonObject.getString("fiat");
+                        tetCny.setText(fiat);
+                    }
+                    if (msgVote.contains("unconfirmed")) {
+                        String unconfirmed = jsonObject.getString("unconfirmed");
+                        tetFiat.setText(String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
+                    } else {
+                        tetFiat.setText("");
+                    }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
+
 
         }
     }

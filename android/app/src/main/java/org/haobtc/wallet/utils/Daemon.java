@@ -1,15 +1,13 @@
 package org.haobtc.wallet.utils;
 
+import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SecondEvent;
-import com.chaquo.python.PyObject;
-
-import java.lang.ref.WeakReference;
 
 public class Daemon {
     public static PyObject commands = null;
@@ -18,24 +16,28 @@ public class Daemon {
 
     private Daemon() {
     }
+
     public static Daemon getInstance() {
         if (daemon == null) {
             synchronized (Daemon.class) {
-                if (daemon  == null) {
+                if (daemon == null) {
                     daemon = new Daemon();
                 }
             }
         }
         return daemon;
     }
+
     public void onCallback(String event, String msg) {
-        Log.i("onCallback", "=================="+event +"   ============================    "+ msg);
-        if (event.equals("update_status")){
-            EventBus.getDefault().post(new SecondEvent(msg));
-        }else if (event.equals("update_history")){
+        Log.i("onCallback", "==================" + event + "   ============================    " + msg);
+        if ("update_status".equals(event)) {
+            if (!TextUtils.isEmpty(msg) && msg.length() != 2) {
+                EventBus.getDefault().post(new SecondEvent(msg));
+            }
+        } else if ("update_history".equals(event)) {
             EventBus.getDefault().post(new FirstEvent("22"));
-        }else if (event.equals("set_server_status")){
-            Log.i("onCallback", "自定义节点添加+++++++++++++++++++++++    "+ msg);
+        } else if ("set_server_status".equals(event)) {
+            Log.i("onCallback", "自定义节点添加+++++++++++++++++++++++    " + msg);
         }
 
     }

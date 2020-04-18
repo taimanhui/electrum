@@ -106,7 +106,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     TextView textCheckSign;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-    private PyObject is_valiad_xpub;
     private boolean signWhich = true;
     private String personceType;
     private String strTest;
@@ -476,6 +475,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
         boolean isInit = features.isInitialized();
         if (isInit) {
+            //hide_phrass -->  hide wallet jump here
             if (!TextUtils.isEmpty(hide_phrass)) {
                 customerUI.callAttr("set_pass_state", 1);
             }

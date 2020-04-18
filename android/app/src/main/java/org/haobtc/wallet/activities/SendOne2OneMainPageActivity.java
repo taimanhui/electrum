@@ -56,6 +56,7 @@ import org.haobtc.wallet.bean.GetsendFeenumBean;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.json.JSONException;
@@ -504,7 +505,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     if (errorMessage.contains("invalid bitcoin address")) {
                         Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG).show();
                     } else if (errorMessage.contains("Insufficient funds")) {
-                        mToast(getString(R.string.insufficient));
+                        mToast(getString(R.string.wallet_insufficient));
+                    } else if (errorMessage.contains("Please use unconfirmed coins")) {
+                        Toast.makeText(this, getString(R.string.please_open_unconfirmed), Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -562,7 +565,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             e.printStackTrace();
             Log.i("CreatTransaction", "mCrea-----  " + e.getMessage());
             if (e.getMessage().contains("Insufficient funds")) {
-                mToast(getString(R.string.fee_toohigh));
+                mToast(getString(R.string.wallet_insufficient));
             } else {
                 mToast(getString(R.string.changeaddress));
             }
@@ -585,6 +588,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 //
 //                }else{
                 EventBus.getDefault().post(new FirstEvent("22"));
+                EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
                 intent.putExtra("keyValue", "A");
@@ -705,17 +709,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             BigDecimal bignum1 = new BigDecimal(strAmount);
             Log.i("wallet_amount", "afterTex+++++ " + wallet_amount);
             if (!TextUtils.isEmpty(wallet_amount)) {
-                String strBtc = "";
-                if (wallet_amount.contains("mBTC")) {
-                    strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" mBTC"));
-                } else if (wallet_amount.contains("sat")) {
-                    strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" sat"));
-                } else if (wallet_amount.contains("bits")) {
-                    strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" bits"));
-                } else {
-                    strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" BTC"));
-                }
-
+                String strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" "));
                 BigDecimal bignum2 = new BigDecimal(strBtc);
                 int math = bignum1.compareTo(bignum2);
                 //if math = 1 -> bignum2
@@ -754,12 +748,16 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
             } catch (Exception e) {
                 e.printStackTrace();
-                errorMessage = e.getMessage();
                 if (e.getMessage().contains("invalid bitcoin address")) {
                     Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG).show();
                 } else if (e.getMessage().contains("Insufficient funds")) {
-                    mToast(getString(R.string.insufficient));
+                    mToast(getString(R.string.wallet_insufficient));
+                } else if (e.getMessage().contains("Please use unconfirmed coins")) {
+                    if (!errorMessage.contains("Please use unconfirmed coins")) {
+                        Toast.makeText(this, getString(R.string.please_open_unconfirmed), Toast.LENGTH_LONG).show();
+                    }
                 }
+                errorMessage = e.getMessage();
                 return;
             }
             Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);

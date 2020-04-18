@@ -167,6 +167,12 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         } catch (Exception e) {
             Log.i("jxm_import_creat_wallet", "importWallet:++ " + e.getMessage());
             e.printStackTrace();
+            String message = e.getMessage();
+            if ("BaseException: file already exists at path".equals(message)) {
+                mToast(getString(R.string.changewalletname));
+            }else if ("The same xpubs have create wallet".equals(message)){
+                mToast(getString(R.string.xpub_have_wallet));
+            }
             return;
         }
         mIntent(MainActivity.class);

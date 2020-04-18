@@ -36,13 +36,13 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
+        android:background="@color/bk_page"
         android:layout_height="match_parent">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bk_page"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 

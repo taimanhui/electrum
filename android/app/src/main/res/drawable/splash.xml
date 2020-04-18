@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!--启动页面logo-->
-    <item android:drawable="@drawable/splash1"/>
+    <item android:drawable="@android:color/white"/>
     <item>
         <bitmap android:src="@drawable/splash1"
-            android:gravity="bottom|center_horizontal"/>
+            android:gravity="bottom|center_horizontal" />
     </item>
 </layer-list>

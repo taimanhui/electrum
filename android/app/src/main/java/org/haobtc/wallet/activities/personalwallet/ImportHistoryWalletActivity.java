@@ -309,7 +309,7 @@ public class ImportHistoryWalletActivity extends BaseActivity implements Busines
 
     @Override
     public void onCancelled() {
-        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
+       mToast(getString(R.string.task_cancle));
     }
 
 }

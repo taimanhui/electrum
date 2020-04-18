@@ -98,6 +98,7 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
     private MyDialog myDialog;
     private EditText edit_bixinName;
     private Dialog dialogBtoms;
+    private int pub;
 
     @Override
     public int getLayoutId() {
@@ -204,25 +205,19 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
     private void mCreatOnlyWallet() {
         String strWalletName = editWalletNameSetting.getText().toString();
         String indication = tvIndicator.getText().toString();
-        int n = Integer.parseInt(indication);
+        pub = Integer.parseInt(indication);
         if (TextUtils.isEmpty(strWalletName)) {
             mToast(getString(R.string.set_wallet));
             return;
         }
-        if (n == 0) {
+        if (pub == 0) {
             mToast(getString(R.string.set_bixinkey_num));
             return;
         }
 
-        try {
-            Daemon.commands.callAttr("set_multi_wallet_info", strWalletName, 1, n);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (n > 1) {
+        if (pub > 1) {
             Intent intent = new Intent(SingleSigWalletCreator.this, PersonalMultiSigWalletCreator.class);
-            intent.putExtra("sigNum", n);
+            intent.putExtra("sigNum", pub);
             intent.putExtra("walletNameNum", walletNameNum);
             intent.putExtra("walletNames", strWalletName);
             startActivity(intent);
@@ -419,26 +414,21 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
                     mToast(getString(R.string.input_public_address));
                     return;
                 }
+                String strXpub = "[\"" + strSweep + "\"]";
                 try {
-                    //add
-                    Daemon.commands.callAttr("add_xpub", strSweep);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
-
-                try {
-                    Daemon.commands.callAttr("create_multi_wallet", walletName);
+                    Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, pub, strXpub);
                 } catch (Exception e) {
                     e.printStackTrace();
                     myDialog.dismiss();
                     String message = e.getMessage();
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getString(R.string.changewalletname));
+                    }else if ("The same xpubs have create wallet".equals(message)){
+                        mToast(getString(R.string.xpub_have_wallet));
                     }
                     return;
                 }
-
+                Log.i("jinxioaminisheduh", "================: ");
                 edit.putInt("defaultName", walletNameNum);
                 edit.apply();
                 myDialog.dismiss();
@@ -495,7 +485,7 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
         if (readingPubKey != null) {
             readingPubKey.dismiss();
         }
-        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
+        mToast(getString(R.string.task_cancle));
     }
 
 }

@@ -1,22 +1,21 @@
 package org.haobtc.wallet.activities.personalwallet;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.encode.CodeCreator;
+
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -25,11 +24,13 @@ import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -71,19 +72,6 @@ public class CreatFinishPersonalActivity extends BaseActivity {
         tetWalletname.setText(walletNames);
 
     }
-
-    @SuppressLint("HandlerLeak")
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-
-                    break;
-            }
-        }
-    };
 
     @Override
     public void initData() {

@@ -20,6 +20,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -84,6 +85,7 @@ import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
+
 public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, BusinessAsyncTask.Helper {
 
     @BindView(R.id.img_back)
@@ -160,6 +162,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
     private int walletNameNum;
     private Bitmap bitmap;
     private boolean ready;
+    private int strUp1;
+    private int strUp2;
 
     @Override
     public int getLayoutId() {
@@ -176,7 +180,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         rxPermissions = new RxPermissions(this);
         myDialog = MyDialog.showDialog(MultiSigWalletCreator.this);
         editWalletname.addTextChangedListener(this);
-        walletNameNum = defaultName +1;
+        walletNameNum = defaultName + 1;
         editWalletname.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
 
     }
@@ -202,7 +206,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                String indicatorText = String.valueOf(progress+2);
+                String indicatorText = String.valueOf(progress + 2);
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
@@ -248,7 +252,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                String indicatorText = String.valueOf(progress+2);
+                String indicatorText = String.valueOf(progress + 2);
                 tvIndicatorTwo.setText(indicatorText);
                 paramsTwo.leftMargin = (int) indicatorOffset;
                 tvIndicatorTwo.setLayoutParams(paramsTwo);
@@ -370,8 +374,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         strInditor1 = tvIndicator.getText().toString();
         strInditor2 = tvIndicatorTwo.getText().toString();
         String strWalletname = editWalletname.getText().toString();
-        int strUp1 = Integer.parseInt(strInditor1);
-        int strUp2 = Integer.parseInt(strInditor2);
+        strUp1 = Integer.parseInt(strInditor1);
+        strUp2 = Integer.parseInt(strInditor2);
         if (TextUtils.isEmpty(strWalletname)) {
             mToast(getString(R.string.set_wallet));
             return;
@@ -393,12 +397,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
             return;
         }
 
-        try {
-            Daemon.commands.callAttr("set_multi_wallet_info", strWalletname, strUp1, strUp2);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
         cardViewOne.setVisibility(View.GONE);
         button.setVisibility(View.GONE);
         imgProgree1.setVisibility(View.GONE);
@@ -522,14 +520,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                 mToast(getString(R.string.input_public_address));
                 return;
             }
-            try {
-                //add
-                Daemon.commands.callAttr("add_xpub", strSweep);
-            } catch (Exception e) {
-                Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-                return;
-            }
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             addBixinKeyEvent.setKeyname(strBixinname);
             addBixinKeyEvent.setKeyaddress(strSweep);
@@ -633,14 +623,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
             }
             if (TextUtils.isEmpty(strSweep)) {
                 mToast(getString(R.string.input_public_address));
-                return;
-            }
-            try {
-                //add
-                Daemon.commands.callAttr("add_xpub", strSweep);
-            } catch (Exception e) {
-                Toast.makeText(this, R.string.changeaddress, Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
                 return;
             }
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
@@ -765,10 +747,10 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         }
         boolean isInit = features.isInitialized();
         if (isInit) {
-                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
-            } else {
-                if (isActive) {
-                   new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
+        } else {
+            if (isActive) {
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -796,15 +778,15 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                         }
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 创建
-                           if (!isNFC) { // ble
-                               CommunicationModeSelector.customerUI.put("pin", pin);
-                           } else { // nfc
-                               if (readingPubKey != null) {
-                                   readingPubKey.dismiss();
-                               }
-                              ready = true;
-                           }
-                           break;
+                        if (!isNFC) { // ble
+                            CommunicationModeSelector.customerUI.put("pin", pin);
+                        } else { // nfc
+                            if (readingPubKey != null) {
+                                readingPubKey.dismiss();
+                            }
+                            ready = true;
+                        }
+                        break;
                     default:
                 }
 
@@ -835,9 +817,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         String indication = tvIndicator.getText().toString();
         String indication2 = tvIndicatorTwo.getText().toString();
         if (!TextUtils.isEmpty(s.toString())) {
-            if (s.length()>13){
+            if (s.length() > 13) {
                 editWalletname.setTextSize(13);
-            }else{
+            } else {
                 editWalletname.setTextSize(15);
             }
             if (Integer.parseInt(indication) != 0) {
@@ -865,17 +847,25 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (msg.what == 1) {
+                ArrayList<String> pubList = new ArrayList<>();
                 String strWalletname = editWalletname.getText().toString();
                 strInditor1 = tvIndicator.getText().toString();
                 strInditor2 = tvIndicatorTwo.getText().toString();
+                for (int i = 0; i < addEventsDatas.size(); i++) {
+                    String keyaddress = addEventsDatas.get(i).getKeyaddress();
+                    pubList.add("\"" + keyaddress + "\"");
+                }
+
                 try {
-                    Daemon.commands.callAttr("create_multi_wallet", strWalletname);
+                    Daemon.commands.callAttr("import_create_hw_wallet", strWalletname, strUp1, strUp2, pubList.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                     myDialog.dismiss();
                     String message = e.getMessage();
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getString(R.string.changewalletname));
+                    }else if ("The same xpubs have create wallet".equals(message)){
+                        mToast(getString(R.string.xpub_have_wallet));
                     }
                     return;
                 }
@@ -904,6 +894,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         }
     };
     private ReadingPubKeyDialogFragment readingPubKey;
+
     @Override
     public void onPreExecute() {
         if (!isActive) {
@@ -942,7 +933,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         if (readingPubKey != null) {
             readingPubKey.dismiss();
         }
-        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
+        mToast(getString(R.string.task_cancle));
     }
 }
 

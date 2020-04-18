@@ -107,14 +107,12 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
                 btnNext.setText(getString(R.string.onclick_check));
             }
         }
-
     }
 
     @Override
     public void initData() {
 
     }
-
 
     @OnClick({R.id.img_backCreat, R.id.btnNext})
     public void onViewClicked(View view) {
@@ -138,7 +136,6 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
                 break;
         }
     }
-
 
     private Runnable runnable2 = () -> showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
 
@@ -183,6 +180,12 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
                 Daemon.commands.callAttr("import_create_hw_wallet", strBixinname, 1, 1, strXpub, new Kwarg("hide_type", true));
             } catch (Exception e) {
                 e.printStackTrace();
+                String message = e.getMessage();
+                if ("BaseException: file already exists at path".equals(message)) {
+                    mToast(getString(R.string.changewalletname));
+                }else if ("The same xpubs have create wallet".equals(message)){
+                    mToast(getString(R.string.xpub_have_wallet));
+                }
                 return;
             }
             dialogBtoms.cancel();
@@ -285,7 +288,7 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
         } else {
             // todo: Initialized
             if (isActive) {
-               new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
             } else {
                 Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                 startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -341,7 +344,6 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
                     ready = true;
                     status = true;
                 }
-
             }
         }
     }
@@ -359,10 +361,12 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
             dialogFragment.dismiss();
         }
     }
+
     private ReadingPubKeyDialogFragment readingPubKey;
+
     @Override
     public void onPreExecute() {
-        if(!isActive) {
+        if (!isActive) {
             readingPubKey = dialogFragment.showReadingDialog();
         }
     }
@@ -389,12 +393,13 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
         }
         if (readingPubKey != null) {
             readingPubKey.dismiss();
-        }        xpub = s;
+        }
+        xpub = s;
         showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
     }
 
     @Override
     public void onCancelled() {
-        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
+        mToast(getString(R.string.task_cancle));
     }
 }

@@ -104,14 +104,21 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (msg.what == 1) {
+                ArrayList<String> pubList = new ArrayList<>();
+                for (int i = 0; i < addEventsDatas.size(); i++) {
+                    String keyaddress = addEventsDatas.get(i).getKeyaddress();
+                    pubList.add("\"" + keyaddress + "\"");
+                }
                 try {
-                    Daemon.commands.callAttr("create_multi_wallet", walletNames);
+                    Daemon.commands.callAttr("import_create_hw_wallet", walletNames, 1, sigNum, pubList.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                     myDialog.dismiss();
                     String message = e.getMessage();
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getString(R.string.changewalletname));
+                    }else if ("The same xpubs have create wallet".equals(message)){
+                        mToast(getString(R.string.xpub_have_wallet));
                     }
                     return;
                 }
@@ -170,12 +177,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
                 showPopupAddCosigner1();
                 break;
             case R.id.bn_complete_add_cosigner:
-                Intent intent = new Intent(PersonalMultiSigWalletCreator.this, CreatFinishPersonalActivity.class);
-                intent.putExtra("walletNames", walletNames);
-                intent.putExtra("flagTag", "onlyChoose");
-                intent.putExtra("strBixinlist", (Serializable) addEventsDatas);
-                startActivity(intent);
-                finish();
+                handler.sendEmptyMessage(1);
                 break;
         }
     }
@@ -231,14 +233,6 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
                 mToast(getString(R.string.input_public_address));
                 return;
             }
-            try {
-                //add
-                Daemon.commands.callAttr("add_xpub", strSweep);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             addBixinKeyEvent.setKeyname(strBixinname);
             addBixinKeyEvent.setKeyaddress(strSweep);
@@ -346,7 +340,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
                 new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
             } else {
                 if (isActive) {
-                  new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
                 } else {
                     Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
                     startActivityForResult(intent1, REQUEST_ACTIVE);
@@ -402,6 +396,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
     }
 
     private ReadingPubKeyDialogFragment readingPubKey;
+
     @Override
     public void onPreExecute() {
         if (!isActive) {
@@ -430,13 +425,14 @@ public class PersonalMultiSigWalletCreator extends BaseActivity implements Busin
         }
         if (readingPubKey != null) {
             readingPubKey.dismiss();
-        }        xpub = s;
+        }
+        xpub = s;
         showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
     }
 
     @Override
     public void onCancelled() {
-        Toast.makeText(this, "当前任务以取消", Toast.LENGTH_SHORT).show();
+        mToast(getString(R.string.task_cancle));
     }
 
 }

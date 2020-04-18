@@ -522,7 +522,7 @@
     <string name="clean_setting">Settings cleared</string>
     <string name="clean_private_key">Clearing private key</string>
     <string name="reset_device_successful">BixinKEY factory reset</string>
-    <string name="bootloader_mode">The hardware is currently in bootloader mode, which is not supported</string>
+    <string name="bootloader_mode">The hardware is in bootloader mode, which is not supported</string>
     <string name="check_hide_wallet">Click to view hidden Wallet</string>
     <string name="check_wallet_tips">To view the hidden wallet, you need to use the activated BixinKEY</string>
     <string name="onclick_check">Click to view</string>
@@ -544,5 +544,7 @@
     <string name="pass_morethan_6">the PIN\'s length less than 6</string>
     <string name="single_sign_only">Signature message only supports single signature</string>
     <string name="unrelated_transaction">This transaction is not related to the current Wallet</string>
+    <string name="please_open_unconfirmed">Please turn on the \"spend unconfirmed revenue\" button in the settings to create a transaction</string>
+    <string name="xpub_have_wallet">Wallet created by this xpub already exists</string>
 
 </resources>

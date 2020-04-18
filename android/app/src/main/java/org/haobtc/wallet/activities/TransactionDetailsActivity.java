@@ -139,7 +139,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     private String language;
     private boolean isIsmine;
     private PyObject get_rbf_status;
-    private boolean aBoolean;
     private String strwalletType;
     private SharedPreferences preferences;
     private String txid;
@@ -161,6 +160,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     private List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddrScan;
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
     private String unrelatedTransaction;
+    private Boolean aBoolean;
 
     @Override
     public int getLayoutId() {
@@ -203,19 +203,9 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         }
         //isIsmine -->recevid or send
         if (isIsmine) {
+            setRbfStatus();//Show RBF button or not
             tvInTb2.setText(R.string.sendetail);
             linFee.setVisibility(View.VISIBLE);
-            if (set_rbf) {
-                tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
-            }
-            try {
-                get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (get_rbf_status != null) {
-                aBoolean = get_rbf_status.toBoolean();
-            }
         } else {
             linFee.setVisibility(View.GONE);
             linearSignStatus.setVisibility(View.GONE);
@@ -232,9 +222,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                         //isIsmine -->recevid or send
                         if (isIsmine) {
                             tvInTb2.setText(R.string.sendetail);
-                            if (set_rbf) {
-                                tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
-                            }
                         } else {
                             linearSignStatus.setVisibility(View.GONE);
                             tvInTb2.setText(R.string.recevid);
@@ -249,9 +236,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
 
                     } else {
                         tvInTb2.setText(R.string.sendetail);
-                        if (set_rbf) {
-                            tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
-                        }
                         //creat succses
                         mCreataSuccsesCheck();
 
@@ -260,6 +244,26 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 case "Sign":
                     jsonDetailData(signTransction);
                     break;
+            }
+        }
+    }
+
+    //Show RBF button or not
+    private void setRbfStatus() {
+        try {
+            get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (get_rbf_status != null) {
+            aBoolean = get_rbf_status.toBoolean();
+            if (set_rbf) {
+                Log.i("setRbfStatus", "setRbfStatus: "+aBoolean);
+                if (aBoolean) {
+                    tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
+                } else {
+                    tetAddSpeed.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -423,7 +427,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 } else {
                     textView14.setText(amount);
                 }
-            }else{
+            } else {
                 textView14.setText(amount);
                 unrelatedTransaction = amount;
             }
@@ -487,6 +491,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             tetState.setText(R.string.wait_broadcast);
             sigTrans.setText(R.string.broadcast);
             tetGrive.setVisibility(View.VISIBLE);
+            linPayAddress.setVisibility(View.GONE);
             //progress
             imgProgressone.setVisibility(View.GONE);
             imgProgressthree.setVisibility(View.VISIBLE);
@@ -530,7 +535,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 startActivity(intent);
                 break;
             case R.id.sig_trans:
-                if (TextUtils.isEmpty(unrelatedTransaction)){
+                if (TextUtils.isEmpty(unrelatedTransaction)) {
                     String strBtncontent = sigTrans.getText().toString();
                     if (strBtncontent.equals(getString(R.string.forWord_orther))) {
                         Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
@@ -554,7 +559,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                             showCustomerDialog();
                         }
                     }
-                }else{
+                } else {
                     mToast(getString(R.string.unrelated_transaction));
                 }
 
@@ -654,38 +659,32 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     }
 
     private void ifHaveRbf() {
-        if (aBoolean) {
-            PyObject get_rbf_fee_info = null;
-            try {
-                get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", tx_hash);
-            } catch (Exception e) {
-                Log.i("strNewfee", "++++++++: " + e.getMessage());
-                e.printStackTrace();
-            }
-            if (get_rbf_fee_info != null) {
-                String strNewfee = get_rbf_fee_info.toString();
-                Log.i("strNewfee", "--------: " + strNewfee);
-                View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
-                alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
-                ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
-                TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
+        PyObject get_rbf_fee_info = null;
+        try {
+            get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", tx_hash);
+        } catch (Exception e) {
+            Log.i("strNewfee", "++++++++: " + e.getMessage());
+            e.printStackTrace();
+        }
+        if (get_rbf_fee_info != null) {
+            String strNewfee = get_rbf_fee_info.toString();
+            Log.i("strNewfee", "--------: " + strNewfee);
+            View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
+            alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
+            ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
 
-                Gson gson = new Gson();
-                AddspeedBean addspeedBean = gson.fromJson(strNewfee, AddspeedBean.class);
-                newFeerate = addspeedBean.getNewFeerate();
-                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee), newFeerate));
-                img_Cancle.setOnClickListener(v -> {
-                    alertDialog.dismiss();
-                });
-                viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
-                    confirmedSpeed();
-                });
-                alertDialog.show();
-            }
-
-
-        } else {
-            mToast(getString(R.string.dontRBF));
+            Gson gson = new Gson();
+            AddspeedBean addspeedBean = gson.fromJson(strNewfee, AddspeedBean.class);
+            newFeerate = addspeedBean.getNewFeerate();
+            tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee), newFeerate));
+            img_Cancle.setOnClickListener(v -> {
+                alertDialog.dismiss();
+            });
+            viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
+                confirmedSpeed();
+            });
+            alertDialog.show();
         }
 
     }

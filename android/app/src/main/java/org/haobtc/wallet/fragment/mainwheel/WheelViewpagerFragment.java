@@ -62,6 +62,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private Button btnRight;
     private String strCNY;
     private String substring;
+    private TextView walletCard;
 
 
     public WheelViewpagerFragment(String name, String personce) {
@@ -92,10 +93,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         btn_appWallet = view.findViewById(R.id.app_wallet);
         tetCny = view.findViewById(R.id.tet_Cny);
         conlayBback = view.findViewById(R.id.conlay_back);
+        walletCard = view.findViewById(R.id.wallet_card_tv3);
         init();
         initdata();
-
-        if (isFirst) refreshList();
 
         return view;
     }
@@ -125,11 +125,14 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             }
         }
 
-
     }
 
     private void initdata() {
-
+        // first wallet
+        if (isFirst) refreshList();
+        //get wallet unit
+        String base_unit = preferences.getString("base_unit", "");
+        walletCard.setText(String.format("%s（%s）", getString(R.string.balance), base_unit));
 
     }
 
@@ -278,7 +281,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.wallet_card_bn1:
-                edit.putString("wallet_type_to_sign",personce);
+                edit.putString("wallet_type_to_sign", personce);
                 edit.apply();
                 Intent intent1 = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
                 intent1.putExtra("wallet_name", name);

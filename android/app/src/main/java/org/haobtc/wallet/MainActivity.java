@@ -51,7 +51,6 @@ import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.MyDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +72,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private RecyclerView recy_data;
     //remeber first back time
     private long firstTime = 0;
-    private MyDialog myDialog;
     private TextView tetNone;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private String date;
@@ -109,7 +107,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void init() {
-        myDialog = MyDialog.showDialog(MainActivity.this);
         rxPermissions = new RxPermissions(this);
         ImageView imageViewSweep = findViewById(R.id.img_sweep);
         TextView btnAddmoney = findViewById(R.id.tet_Addmoney);
@@ -232,10 +229,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onPageSelected(int position) {
-                myDialog.show();
                 scrollPos = position;
                 if (position == (fragmentList.size() - 1) || position == (fragmentList.size() - 2)) {
-                    myDialog.dismiss();
                     if (position == (fragmentList.size() - 1)) {
                         tetNone.setText(getString(R.string.hide_wallet_tips));
                         tetNone.setVisibility(View.VISIBLE);
@@ -275,7 +270,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
-            myDialog.dismiss();
             refreshLayout.finishRefresh();
             tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
@@ -291,7 +285,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
-                myDialog.dismiss();
                 tetNone.setText(getString(R.string.no_records));
                 tetNone.setVisibility(View.VISIBLE);
                 recy_data.setVisibility(View.GONE);
@@ -300,7 +293,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 showTrsactionlist(strHistory);
             }
         } else {
-            myDialog.dismiss();
             refreshLayout.finishRefresh();
             tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
@@ -348,7 +340,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
             }
-            myDialog.dismiss();
             trsactionlistAdapter.notifyDataSetChanged();
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 private String tx_hash1;
@@ -488,8 +479,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
-            Log.i("threadMode", "event: " + msgVote);
+        if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2) {
+            Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
             //Rolling Wallet
             ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
 

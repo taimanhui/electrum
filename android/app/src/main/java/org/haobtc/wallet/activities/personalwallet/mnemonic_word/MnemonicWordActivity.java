@@ -191,6 +191,16 @@ public class MnemonicWordActivity extends BaseActivity {
         if (is_seed != null) {
             boolean isSeed = is_seed.toBoolean();
             if (isSeed) {
+                try {
+                    Daemon.commands.callAttr("is_exist_seed",newSeed);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (e.getMessage().contains("The same seed have create wallet")){
+                        mToast(getString(R.string.xpub_have_wallet));
+                    }
+                    return;
+                }
+
                 Intent intent = new Intent(MnemonicWordActivity.this, CreateHelpWordWalletActivity.class);
                 intent.putExtra("newWallet_type", newWallet_type);
                 intent.putExtra("strNewseed", newSeed);
