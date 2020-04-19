@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.utils.PasswordInputView;
 
 import butterknife.BindView;
@@ -40,6 +41,7 @@ public class ConfirmBackupActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_setPin})
     public void onViewClicked(View view) {
         switch (view.getId()) {

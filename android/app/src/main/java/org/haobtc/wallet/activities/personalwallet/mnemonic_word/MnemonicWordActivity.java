@@ -5,7 +5,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -26,6 +25,7 @@ import com.chaquo.python.PyObject;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -104,6 +104,7 @@ public class MnemonicWordActivity extends BaseActivity {
         dataListName.add(new AddressEvent("electrum"));
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.lin_Bitype, R.id.btn_setPin, R.id.text_paste})
     public void onViewClicked(View view) {
         switch (view.getId()) {

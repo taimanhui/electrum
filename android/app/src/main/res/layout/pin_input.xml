@@ -48,7 +48,7 @@
 
         <TextView
             android:id="@+id/pin_description"
-            android:text="@string/pin_setting"
+            android:text="@string/pin_input"
             android:layout_marginTop="@dimen/dp_20"
             android:textColor="@color/text_color"
             android:textSize="22sp"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/pin_setting_state"
+            android:id="@+id/second_promote"
             android:text="@string/set_PIN"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_marginBottom="@dimen/dp_30"

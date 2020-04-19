@@ -20,6 +20,7 @@ import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -101,7 +102,8 @@ public class CreatFinishPersonalActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.tet_Preservation, R.id.bn_complete_add_cosigner})
+    @SingleClick
+    @OnClick({R.id.img_backCreat, R.id.tet_Preservation, R.id.bn_complete_add_cosigner})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_Preservation:

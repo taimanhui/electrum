@@ -505,11 +505,7 @@ class DeviceMgr(ThreadJob):
         # The user input has wrong PIN or passphrase, or cancelled input,
         # or it is not pairable
         raise DeviceUnpairableError(
-            _('BiXin cannot pair with your {}.\n\n'
-              'Before you request bitcoins to be sent to addresses in this '
-              'wallet, ensure you can pair with your device, or that you have '
-              'its seed (and passphrase, if any).  Otherwise all bitcoins you '
-              'receive will be unspendable.').format(plugin.device))
+            _('BiXin cannot pair with your {}.').format(plugin.device))
 
     def unpaired_device_infos(self, handler, plugin: 'HW_PluginBase', devices: List['Device'] = None,
                               include_failing_clients=False) -> List['DeviceInfo']:

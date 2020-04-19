@@ -23,6 +23,7 @@ import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -75,6 +76,7 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     }
 
 
+    @SingleClick
     @OnClick({R.id.import_file, R.id.sweep_sig, R.id.paste_sig, R.id.confirm_sig, R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {

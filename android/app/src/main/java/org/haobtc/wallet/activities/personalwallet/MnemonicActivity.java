@@ -23,6 +23,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.HelpWordAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.MyDialog;
 
@@ -73,6 +74,7 @@ public class MnemonicActivity extends BaseActivity {
         myDialog.show();
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_setPin, R.id.tet_jump,R.id.text_copy_mnemonic})
     public void onViewClicked(View view) {
         switch (view.getId()) {

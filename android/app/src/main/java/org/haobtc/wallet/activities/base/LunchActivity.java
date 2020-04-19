@@ -2,13 +2,8 @@ package org.haobtc.wallet.activities.base;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
-
-
 import com.chaquo.python.Kwarg;
-
 import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
@@ -87,7 +82,6 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        new Handler().postDelayed(() -> {
             if (BuildConfig.net_type.equals(getString(R.string.TestNet))) {
                 Global.py.getModule("electrum.constants").callAttr("set_testnet");
             } else if (BuildConfig.net_type.equals(getString(R.string.RegTest))) {
@@ -103,7 +97,5 @@ public class LunchActivity extends BaseActivity {
             //Daemon.commands.callAttr("start", Daemon.getInstance());
             //Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());
             init();
-        }, 100);
-
     }
 }

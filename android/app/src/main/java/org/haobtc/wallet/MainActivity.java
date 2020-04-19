@@ -42,6 +42,7 @@ import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
@@ -61,7 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
@@ -137,7 +138,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         recy_data.setAdapter(trsactionlistAdapter);
         //Rolling Wallet
         mWheelplanting();
-
     }
 
     private void mWheelplanting() {
@@ -348,7 +348,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 private String tx_hash1;
                 private boolean status;
-
+                @SingleClick
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     String typeDele = maintrsactionlistEvents.get(position).getType();
@@ -426,7 +426,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void mInitState() {
         ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0.2f).navigationBarColor(R.color.button_bk_ddake).init();
     }
-
+    @SingleClick
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -584,10 +584,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    showWalletList();
-                    break;
+            if (msg.what == 1) {
+                showWalletList();
             }
         }
     };

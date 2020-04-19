@@ -1,16 +1,12 @@
 package org.haobtc.wallet.activities.sign;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -39,36 +35,23 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ConfirmOnHardware;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
-import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
-import org.haobtc.wallet.asynctask.BusinessAsyncTask;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
-import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
-import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.Global;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
 
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
-
-public class SignActivity extends BaseActivity implements TextWatcher, RadioGroup.OnCheckedChangeListener, BusinessAsyncTask.Helper {
+public class SignActivity extends BaseActivity implements TextWatcher, RadioGroup.OnCheckedChangeListener {
 
     public static final String TAG = SignActivity.class.getSimpleName();
     public static final String TAG1 = "SIGN_MESSAGE";
@@ -96,19 +79,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private static final int REQUEST_CODE = 0;
     private boolean signWhich = true;
     private String personceType;
-    private String strTest;
-    private boolean executable = true;
-    private String pin = "";
-    private boolean isActive;
-    private boolean ready;
-    private String strRaw;
     private String strSoftMsg;
     public static String strinputAddress;
-    private String hide_phrass;
     private SharedPreferences.Editor edit;
-    private String hideWalletpass;
-    private boolean done;
-    private CommunicationModeSelector chooseCommunicationWayDialogFragment;
 
     @Override
     public int getLayoutId() {
@@ -123,7 +96,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         edit = preferences.edit();
         Intent intent = getIntent();
         personceType = intent.getStringExtra("personceType");
-        hide_phrass = intent.getStringExtra("hide_phrass");
+        String hide_phrass = intent.getStringExtra("hide_phrass");
         rxPermissions = new RxPermissions(this);
         editTrsactionTest.addTextChangedListener(this);
         radioGroup.setOnCheckedChangeListener(this);
@@ -166,7 +139,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Override
     public void afterTextChanged(Editable s) {
-        strRaw = editTrsactionTest.getText().toString();
+        String strRaw = editTrsactionTest.getText().toString();
         if (!TextUtils.isEmpty(strRaw)) {
             buttonConfirm.setEnabled(true);
             buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
@@ -193,6 +166,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_import_file, R.id.btn_sweep, R.id.pasteSignTrsaction, R.id.btnConfirm, R.id.textCheckSign})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -247,21 +221,24 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         signDialog();
                     }
                 } else { //Hardware wallet signature
-                    strTest = editTrsactionTest.getText().toString();
+
+                    String strTest;
                     if (signWhich) { //sign trsaction
-                        if (!TextUtils.isEmpty(hide_phrass)) {
-                            //hide wallet sign transaction -->set_pass_state
-                            showCustomerDialog(strTest, TAG2);
-                        } else {
-                            showCustomerDialog(strTest, TAG);
-                        }
+                        strTest = editTrsactionTest.getText().toString();
+                        CommunicationModeSelector.runnables.clear();
+                        CommunicationModeSelector.runnables.add(runnable);
+                        Intent intent = new Intent(this, CommunicationModeSelector.class);
+                        intent.putExtra("tag", TAG);
+                        intent.putExtra("extras", strTest);
+                        startActivity(intent);
                     } else {//sign message
-                        if (!TextUtils.isEmpty(hide_phrass)) {
-                            //hide wallet sign message -->set_pass_state
-                            showCustomerDialog(strTest, TAG3);
-                        } else {
-                            showCustomerDialog(strTest, TAG1);
-                        }
+                        strTest = editTrsactionTest.getText().toString();
+                        CommunicationModeSelector.runnables.clear();
+                        CommunicationModeSelector.runnables.add(runnable);
+                        Intent intent = new Intent(this, CommunicationModeSelector.class);
+                        intent.putExtra("tag", TAG1);
+                        intent.putExtra("extras", strTest);
+                        startActivity(intent);
                     }
                 }
                 break;
@@ -349,13 +326,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     }
 
-    private void showCustomerDialog(String signMsg, String tag) {
-        List<Runnable> runnables = new ArrayList<>();
-        runnables.add(runnable);
-        chooseCommunicationWayDialogFragment = new CommunicationModeSelector(tag, runnables, signMsg);
-        chooseCommunicationWayDialogFragment.show(getSupportFragmentManager(), "");
-    }
-
     private Runnable runnable = this::gotoConfirmOnHardware;
 
     private void gotoConfirmOnHardware() {
@@ -375,122 +345,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
     }
 
-    private HardwareFeatures getFeatures() throws Exception {
-        String feature;
-        try {
-            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
-            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
-            if (features.isBootloaderMode()) {
-                throw new Exception("bootloader mode");
-            }
-            return features;
 
-        } catch (ExecutionException | InterruptedException e) {
-            Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        String action = intent.getAction(); // get the action of the coming intent
-        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
-                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
-                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            isNFC = true;
-            dealWithBusiness(intent);
-        }
-    }
-
-    private void dealWithBusiness(Intent intent) {
-        if (executable) {
-            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
-            PyObject nfcHandler = nfc.get("NFCHandle");
-            nfcHandler.put("device", tags);
-            executable = false;
-        }
-        if (ready) {
-            customerUI.put("pin", pin);
-            if (!TextUtils.isEmpty(hideWalletpass)) {
-                customerUI.put("passphrase", hideWalletpass);
-                hideWalletpass = "";
-            }
-            ready = false;
-            return;
-        } else if (done) {
-            customerUI.put("pin", pin);
-            done = false;
-            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-            return;
-        }
-        HardwareFeatures features;
-        try {
-            features = getFeatures();
-        } catch (Exception e) {
-            if ("bootloader mode".equals(e.getMessage())) {
-                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
-            }
-            finish();
-            return;
-        }
-        boolean isInit = features.isInitialized();
-        if (isInit) {
-            //hide_phrass -->  hide wallet jump here
-            if (!TextUtils.isEmpty(hide_phrass)) {
-                customerUI.callAttr("set_pass_state", 1);
-            }
-            if (signWhich) {
-                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, strTest);
-            } else {
-                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, strTest);
-            }
-        } else {
-            if (isActive) {
-                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
-            } else {
-                Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                startActivityForResult(intent1, REQUEST_ACTIVE);
-            }
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 5 && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                pin = data.getStringExtra("pin");
-                int tag = data.getIntExtra("tag", 0);
-                switch (tag) {
-                    case CommunicationModeSelector.PIN_NEW_FIRST: // activation
-                        // ble activation
-                        if (CommunicationModeSelector.isActive) {
-                            customerUI.put("pin", pin);
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-
-                        } else if (isActive) {
-                            // nfc 激活
-                            done = true;
-                        }
-                        break;
-                    case CommunicationModeSelector.PIN_CURRENT: // sign
-                        if (!isNFC) { // ble
-                            customerUI.put("pin", pin);
-                        } else { // nfc
-                            ready = true;
-                        }
-                        break;
-                    default:
-                }
-            }
-        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                isActive = data.getBooleanExtra("isActive", false);
-            }
-        } else if (requestCode == 0 && resultCode == RESULT_OK) {
+         if (requestCode == 0 && resultCode == RESULT_OK) {
             //scan
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
@@ -515,68 +375,20 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, getResources().getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == CommunicationModeSelector.PASSPHRASS_INPUT && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                hideWalletpass = data.getStringExtra("passphrase");
-                //Enter password to create hidden Wallet
-                if (!isNFC) {
-                    customerUI.put("passphrase", hideWalletpass);
-                    gotoConfirmOnHardware();
-                } else {
-                    ready = true;
-                }
+                Toast.makeText(this, getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
             }
         }
     }
-
-    @Override
-    public void onPreExecute() {
-        if (signWhich) {
-            gotoConfirmOnHardware();
-        }
-    }
-
-    @Override
-    public void onException(Exception e) {
-        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
-            ready = false;
-        } else if ("com.chaquo.python.PyException: BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-            mToast(getString(R.string.pin_wrong));
-        } else if ("BaseException: Cannot sign messages with this type of address:p2ws".equals(e.getMessage())) {
-            mToast(getString(R.string.single_sign_only));
-        } else {
-            finish();
-        }
-    }
-
-    @Override
-    public void onResult(String s) {
-        if (signWhich) {
-            EventBus.getDefault().post(new SignResultEvent(s));
-        } else {
-            onSignMessage(new SignMessageEvent(s));
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignMessage(SignMessageEvent event) {
         strSoftMsg = editTrsactionTest.getText().toString();
         String signedMsg = event.getSignedRaw();
-        chooseCommunicationWayDialogFragment.dismiss();
         Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
         intentMsg.putExtra("signMsg", strSoftMsg);
         intentMsg.putExtra("signAddress", strinputAddress);
         intentMsg.putExtra("signedFinish", signedMsg);
         startActivity(intentMsg);
     }
-
-    @Override
-    public void onCancelled() {
-
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

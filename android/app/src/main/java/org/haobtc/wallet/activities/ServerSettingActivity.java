@@ -2,7 +2,6 @@ package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -24,10 +23,9 @@ import org.haobtc.wallet.activities.settings.AgentServerActivity;
 import org.haobtc.wallet.activities.settings.BlockChooseActivity;
 import org.haobtc.wallet.activities.settings.ElectrumNodeChooseActivity;
 import org.haobtc.wallet.activities.settings.QuotationServerActivity;
-import org.haobtc.wallet.adapter.ElectrumListAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.CNYBean;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -188,6 +186,7 @@ public class ServerSettingActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.rel_quotationChoose, R.id.rel_blockChoose, R.id.rel_Electrum_Choose, R.id.relAgent_Choose})
     public void onViewClicked(View view) {
         switch (view.getId()) {

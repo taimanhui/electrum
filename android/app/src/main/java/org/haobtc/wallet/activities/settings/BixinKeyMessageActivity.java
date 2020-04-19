@@ -2,12 +2,11 @@ package org.haobtc.wallet.activities.settings;
 
 import android.content.Intent;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,6 +42,7 @@ public class BixinKeyMessageActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {

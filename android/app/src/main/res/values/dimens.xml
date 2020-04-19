@@ -7,7 +7,7 @@
     <dimen name="layout_margin">10dp</dimen>
     <dimen name="pop_h">440dp</dimen>
     <dimen name="dp_44">44dp</dimen>
-    <dimen name="corner_radius">6dp</dimen>
+    <dimen name="corner_radius">12dp</dimen>
     <dimen name="dp_1">1dp</dimen>
     <dimen name="sp_14">14sp</dimen>
     <dimen name="sp_13">13sp</dimen>
@@ -48,4 +48,8 @@
     <dimen name="dp_60">60dp</dimen>
     <dimen name="dp_61">61dp</dimen>
     <dimen name="sp_15">15sp</dimen>
+    <dimen name="dp_6">6dp</dimen>
+    <dimen name="dp_82">82dp</dimen>
+    <dimen name="dp_86">86dp</dimen>
+    <dimen name="sp_53">53dp</dimen>
 </resources>

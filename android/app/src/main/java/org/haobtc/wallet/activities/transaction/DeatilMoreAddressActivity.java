@@ -13,6 +13,7 @@ import org.haobtc.wallet.adapter.InputaddrScanAdapter;
 import org.haobtc.wallet.adapter.MoreAddressAdapter;
 import org.haobtc.wallet.adapter.OutputaddrScanAdapter;
 import org.haobtc.wallet.adapter.TranscationPayAddressAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.CheckAddressAdapter;
 
 import java.util.List;
@@ -77,6 +78,7 @@ public class DeatilMoreAddressActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_backReceict})
     public void onViewClicked(View view) {
         switch (view.getId()) {

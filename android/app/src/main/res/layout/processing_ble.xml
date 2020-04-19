@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/processing_bk"
+    android:background="@color/pin_back_color"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     tools:context=".activities.settings.fixpin.ChangePinProcessingActivity">
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="31dp"
             android:gravity="center_horizontal"
-            android:text="@string/verification_key"
+            android:text="@string/communicating"
             android:textColor="@color/text"
             android:textSize="18sp" />
 
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_5"
             android:gravity="center_horizontal"
-            android:text="@string/tip_tips"
+            android:text="@string/tip_closer"
             android:textColor="@color/text_0"
             android:textSize="12sp" />
         <TextView

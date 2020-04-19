@@ -8,10 +8,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,7 +36,7 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -52,7 +50,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
 
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.utils.Daemon.commands;
 
 public class ShareOtherActivity extends BaseActivity {
@@ -127,6 +125,7 @@ public class ShareOtherActivity extends BaseActivity {
     }
 
 
+    @SingleClick
     @OnClick({R.id.tet_Preservation, R.id.tet_Copy, R.id.lin_downLoad, R.id.img_back, R.id.tet_open})
     public void onViewClicked(View view) {
         switch (view.getId()) {

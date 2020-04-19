@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
 
 import java.util.ArrayList;
@@ -60,18 +60,16 @@ public class BackupRecoveryActivity extends BaseActivity {
         if (deviceValue != null) {
             BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
             reclCheckKey.setAdapter(bixinkeyManagerAdapter);
-            bixinkeyManagerAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                    Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
-                    intent.putExtra("strKeyname",deviceValue.get(position).getBleName());
-                    intent.putExtra("flagWhere","Backup");
-                    startActivity(intent);
-                }
+            bixinkeyManagerAdapter.setOnItemClickListener((adapter, view, position) -> {
+                Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
+                intent.putExtra("strKeyname",deviceValue.get(position).getBleName());
+                intent.putExtra("flagWhere","Backup");
+                startActivity(intent);
             });
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.tet_keyName})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -79,13 +77,11 @@ public class BackupRecoveryActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.tet_keyName:
-                showPopupAddCosigner1();
+                Intent intent = new Intent(this, CommunicationModeSelector.class);
+                intent.putExtra("tag", TAG);
+                startActivity(intent);
                 break;
         }
     }
 
-    private void showPopupAddCosigner1() {
-        CommunicationModeSelector dialogFragment = new CommunicationModeSelector(TAG, null, "");
-        dialogFragment.show(getSupportFragmentManager(), "");
-    }
 }

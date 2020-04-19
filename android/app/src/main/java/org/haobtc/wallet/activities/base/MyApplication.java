@@ -44,7 +44,7 @@ public class MyApplication extends Application {
                 .setFilterScan(true)//Set whether to filter the founded devices
                 .setConnectFailedRetryCount(3)
                 .setConnectTimeout(10 * 1000)// Set the connection timeout
-                .setScanPeriod(12 * 1000)// Set the Scanning period
+                .setScanPeriod(6 * 1000)// Set the Scanning period
                 .setServiceBindFailedRetryCount(3)
                 .setUuidService(UUID.fromString(PRIMARY_SERVICE))
                 .setUuidWriteCha(UUID.fromString(WRITE_CHARACTERISTIC))

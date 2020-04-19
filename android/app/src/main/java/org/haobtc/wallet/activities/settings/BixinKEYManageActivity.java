@@ -14,12 +14,11 @@ import com.google.gson.Gson;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
-import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -62,6 +61,7 @@ public class BixinKEYManageActivity extends BaseActivity {
             BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
             reclBixinKeyList.setAdapter(bixinkeyManagerAdapter);
             bixinkeyManagerAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                @SingleClick
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     switch (view.getId()) {
@@ -89,6 +89,7 @@ public class BixinKEYManageActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {

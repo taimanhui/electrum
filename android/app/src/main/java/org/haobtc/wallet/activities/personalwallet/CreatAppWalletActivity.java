@@ -13,6 +13,7 @@ import android.widget.ImageView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +51,7 @@ public class CreatAppWalletActivity extends BaseActivity implements TextWatcher 
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_setPin})
     public void onViewClicked(View view) {
         switch (view.getId()) {

@@ -5,14 +5,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
@@ -22,8 +20,8 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -82,6 +80,7 @@ public class CheckSignActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.sweepAddress, R.id.pasteAddress, R.id.pastePublicKey, R.id.pasteSignedMsg, R.id.btnConfirm})
     public void onViewClicked(View view) {
         switch (view.getId()) {

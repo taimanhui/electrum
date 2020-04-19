@@ -14,6 +14,7 @@ import com.chaquo.python.PyObject;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -21,7 +22,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
+
 
 public class AppWalletSetPassActivity extends BaseActivity {
 
@@ -63,6 +65,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
     }
 
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_setPin})
     public void onViewClicked(View view) {
         switch (view.getId()) {

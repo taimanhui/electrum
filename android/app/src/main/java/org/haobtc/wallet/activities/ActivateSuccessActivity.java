@@ -1,11 +1,12 @@
 package org.haobtc.wallet.activities;
 
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,14 +33,13 @@ public class ActivateSuccessActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.bn_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                finish();
-                break;
             case R.id.bn_back:
-                finish();
+                finishAffinity();
         }
     }
 }

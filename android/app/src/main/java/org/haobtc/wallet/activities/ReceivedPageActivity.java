@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -23,6 +22,7 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -93,7 +93,8 @@ public class ReceivedPageActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.textView6, R.id.button, R.id.img_back})
+    @SingleClick
+    @OnClick({R.id.textView6, R.id.button,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.textView6:

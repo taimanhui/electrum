@@ -3,8 +3,6 @@ package org.haobtc.wallet.activities.sign;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,8 +11,8 @@ import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.MyDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,7 +52,8 @@ public class CheckSignMessageActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_back, R.id.testCopyPublickey, R.id.testCopySignedMsg,R.id.btnConfirm})
+    @SingleClick
+    @OnClick({R.id.img_back, R.id.testCopyPublickey, R.id.testCopySignedMsg})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:

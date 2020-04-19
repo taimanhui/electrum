@@ -7,6 +7,7 @@ import android.widget.TextView;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +39,7 @@ public class HardwareInfoActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.tet_Serial, R.id.tet_versonUp, R.id.id_2,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {

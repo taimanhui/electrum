@@ -18,6 +18,7 @@ public class HardwareFeatures {
      * pin_protection : true
      * passphrase_protection : false
      * language : en-US
+     * label: liyan
      * initialized : true
      * revision : 901a3ef288fff3be8cabc0af5efd204c8550ceb4
      * bootloader_hash : 58f0235afaee90cc7640cae76ab92f28d2516e82de4e7b5252b5d7e89e619308
@@ -47,6 +48,8 @@ public class HardwareFeatures {
     private boolean passphraseProtection;
     @SerializedName("language")
     private String language;
+    @SerializedName("label")
+    private String label;
     @SerializedName("initialized")
     private boolean initialized;
     @SerializedName("revision")
@@ -134,6 +137,14 @@ public class HardwareFeatures {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public boolean isInitialized() {

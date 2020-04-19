@@ -1,13 +1,9 @@
 package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,9 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
@@ -32,21 +25,16 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
-import org.haobtc.wallet.asynctask.BusinessAsyncTask;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
-import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SecondEvent;
-import org.haobtc.wallet.event.SignFailedEvent;
-import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.Global;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,20 +42,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
-
-public class TransactionDetailsActivity extends BaseActivity implements BusinessAsyncTask.Helper {
+public class TransactionDetailsActivity extends BaseActivity {
 
     @BindView(R.id.img_progressone)
     ImageView imgProgressone;
@@ -139,7 +119,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     private String listType;
     private String publicTrsation;
     private String jsondef_get;
-    private String rowtx;
+    private String rawtx;
     private String strParse;
     private String language;
     private boolean isIsmine;
@@ -153,21 +133,14 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     private AlertDialog alertDialog;
     private String amount, fee;
     ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr;
-    private boolean executable = true;
-    private String pin = "";
     public static String signedRawTx;
-    private boolean isActive;
-    private boolean ready;
-    private CommunicationModeSelector modeSelector;
     private String signTransction;
     private boolean set_rbf;
     private List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr;
     private List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddrScan;
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
-    private String unrelatedTransaction;
-    private Boolean aBoolean;
-    private boolean done;
     private String unConfirmStatus;
+
 
     @Override
     public int getLayoutId() {
@@ -265,9 +238,8 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             e.printStackTrace();
         }
         if (get_rbf_status != null) {
-            aBoolean = get_rbf_status.toBoolean();
+            Boolean aBoolean = get_rbf_status.toBoolean();
             if (set_rbf) {
-                Log.i("setRbfStatus", "setRbfStatus: " + aBoolean);
                 if (aBoolean) {
                     tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
                 } else {
@@ -334,9 +306,9 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         inputAddr = getnewcreatTrsactionListBean.getInputAddr();
         txid = getnewcreatTrsactionListBean.getTxid();
         tx_hash = txid;
-        rowtx = getnewcreatTrsactionListBean.getTx();
+        rawtx = getnewcreatTrsactionListBean.getTx();
         canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
-        edit.putString("signedRowtrsation", rowtx);
+        edit.putString("signedRowtrsation", rawtx);
         edit.apply();
         if (inputAddr.size() != 0) {
             String addrInput = inputAddr.get(0).getAddr();
@@ -407,7 +379,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
 
         List<Integer> signStatusMes = scanListdata.getSignStatus();
         String txid = scanListdata.getTxid();
-        rowtx = scanListdata.getTx();
+        rawtx = scanListdata.getTx();
         //trsaction hash
         tetTrsactionHash.setText(txid);
         //input address num
@@ -440,7 +412,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 }
             } else {
                 textView14.setText(amount);
-                unrelatedTransaction = amount;
             }
 
         }
@@ -537,6 +508,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         startActivityForResult(intentCon, 1);
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans, R.id.lin_payAddress})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -546,33 +518,36 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             case R.id.img_share:
                 Intent intent = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
                 intent.putExtra("rowTrsaction", tx_hash);
-                intent.putExtra("rowTx", rowtx);
+                intent.putExtra("rowTx", rawtx);
                 startActivity(intent);
                 break;
             case R.id.sig_trans:
-                if (TextUtils.isEmpty(unrelatedTransaction)) {
-                    String strBtncontent = sigTrans.getText().toString();
-                    if (strBtncontent.equals(getString(R.string.forWord_orther))) {
-                        Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
-                        intent1.putExtra("rowTrsaction", tx_hash);
-                        intent1.putExtra("rowTx", rowtx);
-                        startActivity(intent1);
+                String strBtncontent = sigTrans.getText().toString();
+                if (strBtncontent.equals(getString(R.string.forWord_orther))) {
+                    Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
+                    intent1.putExtra("rowTrsaction", tx_hash);
+                    intent1.putExtra("rowTx", rawtx);
+                    startActivity(intent1);
 
-                    } else if (strBtncontent.equals(getString(R.string.broadcast))) {
-                        //bradcast trsaction
-                        braodcastTrsaction();
+                } else if (strBtncontent.equals(getString(R.string.broadcast))) {
+                    //broadcast transaction
+                    braodcastTrsaction();
 
-                    } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
-                        Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
-                        intent1.putExtra("checkTxid", txid);
+                } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
+                    Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
+                    intent1.putExtra("checkTxid", txid);
+                    startActivity(intent1);
+                } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
+                    if ("standard".equals(strwalletType)) {
+                        //sign input pass
+                        signInputpassDialog();
+                    } else {
+                        CommunicationModeSelector.runnables.clear();
+                        CommunicationModeSelector.runnables.add(runnable);
+                        Intent intent1 = new Intent(this, CommunicationModeSelector.class);
+                        intent1.putExtra("tag", TAG);
+                        intent1.putExtra("extras", rawtx);
                         startActivity(intent1);
-                    } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
-                        if ("standard".equals(strwalletType)) {
-                            //sign input pass
-                            signInputpassDialog();
-                        } else {
-                            showCustomerDialog();
-                        }
                     }
                 } else {
                     mToast(getString(R.string.unrelated_transaction));
@@ -587,7 +562,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 } else {
                     intent1.putExtra("jsondef_getScan", (Serializable) outputAddrScan);
                 }
-                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent1);
                 break;
             case R.id.tet_addSpeed:
@@ -602,22 +576,17 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 }
                 intent2Pay.putExtra("addressType", "pay");
                 intent2Pay.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 startActivity(intent2Pay);
                 break;
         }
     }
 
-    private void showCustomerDialog() {
-        List<Runnable> runnables = new ArrayList<>();
-        runnables.add(runnable);
-        modeSelector = new CommunicationModeSelector(TAG, runnables, rowtx);
-        modeSelector.show(getSupportFragmentManager(), "");
-    }
 
     //Radio broadcast
     private void braodcastTrsaction() {
         String signedRowTrsation = preferences.getString("signedRowtrsation", "");
-        Log.i("braodcastTrsact", "braodcastTrsaction: " + signedRowTrsation);
+        Log.d(TAG, "braodcastTrsaction: " + signedRowTrsation);
         try {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
         } catch (Exception e) {
@@ -654,16 +623,14 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 return;
             }
             try {
-                PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rowtx, strPassword);
+                PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rawtx, strPassword);
                 if (sign_tx != null) {
-                    Log.i("sign_txkkkkkkk", "sign_tx: " + sign_tx);
                     jsonDetailData(sign_tx.toString());
                     alertDialog.dismiss();
                     EventBus.getDefault().post(new FirstEvent("22"));
 
                 }
             } catch (Exception e) {
-                Log.i("sign_txkkkkkkk", "+++++++++++= " + e.getMessage());
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
                 }
@@ -733,147 +700,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             alertDialog.dismiss();
         }
     }
-
-    private HardwareFeatures getFeatures() throws Exception {
-        String feature;
-        try {
-            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature", "nfc")).get().toString();
-            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
-            if (features.isBootloaderMode()) {
-                throw new Exception("bootloader mode");
-            }
-            return features;
-
-        } catch (ExecutionException | InterruptedException e) {
-            Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        String action = intent.getAction(); // get the action of the coming intent
-        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
-                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
-                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            isNFC = true;
-            dealWithBusiness(intent);
-        }
-    }
-
-    private void dealWithBusiness(Intent intent) {
-        if (executable) {
-            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
-            PyObject nfcHandler = nfc.get("NFCHandle");
-            nfcHandler.put("device", tags);
-            executable = false;
-        }
-        if (ready) {
-            CommunicationModeSelector.customerUI.put("pin", pin);
-            gotoConfirmOnHardware();
-            ready = false;
-            return;
-        } else if (done) {
-            customerUI.put("pin", pin);
-            done = false;
-            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-            return;
-        }
-        HardwareFeatures features;
-        try {
-            features = getFeatures();
-        } catch (Exception e) {
-            if ("bootloader mode".equals(e.getMessage())) {
-                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
-            }
-            finish();
-            return;
-        }
-        boolean isInit = features.isInitialized();
-        if (isInit) {
-            if (features.isPinCached()) {
-                gotoConfirmOnHardware();
-            }
-            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, rowtx);
-        } else {
-            if (isActive) {
-                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
-            } else {
-                Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                startActivityForResult(intent1, REQUEST_ACTIVE);
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 5 && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                pin = data.getStringExtra("pin");
-                int tag = data.getIntExtra("tag", 0);
-                switch (tag) {
-                    case CommunicationModeSelector.PIN_NEW_FIRST: // 激活
-                        // ble 激活
-                        if (CommunicationModeSelector.isActive) {
-                            CommunicationModeSelector.customerUI.put("pin", pin);
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-
-                        } else if (isActive) {
-                            // nfc 激活
-                            done = true;
-                        }
-                        break;
-                    case CommunicationModeSelector.PIN_CURRENT: // 签名
-                        if (!isNFC) { // ble
-                            CommunicationModeSelector.customerUI.put("pin", pin);
-                            gotoConfirmOnHardware();
-                        } else { // nfc
-                            ready = true;
-                        }
-                        break;
-                    default:
-                }
-            }
-        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                isActive = data.getBooleanExtra("isActive", false);
-            }
-        }
-    }
-
-
-    @Override
-    public void onPreExecute() {
-    }
-
-    @Override
-    public void onException(Exception e) {
-        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
-            ready = false;
-        } else {
-            EventBus.getDefault().post(new SignFailedEvent(e));
-        }
-    }
-
-    @Override
-    public void onResult(String s) {
-        if (isActive) {
-            EventBus.getDefault().post(new ResultEvent(s));
-            isActive = false;
-            return;
-        }
-        EventBus.getDefault().post(new SignResultEvent(s));
-    }
-
-    @Override
-    public void onCancelled() {
-
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
@@ -881,7 +707,6 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             finish();
         }
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
@@ -25,16 +24,14 @@ import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.personalwallet.WalletDetailsActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -273,7 +270,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             e.printStackTrace();
         }
     }
-
+    @SingleClick
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

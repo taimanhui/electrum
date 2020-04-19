@@ -12,14 +12,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.tbruyelle.rxpermissions2.RxPermissions;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.aop.SingleClick;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -73,6 +77,7 @@ public class BackupMessageActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.tet_preversation, R.id.copy_tet, R.id.btn_continue})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -106,7 +111,8 @@ public class BackupMessageActivity extends BaseActivity {
             case R.id.btn_continue:
                 if (flagWhere.equals("Backup")){
                     // new version code
-                    showPopupAddCosigner1();
+                    Intent intent = new Intent(this, CommunicationModeSelector.class);
+                    startActivity(intent);
                 }else{
                     finish();
                 }
@@ -130,10 +136,5 @@ public class BackupMessageActivity extends BaseActivity {
         } catch (IOException ignored) {
             return false;
         }
-    }
-
-    private void showPopupAddCosigner1() {
-        CommunicationModeSelector dialogFragment = new CommunicationModeSelector("", null, "");
-        dialogFragment.show(getSupportFragmentManager(), "");
     }
 }

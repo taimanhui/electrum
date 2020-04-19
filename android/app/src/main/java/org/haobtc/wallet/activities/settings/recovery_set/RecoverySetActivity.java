@@ -1,43 +1,26 @@
 package org.haobtc.wallet.activities.settings.recovery_set;
 
 import android.content.Intent;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.chaquo.python.PyObject;
-import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
-import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.ResultEvent;
-import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
-
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
 
 
 public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, BusinessAsyncTask.Helper {
@@ -50,8 +33,7 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
     Button rest_device;
     @BindView(R.id.checkbox_Know)
     CheckBox checkboxKnow;
-    public static final String TAG = RecoverySetActivity.class.getSimpleName();
-    private boolean executable = true;
+    public static final String TAG = "org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity";
 
     @Override
     public int getLayoutId() {
@@ -69,6 +51,7 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.tet_backups, R.id.reset_device})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -79,14 +62,11 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
                 mIntent(BackupRecoveryActivity.class);
                 break;
             case R.id.reset_device:
-                showPopupAddCosigner1();
+                Intent intent = new Intent(this, CommunicationModeSelector.class);
+                intent.putExtra("tag", TAG);
+                startActivity(intent);
                 break;
         }
-    }
-
-    private void showPopupAddCosigner1() {
-        CommunicationModeSelector dialogFragment = new CommunicationModeSelector(TAG, null, "");
-        dialogFragment.show(getSupportFragmentManager(), "");
     }
 
     @Override
@@ -99,60 +79,6 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
             rest_device.setEnabled(false);
         }
     }
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        String action = intent.getAction(); // get the action of the coming intent
-        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
-                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
-                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            processingState(intent);
-        }
-    }
-    private boolean isInitialized() throws Exception {
-        String feature;
-        try {
-            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
-            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
-            if (features.isBootloaderMode()) {
-                throw new Exception("bootloader mode");
-            }
-            return features.isInitialized();
-        } catch (ExecutionException | InterruptedException e) {
-            Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-            throw e;
-        }
-    }
-    private void processingState(Intent intent) {
-        if (executable) {
-            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
-            PyObject nfcHandler = nfc.get("NFCHandle");
-            nfcHandler.put("device", tags);
-            executable = false;
-        }
-        boolean isInit;
-        try {
-            isInit = isInitialized();
-        } catch (Exception e) {
-            e.printStackTrace();
-            if ("bootloader mode".equals(e.getMessage())) {
-                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
-            }
-            finish();
-            return;
-        }
-        if (isInit) {
-            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.WIPE_DEVICE, COMMUNICATION_MODE_NFC);
-            startActivity(new Intent(this, ResetDeviceProcessing.class));
-        } else {
-            Toast.makeText(this, R.string.wallet_un_activated, Toast.LENGTH_LONG).show();
-            finish();
-        }
-
-    }
-
 
     @Override
     protected void onDestroy() {

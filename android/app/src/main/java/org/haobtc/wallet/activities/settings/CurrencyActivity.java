@@ -18,6 +18,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.CNYAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.CNYBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -220,6 +221,7 @@ public class CurrencyActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.tet_CheckAll})
     public void onViewClicked(View view) {
         switch (view.getId()) {

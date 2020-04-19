@@ -24,6 +24,7 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -95,6 +96,7 @@ public class WalletDetailsActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.tet_Copy, R.id.tet_deleteWallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {

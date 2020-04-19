@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 
@@ -157,6 +158,7 @@ public class TransactionsSettingActivity extends BaseActivity {
         });
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.tet_addNode})
     public void onViewClicked(View view) {
         switch (view.getId()) {

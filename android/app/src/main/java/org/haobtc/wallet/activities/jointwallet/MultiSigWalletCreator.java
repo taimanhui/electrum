@@ -2,7 +2,6 @@ package org.haobtc.wallet.activities.jointwallet;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -10,17 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -51,19 +45,15 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
-import org.haobtc.wallet.asynctask.BusinessAsyncTask;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
-import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.ResultEvent;
-import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.haobtc.wallet.utils.MyDialog;
 
@@ -71,23 +61,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.xpub;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
 
-public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, BusinessAsyncTask.Helper {
+public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -157,16 +139,10 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
     private MyDialog myDialog;
     private PyObject walletAddressShowUi;
     private SharedPreferences.Editor edit;
-    private boolean executable = true;
-    private CommunicationModeSelector dialogFragment;
-    private boolean isActive;
     private int walletNameNum;
     private Bitmap bitmap;
-    private boolean ready;
     private int strUp1;
     private int strUp2;
-    private boolean done;
-    private boolean status = false;
 
     @Override
     public int getLayoutId() {
@@ -193,14 +169,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         addEventsDatas = new ArrayList<>();
         seekbarLatoutup();
         seekbarLatoutdown();
-    }
-
-    private void showPopupAddCosigner1() {
-        List<Runnable> runnables = new ArrayList<>();
-        runnables.add(runnable);
-        runnables.add(runnable2);
-        dialogFragment = new CommunicationModeSelector(TAG, runnables, "");
-        dialogFragment.show(getSupportFragmentManager(), "");
     }
 
     private void seekbarLatoutup() {
@@ -297,6 +265,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         });
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key, R.id.btn_Finish, R.id.bn_complete_add_cosigner, R.id.tet_Preservation})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -307,11 +276,16 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                 mCreatWalletNext();
                 break;
             case R.id.bn_add_key:
-                showPopupAddCosigner1();
+                CommunicationModeSelector.runnables.clear();
+                CommunicationModeSelector.runnables.add(runnable);
+                CommunicationModeSelector.runnables.add(runnable2);
+                Intent intent = new Intent(this, CommunicationModeSelector.class);
+                intent.putExtra("tag", TAG);
+                startActivity(intent);
                 break;
             case R.id.btn_Finish:
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                Intent intent1 = new Intent(this, MainActivity.class);
+                startActivity(intent1);
                 finishAffinity();
                 break;
             case R.id.bn_complete_add_cosigner:
@@ -676,10 +650,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
-
             int cosignerNum = Integer.parseInt(strInditor1);
             bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
-            dialogFragment.dismiss();
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
@@ -705,8 +677,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                     }
                 }
             });
-            dialogFragment.dismiss();
-
+            dialogBtoms.cancel();
         });
 
         //cancel dialog
@@ -730,119 +701,13 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
     private Runnable runnable = () -> showInputDialogs(MultiSigWalletCreator.this, R.layout.bixinkey_input);
     private Runnable runnable2 = () -> showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
 
-
-    private HardwareFeatures getFeatures() throws Exception {
-        String feature;
-        try {
-            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature")).get().toString();
-            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
-            if (features.isBootloaderMode()) {
-                throw new Exception("bootloader mode");
-            }
-            return features;
-
-        } catch (ExecutionException | InterruptedException e) {
-            Toast.makeText(this, "communication error", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        String action = intent.getAction(); // get the action of the coming intent
-        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
-                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
-                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            isNFC = true;
-            dealWithBusiness(intent);
-        }
-
-    }
-
-    private void dealWithBusiness(Intent intent) {
-        if (executable) {
-            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            PyObject nfc = Global.py.getModule("trezorlib.transport.nfc");
-            PyObject nfcHandler = nfc.get("NFCHandle");
-            nfcHandler.put("device", tags);
-            executable = false;
-        }
-        if (ready) {
-            CommunicationModeSelector.customerUI.put("pin", pin);
-            ready = false;
-            return;
-        } else if (done) {
-            customerUI.put("pin", pin);
-            done = false;
-            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-            return;
-        }
-        HardwareFeatures features;
-        try {
-            features = getFeatures();
-        } catch (Exception e) {
-            if ("bootloader mode".equals(e.getMessage())) {
-                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
-            }
-            finish();
-            return;
-        }
-        boolean isInit = features.isInitialized();
-        if (isInit) {
-            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_NFC);
-        } else {
-            if (isActive) {
-                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, COMMUNICATION_MODE_NFC);
-            } else {
-                Intent intent1 = new Intent(this, WalletUnActivatedActivity.class);
-                startActivityForResult(intent1, REQUEST_ACTIVE);
-            }
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CommunicationModeSelector.PIN_REQUEST && resultCode == Activity.RESULT_OK) {
-            if (data != null) { // 激活、创建
-                pin = data.getStringExtra("pin");
-                int tag = data.getIntExtra("tag", 0);
-                switch (tag) {
-                    case CommunicationModeSelector.PIN_NEW_FIRST: // 激活
-                        // ble 激活
-                        if (CommunicationModeSelector.isActive) {
-                            CommunicationModeSelector.customerUI.put("pin", pin);
-                            CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
-                        } else if (isActive) {
-                            // nfc 激活
-                            done = true;
-                        }
-                        break;
-                    case CommunicationModeSelector.PIN_CURRENT: // 创建
-                        if (!isNFC) { // ble
-                            CommunicationModeSelector.customerUI.put("pin", pin);
-                        } else { // nfc
-                            if (readingPubKey != null) {
-                                readingPubKey.dismiss();
-                            }
-                            ready = true;
-                        }
-                        break;
-                    default:
-                }
-
-            }
-        } else if (requestCode == 0 && resultCode == RESULT_OK) {
+        if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 edit_sweep.setText(content);
-            }
-        } else if (requestCode == REQUEST_ACTIVE && resultCode == Activity.RESULT_OK) { // nfc 和 ble 激活
-            if (data != null) {
-                isActive = data.getBooleanExtra("isActive", false);
             }
         }
     }
@@ -941,47 +806,4 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
             }
         }
     };
-    private ReadingPubKeyDialogFragment readingPubKey;
-
-    @Override
-    public void onPreExecute() {
-        if (!isActive) {
-            readingPubKey = dialogFragment.showReadingDialog();
-        }
-    }
-
-    @Override
-    public void onException(Exception e) {
-        readingPubKey.dismiss();
-        if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
-            ready = false;
-        } else if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-            dialogFragment.showReadingFailedDialog(R.string.pin_wrong);
-        } else {
-            dialogFragment.showReadingFailedDialog(R.string.read_pk_failed);
-        }
-    }
-
-    @Override
-    public void onResult(String s) {
-        if (isActive) {
-            EventBus.getDefault().post(new ResultEvent(s));
-            isActive = false;
-            return;
-        }
-        if (readingPubKey != null) {
-            readingPubKey.dismiss();
-        }
-        xpub = s;
-        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
-    }
-
-    @Override
-    public void onCancelled() {
-        if (readingPubKey != null) {
-            readingPubKey.dismiss();
-        }
-        mToast(getString(R.string.task_cancle));
-    }
 }
-

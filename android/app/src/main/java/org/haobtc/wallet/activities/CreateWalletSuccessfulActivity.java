@@ -3,9 +3,7 @@ package org.haobtc.wallet.activities;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,6 +18,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -78,6 +77,7 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.copy_public_key, R.id.btn_enter_wallet,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {

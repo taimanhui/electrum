@@ -89,7 +89,7 @@
 
 
             <TextView
-                android:id="@+id/verify_pin_state"
+                android:id="@+id/first_promote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -107,14 +107,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:drawableStart="@drawable/jinxingzhong"
+                android:drawableStart="@drawable/connecting"
                 android:drawablePadding="@dimen/corner_radius"
                 android:text="@string/sign_successful"
                 android:textColor="@color/text"
                 android:textSize="@dimen/smaller_text_size"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/textView32"
-                app:layout_constraintTop_toBottomOf="@id/verify_pin_state" />
+                app:layout_constraintTop_toBottomOf="@id/first_promote" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

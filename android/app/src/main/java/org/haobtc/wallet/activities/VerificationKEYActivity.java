@@ -8,8 +8,8 @@ import android.widget.ImageView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
-import org.haobtc.wallet.activities.settings.VerificationSuccessActivity;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +41,8 @@ public class VerificationKEYActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_back})
+    @SingleClick
+    @OnClick({R.id.img_back,R.id.img_jump})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:

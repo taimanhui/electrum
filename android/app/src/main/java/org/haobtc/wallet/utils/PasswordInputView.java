@@ -33,12 +33,12 @@ public class PasswordInputView extends EditText {
 
         final int defaultBorderColor = res.getColor(R.color.light_text);
         final float defaultBorderWidth = res.getDimension(R.dimen.dp_1);
-        final float defaultBorderRadius = res.getDimension(R.dimen.corner_radius);
+        final float defaultBorderRadius = res.getDimension(R.dimen.dp_6);
 
         final int defaultPasswordLength = 6;
         final int defaultPasswordColor = res.getColor(R.color.text_color1);
-        final float defaultPasswordWidth = res.getDimension(R.dimen.corner_radius);
-        final float defaultPasswordRadius = res.getDimension(R.dimen.corner_radius);
+        final float defaultPasswordWidth = res.getDimension(R.dimen.dp_6);
+        final float defaultPasswordRadius = res.getDimension(R.dimen.dp_6);
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PasswordInputView, 0, 0);
         try {

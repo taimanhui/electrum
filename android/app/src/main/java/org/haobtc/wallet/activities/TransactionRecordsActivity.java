@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -232,6 +233,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_backTrsa})
     public void onViewClicked(View view) {
         switch (view.getId()) {

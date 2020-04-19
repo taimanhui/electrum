@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.haobtc.wallet.R;

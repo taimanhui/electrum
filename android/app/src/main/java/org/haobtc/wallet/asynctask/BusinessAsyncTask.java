@@ -27,7 +27,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        // EventBus.getDefault().register(this);
         helper.onPreExecute();
     }
 
@@ -38,6 +37,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case GET_EXTEND_PUBLIC_KEY_SINGLE:
             case RECOVER:
             case SIGN_MESSAGE:
+            case INIT_DEVICE:
                 try {
                     result = Daemon.commands.callAttr(strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0], strings[1], strings[2]).toString();
                 } catch (Exception e) {
@@ -50,10 +50,8 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case WIPE_DEVICE:
             case BACK_UP:
             case SIGN_TX:
-            case INIT_DEVICE:
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1]).toString();
-                    Log.i(TAG, "doInBackground:$$$$$$$$$$$$$$$$$$$$$$$$$$$$$--- "+result);
                 } catch (Exception e) {
                     cancel(true);
                     onException(e);
@@ -76,20 +74,14 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     protected void onCancelled() {
         super.onCancelled();
         helper.onCancelled();
-        // EventBus.getDefault().unregister(this);
     }
 
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
-        // EventBus.getDefault().unregister(this);
         helper.onResult(s);
     }
 
-    /*@Subscribe
-    public void onCancel(CancelEvent cancelEvent) {
-        cancel(true);
-    }*/
     public interface Helper {
         void onPreExecute();
 

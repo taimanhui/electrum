@@ -2,15 +2,12 @@ package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
@@ -22,7 +19,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.adapter.HelpWordAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -31,7 +28,6 @@ import org.haobtc.wallet.utils.MyDialog;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,6 +66,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
         myDialog.show();
     }
 
+    @SingleClick
     @OnClick({R.id.img_backCreat, R.id.tet_Preservation, R.id.btn_Finish})
     public void onViewClicked(View view) {
         switch (view.getId()) {

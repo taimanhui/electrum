@@ -19,10 +19,13 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.utils.MyDialog;
 import org.haobtc.wallet.utils.internet.NetBroadcastReceiver;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -111,6 +114,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     }
 
 
+    @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {

@@ -31,6 +31,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.personalwallet.WalletDetailsActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -318,6 +319,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.wallet_card_bn1, R.id.wallet_card_bn2, R.id.wallet_card_bn3, R.id.conlay_back, R.id.textView_more})
     public void onViewClicked(View view) {
         switch (view.getId()) {

@@ -1,0 +1,94 @@
+package org.haobtc.wallet.activities.transaction;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
+import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.utils.NumKeyboardUtil;
+import org.haobtc.wallet.utils.PasswordInputView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class PinNewActivity extends BaseActivity {
+    @BindView(R.id.trader_pwd_set_pwd_edittext)
+    PasswordInputView edtPwd;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
+    @BindView(R.id.bn_next)
+    Button bnCreateWallet;
+    @BindView(R.id.pin_description)
+    TextView textViewPinDescription;
+    private NumKeyboardUtil keyboardUtil;
+    public static final String TAG = PinNewActivity.class.getSimpleName();
+    private String originPin;
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.pin_input;
+    }
+
+    public void initView() {
+        ButterKnife.bind(this);
+        keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
+        textViewPinDescription.setText(R.string.new_pin);
+        originPin = getIntent().getStringExtra("pin_origin");
+        init();
+    }
+
+    @Override
+    public void initData() {
+
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void init() {
+        edtPwd.setOnTouchListener((v, event) -> {
+            keyboardUtil.showKeyboard();
+            return false;
+        });
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (getCurrentFocus() != null && getCurrentFocus().getWindowToken() != null) {
+                keyboardUtil.hideKeyboard();
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+
+    @SingleClick
+    @OnClick({R.id.img_back, R.id.bn_next})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+            case R.id.bn_next:
+                if (edtPwd.getText().length() == 6) {
+                    Intent intent = new Intent(this, ChangePinProcessingActivity.class);
+                    intent.putExtra("pin_origin", originPin);
+                    intent.putExtra("pin_new", edtPwd.getText().toString());
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(getBaseContext(), getString(R.string.pass_morethan_6), Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+}

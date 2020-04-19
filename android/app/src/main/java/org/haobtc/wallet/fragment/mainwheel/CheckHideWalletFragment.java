@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 /**
  * .
@@ -28,6 +29,7 @@ public class CheckHideWalletFragment extends WheelViewpagerFragment {
     private void initview(View view) {
         CardView cardCheckHidewallet = view.findViewById(R.id.wallet_card_add);
         cardCheckHidewallet.setOnClickListener(new View.OnClickListener() {
+            @SingleClick
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), HideWalletActivity.class);

@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -12,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -130,21 +128,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         dialog.show();
     }
 
-    private void showPopupSignTimeout() {
-        view = LayoutInflater.from(this).inflate(R.layout.signature_timeout_popupwindow, null);
-        Button button = view.findViewById(R.id.sign_again);
-        imageViewCancel = view.findViewById(R.id.cancel_sign_timeout);
-        dialog = new Dialog(this, R.style.dialog);
-        dialog.setContentView(view);
-        imageViewCancel.setOnClickListener(this);
-        button.setOnClickListener(this);
-        Window window = dialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.BOTTOM);
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialog.show();
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignSuccessful(SignResultEvent resultEvent) {
         if (dialog == null) {
@@ -221,7 +204,10 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.confirm_on_hardware:
-                showPopupSignProcessing();
+               // showPopupSignProcessing();
+                Intent intent = new Intent(this, PinSettingActivity.class);
+                intent.putExtra("tag", TAG);
+                startActivity(intent);
                 break;
             case R.id.img_back:
                 finish();

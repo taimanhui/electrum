@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
 import cn.com.heaton.blelibrary.ble.Ble;
@@ -156,6 +157,24 @@ public class BleDevice implements Parcelable {
                 ", mBleAlias='" + mBleAlias + '\'' +
                 ", mAutoConnect=" + mAutoConnect +
                 '}';
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof BleDevice)) {
+            return false;
+        }
+        BleDevice device = (BleDevice) obj;
+        return device.getBleAddress().equals(this.getBleAddress());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        return this.getBleAddress().hashCode() +  31 * result;
     }
 
     @Override

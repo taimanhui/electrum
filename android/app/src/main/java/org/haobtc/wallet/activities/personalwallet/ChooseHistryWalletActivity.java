@@ -20,6 +20,7 @@ import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ImportHistryWalletAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.ImportHistryWalletBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -118,6 +119,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_backCreat, R.id.btn_Finish})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -174,4 +176,9 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         mIntent(MainActivity.class);
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ButterKnife.bind(this);
+    }
 }

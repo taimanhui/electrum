@@ -5,7 +5,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +19,7 @@ import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +56,7 @@ public class PublicKeyInputEditActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.bn_sweep_create, R.id.bn_paste_create, R.id.bn_confirm_create,R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {

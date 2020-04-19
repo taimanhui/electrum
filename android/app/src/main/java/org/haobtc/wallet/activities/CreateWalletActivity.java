@@ -2,7 +2,6 @@ package org.haobtc.wallet.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +17,7 @@ import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,6 +57,7 @@ public class CreateWalletActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.lin_input_histry, R.id.bn_create_wallet, R.id.lin_input_helpWord, R.id.linHideWallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {

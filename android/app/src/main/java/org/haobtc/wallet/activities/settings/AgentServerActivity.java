@@ -3,7 +3,6 @@ package org.haobtc.wallet.activities.settings;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -24,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -83,6 +83,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.relNodeType, R.id.btnConfirm})
     public void onViewClicked(View view) {
         switch (view.getId()) {

@@ -9,6 +9,7 @@ import android.widget.Switch;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.SecondEvent;
 
 import butterknife.BindView;
@@ -46,6 +47,7 @@ public class BlueToothStatusActivity extends BaseActivity implements CompoundBut
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {

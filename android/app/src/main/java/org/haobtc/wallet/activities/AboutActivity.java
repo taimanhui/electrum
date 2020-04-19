@@ -14,6 +14,7 @@ import com.azhon.appupdate.utils.ApkUtil;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import java.io.File;
 
@@ -81,6 +82,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
                 .download();
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.attempt_update})
     public void onViewClicked(View view) {
         switch (view.getId()) {

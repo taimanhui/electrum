@@ -19,13 +19,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ElectrumListAdapter;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.CNYBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -121,6 +121,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
     }
 
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_Finish})
     public void onViewClicked(View view) {
         switch (view.getId()) {

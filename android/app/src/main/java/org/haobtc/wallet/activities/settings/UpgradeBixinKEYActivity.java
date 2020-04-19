@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities.settings;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,12 +16,20 @@ import android.widget.Toast;
 import androidx.annotation.StringRes;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.azhon.appupdate.config.UpdateConfiguration;
+import com.azhon.appupdate.listener.OnDownloadListener;
+import com.azhon.appupdate.manager.DownloadManager;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
@@ -34,10 +41,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 
 
-public class UpgradeBixinKEYActivity extends BaseActivity {
+public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadListener {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -53,8 +60,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     ImageView imgdhksjks;
     private MyTask mTask;
     private int tag;
-    public static final String EXECUTE_TASK = "org.haobtc.wallet.activities.settings.EXECUTE_TASK";
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
+    private boolean done;
+    private DownloadManager manager;
 
     private boolean isBootloaderMode(String way) throws Exception {
         String feature;
@@ -68,16 +76,62 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             throw e;
         }
     }
+    private void updateFiles() {
+        // todo: 从服务器获取最新 版本信息
+        UpdateConfiguration configuration = new UpdateConfiguration()
+                .setEnableLog(true)
+                .setJumpInstallPage(false)
+                .setShowBgdToast(true)
+                .setOnDownloadListener(this);
+        manager = DownloadManager.getInstance(this);
+        manager.setConfiguration(configuration)
+                .setApkName(tag == 1  ? "bixin.bin" : "bixin.zip")
+                .setApkUrl(tag == 1 ? "https://key.bixin.com/bixin.bin" : "https://key.bixin.com/bixin.zip")
+                .setShowNewerToast(true)
+                .setSmallIcon(R.drawable.app_icon)
+                .setApkMD5("")
+                .download();
+    }
+
+    @Override
+    public void start() {
+        tetUpgradeTest.setText("正在下载最新的升级文件");
+    }
+
+    @Override
+    public void downloading(int max, int progress) {
+
+    }
+
+    @Override
+    public void done(File apk) {
+        done = true;
+
+    }
+
+    @Override
+    public void cancel() {
+
+    }
+
+    @Override
+    public void error(Exception e) {
+
+    }
 
     public class MyTask extends AsyncTask<String, Object, Void> {
         @Override
         protected void onPreExecute() {
-            // todo: 下载升级文件
+            /*updateFiles();
+            for (;;) {
+               if (done) {
+                   break;
+               }
+            }*/
             progressUpgrade.setIndeterminate(true);
             tetUpgradeTest.setText(getString(R.string.upgradeing));
         }
 
-        @SuppressLint("SdCardPath")
         @Override
         protected Void doInBackground(String... params) {
             PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
@@ -99,8 +153,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                     protocol.put("OFFSET", 0);
                     protocol.put("PROCESS_REPORTER", null);
                     cancel(true);
-                    showPromptMessage(R.string.update_failed);
-                    new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
                 }
             }
             return null;
@@ -123,6 +175,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected void onCancelled() {
             tetUpgradeTest.setText(getString(R.string.Cancelled));
+            showPromptMessage(R.string.update_failed);
+            new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
         }
     }
 
@@ -155,9 +209,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (EXECUTE_TASK.equals(intent.getAction())) {
-                mTask.execute("nfc");
-            } else if (VersionUpgradeActivity.UPDATE_PROCESS.equals(intent.getAction())) {
+            if (VersionUpgradeActivity.UPDATE_PROCESS.equals(intent.getAction())) {
                 int percent = intent.getIntExtra("process", 0);
                 progressUpgrade.setIndeterminate(false);
                 progressUpgrade.setProgress(percent);
@@ -165,7 +217,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             }
         }
     };
-
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void executeTask(ExecuteEvent executeEvent) {
+        mTask.execute("nfc");
+    }
+    @SingleClick
     @OnClick({R.id.img_back, R.id.imgdhksjks, R.id.tet_test})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
@@ -180,7 +236,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(VersionUpgradeActivity.UPDATE_PROCESS));
             progressUpgrade.setIndeterminate(true);
         }
-        registerReceiver(receiver, new IntentFilter(EXECUTE_TASK));
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -190,7 +246,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         }
         mTask = null;
-        unregisterReceiver(receiver);
+        EventBus.getDefault().unregister(this);
     }
 
 }

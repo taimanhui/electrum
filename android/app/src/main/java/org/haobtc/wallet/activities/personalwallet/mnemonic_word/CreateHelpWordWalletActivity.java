@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import java.util.Locale;
 
@@ -89,6 +90,7 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
         });
     }
 
+    @SingleClick
     @OnClick({R.id.img_backCreat, R.id.bn_multi_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {

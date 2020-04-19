@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/processing_bk"
+    android:background="@color/pin_back_color"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     tools:context=".activities.settings.fixpin.ChangePinProcessingActivity">
@@ -46,7 +46,7 @@
             android:layout_marginStart="135dp"
             android:layout_marginTop="22dp"
             android:drawableLeft="@drawable/connecting"
-            android:drawablePadding="@dimen/corner_radius"
+            android:drawablePadding="@dimen/dp_6"
             android:gravity="center"
             android:text="@string/waitting_touch"
             android:textColor="@color/text"
@@ -59,7 +59,7 @@
             android:layout_marginStart="135dp"
             android:layout_marginTop="12dp"
             android:drawableLeft="@drawable/connecting"
-            android:drawablePadding="@dimen/corner_radius"
+            android:drawablePadding="@dimen/dp_6"
             android:text="@string/pin_seted"
             android:textColor="@color/text"
             android:textSize="@dimen/smaller_text_size" />
@@ -72,7 +72,7 @@
             android:layout_marginStart="135dp"
             android:text="@string/pin_seted"
             android:drawableLeft="@drawable/connecting"
-            android:drawablePadding="@dimen/corner_radius"
+            android:drawablePadding="@dimen/dp_6"
             android:textColor="@color/text"
             android:textSize="@dimen/smaller_text_size"
             android:visibility="gone"/>
@@ -84,7 +84,7 @@
             android:layout_marginStart="135dp"
             android:text="@string/pin_seted"
             android:drawableLeft="@drawable/connecting"
-            android:drawablePadding="@dimen/corner_radius"
+            android:drawablePadding="@dimen/dp_6"
             android:textColor="@color/text"
             android:textSize="@dimen/smaller_text_size"
             android:visibility="gone"/>

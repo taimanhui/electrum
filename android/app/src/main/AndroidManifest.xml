@@ -46,7 +46,7 @@
         <activity android:name=".activities.sign.CheckSignActivity" />
         <activity android:name=".activities.personalwallet.ChooseHistryWalletActivity" />
         <activity android:name=".activities.settings.ConfidentialPaymentSettings" />
-        <activity android:name=".activities.settings.fixpin.ConfirmPincodeActivity" />
+        <activity android:name=".activities.settings.fixpin.ConfirmActivity" />
         <activity android:name=".activities.settings.UpgradeFinishedActivity" />
         <activity android:name=".activities.settings.UpgradeBixinKEYActivity" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity" />
@@ -109,17 +109,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.settings.VersionUpgradeActivity">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/usb_device_filter" />
+                android:resource="@xml/usb_device_filter" />-->
         </activity>
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.TransactionRecordsActivity" />
         <activity android:name=".activities.HardwareInfoActivity" />
-        <activity android:name=".activities.MessageManagerActivity" />
         <activity android:name=".activities.LanguageSettingActivity" />
         <activity android:name=".activities.ServerSettingActivity" />
         <activity android:name=".activities.TransactionsSettingActivity" />
@@ -180,11 +179,18 @@
         <activity android:name=".activities.sign.SignActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity" />
         <activity android:name=".activities.ResetDeviceProcessing" />
-        <activity android:name=".ResetDeviceSuccessActivity" />
+        <activity android:name=".activities.settings.ResetDeviceSuccessActivity" />
         <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" />
         <activity android:name=".dfu.NotificationActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.CheckHideWalletActivity" />
-        <activity android:name=".activities.sign.CheckSignMessageActivity" /> <!-- aotusize -->
+        <activity android:name=".activities.sign.CheckSignMessageActivity" />
+        <activity android:name=".activities.service.CommunicationModeSelector"
+            android:theme="@style/dialog"/>
+        <activity android:name=".activities.SetNameActivity" />
+        <activity android:name=".activities.settings.recovery_set.RecoveryActivity" />
+        <activity android:name=".activities.settings.fixpin.ActiveFailedActivity" />
+        <activity android:name=".activities.transaction.PinNewActivity" />
+        <activity android:name=".activities.SignatureProcessing" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />
@@ -193,6 +199,7 @@
             android:value="640" />
 
         <service android:name=".dfu.service.DfuService" />
+        <service android:name=".activities.service.BleService" />
     </application>
 
 </manifest>

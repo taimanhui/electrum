@@ -1,4 +1,5 @@
 package org.haobtc.wallet.activities.settings;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -6,6 +7,7 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +58,7 @@ public class VerificationSuccessActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_finish})
     public void onViewClicked(View view) {
         switch (view.getId()) {
