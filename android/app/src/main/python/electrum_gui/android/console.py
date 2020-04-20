@@ -175,6 +175,8 @@ class AndroidCommands(commands.Commands):
             name_wallets = ([name for name in os.listdir(self._wallet_path())])
             for name, info in self.local_wallet_info.items():
                 if name_wallets.__contains__(name):
+                    if not info.__contains__('time'):
+                        info['time'] = time.time()
                     if not info.__contains__('xpubs'):
                         info['xpubs'] = []
                     if not info.__contains__('seed'):
@@ -1449,7 +1451,7 @@ class AndroidCommands(commands.Commands):
             print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " %(name, self.format_amount_and_units(c), self.wallet.wallet_type,self.wallet.use_change, self.wallet.get_addresses()))
             self.network.trigger_callback("wallet_updated", self.wallet)
 
-            fait = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None,
+            fait = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
             info = {
                 "balance": self.format_amount(c) + ' (%s)'%fait,
                 "name": name
@@ -1468,7 +1470,7 @@ class AndroidCommands(commands.Commands):
         #print(f"local_wallet info === {self.local_wallet_info}")
         name_info = {}
         for name in name_wallets:
-            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else {'type': 'unknow', 'time': time.time(), 'xpubs': []}
+            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else {'type': 'unknow', 'time': time.time(), 'xpubs': [], 'seed': ''}
 
         name_info = sorted(name_info.items(), key=lambda item:item[1]['time'], reverse=True)
         out = []
