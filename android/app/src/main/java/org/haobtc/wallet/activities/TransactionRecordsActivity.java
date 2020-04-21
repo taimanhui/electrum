@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -150,7 +148,6 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
 
-                    String txCreatTrsaction = jsonObject.getString("tx");
                     String invoice_id = jsonObject.getString("invoice_id");//delete use
                     //add attribute
                     maintrsactionlistEvent.setTx_hash(tx_hash);
@@ -162,11 +159,10 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                     maintrsactionlistEvent.setInvoice_id(invoice_id);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
+                trsactionlistAdapter.notifyDataSetChanged();
                 trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-
                     private boolean status;
                     private String tx_hash1;
-
                     @Override
                     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                         String typeDele = maintrsactionlistEvents.get(position).getType();
@@ -216,7 +212,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         Daemon.commands.callAttr("remove_local_tx", tx_hash1);
                                         maintrsactionlistEvents.remove(position);
                                         trsactionlistAdapter.notifyItemChanged(position);
-                                        trsactionlistAdapter.notifyDataSetChanged();
+                                        mTransactionrecordSend(strChoose);
                                         EventBus.getDefault().post(new FirstEvent("22"));
 
                                     } catch (Exception e) {

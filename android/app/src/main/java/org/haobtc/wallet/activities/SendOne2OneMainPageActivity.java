@@ -45,6 +45,8 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -126,7 +128,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String strUnit;
     private String strFeemontAs;
     private String errorMessage = "";
-    private String wallet_type_to_sign;
+    private String hideRefresh;
 
     @Override
     public int getLayoutId() {
@@ -136,10 +138,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     @SuppressLint("ClickableViewAccessibility")
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
+        hideRefresh = getIntent().getStringExtra("hideRefresh");
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         base_unit = preferences.getString("base_unit", "mBTC");
         strUnit = preferences.getString("cny_strunit", "CNY");
-        wallet_type_to_sign = preferences.getString("wallet_type_to_sign", "");//1-n wallet  --> Direct signature and broadcast
         selectSend = findViewById(R.id.llt_select_wallet);
         tetMoneye = findViewById(R.id.tet_Money);
         tetamount = findViewById(R.id.amount);
@@ -563,7 +566,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("CreatTransaction", "mCrea-----  " + e.getMessage());
             if (e.getMessage().contains("Insufficient funds")) {
                 mToast(getString(R.string.wallet_insufficient));
             } else {
@@ -577,18 +579,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             Gson gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             String beanTx = getAddressBean.getTx();
-            if (beanTx != null) {
-//                if (wallet_type_to_sign.contains("1-")){
-//                    PyObject def_get_tx_info_from_raw = null;
-//                    try {
-//                        def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", beanTx);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }else{
-                EventBus.getDefault().post(new FirstEvent("22"));
-                EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
+            if (!TextUtils.isEmpty(beanTx)) {
+                if (!TextUtils.isEmpty(hideRefresh)) {
+                    EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
+                } else {
+                    EventBus.getDefault().post(new FirstEvent("22"));
+                }
                 Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("tx_hash", beanTx);
                 intent.putExtra("keyValue", "A");
@@ -596,8 +592,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 intent.putExtra("strwalletType", waletType);
                 intent.putExtra("txCreatTrsaction", beanTx);
                 startActivity(intent);
-//                }
-
+                finish();
             }
         }
 
@@ -607,6 +602,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(mLayoutChangeListener);
         } else {
@@ -810,6 +806,13 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         return false;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if (msgVote.equals("finish")) {
+            finish();
+        }
+    }
 }
 
 

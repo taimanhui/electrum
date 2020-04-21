@@ -26,6 +26,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.HardwareAdapter;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.event.SignFailedEvent;
 import org.haobtc.wallet.event.SignResultEvent;
@@ -146,9 +147,11 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         signSuccess.setCompoundDrawables(drawableStart, null, null, null);
         String signedRaw = resultEvent.getSignedRaw();
             if (!TextUtils.isEmpty(signedRaw)) {
+                EventBus.getDefault().post(new SecondEvent("finish"));
                 Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
                 intent1.putExtra(TouchHardwareActivity.FROM, TAG);
                 intent1.putExtra("signed_raw_tx", signedRaw);
+                intent1.putExtra("isIsmine", true);
                 startActivity(intent1);
                 dialog.dismiss();
                 finish();

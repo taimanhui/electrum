@@ -32,7 +32,6 @@ public class CheckHideWalletFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), HideWalletActivity.class);
-                intent.putExtra("hidewallet", "check");
                 startActivity(intent);
             }
         });

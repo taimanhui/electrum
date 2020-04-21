@@ -332,6 +332,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 intent1.putExtra("wallet_type", walletType);
                 intent1.putExtra("strNowBtc", walletCardTv4.getText().toString());
                 intent1.putExtra("strNowCny", tetCny.getText().toString());
+                intent1.putExtra("hideRefresh","hideRefresh");
                 startActivity(intent1);
                 break;
             case R.id.wallet_card_bn2:
@@ -393,8 +394,6 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                     e.printStackTrace();
                 }
             }
-
-
         }
     }
 

@@ -1,5 +1,8 @@
 package org.haobtc.wallet.bean;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -18,7 +21,9 @@ public class CheckAddressAdapter extends BaseQuickAdapter<SendMoreAddressEvent, 
 
     @Override
     protected void convert(BaseViewHolder helper, SendMoreAddressEvent item) {
-        helper.setText(R.id.tet_moreaddress,item.getInputAddress()).setText(R.id.tet_payNum,item.getInputAmount()+" BTC");
+        SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        String base_unit = preferences.getString("base_unit", "mBTC");
+        helper.setText(R.id.tet_moreaddress, item.getInputAddress()).setText(R.id.tet_payNum, item.getInputAmount() + " " + base_unit);
 
     }
 }

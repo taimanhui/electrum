@@ -30,7 +30,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:text="@string/create_hide_wallet"
+            android:text="@string/checkHideWallet"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
@@ -105,12 +105,11 @@
         android:id="@+id/btnNext"
         android:layout_width="300dp"
         android:layout_alignParentBottom="true"
-
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:background="@drawable/button_bk"
-        android:text="@string/next"
+        android:text="@string/onclick_check"
         android:textAllCaps="false"
         android:textColor="@android:color/white" />
 

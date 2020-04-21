@@ -28,6 +28,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
@@ -41,6 +44,7 @@ import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SignFailedEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -171,6 +175,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         language = preferences.getString("language", "");
@@ -364,6 +369,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 if (isIsmine) {
                     textView14.setText(String.format("-%s", amount));
                 } else {
+
                     textView14.setText(String.format("+%s", amount));
                 }
             }
@@ -619,7 +625,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         //trsaction hash and time
         linTractionHash.setVisibility(View.VISIBLE);
         EventBus.getDefault().post(new FirstEvent("22"));
-        mToast(getString(R.string.braodcast_succse));
+        mToast(getString(R.string.broadcast_success));
     }
 
     private void signInputpassDialog() {
@@ -703,12 +709,9 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             Gson gson = new Gson();
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
-
-//            tx_hash = addspeedNewtrsactionBean.getNewTx();
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
-//            EventBus.getDefault().post(new FirstEvent("22"));
             alertDialog.dismiss();
         }
     }
@@ -848,5 +851,18 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if (msgVote.equals("finish")) {
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }
 

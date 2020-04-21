@@ -93,6 +93,12 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 tetview.setTextColor(Color.parseColor("#FF838383"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
                 linearDelete.setVisibility(View.VISIBLE);//hide delete button
+            }else if ("Not verified".equals(tx_status)){//Confirmed
+                helper.setText(R.id.tet_zt, R.string.alreadychoose);
+                TextView tetview = helper.getView(R.id.tet_zt);
+                tetview.setTextColor(Color.parseColor("#FF6182F5"));
+                tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
+                linearDelete.setVisibility(View.GONE);//hide delete button
             }
         }
         helper.addOnClickListener(R.id.lin_Item);

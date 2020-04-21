@@ -133,7 +133,7 @@ public class ReceivedPageActivity extends BaseActivity {
     }
 
     private File saveImageToGallery(Context context, Bitmap bmp) {
-        // 首先保存图片
+        // Save picture
         String storePath = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
         Log.i("storePath", "storePath: "+storePath);
         File appDir = new File(storePath);
@@ -144,7 +144,7 @@ public class ReceivedPageActivity extends BaseActivity {
         File file = new File(appDir, fileName);
         try {
             FileOutputStream fos = new FileOutputStream(file);
-            //通过io流的方式来压缩保存图片
+            //Compress and save pictures by IO stream
             boolean isSuccess = false;
             if (bmp != null) {
                 isSuccess = bmp.compress(Bitmap.CompressFormat.PNG, 60, fos);
@@ -152,17 +152,16 @@ public class ReceivedPageActivity extends BaseActivity {
             fos.flush();
             fos.close();
 
-            //把文件插入到系统图库
+            //Insert file into system library
             MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
 
-            //保存图片后发送广播通知更新数据库
+            //Send broadcast notice to update database after saving picture
             Uri uri = Uri.fromFile(file);
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
             if (isSuccess) {
-//                Toast.makeText(context, "成功", Toast.LENGTH_SHORT).show();
                 return file;
             } else {
-                Toast.makeText(context, "失败", Toast.LENGTH_SHORT).show();
+                mToast(getString(R.string.fail));
                 return null;
             }
         } catch (IOException e) {

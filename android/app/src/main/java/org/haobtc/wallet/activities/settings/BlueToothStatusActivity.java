@@ -9,7 +9,7 @@ import android.widget.Switch;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.SecondEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,11 +59,10 @@ public class BlueToothStatusActivity extends BaseActivity implements CompoundBut
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             edit.putBoolean("bluetoothStatus", true);
-            EventBus.getDefault().post(new FirstEvent("bluetooth_status"));
         } else {
             edit.putBoolean("bluetoothStatus", false);
-            EventBus.getDefault().post(new FirstEvent("bluetooth_status"));
         }
         edit.apply();
+        EventBus.getDefault().post(new SecondEvent("bluetooth_status"));
     }
 }

@@ -385,20 +385,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             try {
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
                                 tx_hash1 = jsonObject.getString("tx_hash");
+                                Log.i("onItemChildClick", "onItemCh==== " + tx_hash1);
                                 PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
                                 status = get_remove_flag.toBoolean();
-                                Log.i("onItemChildClick", "onItemCh==== " + status);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             if (status) {
-//                                String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
                                 try {
                                     Daemon.commands.callAttr("remove_local_tx", tx_hash1);
                                     maintrsactionlistEvents.remove(position);
                                     trsactionlistAdapter.notifyItemChanged(position);
-                                    trsactionlistAdapter.notifyDataSetChanged();
+                                    //refresh
+                                    downMainListdata();
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -479,14 +479,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2) {
+        if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
             Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
             //Rolling Wallet
             ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
 
         }
     }
-
 
     @Override
     public void onDestroy() {

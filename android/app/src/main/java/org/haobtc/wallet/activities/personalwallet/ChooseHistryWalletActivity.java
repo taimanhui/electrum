@@ -159,18 +159,14 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         //public  num
         String strpubNum = walletType.substring(walletType.indexOf("-") + 1);
         int pubNum = Integer.parseInt(strpubNum);
-        Gson gson = new Gson();
-        String jsonKeyAddress = gson.toJson(keyaddress);
-        Log.i("jxm_import_creat_wallet", "================: "+keyaddress);
         try {
             Daemon.commands.callAttr("import_create_hw_wallet", wallet_name, sigNum, pubNum, keyaddress);
         } catch (Exception e) {
-            Log.i("jxm_import_creat_wallet", "importWallet:++ " + e.getMessage());
             e.printStackTrace();
             String message = e.getMessage();
             if ("BaseException: file already exists at path".equals(message)) {
                 mToast(getString(R.string.changewalletname));
-            }else if ("The same xpubs have create wallet".equals(message)){
+            }else if (message.contains("The same xpubs have create wallet")){
                 mToast(getString(R.string.xpub_have_wallet));
             }
             return;

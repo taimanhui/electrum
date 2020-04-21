@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +31,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
@@ -40,7 +41,7 @@ import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
 import org.haobtc.wallet.bean.GetsendFeenumBean;
-import org.haobtc.wallet.bean.MainWheelBean;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
@@ -78,7 +79,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     @BindView(R.id.tet_textNum)
     TextView tetTextNum;
     @BindView(R.id.tv_fee)
-    EditText tvFee;
+    TextView tvFee;
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.create_trans_one2many)
@@ -87,6 +88,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     IndicatorSeekBar seedBar;
     @BindView(R.id.tv_indicator)
     TextView tvIndicator;
+    @BindView(R.id.test_wallet_unit)
+    TextView testWalletUnit;
     private ArrayList<AddressEvent> dataListName;
     private Dialog dialogBtom;
     private ChoosePayAddressAdapetr choosePayAddressAdapetr;
@@ -103,8 +106,9 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
     @SuppressLint("CommitPrefEdits")
     public void initView() {
-
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        String base_unit = preferences.getString("base_unit", "mBTC");
         Intent intent = getIntent();
         addressList = (List) getIntent().getSerializableExtra("listdetail");
         wallet_name = intent.getStringExtra("wallet_name");
@@ -116,7 +120,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         strmapBtc = intent.getStringExtra("strmapBtc");
         walletName.setText(wallet_name);
         addressCount.setText(String.format("%s %s", String.valueOf(addressNum), getString(R.string.to_num)));
-        tvAmount.setText(String.format("%s BTC", totalAmount));
+        tvAmount.setText(String.format("%s %s", totalAmount, base_unit));
+        testWalletUnit.setText(base_unit);
         //InputMaxTextNum
         setEditTextComments();
         getFeerate();
@@ -258,13 +263,17 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 break;
             case R.id.create_trans_one2many:
                 String strRemarks = editRemarks.getText().toString();
-                String strFee = tvFee.getText().toString();
+                Log.i("CreatTransaction", "m+++++++++++++: " + strmapBtc);
                 try {
                     mktx = Daemon.commands.callAttr("mktx", strmapBtc, strRemarks);
                     Log.i("CreatTransaction", "m-------: " + mktx);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    mToast(getString(R.string.changeaddress));
+                    if (e.getMessage().contains("Insufficient funds")) {
+                        mToast(getString(R.string.wallet_insufficient));
+                    } else {
+                        mToast(getString(R.string.changeaddress));
+                    }
                     return;
                 }
                 if (mktx != null) {
@@ -274,64 +283,20 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                     String beanTx = getAddressBean.getTx();
 
                     if (beanTx != null) {
+                        EventBus.getDefault().post(new SecondEvent("finish"));
                         Intent intent = new Intent(SendOne2ManyMainPageActivity.this, TransactionDetailsActivity.class);
                         intent.putExtra("tx_hash", beanTx);
                         intent.putExtra("keyValue", "A");
+                        intent.putExtra("isIsmine", true);
                         intent.putExtra("strwalletType", waletType);
                         intent.putExtra("txCreatTrsaction", beanTx);
                         startActivity(intent);
+                        finish();
                     }
                 }
 
                 break;
         }
-    }
-
-    private void showSelectFeeDialogs(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        dialogBtom = new Dialog(context, R.style.dialog);
-        //Here you can set properties for each control as required
-        AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar_fee);
-        TextView textViewFee = view.findViewById(R.id.fee);
-        //SelectFee
-        seekBar.setOnSeekBarChangeListener(new AppCompatSeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                pro = (double) progress / 10000;
-                String strContent = String.valueOf(pro);
-                textViewFee.setText(strContent);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        //cancel dialog
-        view.findViewById(R.id.cancel_select_fee).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-        view.findViewById(R.id.bn_fee).setOnClickListener(v -> {
-            tvFee.setText(String.valueOf(pro));
-            dialogBtom.cancel();
-        });
-
-        dialogBtom.setContentView(view);
-        Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
     }
 
     private void showDialogs(Context context, @LayoutRes int resource) {
@@ -386,7 +351,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private void getFeerate() {
         ArrayList<Map<String, String>> arrayList = new ArrayList<>();
         Map<String, String> pramas = new HashMap<>();
-        if (addressList!=null){
+        if (addressList != null) {
             for (int i = 0; i < addressList.size(); i++) {
                 String straddress = ((SendMoreAddressEvent) (addressList.get(0))).getInputAddress();
                 String strAmount = ((SendMoreAddressEvent) (addressList.get(0))).getInputAmount();
@@ -412,5 +377,4 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             }
         }
     }
-
 }

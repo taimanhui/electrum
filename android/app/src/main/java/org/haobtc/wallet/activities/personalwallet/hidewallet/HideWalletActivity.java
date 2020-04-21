@@ -98,15 +98,6 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
         EventBus.getDefault().register(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
-        Intent intent = getIntent();
-        String hidewallet = intent.getStringExtra("hidewallet");
-        if (!TextUtils.isEmpty(hidewallet)) {
-            if (hidewallet.equals("check")) {
-                testCheckHidewallet.setText(getString(R.string.check_hide_wallet));
-                testCheckTips.setText(getString(R.string.check_wallet_tips));
-                btnNext.setText(getString(R.string.onclick_check));
-            }
-        }
     }
 
     @Override
@@ -121,12 +112,7 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
                 finish();
                 break;
             case R.id.btnNext:
-                String strBtnTest = btnNext.getText().toString();
-                if (strBtnTest.equals(getString(R.string.onclick_check))) {
-                    edit.putString("createOrcheck", "check");
-                } else {
-                    edit.putString("createOrcheck", "create");
-                }
+                edit.putString("createOrcheck", "create");
                 edit.apply();
                 List<Runnable> runnables = new ArrayList<>();
                 runnables.add(null);
@@ -183,7 +169,7 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
                 String message = e.getMessage();
                 if ("BaseException: file already exists at path".equals(message)) {
                     mToast(getString(R.string.changewalletname));
-                }else if ("The same xpubs have create wallet".equals(message)){
+                }else if (message.contains("The same xpubs have create wallet")){
                     mToast(getString(R.string.xpub_have_wallet));
                 }
                 return;
@@ -276,7 +262,7 @@ public class HideWalletActivity extends BaseActivity implements BusinessAsyncTas
             boolean passphrase = features.isPassphraseProtection();
             if (!passphrase) {
                 dialogFragment.dismiss();
-                mlToast("当前硬件状态不支持隐藏钱包");
+                mlToast(getString(R.string.dont_support_hide));
                 return;
             }
             // todo: get xpub

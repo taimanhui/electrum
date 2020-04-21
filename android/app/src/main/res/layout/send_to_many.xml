@@ -144,6 +144,7 @@
                         android:hint="@string/input_send_num" />
 
                     <TextView
+                        android:id="@+id/test_unit"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="10.5dp"
@@ -246,6 +247,7 @@
             </TextView>
 
             <TextView
+                android:id="@+id/test_units"
                 android:layout_toEndOf="@+id/total"
                 android:layout_width="wrap_content"
                 android:layout_centerVertical="true"

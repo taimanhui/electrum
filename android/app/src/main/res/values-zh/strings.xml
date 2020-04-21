@@ -377,7 +377,6 @@
     <string name="have_word">该词已存在</string>
     <string name="select_wallet">选择钱包</string>
     <string name="please_selectwallet">请选择钱包</string>
-    <!--  Last translation  -->
     <string name="backup_succse">备份成功</string>
     <string name="none_wallet">暂无钱包</string>
     <string name="setwallet_pass">设置钱包密码</string>
@@ -426,13 +425,13 @@
     <string name="send_shortcut_access">发币快捷通道</string>
     <string name="please_input_walletname">请输入钱包名称</string>
     <string name="import_wallet">导入钱包</string>
-    <string name="cancled">已取消</string>
+    <string name="Cancelled">已取消</string>
     <string name="choose_import_wallet">选择要导入的钱包</string>
     <string name="key_check">已通过BixinKEY搜索到包含BixinKEY公钥的钱包，请选择并导入</string>
     <string name="confirm_import">确认导入</string>
     <string name="need_band3">需绑定*个BixinKEY，可使用任一BixinKEY授权发币设置多备份可防止单个BixinKEY丢失后，数字资产丢失</string>
     <string name="ipOrportWrong">IP或端口号格式输入不正确</string>
-    <string name="braodcast_succse">广播成功</string>
+    <string name="broadcast_success">广播成功</string>
     <string name="please_import_wallet">请选择要导入的钱包</string>
     <string name="no_import_wallet">暂无可导入的钱包</string>
     <string name="sign_trsaction">签名交易</string>
@@ -495,7 +494,6 @@
     <string name="nowallet_import">暂无可导入钱包</string>
     <string name="timeout_error">抱歉！读取公钥超时，不妨再试试！！</string>
     <string name="check_hide_wallet">点击查看隐藏钱包</string>
-    <string name="check_wallet_tips">查看隐藏钱包，需使用已激活的BixinKEY</string>
     <string name="onclick_check">点击查看</string>
     <string name="usable">可用</string>
     <string name="checkHideWallet">查看隐藏钱包</string>
@@ -505,6 +503,7 @@
     <string name="bluetooth_tips">开启状态，可使用蓝牙与BixinKEY进行通信</string>
     <string name="open">开</string>
     <string name="bootloader_mode">前硬件处于bootloader模式，不支持该操作</string>
+    <string name="not_bootloader_mode">请确认硬件处于BootLoader模式</string>
     <string name="clean_setting">设置已清除</string>
     <string name="clean_private_key">私钥已清除</string>
     <string name="btc_com">https://btc.com/</string>
@@ -516,11 +515,15 @@
     <string name="blurtooth_need_permission">蓝牙需要使用定位权限</string>
     <string name="task_cancle">当前任务以取消</string>
     <string name="bluetooth_fail">蓝牙连接失败</string>
+    <!--  Last translation  -->
     <string name="copy_mnemonic">复制助记词</string>
     <string name="pass_morethan_6">密码不足6位</string>
     <string name="single_sign_only">签名消息只支持单签</string>
     <string name="unrelated_transaction">此交易与当前钱包无关</string>
     <string name="please_open_unconfirmed">请在设置中开启\"花费未确认的收入\"按钮即可创建交易</string>
     <string name="xpub_have_wallet">已存在此xpub创建的钱包</string>
+    <string name="dont_support_hide">当前硬件状态不支持隐藏钱包</string>
+    <string name="same_seed_have">已存在此seed创建的钱包</string>
+    <string name="fail">失败</string>
 
 </resources>

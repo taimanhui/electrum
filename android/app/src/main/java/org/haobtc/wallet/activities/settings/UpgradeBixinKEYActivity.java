@@ -116,12 +116,12 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
         @Override
         protected void onCancelled() {
-            tetUpgradeTest.setText(getString(R.string.cancled));
+            tetUpgradeTest.setText(getString(R.string.Cancelled));
         }
     }
     private void showPromptMessage() {
         UpgradeBixinKEYActivity.this.runOnUiThread(() -> {
-            Toast.makeText(UpgradeBixinKEYActivity.this, "请确认硬件处于BootLoader模式", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UpgradeBixinKEYActivity.this, "", Toast.LENGTH_SHORT).show();
         });
     }
     private void showErrorMessage() {

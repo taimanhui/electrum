@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -27,14 +28,14 @@
 
                 <TextView
                     android:id="@+id/address_to"
-                    android:layout_width="211dp"
+                    android:layout_width="0dp"
                     android:layout_marginStart="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_10"
                     android:layout_weight="1"
                     android:layout_height="@dimen/dp_20"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:text="12222222222222222222222222233333333333333"/>
+                    tools:text="12222222222222222222222222233333333333333"/>
 
                 <ImageView
                     android:id="@+id/remove_vout"
@@ -67,7 +68,7 @@
                 <TextView
                     android:id="@+id/textView33"
                     android:layout_weight="1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/text_margin"
                     android:text="@string/amount"/>

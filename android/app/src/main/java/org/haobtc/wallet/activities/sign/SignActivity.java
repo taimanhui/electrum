@@ -50,6 +50,7 @@ import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SecondEvent;
+import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -118,6 +119,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     public static String strinputAddress;
     private String hide_phrass;
     private SharedPreferences.Editor edit;
+    private String hideWalletpass;
 
     @Override
     public int getLayoutId() {
@@ -127,6 +129,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         Intent intent = getIntent();
@@ -383,6 +386,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 Intent intent = new Intent(SignActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("signTransction", signedMessage);
                 intent.putExtra("keyValue", "Sign");
+                intent.putExtra("isIsmine", true);
                 startActivity(intent);
                 finish();
                 alertDialog.dismiss();
@@ -461,6 +465,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
         if (ready) {
             CommunicationModeSelector.customerUI.put("pin", pin);
+            if (!TextUtils.isEmpty(hideWalletpass)) {
+                customerUI.put("passphrase", hideWalletpass);
+                hideWalletpass = "";
+            }
             ready = false;
         }
         HardwareFeatures features;
@@ -508,21 +516,22 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 pin = data.getStringExtra("pin");
                 int tag = data.getIntExtra("tag", 0);
                 switch (tag) {
-                    case CommunicationModeSelector.PIN_NEW_FIRST: // 激活
-                        // ble 激活
+                    case CommunicationModeSelector.PIN_NEW_FIRST: // activation
+                        // ble activation
                         if (CommunicationModeSelector.isActive) {
                             CommunicationModeSelector.customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
 
                         } else if (isActive) {
-                            // nfc 激活
+                            // nfc activation
                             CommunicationModeSelector.pin = pin;
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
                         }
                         break;
-                    case CommunicationModeSelector.PIN_CURRENT: // 签名
+                    case CommunicationModeSelector.PIN_CURRENT: // sign
                         if (!isNFC) { // ble
                             CommunicationModeSelector.customerUI.put("pin", pin);
+                            gotoConfirmOnHardware();
                         } else { // nfc
                             ready = true;
                         }
@@ -543,7 +552,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 } else {
                     editSignMsg.setText(content);
                 }
-
             }
         } else if (requestCode == 1 && resultCode == RESULT_OK) {
             //import file
@@ -565,12 +573,21 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                     } else {
                         editSignMsg.setText(readFile);
                     }
-
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(this, getResources().getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == CommunicationModeSelector.PASSPHRASS_INPUT && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                hideWalletpass = data.getStringExtra("passphrase");
+                //Enter password to create hidden Wallet
+                if (!isNFC) {
+                    customerUI.put("passphrase", hideWalletpass);
+                    gotoConfirmOnHardware();
+                } else {
+                    ready = true;
+                }
             }
         }
     }
@@ -597,24 +614,34 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Override
     public void onResult(String s) {
+        Log.i(TAG, signWhich + "  @@@@@@@@@@@@@  " + s);
         if (signWhich) {
             EventBus.getDefault().post(new SignResultEvent(s));
         } else {
-            Log.i("zsjbssajhdbejjdbskjbkn", "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            strSoftMsg = editSignMsg.getText().toString();
-            String signedMsg = s;
-            Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
-            intentMsg.putExtra("signMsg", strSoftMsg);
-            intentMsg.putExtra("signAddress", strinputAddress);
-            intentMsg.putExtra("signedFinish", signedMsg);
-            startActivity(intentMsg);
-            finish();
+            onSignMessage(new SignMessageEvent(s));
         }
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSignMessage(SignMessageEvent event) {
+        strSoftMsg = editSignMsg.getText().toString();
+        String signedMsg = event.getSignedRaw();
+        Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
+        intentMsg.putExtra("signMsg", strSoftMsg);
+        intentMsg.putExtra("signAddress", strinputAddress);
+        intentMsg.putExtra("signedFinish", signedMsg);
+        startActivity(intentMsg);
+        finish();
     }
 
     @Override
     public void onCancelled() {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

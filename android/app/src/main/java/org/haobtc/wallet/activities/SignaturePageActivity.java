@@ -5,7 +5,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -76,7 +75,7 @@ public class SignaturePageActivity extends BaseActivity implements TextWatcher {
     }
 
 
-    @OnClick({R.id.import_file, R.id.sweep_sig, R.id.paste_sig, R.id.confirm_sig,R.id.img_back})
+    @OnClick({R.id.import_file, R.id.sweep_sig, R.id.paste_sig, R.id.confirm_sig, R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.import_file:

@@ -98,6 +98,8 @@ public class AppWalletSetPassActivity extends BaseActivity {
                             e.printStackTrace();
                             if (e.getMessage().contains("path is exist")) {
                                 mToast(getString(R.string.changewalletname));
+                            }else if (e.getMessage().contains("The same seed have create wallet")){
+                                mToast(getString(R.string.same_seed_have));
                             }
                             return;
                         }

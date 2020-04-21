@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -26,9 +27,13 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.SendmoreAddressAdapter;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
 
 import java.io.Serializable;
@@ -49,6 +54,10 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     EditText editContext;
     @BindView(R.id.byte_count)
     TextView byteCount;
+    @BindView(R.id.test_unit)
+    TextView testUnit;
+    @BindView(R.id.test_units)
+    TextView testUnits;
     private Button buttonNext;
     private EditText editTextAddress, editTextAmount;
     private TextView textViewTotal;
@@ -62,14 +71,17 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     private ArrayList<Map<String, String>> mapsBtc;
     private String strmapBtc;
     private String wallet_type;
+    private String base_unit;
 
     public int getLayoutId() {
         return R.layout.send_to_many;
     }
 
     public void initView() {
-
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        base_unit = preferences.getString("base_unit", "mBTC");
         rxPermissions = new RxPermissions(this);
         LinearLayout buttonAdd = findViewById(R.id.lin_add_to);
         ImageView buttonSweep = findViewById(R.id.bn_sweep_2many);
@@ -94,6 +106,8 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void init() {
+        testUnit.setText(base_unit);
+        testUnits.setText(base_unit);
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
         wallet_type = intent.getStringExtra("wallet_type");
@@ -127,7 +141,6 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     @Override
     public void initData() {
         sendMoreAddressList = new ArrayList<>();
-        pramasBtc = new HashMap<>();
         mapsBtc = new ArrayList<>();
 
     }
@@ -173,7 +186,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                     intent.putExtra(TOTAL_AMOUNT, textViewTotal.getText().toString());
                     intent.putExtra(ADDRESS, "");
                     intent.putExtra("wallet_name", wallet_name);
-                    intent.putExtra("wallet_type",wallet_type);
+                    intent.putExtra("wallet_type", wallet_type);
                     intent.putExtra("addressNum", size);
                     intent.putExtra("totalAmount", bigAmont);
                     intent.putExtra("strmapBtc", strmapBtc);
@@ -224,17 +237,18 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         sendMoreAddressEvent.setInputAmount(strSmount);
         sendMoreAddressList.add(sendMoreAddressEvent);
         totalAmount = new BigDecimal("0");
+        mapsBtc.clear();
         for (int i = 0; i < sendMoreAddressList.size(); i++) {
             BigDecimal bignum1 = new BigDecimal(sendMoreAddressList.get(i).getInputAmount());
             //Total transfer quantity
             totalAmount = totalAmount.add(bignum1);
+            //hashmap
+            pramasBtc = new HashMap<>();
+            pramasBtc.put(sendMoreAddressList.get(i).getInputAddress(), sendMoreAddressList.get(i).getInputAmount());
+            mapsBtc.add(pramasBtc);
         }
         textViewTotal.setText(String.format("%s", totalAmount));
 
-        //hashmap
-        pramasBtc.put(straddress, strSmount);
-        mapsBtc.clear();
-        mapsBtc.add(pramasBtc);
         strmapBtc = new Gson().toJson(mapsBtc);//intent to sendone2manypage
 
         //edittext to null
@@ -249,11 +263,8 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void onItemClick(int position) {
                 //change string
-                pramasBtc.remove(sendMoreAddressList.get(position).getInputAddress());
-                mapsBtc.clear();
-                mapsBtc.add(pramasBtc);
+                mapsBtc.remove(position);
                 strmapBtc = new Gson().toJson(mapsBtc);//intent to sendone2manypage
-                Log.i("mapsBtc", "mapsBtc-----: " + strmapBtc);
 
                 //change view
                 sendMoreAddressList.remove(position);
@@ -322,4 +333,17 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if (msgVote.equals("finish")) {
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

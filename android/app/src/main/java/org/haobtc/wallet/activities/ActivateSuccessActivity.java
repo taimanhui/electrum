@@ -2,7 +2,6 @@ package org.haobtc.wallet.activities;
 
 import android.view.View;
 import android.widget.ImageView;
-import android.content.Intent;
 import android.widget.Button;
 
 import org.haobtc.wallet.R;
@@ -40,8 +39,6 @@ public class ActivateSuccessActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.bn_back:
-                Intent intent = new Intent(this, CreateWalletActivity.class);
-                startActivity(intent);
                 finish();
         }
     }

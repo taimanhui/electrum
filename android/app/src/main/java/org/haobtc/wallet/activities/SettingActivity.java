@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import org.haobtc.wallet.activities.settings.BlueToothStatusActivity;
 import org.haobtc.wallet.activities.settings.CurrencyActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.SecondEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -113,7 +115,7 @@ public class SettingActivity extends BaseActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(FirstEvent updataHint) {
+    public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if (msgVote.equals("bluetooth_status")) {
             bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);

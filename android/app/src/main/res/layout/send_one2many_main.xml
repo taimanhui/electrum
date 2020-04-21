@@ -74,6 +74,7 @@
                     android:textColor="@color/text" />
 
                 <TextView
+                    android:id="@+id/test_wallet_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/text_margin"
@@ -212,12 +213,13 @@
                         android:textColor="@android:color/white"
                         android:textSize="@dimen/smaller_text_size" />
 
-                    <EditText
+                    <TextView
                         android:id="@+id/tv_fee"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
                         android:background="@null"
                         android:paddingStart="@dimen/dp_10"
+                        android:gravity="center"
                         android:paddingEnd="@dimen/dp_10"
                         android:textColor="@color/text"
                         android:textSize="@dimen/sp_14" />

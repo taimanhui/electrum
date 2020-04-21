@@ -69,6 +69,7 @@ import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
@@ -114,6 +115,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
     public static final int PIN_CURRENT = 1;
     public static final int PIN_NEW_FIRST = 2;
     public static final int PASS_NEW_PASSPHRASS = 6;
+    public static final int PASS_PASSPHRASS = 3;
     private static final int REQUEST_ENABLE_BT = 1;
     public static final int PASSPHRASS_INPUT = 8;
     public static volatile String pin = "";
@@ -330,12 +332,14 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         starter.setDeviceName(devices.get(0).getBleName());
         /*
         调用此方法使Nordic nrf52832进入bootloader模式
-*/      starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
+*/
+        starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
         starter.setZip(null, "/sdcard/Android/data/org.haobtc.wallet/cache/ble.zip");
         DfuServiceInitiator.createDfuNotificationChannel(Objects.requireNonNull(getContext()));
         starter.start(getContext(), DfuService.class);
         isDfu = true;
     }
+
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -442,9 +446,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     if (SignActivity.TAG2.equals(tag)) {
                         //hide wallet sign transaction -->set_pass_state
                         customerUI.callAttr("set_pass_state", 1);
-                    }
-                    if (features.isPinCached()) {
-                        Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
+                    } else {
+                        if (features.isPinCached()) {
+                            Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(0));
+                        }
                     }
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, extras);
                 }
@@ -720,6 +725,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
 
     @Override
     public void onResult(String s) {
+        Log.i(TAG, "onResult:…………………………………………………………………… " + s);
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -738,8 +744,12 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             } else {
                 Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
             }
-        } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag)) {
-            EventBus.getDefault().post(new SignResultEvent(s));
+        } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag)) {
+            if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
+                EventBus.getDefault().post(new SignMessageEvent(s));
+            } else {
+                EventBus.getDefault().post(new SignResultEvent(s));
+            }
             // 获取签名后的动作
         } else if (BackupRecoveryActivity.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
@@ -799,6 +809,11 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     fragmentActivity.startActivity(intent2);
                     break;
                 case PASS_NEW_PASSPHRASS:
+                    //Set password
+                    Intent intent3 = new Intent(fragmentActivity, HideWalletSetPassActivity.class);
+                    fragmentActivity.startActivityForResult(intent3, PASSPHRASS_INPUT);
+                    break;
+                case PASS_PASSPHRASS:
                     //Set password
                     Intent intent4 = new Intent(fragmentActivity, HideWalletSetPassActivity.class);
                     fragmentActivity.startActivityForResult(intent4, PASSPHRASS_INPUT);

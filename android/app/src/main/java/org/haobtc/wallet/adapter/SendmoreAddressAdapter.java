@@ -1,6 +1,7 @@
 package org.haobtc.wallet.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,11 @@ public class SendmoreAddressAdapter extends RecyclerView.Adapter<SendmoreAddress
 
     @Override
     public void onBindViewHolder(@NonNull myViewHoleder holder, int position) {
+        SharedPreferences preferences = context.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        String base_unit = preferences.getString("base_unit", "mBTC");
         holder.tetAddress.setText(sendMoreAddressList.get(position).getInputAddress());
-        holder.tetAmount.setText(String.format("%s BTC", sendMoreAddressList.get(position).getInputAmount()));
+
+        holder.tetAmount.setText(String.format("%s %s", sendMoreAddressList.get(position).getInputAmount(),base_unit));
         holder.imgDelete.setOnClickListener(v -> {
             if (onItemDeleteListener!=null){
                 onItemDeleteListener.onItemClick(position);
