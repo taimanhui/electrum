@@ -263,9 +263,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 break;
             case R.id.create_trans_one2many:
                 String strRemarks = editRemarks.getText().toString();
-                Log.i("CreatTransaction", "m+++++++++++++: " + strmapBtc);
                 try {
-                    mktx = Daemon.commands.callAttr("mktx", strmapBtc, strRemarks);
+                    mktx = Daemon.commands.callAttr("mktx", "", strRemarks);
                     Log.i("CreatTransaction", "m-------: " + mktx);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -349,32 +348,20 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
     //get fee num
     private void getFeerate() {
-        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
-        Map<String, String> pramas = new HashMap<>();
-        if (addressList != null) {
-            for (int i = 0; i < addressList.size(); i++) {
-                String straddress = ((SendMoreAddressEvent) (addressList.get(0))).getInputAddress();
-                String strAmount = ((SendMoreAddressEvent) (addressList.get(0))).getInputAmount();
-                pramas.put(straddress, strAmount);
-                arrayList.add(pramas);
-            }
+        PyObject get_fee_by_feerate = null;
+        try {
+            get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strmapBtc, "", intmaxFee);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (get_fee_by_feerate != null) {
+            Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);
+            String strnewFee = get_fee_by_feerate.toString();
+            Gson gson = new Gson();
+            GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
+            int fee = getsendFeenumBean.getFee();
+            tvFee.setText(String.format("%ssat", String.valueOf(fee)));
 
-            String strPramas = new Gson().toJson(arrayList);
-            PyObject get_fee_by_feerate = null;
-            try {
-                get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", intmaxFee);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (get_fee_by_feerate != null) {
-                Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);
-                String strnewFee = get_fee_by_feerate.toString();
-                Gson gson = new Gson();
-                GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
-                int fee = getsendFeenumBean.getFee();
-                tvFee.setText(String.format("%ssat", String.valueOf(fee)));
-
-            }
         }
     }
 }

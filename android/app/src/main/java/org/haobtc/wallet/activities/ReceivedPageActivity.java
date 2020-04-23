@@ -65,8 +65,7 @@ public class ReceivedPageActivity extends BaseActivity {
     public void initData() {
         //Generate QR code
         mGeneratecode();
-
-
+        
     }
 
     private void mGeneratecode() {
@@ -110,11 +109,13 @@ public class ReceivedPageActivity extends BaseActivity {
                             if (granted) { // Always true pre-M
                                 File file = saveImageToGallery(this, bitmap);
                                 if (file!=null){
-                                    String path = insertImageToSystem(this, file.getPath());
-                                    Intent imageIntent = new Intent(Intent.ACTION_SEND);
-                                    imageIntent.setType("image/jpeg");
-                                    imageIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
-                                    startActivity(Intent.createChooser(imageIntent, getString(R.string.share)));
+                                    Uri imgUri = Uri.parse(file.getPath());
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                                    shareIntent.setType("image/*");
+                                    shareIntent = Intent.createChooser(shareIntent, "Here is the title of Select box");
+                                    startActivity(shareIntent);
 
                                 }else{
                                     mToast(getString(R.string.pictrue_fail));
@@ -169,16 +170,5 @@ public class ReceivedPageActivity extends BaseActivity {
         }
         return null;
     }
-
-    private static String insertImageToSystem(Context context, String imagePath) {
-        String url = "";
-        try {
-            url = MediaStore.Images.Media.insertImage(context.getContentResolver(), imagePath, "yup", "");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return url;
-    }
-
 }
 

@@ -265,7 +265,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         if (get_rbf_status != null) {
             aBoolean = get_rbf_status.toBoolean();
             if (set_rbf) {
-                Log.i("setRbfStatus", "setRbfStatus: "+aBoolean);
+                Log.i("setRbfStatus", "setRbfStatus: " + aBoolean);
                 if (aBoolean) {
                     tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
                 } else {
@@ -838,7 +838,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     public void onException(Exception e) {
         if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
             ready = false;
-        } else {
+        }else {
             EventBus.getDefault().post(new SignFailedEvent(e));
         }
     }

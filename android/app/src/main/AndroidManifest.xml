@@ -42,7 +42,6 @@
         <activity android:name=".activities.settings.BlueToothStatusActivity" /> <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->
         <activity android:name=".activities.settings.AgentServerActivity" />
         <activity android:name=".activities.sign.CheckSignResultActivity" />
-        <activity android:name=".activities.sign.SignMessageActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.HideWalletActivity" />
         <activity android:name=".activities.sign.CheckSignActivity" />
         <activity android:name=".activities.personalwallet.ChooseHistryWalletActivity" />

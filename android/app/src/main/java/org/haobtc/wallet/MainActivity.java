@@ -152,6 +152,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Log.i("mWheelplanting", "run: " + e.getMessage());
                     addwalletFragment();
                     return;
                 }
@@ -200,10 +201,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 } else {
                     addwalletFragment();
                 }
+            } else {
+                addwalletFragment();
             }
         }
         //scroll
-        viewPagerScroll();
+        viewPagerScroll(walletnameList.size());
     }
 
     //no wallet show fragment
@@ -220,7 +223,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     //viewPagerScroll
-    private void viewPagerScroll() {
+    private void viewPagerScroll(int size) {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -307,6 +310,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         maintrsactionlistEvents.clear();
         try {
             jsonArray = new JSONArray(strHistory);
+            Log.i("showTrsactionlist", "showTrsactionlist========: " + strHistory);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();

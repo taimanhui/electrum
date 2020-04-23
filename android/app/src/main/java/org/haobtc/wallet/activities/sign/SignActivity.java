@@ -121,6 +121,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private SharedPreferences.Editor edit;
     private String hideWalletpass;
     private boolean done;
+    private CommunicationModeSelector chooseCommunicationWayDialogFragment;
 
     @Override
     public int getLayoutId() {
@@ -345,10 +346,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
             if (sign_message != null) {
                 String signedMessage = sign_message.toString();
-                Intent intent = new Intent(SignActivity.this, CheckSignActivity.class);
-                intent.putExtra("strSignMsg", strSoftMsg);
-                intent.putExtra("strinputAddress", strinputAddress);
-                intent.putExtra("signedMessage", signedMessage);
+                Intent intent = new Intent(SignActivity.this, CheckSignMessageActivity.class);
+                intent.putExtra("signMsg", strSoftMsg);
+                intent.putExtra("signAddress", strinputAddress);
+                intent.putExtra("signedFinish", signedMessage);
                 startActivity(intent);
                 alertDialog.dismiss();
             }
@@ -389,7 +390,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 intent.putExtra("keyValue", "Sign");
                 intent.putExtra("isIsmine", true);
                 startActivity(intent);
-                finish();
                 alertDialog.dismiss();
             }
 
@@ -404,7 +404,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private void showCustomerDialog(String signMsg, String tag) {
         List<Runnable> runnables = new ArrayList<>();
         runnables.add(runnable);
-        CommunicationModeSelector chooseCommunicationWayDialogFragment = new CommunicationModeSelector(tag, runnables, signMsg);
+        chooseCommunicationWayDialogFragment = new CommunicationModeSelector(tag, runnables, signMsg);
         chooseCommunicationWayDialogFragment.show(getSupportFragmentManager(), "");
     }
 
@@ -625,12 +625,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     public void onSignMessage(SignMessageEvent event) {
         strSoftMsg = editSignMsg.getText().toString();
         String signedMsg = event.getSignedRaw();
+        chooseCommunicationWayDialogFragment.dismiss();
         Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
         intentMsg.putExtra("signMsg", strSoftMsg);
         intentMsg.putExtra("signAddress", strinputAddress);
         intentMsg.putExtra("signedFinish", signedMsg);
         startActivity(intentMsg);
-        finish();
     }
 
     @Override

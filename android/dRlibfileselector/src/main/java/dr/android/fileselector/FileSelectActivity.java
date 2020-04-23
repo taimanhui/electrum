@@ -369,8 +369,13 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                 Map<String, Object> map = mAdapter.getData().get(i);
                 boolean isChecked = (boolean) map.get(mFrom[4]);
                 File file = (File) map.get("file");
-                if (file.isDirectory() && isChecked) {
-                    fileList.add(file.getAbsolutePath());
+                if (file!=null){
+                    Log.i(TAG, "1111111111111111111111111111111111111: "+file.isDirectory());
+                    if (file.isDirectory() || isChecked) {
+                        fileList.add(file.getAbsolutePath());
+                    }
+                }else{
+                    Log.i(TAG, "9999999999999999999999999999999999999: ");
                 }
             }
 

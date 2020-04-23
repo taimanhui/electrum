@@ -96,7 +96,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
             return;
         }
         edit.putBoolean("set_rbf", true);
-        edit.putBoolean("set_unconf", false);
+        edit.putBoolean("set_unconf", true);
         edit.putString("base_unit", "mBTC");
         edit.putBoolean("set_syn_server", true);//setting synchronize server
         edit.putBoolean("bluetoothStatus",true);//open bluetooth

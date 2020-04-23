@@ -56,8 +56,9 @@
     <string name="scaning">Scan</string>
     <string name="paste">Paste</string>
     <string name="confirm">Confirm</string>
-    <string name="cosigner_num_select">Set co-signers</string>
     <string name="select_multisig">Select multi-sig wallet</string>
+    <string name="cosigner_num_select">Set cosigner</string>
+    <string name="select_mutisig">Select multi-sig wallet</string>
     <string name="wallet_name">Multi-sig wallet 1</string>
     <string name="create_multisig">Create multi-sig wallet</string>
     <string name="select">Please select</string>
@@ -136,13 +137,13 @@
     <string name="dontsmall">Number of co-signers cannot be less than number of signatures</string>
     <string name="inoutnum">Enter amount to transfer</string>
     <string name="moreinput_text">Enter 20 characters at most</string>
-    <string name="photopersion">Camera permission denied, cannot scan QR code</string>
+    <string name="photopersion">Camera permission denied, cannot read QR code</string>
     <string name="reservatpion_photo">Permission denied, cannot execute</string>
     <string name="copysuccess">Copied!</string>
     <string name="changeaddress">Please change address</string>
     <string name="waitchoose">To confirm</string>
     <string name="alreadychoose">Confirmed</string>
-    <string name="co_signer">Co-signers</string>
+    <string name="co_signer">Cosigner</string>
     <string name="unsigned">Unsigned</string>
     <string name="you_are_signed">To be signed (You have signed)</string>
     <string name="wait_broadcast">To propagate</string>
@@ -168,13 +169,13 @@
     <string name="spin_get">Receive</string>
     <string name="spin_open">Expand</string>
     <string name="retract">Collapse</string>
-    <string name="signature_sign">Signed by co-signers【联署人签名】</string>
+    <string name="signature_sign">Signed by co-signers</string>
     <string name="chain_confirmation">Confirmation on-chain</string>
     <string name="time">Time</string>
     <string name="trsactionhash">Transaction hash</string>
     <string name="choose_payaddress">Choose payment wallet</string>
     <string name="feenum">Amount</string>
-    <string name="waitmoredres">Wait for 15【等15个】</string>
+    <string name="waitmoredres">Wait for 15</string>
     <string name="now_verson">Firmware version</string>
     <string name="verson_updata">V1.1.2 Updates</string>
     <string name="fix_where">1. Main interface optimized</string>
@@ -186,7 +187,7 @@
     <string name="pleas_add_outputAdrs">Please add receiving address</string>
     <string name="pay_wallet">Payment wallet</string>
     <string name="confirmnum">Confirmations</string>
-    <string name="wallet_insufficient">Wallet balance insufficient</string>
+    <string name="wallet_insufficient">Wallet not enough funds</string>
     <string name="filename">Please enter file name</string>
     <string name="alredycopy">Copied</string>
     <string name="filestyle_wrong">File format error</string>
@@ -195,7 +196,7 @@
     <string name="no_address">No address</string>
     <string name="downloadfail">Download failed</string>
     <string name="downloadsuccse">Download succeeded</string>
-    <string name="message_big">Transaction info too big to be shared by QR code</string>
+    <string name="message_big">Transaction inormation too big to be shared by QR code</string>
     <string name="rate">Fee rate (sat/byte</string>
     <string name="sendMore">Transaction upper limit is 2100000BTC</string>
     <string name="insufficient">Insufficient fund</string>
@@ -207,8 +208,8 @@
     <string name="address_wrong">Address resolution error</string>
     <string name="wait">Wait</string>
     <string name="ge">个</string>
-    <string name="delete">Delete</string>
-    <string name="delete_unBroad">Only allows deleting unpropagated transactions</string>
+    <string name="delete">Remove</string>
+    <string name="delete_unBroad">Only allows remove unpropagated transactions</string>
     <string name="my_walet_many">Personal wallet supports multi-hardware backup</string>
     <string name="fee_toohigh">Fee rate too high</string>
     <string name="pictrue_fail">Image resolution failed</string>
@@ -293,7 +294,7 @@
     <string name="input_old_pin">Enter initial PIN code</string>
     <string name="bixinkey_fit">Make phone touch BixinKEY closely</string>
     <string name="tip_tips">Data transfer takes some time, please keep them together</string>
-    <string name="pin_sussce">PIN code verified</string>
+    <string name="pin_sussce">PIN code verification successful</string>
     <string name="pin_seted">New PIN code has been set</string>
     <string name="input_new_pin">Enter new PIN code</string>
     <string name="recovery_risk">Reset to factory settings entails the following risks</string>
@@ -372,7 +373,7 @@
     <string name="recovery_succse">Restored successfully</string>
     <string name="block_choose">Select blockchain server</string>
     <string name="send_num">Amount to send</string>
-    <string name="wrong_pass">Wrong password</string>
+    <string name="wrong_pass">Incorrect password entered</string>
     <string name="msg_get_wrong">Failed to retrieve information</string>
     <string name="net_dont_use">Current network unavailable</string>
     <string name="have_word">That word already exists</string>
@@ -413,7 +414,6 @@
     <string name="str_0_00">0.00</string>
     <string name="lunch_invalid_text">2020 ©BIXIN GLOBAL Co.,Ltd</string>
     <string name="bixinkey_orspr">BixinKEY-ORSPR</string>
-    <string name="promote_message">1. 请牢记备份PIN码 \n2. 请记BixinKEY展示的密码</string>
     <string name="_55">55%</string>
     <string name="ip">IP</string>
     <string name="pin_change_success">PIN change successful</string>
@@ -456,14 +456,14 @@
     <string name="clean_private_key">Clearing private key</string>
     <string name="reset_device_successful">BixinKEY factory reset</string>
     <string name="bootloader_mode">The hardware is in bootloader mode, which is not supported</string>
-    <string name="not_bootloader_mode">Please ensure the hardware currently is in bootloader mode</string>
+    <string name="not_bootloader_mode">Please confirm the hardware currently is in bootloader mode</string>
     <string name="check_hide_wallet">Click to view hidden Wallet</string>
     <string name="onclick_check">Click to view</string>
     <string name="usable">available</string>
     <string name="wallet_un_activated">Wallet is not activated, no need to restore factory settings</string>
     <string name="wallet_un_activated_pin">Wallet is not activated, PIN code cannot be modified</string>
     <string name="checkHideWallet">View hidden Wallet</string>
-    <string name="verification">Verification</string>
+    <string name="verification">Verify</string>
     <string name="bluetooth">Bluetooth</string>
     <string name="use_bluetooth_line">Using Bluetooth to connect to BixinKEY</string>
     <string name="bluetooth_tips">On status, can use Bluetooth to communicate with BixinKEY</string>
@@ -524,7 +524,7 @@
     <string name="contact_service">BixinKey may have been compromised. Please contact sales staff</string>
     <string name="verifying_retry">Verification timed out, please retry</string>
     <string name="open_bluetooth">Bluetooth must be on to use this communication method</string>
-    <string name="confirm_NFC_pattern">Please make sure device is in NFC mode</string>
+    <string name="confirm_NFC_pattern">Please confirm device is in NFC mode</string>
     <string name="input_tsaction_text">Enter TX message</string>
     <string name="PINiswrong">PIN code error, please re-enter</string>
     <string name="hide_wallet_tips">Hidden wallet does not store transaction record</string>
@@ -542,7 +542,7 @@
     <string name="bluetooth_fail">Bluetooth connection failed</string>
     <string name="default_key">Key</string>
     <string name="copy_mnemonic">Copy mnemonic</string>
-    <string name="pass_morethan_6">the PIN\'s length less than 6</string>
+    <string name="pass_morethan_6">The PIN\'s length less than 6</string>
     <string name="single_sign_only">Signature message only supports single signature</string>
     <string name="unrelated_transaction">This transaction is not related to the current Wallet</string>
     <string name="please_open_unconfirmed">Please turn on the \"spend unconfirmed revenue\" button in the settings to create a transaction</string>
@@ -552,4 +552,11 @@
     <string name="fail">Fail</string>
     <string name="update_failed">Update failed, we would exit this page 2 second later</string>
     <string name="file_not_exist">Update file not exist</string>
+    <string name="promote_message">1. Please remember the backup pin code \n 2. Please remember the password displayed by bixinkey</string>
+    <string name="checksign_succsse">Successful signature verification</string>
+    <string name="checksign_fail">Signature verification failed</string>
+    <string name="no_delete_xpub">The xpub to be delete not in keystore</string>
+    <string name="xpub_wrong">Invalid type of xpub</string>
+    <string name="wrong_key_type">Wrong key type p2wpkh</string>
+    <string name="sign_failed_device">Failed to sign, Bixin cannot pair with your device</string>
 </resources>

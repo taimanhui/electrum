@@ -162,6 +162,9 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         if (dialog != null) {
             dialog.dismiss();
         }
+        if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(failedEvent.getException().getMessage())){
+            mToast(getString(R.string.sign_failed_device));
+        }
         showPopupSignFailed();
     }
 

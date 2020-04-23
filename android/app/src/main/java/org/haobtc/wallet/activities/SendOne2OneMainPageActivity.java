@@ -111,13 +111,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private TextView tetWalletname;
     private String wallet_name;
     private TextView textView;
-    private double pro;
-    private String wallet_amount;
     private PyObject get_wallets_list;
-    private int walletmoney = 0;
     private int catorText;
     private PyObject pyObject;
-    private PyObject select_wallet;
     private int intmaxFee;
     private String strComment = "";
     private String waletType;
@@ -250,7 +246,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         tetStrunit.setText(strUnit);
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
-        wallet_amount = intent.getStringExtra("wallet_balance");
         waletType = intent.getStringExtra("wallet_type");
         String sendAdress = intent.getStringExtra("sendAdress");
         String sendmessage = intent.getStringExtra("sendmessage");
@@ -378,15 +373,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
             try {
                 Daemon.commands.callAttr("load_wallet", wallet_name);
-                select_wallet = Daemon.commands.callAttr("select_wallet", wallet_name);
+                Daemon.commands.callAttr("select_wallet", wallet_name);
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-            if (select_wallet != null) {
-                String toString = select_wallet.toString();
-                Gson gson = new Gson();
-                MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
-                wallet_amount = mainWheelBean.getBalance();
             }
 
             tetWalletname.setText(wallet_name);
@@ -441,19 +430,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     }
                 }
 
-                try {
-                    Daemon.commands.callAttr("load_wallet", wallet_name);
-                    select_wallet = Daemon.commands.callAttr("select_wallet", wallet_name);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (select_wallet != null) {
-                    String toString = select_wallet.toString();
-                    Gson gson = new Gson();
-                    MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
-                    wallet_amount = mainWheelBean.getBalance();
-                }
-
             }
         }, 200);
 
@@ -495,10 +471,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 }
                 if (TextUtils.isEmpty(strAmount)) {
                     Toast.makeText(this, R.string.inoutnum, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (walletmoney == 1) {
-                    mToast(getString(R.string.wallet_insufficient));
                     return;
                 }
                 if (TextUtils.isEmpty(errorMessage)) {
@@ -700,28 +672,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             }
             if (pyObject != null) {
                 editChangeMoney.setText(pyObject.toString());
-            }
-            //compare
-            BigDecimal bignum1 = new BigDecimal(strAmount);
-            Log.i("wallet_amount", "afterTex+++++ " + wallet_amount);
-            if (!TextUtils.isEmpty(wallet_amount)) {
-                String strBtc = wallet_amount.substring(0, wallet_amount.indexOf(" "));
-                BigDecimal bignum2 = new BigDecimal(strBtc);
-                int math = bignum1.compareTo(bignum2);
-                //if math = 1 -> bignum2
-                BigDecimal bigDecimal = new BigDecimal(21000000);
-                int mathMax = bignum1.compareTo(bigDecimal);
-                if (mathMax > 0) {
-                    mToast(getString(R.string.sendMore));
-                } else {
-                    if (math > 0) {
-                        mToast(getString(R.string.wallet_insufficient));
-                        //walletmoney == 1  ->  Sorry, your credit is running low
-                        walletmoney = 1;
-                    } else {
-                        walletmoney = 0;
-                    }
-                }
             }
         } else {
             editChangeMoney.setText("");

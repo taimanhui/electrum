@@ -152,6 +152,7 @@
                 android:layout_height="@dimen/dp_40"
                 android:layout_marginTop="@dimen/dp_10"
                 android:gravity="center"
+                android:visibility="gone"
                 android:text="@string/jump"
                 android:textColor="@color/text_0"
                 android:textSize="@dimen/sp_16" />

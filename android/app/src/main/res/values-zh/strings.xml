@@ -527,5 +527,11 @@
     <string name="fail">失败</string>
     <string name="update_failed">升级失败,将在2秒后退出此界面</string>
     <string name="file_not_exist">升级文件不存在</string>
+    <string name="checksign_succsse">验签成功</string>
+    <string name="checksign_fail">验签失败</string>
+    <string name="no_delete_xpub">删除的xpub不存在</string>
+    <string name="xpub_wrong">添加xpub类型错误</string>
+    <string name="wrong_key_type">错误的密钥类型p2wpkh</string>
+    <string name="sign_failed_device">签名失败，BiXin无法与您的设备配对</string>
 
 </resources>
