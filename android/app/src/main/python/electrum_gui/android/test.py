@@ -14,7 +14,7 @@ from electrum.util import InvalidPassword
 from electrum.commands import get_parser, known_commands, Commands, config_variables
 from electrum import daemon
 from electrum import keystore
-
+from electrum.logging import get_logger, configure_logging
 _logger = get_logger(__name__)
 from console import AndroidCommands
 

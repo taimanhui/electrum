@@ -1374,7 +1374,7 @@ class AndroidCommands(commands.Commands):
     def get_rbf_fee_info(self, tx_hash):
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
-            return False
+            raise BaseException("get transaction failed")
         txid = tx.txid()
         assert txid
         fee = self.wallet.get_tx_fee(txid)
