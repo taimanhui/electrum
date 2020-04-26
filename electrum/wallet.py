@@ -221,7 +221,8 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
 
     LOGGING_SHORTCUT = 'w'
     max_change_outputs = 3
-    gap_limit_for_change = 6
+    #gap_limit_for_change = 6
+    gap_limit_for_change = 3
 
     txin_type: str
     wallet_type: str
@@ -2137,7 +2138,7 @@ class Deterministic_Wallet(Abstract_Wallet):
     def __init__(self, db, storage, *, config):
         self._ephemeral_addr_to_addr_index = {}  # type: Dict[str, Sequence[int]]
         Abstract_Wallet.__init__(self, db, storage, config=config)
-        self.gap_limit = db.get('gap_limit', 20)
+        self.gap_limit = db.get('gap_limit', 3)
         # generate addresses now. note that without libsecp this might block
         # for a few seconds!
         self.synchronize()
@@ -2272,6 +2273,7 @@ class Deterministic_Wallet(Abstract_Wallet):
         with self.lock:
             self.synchronize_sequence(False)
             self.synchronize_sequence(True)
+
 
     def get_all_known_addresses_beyond_gap_limit(self):
         # note that we don't stop at first large gap

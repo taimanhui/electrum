@@ -4,7 +4,6 @@ import os
 from os.path import exists, join
 import pkgutil
 import unittest
-from electrum.logging import get_logger, configure_logging
 from electrum import util
 from electrum import constants
 from electrum import SimpleConfig
@@ -61,14 +60,26 @@ password = "111111"
 # testcommond.create_multi_wallet(name)
 
 # ### test import create hardware wallets
+# m = 2
+# n = 2
+# ##xpubs = ["Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm", "Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"]
+# #xpubs=['Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX', 'Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg']
+# testcommond.delete_wallet(name)
+# testcommond.import_create_hw_wallet(name, m, n, "[\"Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX\", \"Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg\"]")
+
+
+## dulk create
 m = 2
 n = 2
-##xpubs = ["Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm", "Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg"]
-#xpubs=['Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX', 'Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg']
-testcommond.delete_wallet(name)
-testcommond.import_create_hw_wallet(name, m, n, "[\"Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX\", \"Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg\"]")
-
-time.sleep(10000)
+xpubs=['Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX', 'Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg']
+xpubs1=['Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX', 'Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg']
+xpubs2=['Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX', 'Vpub5gyCX33B53xAyfEaH1Jfnp5grizbHfxVz6bWLPD92nLcbKMsQzSbM2eyGiK4qiRziuoRhoeVMoPLvEdfbQxGp88PN9cU6zupSSuiPi3RjEg']
+wallet_info = []
+wallet_info.append(2,2,"name",xpubs)
+wallet_info.append(2,2,"name1",xpubs1)
+wallet_info.append(2,2,"name2",xpubs2)
+testcommond.bulk_create_wallet(json.dumps(wallet_info))
+# time.sleep(10000)
 #create_wallet 1-N HW wallet
 
 # m = 1
@@ -103,14 +114,14 @@ time.sleep(10000)
 # testcommond.create_multi_wallet(name)
 # # #testcommond.kifkey_change_from_p2wsh_to_p2wpkh("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 
-xpub1='Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX'
-# #xpub2='Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX'
-time.sleep(5)
-data1 = testcommond.get_wallet_info_from_server(xpub1)
-print("data 1 = %s" %data1)
-# #data2 =testcommond.get_wallet_info_from_server(xpub2)
-# #print("data 2 = %s" %data2)
-time.sleep(100000000)
+# xpub1='Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX'
+# # #xpub2='Vpub5grtuYJFuEqUDE1Faumgr5osg3dWyJ5PiJdCELdMM4ai6nSCPNiQ671FRnucQNnMN3eznVE3e8Ud7HnMQVKtKy2JHkDmiySbHbaEePZByYX'
+# time.sleep(5)
+# data1 = testcommond.get_wallet_info_from_server(xpub1)
+# print("data 1 = %s" %data1)
+# # #data2 =testcommond.get_wallet_info_from_server(xpub2)
+# # #print("data 2 = %s" %data2)
+# time.sleep(100000000)
 
 
 # name = ""

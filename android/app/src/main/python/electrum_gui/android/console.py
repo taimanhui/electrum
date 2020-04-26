@@ -499,6 +499,16 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.load_wallet(self.wallet, wallet_name)
         self.wizard = None
 
+    def bulk_create_wallet(self, wallets_info):
+        wallets_list = json.loads(wallets_info)
+        create_failed_into = {}
+        for m,n,name,xpubs in wallets_list:
+            try:
+                self.import_create_hw_wallet(name, m, n, xpubs)    
+            except BaseException as e:
+                create_failed_into['name'] = str(e)
+        return json.dumps(create_failed_into)
+
     def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False):
         try:
             print(f"xpubs=========={m,n,xpubs}")
@@ -1092,6 +1102,9 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     ##connection with terzorlib#########################
+    def hardware_verify(self, msg):
+        print(f"hahhahaha")
+        
     def backup_wallet(self, path='nfc'):
         print(f"hello world")
         # client = self.get_client(path=path)
