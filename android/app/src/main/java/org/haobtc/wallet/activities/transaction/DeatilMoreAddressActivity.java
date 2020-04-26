@@ -1,8 +1,9 @@
 package org.haobtc.wallet.activities.transaction;
 
-import android.util.Log;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,8 @@ public class DeatilMoreAddressActivity extends BaseActivity {
     ImageView imgBackReceict;
     @BindView(R.id.recy_moreAddress)
     RecyclerView recyMoreAddress;
+    @BindView(R.id.tv_in_tb2)
+    TextView tvInTb2;
     private List jsondef_get;
     private List addressList;
     private List payAddress;
@@ -39,14 +42,15 @@ public class DeatilMoreAddressActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        String addressType = getIntent().getStringExtra("addressType");
         jsondef_get = (List) getIntent().getSerializableExtra("jsondef_get");
         jsondef_getScan = (List) getIntent().getSerializableExtra("jsondef_getScan");
         addressList = (List) getIntent().getSerializableExtra("listdetail");
         payAddress = (List) getIntent().getSerializableExtra("payAddress");
         payAddressScan = (List) getIntent().getSerializableExtra("payAddressScan");
-        Log.i("jsondef_get", "jsondef_get: " + jsondef_get);
-        Log.i("jsondef_get", "addressList: " + addressList);
-        Log.i("jsondef_get", "payAddress: " + payAddress);
+        if ("pay".equals(addressType)) {
+            tvInTb2.setText(getString(R.string.from));
+        }
     }
 
     @Override
@@ -80,5 +84,12 @@ public class DeatilMoreAddressActivity extends BaseActivity {
                 finish();
                 break;
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

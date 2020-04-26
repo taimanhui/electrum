@@ -45,5 +45,6 @@
     <color name="red_text">#f26a3a</color>
     <color name="gray_text_tou">#3bffffff</color>
     <color name="blue_text_tou">#3bffffff</color>
+    <color name="processing_bk">#7b99ff</color>
 
 </resources>

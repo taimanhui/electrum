@@ -166,6 +166,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
     private int strUp1;
     private int strUp2;
     private boolean done;
+
     @Override
     public int getLayoutId() {
         return R.layout.activity_many_wallet_together;
@@ -549,7 +550,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                                 Daemon.commands.callAttr("delete_xpub", strSweep);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                if (e.getMessage().contains("the xpub to be delete not in keystore")){
+                                if (e.getMessage().contains("the xpub to be delete not in keystore")) {
                                     mToast(getString(R.string.no_delete_xpub));
                                 }
                             }
@@ -863,18 +864,18 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                 }
 
                 try {
-                    Daemon.commands.callAttr("import_create_hw_wallet", strWalletname, strUp1, strUp2, pubList.toString());
+                    Daemon.commands.callAttr("import_create_hw_wallet", strWalletname, strUp2, strUp1, pubList.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                     myDialog.dismiss();
                     String message = e.getMessage();
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getString(R.string.changewalletname));
-                    }else if (message.contains("The same xpubs have create wallet")){
+                    } else if (message.contains("The same xpubs have create wallet")) {
                         mToast(getString(R.string.xpub_have_wallet));
-                    }else if (message.contains("invaild type of xpub")){
+                    } else if (message.contains("invaild type of xpub")) {
                         mToast(getString(R.string.xpub_wrong));
-                    }else if (message.contains("Wrong key type p2wpkh")){
+                    } else if (message.contains("Wrong key type p2wpkh")) {
                         mToast(getString(R.string.wrong_key_type));
                     }
                     return;

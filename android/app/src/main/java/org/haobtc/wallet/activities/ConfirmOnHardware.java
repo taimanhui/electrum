@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -26,10 +28,13 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.HardwareAdapter;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
+import org.haobtc.wallet.event.SendSignBroadcastEvent;
 import org.haobtc.wallet.event.SignFailedEvent;
 import org.haobtc.wallet.event.SignResultEvent;
+import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -55,6 +60,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     @BindView(R.id.recl_Msg)
     RecyclerView reclMsg;
     private TextView signSuccess;
+    private String txHash;
 
     public int getLayoutId() {
         return R.layout.confirm_on_hardware;
@@ -76,15 +82,17 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             String payAddress = bundle.getString("pay_address");
             String fee = bundle.getString("fee");
             ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputs = (ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean>) bundle.getSerializable("output");
-            for (GetnewcreatTrsactionListBean.OutputAddrBean output : outputs) {
-                SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
-                String addr = output.getAddr();
-                String amount = output.getAmount();
-                sendMoreAddressEvent.setInputAddress(addr);
-                sendMoreAddressEvent.setInputAmount(amount);
-                addressEventList.add(sendMoreAddressEvent);
+            if (outputs != null) {
+                for (GetnewcreatTrsactionListBean.OutputAddrBean output : outputs) {
+                    SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
+                    String addr = output.getAddr();
+                    String amount = output.getAmount();
+                    sendMoreAddressEvent.setInputAddress(addr);
+                    sendMoreAddressEvent.setInputAmount(amount);
+                    addressEventList.add(sendMoreAddressEvent);
+                }
+                Log.i("addressEventList", "-----: " + addressEventList);
             }
-            Log.i("addressEventList", "-----: " + addressEventList);
             tetPayAddress.setText(payAddress);
             tetFeeNum.setText(fee);
             HardwareAdapter hardwareAdapter = new HardwareAdapter(addressEventList);
@@ -146,23 +154,60 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
         signSuccess.setCompoundDrawables(drawableStart, null, null, null);
         String signedRaw = resultEvent.getSignedRaw();
-            if (!TextUtils.isEmpty(signedRaw)) {
-                EventBus.getDefault().post(new SecondEvent("finish"));
-                Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
-                intent1.putExtra(TouchHardwareActivity.FROM, TAG);
-                intent1.putExtra("signed_raw_tx", signedRaw);
-                intent1.putExtra("isIsmine", true);
-                startActivity(intent1);
-                dialog.dismiss();
-                finish();
-            }
+        if (!TextUtils.isEmpty(signedRaw)) {
+            EventBus.getDefault().post(new SecondEvent("finish"));
+            Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
+            intent1.putExtra(TouchHardwareActivity.FROM, TAG);
+            intent1.putExtra("signed_raw_tx", signedRaw);
+            intent1.putExtra("isIsmine", true);
+            startActivity(intent1);
+            dialog.dismiss();
+            finish();
+        }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSignSuccessful(SendSignBroadcastEvent resultEvent) {
+        if (dialog == null) {
+            showPopupSignProcessing();
+        }
+        Drawable drawableStart = getDrawable(R.drawable.chenggong);
+        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+        signSuccess.setCompoundDrawables(drawableStart, null, null, null);
+        String signedTx = resultEvent.getSignTx();
+        if (!TextUtils.isEmpty(signedTx)) {
+            EventBus.getDefault().post(new SecondEvent("finish"));
+            try {
+                Gson gson = new Gson();
+                GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(signedTx, GetnewcreatTrsactionListBean.class);
+                String tx = getnewcreatTrsactionListBean.getTx();
+                txHash = getnewcreatTrsactionListBean.getTxid();
+                Log.i("onSignSuccessful", "onSignSuccessful:++ "+tx);
+                Daemon.commands.callAttr("broadcast_tx", tx);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+            EventBus.getDefault().post(new FirstEvent("22"));
+            Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
+            intent1.putExtra(TouchHardwareActivity.FROM, TAG);
+            intent1.putExtra("listType", "history");
+            intent1.putExtra("keyValue", "B");
+            intent1.putExtra("tx_hash", txHash);
+            intent1.putExtra("isIsmine", true);
+            intent1.putExtra("unConfirmStatus","broadcast_complete");
+            startActivity(intent1);
+            dialog.dismiss();
+            finish();
+        }
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignFailed(SignFailedEvent failedEvent) {
         if (dialog != null) {
             dialog.dismiss();
         }
-        if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(failedEvent.getException().getMessage())){
+        if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(failedEvent.getException().getMessage())) {
             mToast(getString(R.string.sign_failed_device));
         }
         showPopupSignFailed();

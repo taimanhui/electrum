@@ -187,7 +187,7 @@
     <string name="pay_wallet">付款钱包</string>
     <string name="confirmnum">确认数</string>
     <string name="wallet_insufficient">钱包余额不足</string>
-    <string name="filename">请填写文件名</string>
+    <string name="filename">请填写文件名称</string>
     <string name="alredycopy">已复制</string>
     <string name="filestyle_wrong">文件格式错误</string>
     <string name="sharetrsaction">转发交易</string>
@@ -533,5 +533,7 @@
     <string name="xpub_wrong">添加xpub类型错误</string>
     <string name="wrong_key_type">错误的密钥类型p2wpkh</string>
     <string name="sign_failed_device">签名失败，BiXin无法与您的设备配对</string>
+    <string name="file_name">文件名称</string>
+    <string name="waitting_touch">等待贴合</string>
 
 </resources>

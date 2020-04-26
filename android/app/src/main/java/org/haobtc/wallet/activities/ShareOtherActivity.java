@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -219,23 +221,20 @@ public class ShareOtherActivity extends BaseActivity {
             String str = listExtra.toString();
             String substring = str.substring(1);
             String strPath = substring.substring(0, substring.length() - 1);
-            showPopupFilename(ShareOtherActivity.this, R.layout.dialog_view, strPath);
+            showPopupFilename(strPath);
 
         }
     }
 
-    private void showPopupFilename(Context context, @LayoutRes int resource, String stPath) {
-        //set view
-        View inflate = View.inflate(context, resource, null);
-        dialogBtom = new Dialog(context, R.style.dialog);
-        EditText edtFilename = inflate.findViewById(R.id.edit_Filename);
-        TextView teCancle = inflate.findViewById(R.id.tet_Cancle);
-        TextView teConfirm = inflate.findViewById(R.id.tet_Confirm);
-        teCancle.setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-        teConfirm.setOnClickListener(v -> {
-            String strFilename = edtFilename.getText().toString();
+    private void showPopupFilename(String stPath) {
+        Log.i("printException", "show---_________________________________" + stPath);
+        View view1 = LayoutInflater.from(this).inflate(R.layout.dialog_view, null, false);
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
+        ImageView img_Cancle = view1.findViewById(R.id.img_Cancle);
+
+        view1.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
+            EditText editFilename = view1.findViewById(R.id.edit_Filename);
+            String strFilename = editFilename.getText().toString();
             String fullFilename = stPath + "/" + strFilename + ".psbt";
 
             try {
@@ -247,21 +246,13 @@ public class ShareOtherActivity extends BaseActivity {
                 Log.i("printException", "show---" + e.getMessage());
                 mToast(getString(R.string.downloadfail));
             }
+            alertDialog.dismiss();
 
-            dialogBtom.cancel();
         });
-
-
-        dialogBtom.setContentView(inflate);
-        dialogBtom.setCanceledOnTouchOutside(false);
-        Window window = dialogBtom.getWindow();
-        //Set pop-up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
+        img_Cancle.setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+        alertDialog.show();
 
     }
 

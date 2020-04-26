@@ -164,6 +164,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void showWalletList() {
         if (get_wallets_list_info != null && get_wallets_list_info.size() != 0) {
             String toStrings = get_wallets_list_info.toString();
+            Log.i("mWheelplanting", "toStrings: " + toStrings);
             if (toStrings.length() != 2) {
                 com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
                 for (int i = 0; i < jsons.size(); i++) {
@@ -180,7 +181,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         walletnameList.add(addressEvent);
                     }
                 }
-                Log.i("mWheelplanting", "mWheelplanting: " + get_wallets_list_info.toString());
+                Log.i("mWheelplanting", "mWheelplanting: " + walletnameList);
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();

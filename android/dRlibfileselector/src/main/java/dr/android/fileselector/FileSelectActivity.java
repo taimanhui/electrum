@@ -370,12 +370,9 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
                 boolean isChecked = (boolean) map.get(mFrom[4]);
                 File file = (File) map.get("file");
                 if (file!=null){
-                    Log.i(TAG, "1111111111111111111111111111111111111: "+file.isDirectory());
-                    if (file.isDirectory() || isChecked) {
+                    if (file.isDirectory() && isChecked) {
                         fileList.add(file.getAbsolutePath());
                     }
-                }else{
-                    Log.i(TAG, "9999999999999999999999999999999999999: ");
                 }
             }
 

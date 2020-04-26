@@ -339,7 +339,7 @@ public class SingleSigWalletCreator extends BaseActivity implements BusinessAsyn
                 features = getFeatures();
             } catch (Exception e) {
                 if ("bootloader mode".equals(e.getMessage())) {
-                    Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+                    mlToast(getString(R.string.bootloader_mode));
                 }
                 finish();
                 return;

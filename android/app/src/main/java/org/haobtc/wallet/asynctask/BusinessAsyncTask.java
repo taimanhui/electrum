@@ -17,6 +17,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public final static String WIPE_DEVICE = "wipe_device";
     public static final String SIGN_MESSAGE = "sign_message";
     public static final String INIT_DEVICE = "init";
+    public static final String COUNTER_VERIFICATION = "hardware_verify";
 
     public BusinessAsyncTask setHelper(Helper helper) {
         this.helper = helper;

@@ -35,7 +35,6 @@ public class ActivatedProcessing extends BaseActivity {
         ButterKnife.bind(this);
         textViewProcess = findViewById(R.id.activate_state);
         EventBus.getDefault().register(this);
-        // 设置沉浸式状态栏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
     }
 

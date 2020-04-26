@@ -50,7 +50,11 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ActivatedProcessing;
 import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.ResetDeviceProcessing;
+import org.haobtc.wallet.activities.SendOne2ManyMainPageActivity;
+import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
+import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
+import org.haobtc.wallet.activities.VerificationKEYActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.personalwallet.ChooseHistryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
@@ -69,6 +73,7 @@ import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SendSignBroadcastEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
@@ -287,7 +292,6 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                     if (activity != null) {
                         activity.runOnUiThread(() -> Toast.makeText(getContext(), getString(R.string.bluetooth_abnormal), Toast.LENGTH_LONG).show());
                     }
-                    dismiss();
                     break;
                 case 133:
                     mBle.disconnect(device);
@@ -423,7 +427,6 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         } catch (Exception e) {
             if ("bootloader mode".equals(e.getMessage())) {
                 Toast.makeText(getContext(), R.string.bootloader_mode, Toast.LENGTH_LONG).show();
-                dismiss();
             }
             return;
         }
@@ -438,7 +441,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 } else {
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, COMMUNICATION_MODE_BLE);
                 }
-            } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag)) {
+            } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag) || SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag)) {
                 if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
                     if (SignActivity.TAG3.equals(tag)) {
                         //hide wallet sign message -->set_pass_state
@@ -463,9 +466,13 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
                 } else {
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.RECOVER, COMMUNICATION_MODE_BLE, extras);
                 }
+            } else if (SettingActivity.TAG.equals(tag)) {
+                String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
+                //Anti counterfeiting verification
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.COUNTER_VERIFICATION, strRandom);
             }
         } else {
-            Intent intent = new Intent(getContext(), WalletUnActivatedActivity.class);
+            Intent intent = new Intent(getActivity(), WalletUnActivatedActivity.class);
             startActivityForResult(intent, REQUEST_ACTIVE);
         }
     }
@@ -748,9 +755,11 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             } else {
                 Objects.requireNonNull(getActivity()).runOnUiThread(runnables.get(1));
             }
-        } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag)) {
+        } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag) || SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag)) {
             if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
                 EventBus.getDefault().post(new SignMessageEvent(s));
+            } else if (SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag)) {
+                EventBus.getDefault().post(new SendSignBroadcastEvent(s));
             } else {
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
@@ -763,6 +772,10 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
             }
         } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag)) {
             EventBus.getDefault().post(new ResultEvent(s));
+        } else if (SettingActivity.TAG.equals(tag)) {
+            Intent intentCon = new Intent(getActivity(), VerificationKEYActivity.class);
+            intentCon.putExtra("strVerification", s);
+            startActivity(intentCon);
         }
     }
 

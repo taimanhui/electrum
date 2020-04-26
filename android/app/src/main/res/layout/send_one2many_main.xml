@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -17,8 +18,8 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
             android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
         <TextView
@@ -175,7 +176,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/lsdjlskm"
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/layout_margin"
             android:layout_marginEnd="@dimen/layout_margin"
@@ -184,7 +185,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/text_margin"
                 android:orientation="vertical">
 
@@ -192,6 +193,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:layout_marginTop="@dimen/layout_margin"
+                    android:layout_marginBottom="@dimen/dp_10"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -203,23 +205,12 @@
                         android:text="@string/fee" />
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="18dp"
-                        android:background="@color/text_red"
-                        android:gravity="center"
-                        android:paddingStart="3dp"
-                        android:paddingEnd="3dp"
-                        android:text="@string/recommend"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/smaller_text_size" />
-
-                    <TextView
                         android:id="@+id/tv_fee"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
                         android:background="@null"
-                        android:paddingStart="@dimen/dp_10"
                         android:gravity="center"
+                        android:paddingStart="@dimen/dp_10"
                         android:paddingEnd="@dimen/dp_10"
                         android:textColor="@color/text"
                         android:textSize="@dimen/sp_14" />
@@ -230,94 +221,91 @@
                         android:layout_height="35dp"
                         android:layout_gravity="center_vertical"
                         android:padding="@dimen/dp_12"
-                        android:src="@drawable/more" />
+                        android:src="@drawable/jiantou" />
 
                 </LinearLayout>
 
-                <org.haobtc.wallet.utils.IndicatorSeekBar
-                    android:id="@+id/seed_Bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:max="100"
-                    android:overScrollMode="never" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_16">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:text="@string/slowly"
-                        android:textColor="#b3b3b3"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:gravity="center_horizontal"
-                        android:text="@string/quikly"
-                        android:textColor="#b3b3b3"
-                        android:textSize="12sp" />
-                    <TextView
-                        android:id="@+id/tv_indicator"
-                        android:layout_width="wrap_content"
-                        android:visibility="gone"
-                        android:paddingStart="@dimen/dp_8"
-                        android:maxLines="1"
-                        android:paddingEnd="@dimen/dp_8"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:textColor="#6182f5"
-                        android:textSize="12sp" />
-
-                </RelativeLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_8"
-                    android:textColor="@color/graytext_color"
-                    android:textSize="@dimen/sp_12"
-                    android:text="@string/_sat_byte" />
-
-
                 <LinearLayout
+                    android:visibility="visible"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:gravity="center_vertical"
-                    android:visibility="gone">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+
+                    <org.haobtc.wallet.utils.IndicatorSeekBar
+                        android:id="@+id/seed_Bar"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/comments" />
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:max="100"
+                        android:overScrollMode="never" />
 
-                    <EditText
-                        android:id="@+id/edit_Remarks"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/layout_margin"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:inputType="text"
-                        android:maxLength="20"
-                        android:singleLine="true"
-                        android:textSize="@dimen/sp_14" />
-
-                    <TextView
-                        android:id="@+id/tet_textNum"
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/layout_margin"
-                        android:text="@string/count" />
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:text="@string/slowly"
+                            android:textColor="#b3b3b3"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:gravity="center_horizontal"
+                            android:text="@string/quikly"
+                            android:textColor="#b3b3b3"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tv_indicator"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:maxLines="1"
+                            android:paddingStart="@dimen/dp_8"
+                            android:paddingEnd="@dimen/dp_8"
+                            android:textColor="#6182f5"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:layout_marginBottom="@dimen/dp_20"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/text_blocks"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/graytext_color"
+                            android:textSize="@dimen/sp_12"
+                            tools:text="180 sat/byte" />
+
+                        <Button
+                            android:id="@+id/btnRecommendFee"
+                            android:layout_width="70dp"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/blue_strok"
+                            android:text="@string/recomend_fee"
+                            android:textAllCaps="false"
+                            android:textColor="@color/button_bk_disableok"
+                            android:textSize="@dimen/sp_13" />
+
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
@@ -331,14 +319,14 @@
             android:layout_height="@dimen/dp_50"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:layout_marginTop="@dimen/dp_30"
             android:background="@drawable/button_bk"
             android:text="@string/next"
             android:textAllCaps="false"
-            android:layout_marginTop="@dimen/dp_30"
             android:textColor="@android:color/white"
-            app:layout_constraintTop_toBottomOf="@+id/lsdjlskm"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lsdjlskm">
 
         </Button>
 

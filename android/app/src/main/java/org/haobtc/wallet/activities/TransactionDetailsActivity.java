@@ -167,6 +167,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     private String unrelatedTransaction;
     private Boolean aBoolean;
     private boolean done;
+    private String unConfirmStatus;
 
     @Override
     public int getLayoutId() {
@@ -190,6 +191,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
             tx_hash = intent.getStringExtra("tx_hash");
             listType = intent.getStringExtra("listType");
+            unConfirmStatus = intent.getStringExtra("unConfirmStatus");//Manually change to the status to be confirmed
             signTransction = intent.getStringExtra("signTransction");//from SignActivity
             strParse = intent.getStringExtra("strParse");
             String dataTime = intent.getStringExtra("dataTime");
@@ -198,7 +200,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             tetTrsactionTime.setText(dataTime);
         }
 
-        Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   isIsmine -- : " + isIsmine);
+        Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   isIsmine -- : " + isIsmine + "   publicTrsation -- : " + publicTrsation);
     }
 
     @Override
@@ -456,63 +458,67 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
 
     //judge state
     private void judgeState(String tx_status) {
-        //trsaction state
-        if ("Unconfirmed".equals(tx_status)) {//Unconfirmed
-            tetState.setText(R.string.waitchoose);
-            sigTrans.setText(R.string.check_trsaction);
-            imgProgressone.setVisibility(View.GONE);
-            imgProgressthree.setVisibility(View.GONE);
-            imgProgressfour.setVisibility(View.VISIBLE);
-            //text color
-            tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
-            tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
-            //trsaction hash and time
-            linTractionHash.setVisibility(View.VISIBLE);
-            linTractionTime.setVisibility(View.GONE);
-        } else if (tx_status.contains("confirmations")) {//Confirmed
-            tetState.setText(R.string.completed);
-            sigTrans.setText(R.string.check_trsaction);
-            imgProgressone.setVisibility(View.GONE);
-            imgProgressthree.setVisibility(View.GONE);
-            imgProgressfour.setVisibility(View.VISIBLE);
-            //Number of judgment confirmation
-            String strConfirl = tx_status.replaceAll(" confirmations", "");
-            BigDecimal bignum1 = new BigDecimal(strConfirl);
-            BigDecimal bigDecimal = new BigDecimal(100);
-            int mathMax = bignum1.compareTo(bigDecimal);
-            if (mathMax > 0) {
-                tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), ">100"));
-            } else {
-                tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), strConfirl));
+        if ("broadcast_complete".equals(unConfirmStatus)) {
+            broadcastStatus();//sendOne2OnePageActivity  1-n wallet -->sign and broadcast ，Modify status manually
+        } else {
+            //transaction state
+            if ("Unconfirmed".equals(tx_status)) {//Unconfirmed
+                tetState.setText(R.string.waitchoose);
+                sigTrans.setText(R.string.check_trsaction);
+                imgProgressone.setVisibility(View.GONE);
+                imgProgressthree.setVisibility(View.GONE);
+                imgProgressfour.setVisibility(View.VISIBLE);
+                //text color
+                tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+                tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
+                //transaction hash and time
+                linTractionHash.setVisibility(View.VISIBLE);
+                linTractionTime.setVisibility(View.GONE);
+            } else if (tx_status.contains("confirmations")) {//Confirmed
+                tetState.setText(R.string.completed);
+                sigTrans.setText(R.string.check_trsaction);
+                imgProgressone.setVisibility(View.GONE);
+                imgProgressthree.setVisibility(View.GONE);
+                imgProgressfour.setVisibility(View.VISIBLE);
+                //Number of judgment confirmation
+                String strConfirl = tx_status.replaceAll(" confirmations", "");
+                BigDecimal bignum1 = new BigDecimal(strConfirl);
+                BigDecimal bigDecimal = new BigDecimal(100);
+                int mathMax = bignum1.compareTo(bigDecimal);
+                if (mathMax > 0) {
+                    tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), ">100"));
+                } else {
+                    tetConfirm.setText(String.format("%s%s", getString(R.string.confirmnum), strConfirl));
+                }
+
+                tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+                tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
+                //transaction hash and time
+                linTractionHash.setVisibility(View.VISIBLE);
+                linTractionTime.setVisibility(View.VISIBLE);
+            } else if (tx_status.contains("Unsigned")) {//unsigned
+                linPayAddress.setVisibility(View.VISIBLE);
+                tetState.setText(R.string.unsigned);
+                sigTrans.setText(R.string.signature_trans);
+            } else if (tx_status.contains("Signed") || tx_status.contains("Local") || canBroadcast) {//signed
+                tetState.setText(R.string.wait_broadcast);
+                sigTrans.setText(R.string.broadcast);
+                tetGrive.setVisibility(View.VISIBLE);
+                linPayAddress.setVisibility(View.GONE);
+                //progress
+                imgProgressone.setVisibility(View.GONE);
+                imgProgressthree.setVisibility(View.VISIBLE);
+                imgProgressfour.setVisibility(View.GONE);
+                tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+
+            } else if (tx_status.contains("Partially signed")) {//you are signer
+                tetState.setText(R.string.you_are_signed);
+                sigTrans.setText(R.string.forWord_orther);
+                //progress
+                imgProgressone.setVisibility(View.VISIBLE);
+                imgProgressthree.setVisibility(View.GONE);
+                imgProgressfour.setVisibility(View.GONE);
             }
-
-            tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
-            tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
-            //trsaction hash and time
-            linTractionHash.setVisibility(View.VISIBLE);
-            linTractionTime.setVisibility(View.VISIBLE);
-        } else if (tx_status.contains("Unsigned")) {//unsigned
-            linPayAddress.setVisibility(View.VISIBLE);
-            tetState.setText(R.string.unsigned);
-            sigTrans.setText(R.string.signature_trans);
-        } else if (tx_status.contains("Signed") || tx_status.contains("Local") || canBroadcast) {//signed
-            tetState.setText(R.string.wait_broadcast);
-            sigTrans.setText(R.string.broadcast);
-            tetGrive.setVisibility(View.VISIBLE);
-            linPayAddress.setVisibility(View.GONE);
-            //progress
-            imgProgressone.setVisibility(View.GONE);
-            imgProgressthree.setVisibility(View.VISIBLE);
-            imgProgressfour.setVisibility(View.GONE);
-            tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
-
-        } else if (tx_status.contains("Partially signed")) {//you are signer
-            tetState.setText(R.string.you_are_signed);
-            sigTrans.setText(R.string.forWord_orther);
-            //progress
-            imgProgressone.setVisibility(View.VISIBLE);
-            imgProgressthree.setVisibility(View.GONE);
-            imgProgressfour.setVisibility(View.GONE);
         }
     }
 
@@ -593,6 +599,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
                 } else {
                     intent2Pay.putExtra("payAddressScan", (Serializable) inputAddrScan);
                 }
+                intent2Pay.putExtra("addressType", "pay");
                 intent2Pay.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent2Pay);
                 break;
@@ -616,6 +623,11 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             e.printStackTrace();
             return;
         }
+        EventBus.getDefault().post(new FirstEvent("22"));
+        broadcastStatus();
+    }
+
+    private void broadcastStatus() {
         tetState.setText(R.string.waitchoose);
         sigTrans.setText(R.string.check_trsaction);
         imgProgressone.setVisibility(View.GONE);
@@ -626,8 +638,8 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         tetTrfore.setTextColor(getColor(R.color.button_bk_disableok));
         //trsaction hash and time
         linTractionHash.setVisibility(View.VISIBLE);
-        EventBus.getDefault().post(new FirstEvent("22"));
         mToast(getString(R.string.broadcast_success));
+
     }
 
     private void signInputpassDialog() {
@@ -838,7 +850,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
     public void onException(Exception e) {
         if ("BaseException: waiting pin timeout".equals(e.getMessage())) {
             ready = false;
-        }else {
+        } else {
             EventBus.getDefault().post(new SignFailedEvent(e));
         }
     }

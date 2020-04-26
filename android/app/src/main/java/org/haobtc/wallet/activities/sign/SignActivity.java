@@ -613,7 +613,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Override
     public void onResult(String s) {
-        Log.i(TAG, signWhich + "  @@@@@@@@@@@@@  " + s);
         if (signWhich) {
             EventBus.getDefault().post(new SignResultEvent(s));
         } else {
