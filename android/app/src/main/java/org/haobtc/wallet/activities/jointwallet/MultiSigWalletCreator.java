@@ -166,6 +166,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
     private int strUp1;
     private int strUp2;
     private boolean done;
+    private boolean status = false;
 
     @Override
     public int getLayoutId() {
@@ -254,7 +255,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                String indicatorText = String.valueOf(progress + 2);
+                String indicatorText = String.valueOf(progress + 1);
                 tvIndicatorTwo.setText(indicatorText);
                 paramsTwo.leftMargin = (int) indicatorOffset;
                 tvIndicatorTwo.setLayoutParams(paramsTwo);
@@ -523,16 +524,33 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                 return;
             }
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-            addBixinKeyEvent.setKeyname(strBixinname);
-            addBixinKeyEvent.setKeyaddress(strSweep);
-            addEventsDatas.add(addBixinKeyEvent);
+            boolean exist = false;
+            if (addEventsDatas.size() != 0) {
+                for (int i = 0; i < addEventsDatas.size(); i++) {
+                    if (strSweep.equals(addEventsDatas.get(i).getKeyaddress())) {
+                        mToast(getString(R.string.please_change_xpub));
+                        exist = true;
+                        break;
+                    }
+                }
+                if (!exist) {
+                    addBixinKeyEvent = new AddBixinKeyEvent();
+                    addBixinKeyEvent.setKeyaddress(strSweep);
+                    addEventsDatas.add(addBixinKeyEvent);
+                    dialogBtoms.cancel();
+                }
+            } else {
+                addBixinKeyEvent.setKeyname(strBixinname);
+                addBixinKeyEvent.setKeyaddress(strSweep);
+                addEventsDatas.add(addBixinKeyEvent);
+                dialogBtoms.cancel();
+            }
             //public person
             PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
             reclPublicPerson.setAdapter(publicPersonAdapter);
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
-
             int cosignerNum = Integer.parseInt(strInditor1);
             bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
 
@@ -565,7 +583,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                     }
                 }
             });
-            dialogBtoms.cancel();
 
         });
 
@@ -629,9 +646,28 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                 return;
             }
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-            addBixinKeyEvent.setKeyname(strBixinname);
-            addBixinKeyEvent.setKeyaddress(strSweep);
-            addEventsDatas.add(addBixinKeyEvent);
+            boolean exist = false;
+            if (addEventsDatas.size() != 0) {
+                for (int i = 0; i < addEventsDatas.size(); i++) {
+                    if (strSweep.equals(addEventsDatas.get(i).getKeyaddress())) {
+                        mToast(getString(R.string.please_change_xpub));
+                        exist = true;
+                        break;
+                    }
+                }
+                if (!exist) {
+                    addBixinKeyEvent = new AddBixinKeyEvent();
+                    addBixinKeyEvent.setKeyaddress(strSweep);
+                    addEventsDatas.add(addBixinKeyEvent);
+                    dialogBtoms.cancel();
+                }
+            } else {
+                addBixinKeyEvent.setKeyname(strBixinname);
+                addBixinKeyEvent.setKeyaddress(strSweep);
+                addEventsDatas.add(addBixinKeyEvent);
+                dialogBtoms.cancel();
+            }
+
             //public person
             PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
             reclPublicPerson.setAdapter(publicPersonAdapter);
@@ -667,7 +703,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                     }
                 }
             });
-            dialogBtoms.cancel();
             dialogFragment.dismiss();
 
         });

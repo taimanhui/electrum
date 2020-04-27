@@ -22,6 +22,7 @@ import org.haobtc.wallet.R;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -102,7 +103,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public String mmTextToutf8(String strFiled) {
         String filed1HangyeUTF = null;
         try {
-            filed1HangyeUTF = new String(strFiled.getBytes("UTF-8"));
+            filed1HangyeUTF = new String(strFiled.getBytes(StandardCharsets.UTF_8));
             filed1utf = URLEncoder.encode(filed1HangyeUTF, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -113,7 +114,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     //get now time
     public String mGetNowDatetime() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date curDate = new Date(System.currentTimeMillis());
         return formatter.format(curDate);
     }
@@ -153,8 +154,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * get  versionName
      *
-     * @param context
-     * @return
      */
     public String mGetVersionName(Context context) {
         PackageManager packageManager = context.getPackageManager();
@@ -172,7 +171,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     //Picture compression
     public Bitmap mPicYasuo(String imgPath) {
         /**
-         * 压缩图片
+         * Compress picture
          */
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -199,7 +198,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 //        LinearLayout top_manger=findViewById(R.id.top_manger);
         //透明状态栏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//            //透明导航栏
 
     }
 
@@ -208,8 +206,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public void mBinitState() {
 //        ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0f).navigationBarColor(R.color.button_bk_ddake).init();
-
-
         //other one write
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().setStatusBarColor(Color.WHITE);

@@ -3,6 +3,8 @@ package org.haobtc.wallet.activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -57,7 +59,7 @@ public class PinSettingActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        keyboardUtil.showKeyboard();
     }
 
     @SuppressLint("ClickableViewAccessibility")

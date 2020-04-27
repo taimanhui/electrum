@@ -37,6 +37,7 @@ import butterknife.OnClick;
 
 public class ReceivedPageActivity extends BaseActivity {
 
+    private static final String SHARE_PIC_NAME = "";
     @BindView(R.id.imageView2)
     ImageView imageView2;
     @BindView(R.id.textView5)
@@ -49,6 +50,7 @@ public class ReceivedPageActivity extends BaseActivity {
     ImageView imgBack;
     private Bitmap bitmap;
     private RxPermissions rxPermissions;
+
     @Override
     public int getLayoutId() {
         return R.layout.address_info;
@@ -65,7 +67,7 @@ public class ReceivedPageActivity extends BaseActivity {
     public void initData() {
         //Generate QR code
         mGeneratecode();
-        
+
     }
 
     private void mGeneratecode() {
@@ -91,7 +93,7 @@ public class ReceivedPageActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.textView6, R.id.button,R.id.img_back})
+    @OnClick({R.id.textView6, R.id.button, R.id.img_back})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.textView6:
@@ -108,16 +110,16 @@ public class ReceivedPageActivity extends BaseActivity {
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
                                 File file = saveImageToGallery(this, bitmap);
-                                if (file!=null){
-                                    Uri imgUri = Uri.parse(file.getPath());
+                                if (file != null) {
+                                    String imgUri = insertImageToSystem(ReceivedPageActivity.this, file.getPath());
                                     Intent shareIntent = new Intent();
                                     shareIntent.setAction(Intent.ACTION_SEND);
-                                    shareIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(imgUri));
                                     shareIntent.setType("image/*");
                                     shareIntent = Intent.createChooser(shareIntent, "Here is the title of Select box");
                                     startActivity(shareIntent);
 
-                                }else{
+                                } else {
                                     mToast(getString(R.string.pictrue_fail));
                                 }
 
@@ -133,10 +135,20 @@ public class ReceivedPageActivity extends BaseActivity {
         }
     }
 
+    private static String insertImageToSystem(Context context, String imagePath) {
+        String url = "";
+        try {
+            url = MediaStore.Images.Media.insertImage(context.getContentResolver(), imagePath, SHARE_PIC_NAME, "");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return url;
+    }
+
     private File saveImageToGallery(Context context, Bitmap bmp) {
         // Save picture
         String storePath = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
-        Log.i("storePath", "storePath: "+storePath);
+        Log.i("storePath", "storePath: " + storePath);
         File appDir = new File(storePath);
         if (!appDir.exists()) {
             appDir.mkdir();

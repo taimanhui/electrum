@@ -176,7 +176,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         signSuccess.setCompoundDrawables(drawableStart, null, null, null);
         String signedTx = resultEvent.getSignTx();
         if (!TextUtils.isEmpty(signedTx)) {
-            EventBus.getDefault().post(new SecondEvent("finish"));
             try {
                 Gson gson = new Gson();
                 GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(signedTx, GetnewcreatTrsactionListBean.class);
@@ -188,6 +187,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 e.printStackTrace();
                 return;
             }
+            EventBus.getDefault().post(new SecondEvent("finish"));
             EventBus.getDefault().post(new FirstEvent("22"));
             Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
             intent1.putExtra(TouchHardwareActivity.FROM, TAG);

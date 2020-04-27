@@ -15,14 +15,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,21 +47,15 @@ import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,7 +66,6 @@ import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.REQUEST_ACTIVE;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.customerUI;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.executorService;
-import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector.isNFC;
 
 public class SignActivity extends BaseActivity implements TextWatcher, RadioGroup.OnCheckedChangeListener, BusinessAsyncTask.Helper {
@@ -95,16 +86,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     Button btnSweep;
     @BindView(R.id.pasteSignTrsaction)
     Button pasteSignTrsaction;
-    @BindView(R.id.editSignMsg)
-    EditText editSignMsg;
     @BindView(R.id.btnConfirm)
     Button buttonConfirm;
-    @BindView(R.id.linSignTrsaction)
-    LinearLayout linSignTrsaction;
-    @BindView(R.id.linSignMsg)
-    LinearLayout linSignMsg;
     @BindView(R.id.textCheckSign)
     TextView textCheckSign;
+    @BindView(R.id.test_sign_tips)
+    TextView testSignTips;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private boolean signWhich = true;
@@ -140,33 +127,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         rxPermissions = new RxPermissions(this);
         editTrsactionTest.addTextChangedListener(this);
         radioGroup.setOnCheckedChangeListener(this);
-        inputSignMsg();
-    }
-
-    private void inputSignMsg() {
-        editSignMsg.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s)) {
-                    buttonConfirm.setEnabled(true);
-                    buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
-                } else {
-                    buttonConfirm.setEnabled(false);
-                    buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
-                }
-
-            }
-        });
     }
 
     @Override
@@ -222,13 +182,13 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         switch (checkedId) {
             case R.id.radioSignTrsaction:
                 signWhich = true;
-                linSignTrsaction.setVisibility(View.VISIBLE);
-                linSignMsg.setVisibility(View.GONE);
+                testSignTips.setText(getString(R.string.prompt_sig));
+                editTrsactionTest.setHint(getString(R.string.input_tsaction_text));
                 break;
             case R.id.radioSignMsg:
                 signWhich = false;
-                linSignTrsaction.setVisibility(View.GONE);
-                linSignMsg.setVisibility(View.VISIBLE);
+                testSignTips.setText(getString(R.string.input_message));
+                editTrsactionTest.setHint(getString(R.string.input_sign_msg));
                 break;
         }
     }
@@ -270,48 +230,36 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         }).dispose();
                 break;
             case R.id.pasteSignTrsaction:
-                if (signWhich) {
-                    pasteMessage(editTrsactionTest);
-                } else {
-                    pasteMessage(editSignMsg);
-                }
+                pasteMessage(editTrsactionTest);
                 break;
             case R.id.btnConfirm:
                 edit.putString("createOrcheck", "check");
                 edit.apply();
                 if ("standard".equals(personceType)) {//Software Wallet sign
+                    strSoftMsg = editTrsactionTest.getText().toString();
+                    if (TextUtils.isEmpty(strSoftMsg)) {
+                        mToast(getString(R.string.raw));
+                        return;
+                    }
                     if (signWhich) { //sign trsaction
-                        strSoftMsg = editTrsactionTest.getText().toString();
-                        if (TextUtils.isEmpty(strSoftMsg)) {
-                            mToast(getString(R.string.raw));
-                            return;
-                        }
                         softwareSignTrsaction(strSoftMsg);
                     } else { //sign message
-                        strSoftMsg = editSignMsg.getText().toString();
-                        if (TextUtils.isEmpty(strSoftMsg)) {
-                            mToast(getString(R.string.inputSignMsg));
-                            return;
-                        }
                         signDialog();
                     }
                 } else { //Hardware wallet signature
+                    strTest = editTrsactionTest.getText().toString();
                     if (signWhich) { //sign trsaction
                         if (!TextUtils.isEmpty(hide_phrass)) {
                             //hide wallet sign transaction -->set_pass_state
-                            strTest = editTrsactionTest.getText().toString();
                             showCustomerDialog(strTest, TAG2);
                         } else {
-                            strTest = editTrsactionTest.getText().toString();
                             showCustomerDialog(strTest, TAG);
                         }
                     } else {//sign message
                         if (!TextUtils.isEmpty(hide_phrass)) {
                             //hide wallet sign message -->set_pass_state
-                            strTest = editSignMsg.getText().toString();
                             showCustomerDialog(strTest, TAG3);
                         } else {
-                            strTest = editSignMsg.getText().toString();
                             showCustomerDialog(strTest, TAG1);
                         }
                     }
@@ -465,7 +413,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             executable = false;
         }
         if (ready) {
-            CommunicationModeSelector.customerUI.put("pin", pin);
+            customerUI.put("pin", pin);
             if (!TextUtils.isEmpty(hideWalletpass)) {
                 customerUI.put("passphrase", hideWalletpass);
                 hideWalletpass = "";
@@ -546,11 +494,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             //scan
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                if (signWhich) {
-                    editTrsactionTest.setText(content);
-                } else {
-                    editSignMsg.setText(content);
-                }
+                editTrsactionTest.setText(content);
             }
         } else if (requestCode == 1 && resultCode == RESULT_OK) {
             //import file
@@ -567,11 +511,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 if (read_tx_from_file != null) {
                     String readFile = read_tx_from_file.toString();
                     Log.i("readFile", "tx-------: " + readFile);
-                    if (signWhich) {
-                        editTrsactionTest.setText(readFile);
-                    } else {
-                        editSignMsg.setText(readFile);
-                    }
+                    editTrsactionTest.setText(readFile);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -622,7 +562,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignMessage(SignMessageEvent event) {
-        strSoftMsg = editSignMsg.getText().toString();
+        strSoftMsg = editTrsactionTest.getText().toString();
         String signedMsg = event.getSignedRaw();
         chooseCommunicationWayDialogFragment.dismiss();
         Intent intentMsg = new Intent(SignActivity.this, CheckSignMessageActivity.class);
@@ -641,5 +581,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

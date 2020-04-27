@@ -40,7 +40,7 @@
     <string name="pin_setting_first">请为你的冷钱包设置安全密码</string>
     <string name="confirm_pin">请再次次输入您设置的安全密码</string>
     <string name="touch_again">请保持与硬件贴合</string>
-    <string name="connect">链接硬件成功</string>
+    <string name="connect">连接硬件成功</string>
     <string name="set_pin_processinfo">设置PIN码成功</string>
     <string name="activing_processinfo">激活设备中</string>
     <string name="back">返回</string>
@@ -456,7 +456,7 @@
     <string name="check_word">验证助记词</string>
     <string name="hide_wallet">隐藏钱包</string>
     <string name="create_hide_wallet">创建隐藏钱包</string>
-    <string name="hide_wallet_know_tips">隐藏钱包不在APP记录任何数据，使用时需使用BixinKEY链接，并使用专用PIN码解锁</string>
+    <string name="hide_wallet_know_tips">隐藏钱包不在APP记录任何数据，使用时需使用BixinKEY连接，并使用专用PIN码解锁</string>
     <string name="hide_wallet_benefit">隐藏钱包将帮助您更好的隐藏资产状况</string>
     <string name="create_hide_wallet_tips">创建隐藏钱包，需使用已激活的BixinKEY</string>
     <string name="hide_wallet_is">什么是隐藏钱包？</string>
@@ -535,5 +535,8 @@
     <string name="sign_failed_device">签名失败，BiXin无法与您的设备配对</string>
     <string name="file_name">文件名称</string>
     <string name="waitting_touch">等待贴合</string>
+    <string name="addspeed_success">加速成功！</string>
+    <string name="software_wallet">软件钱包</string>
+    <string name="please_change_xpub">此xpub已存在，请更换</string>
 
 </resources>

@@ -7,14 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.bean.AddressEvent;
@@ -33,12 +28,12 @@ public class ChoosePayAddressAdapetr extends RecyclerView.Adapter<ChoosePayAddre
         this.data = data;
 
         isClicks = new ArrayList<>();
-        for(int i = 0;i<data.size();i++){
+        for (int i = 0; i < data.size(); i++) {
             isClicks.add(false);
         }
     }
 
-    public class myViewHolder extends RecyclerView.ViewHolder{
+    public class myViewHolder extends RecyclerView.ViewHolder {
         TextView tet_WalletName;
         TextView tet_WalletType;
         RelativeLayout rel_background;
@@ -62,33 +57,36 @@ public class ChoosePayAddressAdapetr extends RecyclerView.Adapter<ChoosePayAddre
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-//        String streplace = data.get(position).getType().replaceAll("of", "/");
         holder.tet_WalletName.setText(data.get(position).getName());
-//        holder.tet_WalletType.setText(streplace);
-
-        if(mOnItemClickListener!=null) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = holder.getLayoutPosition(); // 1
-                    for(int i = 0; i <isClicks.size();i++){
-                        isClicks.set(i,false);
-                    }
-                    isClicks.set(position,true);
-                    notifyDataSetChanged();
+        if ("standard".equals(data.get(position).getType())) {
+            holder.tet_WalletType.setText(R.string.software_wallet);
+        } else {
+            holder.tet_WalletType.setText(data.get(position).getType());
+        }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getLayoutPosition(); // 1
+                for (int i = 0; i < isClicks.size(); i++) {
+                    isClicks.set(i, false);
+                }
+                isClicks.set(position, true);
+                notifyDataSetChanged();
+                if (mOnItemClickListener != null) {
                     mOnItemClickListener.onItemClick(position); // 2
                 }
-            });
-        }
+            }
+        });
+
         holder.itemView.setTag(holder.tet_WalletName);
         holder.itemView.setTag(holder.tet_WalletType);
 
-        if(isClicks.get(position)){
+        if (isClicks.get(position)) {
             holder.tet_WalletName.setTextColor(Color.parseColor("#ffffff"));
             holder.tet_WalletType.setTextColor(Color.parseColor("#ffffff"));
             holder.rel_background.setBackgroundColor(Color.parseColor("#6182F5"));
             holder.view_line.setBackgroundColor(Color.parseColor("#6182F5"));
-        }else{
+        } else {
             holder.tet_WalletName.setTextColor(Color.parseColor("#494949"));
             holder.tet_WalletType.setTextColor(Color.parseColor("#6182F5"));
             holder.rel_background.setBackgroundColor(Color.parseColor("#ffffff"));
@@ -99,17 +97,17 @@ public class ChoosePayAddressAdapetr extends RecyclerView.Adapter<ChoosePayAddre
 
     @Override
     public int getItemCount() {
-        if (data!=null){
+        if (data != null) {
             return data.size();
-        }else{
+        } else {
             return 0;
         }
-
     }
 
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
         void onItemClick(int position);
     }
+
     private OnItemClickListener mOnItemClickListener;
 
     public void setmOnItemClickListener(OnItemClickListener mOnItemClickListener) {

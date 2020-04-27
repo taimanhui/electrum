@@ -226,16 +226,17 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:visibility="visible"
+                    android:id="@+id/linear_seek"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
 
                     <org.haobtc.wallet.utils.IndicatorSeekBar
                         android:id="@+id/seed_Bar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:min="1"
                         android:layout_marginTop="@dimen/dp_10"
                         android:max="100"
                         android:overScrollMode="never" />

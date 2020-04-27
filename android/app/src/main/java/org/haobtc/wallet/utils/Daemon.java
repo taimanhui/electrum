@@ -33,9 +33,10 @@ public class Daemon {
         if ("update_status".equals(event)) {
             if (!TextUtils.isEmpty(msg) && msg.length() != 2) {
                 EventBus.getDefault().post(new SecondEvent(msg));
+                EventBus.getDefault().post(new FirstEvent("22"));
             }
         } else if ("update_history".equals(event)) {
-            EventBus.getDefault().post(new FirstEvent("22"));
+//            EventBus.getDefault().post(new FirstEvent("22"));
         } else if ("set_server_status".equals(event)) {
             Log.i("onCallback", "自定义节点添加+++++++++++++++++++++++    " + msg);
         }

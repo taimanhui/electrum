@@ -64,7 +64,8 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingEnd="@dimen/sp_16">
+                    android:paddingEnd="@dimen/sp_16"
+                    tools:ignore="RtlSymmetry">
 
                     <TextView
                         android:layout_width="0dp"
@@ -399,12 +400,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:visibility="visible">
+                        android:visibility="gone">
 
                         <org.haobtc.wallet.utils.IndicatorSeekBar
                             android:id="@+id/seek_bar"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:min="1"
                             android:layout_marginTop="@dimen/dp_10"
                             android:overScrollMode="never" />
 

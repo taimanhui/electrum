@@ -350,7 +350,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
-                                android:text="@string/signature_need_min"
+                                android:text="@string/number_1"
                                 android:textColor="@color/text_0"
                                 android:textSize="12sp" />
 
@@ -371,7 +371,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_horizontal"
-                                android:text="@string/signature_need_min"
+                                android:text="@string/number_1"
                                 android:textColor="#6182f5"
                                 android:textSize="12sp" />
 

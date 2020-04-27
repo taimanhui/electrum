@@ -559,6 +559,9 @@
     <string name="xpub_wrong">Invalid type of xpub</string>
     <string name="wrong_key_type">Wrong key type p2wpkh</string>
     <string name="sign_failed_device">Failed to sign, Bixin cannot pair with your device</string>
-    <string name="file_name">文件名称</string>
-    <string name="waitting_touch">等待贴合</string>
+    <string name="file_name">File name</string>
+    <string name="waitting_touch">Waiting for fit</string>
+    <string name="addspeed_success">Accelerate success!</string>
+    <string name="software_wallet">Software Wallet</string>
+    <string name="please_change_xpub">This xpub already exists, please replace it</string>
 </resources>

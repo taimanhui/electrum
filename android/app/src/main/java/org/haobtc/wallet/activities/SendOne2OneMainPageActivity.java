@@ -158,6 +158,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String rowtx;
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     private boolean showSeek = true;
+    private String onlickName;
 
     @Override
     public int getLayoutId() {
@@ -292,7 +293,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
             }
         }
-
+        onlickName = wallet_name;//if onlickName != wallet_name -->home page don't update transaction list
         tetWalletname.setText(wallet_name);
         int sendamount = intent.getIntExtra("sendamount", 0);
         editAddress.setText(sendAdress);
@@ -412,7 +413,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+            getFeerate();
             tetWalletname.setText(wallet_name);
             dialogBtom.cancel();
         });
@@ -476,6 +477,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             public void onItemClick(int position) {
                 wallet_name = dataListName.get(position).getName();
                 waletType = dataListName.get(position).getType();
+                wallet_type_to_sign = waletType;
             }
         });
     }
@@ -612,7 +614,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     if (!TextUtils.isEmpty(hideRefresh)) {
                         EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
                     } else {
-                        EventBus.getDefault().post(new FirstEvent("22"));
+                        if (onlickName.equals(wallet_name)) {
+                            EventBus.getDefault().post(new FirstEvent("22"));
+                        }
                     }
                     Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                     intent.putExtra("tx_hash", rowtx);
@@ -920,6 +924,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             PyObject get_fee_by_feerate = null;
             try {
                 get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
+                errorMessage = "";
             } catch (Exception e) {
                 e.printStackTrace();
                 if (e.getMessage().contains("invalid bitcoin address")) {

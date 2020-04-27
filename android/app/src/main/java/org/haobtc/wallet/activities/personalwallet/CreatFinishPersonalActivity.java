@@ -23,7 +23,6 @@ import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.MyDialog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,21 +36,16 @@ import butterknife.OnClick;
 
 public class CreatFinishPersonalActivity extends BaseActivity {
 
-    @BindView(R.id.img_backCreat)
-    ImageView imgBackCreat;
     @BindView(R.id.tetWalletname)
     TextView tetWalletname;
     @BindView(R.id.img_Orcode)
     ImageView imgOrcode;
     @BindView(R.id.tet_Preservation)
     TextView tetPreservation;
-    @BindView(R.id.bn_complete_add_cosigner)
-    Button bnCompleteAddCosigner;
     @BindView(R.id.recl_keyView)
     RecyclerView reclKeyView;
     private Bitmap bitmap;
     private String walletNames;
-    private MyDialog myDialog;
     private String flagTag;
     private ArrayList<AddBixinKeyEvent> keyList;
     private String strBixinname;
@@ -65,7 +59,6 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        myDialog = MyDialog.showDialog(CreatFinishPersonalActivity.this);
         intent = getIntent();
         walletNames = intent.getStringExtra("walletNames");
         flagTag = intent.getStringExtra("flagTag");
@@ -108,12 +101,9 @@ public class CreatFinishPersonalActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_backCreat, R.id.tet_Preservation, R.id.bn_complete_add_cosigner})
+    @OnClick({R.id.tet_Preservation, R.id.bn_complete_add_cosigner})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.img_backCreat:
-                finish();
-                break;
             case R.id.tet_Preservation:
                 boolean toGallery = saveBitmap(bitmap);
                 if (toGallery) {

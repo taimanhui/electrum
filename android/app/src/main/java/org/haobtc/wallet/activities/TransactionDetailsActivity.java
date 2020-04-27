@@ -30,14 +30,12 @@ import com.google.gson.JsonSyntaxException;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
-import org.haobtc.wallet.bean.AddspeedBean;
 import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
@@ -49,6 +47,8 @@ import org.haobtc.wallet.event.SignFailedEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -333,6 +333,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
         inputAddr = getnewcreatTrsactionListBean.getInputAddr();
         txid = getnewcreatTrsactionListBean.getTxid();
+        tx_hash = txid;
         rowtx = getnewcreatTrsactionListBean.getTx();
         canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
         edit.putString("signedRowtrsation", rowtx);
@@ -680,6 +681,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
 
     private void ifHaveRbf() {
         PyObject get_rbf_fee_info = null;
+        Log.i("tx_hash——jinxm", "tx_hash: "+tx_hash);
         try {
             get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", tx_hash);
         } catch (Exception e) {
@@ -693,20 +695,22 @@ public class TransactionDetailsActivity extends BaseActivity implements Business
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
             ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
-
-            Gson gson = new Gson();
-            AddspeedBean addspeedBean = gson.fromJson(strNewfee, AddspeedBean.class);
-            newFeerate = addspeedBean.getNewFeerate();
-            tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee), newFeerate));
-            img_Cancle.setOnClickListener(v -> {
-                alertDialog.dismiss();
-            });
-            viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
-                confirmedSpeed();
-            });
-            alertDialog.show();
+            try {
+                JSONObject jsonObject = new JSONObject(strNewfee);
+                newFeerate= jsonObject.getString("new_feerate");
+                mToast(getString(R.string.addspeed_success));
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee), newFeerate));
+                img_Cancle.setOnClickListener(v -> {
+                    alertDialog.dismiss();
+                });
+                viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
+                    confirmedSpeed();
+                });
+                alertDialog.show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
     //confirm speed

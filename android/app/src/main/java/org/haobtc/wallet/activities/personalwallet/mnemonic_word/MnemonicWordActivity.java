@@ -157,27 +157,37 @@ public class MnemonicWordActivity extends BaseActivity {
                         if (!TextUtils.isEmpty(text.toString())) {
                             String[] wordsList = text.toString().split(" ");
                             ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
-                            if (wordList.size() == 12) {
-                                editOne.setText(wordList.get(0));
-                                editTwo.setText(wordList.get(1));
-                                editThree.setText(wordList.get(2));
-                                editFour.setText(wordList.get(3));
-                                editFive.setText(wordList.get(4));
-                                editSix.setText(wordList.get(5));
-                                editSeven.setText(wordList.get(6));
-                                editEight.setText(wordList.get(7));
-                                editNine.setText(wordList.get(8));
-                                editTen.setText(wordList.get(9));
-                                editEleven.setText(wordList.get(10));
-                                editTwelve.setText(wordList.get(11));
-                            }else{
-                                editOne.setText(text.toString());
+                            switch (wordList.size()) {
+                                case 12:
+                                    editTwelve.setText(wordList.get(11));
+                                case 11:
+                                    editEleven.setText(wordList.get(10));
+                                case 10:
+                                    editTen.setText(wordList.get(9));
+                                case 9:
+                                    editNine.setText(wordList.get(8));
+                                case 8:
+                                    editEight.setText(wordList.get(7));
+                                case 7:
+                                    editSeven.setText(wordList.get(6));
+                                case 6:
+                                    editSix.setText(wordList.get(5));
+                                case 5:
+                                    editFive.setText(wordList.get(4));
+                                case 4:
+                                    editFour.setText(wordList.get(3));
+                                case 3:
+                                    editThree.setText(wordList.get(2));
+                                case 2:
+                                    editTwo.setText(wordList.get(1));
+                                case 1:
+                                    editOne.setText(wordList.get(0));
+
                             }
                         }
                     }
                 }
                 break;
-
         }
     }
 
@@ -192,10 +202,10 @@ public class MnemonicWordActivity extends BaseActivity {
             boolean isSeed = is_seed.toBoolean();
             if (isSeed) {
                 try {
-                    Daemon.commands.callAttr("is_exist_seed",newSeed);
+                    Daemon.commands.callAttr("is_exist_seed", newSeed);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    if (e.getMessage().contains("The same seed have create wallet")){
+                    if (e.getMessage().contains("The same seed have create wallet")) {
                         mToast(getString(R.string.xpub_have_wallet));
                     }
                     return;
@@ -206,7 +216,7 @@ public class MnemonicWordActivity extends BaseActivity {
                 intent.putExtra("strNewseed", newSeed);
                 startActivity(intent);
                 finish();
-            }else{
+            } else {
                 mToast(getString(R.string.helpword_wrong));
             }
         }

@@ -106,6 +106,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity implements Busine
     TextView textBlocks;
     @BindView(R.id.btnRecommendFee)
     Button btnRecommendFee;
+    @BindView(R.id.linear_seek)
+    LinearLayout linearSeek;
     private ArrayList<AddressEvent> dataListName;
     private Dialog dialogBtom;
     private ChoosePayAddressAdapetr choosePayAddressAdapetr;
@@ -127,6 +129,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity implements Busine
     private boolean done;
     private String rowtx;
     private String strFeemontAs;
+    private boolean showSeek = true;
 
     public int getLayoutId() {
         return R.layout.send_one2many_main;
@@ -282,8 +285,15 @@ public class SendOne2ManyMainPageActivity extends BaseActivity implements Busine
                 startActivity(intent1);
                 break;
             case R.id.img_feeSelect:
-                //Miner money
-//                showSelectFeeDialogs(SendOne2ManyMainPageActivity.this, R.layout.select_fee_popwindow);
+                if (showSeek) {
+                    feeSelect.setImageDrawable(getDrawable(R.drawable.jiantou_up));
+                    linearSeek.setVisibility(View.VISIBLE);
+                    showSeek = false;
+                } else {
+                    feeSelect.setImageDrawable(getDrawable(R.drawable.jiantou));
+                    linearSeek.setVisibility(View.GONE);
+                    showSeek = true;
+                }
                 break;
             case R.id.img_back:
                 finish();
@@ -349,6 +359,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity implements Busine
     private Runnable runnable = this::gotoConfirmOnHardware;
 
     private void gotoConfirmOnHardware() {
+        EventBus.getDefault().post(new SecondEvent("finish"));
         Intent intentCon = new Intent(SendOne2ManyMainPageActivity.this, ConfirmOnHardware.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", outputAddr);
@@ -510,6 +521,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity implements Busine
                 Daemon.commands.callAttr("select_wallet", wallet_name);
             } catch (Exception e) {
                 e.printStackTrace();
+                return;
             }
             walletName.setText(wallet_name);
             dialogBtom.cancel();
@@ -538,7 +550,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity implements Busine
             public void onItemClick(int position) {
                 wallet_name = dataListName.get(position).getName();
                 waletType = dataListName.get(position).getType();
-
+                wallet_type_to_sign = waletType;
             }
         });
     }
@@ -568,5 +580,12 @@ public class SendOne2ManyMainPageActivity extends BaseActivity implements Busine
         if (msgVote.equals("finish")) {
             finish();
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }
