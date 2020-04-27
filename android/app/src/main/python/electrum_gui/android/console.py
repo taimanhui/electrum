@@ -1104,9 +1104,15 @@ class AndroidCommands(commands.Commands):
     ##connection with terzorlib#########################
     def hardware_verify(self, msg):
         print(f"hahhahaha")
+        verify_info = {}
+        verify_info['sign'] = "30460221009e9b1243dbdb4e76d55cf60fb0793a72caa74f0baf5ac8834380e46845a8537e022100ed970f1454e5b769c28e47e489da057b5b8c17bab87ab3fec87592cdead3ab29"
+        verify_info['seq'] = "12133"
+        return json.dumps(verify_info)
         
     def backup_wallet(self, path='nfc'):
         print(f"hello world")
+        ency_wallet = "30460221009e9b1243dbdb4e76d55cf60fb0793a72caa74f0baf5ac8834380e46845a8537e022100ed970f1454e5b769c28e47e489da057b5b8c17bab87ab3fec87592cdead3ab29"
+        return ency_wallet
         # client = self.get_client(path=path)
         # try:
         #     response = client.backup_device()
@@ -1122,6 +1128,15 @@ class AndroidCommands(commands.Commands):
             return True
         else:
             return False
+
+    def set_no_pin(self, x):
+        print(f"set_no_pin = {x}")
+
+    def set_no_confirm(self, x):
+        print(f"set_no_confir = {x}")
+
+    def set_limit(self, limit):
+        print(f"set_limit = {limit}")
 
     def init(self, path='nfc'):
         client = self.get_client(path=path)
