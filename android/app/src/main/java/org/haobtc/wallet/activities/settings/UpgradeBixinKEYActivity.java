@@ -135,17 +135,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
         @Override
         protected Void doInBackground(String... params) {
             PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
-            if (tag == 1) { // 固件
                 try {
-                    boolean ready = isBootloaderMode(params[0]);
-                    if (ready) {
+                 //   boolean ready = isBootloaderMode(params[0]);
+                   // if (ready) {
                         protocol.put("PROCESS_REPORTER", this);
                         Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, params[0]);
-
-                    } else {
-                        showPromptMessage(R.string.not_bootloader_mode);
-                        cancel(true);
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     // clear state
@@ -154,7 +148,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
                     protocol.put("PROCESS_REPORTER", null);
                     cancel(true);
                 }
-            }
             return null;
         }
 
@@ -194,7 +187,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        tag = getIntent().getIntExtra("tag", 0);
+        tag = getIntent().getIntExtra("tag", 1);
         NfcUtils.nfc(this, false);
     }
 
@@ -220,6 +213,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void executeTask(ExecuteEvent executeEvent) {
         mTask.execute("nfc");
+        EventBus.getDefault().removeStickyEvent(ExecuteEvent.class);
     }
     @SingleClick
     @OnClick({R.id.img_back, R.id.imgdhksjks, R.id.tet_test})
@@ -249,4 +243,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
+    }
 }

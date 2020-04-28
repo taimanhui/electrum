@@ -46,7 +46,6 @@ public class BleService extends Service {
     private Ble<BleDevice> mBle;
     public static final String TAG = BleService.class.getSimpleName();
     private BluetoothDevice bluetoothDevice;
-    private static boolean isErrorOccurred;
     private final IntentFilter bondFilter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
     private boolean isBonded;
     private BleDevice mBleDevice;
@@ -93,57 +92,24 @@ public class BleService extends Service {
         @Override
         public void onServicesDiscovered(BleDevice device, List<BluetoothGattService> gattServices) {
             super.onServicesDiscovered(device, gattServices);
-            setNotify(device);
         }
 
         @Override
         public void onReady(BleDevice device) {
             super.onReady(device);
-            EventBus.getDefault().post(new ConnectingEvent());
-            isNFC = false;
-            bleTransport.put("ENABLED", true);
-            nfcTransport.put("ENABLED", false);
-            usb.put("ENABLED", false);
-            bleHandler.put("BLE", mBle);
-            bleHandler.put("BLE_DEVICE", device);
-            bleHandler.put("CALL_BACK", writeCallBack);
-            for (;;) {
-                BluetoothGattCharacteristic characteristic = mBle.getBleRequest().getReadCharacteristic(bluetoothDevice.getAddress());
-                BluetoothGattDescriptor notify = null;
-                if (characteristic != null) {
-                    notify = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
-                }
-                boolean isNotify = false;
-                if (notify != null) {
-                    isNotify = Arrays.equals(notify.getValue(), BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                }
-                if (isNotify) {
-                    new Handler().postDelayed(() -> EventBus.getDefault().post(new HandlerEvent()), isBonded ? 3000 : 1600);
-                    break;
-                } else {
-                    setNotify(mBleDevice);
-                }
-                if (isErrorOccurred) {
-                    isErrorOccurred = false;
-                    break;
-                }
-            }
+            setNotify(device);
         }
 
         @Override
         public void onConnectException(BleDevice device, int errorCode) {
             super.onConnectException(device, errorCode);
             Log.e(TAG, String.format("连接异常，异常状态码: %d", errorCode));
-            isErrorOccurred = true;
             if (isDfu) {
                 return;
             }
             switch (errorCode) {
                 case 2523:
                     Toast.makeText(BleService.this, getString(R.string.bluetooth_abnormal), Toast.LENGTH_LONG).show();
-/*
-                    mBle.connect(device, connectCallback);
-*/
                     break;
                 case 133:
                 case 8:
@@ -170,6 +136,9 @@ public class BleService extends Service {
             stopSelf();
         }
     };
+    private void handle() {
+        EventBus.getDefault().post(new HandlerEvent());
+    }
     private void setNotify(BleDevice device) {
         /*Set up notifications when the connection is successful*/
         mBle.enableNotify(device, true, new BleNotiftCallback<BleDevice>() {
@@ -183,6 +152,15 @@ public class BleService extends Service {
             public void onNotifySuccess(BleDevice device) {
                 super.onNotifySuccess(device);
                 Log.d(TAG, "onNotifySuccess: " + device.getBleName());
+                EventBus.getDefault().post(new ConnectingEvent());
+                isNFC = false;
+                bleTransport.put("ENABLED", true);
+                nfcTransport.put("ENABLED", false);
+                usb.put("ENABLED", false);
+                bleHandler.put("BLE", mBle);
+                bleHandler.put("BLE_DEVICE", device);
+                bleHandler.put("CALL_BACK", writeCallBack);
+                handle();
             }
 
             @Override
@@ -202,7 +180,7 @@ public class BleService extends Service {
             switch (bluetoothDevice.getBondState()) {
                 case BluetoothDevice.BOND_BONDED:
                     if (mBleDevice.isConnected()) {
-                        connectCallback.onReady(mBleDevice);
+                        handle();
                     } else if (mBleDevice.isConnectting()) {
                         mBle.cancelConnectting(mBleDevice);
                         mBle.connect(mBleDevice, connectCallback);
@@ -216,6 +194,7 @@ public class BleService extends Service {
                         Log.e("BLE", "无法绑定设备");
                         Toast.makeText(this, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
                     }
+                    isBonded = true;
             }
         return Service.START_NOT_STICKY;
     }
@@ -223,23 +202,27 @@ public class BleService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            BluetoothDevice  device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            Log.i(TAG, "receive broadcast===" + action);
-            if (bluetoothDevice == null || device == null || !device.getAddress().equals(bluetoothDevice.getAddress())) {
-                return;
-            }
-            if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
-                EventBus.getDefault().post(new ConnectingEvent());
-            }
-            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                if (bluetoothDevice != null) {
-                    if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
+            synchronized (this) {
+                if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                    BluetoothDevice  device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
+                    Log.d(TAG, "receive broadcast===" + action + "state===" + bluetoothDevice.getBondState() + "===previous===" + previousState);
+                    if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE && previousState == BluetoothDevice.BOND_BONDED) {
+                        Log.d(TAG, String.format("设备==%s==,配对信息已清除", bluetoothDevice.getName()));
+                    }
+                    if (bluetoothDevice == null || device == null || !device.getAddress().equals(bluetoothDevice.getAddress())) {
+                        return;
+                    }
+                    if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDING && previousState == BluetoothDevice.BOND_NONE) {
+                        EventBus.getDefault().post(new ConnectingEvent());
+                        return;
+                    }
+                    if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDED && previousState == BluetoothDevice.BOND_BONDING && isBonded) {
                         if (mBleDevice.isConnected()) {
-                            connectCallback.onReady(mBleDevice);
+                            handle();
                         } else {
                             mBle.connect(mBleDevice, connectCallback);
                         }
-                        isBonded = true;
                     }
                 }
             }

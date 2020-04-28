@@ -1231,8 +1231,13 @@ class AndroidCommands(commands.Commands):
         Note : Device must be in bootloader mode.
         """
         client = self.get_client(path)
-        if not dry_run and not client.features.bootloader_mode:
-            raise BaseException("Please switch your device to bootloader mode.")
+        resp = client.client.call(messages.BixinUpgrade())
+        if not dry_run and not isinstance(resp, messages.Success):
+            raise RuntimeError("Device must be in bootloader mode")
+        time.sleep(2)
+        features = client.client.init_device()
+        if not dry_run and not features.bootloader_mode:
+             raise BaseException("Please switch your device to bootloader mode.")
 
         f = client.features
         bootloader_onev2 = f.major_version == 1 and f.minor_version >= 8

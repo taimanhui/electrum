@@ -593,4 +593,6 @@
     <string name="verifying_pin">正在验证PIN码</string>
     <string name="reading_signature">reading signature</string>
     <string name="transaction_parse_error">交易解析失败</string>
+    <string name="testnet">Bixin cold wallet T</string>
+    <string name="regnet">Bixin cold wallet R</string>
 </resources>

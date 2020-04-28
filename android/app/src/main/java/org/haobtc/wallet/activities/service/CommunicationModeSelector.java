@@ -315,7 +315,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 intent.putExtra("way", isNFC ? COMMUNICATION_MODE_NFC: COMMUNICATION_MODE_BLE);
                 intent.putExtra("tag", 1);
                 startActivity(intent);
-                EventBus.getDefault().postSticky(new ExecuteEvent());
+                if (isNFC) {
+                    EventBus.getDefault().postSticky(new ExecuteEvent());
+                }
             } else if ("ble".equals(extras)) {
                 dfu();
             }
@@ -468,6 +470,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         /*
         调用此方法使Nordic nrf52832进入bootloader模式
 */      starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
+        starter.setKeepBond(true);
         starter.setZip(null, String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
         DfuServiceInitiator.createDfuNotificationChannel(this);
         starter.start(this, DfuService.class);
