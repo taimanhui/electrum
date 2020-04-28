@@ -8,9 +8,11 @@ import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,11 +32,10 @@ import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
 import org.haobtc.wallet.activities.settings.BlueToothStatusActivity;
 import org.haobtc.wallet.activities.settings.CurrencyActivity;
+import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
-import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
-import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.ReadingPubKeyDialogFragment;
@@ -83,6 +84,10 @@ public class SettingActivity extends BaseActivity implements BusinessAsyncTask.H
     TextView tetVerson;
     @BindView(R.id.bluetooth_status)
     TextView bluetoothStatusText;
+    @BindView(R.id.hardware_update)
+    LinearLayout hardwareUpdate;
+    @BindView(R.id.change_pin)
+    LinearLayout changePin;
     private boolean bluetoothStatus;
     private SharedPreferences preferences;
     private boolean executable = true;
@@ -117,7 +122,7 @@ public class SettingActivity extends BaseActivity implements BusinessAsyncTask.H
 
     }
 
-    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set})
+    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.hardware_update,R.id.change_pin})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_bixinKey:
@@ -150,6 +155,13 @@ public class SettingActivity extends BaseActivity implements BusinessAsyncTask.H
                 break;
             case R.id.bluetooth_set:
                 mIntent(BlueToothStatusActivity.class);
+                break;
+            case R.id.hardware_update:
+                Intent intentVersion = new Intent(SettingActivity.this, VersionUpgradeActivity.class);
+                startActivity(intentVersion);
+                break;
+            case R.id.change_pin:
+
                 break;
         }
     }
@@ -203,7 +215,7 @@ public class SettingActivity extends BaseActivity implements BusinessAsyncTask.H
                 executable = false;
             }
             if (ready) {
-                CommunicationModeSelector.customerUI.put("pin", pin);
+                customerUI.put("pin", pin);
                 ready = false;
                 return;
             } else if (done) {
@@ -236,7 +248,6 @@ public class SettingActivity extends BaseActivity implements BusinessAsyncTask.H
                 }
             }
         }
-
     }
 
     @Override
@@ -250,7 +261,7 @@ public class SettingActivity extends BaseActivity implements BusinessAsyncTask.H
                     case CommunicationModeSelector.PIN_NEW_FIRST: // 激活
                         // ble 激活
                         if (CommunicationModeSelector.isActive) {
-                            CommunicationModeSelector.customerUI.put("pin", pin);
+                            customerUI.put("pin", pin);
                             CommunicationModeSelector.handler.sendEmptyMessage(CommunicationModeSelector.SHOW_PROCESSING);
 
                         } else if (isActive) {
@@ -260,7 +271,7 @@ public class SettingActivity extends BaseActivity implements BusinessAsyncTask.H
                         break;
                     case CommunicationModeSelector.PIN_CURRENT: // 创建
                         if (!isNFC) { // ble
-                            CommunicationModeSelector.customerUI.put("pin", pin);
+                            customerUI.put("pin", pin);
                         } else { // nfc
                             if (readingPubKey != null) {
                                 readingPubKey.dismiss();
@@ -339,7 +350,6 @@ public class SettingActivity extends BaseActivity implements BusinessAsyncTask.H
             }
         }
     }
-
 
     @Override
     protected void onDestroy() {

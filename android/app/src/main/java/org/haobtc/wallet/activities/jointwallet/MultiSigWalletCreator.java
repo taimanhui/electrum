@@ -205,6 +205,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
 
     private void seekbarLatoutup() {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
+        seekBarFee.setProgress(1);
         seekBarFee.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
 
             @Override
@@ -252,6 +253,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
 
     private void seekbarLatoutdown() {
         RelativeLayout.LayoutParams paramsTwo = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
+        seekBarNum.setProgress(1);
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {

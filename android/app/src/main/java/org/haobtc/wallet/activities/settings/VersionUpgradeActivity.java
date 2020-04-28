@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.settings;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -20,25 +22,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.chaquo.python.PyObject;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector;
+import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.utils.Global;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dr.android.fileselector.FileSelectConstant;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
-
 
 public class VersionUpgradeActivity extends BaseActivity {
 
@@ -54,9 +60,13 @@ public class VersionUpgradeActivity extends BaseActivity {
     CheckBox checkBoxBluetooth;
     public String pin = "";
     public final static String TAG = VersionUpgradeActivity.class.getSimpleName();
+    @BindView(R.id.btn_import_file)
+    Button btnImportFile;
     private int checkWitch = 1;
     public static final String UPDATE_PROCESS = "org.haobtc.wallet.activities.settings.percent";
     CommunicationModeSelector dialog;
+    private RxPermissions rxPermissions;
+    public static String filePath;
 
     @Override
     public int getLayoutId() {
@@ -66,6 +76,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        rxPermissions = new RxPermissions(this);
         Intent intent = getIntent();
         String firmwareVersion = intent.getStringExtra("firmwareVersion");
         String bleVerson = intent.getStringExtra("bleVerson");
@@ -83,7 +94,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         System.out.println("deveice size" + usbManager.getDeviceList().size());
         usbManager.getDeviceList().entrySet().forEach(stringUsbDeviceEntry -> {
             System.out.println("fonud device===" + stringUsbDeviceEntry.getValue().getDeviceName() + "====" + stringUsbDeviceEntry.getValue().getProductId()
-           + "=====" + stringUsbDeviceEntry.getValue().getProductName() + "===" + stringUsbDeviceEntry.getValue().getVendorId());
+                    + "=====" + stringUsbDeviceEntry.getValue().getProductName() + "===" + stringUsbDeviceEntry.getValue().getVendorId());
         });
     }
 
@@ -112,7 +123,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.img_back, R.id.btn_toUpgrade})
+    @OnClick({R.id.img_back, R.id.btn_toUpgrade, R.id.btn_import_file})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -132,6 +143,23 @@ public class VersionUpgradeActivity extends BaseActivity {
                         dialog.show(getSupportFragmentManager(), "");
                         break;
                 }
+                break;
+            case R.id.btn_import_file:
+                rxPermissions
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                Intent intent1 = new Intent();
+                                intent1.setClass(getApplicationContext(), FsActivity.class);
+                                intent1.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FILE);
+                                intent1.addCategory(Intent.CATEGORY_OPENABLE);
+                                intent1.putExtra("keyFile", "1");
+                                startActivityForResult(intent1, 1);
+
+                            } else { // Oups permission denied
+                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
                 break;
         }
     }
@@ -172,6 +200,7 @@ public class VersionUpgradeActivity extends BaseActivity {
 
         }
     }
+
     private final DfuProgressListener dfuProgressListener = new DfuProgressListenerAdapter() {
         @Override
         public void onDfuCompleted(@NonNull String deviceAddress) {
@@ -184,7 +213,9 @@ public class VersionUpgradeActivity extends BaseActivity {
         public void onDfuProcessStarted(@NonNull String deviceAddress) {
             super.onDfuProcessStarted(deviceAddress);
         }
+
         Intent intent;
+
         @Override
         public void onDfuProcessStarting(@NonNull String deviceAddress) {
             super.onDfuProcessStarting(deviceAddress);
@@ -224,12 +255,30 @@ public class VersionUpgradeActivity extends BaseActivity {
         super.onDestroy();
         DfuServiceListenerHelper.unregisterProgressListener(this, dfuProgressListener);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            //import file
+            assert data != null;
+            ArrayList<String> listExtra = data.getStringArrayListExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS);
+            assert listExtra != null;
+            String str = listExtra.toString();
+            String substring = str.substring(1);
+            filePath = substring.substring(0, substring.length() - 1);
+            Log.i("listExtra", "listExtra--: " + listExtra + "   strPath ---  " + filePath);
+            mToast(filePath);
+        }
+    }
+
     BroadcastReceiver usbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
                     // call your method that cleans up and closes communication with the device
                     UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);

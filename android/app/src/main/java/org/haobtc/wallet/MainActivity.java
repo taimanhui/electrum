@@ -228,7 +228,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override

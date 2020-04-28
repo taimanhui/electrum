@@ -246,11 +246,13 @@
                             android:layout_weight="1"
                             android:background="@color/little_circle_color">
 
-                            <TextView
+                            <EditText
                                 android:id="@+id/edit_changeMoney"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
+                                android:inputType="numberDecimal"
+                                android:background="@null"
                                 android:gravity="center|start"
                                 android:paddingStart="@dimen/dp_10"
                                 android:textColor="@color/text"

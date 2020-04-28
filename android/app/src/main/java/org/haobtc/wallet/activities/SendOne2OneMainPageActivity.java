@@ -96,7 +96,7 @@ import static org.haobtc.wallet.activities.jointwallet.CommunicationModeSelector
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher, BusinessAsyncTask.Helper {
     public static final String TAG = SendOne2OneMainPageActivity.class.getSimpleName();
     @BindView(R.id.edit_changeMoney)
-    TextView editChangeMoney;
+    EditText editChangeMoney;
     @BindView(R.id.seek_bar)
     IndicatorSeekBar seekBar;
     @BindView(R.id.tv_indicator)
@@ -159,6 +159,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     private boolean showSeek = true;
     private String onlickName;
+    private boolean flag = true;
 
     @Override
     public int getLayoutId() {
@@ -190,7 +191,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         Button btnRecommend = findViewById(R.id.btnRecommendFee);
         btnRecommend.setOnClickListener(this);
         imgBack.setOnClickListener(this);
-        tetamount.addTextChangedListener(this);
         init();
 
     }
@@ -198,7 +198,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     //edittext focus change
     private void focusChange() {
         registerKeyBoard();
-
         editAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -221,6 +220,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 }
             }
         });
+        //btc to cny
+        TextWatcher1 textWatcher1 = new TextWatcher1();
+        tetamount.addTextChangedListener(textWatcher1);
+        //cny to btc
+        TextWatcher2 textWatcher2 = new TextWatcher2();
+        editChangeMoney.addTextChangedListener(textWatcher2);
 
     }
 
@@ -994,6 +999,108 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         String msgVote = updataHint.getMsg();
         if (msgVote.equals("finish")) {
             finish();
+        }
+    }
+
+    class TextWatcher1 implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            inputType(tetamount, charSequence);
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            strAmount = editable.toString();
+            if (!TextUtils.isEmpty(strAmount)) {
+                if (flag) {
+                    flag = false;
+                    BigDecimal bigmBTC = new BigDecimal(strAmount);
+                    try {
+                        pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", bigmBTC);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        mToast(e.getMessage());
+                    }
+                    if (pyObject != null) {
+                        editChangeMoney.setText(pyObject.toString());
+                    }
+                } else {
+                    flag = true;
+                }
+            } else {
+                if (flag) {
+                    flag = false;
+                    editChangeMoney.setText("");
+                } else {
+                    flag = true;
+                }
+            }
+        }
+    }
+
+    class TextWatcher2 implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            inputType(editChangeMoney, charSequence);
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if (!TextUtils.isEmpty(editable.toString())) {
+                if (flag) {
+                    flag = false;
+                    try {
+                        pyObject = Daemon.commands.callAttr("get_exchange_currency", "fiat", editable.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        mToast(e.getMessage());
+                    }
+                    if (pyObject != null) {
+                        tetamount.setText(pyObject.toString());
+                    }
+                } else {
+                    flag = true;
+                }
+            } else {
+                if (flag) {
+                    flag = false;
+                    tetamount.setText("");
+                } else {
+                    flag = true;
+                }
+            }
+        }
+    }
+
+    private void inputType(EditText edittext, CharSequence s) {
+        if (s.toString().contains(".")) {
+            if (s.length() - 1 - s.toString().indexOf(".") > 7) {
+                s = s.toString().subSequence(0,
+                        s.toString().indexOf(".") + 8);
+                edittext.setText(s);
+                edittext.setSelection(s.length());
+            }
+        }
+        if (s.toString().trim().substring(0).equals(".")) {
+            s = "0" + s;
+            edittext.setText(s);
+            edittext.setSelection(2);
+        }
+        if (s.toString().startsWith("0")
+                && s.toString().trim().length() > 1) {
+            if (!s.toString().substring(1, 2).equals(".")) {
+                edittext.setText(s.subSequence(0, 1));
+                edittext.setSelection(1);
+                return;
+            }
         }
     }
 }

@@ -108,13 +108,51 @@
                     android:text="@string/verification_key"
                     android:textColor="@color/text" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="@dimen/dp_1"
+                    android:background="@color/separation_line" />
+
+                <LinearLayout
+                    android:id="@+id/change_pin"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="59.5dp"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        android:text="@string/fix_pin" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:layout_width="37dp"
+                        android:layout_height="match_parent"
+                        android:padding="15dp"
+                        android:src="@drawable/jiantou" />
+
+
+                </LinearLayout>
+
+
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="360dp"
+            android:layout_height="420dp"
             android:layout_below="@+id/sec_view"
             android:layout_marginLeft="@dimen/layout_margin"
             android:layout_marginTop="10dp"
@@ -240,7 +278,46 @@
                         android:text="@string/open"
                         android:textColor="@color/graytext_color" />
                 </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:background="@color/separation_line" />
 
+                <LinearLayout
+                    android:id="@+id/hardware_update"
+                    android:layout_width="match_parent"
+                    android:layout_height="59.5dp"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp"
+                        android:text="@string/verson_update" />
+
+                    <TextView
+                        android:id="@+id/tet_code"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|end"
+                        android:singleLine="true"
+                        android:textColor="@color/graytext_color"
+                        android:textSize="@dimen/sp_13"
+                        android:text="@string/v_1_2_3" />
+
+                    <ImageView
+                        android:layout_width="37dp"
+                        android:layout_height="match_parent"
+                        android:padding="15dp"
+                        android:src="@drawable/jiantou" />
+
+
+                </LinearLayout>
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp_1"

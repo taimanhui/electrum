@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -85,12 +86,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                     boolean ready = isBootloaderMode(params[0]);
                     if (ready) {
                         protocol.put("PROCESS_REPORTER", this);
-                        File file = new File("/sdcard/Android/data/org.haobtc.wallet/cache/trezor.bin");
-                        if (file.exists()) {
-                            Daemon.commands.callAttr("firmware_update", "/sdcard/Android/data/org.haobtc.wallet/cache/trezor.bin", params[0]);
-                        } else {
-                            showPromptMessage(R.string.file_not_exist);
-                        }
+                        Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, params[0]);
+
                     } else {
                         showPromptMessage(R.string.not_bootloader_mode);
                         cancel(true);
@@ -128,11 +125,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             tetUpgradeTest.setText(getString(R.string.Cancelled));
         }
     }
+
     private void showPromptMessage(@StringRes int id) {
         UpgradeBixinKEYActivity.this.runOnUiThread(() -> {
             Toast.makeText(UpgradeBixinKEYActivity.this, id, Toast.LENGTH_SHORT).show();
         });
     }
+
     @Override
     public int getLayoutId() {
         return R.layout.activity_upgrade_bixin_key;

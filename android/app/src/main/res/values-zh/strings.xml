@@ -538,5 +538,6 @@
     <string name="addspeed_success">加速成功！</string>
     <string name="software_wallet">软件钱包</string>
     <string name="please_change_xpub">此xpub已存在，请更换</string>
+    <string name="error_wallet_transaction">此交易与当前钱包无关</string>
 
 </resources>

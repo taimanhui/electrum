@@ -301,12 +301,13 @@ public class SendOne2ManyMainPageActivity extends BaseActivity implements Busine
             case R.id.create_trans_one2many:
                 try {
                     mktx = Daemon.commands.callAttr("mktx", "", "");
-                    Log.i("CreatTransaction", "m-------: " + mktx);
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (e.getMessage().contains("Insufficient funds")) {
                         mToast(getString(R.string.wallet_insufficient));
-                    } else {
+                    } else if (e.getMessage().contains("Transaction is unrelated to this wallet")){
+                        mToast(getString(R.string.error_wallet_transaction));
+                    }else {
                         mToast(getString(R.string.changeaddress));
                     }
                     return;

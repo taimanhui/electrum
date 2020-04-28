@@ -583,10 +583,4 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }

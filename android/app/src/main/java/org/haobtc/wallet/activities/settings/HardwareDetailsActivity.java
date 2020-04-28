@@ -224,14 +224,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         }
     }
 
-/*    @Override
-    protected void onResume() {
-        super.onResume();
-        if (dialogFragment != null && dismiss) {
-            dialogFragment.dismiss();
-        }
-    }*/
-
     @Override
     public void onPreExecute() {
 

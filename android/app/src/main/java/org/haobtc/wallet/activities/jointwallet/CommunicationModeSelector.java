@@ -341,7 +341,7 @@ public class CommunicationModeSelector extends DialogFragment implements View.On
         调用此方法使Nordic nrf52832进入bootloader模式
 */
         starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
-        starter.setZip(null, "/sdcard/Android/data/org.haobtc.wallet/cache/ble.zip");
+        starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getActivity().getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath);
         DfuServiceInitiator.createDfuNotificationChannel(Objects.requireNonNull(getContext()));
         starter.start(getContext(), DfuService.class);
         isDfu = true;

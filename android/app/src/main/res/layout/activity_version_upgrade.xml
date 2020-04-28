@@ -40,6 +40,7 @@
         android:orientation="vertical"
         android:layout_below="@+id/snkdfnksjndkjsd"
         android:layout_width="match_parent"
+        android:gravity="center_horizontal"
         android:layout_height="match_parent"
         android:background="@color/bk_page">
 
@@ -229,7 +230,20 @@
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
-
+        <Button
+            android:id="@+id/btn_import_file"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_40"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:background="@color/paste_bk"
+            android:drawableStart="@drawable/file"
+            android:paddingStart="10dp"
+            android:paddingEnd="@dimen/dp_10"
+            android:text="@string/import_file"
+            android:textAllCaps="false"
+            android:textColor="@color/button_bk"
+            android:textSize="@dimen/sp_13" />
     </LinearLayout>
 
     <Button

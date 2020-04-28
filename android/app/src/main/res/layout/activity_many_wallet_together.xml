@@ -334,7 +334,7 @@
                                 android:id="@+id/seek_bar_num"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/dp_30"
-                                android:max="13"
+                                android:max="14"
                                 android:thumb="@drawable/white_clrcle" />
 
 
