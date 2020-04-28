@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import androidx.cardview.widget.CardView;
 
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.MultiSigWalletCreator;
@@ -65,7 +66,7 @@ public class CreateWalletActivity extends BaseActivity {
                 if (TextUtils.isEmpty(intentWhere)) {
                     finish();
                 } else {
-                    System.exit(0);
+                    mIntent(MainActivity.class);
                 }
                 break;
             case R.id.lin_personal_walt:

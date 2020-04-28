@@ -67,6 +67,7 @@ public class ImportHistoryWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.create_trans_one2one:
+//                mIntent(ChooseHistryWalletActivity.class);
                 // new version code
                 CommunicationModeSelector.runnables.clear();
                 CommunicationModeSelector.runnables.add(null);

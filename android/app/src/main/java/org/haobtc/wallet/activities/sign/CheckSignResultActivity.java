@@ -41,6 +41,7 @@ public class CheckSignResultActivity extends BaseActivity {
             imgStatus.setImageDrawable(getDrawable(R.drawable.fail));
             testStatus.setText(getString(R.string.sign_check_fail));
             btnFinish.setText(getString(R.string.confirm));
+            testContent.setVisibility(View.GONE);
         }
 
     }

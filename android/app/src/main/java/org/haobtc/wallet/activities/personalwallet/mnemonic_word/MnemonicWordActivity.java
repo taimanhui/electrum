@@ -31,6 +31,8 @@ import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -156,7 +158,12 @@ public class MnemonicWordActivity extends BaseActivity {
                     if (data != null && data.getItemCount() > 0) {
                         CharSequence text = data.getItemAt(0).getText();
                         if (!TextUtils.isEmpty(text.toString())) {
-                            String[] wordsList = text.toString().split(" ");
+                            String strlist = "";
+                            Pattern p = Pattern.compile("\\s+");
+                            Matcher m = p.matcher(text.toString());
+                            strlist = m.replaceAll(" ");
+
+                            String[] wordsList = strlist.split(" ");
                             ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
                             switch (wordList.size()) {
                                 case 12:

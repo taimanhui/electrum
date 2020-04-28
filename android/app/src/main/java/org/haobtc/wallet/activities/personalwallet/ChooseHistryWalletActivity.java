@@ -23,6 +23,7 @@ import org.haobtc.wallet.adapter.ImportHistryWalletAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.ImportHistryWalletBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
+import org.haobtc.wallet.event.InputHistoryWalletEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +52,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     private boolean chooseWallet = false;
     private String keyaddress;
     private String walletType;
+    private ArrayList<InputHistoryWalletEvent> walletList;
+    private InputHistoryWalletEvent inputHistoryWalletEvent;
 
     @Override
     public int getLayoutId() {
@@ -70,6 +74,92 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         xpubList = new ArrayList<>();
         //get histry wallet
         getHistryWallet();
+
+//        walletList = new ArrayList<>();
+//
+//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//        inputHistoryWalletEvent.setName("共管钱包");
+//        inputHistoryWalletEvent.setType("2-3");
+//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
+//        walletList.add(inputHistoryWalletEvent);
+//
+//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//        inputHistoryWalletEvent.setName("共管钱包");
+//        inputHistoryWalletEvent.setType("3-5");
+//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
+//        walletList.add(inputHistoryWalletEvent);
+//
+//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//        inputHistoryWalletEvent.setName("共管钱包");
+//        inputHistoryWalletEvent.setType("4-6");
+//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
+//        walletList.add(inputHistoryWalletEvent);
+//
+//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//        inputHistoryWalletEvent.setName("name");
+//        inputHistoryWalletEvent.setType("1-1");
+//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
+//        walletList.add(inputHistoryWalletEvent);
+//
+//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//        inputHistoryWalletEvent.setName("key");
+//        inputHistoryWalletEvent.setType("1-3");
+//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
+//        walletList.add(inputHistoryWalletEvent);
+//
+//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//        inputHistoryWalletEvent.setName("flag");
+//        inputHistoryWalletEvent.setType("1-2");
+//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
+//        walletList.add(inputHistoryWalletEvent);
+//
+//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//        inputHistoryWalletEvent.setName("name");
+//        inputHistoryWalletEvent.setType("1-5");
+//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
+//        walletList.add(inputHistoryWalletEvent);
+//
+//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//        inputHistoryWalletEvent.setName("table");
+//        inputHistoryWalletEvent.setType("1-1");
+//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
+//        walletList.add(inputHistoryWalletEvent);
+//
+//        ArrayList<InputHistoryWalletEvent> list = new ArrayList<>();
+//        boolean flag = false;
+//        for (int i = 0; i < walletList.size(); i++) {
+//            String c = walletList.get(i).getName();
+//            if (list.size() > 0) {
+//                InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//                int index = 1;
+//                for (int j = 0; j < list.size(); j++) {
+//                    if (list.get(j).getName().contains(c)) {
+//                        list.get(j).setName(c + "(" + index + ")");
+//                        flag = true;
+//                        index++;
+//                    }
+//                }
+//                inputHistoryWalletEvent.setType(walletList.get(i).getType());
+//                inputHistoryWalletEvent.setXpubs(walletList.get(i).getXpubs());
+//                if (flag) {
+//                    inputHistoryWalletEvent.setName(c + "(" + index + ")");
+//                    list.add(inputHistoryWalletEvent);
+//                } else {
+//                    inputHistoryWalletEvent.setName(c);
+//                    list.add(inputHistoryWalletEvent);
+//                }
+//            } else {
+//                InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
+//                inputHistoryWalletEvent.setName(c);
+//                inputHistoryWalletEvent.setType(walletList.get(i).getType());
+//                inputHistoryWalletEvent.setXpubs(walletList.get(i).getXpubs());
+//                list.add(inputHistoryWalletEvent);
+//            }
+//            flag = false;
+//        }
+//
+//        ImportHistryWalletAdapter histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, list);
+//        reclImportWallet.setAdapter(histryWalletAdapter);
 
     }
 
@@ -168,7 +258,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
             String message = e.getMessage();
             if ("BaseException: file already exists at path".equals(message)) {
                 mToast(getString(R.string.changewalletname));
-            }else if (message.contains("The same xpubs have create wallet")){
+            } else if (message.contains("The same xpubs have create wallet")) {
                 mToast(getString(R.string.xpub_have_wallet));
             }
             return;
