@@ -16,11 +16,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.entries.FsActivity;
+import org.haobtc.wallet.event.ExceptionEvent;
 
 import java.util.ArrayList;
 
@@ -184,6 +186,12 @@ public class VersionUpgradeActivity extends BaseActivity {
             intent.setAction(UPDATE_PROCESS);
             intent.putExtra("process", percent);
             LocalBroadcastManager.getInstance(VersionUpgradeActivity.this).sendBroadcast(intent);
+        }
+
+        @Override
+        public void onError(@NonNull String deviceAddress, int error, int errorType, String message) {
+            super.onError(deviceAddress, error, errorType, message);
+            EventBus.getDefault().post(new ExceptionEvent(message));
         }
     };
 

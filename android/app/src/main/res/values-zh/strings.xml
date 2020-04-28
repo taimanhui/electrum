@@ -569,4 +569,5 @@
     <string name="transaction_parse_error">交易解析失败</string>
     <string name="testnet">币信冷钱包T</string>
     <string name="regnet">币信冷钱包R</string>
+    <string name="update_file_not_exist">升级文件不存在</string>
 </resources>

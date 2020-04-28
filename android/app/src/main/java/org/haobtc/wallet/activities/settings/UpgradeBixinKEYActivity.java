@@ -20,7 +20,6 @@ import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnDownloadListener;
 import com.azhon.appupdate.manager.DownloadManager;
 import com.chaquo.python.PyObject;
-import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -28,20 +27,17 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.ExceptionEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.io.File;
-import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 
 
 public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadListener {
@@ -64,18 +60,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
     private boolean done;
     private DownloadManager manager;
 
-/*    private boolean isBootloaderMode(String way) throws Exception {
-        String feature;
-        try {
-            feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature", way)).get().toString();
-            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
-            return features.isBootloaderMode();
-
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }*/
     private void updateFiles() {
         // todo: 从服务器获取最新 版本信息
         UpdateConfiguration configuration = new UpdateConfiguration()
@@ -136,9 +120,14 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
         protected Void doInBackground(String... params) {
             PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
                 try {
-                 //   boolean ready = isBootloaderMode(params[0]);
-                   // if (ready) {
                         protocol.put("PROCESS_REPORTER", this);
+                        if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                            File file = new File(String.format("%s/bixin.bin", getExternalCacheDir().getPath()));
+                            if (!file.exists()) {
+                                showPromptMessage(R.string.update_file_not_exist);
+                                cancel(true);
+                            }
+                        }
                         Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, params[0]);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -212,10 +201,19 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
             }
         }
     };
+
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void executeTask(ExecuteEvent executeEvent) {
         mTask.execute("nfc");
         EventBus.getDefault().removeStickyEvent(ExecuteEvent.class);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDfuException(ExceptionEvent event) {
+        VersionUpgradeActivity.filePath = "";
+        tetUpgradeTest.setText(getString(R.string.Cancelled));
+        showPromptMessage(R.string.update_failed);
+        new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
     }
     @SingleClick
     @OnClick({R.id.img_back, R.id.imgdhksjks, R.id.tet_test})

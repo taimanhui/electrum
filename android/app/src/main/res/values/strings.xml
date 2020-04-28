@@ -595,4 +595,6 @@
     <string name="transaction_parse_error">交易解析失败</string>
     <string name="testnet">Bixin cold wallet T</string>
     <string name="regnet">Bixin cold wallet R</string>
+    <string name="update_file_not_exist">升级文件不存在</string>
+    <string name="update_file_format_error">升级文件应该以.zip结尾</string>
 </resources>

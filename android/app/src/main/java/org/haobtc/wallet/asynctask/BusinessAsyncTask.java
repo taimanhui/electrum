@@ -12,7 +12,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public final static String GET_EXTEND_PUBLIC_KEY_SINGLE = "get_xpub_from_hw_single";
     public final static String SIGN_TX = "sign_tx";
     public static final String BACK_UP = "backup_wallet";
-    public static final String RECOVER = "wallet_recovery";
+    public static final String RECOVER = "recovery_wallet";
     public final static String CHANGE_PIN = "reset_pin";
     public final static String WIPE_DEVICE = "wipe_device";
     public static final String SIGN_MESSAGE = "sign_message";

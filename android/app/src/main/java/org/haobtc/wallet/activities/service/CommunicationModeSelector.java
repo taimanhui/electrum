@@ -82,6 +82,7 @@ import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -447,7 +448,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 } else {
                     Log.i(TAG, "java ==== backup");
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC: COMMUNICATION_MODE_BLE);
-
                 }
             }
         } else {
@@ -471,6 +471,18 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         调用此方法使Nordic nrf52832进入bootloader模式
 */      starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
         starter.setKeepBond(true);
+        if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+            File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
+            if (!file.exists()) {
+               Toast.makeText(this, R.string.update_file_not_exist, Toast.LENGTH_LONG).show();
+               finish();
+               return;
+            }
+        } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
+            Toast.makeText(this, R.string.update_file_format_error, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath);
         DfuServiceInitiator.createDfuNotificationChannel(this);
         starter.start(this, DfuService.class);
@@ -658,6 +670,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         } else if (BackupRecoveryActivity.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
                 // TODO: 获取加密后的私钥
+
             } else {
                 // todo: 恢复结果
             }

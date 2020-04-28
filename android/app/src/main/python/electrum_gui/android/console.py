@@ -1281,16 +1281,17 @@ class AndroidCommands(commands.Commands):
         Note : Device must be in bootloader mode.
         """
         client = self.get_client(path)
-        resp = client.client.call(messages.BixinUpgrade())
-        if not dry_run and not isinstance(resp, messages.Success):
-            raise RuntimeError("Device must be in bootloader mode")
-        time.sleep(2)
-        features = client.client.init_device()
+        features = client.features
+        if not features.bootloader_mode:
+            resp = client.client.call(messages.BixinUpgrade())
+            if not dry_run and not isinstance(resp, messages.Success):
+                raise RuntimeError("Device turn into bootloader failed")
+            time.sleep(2)
+            features = client.client.init_device()
         if not dry_run and not features.bootloader_mode:
-             raise BaseException("Please switch your device to bootloader mode.")
+            raise BaseException("Please switch your device to bootloader mode.")
 
-        f = client.features
-        bootloader_onev2 = f.major_version == 1 and f.minor_version >= 8
+        bootloader_onev2 = features.major_version == 1 and features.minor_version >= 8
 
         if filename:
             try:
@@ -1317,9 +1318,9 @@ class AndroidCommands(commands.Commands):
             elif not bootloader_onev2 and version == firmware.FirmwareFormat.TREZOR_ONE_V2:
                 raise BaseException("You need to upgrade to bootloader 1.8.0 first.")
 
-            if f.major_version not in trezorctl.ALLOWED_FIRMWARE_FORMATS:
+            if features.major_version not in trezorctl.ALLOWED_FIRMWARE_FORMATS:
                 raise BaseException("trezorctl doesn't know your device version. Aborting.")
-            elif version not in trezorctl.ALLOWED_FIRMWARE_FORMATS[f.major_version]:
+            elif version not in trezorctl.ALLOWED_FIRMWARE_FORMATS[features.major_version]:
                 raise BaseException("Firmware does not match your device, aborting.")
 
         if not raw:
@@ -1334,7 +1335,7 @@ class AndroidCommands(commands.Commands):
             print("Dry run. Not uploading firmware to device.")
         else:
             try:
-                if f.major_version == 1 and f.firmware_present is not False:
+                if features.major_version == 1 and features.firmware_present is not False:
                     # Trezor One does not send ButtonRequest
                     print("Please confirm the action on your Trezor device")
                 return firmware.update(client.client, data, type=type)
