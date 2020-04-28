@@ -1106,41 +1106,91 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     ##connection with terzorlib#########################
-    def hardware_verify(self, msg):
-        print(f"hahhahaha")
+    def hardware_verify(self, msg, path='nfc'):
+        client = self.get_client(path=path)
+        try:
+            response = client.anti_counterfeiting_verify(inputmessage=msg)
+        except Exception as e:
+            raise BaseException(e)
         verify_info = {}
-        verify_info['sign'] = "30460221009e9b1243dbdb4e76d55cf60fb0793a72caa74f0baf5ac8834380e46845a8537e022100ed970f1454e5b769c28e47e489da057b5b8c17bab87ab3fec87592cdead3ab29"
-        verify_info['seq'] = "12133"
+        verify_info['sign'] = response
+        verify_info['seq'] = client.features.device_id
         return json.dumps(verify_info)
         
     def backup_wallet(self, path='nfc'):
-        print(f"hello world")
-        ency_wallet = "30460221009e9b1243dbdb4e76d55cf60fb0793a72caa74f0baf5ac8834380e46845a8537e022100ed970f1454e5b769c28e47e489da057b5b8c17bab87ab3fec87592cdead3ab29"
-        return ency_wallet
-        # client = self.get_client(path=path)
-        # try:
-        #     response = client.backup_device()
-        # except Exception as e:
-        #     raise BaseException(e)
-        # if response == "Device successfully backuped":
-        #     return 1
-        # else:
-        #     return 0
+        client = self.get_client(path=path)
+        try:
+            response = client.backup_and_recovry(type=1)
+        except Exception as e:
+            raise BaseException(e)
+        return response
 
-    def wallet_recovery(self, str):
-        if str == "hello world":
-            return True
+    def recovery_wallet(self, msg, path='nfc'):
+        client = self.get_client(path=path)
+        try:
+            response = client.backup_and_recovry(type=2, seed_importData=msg)
+        except Exception as e:
+            raise BaseException(e)
+        if response == "seed import success":
+            return 1
         else:
-            return False
+            return 0
 
-    def set_no_pin(self, x):
-        print(f"set_no_pin = {x}")
+    def change_use_pin(self, x, path='path'):
+        client = self.get_client(path=path)
+        try:
+            client.change_use_pin(x)
+        except Exception as e:
+            raise BaseException(e)
 
-    def set_no_confirm(self, x):
-        print(f"set_no_confir = {x}")
+    def change_use_confirm(self, x, path='path'):
+        client = self.get_client(path=path)
+        try:
+            client.change_use_confirm(x)
+        except Exception as e:
+            raise BaseException(e)
 
-    def set_limit(self, limit):
-        print(f"set_limit = {limit}")
+    def set_times(self, times, path='path'):
+        client = self.get_client(path=path)
+        try:
+            client.set_times(times)
+        except Exception as e:
+            raise BaseException(e)
+
+    def set_limit(self, limit, path='path'):
+        client = self.get_client(path=path)
+        try:
+            client.set_limit(limit)
+        except Exception as e:
+            raise BaseException(e)
+
+    def change_exportseeds(self, use_exportseeds, path='path'):
+        client = self.get_client(path=path)
+        try:
+            client.change_exportseeds(use_exportseeds)
+        except Exception as e:
+            raise BaseException(e)
+
+    def change_use_ble(self, use_ble, path='path'):
+        client = self.get_client(path=path)
+        try:
+            client.change_use_ble(use_ble)
+        except Exception as e:
+            raise BaseException(e)
+
+    def change_language(self, language, path='nfc'):
+        client = self.get_client(path=path)
+        try:
+            client.change_language(language)
+        except Exception as e:
+            raise BaseException(e)
+
+    def change_use_se(self, use_se, path='nfc'):
+        client = self.get_client(path=path)
+        try:
+            client.change_use_se(use_se)
+        except Exception as e:
+            raise BaseException(e)
 
 
     def init(self, path='android_usb', label="BixinKEY"):

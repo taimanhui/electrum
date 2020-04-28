@@ -15,6 +15,7 @@ from trezorlib.messages import WordRequestType, FailureType, RecoveryDeviceType,
 import trezorlib.btc
 import trezorlib.device
 
+
 MESSAGES = {
     ButtonRequestType.ConfirmOutput:
         _("Confirm the transaction output on your {} device"),
@@ -139,6 +140,18 @@ class TrezorClientBase(HardwareClientBase, Logger):
                          fingerprint=self.i4b(node.fingerprint),
                          child_number=self.i4b(node.child_num)).to_xpub()
 
+    def backup_and_recovry(self, type, seed_importData=None):
+        if type == 1:
+            msg = ("Confirm backup your {} device")
+        elif type == 2:
+            msg = ("Confirm recovry your {} device")
+        with self.run_flow(msg):
+            return trezorlib.device.backup_and_recovry(self.client, type=type, seed_importData=seed_importData)
+
+    def anti_counterfeiting_verify(self, inputmessage):
+        with self.run_flow(_("Confirm anti_counterfeiting_verify on your {} device")):
+            return trezorlib.device.anti_counterfeiting_verify(self.client, inputmessage=inputmessage)
+
     def toggle_passphrase(self):
         if self.features.passphrase_protection:
             msg = _("Confirm on your {} device to disable passphrases")
@@ -147,6 +160,38 @@ class TrezorClientBase(HardwareClientBase, Logger):
         enabled = not self.features.passphrase_protection
         with self.run_flow(msg):
             trezorlib.device.apply_settings(self.client, use_passphrase=enabled)
+
+    def change_language(self, language):
+        with self.run_flow(_("Confirm the new language on your {} device")):
+            trezorlib.device.apply_settings(self.client, language=language)
+
+    def change_use_se(self, use_se):
+        with self.run_flow(_("Confirm use se on your {} device")):
+            trezorlib.device.apply_settings(self.client, use_se=use_se)
+
+    def change_use_ble(self, use_ble):
+        with self.run_flow(_("Confirm use ble on your {} device")):
+            trezorlib.device.apply_settings(self.client, use_ble=use_ble)
+
+    def change_use_exportseeds(self, use_exportseeds):
+        with self.run_flow(_("Confirm use exportseeds on your {} device")):
+            trezorlib.device.apply_settings(self.client, use_exportseeds=use_exportseeds)
+
+    def change_use_pin(self, use_pin):
+        with self.run_flow(_("Confirm use pin on your {} device")):
+            trezorlib.device.apply_settings(self.client, use_fee_pay=use_pin)
+
+    def change_use_confirm(self, use_confirm):
+        with self.run_flow(_("Confirm use confirm on your {} device")):
+            trezorlib.device.apply_settings(self.client, use_fee_pay=use_confirm)
+
+    def set_times(self, times):
+        with self.run_flow(_("Confirm set times on your {} device")):
+            trezorlib.device.apply_settings(self.client, use_fee_pay=times)
+
+    def set_limit(self, limit):
+        with self.run_flow(_("Confirm set limit on your {} device")):
+            trezorlib.device.apply_settings(self.client, use_fee_pay=limit)
 
     def change_label(self, label):
         with self.run_flow(_("Confirm the new label on your {} device")):
