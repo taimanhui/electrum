@@ -64,7 +64,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
     private boolean done;
     private DownloadManager manager;
 
-    private boolean isBootloaderMode(String way) throws Exception {
+/*    private boolean isBootloaderMode(String way) throws Exception {
         String feature;
         try {
             feature = executorService.submit(() -> Daemon.commands.callAttr("get_feature", way)).get().toString();
@@ -75,7 +75,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
             e.printStackTrace();
             throw e;
         }
-    }
+    }*/
     private void updateFiles() {
         // todo: 从服务器获取最新 版本信息
         UpdateConfiguration configuration = new UpdateConfiguration()
@@ -161,12 +161,14 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            VersionUpgradeActivity.filePath = "";
             mIntent(UpgradeFinishedActivity.class);
             finish();
         }
 
         @Override
         protected void onCancelled() {
+            VersionUpgradeActivity.filePath = "";
             tetUpgradeTest.setText(getString(R.string.Cancelled));
             showPromptMessage(R.string.update_failed);
             new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);

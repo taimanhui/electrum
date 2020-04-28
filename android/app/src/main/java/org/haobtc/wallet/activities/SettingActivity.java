@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.azhon.appupdate.utils.ApkUtil;
@@ -55,6 +57,10 @@ public class SettingActivity extends BaseActivity {
     TextView tetVerson;
     @BindView(R.id.bluetooth_status)
     TextView bluetoothStatusText;
+    @BindView(R.id.change_pin)
+    LinearLayout changePin;
+    @BindView(R.id.hardware_update)
+    LinearLayout hardwareUpdate;
     private boolean bluetoothStatus;
     private SharedPreferences preferences;
     public String pin = "";
@@ -71,7 +77,7 @@ public class SettingActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);
         if (!bluetoothStatus) {
-           bluetoothStatusText.setText(getString(R.string.close));
+            bluetoothStatusText.setText(getString(R.string.close));
         } else {
             bluetoothStatusText.setText(getString(R.string.open));
         }
@@ -85,7 +91,7 @@ public class SettingActivity extends BaseActivity {
 
 
     @SingleClick
-    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set})
+    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_bixinKey:

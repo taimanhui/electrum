@@ -97,6 +97,7 @@ public class BleService extends Service {
         @Override
         public void onReady(BleDevice device) {
             super.onReady(device);
+            EventBus.getDefault().post(new ConnectingEvent());
             setNotify(device);
         }
 
@@ -137,6 +138,7 @@ public class BleService extends Service {
         }
     };
     private void handle() {
+        isNFC = false;
         EventBus.getDefault().post(new HandlerEvent());
     }
     private void setNotify(BleDevice device) {
@@ -152,8 +154,6 @@ public class BleService extends Service {
             public void onNotifySuccess(BleDevice device) {
                 super.onNotifySuccess(device);
                 Log.d(TAG, "onNotifySuccess: " + device.getBleName());
-                EventBus.getDefault().post(new ConnectingEvent());
-                isNFC = false;
                 bleTransport.put("ENABLED", true);
                 nfcTransport.put("ENABLED", false);
                 usb.put("ENABLED", false);

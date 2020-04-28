@@ -163,6 +163,7 @@ public class VersionUpgradeActivity extends BaseActivity {
 
         @Override
         public void onDfuProcessStarting(@NonNull String deviceAddress) {
+           VersionUpgradeActivity.filePath = "";
             super.onDfuProcessStarting(deviceAddress);
             if (intent == null) {
                 intent = new Intent(VersionUpgradeActivity.this, UpgradeBixinKEYActivity.class);

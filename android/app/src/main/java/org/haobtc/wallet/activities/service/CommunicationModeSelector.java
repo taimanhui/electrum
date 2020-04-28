@@ -471,7 +471,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         调用此方法使Nordic nrf52832进入bootloader模式
 */      starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
         starter.setKeepBond(true);
-        starter.setZip(null, String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
+        starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath);
         DfuServiceInitiator.createDfuNotificationChannel(this);
         starter.start(this, DfuService.class);
         isDfu = true;

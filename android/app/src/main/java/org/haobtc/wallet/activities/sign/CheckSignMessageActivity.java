@@ -53,7 +53,7 @@ public class CheckSignMessageActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.testCopyPublickey, R.id.testCopySignedMsg})
+    @OnClick({R.id.img_back, R.id.testCopyPublickey, R.id.testCopySignedMsg, R.id.btnConfirm})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:

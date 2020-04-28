@@ -103,7 +103,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_backCreat, R.id.tet_Preservation, R.id.bn_complete_add_cosigner})
+    @OnClick({R.id.tet_Preservation, R.id.bn_complete_add_cosigner})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_Preservation:
