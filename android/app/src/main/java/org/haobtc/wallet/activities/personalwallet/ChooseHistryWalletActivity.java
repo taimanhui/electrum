@@ -90,26 +90,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
 //        walletList.add(inputHistoryWalletEvent);
 //
 //        inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//        inputHistoryWalletEvent.setName("共管钱包");
-//        inputHistoryWalletEvent.setType("4-6");
-//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
-//        walletList.add(inputHistoryWalletEvent);
-//
-//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
 //        inputHistoryWalletEvent.setName("name");
 //        inputHistoryWalletEvent.setType("1-1");
-//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
-//        walletList.add(inputHistoryWalletEvent);
-//
-//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//        inputHistoryWalletEvent.setName("key");
-//        inputHistoryWalletEvent.setType("1-3");
-//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
-//        walletList.add(inputHistoryWalletEvent);
-//
-//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//        inputHistoryWalletEvent.setName("flag");
-//        inputHistoryWalletEvent.setType("1-2");
 //        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
 //        walletList.add(inputHistoryWalletEvent);
 //
@@ -199,7 +181,6 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                             }
                         });
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -245,30 +226,26 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     }
 
     private void importWallet(String wallet_name) {
-        //signum
-        String strsigNum = walletType.substring(0, walletType.indexOf("-"));
-        int sigNum = Integer.parseInt(strsigNum);
-        //public  num
-        String strpubNum = walletType.substring(walletType.indexOf("-") + 1);
-        int pubNum = Integer.parseInt(strpubNum);
-        try {
-            Daemon.commands.callAttr("import_create_hw_wallet", wallet_name, sigNum, pubNum, keyaddress);
-        } catch (Exception e) {
-            e.printStackTrace();
-            String message = e.getMessage();
-            if ("BaseException: file already exists at path".equals(message)) {
-                mToast(getString(R.string.changewalletname));
-            } else if (message.contains("The same xpubs have create wallet")) {
-                mToast(getString(R.string.xpub_have_wallet));
+        if (walletType.contains("-")) {
+            //signum
+            String strsigNum = walletType.substring(0, walletType.indexOf("-"));
+            int sigNum = Integer.parseInt(strsigNum);
+            //public  num
+            String strpubNum = walletType.substring(walletType.indexOf("-") + 1);
+            int pubNum = Integer.parseInt(strpubNum);
+            try {
+                Daemon.commands.callAttr("import_create_hw_wallet", wallet_name, sigNum, pubNum, keyaddress);
+            } catch (Exception e) {
+                e.printStackTrace();
+                String message = e.getMessage();
+                if ("BaseException: file already exists at path".equals(message)) {
+                    mToast(getString(R.string.changewalletname));
+                } else if (message.contains("The same xpubs have create wallet")) {
+                    mToast(getString(R.string.xpub_have_wallet));
+                }
+                return;
             }
-            return;
+            mIntent(MainActivity.class);
         }
-        mIntent(MainActivity.class);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
     }
 }

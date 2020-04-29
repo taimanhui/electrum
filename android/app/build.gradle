@@ -82,7 +82,7 @@ android {
         }
         RegTest {
             buildConfigField "String", "net_type", "\"RegTest\""
-            applicationId "com.bixin.wallet.regnet"
+           // applicationId "com.bixin.wallet.regnet"
             manifestPlaceholders = [app_name: "@string/regnet"]
         }
     }
@@ -203,6 +203,7 @@ dependencies {
     implementation 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0'
     // android aop programing support
    implementation 'org.aspectj:aspectjrt:1.9.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
 
 }
 repositories {

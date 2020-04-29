@@ -595,6 +595,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         e.printStackTrace();
                         return;
                     }
+                    EventBus.getDefault().post(new FirstEvent("22"));
                     //1-n wallet  --> Direct signature and broadcast
                     CommunicationModeSelector.runnables.clear();
                     CommunicationModeSelector.runnables.add(runnable);

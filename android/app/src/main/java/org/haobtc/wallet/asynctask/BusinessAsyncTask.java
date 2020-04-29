@@ -38,6 +38,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case RECOVER:
             case SIGN_MESSAGE:
             case INIT_DEVICE:
+            case COUNTER_VERIFICATION:
                 try {
                     result = Daemon.commands.callAttr(strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0], strings[1], strings[2]).toString();
                 } catch (Exception e) {

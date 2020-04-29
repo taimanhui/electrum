@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.settings;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,11 +21,13 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -56,6 +59,9 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     private String strUsername;
     private String strPass;
     private String strNodetype;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor edit;
+    private String set_proxy;
 
     @Override
     public int getLayoutId() {
@@ -66,6 +72,9 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
+        set_proxy = preferences.getString("set_proxy", "");
         TextChange textChange = new TextChange();
         editAgentIP.addTextChangedListener(textChange);
         editPort.addTextChangedListener(textChange);
@@ -73,6 +82,19 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         editPass.addTextChangedListener(textChange);
         switchAgent.setOnCheckedChangeListener(this);
 
+        inits();
+
+    }
+
+    private void inits() {
+        if (!TextUtils.isEmpty(set_proxy)) {
+            String[] wordsList = set_proxy.split(" ");
+            testNodeType.setText(wordsList[0]);
+            editAgentIP.setText(wordsList[1]);
+            editPort.setText(wordsList[2]);
+            editUsername.setText(wordsList[3]);
+            editPass.setText(wordsList[4]);
+        }
     }
 
     @Override
@@ -112,6 +134,9 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             e.printStackTrace();
             return;
         }
+        edit.putString("set_proxy", strNodetype + " " + strAgentIP + " " + strPort + " " + strUsername + " " + strPass);
+        edit.apply();
+        EventBus.getDefault().post(new FirstEvent("set_proxy"));
         mToast(getString(R.string.set_finish));
 
     }
@@ -159,8 +184,21 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             editPort.setEnabled(true);
             editUsername.setEnabled(true);
             editPass.setEnabled(true);
+            if (!TextUtils.isEmpty(set_proxy)) {
+                String[] wordsList = set_proxy.split(" ");
+                testNodeType.setText(wordsList[0]);
+                editAgentIP.setText(wordsList[1]);
+                editPort.setText(wordsList[2]);
+                editUsername.setText(wordsList[3]);
+                editPass.setText(wordsList[4]);
+            }
 
         } else {
+            testNodeType.setText("");
+            editAgentIP.setText("");
+            editPort.setText("");
+            editUsername.setText("");
+            editPass.setText("");
             editAgentIP.setEnabled(false);
             editPort.setEnabled(false);
             editUsername.setEnabled(false);

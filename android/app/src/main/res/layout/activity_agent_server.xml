@@ -209,6 +209,7 @@
                     android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:layout_marginBottom="@dimen/dp_20"
+                    android:inputType="textPassword"
                     android:background="@drawable/gray_tuo_6"
                     android:hint="@string/password"
                     android:paddingStart="@dimen/dp_16"

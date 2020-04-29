@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -55,6 +56,8 @@ public class ServerSettingActivity extends BaseActivity {
     TextView testBlockcheck;
     @BindView(R.id.testElectrumNode)
     TextView testElectrumNode;
+    @BindView(R.id.test_agent_server)
+    TextView testAgentServer;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
     private String exchangeName;
@@ -62,6 +65,7 @@ public class ServerSettingActivity extends BaseActivity {
     private String electrumTest;
     private PyObject get_server_list;
     private ArrayList<CNYBean> electrumList;
+    private String set_proxy;
 
     public int getLayoutId() {
         return R.layout.server_setting;
@@ -75,6 +79,7 @@ public class ServerSettingActivity extends BaseActivity {
         exchangeName = preferences.getString("exchangeName", "");
         blockServerLine = preferences.getString("blockServerLine", "");
         electrumTest = preferences.getString("electrumTest", "");
+        set_proxy = preferences.getString("set_proxy", "");
         edit = preferences.edit();
         inits();
 
@@ -102,12 +107,18 @@ public class ServerSettingActivity extends BaseActivity {
         //get electrum node
         if (!TextUtils.isEmpty(electrumTest)) {
             testElectrumNode.setText(electrumTest);
-        }else{
+        } else {
             //get electrum list
             getElectrumData();
         }
+        //get agent server
+        if (!TextUtils.isEmpty(set_proxy)){
+            String[] wordsList = set_proxy.split(" ");
+            testAgentServer.setText(wordsList[0]);
+        }
 
     }
+
     private void getElectrumData() {
         try {
             get_server_list = Daemon.commands.callAttr("get_server_list");
@@ -116,7 +127,7 @@ public class ServerSettingActivity extends BaseActivity {
         }
         if (get_server_list != null) {
             String get_server = get_server_list.toString();
-            Log.i("get_server_list", "get_server_list: "+get_server);
+            Log.i("get_server_list", "get_server_list: " + get_server);
             Map<String, Object> jsonToMap = JSONObject.parseObject(get_server);
             Set<String> keySets = jsonToMap.keySet();
             for (String k : keySets) {
@@ -214,12 +225,18 @@ public class ServerSettingActivity extends BaseActivity {
         if (msgVote.equals("defaultServer")) {
             exchangeName = preferences.getString("exchangeName", "");
             tetDefaultServer.setText(exchangeName);
-        }else if (msgVote.equals("block_check")){
+        } else if (msgVote.equals("block_check")) {
             blockServerLine = preferences.getString("blockServerLine", "");
             testBlockcheck.setText(blockServerLine);
-        }else if (msgVote.equals("changeElectrumNode")){
+        } else if (msgVote.equals("changeElectrumNode")) {
             electrumTest = preferences.getString("electrumTest", "");
             testElectrumNode.setText(electrumTest);
+        } else if (msgVote.equals("set_proxy")) {
+            set_proxy = preferences.getString("set_proxy", "");
+            if (!TextUtils.isEmpty(set_proxy)) {
+                String[] wordsList = set_proxy.split(" ");
+                testAgentServer.setText(wordsList[0]);
+            }
         }
     }
 

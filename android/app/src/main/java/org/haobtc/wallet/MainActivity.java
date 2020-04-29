@@ -513,6 +513,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                        mToast(getString(R.string.address_wrong));
                         Log.i("PyObject", "parse_qr+++++++:  " + e.getMessage());
                         return;
                     }
@@ -548,6 +549,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            mToast(getString(R.string.address_wrong));
                         }
                     }
                 }

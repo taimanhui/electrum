@@ -149,7 +149,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onSignSuccessful(SendSignBroadcastEvent resultEvent) {
         if (dialog == null) {
             showPopupSignProcessing();
@@ -183,6 +183,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             dialog.dismiss();
             finish();
         }
+        EventBus.getDefault().removeStickyEvent(SendSignBroadcastEvent.class);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
