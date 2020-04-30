@@ -282,7 +282,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             nfcTransport.put("ENABLED", true);
             bleHandler.put("ENABLED", false);
-            usb.put("ENABLED", false);
+            usbTransport.put("ENABLED", false);
             nfcHandler.put("device", tags);
             handlerEverything(true);
         }
@@ -294,7 +294,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         try {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE));
             executorService.submit(futureTask);
-            feature = futureTask.get(10, TimeUnit.SECONDS).toString();
+            feature = futureTask.get(2, TimeUnit.SECONDS).toString();
             HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
             if (features.isBootloaderMode()) {
                 throw new Exception("bootloader mode");
@@ -325,15 +325,27 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 intent.putExtra("tag", 1);
                 startActivity(intent);
                 if (isNFC) {
-                    EventBus.getDefault().postSticky(new ExecuteEvent());
+                   new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
                 }
             } else if ("ble".equals(extras)) {
-                dfu();
+                if (isNFC) {
+                    Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
+                    intent.putExtra("way", COMMUNICATION_MODE_NFC);
+                    intent.putExtra("tag", 2);
+                    startActivity(intent);
+                    new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
+                } else {
+                    dfu();
+                }
             }
         } else if (HardwareDetailsActivity.TAG.equals(tag)) {
             dealWithChangePin(isNFC);
         } else if (RecoverySetActivity.TAG.equals(tag)) {
             dealWithWipeDevice(isNFC);
+        } else if (SettingActivity.TAG.equals(tag)) {
+            String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC: COMMUNICATION_MODE_BLE);
+            startActivity(new Intent(this, VerificationKEYActivity.class));
         } else {
             if (SetNameActivity.TAG.equals(tag)) {
                 Intent intent = new Intent(this, PinSettingActivity.class);
@@ -694,9 +706,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag)) {
             EventBus.getDefault().post(new ResultEvent(s));
         } else if (SettingActivity.TAG.equals(tag)) {
-            Intent intentCon = new Intent(this, VerificationKEYActivity.class);
-            intentCon.putExtra("strVerification", s);
-            startActivity(intentCon);
+            EventBus.getDefault().post(new ResultEvent(s));
         }
         finish();
     }

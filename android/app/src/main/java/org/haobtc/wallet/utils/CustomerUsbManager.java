@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usb;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usbTransport;
 
 public class CustomerUsbManager {
 
@@ -31,6 +32,7 @@ public class CustomerUsbManager {
     private IntentFilter observerFilter;
     private PendingIntent permissionIntent;
     public static final String TAG = CustomerUsbManager.class.getSimpleName();
+
     public static CustomerUsbManager getInstance(Context context) {
         if (customerUsbManager == null) {
             synchronized (CustomerUsbManager.class) {
@@ -41,12 +43,14 @@ public class CustomerUsbManager {
         }
         return customerUsbManager;
     }
+
     private CustomerUsbManager(Context context) {
         this.usbManager = (UsbManager) context.getApplicationContext().getSystemService(Context.USB_SERVICE);
         observerFilter = new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         observerFilter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
     }
-   private final BroadcastReceiver connectionStateChangeReceiver =  new BroadcastReceiver() {
+
+    private final BroadcastReceiver connectionStateChangeReceiver =  new BroadcastReceiver() {
        @Override
        public void onReceive(Context context, Intent intent) {
            String action = intent.getAction();
@@ -82,19 +86,22 @@ public class CustomerUsbManager {
 
         return first.map(Map.Entry::getValue).orElse(null);
     }
+
     public void doBusiness(UsbDevice device) {
         if (!usbManager.hasPermission(device)) {
             usbManager.requestPermission(device, permissionIntent);
         } else {
             usb.put("USB_Manager", usbManager);
             usb.put("USB_DEVICE", device);
+            usbTransport.put("ENABLED", true);
             bleTransport.put("ENABLED", false);
             nfcTransport.put("ENABLED", false);
             EventBus.getDefault().post(new HandlerEvent());
         }
 
     }
-   private final BroadcastReceiver permissionGrantedStateChangeReceiver = new BroadcastReceiver() {
+
+    private final BroadcastReceiver permissionGrantedStateChangeReceiver = new BroadcastReceiver() {
        @Override
        public void onReceive(Context context, Intent intent) {
                String action = intent.getAction();
@@ -113,10 +120,12 @@ public class CustomerUsbManager {
                }
            }
    };
+
     public void register(Context context) {
        context.registerReceiver(connectionStateChangeReceiver, observerFilter);
        context.registerReceiver(permissionGrantedStateChangeReceiver, permissionFilter);
    }
+
    public void unRegister(Context context) {
         context.unregisterReceiver(connectionStateChangeReceiver);
         context.unregisterReceiver(permissionGrantedStateChangeReceiver);
