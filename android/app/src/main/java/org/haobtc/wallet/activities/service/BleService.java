@@ -4,13 +4,11 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,9 +22,7 @@ import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.CommonUtils;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
@@ -40,7 +36,7 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usb;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usbTransport;
 
 public class BleService extends Service {
     private Ble<BleDevice> mBle;
@@ -97,7 +93,6 @@ public class BleService extends Service {
         @Override
         public void onReady(BleDevice device) {
             super.onReady(device);
-            EventBus.getDefault().post(new ConnectingEvent());
             setNotify(device);
         }
 
@@ -156,7 +151,7 @@ public class BleService extends Service {
                 Log.d(TAG, "onNotifySuccess: " + device.getBleName());
                 bleTransport.put("ENABLED", true);
                 nfcTransport.put("ENABLED", false);
-                usb.put("ENABLED", false);
+                usbTransport.put("ENABLED", false);
                 bleHandler.put("BLE", mBle);
                 bleHandler.put("BLE_DEVICE", device);
                 bleHandler.put("CALL_BACK", writeCallBack);
@@ -175,6 +170,7 @@ public class BleService extends Service {
             if (mBle.isScanning()) {
                 mBle.stopScan();
             }
+            EventBus.getDefault().post(new ConnectingEvent());
             mBleDevice = BleDeviceRecyclerViewAdapter.mBleDevice;
             bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mBleDevice.getBleAddress());
             switch (bluetoothDevice.getBondState()) {

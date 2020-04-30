@@ -121,14 +121,33 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
             PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
                 try {
                         protocol.put("PROCESS_REPORTER", this);
-                        if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
-                            File file = new File(String.format("%s/bixin.bin", getExternalCacheDir().getPath()));
-                            if (!file.exists()) {
-                                showPromptMessage(R.string.update_file_not_exist);
-                                cancel(true);
-                            }
+                        switch (tag) {
+                            case 1:
+                                if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                                    File file = new File(String.format("%s/bixin.bin", getExternalCacheDir().getPath()));
+                                    if (!file.exists()) {
+                                        showPromptMessage(R.string.update_file_not_exist);
+                                        cancel(true);
+                                    }
+                                }
+                                Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, params[0]);
+                                break;
+                            case 2:
+                                if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                                    File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
+                                    if (!file.exists()) {
+                                        showPromptMessage(R.string.update_file_not_exist);
+                                        cancel(true);
+                                    }
+                                } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
+                                    showPromptMessage(R.string.update_file_format_error);
+                                    cancel(true);
+                                }
+                                Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, params[0], "ble_ota");
+                                break;
+                            default:
                         }
-                        Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, params[0]);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     // clear state

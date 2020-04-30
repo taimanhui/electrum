@@ -40,6 +40,7 @@ from trezorlib import (
 from trezorlib.cli import trezorctl
 from electrum.wallet_db import WalletDB
 from enum import Enum
+from .firmware_sign_nordic_dfu import parse
 
 
 class Status(Enum):
@@ -109,7 +110,7 @@ class Help:
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
     def __init__(self, config=None, user_dir=None, callback=None):
-        self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()#TODO:close loop
+        self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()  # TODO:close loop
         config_options = {}
         config_options['auto_connect'] = True
         if config is None:
@@ -470,7 +471,7 @@ class AndroidCommands(commands.Commands):
             for key, value in self.local_wallet_info.items():
                 if value['xpubs'] == keystores:
                     raise BaseException("The same xpubs have create wallet")
-            storage, db = self.wizard.create_storage(path=path, password = '', hide_type=hide_type)
+            storage, db = self.wizard.create_storage(path=path, password='', hide_type=hide_type)
         except Exception as e:
             raise BaseException(e)
         if storage:
@@ -492,7 +493,7 @@ class AndroidCommands(commands.Commands):
             self.wallet = wallet
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
-            #self.select_wallet(self.wallet_name)
+            # self.select_wallet(self.wallet_name)
             if self.label_flag:
                 wallet_name = ""
                 if wallet_type[0:1] == '1':
@@ -505,16 +506,16 @@ class AndroidCommands(commands.Commands):
     def bulk_create_wallet(self, wallets_info):
         wallets_list = json.loads(wallets_info)
         create_failed_into = {}
-        for m,n,name,xpubs in wallets_list:
+        for m, n, name, xpubs in wallets_list:
             try:
-                self.import_create_hw_wallet(name, m, n, xpubs)    
+                self.import_create_hw_wallet(name, m, n, xpubs)
             except BaseException as e:
                 create_failed_into['name'] = str(e)
         return json.dumps(create_failed_into)
 
     def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False):
         try:
-            print(f"xpubs=========={m,n,xpubs}")
+            print(f"xpubs=========={m, n, xpubs}")
             self.set_multi_wallet_info(name, m, n)
             xpubs_list = json.loads(xpubs)
             for xpub in xpubs_list:
@@ -783,8 +784,8 @@ class AndroidCommands(commands.Commands):
             amount_str = self.format_amount_and_units(tx_details.amount)
 
         ret_data = {
-            'txid':tx_details.txid,
-            'can_broadcast':tx_details.can_broadcast,
+            'txid': tx_details.txid,
+            'can_broadcast': tx_details.can_broadcast,
             'amount': amount_str,
             'fee': self.format_amount_and_units(tx_details.fee),
             'description': self.wallet.get_label(tx_details.txid),
@@ -1116,7 +1117,7 @@ class AndroidCommands(commands.Commands):
         verify_info['sign'] = response
         verify_info['seq'] = client.features.device_id
         return json.dumps(verify_info)
-        
+
     def backup_wallet(self, path='nfc'):
         client = self.get_client(path=path)
         try:
@@ -1164,10 +1165,10 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def change_exportseeds(self, use_exportseeds, path='path'):
+    def change_exportseeds(self, use_exportseeds, path='android_usb'):
         client = self.get_client(path=path)
         try:
-            client.change_exportseeds(use_exportseeds)
+            client.change_use_exportseeds(use_exportseeds)
         except Exception as e:
             raise BaseException(e)
 
@@ -1185,13 +1186,12 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def change_use_se(self, use_se, path='nfc'):
+    def change_use_se(self, use_se, path='android'):
         client = self.get_client(path=path)
         try:
-            client.change_use_se(use_se)
+            client.change_use_se(use_se=use_se)
         except Exception as e:
             raise BaseException(e)
-
 
     def init(self, path='android_usb', label="BixinKEY"):
         client = self.get_client(path=path)
@@ -1294,11 +1294,14 @@ class AndroidCommands(commands.Commands):
         bootloader_onev2 = features.major_version == 1 and features.minor_version >= 8
 
         if filename:
-            try:
-                with open(filename, "rb") as file:
-                    data = file.read()
-            except IOError as e:
-                raise BaseException(e)
+             try:
+                if type:
+                    data = parse(filename)
+                else:
+                     with open(filename, "rb") as file:
+                            data = file.read()
+             except Exception as e:
+                        raise BaseException(e)
         else:
             raise BaseException("Please Give The File Name")
 
@@ -1367,7 +1370,7 @@ class AndroidCommands(commands.Commands):
         for key, value in self.local_wallet_info.items():
             if value['seed'] == seed:
                 raise BaseException("The same seed have create wallet")
-    
+
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
         """Create or restore a new wallet"""
@@ -1543,13 +1546,13 @@ class AndroidCommands(commands.Commands):
             c, u, x = self.wallet.get_balance()
             print("console.select_wallet %s %s %s==============" % (c, u, x))
             print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " % (
-            name, self.format_amount_and_units(c), self.wallet.wallet_type, self.wallet.use_change,
-            self.wallet.get_addresses()))
+                name, self.format_amount_and_units(c), self.wallet.wallet_type, self.wallet.use_change,
+                self.wallet.get_addresses()))
             self.network.trigger_callback("wallet_updated", self.wallet)
 
             fait = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
             info = {
-                "balance": self.format_amount(c) + ' (%s)'%fait,
+                "balance": self.format_amount(c) + ' (%s)' % fait,
                 "name": name
             }
             return json.dumps(info)
@@ -1566,7 +1569,8 @@ class AndroidCommands(commands.Commands):
         # print(f"local_wallet info === {self.local_wallet_info}")
         name_info = {}
         for name in name_wallets:
-            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else {'type': 'unknow', 'time': time.time(), 'xpubs': [], 'seed': ''}
+            name_info[name] = self.local_wallet_info.get(name) if self.local_wallet_info.__contains__(name) else {
+                'type': 'unknow', 'time': time.time(), 'xpubs': [], 'seed': ''}
 
         name_info = sorted(name_info.items(), key=lambda item: item[1]['time'], reverse=True)
         out = []

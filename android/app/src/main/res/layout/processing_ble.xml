@@ -27,16 +27,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="31dp"
             android:gravity="center_horizontal"
-            android:text="@string/communicating"
+            android:text="@string/keep_connection"
             android:textColor="@color/text"
-            android:textSize="18sp" />
+            android:textSize="18sp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_5"
             android:gravity="center_horizontal"
-            android:text="@string/tip_closer"
+            android:text="@string/tip_connnection"
             android:textColor="@color/text_0"
             android:textSize="12sp" />
         <TextView

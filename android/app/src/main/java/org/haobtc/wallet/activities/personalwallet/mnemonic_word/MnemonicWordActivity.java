@@ -158,12 +158,7 @@ public class MnemonicWordActivity extends BaseActivity {
                     if (data != null && data.getItemCount() > 0) {
                         CharSequence text = data.getItemAt(0).getText();
                         if (!TextUtils.isEmpty(text.toString())) {
-                            String strlist = "";
-                            Pattern p = Pattern.compile("\\s+");
-                            Matcher m = p.matcher(text.toString());
-                            strlist = m.replaceAll(" ");
-
-                            String[] wordsList = strlist.split(" ");
+                            String[] wordsList = text.toString().split("\\s+");
                             ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
                             switch (wordList.size()) {
                                 case 12:

@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.personalwallet;
 
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -99,7 +101,9 @@ public class MnemonicActivity extends BaseActivity {
                 //copy text
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
-                cm.setText(textAllWord.getText());
+                if (cm != null) {
+                    cm.setPrimaryClip(ClipData.newPlainText(null, textAllWord.getText()));
+                }
                 Toast.makeText(MnemonicActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
 
                 break;
@@ -112,11 +116,8 @@ public class MnemonicActivity extends BaseActivity {
         textCopyMnemonic.setVisibility(View.VISIBLE);
         textAllWord.setText(strSeed);
         if (!TextUtils.isEmpty(strSeed)) {
-            String[] wordsList = strSeed.split(" ");
-            ArrayList<String> strings = new ArrayList<>();
-            for (int i = 0; i < wordsList.length; i++) {
-                strings.add(wordsList[i]);
-            }
+            String[] wordsList = strSeed.split("\\s+");
+            ArrayList<String> strings = new ArrayList<>(Arrays.asList(wordsList));
             myDialog.dismiss();
             tetJump.setVisibility(View.VISIBLE);
             btnSetPin.setEnabled(true);

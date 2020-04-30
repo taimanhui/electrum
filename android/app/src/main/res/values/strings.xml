@@ -597,4 +597,6 @@
     <string name="regnet">Bixin cold wallet R</string>
     <string name="update_file_not_exist">升级文件不存在</string>
     <string name="update_file_format_error">升级文件应该以.zip结尾</string>
+    <string name="keep_connection">请保持手机与BixinKey连接</string>
+    <string name="tip_connnection">数据传输需要一些时间，请保持连接状态</string>
 </resources>

@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities;
 
-import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -10,17 +9,20 @@ import com.squareup.okhttp.Request;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.ResultEvent;
 
 import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.OkHttpClient;
 
 public class VerificationKEYActivity extends BaseActivity {
 
@@ -37,10 +39,8 @@ public class VerificationKEYActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         // 设置沉浸式状态栏
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        Intent intent = getIntent();
-        String strVerification = intent.getStringExtra("strVerification");
-        Log.i("strVerification", "initView: " + strVerification);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -68,18 +68,24 @@ public class VerificationKEYActivity extends BaseActivity {
                     }
                 });
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSuccess(ResultEvent event) {
+        Log.i("strVerification", "initView: "+ event.getResult());
+        // todo: 调用接口，验证返回，跳转成功页面
+        //                Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
+//                startActivity(intent);
+    }
     @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-//                Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
-//                startActivity(intent);
-                break;
-
+        if (view.getId() == R.id.img_back) {
+            finish();
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
 }

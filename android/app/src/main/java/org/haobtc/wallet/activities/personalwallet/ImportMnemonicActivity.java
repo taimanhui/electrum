@@ -76,7 +76,8 @@ public class ImportMnemonicActivity extends BaseActivity {
         String strSeeds = intent.getStringExtra("strSeeds");
         strPass1 = intent.getStringExtra("strPass1");
         strName = intent.getStringExtra("strName");
-        String[] wordsList = strSeeds.split(" ");
+        assert strSeeds != null;
+        String[] wordsList = strSeeds.split("\\s+");
 
         ArrayList<String> strings = new ArrayList<>();
         Collections.addAll(strings, wordsList);
@@ -87,6 +88,7 @@ public class ImportMnemonicActivity extends BaseActivity {
         HelpWordAdapter helpWordAdapter = new HelpWordAdapter(randomList);
         reclHelpWord.setAdapter(helpWordAdapter);
         helpWordAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @SingleClick
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 //                mIntent(AppWalletCreateFinishActivity.class);
