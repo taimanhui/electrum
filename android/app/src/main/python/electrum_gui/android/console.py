@@ -1196,7 +1196,7 @@ class AndroidCommands(commands.Commands):
     def init(self, path='android_usb', label="BixinKEY"):
         client = self.get_client(path=path)
         try:
-            response = client.reset_device(label=label)
+            response = client.reset_device(label=label, pin_protection=False)
         except Exception as e:
             raise BaseException(e)
         if response == "Device successfully initialized":
