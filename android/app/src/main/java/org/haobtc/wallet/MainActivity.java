@@ -463,20 +463,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(FirstEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if (msgVote.equals("11")) {
-            //Rolling Wallet
-            mWheelplanting();
-        } else if (msgVote.equals("22")) {
-            if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
-                maintrsactionlistEvents.clear();
-                //trsaction list data
-                downMainListdata();
-                trsactionlistAdapter.notifyDataSetChanged();
-            }
-        } else if (msgVote.equals("33")) {
-            tetNone.setText(getString(R.string.no_records));
-            tetNone.setVisibility(View.VISIBLE);
-            recy_data.setVisibility(View.GONE);
+        switch (msgVote) {
+            case "11":
+                //Rolling Wallet
+                mWheelplanting();
+                break;
+            case "22":
+                if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
+                    maintrsactionlistEvents.clear();
+                    //trsaction list data
+                    downMainListdata();
+                    trsactionlistAdapter.notifyDataSetChanged();
+                }
+                break;
+            case "33":
+                tetNone.setText(getString(R.string.no_records));
+                tetNone.setVisibility(View.VISIBLE);
+                recy_data.setVisibility(View.GONE);
+                break;
         }
     }
 

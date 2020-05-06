@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
@@ -82,6 +83,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private String strSoftMsg;
     public static String strinputAddress;
     private SharedPreferences.Editor edit;
+    String hide_phrass;
 
     @Override
     public int getLayoutId() {
@@ -96,7 +98,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         edit = preferences.edit();
         Intent intent = getIntent();
         personceType = intent.getStringExtra("personceType");
-        String hide_phrass = intent.getStringExtra("hide_phrass");
+        hide_phrass = intent.getStringExtra("hide_phrass");
         rxPermissions = new RxPermissions(this);
         editTrsactionTest.addTextChangedListener(this);
         radioGroup.setOnCheckedChangeListener(this);
@@ -222,21 +224,19 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                     }
                 } else { //Hardware wallet signature
 
-                    String strTest;
+                    String strTest = editTrsactionTest.getText().toString();
                     if (signWhich) { //sign trsaction
-                        strTest = editTrsactionTest.getText().toString();
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent = new Intent(this, CommunicationModeSelector.class);
-                        intent.putExtra("tag", TAG);
+                        intent.putExtra("tag", Strings.isNullOrEmpty(hide_phrass) ? TAG : TAG2);
                         intent.putExtra("extras", strTest);
                         startActivity(intent);
                     } else {//sign message
-                        strTest = editTrsactionTest.getText().toString();
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent = new Intent(this, CommunicationModeSelector.class);
-                        intent.putExtra("tag", TAG1);
+                        intent.putExtra("tag", Strings.isNullOrEmpty(hide_phrass) ? TAG1 : TAG3);
                         intent.putExtra("extras", strTest);
                         startActivity(intent);
                     }
