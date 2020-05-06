@@ -68,6 +68,7 @@ public class BixinKEYManageActivity extends BaseActivity {
                         case R.id.relativeLayout_bixinkey:
                             String firmwareVersion = "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
                             Intent intent = new Intent(BixinKEYManageActivity.this, HardwareDetailsActivity.class);
+                            intent.putExtra("label",deviceValue.get(position).getLabel());
                             intent.putExtra("bleName", deviceValue.get(position).getBleName());
                             intent.putExtra("firmwareVersion", firmwareVersion);
                             intent.putExtra("bleVerson", "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getPatchVersion());

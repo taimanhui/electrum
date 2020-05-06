@@ -50,9 +50,10 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/linear_fix_key"
                 android:layout_width="match_parent"
                 android:layout_height="59.5dp"
-                android:background="@color/button_bk_ddake">
+                android:background="?attr/selectableItemBackground">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -68,7 +69,6 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_16"
                     android:layout_weight="1"
                     android:gravity="center_vertical|end"
                     android:singleLine="true"
@@ -76,6 +76,11 @@
                     android:textColor="@color/graytext_color"
                     android:textSize="@dimen/sp_13" />
 
+                <ImageView
+                    android:layout_width="37dp"
+                    android:layout_height="match_parent"
+                    android:padding="15dp"
+                    android:src="@drawable/jiantou" />
             </LinearLayout>
 
             <View

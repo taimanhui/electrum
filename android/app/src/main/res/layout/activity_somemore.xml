@@ -18,8 +18,8 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
             android:background="?android:attr/selectableItemBackground"
+            android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
         <TextView
@@ -43,9 +43,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="360dp"
             android:layout_marginStart="@dimen/dp_10"
-            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_10"
             android:layout_marginEnd="@dimen/dp_10"
             android:background="@drawable/white_tuo"
             android:orientation="vertical">
@@ -61,9 +61,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dp_16"
                     android:gravity="center_vertical"
+                    android:text="@string/bixinkey_message"
                     android:textColor="@color/text_color"
-                    android:textSize="15sp"
-                    android:text="@string/bixinkey_message" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/tet_keyName"
@@ -73,9 +73,9 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical|end"
                     android:singleLine="true"
+                    android:text="@string/bixinkey"
                     android:textColor="@color/graytext_color"
-                    android:textSize="@dimen/sp_13"
-                    android:text="@string/bixinkey" />
+                    android:textSize="@dimen/sp_13" />
 
                 <ImageView
                     android:layout_width="37dp"
@@ -89,8 +89,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_1"
-                android:layout_marginStart="@dimen/sp_16"
-                android:layout_marginEnd="@dimen/sp_16"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
                 android:background="@color/separation_line" />
 
             <LinearLayout
@@ -104,9 +104,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dp_16"
                     android:gravity="center_vertical"
+                    android:text="@string/verson_update"
                     android:textColor="@color/text_color"
-                    android:textSize="15sp"
-                    android:text="@string/verson_update" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/tet_code"
@@ -116,9 +116,9 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical|end"
                     android:singleLine="true"
+                    android:text="@string/v_1_2_3"
                     android:textColor="@color/graytext_color"
-                    android:textSize="@dimen/sp_13"
-                    android:text="@string/v_1_2_3" />
+                    android:textSize="@dimen/sp_13" />
 
                 <ImageView
                     android:layout_width="37dp"
@@ -132,8 +132,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_1"
-                android:layout_marginStart="@dimen/sp_16"
-                android:layout_marginEnd="@dimen/sp_16"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
                 android:background="@color/separation_line" />
 
             <LinearLayout
@@ -147,9 +147,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dp_16"
                     android:gravity="center_vertical"
+                    android:text="@string/fix_pin"
                     android:textColor="@color/text_color"
-                    android:textSize="15sp"
-                    android:text="@string/fix_pin" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -169,8 +169,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_1"
-                android:layout_marginStart="@dimen/sp_16"
-                android:layout_marginEnd="@dimen/sp_16"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
                 android:background="@color/separation_line" />
 
             <LinearLayout
@@ -184,9 +184,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dp_16"
                     android:gravity="center_vertical"
+                    android:text="@string/nopass_pay"
                     android:textColor="@color/text_color"
-                    android:textSize="15sp"
-                    android:text="@string/nopass_pay" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/tet_noPasspay"
@@ -196,9 +196,9 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical|end"
                     android:singleLine="true"
+                    android:text="@string/opened"
                     android:textColor="@color/graytext_color"
-                    android:textSize="@dimen/sp_13"
-                    android:text="@string/opened" />
+                    android:textSize="@dimen/sp_13" />
 
                 <ImageView
                     android:layout_width="37dp"
@@ -212,8 +212,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_1"
-                android:layout_marginStart="@dimen/sp_16"
-                android:layout_marginEnd="@dimen/sp_16"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
                 android:background="@color/separation_line" />
 
             <LinearLayout
@@ -227,9 +227,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dp_16"
                     android:gravity="center_vertical"
+                    android:text="@string/restore_factory"
                     android:textColor="@color/text_color"
-                    android:textSize="15sp"
-                    android:text="@string/restore_factory" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -245,6 +245,30 @@
 
 
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@color/separation_line" />
+
+            <TextView
+                android:id="@+id/tetBluetoothSet"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:drawableEnd="@drawable/jiantou"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/text_margin"
+                android:paddingEnd="@dimen/text_margin"
+                android:text="@string/bluetooth_setting"
+                android:textColor="@color/text"
+                android:textSize="@dimen/text_size" />
+
 
         </LinearLayout>
     </RelativeLayout>

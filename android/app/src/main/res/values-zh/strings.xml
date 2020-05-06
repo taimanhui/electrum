@@ -572,4 +572,6 @@
     <string name="update_file_not_exist">升级文件不存在</string>
     <string name="keep_connection">请保持手机与BixinKey连接</string>
     <string name="tip_connnection">数据传输需要一些时间，请保持连接状态</string>
+    <string name="bluetooth_setting">蓝牙设置</string>
+    <string name="confirm_fix">确认修改</string>
 </resources>

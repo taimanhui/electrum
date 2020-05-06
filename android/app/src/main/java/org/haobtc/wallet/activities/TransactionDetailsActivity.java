@@ -648,25 +648,21 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     private void ifHaveRbf() {
         PyObject get_rbf_fee_info = null;
-        Log.i("tx_hash——jinxm", "tx_hash: "+tx_hash);
         try {
             get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", tx_hash);
         } catch (Exception e) {
-            Log.i("strNewfee", "++++++++: " + e.getMessage());
             e.printStackTrace();
         }
         if (get_rbf_fee_info != null) {
             String strNewfee = get_rbf_fee_info.toString();
-            Log.i("strNewfee", "--------: " + strNewfee);
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
             ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
             try {
                 JSONObject jsonObject = new JSONObject(strNewfee);
-                newFeerate= jsonObject.getString("new_feerate");
-                mToast(getString(R.string.addspeed_success));
-                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee), newFeerate));
+                newFeerate = jsonObject.getString("new_feerate");
+                tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), newFeerate));
                 img_Cancle.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
@@ -694,12 +690,15 @@ public class TransactionDetailsActivity extends BaseActivity {
             Gson gson = new Gson();
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
+            mToast(getString(R.string.addspeed_success));
+            EventBus.getDefault().post(new FirstEvent("22"));
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
             alertDialog.dismiss();
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
@@ -707,6 +706,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             finish();
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

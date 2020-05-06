@@ -26,6 +26,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.HelpWordAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.MnemonicEvent;
 import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
@@ -111,8 +112,8 @@ public class MnemonicActivity extends BaseActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(FirstEvent updataHint) {
-        strSeed = updataHint.getMsg();
+    public void event(MnemonicEvent updataHint) {
+        strSeed = updataHint.getSeed();
         textCopyMnemonic.setVisibility(View.VISIBLE);
         textAllWord.setText(strSeed);
         if (!TextUtils.isEmpty(strSeed)) {

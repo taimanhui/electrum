@@ -58,6 +58,7 @@ import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.GetsendFeenumBean;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
@@ -133,16 +134,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String wallet_type_to_sign;
     private CommunicationModeSelector modeSelector;
     private String payAddress;
-    private boolean executable = true;
-    private String pin = "";
-    private boolean isActive;
-    private boolean ready;
-    private boolean done;
     private String rowtx;
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     private boolean showSeek = true;
     private String onlickName;
     private boolean flag = true;
+    private int wallet_name_pos;
 
     @Override
     public int getLayoutId() {
@@ -463,6 +460,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapetr.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                wallet_name_pos = position;
                 wallet_name = dataListName.get(position).getName();
                 waletType = dataListName.get(position).getType();
                 wallet_type_to_sign = waletType;
@@ -595,7 +593,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         e.printStackTrace();
                         return;
                     }
-                    EventBus.getDefault().post(new FirstEvent("22"));
+                    if (onlickName.equals(wallet_name)) {
+                        EventBus.getDefault().post(new FirstEvent("22"));
+                    } else {
+                        EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
+                    }
                     //1-n wallet  --> Direct signature and broadcast
                     CommunicationModeSelector.runnables.clear();
                     CommunicationModeSelector.runnables.add(runnable);
@@ -610,6 +612,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     } else {
                         if (onlickName.equals(wallet_name)) {
                             EventBus.getDefault().post(new FirstEvent("22"));
+                        } else {
+                            EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                         }
                     }
                     Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
@@ -641,7 +645,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             payAddress = getCodeAddressBean.getAddr();
         }
     }
-
 
 
     private Runnable runnable = this::gotoConfirmOnHardware;

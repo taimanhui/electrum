@@ -1,6 +1,8 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,6 +44,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     private String firmwareVersion;
     private String device_id;
     private String bleVerson;
+    private String label;
 
     @Override
     public int getLayoutId() {
@@ -61,7 +64,12 @@ public class HardwareDetailsActivity extends BaseActivity {
         firmwareVersion = intent.getStringExtra("firmwareVersion");
         bleVerson = intent.getStringExtra("bleVerson");
         device_id = intent.getStringExtra("device_id");
-        tetKeyName.setText(bleName);
+        label = intent.getStringExtra("label");
+        if (!TextUtils.isEmpty(label)) {
+            tetKeyName.setText(label);
+        } else {
+            tetKeyName.setText(String.format("%s", "BixinKEY"));
+        }
         tetCode.setText(firmwareVersion);
 
     }
@@ -72,7 +80,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device})
+    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.tetBluetoothSet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -80,14 +88,15 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
             case R.id.lin_OnckOne:
                 Intent intent = new Intent(HardwareDetailsActivity.this, BixinKeyMessageActivity.class);
-                intent.putExtra("bleName",bleName);
-                intent.putExtra("device_id",device_id);
+                intent.putExtra("bleName", bleName);
+                intent.putExtra("label", label);
+                intent.putExtra("device_id", device_id);
                 startActivity(intent);
                 break;
             case R.id.lin_OnckTwo:
                 Intent intentVersion = new Intent(HardwareDetailsActivity.this, VersionUpgradeActivity.class);
-                intentVersion.putExtra("firmwareVersion",firmwareVersion);
-                intentVersion.putExtra("bleVerson",bleVerson);
+                intentVersion.putExtra("firmwareVersion", firmwareVersion);
+                intentVersion.putExtra("bleVerson", bleVerson);
                 startActivity(intentVersion);
                 break;
             case R.id.change_pin:
@@ -100,6 +109,9 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
             case R.id.wipe_device:
                 mIntent(RecoverySetActivity.class);
+                break;
+            case R.id.tetBluetoothSet:
+                mIntent(BixinKeyBluetoothSettingActivity.class);
                 break;
         }
     }

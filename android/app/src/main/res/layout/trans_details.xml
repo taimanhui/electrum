@@ -35,13 +35,6 @@
                     android:src="@drawable/step1"
                     android:visibility="visible" />
 
-                <!--                <ImageView-->
-                <!--                    android:id="@+id/img_progresstwo"-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="wrap_content"-->
-                <!--                    android:src="@drawable/progress_two"-->
-                <!--                    android:visibility="gone" />-->
-
                 <ImageView
                     android:id="@+id/img_progressthree"
                     android:layout_width="match_parent"
@@ -118,8 +111,8 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="end"
                 android:layout_marginEnd="15.3dp"
-                android:padding="8dp"
                 android:background="?attr/selectableItemBackground"
+                android:padding="8dp"
                 android:src="@drawable/back" />
 
             <TextView
@@ -140,8 +133,8 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="end"
                 android:layout_marginEnd="5.3dp"
-                android:padding="8dp"
                 android:background="?attr/selectableItemBackground"
+                android:padding="8dp"
                 android:src="@drawable/share" />
         </RelativeLayout>
 
@@ -183,12 +176,12 @@
 
                 <LinearLayout
                     android:id="@+id/lin_payAddress"
-                    android:visibility="gone"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="21.5dp">
+                    android:layout_marginTop="21.5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="53dp"
@@ -204,8 +197,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/text_margin"
-                        android:ellipsize="end"
                         android:layout_weight="1"
+                        android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/text_color"
                         android:textSize="15sp"
@@ -264,9 +257,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/dp_5"
+                        android:background="?attr/selectableItemBackground"
                         android:textColor="@color/light_text"
                         android:textSize="@dimen/sp_13"
-                        android:background="?attr/selectableItemBackground"
                         tools:text="@string/waitmoredres" />
 
                     <ImageView
@@ -309,12 +302,12 @@
                         android:layout_width="@dimen/dp_50"
                         android:layout_height="21dp"
                         android:layout_marginEnd="@dimen/dp_10"
-                        android:visibility="gone"
                         android:background="@drawable/black_tuo"
                         android:gravity="center"
                         android:text="@string/add_speed"
                         android:textColor="@color/button_bk_ddake"
-                        android:textSize="@dimen/sp_12" />
+                        android:textSize="@dimen/sp_12"
+                        android:visibility="gone" />
 
 
                 </LinearLayout>
@@ -399,12 +392,12 @@
                         android:gravity="center"
                         android:paddingStart="5dp"
                         android:paddingEnd="5dp"
-                        tools:text="0/0"
                         android:textColor="@android:color/white"
                         android:textSize="@dimen/smaller_text_size"
                         android:visibility="visible"
                         app:layout_constraintStart_toEndOf="@+id/textView19"
-                        app:layout_constraintTop_toTopOf="@+id/textView19" />
+                        app:layout_constraintTop_toTopOf="@+id/textView19"
+                        tools:text="0/0" />
 
                     <TextView
                         android:id="@+id/tet_Nosign"

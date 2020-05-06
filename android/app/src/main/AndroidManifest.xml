@@ -26,7 +26,7 @@
         android:required="false" />
     <uses-feature
         android:name="android.hardware.usb.host"
-        android:required="false"/>
+        android:required="false" />
 
     <application
         android:name=".activities.base.MyApplication"
@@ -34,12 +34,14 @@
         android:fullBackupContent="true"
         android:icon="@drawable/app_icon"
         android:label="${app_name}"
-        tools:replace="label"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        tools:replace="label"
         tools:targetApi="q">
+        <activity android:name=".activities.settings.FixBixinkeyNameActivity" />
+        <activity android:name=".activities.settings.BixinKeyBluetoothSettingActivity" />
         <activity android:name=".activities.settings.BlueToothStatusActivity" /> <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->
         <activity android:name=".activities.settings.AgentServerActivity" />
         <activity android:name=".activities.sign.CheckSignResultActivity" />
@@ -110,12 +112,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.settings.VersionUpgradeActivity">
-            <!--<intent-filter>
+
+            <!--
+            <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/usb_device_filter" />-->
+                android:resource="@xml/usb_device_filter" />
+            -->
         </activity>
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.TransactionRecordsActivity" />
@@ -185,8 +190,9 @@
         <activity android:name=".dfu.NotificationActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.CheckHideWalletActivity" />
         <activity android:name=".activities.sign.CheckSignMessageActivity" />
-        <activity android:name=".activities.service.CommunicationModeSelector"
-            android:theme="@style/dialog"/>
+        <activity
+            android:name=".activities.service.CommunicationModeSelector"
+            android:theme="@style/dialog" />
         <activity android:name=".activities.SetNameActivity" />
         <activity android:name=".activities.settings.recovery_set.RecoveryActivity" />
         <activity android:name=".activities.settings.fixpin.ActiveFailedActivity" />

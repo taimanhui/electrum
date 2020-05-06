@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,9 +31,10 @@ public class BixinKeyMessageActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         Intent intent = getIntent();
+        String label = intent.getStringExtra("label");
         String bleName = intent.getStringExtra("bleName");
         String device_id = intent.getStringExtra("device_id");
-        tetKeyName.setText(bleName);
+        tetKeyName.setText(label);
         tetCode.setText(device_id);
         tetBluetoose.setText(bleName);
     }
@@ -43,10 +45,15 @@ public class BixinKeyMessageActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back})
+    @OnClick({R.id.img_back, R.id.linear_fix_key})
     public void onViewClicked(View view) {
-        if (view.getId() == R.id.img_back) {
-            finish();
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+            case R.id.linear_fix_key:
+                mIntent(FixBixinkeyNameActivity.class);
+                break;
         }
     }
 }

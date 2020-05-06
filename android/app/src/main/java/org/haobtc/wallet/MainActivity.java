@@ -47,6 +47,7 @@ import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.CheckHideWalletFragment;
@@ -492,6 +493,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             //Rolling Wallet
             ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
 
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(MainpageWalletEvent updataHint) {
+        String status = updataHint.getStatus();
+        if (status.equals("22")){
+            int walletPos = updataHint.getPos();
+            viewPager.setCurrentItem(walletPos);
+            Log.i("viewPagernihao", "event:------ "+walletPos);
         }
     }
 

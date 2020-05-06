@@ -222,7 +222,7 @@ variants.all { variant ->
         log.debug("Skipping non-debuggable build type '${variant.buildType.name}'.")
         return;
     }
-        // Android 3.3.0+
+    // Android 3.3.0+
     JavaCompile javaCompileTask = variant.javaCompileProvider.get()
     javaCompileTask.doLast {
         String[] args = ["-showWeaveInfo",

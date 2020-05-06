@@ -16,6 +16,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.MnemonicEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import butterknife.BindView;
@@ -112,7 +113,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                             edit.putInt("defaultName", walletNameNum);
                             edit.putBoolean("haveCreateNopass", true);
                             edit.apply();
-                            EventBus.getDefault().postSticky(new FirstEvent(strpyObject));
+                            EventBus.getDefault().postSticky(new MnemonicEvent(strpyObject));
                         }
                     }
                 });

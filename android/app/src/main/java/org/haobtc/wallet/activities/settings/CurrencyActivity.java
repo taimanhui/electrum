@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,8 +69,15 @@ public class CurrencyActivity extends BaseActivity {
         listCNY = new ArrayList<>();
         //BTC
         radioSelectOne();
-        //CNY
-        radioSelectTwo();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //CNY
+                radioSelectTwo();
+            }
+        }, 200);
+
     }
 
     private void radioSelectOne() {
@@ -144,12 +152,9 @@ public class CurrencyActivity extends BaseActivity {
                         edit.putString("base_unit", "sat");
                         edit.apply();
                         break;
-
                 }
-
             }
         });
-
     }
 
     private void radioSelectTwo() {
@@ -173,7 +178,7 @@ public class CurrencyActivity extends BaseActivity {
                     listCNY.add(new CNYBean(String.valueOf(pyObjects.get(i)), false));
                 }
             }
-
+            reclCnyTable.setVisibility(View.VISIBLE);
             CNYAdapter cnyAdapter = new CNYAdapter(CurrencyActivity.this, listCNY, cny_unit);
             reclCnyTable.setAdapter(cnyAdapter);
             cnyAdapter.setOnLisennorClick(new CNYAdapter.onLisennorClick() {
@@ -217,7 +222,6 @@ public class CurrencyActivity extends BaseActivity {
                     edit.apply();
                 }
             });
-
         }
     }
 
@@ -235,7 +239,6 @@ public class CurrencyActivity extends BaseActivity {
                     linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     reclCnyTable.setLayoutParams(linearParams1);
                     tetCheckAll.setText(getString(R.string.retract));
-
                 } else {
                     RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
                     linearParams1.height = 530;
