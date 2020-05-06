@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities.personalwallet.hidewallet;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -10,14 +9,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.utils.Global;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class HideWalletSetPassActivity extends BaseActivity {
 
@@ -32,6 +36,7 @@ public class HideWalletSetPassActivity extends BaseActivity {
     @BindView(R.id.linearNextInputPass)
     LinearLayout linearNextInputPass;
     private String createOrcheck;
+    public static final String TAG = "org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity";
 
     @Override
     public int getLayoutId() {
@@ -52,12 +57,13 @@ public class HideWalletSetPassActivity extends BaseActivity {
     public void initData() {
 
     }
+
     @SingleClick
     @OnClick({R.id.img_back, R.id.bn_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
+              //  Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
                 finish();
                 break;
             case R.id.bn_next:
@@ -68,10 +74,14 @@ public class HideWalletSetPassActivity extends BaseActivity {
                         mToast(getString(R.string.please_input_pass));
                         return;
                     }
-                    Intent intent = new Intent();
-                    intent.putExtra("passphrase", strNewpass);
-                    setResult(Activity.RESULT_OK, intent);
-                    finish();
+                    if (!isNFC) {
+                        EventBus.getDefault().post(new PinEvent("", strNewpass));
+                    } else {
+                        Intent intent = new Intent(this, CommunicationModeSelector.class);
+                        intent.putExtra("tag", TAG);
+                        intent.putExtra("passphrase", strNewpass);
+                        startActivity(intent);
+                    }
                 } else {
                     if (TextUtils.isEmpty(strNewpass)) {
                         mToast(getString(R.string.please_input_pass));
@@ -85,12 +95,16 @@ public class HideWalletSetPassActivity extends BaseActivity {
                         mToast(getString(R.string.two_different_pass));
                         return;
                     }
-                    Intent intent = new Intent();
-                    intent.putExtra("passphrase", strNewpass);
-                    setResult(Activity.RESULT_OK, intent);
-                    finish();
+                    if (!isNFC) {
+                        EventBus.getDefault().post(new PinEvent("", strNewpass));
+                    } else {
+                        Intent intent = new Intent(this, CommunicationModeSelector.class);
+                        intent.putExtra("tag", TAG);
+                        intent.putExtra("passphrase", strNewpass);
+                        startActivity(intent);
+                    }
                 }
-
+                finish();
                 break;
         }
     }

@@ -174,7 +174,7 @@
                     <Button
                         android:id="@+id/wallet_card_bn3"
                         android:layout_width="0dp"
-                        android:layout_height="27dp"
+                        android:layout_height="match_parent"
                         android:layout_marginStart="5.5dp"
                         android:layout_weight="1"
                         android:background="@drawable/button_bk_small"

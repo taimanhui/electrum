@@ -1,9 +1,8 @@
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
-    android:horizontalGap="1dp"
-    android:keyWidth="33.33%p"
-    android:keyHeight="70dp"
-    android:verticalGap="1dp"
-    android:background="@android:color/darker_gray">
+    android:horizontalGap="@dimen/dp_6"
+    android:keyWidth="31%p"
+    android:keyHeight="@dimen/dp_46"
+    android:verticalGap="@dimen/dp_7">
 
     <Row>
         <Key
@@ -48,7 +47,7 @@
             android:keyEdgeFlags="left"/>
         <Key
             android:codes="48"
-            android:keyLabel="" />
+            android:keyLabel="C" />
         <Key
             android:codes="-5"
             android:keyIcon="@drawable/close_big_black"

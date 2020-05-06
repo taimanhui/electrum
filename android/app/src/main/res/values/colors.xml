@@ -42,9 +42,11 @@
     <color name="tet_tips">#fff6e5</color>
     <color name="black_gray_color">#777777</color>
     <color name="black_0">#000000</color>
+    <color name="black_key">#030303</color>
     <color name="red_text">#f26a3a</color>
     <color name="gray_text_tou">#3bffffff</color>
     <color name="blue_text_tou">#3bffffff</color>
+    <color name="key_bk">#e6d2d5db</color>
     <color name="text_blue">#6182f5</color>
     <color name="processing_bk">#7b99ff</color>
 

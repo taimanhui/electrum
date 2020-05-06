@@ -2,8 +2,6 @@ package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +17,6 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.PinEvent;
-import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
 
@@ -93,7 +90,7 @@ public class PinSettingActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
+               // Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
                 finish();
                 break;
             case R.id.bn_next:
@@ -119,6 +116,7 @@ public class PinSettingActivity extends BaseActivity {
                             Intent intent3 = new Intent(this, SignatureProcessing.class);
                             intent3.putExtra("pin", pin);
                             startActivity(intent3);
+                            break;
                         default:
                             EventBus.getDefault().post(new PinEvent(pin, ""));
                             finish();
