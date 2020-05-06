@@ -499,9 +499,32 @@ class AndroidCommands(commands.Commands):
                 if wallet_type[0:1] == '1':
                     wallet_name = name
                 else:
-                    wallet_name = wallet_type
-                self.label_plugin.load_wallet(self.wallet, wallet_name)
+                    wallet_name = "共管钱包"
+                self.label_plugin.create_wallet(self.wallet, wallet_type, wallet_name)
         self.wizard = None
+
+    def pull_tx_infos(self):
+        try:
+            self._assert_wallet_isvalid()
+            if self.label_flag:
+                data = self.label_plugin.pull_tx(self.wallet)
+                data_list = json.loads(data)
+                except_list = []
+                for txinfo in data_list:
+                    try:
+                        tx = tx_from_any(txinfo['tx'])
+                        tx.deserialize()
+                        self.do_save(tx)
+                    except BaseException as e:
+                        print(f"except-------- {txinfo['tx_hash'],txinfo['tx']}")
+                        temp_data = {}
+                        temp_data['tx_hash'] = txinfo['tx_hash']
+                        temp_data['error'] = str(e)
+                        except_list.append(temp_data)
+                        pass
+                return json.dumps(except_list)
+        except BaseException as e:
+            raise BaseException(e)
 
     def bulk_create_wallet(self, wallets_info):
         wallets_list = json.loads(wallets_info)
@@ -530,9 +553,9 @@ class AndroidCommands(commands.Commands):
             if self.label_flag:
                 Vpub_data = []
                 if xpub[0:4] == 'Vpub':
-                    Vpub_data = json.loads(self.label_plugin.pull(xpub))
+                    Vpub_data = json.loads(self.label_plugin.pull_xpub(xpub))
                     xpub = BIP32Node.get_p2wpkh_from_p2wsh(xpub)
-                vpub_data = json.loads(self.label_plugin.pull(xpub))
+                vpub_data = json.loads(self.label_plugin.pull_xpub(xpub))
                 return json.dumps(Vpub_data + vpub_data if Vpub_data is not None else vpub_data)
         except BaseException as e:
             raise e
@@ -610,6 +633,8 @@ class AndroidCommands(commands.Commands):
         ret_data = {
             'tx': str(self.tx)
         }
+        if self.label_flag:
+            self.label_plugin.push_tx(self.wallet, 'createtx', tx.txid(), self.tx)
         json_str = json.dumps(ret_data)
         return json_str
 
@@ -789,7 +814,7 @@ class AndroidCommands(commands.Commands):
             'amount': amount_str,
             'fee': self.format_amount_and_units(tx_details.fee),
             'description': self.wallet.get_label(tx_details.txid),
-            'tx_status': tx_details.status,  # TODO:需要对应界面的几个状态
+            'tx_status': tx_details.status,
             'sign_status': [s, r],
             'output_addr': out_list,
             'input_addr': in_list,
@@ -928,7 +953,7 @@ class AndroidCommands(commands.Commands):
                 ri['quote_text'] = fiat_value.to_ui_string()
         return ri
 
-    def get_wallet_address_show_UI(self):  # TODO:需要按照electrum方式封装二维码数据?
+    def get_wallet_address_show_UI(self):
         try:
             self._assert_wallet_isvalid()
             data = util.create_bip21_uri(self.wallet.get_addresses()[0], "", "")
@@ -1102,6 +1127,8 @@ class AndroidCommands(commands.Commands):
                 self.do_save(sign_tx)
             except:
                 pass
+            if self.label_flag:
+                self.label_plugin.push_tx(self.wallet, 'signtx', tx.txid(), sign_tx.serialize_as_bytes().hex())
             return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
         except BaseException as e:
             raise BaseException(e)
@@ -1490,6 +1517,8 @@ class AndroidCommands(commands.Commands):
             self.do_save(new_tx)
         except:
             pass
+        if self.label_flag:
+            self.label_plugin.push_tx(self.wallet, 'rbftx', new_tx.txid(), new_tx.serialize_as_bytes().hex(), tx_hash_old=tx_hash)
         # self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
         return json.dumps(out)
 
@@ -1555,6 +1584,9 @@ class AndroidCommands(commands.Commands):
                 "balance": self.format_amount(c) + ' (%s)' % fait,
                 "name": name
             }
+            if self.label_flag:
+                self.label_plugin.load_wallet(self.wallet)
+
             return json.dumps(info)
         except BaseException as e:
             raise BaseException(e)
