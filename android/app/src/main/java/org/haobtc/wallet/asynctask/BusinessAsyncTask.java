@@ -5,6 +5,8 @@ import android.util.Log;
 
 import org.haobtc.wallet.utils.Daemon;
 
+import cn.com.heaton.blelibrary.ble.Ble;
+
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     private Helper helper;
     private final static String TAG = BusinessAsyncTask.class.getSimpleName();
@@ -74,6 +76,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onCancelled() {
         super.onCancelled();
+        Ble.getInstance().disconnectAll();
         helper.onCancelled();
     }
 

@@ -1,7 +1,9 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +31,8 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
+import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import dr.android.fileselector.FileSelectConstant;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
@@ -154,6 +158,7 @@ public class VersionUpgradeActivity extends BaseActivity {
             super.onDfuCompleted(deviceAddress);
             CommunicationModeSelector.isDfu = false;
             mIntent(UpgradeFinishedActivity.class);
+            Ble.getInstance().disconnectAll();
         }
 
         @Override
@@ -161,22 +166,19 @@ public class VersionUpgradeActivity extends BaseActivity {
             super.onDfuProcessStarted(deviceAddress);
         }
 
-        Intent intent;
+
 
         @Override
         public void onDfuProcessStarting(@NonNull String deviceAddress) {
            VersionUpgradeActivity.filePath = "";
             super.onDfuProcessStarting(deviceAddress);
-            if (intent == null) {
-                intent = new Intent(VersionUpgradeActivity.this, UpgradeBixinKEYActivity.class);
-                intent.putExtra("tag", 2);
-                startActivity(intent);
-            }
         }
 
         @Override
         public void onDfuAborted(@NonNull String deviceAddress) {
             super.onDfuAborted(deviceAddress);
+            Ble.getInstance().disconnectAll();
+            EventBus.getDefault().post(new ExceptionEvent("abort"));
         }
 
         @Override
@@ -191,7 +193,27 @@ public class VersionUpgradeActivity extends BaseActivity {
         @Override
         public void onError(@NonNull String deviceAddress, int error, int errorType, String message) {
             super.onError(deviceAddress, error, errorType, message);
+            Ble.getInstance().disconnectAll();
             EventBus.getDefault().post(new ExceptionEvent(message));
+        }
+
+        @Override
+        public void onDeviceConnected(@NonNull String deviceAddress) {
+            super.onDeviceConnected(deviceAddress);
+        }
+
+        @Override
+        public void onEnablingDfuMode(@NonNull String deviceAddress) {
+            super.onEnablingDfuMode(deviceAddress);
+            Intent intent = new Intent(VersionUpgradeActivity.this, UpgradeBixinKEYActivity.class);
+            intent.putExtra("tag", 2);
+            startActivity(intent);
+        }
+
+        @Override
+        public void onDeviceDisconnected(@NonNull String deviceAddress) {
+            super.onDeviceDisconnected(deviceAddress);
+            System.out.println("dfu disconnecting========");
         }
     };
 

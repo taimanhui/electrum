@@ -1221,9 +1221,11 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     def init(self, path='android_usb', label="BixinKEY"):
+        self.client = None
+        self.path = ''
         client = self.get_client(path=path)
         try:
-            response = client.reset_device(label=label, pin_protection=False)
+            response = client.reset_device(label=label)
         except Exception as e:
             raise BaseException(e)
         if response == "Device successfully initialized":
@@ -1232,6 +1234,8 @@ class AndroidCommands(commands.Commands):
             return 0
 
     def reset_pin(self, path='android_usb') -> int:
+        self.client = None
+        self.path = ''
         client = self.get_client(path)
         try:
             resp = client.set_pin(False)
@@ -1243,6 +1247,8 @@ class AndroidCommands(commands.Commands):
             return 0
 
     def wipe_device(self, path='android_usb') -> int:
+        self.client = None
+        self.path = ''
         client = self.get_client(path)
         resp = client.wipe_device()
         if resp == "Device wiped":
@@ -1270,6 +1276,7 @@ class AndroidCommands(commands.Commands):
         assert len(device) != 0, "Not found the point device"
         print(f"======{device[0]}====")
         client = plugin.create_client(device[0], ui)
+        client.set_bixin_app(True)
         self.client = client
         self.path = path
         return client
@@ -1307,6 +1314,8 @@ class AndroidCommands(commands.Commands):
         Upload new firmware to device.
         Note : Device must be in bootloader mode.
         """
+        self.client = None
+        self.path = ''
         client = self.get_client(path)
         features = client.features
         if not features.bootloader_mode:

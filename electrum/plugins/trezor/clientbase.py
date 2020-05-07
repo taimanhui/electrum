@@ -201,6 +201,10 @@ class TrezorClientBase(HardwareClientBase, Logger):
         with self.run_flow(_("Confirm on your {} device to change your home screen")):
             trezorlib.device.apply_settings(self.client, homescreen=homescreen)
 
+    def set_bixin_app(self, is_bixin):
+        with self.run_flow(_("")):
+            trezorlib.device.apply_settings(self.client, is_bixinapp=is_bixin)
+
     def set_pin(self, remove):
         if remove:
             msg = _("Confirm on your {} device to disable PIN protection")

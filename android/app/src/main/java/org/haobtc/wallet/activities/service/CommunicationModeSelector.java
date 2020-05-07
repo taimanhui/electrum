@@ -297,7 +297,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         try {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE));
             executorService.submit(futureTask);
-            feature = futureTask.get(2, TimeUnit.SECONDS).toString();
+            feature = futureTask.get(5, TimeUnit.SECONDS).toString();
             HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
             if (features.isBootloaderMode()) {
                 throw new Exception("bootloader mode");
@@ -328,7 +328,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 intent.putExtra("tag", 1);
                 startActivity(intent);
                 if (isNFC) {
-                   new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
+                   new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 1000);
                 }
             } else if ("ble".equals(extras)) {
                 if (isNFC) {
@@ -429,7 +429,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (isInit) {
             if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
                 // todo: remove the below pin about code
-                if (!features.isPinCached()) {
+                if (!features.isPinCached() && features.isPinProtection()) {
                     Intent intent = new Intent(this, PinSettingActivity.class);
                     intent.putExtra("tag", tag);
                     startActivity(intent);
@@ -456,14 +456,14 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                         customerUI.callAttr("set_pass_state", 1);
                     } else {
                         // todo: 收到交易传输完成的信号，才能跳转，👇代码要删除
-                        if (features.isPinCached()) {
+                        if (features.isPinCached() || !features.isPinProtection()) {
                             runOnUiThread(runnables.get(0));
                         }
                     }
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, extras);
                 }
                 // todo: remove the if , pin always required
-                if (!features.isPinCached()) {
+                if (!features.isPinCached() && features.isPinProtection()) {
                     Intent intent = new Intent(this, PinSettingActivity.class);
                     intent.putExtra("tag", "signature");
                     startActivity(intent);
@@ -489,35 +489,34 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     }
 
     private void dfu() {
-        List<BleDevice> devices = Ble.getInstance().getConnetedDevices();
-        if (devices.size() == 0) {
-            Log.d(TAG, "没有已连接设备");
-            finish();
-            return;
-        }
-        final DfuServiceInitiator starter = new DfuServiceInitiator(devices.get(0).getBleAddress());
-        starter.setDeviceName(devices.get(0).getBleName());
+        BleDevice device = BleDeviceRecyclerViewAdapter.mBleDevice;
+        Ble.getInstance().disconnect(device);
+        new Handler().postDelayed(() -> {
+            final DfuServiceInitiator starter = new DfuServiceInitiator(device.getBleAddress());
+            starter.setDeviceName(device.getBleName());
+            starter.setKeepBond(true);
         /*
            Call this method to put Nordic nrf52832 into bootloader mode
         */
-        starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
-        starter.setKeepBond(true);
-        if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
-            File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
-            if (!file.exists()) {
-                Toast.makeText(this, R.string.update_file_not_exist, Toast.LENGTH_LONG).show();
+            starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
+            if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
+                if (!file.exists()) {
+                    Toast.makeText(this, R.string.update_file_not_exist, Toast.LENGTH_LONG).show();
+                    finish();
+                    return;
+                }
+            } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
+                Toast.makeText(this, R.string.update_file_format_error, Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
-        } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
-            Toast.makeText(this, R.string.update_file_format_error, Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath);
-        DfuServiceInitiator.createDfuNotificationChannel(this);
-        starter.start(this, DfuService.class);
-        isDfu = true;
+            starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath);
+            DfuServiceInitiator.createDfuNotificationChannel(this);
+            starter.start(this, DfuService.class);
+            isDfu = true;
+        } , 2000);
+
     }
 
     private void showConnecting() {

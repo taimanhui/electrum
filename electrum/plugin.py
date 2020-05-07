@@ -518,7 +518,7 @@ class DeviceMgr(ThreadJob):
             devices = self.scan_devices()
             # below `if not self.xpub_by_id(dev.id_)` may case 'select device failed,maybe xpub is not in the device'
             # when toggle the normal wallet sign with the hide wallet sign
-        devices = [dev for dev in devices if not self.xpub_by_id(dev.id_)]
+        devices = [dev for dev in devices]
         infos = []
         for device in devices:
             if device.product_key not in plugin.DEVICE_IDS:

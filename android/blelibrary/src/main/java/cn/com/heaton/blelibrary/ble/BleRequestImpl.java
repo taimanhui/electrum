@@ -95,11 +95,11 @@ public final class BleRequestImpl<T extends BleDevice> {
                         connectWrapperCallback.onConnectionChanged(bleDevice);
                     }
                     BleLog.d(TAG, "onConnectionStateChange:----device is connected.");
-                    BluetoothGatt bluetoothGatt = gattHashMap.get(device.getAddress());
+                   BluetoothGatt bluetoothGatt = gattHashMap.get(device.getAddress());
                     if (null != bluetoothGatt){
                         // Attempts to discover services after successful connection.
                         BleLog.d(TAG, "Attempting to start service discovery");
-                        bluetoothGatt.discoverServices();
+                        gatt.discoverServices();
                     }
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     BleLog.d(TAG, "onConnectionStateChange:----device is disconnected.");
@@ -139,6 +139,10 @@ public final class BleRequestImpl<T extends BleDevice> {
                 notifyCharacteristics.clear();
                 notifyIndex = 0;
                 //Start setting notification feature
+                if (gatt.getServices().size() <= 3) {
+                    gatt.discoverServices();
+                    return;
+                }
                 displayGattServices(gatt.getDevice(), getSupportedGattServices(gatt.getDevice().getAddress()));
             } else {
                 BleLog.e(TAG, "onServicesDiscovered received: " + status);
@@ -384,10 +388,10 @@ public final class BleRequestImpl<T extends BleDevice> {
             connectWrapperCallback.onConnectionChanged(bleDevice);
         }
         // We want to directly connect to the device, so we are setting the autoConnect parameter to false
-        BluetoothGatt bluetoothGatt = device.connectGatt(context, false, gattCallback, BluetoothDevice.TRANSPORT_LE, BluetoothDevice.PHY_LE_2M_MASK);
+        BluetoothGatt bluetoothGatt = device.connectGatt(context, false, gattCallback, BluetoothDevice.TRANSPORT_LE);
         if (bluetoothGatt != null) {
-            gattHashMap.put(address, bluetoothGatt);
-            BleLog.d(TAG, "Trying to create a new connection.");
+           gattHashMap.put(address, bluetoothGatt);
+           BleLog.d(TAG, "Trying to create a new connection.");
             return true;
         }
         return false;
@@ -733,6 +737,7 @@ public final class BleRequestImpl<T extends BleDevice> {
                     BleLog.d("setCharaNotification", "setCharaNotification");
                     setCharacteristicNotification(address, notifyCharacteristics.get(notifyIndex++), true);
                 }*/
+                System.out.println("==========================");
                 if (null != connectWrapperCallback) {
                     connectWrapperCallback.onReady(getBleDeviceInternal(device));
                 }

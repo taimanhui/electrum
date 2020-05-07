@@ -97,11 +97,11 @@ public class PinSettingActivity extends BaseActivity {
                 String pin = edtPwd.getText().toString();
                 if (pin.length() == 6) {
                     switch (tag) {
-                        case SetNameActivity.TAG:
-                            Intent intent = new Intent(this, ActivatedProcessing.class);
-                            intent.putExtra("pin", pin);
-                            startActivity(intent);
-                            break;
+//                        case SetNameActivity.TAG:
+//                            Intent intent = new Intent(this, ActivatedProcessing.class);
+//                            intent.putExtra("pin", pin);
+//                            startActivity(intent);
+//                            break;
                         case HardwareDetailsActivity.TAG: // change pin
                                 Intent intent1 = new Intent(this, PinNewActivity.class);
                                 intent1.putExtra("pin_origin", pin);

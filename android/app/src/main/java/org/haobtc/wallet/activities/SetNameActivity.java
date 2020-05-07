@@ -61,7 +61,10 @@ public class SetNameActivity extends BaseActivity {
                     Toast.makeText(this, "名字不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (CommunicationModeSelector.isNFC) {
+                Intent intent = new Intent(this, ActivatedProcessing.class);
+                intent.putExtra("name", nameEdit.getText().toString());
+                startActivity(intent);
+                /*if (CommunicationModeSelector.isNFC) {
                     Intent intent = new Intent(this, CommunicationModeSelector.class);
                     intent.putExtra("tag", TAG);
                     intent.putExtra("name", nameEdit.getText().toString());
@@ -72,7 +75,7 @@ public class SetNameActivity extends BaseActivity {
                 Intent intent = new Intent(this, PinSettingActivity.class);
                 intent.putExtra("tag", TAG);
                 intent.putExtra("pin_type", 2);
-                startActivity(intent);
+                startActivity(intent);*/
                 break;
         }
     }

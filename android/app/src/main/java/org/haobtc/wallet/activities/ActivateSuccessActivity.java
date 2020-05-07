@@ -11,6 +11,7 @@ import org.haobtc.wallet.aop.SingleClick;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class ActivateSuccessActivity extends BaseActivity {
 
@@ -39,6 +40,7 @@ public class ActivateSuccessActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.bn_back:
+                Ble.getInstance().disconnectAll();
                 finishAffinity();
         }
     }

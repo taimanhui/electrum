@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -198,7 +199,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
     public void initView() {
         ButterKnife.bind(this);
         tag = getIntent().getIntExtra("tag", 1);
-        NfcUtils.nfc(this, false);
     }
 
     @Override
@@ -235,11 +235,18 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
         new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
     }
     @SingleClick
-    @OnClick({R.id.img_back, R.id.imgdhksjks, R.id.tet_test})
+    @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
             finish();
         }
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

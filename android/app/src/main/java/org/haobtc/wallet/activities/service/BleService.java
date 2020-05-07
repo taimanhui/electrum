@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -190,7 +191,7 @@ public class BleService extends Service {
                         Log.e("BLE", "无法绑定设备");
                         Toast.makeText(this, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
                     }
-                    isBonded = true;
+                    // isBonded = true;
             }
         return Service.START_NOT_STICKY;
     }
@@ -198,7 +199,7 @@ public class BleService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            synchronized (this) {
+         //   synchronized (this) {
                 if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                     BluetoothDevice  device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
@@ -213,7 +214,7 @@ public class BleService extends Service {
                         EventBus.getDefault().post(new ConnectingEvent());
                         return;
                     }
-                    if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDED && previousState == BluetoothDevice.BOND_BONDING && isBonded) {
+                    if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_BONDED && previousState == BluetoothDevice.BOND_BONDING) {
                         if (mBleDevice.isConnected()) {
                             handle();
                         } else {
@@ -221,7 +222,7 @@ public class BleService extends Service {
                         }
                     }
                 }
-            }
+            // }
         }
     };
     @Override

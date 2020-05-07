@@ -23,6 +23,7 @@ import org.haobtc.wallet.activities.settings.fixpin.ActiveFailedActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ConfirmActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SendingFailedEvent;
@@ -37,6 +38,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+
 public class ActivatedProcessing extends BaseActivity {
     public static final String TAG = ActivatedProcessing.class.getSimpleName();
     @BindView(R.id.img_back)
@@ -45,11 +48,14 @@ public class ActivatedProcessing extends BaseActivity {
     TextView firstPromote;
     @BindView(R.id.second_promote)
     TextView secondPromote;
+/*
     private String pin;
+*/
     int MAX_LEVEL = 10000;
+    private String  name;
 
     public int getLayoutId() {
-        return CommunicationModeSelector.isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
+        return isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
     }
 
     @Override
@@ -58,7 +64,7 @@ public class ActivatedProcessing extends BaseActivity {
         EventBus.getDefault().register(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         List<Drawable> drawables = new ArrayList<>();
-        if (CommunicationModeSelector.isNFC) {
+        if (isNFC) {
            secondPromote.setText(R.string.order_sending);
         }
         drawables.addAll(Arrays.asList(firstPromote.getCompoundDrawables()));
@@ -71,14 +77,20 @@ public class ActivatedProcessing extends BaseActivity {
                     animator.setInterpolator(new LinearInterpolator());
                     animator.start();
                 });
+/*
         pin = getIntent().getStringExtra("pin");
+*/
     }
 
     @Override
     public void initData() {
         NfcUtils.nfc(this, false);
-        if (!CommunicationModeSelector.isNFC) {
+        /*if (!isNFC) {
             EventBus.getDefault().post(new PinEvent(pin, ""));
+        }*/
+        name = getIntent().getStringExtra("name");
+        if (!isNFC) {
+            EventBus.getDefault().post(new InitEvent(name));
         }
     }
 
@@ -101,7 +113,7 @@ public class ActivatedProcessing extends BaseActivity {
     public void onButtonRequest(ButtonRequestEvent event) {
         Drawable drawableStart = getDrawable(R.drawable.chenggong);
         Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        if (CommunicationModeSelector.isNFC) {
+        if (isNFC) {
             secondPromote.setText(R.string.order_sending_successful);
             secondPromote.setCompoundDrawables(drawableStart, null, null, null);
             startActivity(new Intent(this, ConfirmActivity.class));
@@ -124,7 +136,7 @@ public class ActivatedProcessing extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
-            EventBus.getDefault().post(new PinEvent(pin, ""));
+            EventBus.getDefault().post(new InitEvent(name));
         }
     }
 
@@ -161,11 +173,5 @@ public class ActivatedProcessing extends BaseActivity {
         if (view.getId() == R.id.img_back) {
             finishAffinity();
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
     }
 }

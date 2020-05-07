@@ -12,6 +12,7 @@ import org.haobtc.wallet.aop.SingleClick;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class VerificationSuccessActivity extends BaseActivity {
     @BindView(R.id.img_back)
@@ -63,10 +64,9 @@ public class VerificationSuccessActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                finish();
-                break;
             case R.id.btn_finish:
-
+                Ble.getInstance().disconnectAll();
+                finish();
                 break;
         }
     }
