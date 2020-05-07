@@ -143,6 +143,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
     private Bitmap bitmap;
     private int strUp1;
     private int strUp2;
+    private SharedPreferences preferences;
+    private int defaultKeyNameNum;
 
     @Override
     public int getLayoutId() {
@@ -153,7 +155,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         int defaultName = preferences.getInt("defaultName", 0);
         edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
@@ -400,7 +402,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
         EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         edit_sweep = view.findViewById(R.id.edit_public_key_cosigner_popup);
-
+        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
+        defaultKeyNameNum = defaultKeyNum + 1;
+        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -535,6 +539,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
+            edit.putInt("defaultKeyNum",defaultKeyNameNum);
+            edit.apply();
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
@@ -588,6 +594,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
+        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
+        defaultKeyNameNum = defaultKeyNum + 1;
+        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -657,6 +666,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
+            edit.putInt("defaultKeyNum",defaultKeyNameNum);
+            edit.apply();
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {

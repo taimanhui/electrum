@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +26,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import dr.android.utils.FileUtil;
 import dr.android.utils.SdCardUtil;
 
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -107,14 +105,6 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
         mSelectorIsMultiple = getIntent().getBooleanExtra(FileSelectConstant.SELECTOR_IS_MULTIPLE, false);
     }
 
-    /**
-     * setSelectorFileTitle("this is file title");
-     * setSelectorFolderTitle("this is folder title");
-     * setSelectorFileIcon(R.drawable.ic_fileselect_file);
-     * setSelectorFolderIcon(R.drawable.ic_fileselect_folder);
-     * setSelectorIconWidth(100);
-     * setSelectorIconHeight(100);
-     */
     public void initParams() {
 
     }
@@ -129,7 +119,6 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
     }
 
     private void initData() {
-
 //		if (mSelectorMode == FileSelectConstant.SELECTOR_MODE_FILE) {
 //
 //			actionbar.setTitle(mSelectorFileTitle);// Set the title to select document
@@ -139,7 +128,6 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
 //			actionbar.setTitle(mSelectorFolderTitle);// Set the title to select path
 //
 //		}
-
         mFolderPath_tv.setText(mSelectorRootPathName);
 
         mFrom = new String[]{"icon", " filename", "childnum", "createtime", "fun"};
@@ -377,7 +365,11 @@ public class FileSelectActivity extends AppCompatActivity implements OnItemClick
             }
 
             if (fileList.isEmpty()) {
-                Toast.makeText(this, getString(R.string.nochoosepath), Toast.LENGTH_SHORT).show();
+                fileList.add( mFolderPath_tv.getText().toString());
+                Intent intent = new Intent();
+                intent.putExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS,fileList);
+                setResult(Activity.RESULT_OK, intent);
+                finish();
             } else {
                 Intent intent = new Intent();
                 intent.putExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS, fileList);

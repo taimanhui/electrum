@@ -90,7 +90,7 @@ public class PinSettingActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-               // Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
+                // Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
                 finish();
                 break;
             case R.id.bn_next:
@@ -102,10 +102,11 @@ public class PinSettingActivity extends BaseActivity {
 //                            intent.putExtra("pin", pin);
 //                            startActivity(intent);
 //                            break;
+                        case SettingActivity.TAG_CHANGE_PIN:
                         case HardwareDetailsActivity.TAG: // change pin
-                                Intent intent1 = new Intent(this, PinNewActivity.class);
-                                intent1.putExtra("pin_origin", pin);
-                                startActivity(intent1);
+                            Intent intent1 = new Intent(this, PinNewActivity.class);
+                            intent1.putExtra("pin_origin", pin);
+                            startActivity(intent1);
                             break;
                         case RecoverySetActivity.TAG:
                             Intent intent2 = new Intent(this, ResetDeviceProcessing.class);

@@ -54,6 +54,8 @@ public class HideWalletActivity extends BaseActivity {
     private EditText edit_bixinName;
     private TextView textView;
     private SharedPreferences.Editor edit;
+    private int defaultKeyNum;
+    private int defaultKeyNameNum;
 
     @Override
     public int getLayoutId() {
@@ -66,6 +68,7 @@ public class HideWalletActivity extends BaseActivity {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
+        defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
     }
 
     @Override
@@ -102,6 +105,8 @@ public class HideWalletActivity extends BaseActivity {
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
+        defaultKeyNameNum = defaultKeyNum + 1;
+        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -143,6 +148,8 @@ public class HideWalletActivity extends BaseActivity {
                 }
                 return;
             }
+            edit.putInt("defaultKeyNum",defaultKeyNameNum);
+            edit.apply();
             dialogBtoms.cancel();
             // todo: 弹窗关闭
             Intent intent = new Intent(HideWalletActivity.this, CheckHideWalletActivity.class);

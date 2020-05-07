@@ -35,6 +35,7 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpu
 public class SettingActivity extends BaseActivity {
 
     public static final String TAG = SettingActivity.class.getSimpleName();
+    public static final String TAG_CHANGE_PIN = "SETTING_CHANGE_PIN";
     @BindView(R.id.tetBuckup)
     TextView tetBuckup;
     @BindView(R.id.tet_language)
@@ -133,7 +134,9 @@ public class SettingActivity extends BaseActivity {
                 startActivity(intentVersion);
                 break;
             case R.id.change_pin:
-
+                Intent intent1 = new Intent(this, CommunicationModeSelector.class);
+                intent1.putExtra("tag", TAG_CHANGE_PIN);
+                startActivity(intent1);
                 break;
         }
     }

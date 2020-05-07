@@ -17,8 +17,8 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
             android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
         <TextView
@@ -33,332 +33,335 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bk_page">
 
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/sec_view"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:layout_marginLeft="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/dp_16"
-            android:layout_marginRight="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
+                android:id="@+id/sec_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/tet_bixinKey"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_0"
-                    android:layout_weight="1"
-                    android:drawableEnd="@drawable/jiantou"
-                    android:gravity="center_vertical"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:background="?attr/selectableItemBackground"
-                    android:text="@string/bixinkey_manage"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/text_size" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
-
-                <TextView
-                    android:id="@+id/tetBuckup"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:drawableEnd="@drawable/jiantou"
-                    android:gravity="center_vertical"
-                    android:text="@string/bixinkey_backups"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/text_size"
-                    android:background="?attr/selectableItemBackground"
-                    android:visibility="visible" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
-
-                <TextView
-                    android:id="@+id/tetVerification"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_0"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:drawableEnd="@drawable/jiantou"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:text="@string/verification_key"
-                    android:textColor="@color/text" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
+                android:layout_height="300dp"
+                android:layout_marginLeft="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginRight="@dimen/layout_margin"
+                app:cardCornerRadius="@dimen/corner_radius">
 
                 <LinearLayout
-                    android:id="@+id/change_pin"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
-                    android:layout_height="59.5dp"
-                    android:background="?attr/selectableItemBackground">
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp"
-                        android:text="@string/fix_pin" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_weight="1" />
-
-                    <ImageView
-                        android:layout_width="37dp"
-                        android:layout_height="match_parent"
-                        android:padding="15dp"
-                        android:src="@drawable/jiantou" />
-
-
-                </LinearLayout>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
-
-                <LinearLayout
-                    android:id="@+id/hardware_update"
-                    android:layout_width="match_parent"
-                    android:layout_height="59.5dp"
-                    android:background="?attr/selectableItemBackground">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp"
-                        android:text="@string/verson_update" />
-
-                    <TextView
-                        android:id="@+id/tet_code"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
+                        android:id="@+id/tet_bixinKey"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_0"
                         android:layout_weight="1"
-                        android:gravity="center_vertical|end"
-                        android:singleLine="true"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_13"
-                        android:text="@string/v_1_2_3" />
+                        android:background="?attr/selectableItemBackground"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/dp_16"
+                        android:paddingEnd="@dimen/dp_16"
+                        android:text="@string/bixinkey_manage"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
 
-                    <ImageView
-                        android:layout_width="37dp"
-                        android:layout_height="match_parent"
-                        android:padding="15dp"
-                        android:src="@drawable/jiantou" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <TextView
+                        android:id="@+id/tetBuckup"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/dp_16"
+                        android:paddingEnd="@dimen/dp_16"
+                        android:text="@string/bixinkey_backups"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size"
+                        android:visibility="visible" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <TextView
+                        android:id="@+id/tetVerification"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_0"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/dp_16"
+                        android:paddingEnd="@dimen/dp_16"
+                        android:text="@string/verification_key"
+                        android:textColor="@color/text" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line"
+                        android:visibility="visible" />
+
+                    <LinearLayout
+                        android:id="@+id/change_pin"
+                        android:layout_width="match_parent"
+                        android:layout_height="59.5dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:gravity="center_vertical"
+                            android:text="@string/fix_pin"
+                            android:textColor="@color/text_color"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="match_parent"
+                            android:padding="15dp"
+                            android:src="@drawable/jiantou" />
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <LinearLayout
+                        android:id="@+id/hardware_update"
+                        android:layout_width="match_parent"
+                        android:layout_height="59.5dp"
+                        android:background="?attr/selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:gravity="center_vertical"
+                            android:text="@string/verson_update"
+                            android:textColor="@color/text_color"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/tet_code"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical|end"
+                            android:singleLine="true"
+                            android:text="@string/v_1_2_3"
+                            android:textColor="@color/graytext_color"
+                            android:textSize="@dimen/sp_13" />
+
+                        <ImageView
+                            android:layout_width="37dp"
+                            android:layout_height="match_parent"
+                            android:padding="15dp"
+                            android:src="@drawable/jiantou" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="360dp"
+                android:layout_below="@+id/sec_view"
+                android:layout_marginLeft="@dimen/layout_margin"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="@dimen/layout_margin"
+                android:layout_marginBottom="@dimen/dp_10"
+                app:cardCornerRadius="@dimen/corner_radius">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/tet_language"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
+                        android:text="@string/language"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <TextView
+                        android:id="@+id/tet_Faru"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
+                        android:text="@string/legal_currency"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <TextView
+                        android:id="@+id/tetSeverSet"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_rowWeight="1"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
+                        android:text="@string/server_setting"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <TextView
+                        android:id="@+id/tetTrsactionSet"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
+                        android:text="@string/transaction_setting"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <RelativeLayout
+                        android:id="@+id/bluetooth_set"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:text="@string/bluetooth"
+                            android:textColor="@color/text" />
+
+                        <TextView
+                            android:id="@+id/bluetooth_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentEnd="true"
+                            android:drawableEnd="@drawable/jiantou"
+                            android:drawablePadding="@dimen/dp_10"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:text="@string/open"
+                            android:textColor="@color/graytext_color" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_1"
+                        android:background="@color/separation_line" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin">
+
+                        <TextView
+                            android:id="@+id/tetAbout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:text="@string/about_only"
+                            android:textColor="@color/text" />
+
+                        <TextView
+                            android:id="@+id/tet_verson"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentEnd="true"
+                            android:drawableEnd="@drawable/jiantou"
+                            android:drawablePadding="@dimen/dp_10"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:text="@string/_1_0_0"
+                            android:textColor="@color/graytext_color" />
+                    </RelativeLayout>
 
 
                 </LinearLayout>
 
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="360dp"
-            android:layout_below="@+id/sec_view"
-            android:layout_marginLeft="@dimen/layout_margin"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+            </androidx.cardview.widget.CardView>
 
 
-                <TextView
-                    android:id="@+id/tet_language"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:drawableEnd="@drawable/jiantou"
-                    android:focusable="true"
-                    android:paddingStart="@dimen/text_margin"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:gravity="center_vertical"
-                    android:text="@string/language"
-                    android:background="?attr/selectableItemBackground"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/text_size" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
-
-                <TextView
-                    android:id="@+id/tet_Faru"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:paddingStart="@dimen/text_margin"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:drawableEnd="@drawable/jiantou"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:text="@string/legal_currency"
-                    android:background="?attr/selectableItemBackground"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/text_size" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
-
-                <TextView
-                    android:id="@+id/tetSeverSet"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_rowWeight="1"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:drawableEnd="@drawable/jiantou"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:paddingStart="@dimen/text_margin"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:text="@string/server_setting"
-                    android:textColor="@color/text"
-                    android:background="?attr/selectableItemBackground"
-                    android:textSize="@dimen/text_size" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
-
-                <TextView
-                    android:id="@+id/tetTrsactionSet"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="?attr/selectableItemBackground"
-                    android:drawableEnd="@drawable/jiantou"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:paddingStart="@dimen/text_margin"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:text="@string/transaction_setting"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/text_size" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
-
-                <RelativeLayout
-                    android:id="@+id/bluetooth_set"
-                    android:layout_width="match_parent"
-                    android:paddingStart="@dimen/text_margin"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:background="?attr/selectableItemBackground"
-                    android:layout_height="60dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:text="@string/bluetooth"
-                        android:textColor="@color/text" />
-
-                    <TextView
-                        android:id="@+id/bluetooth_status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentEnd="true"
-                        android:drawableEnd="@drawable/jiantou"
-                        android:drawablePadding="@dimen/dp_10"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:text="@string/open"
-                        android:textColor="@color/graytext_color" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
-                    android:background="@color/separation_line" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:paddingStart="@dimen/text_margin"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:background="?attr/selectableItemBackground"
-                    android:layout_height="60dp">
-
-                    <TextView
-                        android:id="@+id/tetAbout"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:text="@string/about_only"
-                        android:textColor="@color/text" />
-
-                    <TextView
-                        android:id="@+id/tet_verson"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentEnd="true"
-                        android:drawableEnd="@drawable/jiantou"
-                        android:drawablePadding="@dimen/dp_10"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:text="@string/_1_0_0"
-                        android:textColor="@color/graytext_color" />
-                </RelativeLayout>
-
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-
-    </RelativeLayout>
-
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

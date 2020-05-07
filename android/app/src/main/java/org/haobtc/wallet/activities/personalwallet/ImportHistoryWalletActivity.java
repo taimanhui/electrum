@@ -1,8 +1,10 @@
 package org.haobtc.wallet.activities.personalwallet;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -41,6 +43,9 @@ public class ImportHistoryWalletActivity extends BaseActivity {
     private Dialog dialogBtoms;
     private EditText edit_bixinName;
     private TextView textView;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor edit;
+    private int defaultKeyNameNum;
 
 
     @Override
@@ -48,9 +53,12 @@ public class ImportHistoryWalletActivity extends BaseActivity {
         return R.layout.activity_import_history_wallet;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
 
     }
 
@@ -90,6 +98,9 @@ public class ImportHistoryWalletActivity extends BaseActivity {
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
+        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
+        defaultKeyNameNum = defaultKeyNum + 1;
+        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -116,6 +127,8 @@ public class ImportHistoryWalletActivity extends BaseActivity {
                 mToast(getString(R.string.input_name));
                 return;
             }
+            edit.putInt("defaultKeyNum",defaultKeyNameNum);
+            edit.apply();
             Intent intent1 = new Intent(ImportHistoryWalletActivity.this, ChooseHistryWalletActivity.class);
             intent1.putExtra("histry_xpub", xpub);
             startActivity(intent1);

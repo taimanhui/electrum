@@ -341,13 +341,13 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     dfu();
                 }
             }
-        } else if (HardwareDetailsActivity.TAG.equals(tag)) {
+        } else if (HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag)) {
             dealWithChangePin(isNFC);
         } else if (RecoverySetActivity.TAG.equals(tag)) {
             dealWithWipeDevice(isNFC);
         } else if (SettingActivity.TAG.equals(tag)) {
             String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
-            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC: COMMUNICATION_MODE_BLE);
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
             startActivity(new Intent(this, VerificationKEYActivity.class));
         } else if (SetNameActivity.TAG.equals(tag)) {
             Intent intent = new Intent(this, PinSettingActivity.class);
@@ -378,7 +378,11 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
         if (features.isInitialized()) {
             Intent intent = new Intent(this, PinSettingActivity.class);
-            intent.putExtra("tag", HardwareDetailsActivity.TAG);
+            if (SettingActivity.TAG_CHANGE_PIN.equals(tag)) {
+                intent.putExtra("tag", SettingActivity.TAG_CHANGE_PIN);
+            } else if (HardwareDetailsActivity.TAG.equals(tag)) {
+                intent.putExtra("tag", HardwareDetailsActivity.TAG);
+            }
             intent.putExtra("pin_type", 3);
             startActivity(intent);
             new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.CHANGE_PIN, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
@@ -711,7 +715,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             } else {
                 // todo: 恢复结果
             }
-        } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag)) {
+        } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag)) {
             EventBus.getDefault().post(new ResultEvent(s));
         } else if (SettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().post(new ResultEvent(s));

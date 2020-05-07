@@ -71,6 +71,9 @@ public class SingleSigWalletCreator extends BaseActivity {
     private EditText edit_bixinName;
     private Dialog dialogBtoms;
     private int pub;
+    private int defaultKeyNum;
+    private int defaultKeyNameNum;
+
     @Override
     public int getLayoutId() {
         return R.layout.activity_create_personal_wallet;
@@ -84,6 +87,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         defaultName = preferences.getInt("defaultName", 0);
+        defaultKeyNum = preferences.getInt("defaultKeyNum", 0);//default key name
         init();
 
     }
@@ -134,17 +138,17 @@ public class SingleSigWalletCreator extends BaseActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
                 walletName = editWalletNameSetting.getText().toString();
-                String indicatorText = String.valueOf(progress+1);
+                String indicatorText = String.valueOf(progress + 1);
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
-                    if (!TextUtils.isEmpty(walletName)) {
-                        bnMultiNext.setEnabled(true);
-                        bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
-                    } else {
-                        bnMultiNext.setEnabled(false);
-                        bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
-                    }
+                if (!TextUtils.isEmpty(walletName)) {
+                    bnMultiNext.setEnabled(true);
+                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
+                } else {
+                    bnMultiNext.setEnabled(false);
+                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
+                }
             }
 
             @Override
@@ -218,6 +222,8 @@ public class SingleSigWalletCreator extends BaseActivity {
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
+        defaultKeyNameNum = defaultKeyNum + 1;
+        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -272,7 +278,7 @@ public class SingleSigWalletCreator extends BaseActivity {
     }
 
     @SuppressLint("HandlerLeak")
-    Handler handler =new Handler(){
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
@@ -297,13 +303,14 @@ public class SingleSigWalletCreator extends BaseActivity {
                     String message = e.getMessage();
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getString(R.string.changewalletname));
-                    }else if (message.contains("The same xpubs have create wallet")){
+                    } else if (message.contains("The same xpubs have create wallet")) {
                         mToast(getString(R.string.xpub_have_wallet));
                     }
                     return;
                 }
                 Log.i("jinxioaminisheduh", "================: ");
                 edit.putInt("defaultName", walletNameNum);
+                edit.putInt("defaultKeyNum",defaultKeyNameNum);
                 edit.apply();
                 myDialog.dismiss();
                 EventBus.getDefault().post(new FirstEvent("11"));
