@@ -48,7 +48,7 @@
             android:drawableLeft="@drawable/connecting"
             android:drawablePadding="@dimen/dp_9"
             android:gravity="center"
-            android:text="@string/verify_pin"
+            android:text="@string/verifying_pin"
             android:textColor="@color/text"
             android:textSize="@dimen/smaller_text_size" />
 
@@ -61,6 +61,7 @@
             android:text="@string/pin_seted"
             android:drawableLeft="@drawable/connecting"
             android:drawablePadding="@dimen/dp_9"
+            android:visibility="gone"
             android:textColor="@color/text"
             android:textSize="@dimen/smaller_text_size"/>
         <TextView

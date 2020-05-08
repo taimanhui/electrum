@@ -1,5 +1,7 @@
 package org.haobtc.wallet.event;
 
+import androidx.annotation.NonNull;
+
 public class ChangePinEvent {
     private String pinOrigin;
     private String pinNew;
@@ -22,5 +24,11 @@ public class ChangePinEvent {
 
     public String getPinOrigin() {
         return pinOrigin;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return pinOrigin + pinNew;
     }
 }

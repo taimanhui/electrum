@@ -29,7 +29,8 @@ public class HardwareFeatures {
      * unfinished_backup : false
      * no_backup : false
      * capabilities : [1,2,5,7,8,10,12,14]
-     * ble_name :
+     * 'ble_name': 'BixinKEY1013113806',
+     * 'ble_ver': '1.0.1'
      */
 
     @SerializedName("vendor")
@@ -72,6 +73,8 @@ public class HardwareFeatures {
     private List<Integer> capabilities;
     @SerializedName("ble_name")
     private String bleName;
+    @SerializedName("ble_ver")
+    private String bleVer;
     @SerializedName("bootloader_mode")
     private boolean bootloaderMode;
 
@@ -233,7 +236,12 @@ public class HardwareFeatures {
     public String getBleName() {
         return bleName;
     }
-
+    public String getBleVer() {
+        return bleVer;
+    }
+    public void setBleVer(String bleVer) {
+        this.bleVer = bleVer;
+    }
     public boolean isBootloaderMode() {
         return bootloaderMode;
     }

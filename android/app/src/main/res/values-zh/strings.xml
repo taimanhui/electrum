@@ -508,7 +508,7 @@
     <string name="clean_private_key">私钥已清除</string>
     <string name="btc_com">https://btc.com/</string>
     <string name="read_pk_failed">对不起，读取错误，请重试</string>
-    <string name="reset_device_successful">BixinKEY恢复出厂设置成功</string>
+    <string name="reset_device_successful">请在BixinKey上确认并完成剩余流程</string>
     <string name="wallet_un_activated">钱包未激活，不需要恢复出厂设置</string>
     <string name="wallet_un_activated_pin">钱包未激活，不需要修改PIN码</string>
     <string name="no_message">未能获取到设备信息, 请稍后再尝试！！</string>
@@ -546,7 +546,7 @@
     <string name="tip_closer">数据传输需要时间，请保持BixinKEY靠近手机</string>
     <string name="waitting_touch">等待BixinKey贴合</string>
     <string name="connectting_successful">BixinKey连接成功</string>
-    <string name="order_sending">激活指令发送中</string>
+    <string name="order_sending">指令发送中</string>
     <string name="order_sending_failed">激活指令发送失败</string>
     <string name="active_failed">BixinKey激活失败，请重新尝试</string>
     <string name="order_sending_successful">激活指令发送成功</string>
@@ -574,4 +574,6 @@
     <string name="tip_connnection">数据传输需要一些时间，请保持连接状态</string>
     <string name="bluetooth_setting">蓝牙设置</string>
     <string name="confirm_fix">确认修改</string>
+    <string name="original_pin_wrong">原PIN码错误</string>
+    <string name="reset_device_failed">BixinKey恢复出厂设置失败</string>
 </resources>

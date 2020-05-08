@@ -46,8 +46,8 @@ public class SingleClickAspect {
         if (!ClickUtil.isFastDoubleClick(view, singleClick.value())) {
             // do original logic
             joinPoint.proceed();
-        } else {
-            Toast.makeText(MyApplication.getInstance(), "这位客官您慢点，我怕痒", Toast.LENGTH_SHORT).show();
-        }
+      } //   else {
+//          //  Toast.makeText(MyApplication.getInstance(), "这位客官您慢点，我怕痒", Toast.LENGTH_SHORT).show();
+//        }
     }
 }

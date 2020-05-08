@@ -1,4 +1,4 @@
-include ':app'
+include ':app', ':dfu'
 rootProject.name='bixinWallet'
 include ':dRlibfileselector'
 include ':blelibrary'

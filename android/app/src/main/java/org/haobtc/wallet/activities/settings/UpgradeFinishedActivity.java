@@ -1,7 +1,5 @@
 package org.haobtc.wallet.activities.settings;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;

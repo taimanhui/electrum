@@ -737,7 +737,6 @@ public final class BleRequestImpl<T extends BleDevice> {
                     BleLog.d("setCharaNotification", "setCharaNotification");
                     setCharacteristicNotification(address, notifyCharacteristics.get(notifyIndex++), true);
                 }*/
-                System.out.println("==========================");
                 if (null != connectWrapperCallback) {
                     connectWrapperCallback.onReady(getBleDeviceInternal(device));
                 }

@@ -454,7 +454,7 @@
     <string name="timeout_error">I\'m sorry! Timeout reading public key, try again！！！</string>
     <string name="clean_setting">Settings cleared</string>
     <string name="clean_private_key">Clearing private key</string>
-    <string name="reset_device_successful">BixinKEY factory reset</string>
+    <string name="reset_device_successful">请在BixinKey上确认并完成剩余流程</string>
     <string name="bootloader_mode">The hardware is in bootloader mode, which is not supported</string>
     <string name="not_bootloader_mode">Please confirm the hardware currently is in bootloader mode</string>
     <string name="check_hide_wallet">Click to view hidden Wallet</string>
@@ -572,7 +572,7 @@
     <string name="tip_closer">Data transmission takes time, please keep BixinKEY close to the mobile phone</string>
     <string name="waitting_touch">waitting BixinKEY touch</string>
     <string name="connectting_successful">connectting BixinKEY successful</string>
-    <string name="order_sending">active order sending</string>
+    <string name="order_sending">order sending</string>
     <string name="order_sending_failed">active order sending failed</string>
     <string name="active_failed">BixinKEY active failed, please retry again</string>
     <string name="order_sending_successful">active order sending successful</string>
@@ -602,4 +602,6 @@
     <string name="bluetooth_setting">Bluetooth Settings</string>
     <string name="_0_16">0/16</string>
     <string name="confirm_fix">Confirm modification</string>
+    <string name="original_pin_wrong">原PIN码错误</string>
+    <string name="reset_device_failed">BixinKey恢复出厂设置失败</string>
 </resources>

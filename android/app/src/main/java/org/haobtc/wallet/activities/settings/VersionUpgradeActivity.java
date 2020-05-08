@@ -19,11 +19,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.entries.FsActivity;
+import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
 
 import java.util.ArrayList;
@@ -34,8 +37,10 @@ import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import dr.android.fileselector.FileSelectConstant;
+import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
+import no.nordicsemi.android.dfu.DfuServiceController;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class VersionUpgradeActivity extends BaseActivity {
@@ -78,6 +83,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     @Override
     public void initData() {
         checkBoxClick();
+        EventBus.getDefault().register(this);
     }
 
     private void checkBoxClick() {
@@ -118,12 +124,14 @@ public class VersionUpgradeActivity extends BaseActivity {
                         break;
                     case 1:
                         Intent intent = new Intent(this, CommunicationModeSelector.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("tag", TAG);
                         intent.putExtra("extras", "hardware");
                         startActivity(intent);
                         break;
                     case 2:
                         Intent intent1 = new Intent(this, CommunicationModeSelector.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent1.putExtra("tag", TAG);
                         intent1.putExtra("extras", "ble");
                         startActivity(intent1);
@@ -156,9 +164,11 @@ public class VersionUpgradeActivity extends BaseActivity {
         @Override
         public void onDfuCompleted(@NonNull String deviceAddress) {
             super.onDfuCompleted(deviceAddress);
+            VersionUpgradeActivity.filePath = "";
             CommunicationModeSelector.isDfu = false;
             mIntent(UpgradeFinishedActivity.class);
-            Ble.getInstance().disconnectAll();
+//            Ble.getInstance().disconnectAll();
+            DfuServiceListenerHelper.unregisterProgressListener(VersionUpgradeActivity.this, dfuProgressListener);
         }
 
         @Override
@@ -167,17 +177,15 @@ public class VersionUpgradeActivity extends BaseActivity {
         }
 
 
-
         @Override
         public void onDfuProcessStarting(@NonNull String deviceAddress) {
-           VersionUpgradeActivity.filePath = "";
             super.onDfuProcessStarting(deviceAddress);
         }
 
         @Override
         public void onDfuAborted(@NonNull String deviceAddress) {
             super.onDfuAborted(deviceAddress);
-            Ble.getInstance().disconnectAll();
+//            Ble.getInstance().disconnectAll();
             EventBus.getDefault().post(new ExceptionEvent("abort"));
         }
 
@@ -193,7 +201,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         @Override
         public void onError(@NonNull String deviceAddress, int error, int errorType, String message) {
             super.onError(deviceAddress, error, errorType, message);
-            Ble.getInstance().disconnectAll();
+//            Ble.getInstance().disconnectAll();
             EventBus.getDefault().post(new ExceptionEvent(message));
         }
 
@@ -213,20 +221,26 @@ public class VersionUpgradeActivity extends BaseActivity {
         @Override
         public void onDeviceDisconnected(@NonNull String deviceAddress) {
             super.onDeviceDisconnected(deviceAddress);
-            System.out.println("dfu disconnecting========");
         }
     };
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDfu(DfuEvent event) {
+        if (event.getType() == DfuEvent.DFU_SHOW_PROCESS) {
+            Intent intent = new Intent(VersionUpgradeActivity.this, UpgradeBixinKEYActivity.class);
+            intent.putExtra("tag", 2);
+            startActivity(intent);
+        }
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         DfuServiceListenerHelper.registerProgressListener(this, dfuProgressListener);
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DfuServiceListenerHelper.unregisterProgressListener(this, dfuProgressListener);
+        EventBus.getDefault().unregister(this);
     }
 
 

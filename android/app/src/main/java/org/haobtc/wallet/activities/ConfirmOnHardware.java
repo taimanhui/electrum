@@ -205,10 +205,10 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.confirm_on_hardware:
-               // showPopupSignProcessing();
-                Intent intent = new Intent(this, PinSettingActivity.class);
-                intent.putExtra("tag", TAG);
-                startActivity(intent);
+                showPopupSignProcessing();
+//                Intent intent = new Intent(this, PinSettingActivity.class);
+//                intent.putExtra("tag", TAG);
+//                startActivity(intent);
                 break;
             case R.id.img_back:
                 finish();

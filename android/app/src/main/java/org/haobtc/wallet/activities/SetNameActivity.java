@@ -7,14 +7,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.InitEvent;
 
 import java.util.Locale;
 
@@ -57,10 +53,10 @@ public class SetNameActivity extends BaseActivity {
                 finishAffinity();
                 break;
             case R.id.next:
-                if (nameEdit.getText().length() == 0) {
-                    Toast.makeText(this, "名字不能为空", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+//                if (nameEdit.getText().length() == 0) {
+//                    Toast.makeText(this, "名字不能为空", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
                 Intent intent = new Intent(this, ActivatedProcessing.class);
                 intent.putExtra("name", nameEdit.getText().toString());
                 startActivity(intent);

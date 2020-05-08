@@ -10,9 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.service.BleService;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.ConnectingEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +62,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
             @Override
             public void onClick(View v) {
                 mBleDevice = holder.device;
+                EventBus.getDefault().post(new ConnectingEvent());
                 context.startService(new Intent(context, BleService.class));
             }
         });

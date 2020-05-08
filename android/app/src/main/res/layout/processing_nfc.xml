@@ -60,7 +60,7 @@
             android:layout_marginTop="12dp"
             android:drawableLeft="@drawable/connecting"
             android:drawablePadding="@dimen/dp_6"
-            android:text="@string/pin_seted"
+            android:text="@string/order_sending"
             android:textColor="@color/text"
             android:textSize="@dimen/smaller_text_size" />
 

@@ -63,6 +63,7 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
                 break;
             case R.id.reset_device:
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
                 break;

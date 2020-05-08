@@ -184,7 +184,7 @@
         <activity android:name=".activities.settings.VerificationSuccessActivity" />
         <activity android:name=".activities.sign.SignActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity" />
-        <activity android:name=".activities.ResetDeviceProcessing" />
+        <activity android:name=".activities.settings.recovery_set.ResetDeviceProcessing" />
         <activity android:name=".activities.settings.ResetDeviceSuccessActivity" />
         <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" />
         <activity android:name=".dfu.NotificationActivity" />
@@ -197,7 +197,8 @@
         <activity android:name=".activities.settings.recovery_set.RecoveryActivity" />
         <activity android:name=".activities.settings.fixpin.ActiveFailedActivity" />
         <activity android:name=".activities.transaction.PinNewActivity" />
-        <activity android:name=".activities.SignatureProcessing" /> <!-- aotusize -->
+        <activity android:name=".activities.SignatureProcessing" />
+        <activity android:name=".activities.settings.recovery_set.ResetDeviceFailedActivity" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />

@@ -1236,11 +1236,14 @@ class AndroidCommands(commands.Commands):
     def reset_pin(self, path='android_usb') -> int:
         self.client = None
         self.path = ''
-        client = self.get_client(path)
         try:
+            client = self.get_client(path)
             resp = client.set_pin(False)
         except Exception as e:
-            raise BaseException(e)
+            if isinstance(e, exceptions.PinException):
+                return 0
+            else:
+                raise BaseException(e)
         if resp == "PIN changed":
             return 1
         else:
@@ -1249,8 +1252,14 @@ class AndroidCommands(commands.Commands):
     def wipe_device(self, path='android_usb') -> int:
         self.client = None
         self.path = ''
-        client = self.get_client(path)
-        resp = client.wipe_device()
+        try:
+            client = self.get_client(path)
+            resp = client.wipe_device()
+        except Exception as e:
+            if isinstance(e, exceptions.PinException):
+                return 0
+            else:
+                raise BaseException(e)
         if resp == "Device wiped":
             return 1
         else:

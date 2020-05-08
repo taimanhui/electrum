@@ -1,4 +1,4 @@
-package org.haobtc.wallet.activities;
+package org.haobtc.wallet.activities.settings.recovery_set;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
@@ -35,6 +35,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+
 
 public class ResetDeviceProcessing extends BaseActivity {
     int MAX_LEVEL = 10000;
@@ -49,7 +51,7 @@ public class ResetDeviceProcessing extends BaseActivity {
     private String pin;
 
     public int getLayoutId() {
-        return CommunicationModeSelector.isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
+        return isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
     }
 
     @Override
@@ -73,18 +75,26 @@ public class ResetDeviceProcessing extends BaseActivity {
 
     @Subscribe
     public void onEventMainThread(ResultEvent resultEvent) {
-        switch (resultEvent.getResult()) {
-            case "1":
-                Drawable drawableStart = getDrawable(R.drawable.chenggong);
-                Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-                firstPromote.setCompoundDrawables(drawableStart, null, null, null);
+        //            case "1":
+        //                Drawable drawableStart = getDrawable(R.drawable.chenggong);
+        //                Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+        //                firstPromote.setCompoundDrawables(drawableStart, null, null, null);
+        //                secondPromote.setCompoundDrawables(drawableStart, null, null, null);
+        //                startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
+        //                finish();
+        //                break;
+        if ("0".equals(resultEvent.getResult())) {
+            Log.d("RESET", "恢复出厂设置失败");
+            Drawable drawableStart = getDrawable(R.drawable.fail);
+            Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+            if (isNFC) {
+                secondPromote.setText(R.string.pin_wrong);
                 secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-                startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
-                finish();
-                break;
-            case "0":
-                Toast.makeText(this, "恢复出厂设置失败", Toast.LENGTH_LONG).show();
-                finish();
+            } else {
+               firstPromote.setText(R.string.pin_wrong);
+               firstPromote.setCompoundDrawables(drawableStart, null, null, null);
+            }
+            startActivity(new Intent(this, ResetDeviceFailedActivity.class));
         }
 
     }
@@ -92,16 +102,18 @@ public class ResetDeviceProcessing extends BaseActivity {
     public void onButtonRequest(ButtonRequestEvent event) {
         Drawable drawableStart = getDrawable(R.drawable.chenggong);
         Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        if (CommunicationModeSelector.isNFC) {
+        if (isNFC) {
             secondPromote.setText(R.string.order_sending_successful);
             secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-            startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
+        } else {
+            firstPromote.setCompoundDrawables(drawableStart, null, null, null);
         }
+        startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
     }
     @Override
     public void initData() {
         NfcUtils.nfc(this, false);
-        if (!CommunicationModeSelector.isNFC) {
+        if (!isNFC) {
             EventBus.getDefault().post(new PinEvent(pin, ""));
         }
     }
@@ -111,7 +123,7 @@ public class ResetDeviceProcessing extends BaseActivity {
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
-            finish();
+            finishAffinity();
         }
     }
 

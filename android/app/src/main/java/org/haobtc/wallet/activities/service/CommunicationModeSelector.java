@@ -10,6 +10,7 @@ import android.hardware.usb.UsbDevice;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
@@ -67,7 +69,9 @@ import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.ChangePinEvent;
 import org.haobtc.wallet.event.ConnectingEvent;
+import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.InitEvent;
@@ -305,8 +309,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             if (features.isInitialized()) {
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
                 if (!devices.contains(features.getDeviceId())) {
-                    features.setBleName(isNFC ? "unknown" : Ble.getInstance().getConnetedDevices().get(0).getBleName());
-                    feature = features.toString();
                     devices.edit().putString(features.getDeviceId(), feature).apply();
                 }
             }
@@ -460,9 +462,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                         customerUI.callAttr("set_pass_state", 1);
                     } else {
                         // todo: 收到交易传输完成的信号，才能跳转，👇代码要删除
-                        if (features.isPinCached() || !features.isPinProtection()) {
+
+                      //  if (features.isPinCached() || !features.isPinProtection())
                             runOnUiThread(runnables.get(0));
-                        }
+                      //  }
                     }
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, extras);
                 }
@@ -498,7 +501,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         new Handler().postDelayed(() -> {
             final DfuServiceInitiator starter = new DfuServiceInitiator(device.getBleAddress());
             starter.setDeviceName(device.getBleName());
-            starter.setKeepBond(true);
+//            starter.setKeepBond(true);
         /*
            Call this method to put Nordic nrf52832 into bootloader mode
         */
@@ -507,11 +510,14 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
                 if (!file.exists()) {
                     Toast.makeText(this, R.string.update_file_not_exist, Toast.LENGTH_LONG).show();
+
+                    EventBus.getDefault().post(new ExecuteEvent());
                     finish();
                     return;
                 }
             } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
                 Toast.makeText(this, R.string.update_file_format_error, Toast.LENGTH_LONG).show();
+                EventBus.getDefault().post(new ExecuteEvent());
                 finish();
                 return;
             }
@@ -553,7 +559,13 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void doInit(InitEvent event) {
         new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, event.getName());
     }
-
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void doDfu(DfuEvent dfuEvent) {
+        if (dfuEvent.getType() == DfuEvent.START_DFU) {
+            dfu();
+            EventBus.getDefault().post(new DfuEvent(1));
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doWipe(WipeEvent event) {
         new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
@@ -575,7 +587,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             customerUI.put("pin", event.getPinCode());
         }
     }
-
+    @Subscribe
+    public void changePin(ChangePinEvent event) {
+        if (!Strings.isNullOrEmpty(event.toString())) {
+            customerUI.put("pin", event.toString());
+        }
+    }
     @Subscribe
     public void setPassphrass(PinEvent event) {
         if (!Strings.isNullOrEmpty(event.getPassphrass())) {
@@ -667,7 +684,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         dialogFragment.dismiss();
         EventBus.getDefault().post(new SendingFailedEvent(e));
         if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
-            showErrorDialog(R.string.pin_wrong, R.string.pin_input_again);
+            showErrorDialog(0, R.string.pin_wrong);
         } else if ("DeviceUnpairableError: BiXin cannot pair with your Trezor.".equals(e.getMessage())) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);
         } else if ("BaseException: failed to recognize transaction encoding for txt: craft fury pig target diagram ...".equals(e.getMessage())) {
@@ -707,7 +724,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
             // todo: 收到传输完成的结果再跳转
-            runOnUiThread(runnables.get(0));
+           // runOnUiThread(runnables.get(0));
         } else if (BackupRecoveryActivity.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
                 // TODO: 获取加密后的私钥

@@ -93,7 +93,7 @@
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/button_bk_grey"
+                android:background="@drawable/button_bk"
                 android:text="@string/next"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white" />

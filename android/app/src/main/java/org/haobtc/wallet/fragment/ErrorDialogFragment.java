@@ -36,7 +36,7 @@ public class ErrorDialogFragment extends DialogFragment {
         this.activity = activity;
     }
 
-    public ErrorDialogFragment(@StringRes int errors, @StringRes int title) {
+    public ErrorDialogFragment(int errors, @StringRes int title) {
         this.errorsId = errors;
         this.title = title;
     }
@@ -55,7 +55,11 @@ public class ErrorDialogFragment extends DialogFragment {
         TextView errorMessage = view.findViewById(R.id.error_message);
         errorMessage.setText(title);
         TextView errorPromote = view.findViewById(R.id.error_promote);
-        errorPromote.setText(errorsId);
+        if (errorsId == 0) {
+            errorPromote.setText("");
+        } else {
+            errorPromote.setText(errorsId);
+        }
         Window window = Objects.requireNonNull(getDialog()).getWindow();
         if (window != null) {
             window.setBackgroundDrawableResource(R.color.transparent);

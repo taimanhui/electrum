@@ -9,6 +9,7 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -38,7 +39,7 @@ public class NfcUtils {
             if (!mNfcAdapter.isEnabled() && promote) {
                 isToSet(activity);
             } else {
-                Toast.makeText(activity, "NFC功能已打开!", Toast.LENGTH_SHORT).show();
+                Log.d("NFC", "NFC功能已打开!");
             }
         }
         return mNfcAdapter;

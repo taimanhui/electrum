@@ -32,6 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+
 public class ChangePinProcessingActivity extends BaseActivity {
 
     public static final String TAG = ChangePinProcessingActivity.class.getSimpleName();
@@ -46,7 +48,7 @@ public class ChangePinProcessingActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
-        return CommunicationModeSelector.isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
+        return isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
     }
 
     @Override
@@ -73,7 +75,7 @@ public class ChangePinProcessingActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        if (!CommunicationModeSelector.isNFC) {
+        if (!isNFC) {
             EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
         }
 
@@ -81,35 +83,45 @@ public class ChangePinProcessingActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void changePinResult(ResultEvent resultEvent) {
-        switch (resultEvent.getResult()) {
-            case "1":
-                Drawable drawableStart = getDrawable(R.drawable.chenggong);
-                Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-                secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-                startActivity(new Intent(this, ConfirmActivity.class));
-                finish();
-                break;
-            case "0":
-                Toast.makeText(this, "PIN码重置失败", Toast.LENGTH_LONG).show();
-                finish();
+        //            case "1":
+        //                Drawable drawableStart = getDrawable(R.drawable.chenggong);
+        //                Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+        //                secondPromote.setCompoundDrawables(drawableStart, null, null, null);
+        //                startActivity(new Intent(this, ConfirmActivity.class));
+        //                finish();
+        //                break;
+        if ("0".equals(resultEvent.getResult())) {
+            Drawable drawable = getDrawable(R.drawable.fail);
+            Objects.requireNonNull(drawable).setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+            if (isNFC) {
+                secondPromote.setText(R.string.original_pin_wrong);
+                secondPromote.setCompoundDrawables(drawable, null, null, null);
+            } else {
+                firstPromote.setText(R.string.original_pin_wrong);
+                firstPromote.setCompoundDrawables(drawable, null, null, null);
+            }
+            finishAffinity();
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         Drawable drawableStart = getDrawable(R.drawable.chenggong);
         Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        if (CommunicationModeSelector.isNFC) {
+        if (isNFC) {
             secondPromote.setText(R.string.order_sending_successful);
             secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-            Intent intent = new Intent(this, ConfirmActivity.class);
-            intent.putExtra("tag", TAG);
-            startActivity(intent);
+        } else {
+            firstPromote.setText(R.string.pin_sussce);
+            firstPromote.setCompoundDrawables(drawableStart, null, null, null);
         }
+        Intent intent = new Intent(this, ConfirmActivity.class);
+        intent.putExtra("tag", TAG);
+        startActivity(intent);
     }
     @OnClick(R.id.img_back)
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
-            finish();
+            finishAffinity();
         }
     }
 

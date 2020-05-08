@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.ConnectingEvent;
+import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.CommonUtils;
@@ -113,6 +114,7 @@ public class BleService extends Service {
                 case 2521:
                 case 59:
                     Toast.makeText(BleService.this, getString(R.string.bluetooth_fail), Toast.LENGTH_LONG).show();
+                    Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
                     stopSelf();
                     break;
                 default:
@@ -174,32 +176,37 @@ public class BleService extends Service {
             EventBus.getDefault().post(new ConnectingEvent());
             mBleDevice = BleDeviceRecyclerViewAdapter.mBleDevice;
             bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mBleDevice.getBleAddress());
-            switch (bluetoothDevice.getBondState()) {
-                case BluetoothDevice.BOND_BONDED:
-                    if (mBleDevice.isConnected()) {
-                        handle();
-                    } else if (mBleDevice.isConnectting()) {
-                        mBle.cancelConnectting(mBleDevice);
-                        mBle.connect(mBleDevice, connectCallback);
-                    } else if (mBleDevice.isDisconnected()) {
-                        mBle.connect(mBleDevice, connectCallback);
-                    }
-                    break;
-                case BluetoothDevice.BOND_NONE:
-                    boolean bond =  bluetoothDevice.createBond();
-                    if (!bond) {
-                        Log.e("BLE", "无法绑定设备");
-                        Toast.makeText(this, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
-                    }
-                    // isBonded = true;
+            if (bluetoothDevice.getName().endsWith("_DFU")) {
+                EventBus.getDefault().post(new DfuEvent(0));
+            } else {
+                switch (bluetoothDevice.getBondState()) {
+                    case BluetoothDevice.BOND_BONDED:
+                        if (mBleDevice.isConnected()) {
+                            handle();
+                        } else if (mBleDevice.isConnectting()) {
+                            mBle.cancelConnectting(mBleDevice);
+                            mBle.connect(mBleDevice, connectCallback);
+                        } else if (mBleDevice.isDisconnected()) {
+                            mBle.connect(mBleDevice, connectCallback);
+                        }
+                        break;
+                    case BluetoothDevice.BOND_NONE:
+                        boolean bond =  bluetoothDevice.createBond();
+                        if (!bond) {
+                            Log.e("BLE", "无法绑定设备");
+                            Toast.makeText(this, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
+                        }
+                        // isBonded = true;
+                }
             }
+
         return Service.START_NOT_STICKY;
     }
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-         //   synchronized (this) {
+           synchronized (this) {
                 if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                     BluetoothDevice  device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
@@ -222,7 +229,7 @@ public class BleService extends Service {
                         }
                     }
                 }
-            // }
+             }
         }
     };
     @Override

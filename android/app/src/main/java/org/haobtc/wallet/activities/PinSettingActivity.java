@@ -14,6 +14,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.PinEvent;

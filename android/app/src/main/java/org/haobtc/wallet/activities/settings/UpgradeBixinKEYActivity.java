@@ -39,6 +39,7 @@ import java.io.File;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import no.nordicsemi.android.dfu.DfuBaseService;
 
 
 public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadListener {
@@ -172,7 +173,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
         protected void onPostExecute(Void aVoid) {
             VersionUpgradeActivity.filePath = "";
             mIntent(UpgradeFinishedActivity.class);
-            finish();
+            finishAffinity();
         }
 
         @Override
@@ -229,7 +230,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDfuException(ExceptionEvent event) {
-        VersionUpgradeActivity.filePath = "";
         tetUpgradeTest.setText(getString(R.string.Cancelled));
         showPromptMessage(R.string.update_failed);
         new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
@@ -239,6 +239,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
             finish();
+            final Intent pauseAction = new Intent(DfuBaseService.BROADCAST_ACTION);
+            pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(pauseAction);
         }
     }
     @Override

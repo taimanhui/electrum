@@ -66,6 +66,8 @@ public class ActivatedProcessing extends BaseActivity {
         List<Drawable> drawables = new ArrayList<>();
         if (isNFC) {
            secondPromote.setText(R.string.order_sending);
+        } else {
+            firstPromote.setText(R.string.order_sending);
         }
         drawables.addAll(Arrays.asList(firstPromote.getCompoundDrawables()));
         drawables.addAll(Arrays.asList(secondPromote.getCompoundDrawables()));
@@ -103,28 +105,38 @@ public class ActivatedProcessing extends BaseActivity {
                 firstPromote.setCompoundDrawables(drawableStart, null, null, null);
                 secondPromote.setCompoundDrawables(drawableStart, null, null, null);
                 startActivity(new Intent(this, ActivateSuccessActivity.class));
+                finish();
                 break;
             case "0":
-                Toast.makeText(this, "设备激活失败", Toast.LENGTH_LONG).show();
-                finishAffinity();
+                Log.d(TAG, "设备激活失败");
+                Drawable drawableStartFail = getDrawable(R.drawable.fail);
+                Objects.requireNonNull(drawableStartFail).setBounds(0, 0, drawableStartFail.getMinimumWidth(), drawableStartFail.getMinimumHeight());
+                if (isNFC) {
+                    secondPromote.setText(R.string.active_failed);
+                    secondPromote.setCompoundDrawables(drawableStartFail, null, null, null);
+                } else {
+                   firstPromote.setText(R.string.active_failed);
+                   firstPromote.setCompoundDrawables(drawableStartFail, null, null, null);
+                }
+                startActivity(new Intent(this, ActiveFailedActivity.class));
+                finish();
         }
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onButtonRequest(ButtonRequestEvent event) {
-        Drawable drawableStart = getDrawable(R.drawable.chenggong);
-        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        if (isNFC) {
-            secondPromote.setText(R.string.order_sending_successful);
-            secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-            startActivity(new Intent(this, ConfirmActivity.class));
-        }
-    }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onSendingFailed(SendingFailedEvent event) {
-        // todo: 发送指令失败，修改图标加文案
-        startActivity(new Intent(this, ActiveFailedActivity.class));
-
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onButtonRequest(ButtonRequestEvent event) {
+//        Drawable drawableStart = getDrawable(R.drawable.chenggong);
+//        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+//        if (isNFC) {
+//            secondPromote.setText(R.string.order_sending_successful);
+//            secondPromote.setCompoundDrawables(drawableStart, null, null, null);
+//            startActivity(new Intent(this, ConfirmActivity.class));
+//        }
+//    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onSendingFailed(SendingFailedEvent event) {
+//        startActivity(new Intent(this, ActiveFailedActivity.class));
+//
+//    }
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

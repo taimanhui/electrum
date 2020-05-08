@@ -8,7 +8,7 @@ android {
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "org.haobtc.wallet"
-        minSdkVersion 24 // android 7.0
+        minSdkVersion 26 // android 8.0.0
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -197,13 +197,15 @@ dependencies {
     // app internal update
     implementation 'com.azhon:appupdateX:2.9.0'
     // dfu
-    implementation 'no.nordicsemi.android:dfu:1.10.1'
+//    implementation 'no.nordicsemi.android:dfu:1.10.1'
+    implementation project(':dfu')
     //SwipeDelMenuLayout
     implementation 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0'
     // android aop programing support
     implementation 'org.aspectj:aspectjrt:1.9.5'
     // guava
     implementation 'com.google.guava:guava:29.0-android'
+    implementation 'org.jetbrains:annotations:15.0'
 
 }
 repositories {

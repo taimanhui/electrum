@@ -41,7 +41,7 @@ public class ResetDeviceSuccessActivity extends BaseActivity {
             case R.id.img_back:
             case R.id.btn_finish:
                 Ble.getInstance().disconnectAll();
-                finish();
+                finishAffinity();
                 break;
         }
     }
