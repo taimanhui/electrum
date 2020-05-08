@@ -501,7 +501,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         new Handler().postDelayed(() -> {
             final DfuServiceInitiator starter = new DfuServiceInitiator(device.getBleAddress());
             starter.setDeviceName(device.getBleName());
-//            starter.setKeepBond(true);
+            starter.setKeepBond(true);
         /*
            Call this method to put Nordic nrf52832 into bootloader mode
         */

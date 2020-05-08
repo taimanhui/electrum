@@ -60,6 +60,7 @@ public class SetNameActivity extends BaseActivity {
                 Intent intent = new Intent(this, ActivatedProcessing.class);
                 intent.putExtra("name", nameEdit.getText().toString());
                 startActivity(intent);
+                finish();
                 /*if (CommunicationModeSelector.isNFC) {
                     Intent intent = new Intent(this, CommunicationModeSelector.class);
                     intent.putExtra("tag", TAG);

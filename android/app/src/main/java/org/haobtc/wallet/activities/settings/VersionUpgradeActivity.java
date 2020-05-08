@@ -168,7 +168,6 @@ public class VersionUpgradeActivity extends BaseActivity {
             CommunicationModeSelector.isDfu = false;
             mIntent(UpgradeFinishedActivity.class);
 //            Ble.getInstance().disconnectAll();
-            DfuServiceListenerHelper.unregisterProgressListener(VersionUpgradeActivity.this, dfuProgressListener);
         }
 
         @Override

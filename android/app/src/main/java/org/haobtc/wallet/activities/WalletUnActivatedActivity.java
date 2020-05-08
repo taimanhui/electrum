@@ -44,7 +44,7 @@ public class WalletUnActivatedActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                finishAffinity();
+                finish();
                 break;
             case R.id.button_activate:
                 startActivity(new Intent(this, SetNameActivity.class));

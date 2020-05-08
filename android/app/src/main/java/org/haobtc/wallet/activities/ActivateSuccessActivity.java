@@ -40,8 +40,8 @@ public class ActivateSuccessActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.bn_back:
-                Ble.getInstance().disconnectAll();
                 finishAffinity();
+                Ble.getInstance().disconnectAll();
         }
     }
 }
