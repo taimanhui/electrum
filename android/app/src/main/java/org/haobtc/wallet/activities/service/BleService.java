@@ -77,7 +77,6 @@ public class BleService extends Service {
         public void onConnectionChanged(BleDevice device) {
             if (device.isConnectting()) {
                 Log.i(TAG, "connecting---" + device.getBleName());
-                EventBus.getDefault().post(new ConnectingEvent());
             }
             if (bluetoothDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
                 return;
@@ -110,6 +109,8 @@ public class BleService extends Service {
                     Toast.makeText(BleService.this, getString(R.string.bluetooth_abnormal), Toast.LENGTH_LONG).show();
                     break;
                 case 133:
+                    Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
+                    break;
                 case 8:
                 case 2521:
                 case 59:
@@ -173,7 +174,6 @@ public class BleService extends Service {
             if (mBle.isScanning()) {
                 mBle.stopScan();
             }
-            EventBus.getDefault().post(new ConnectingEvent());
             mBleDevice = BleDeviceRecyclerViewAdapter.mBleDevice;
             bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mBleDevice.getBleAddress());
             if (bluetoothDevice.getName().endsWith("_DFU")) {

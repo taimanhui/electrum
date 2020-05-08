@@ -539,7 +539,7 @@
     <string name="key_wrong_prompte">读取到的公钥格式错误，读取过程中，请保持手机与BixinKEY贴合</string>
     <string name="security_risks">BinKEY存在安全风险</string>
     <string name="official_firmware_suggest">检测到未使用官方固件，请更换官方固件</string>
-    <string name="pin_confirm_hardware">请在硬件上确认PIN码并完成创建</string>
+    <string name="pin_confirm_hardware">请在硬件上确认PIN码</string>
     <string name="communicating">与BixinKEY通讯中</string>
     <string name="tip_closer">数据传输需要时间，请保持BixinKEY靠近手机</string>
     <string name="waitting_touch">等待BixinKey贴合</string>

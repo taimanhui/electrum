@@ -565,7 +565,7 @@
     <string name="key_wrong_prompte">The format of the public key read is wrong. Please keep the phone and BixinKEY fit during reading</string>
     <string name="security_risks">BixinKEY has security risks</string>
     <string name="official_firmware_suggest">It is detected that the official firmware is not used. Please replace the official firmware</string>
-    <string name="pin_confirm_hardware">Please confirm the pin code on the hardware and complete the creation</string>
+    <string name="pin_confirm_hardware">Please confirm the pin code on the hardware</string>
     <string name="communicating">In communication with BixinKEY</string>
     <string name="tip_closer">Data transmission takes time, please keep BixinKEY close to the mobile phone</string>
     <string name="waitting_touch">waitting BixinKEY touch</string>
