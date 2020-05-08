@@ -355,7 +355,6 @@
     <string name="get_btc_price">Select 3rd party service to get bitcoin price</string>
     <string name="blockchain_choose">Select block explorer</string>
     <string name="check_trsaction_msg">Select block explorer to view on-chain information</string>
-    <string name="electrum_choose_tips">Bixin cold wallet uses open-source &#038; decentralized Electrum nodes for transaction propagation and on-chain info retrieval</string>
     <string name="quotation_choose">Select market info server</string>
     <string name="import_hardware">Import using hardware wallet</string>
     <string name="bixinkey_import">Please import through BixinKEY</string>
@@ -433,7 +432,6 @@
     <string name="agreement_msg">The signature information is consistent with the original public key information</string>
     <string name="sign_check_fail">Signature verification failed</string>
     <string name="agent_server">proxy server</string>
-    <string name="agent_tips">Cold wallet uses electrum open source distributed server to broadcast transactions and obtain information on the chain</string>
     <string name="useAgent_hideIP">Hide real IP using proxy server</string>
     <string name="add_agentserver">Add proxy server</string>
     <string name="edit_agent">Edit proxy server</string>
@@ -602,6 +600,7 @@
     <string name="bluetooth_setting">Bluetooth Settings</string>
     <string name="_0_16">0/16</string>
     <string name="confirm_fix">Confirm modification</string>
-    <string name="original_pin_wrong">原PIN码错误</string>
-    <string name="reset_device_failed">BixinKey恢复出厂设置失败</string>
+    <string name="original_pin_wrong">Original PIN code error</string>
+    <string name="reset_device_failed">BixinKey failed to restore factory settings</string>
+    <string name="agent_tips">Using a proxy server,hide network traces</string>
 </resources>

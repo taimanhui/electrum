@@ -106,7 +106,7 @@ public class HideWalletActivity extends BaseActivity {
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
         defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
+        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 

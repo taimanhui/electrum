@@ -2,14 +2,19 @@ package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
@@ -18,6 +23,8 @@ import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.PinEvent;
+import org.haobtc.wallet.event.SecondEvent;
+import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
 
@@ -37,6 +44,7 @@ public class PinSettingActivity extends BaseActivity {
     private NumKeyboardUtil keyboardUtil;
     private String tag;
     public static final String TAG = PinSettingActivity.class.getSimpleName();
+    private RelativeLayout relativeLayout_key;
 
     @Override
     public int getLayoutId() {
@@ -45,6 +53,8 @@ public class PinSettingActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
+        relativeLayout_key = findViewById(R.id.relativeLayout_key);
         keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
         int pinType = getIntent().getIntExtra("pin_type", 0);
         tag = getIntent().getStringExtra("tag");
@@ -56,7 +66,6 @@ public class PinSettingActivity extends BaseActivity {
                 textViewPinDescription.setText(getString(R.string.pin_original));
             default:
                 textViewPinDescription.setText(getString(R.string.pin_input));
-
 
         }
         init();
@@ -70,6 +79,7 @@ public class PinSettingActivity extends BaseActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
         edtPwd.setOnTouchListener((v, event) -> {
+            relativeLayout_key.setVisibility(View.VISIBLE);
             keyboardUtil.showKeyboard();
             return false;
         });
@@ -79,6 +89,8 @@ public class PinSettingActivity extends BaseActivity {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (getCurrentFocus() != null && getCurrentFocus().getWindowToken() != null) {
+                relativeLayout_key.setVisibility(View.GONE);
+                mToast("dffff");
                 keyboardUtil.hideKeyboard();
             }
         }
@@ -131,4 +143,17 @@ public class PinSettingActivity extends BaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if ("Keyboard".equals(msgVote)){
+            relativeLayout_key.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

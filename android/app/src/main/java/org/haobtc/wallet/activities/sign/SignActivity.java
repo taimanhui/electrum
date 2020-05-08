@@ -345,8 +345,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -364,13 +362,11 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             String str = listExtra.toString();
             String substring = str.substring(1);
             String strPath = substring.substring(0, substring.length() - 1);
-            Log.i("listExtra", "listExtra--: " + listExtra + "   strPath ---  " + strPath);
             try {
                 //read file
                 PyObject read_tx_from_file = Daemon.commands.callAttr("read_tx_from_file", strPath);
                 if (read_tx_from_file != null) {
                     String readFile = read_tx_from_file.toString();
-                    Log.i("readFile", "tx-------: " + readFile);
                     editTrsactionTest.setText(readFile);
                 }
             } catch (Exception e) {

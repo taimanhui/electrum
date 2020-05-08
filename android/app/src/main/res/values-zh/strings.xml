@@ -353,7 +353,6 @@
     <string name="get_btc_price">选择第三方服务获取比特币价格</string>
     <string name="blockchain_choose">区块链浏览器选择</string>
     <string name="check_trsaction_msg">选择区块链浏览器查看链上交易信息</string>
-    <string name="electrum_choose_tips">币信冷钱包使用Electrum开源分布式节点进行交易广播，和链上信息获取</string>
     <string name="quotation_choose">行情服务器选择</string>
     <string name="import_hardware">导入硬件钱包</string>
     <string name="bixinkey_import">请通过BixinKEY导入</string>
@@ -479,7 +478,6 @@
     <string name="agreement_msg">签名信息与公钥原始信息一致</string>
     <string name="sign_check_fail">签名核实失败</string>
     <string name="agent_server">代理服务器</string>
-    <string name="agent_tips">币信冷钱包使用Electrum开源分布式服务器进行交易广播，和链上信息获取</string>
     <string name="useAgent_hideIP">使用代理服务器隐藏真实IP</string>
     <string name="add_agentserver">添加代理服务器</string>
     <string name="edit_agent">编辑代理服务器</string>
@@ -576,4 +574,5 @@
     <string name="confirm_fix">确认修改</string>
     <string name="original_pin_wrong">原PIN码错误</string>
     <string name="reset_device_failed">BixinKey恢复出厂设置失败</string>
+    <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>
 </resources>

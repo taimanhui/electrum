@@ -330,7 +330,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 intent.putExtra("tag", 1);
                 startActivity(intent);
                 if (isNFC) {
-                   new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 1000);
+                    new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 1000);
                 }
             } else if ("ble".equals(extras)) {
                 if (isNFC) {
@@ -525,7 +525,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             DfuServiceInitiator.createDfuNotificationChannel(this);
             starter.start(this, DfuService.class);
             isDfu = true;
-        } , 2000);
+        }, 2000);
 
     }
 
@@ -639,12 +639,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
     }
 
-/*    @Override
-    protected void onRestart() {
-        super.onRestart();
-        finish();
-    }*/
-
     @Override
     public void onPause() {
         super.onPause();
@@ -683,6 +677,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void onException(Exception e) {
         dialogFragment.dismiss();
         EventBus.getDefault().post(new SendingFailedEvent(e));
+        Log.i("TAG-ErrorMsgDialog", "onException: " + e.getMessage());
         if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
             showErrorDialog(0, R.string.pin_wrong);
         } else if ("DeviceUnpairableError: BiXin cannot pair with your Trezor.".equals(e.getMessage())) {
@@ -744,7 +739,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void onCancelled() {
         runOnUiThread(() -> Toast.makeText(this, getString(R.string.task_cancle), Toast.LENGTH_SHORT).show());
     }
-
 
     public static class MyHandler extends Handler {
         private static volatile MyHandler myHandler;

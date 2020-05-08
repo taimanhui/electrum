@@ -313,7 +313,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="@dimen/dp_16"
                         android:paddingEnd="@dimen/dp_10"
-                        android:text="@string/electrum_choose_tips"
+                        android:text="@string/electrum_tips"
                         android:textColor="@color/graytext_color" />
 
                 </LinearLayout>

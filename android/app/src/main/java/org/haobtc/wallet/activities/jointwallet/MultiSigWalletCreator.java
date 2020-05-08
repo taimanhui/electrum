@@ -404,7 +404,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
         edit_sweep = view.findViewById(R.id.edit_public_key_cosigner_popup);
         int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
         defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
+        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -596,7 +596,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
         textView.setText(xpub);
         int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
         defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
+        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 

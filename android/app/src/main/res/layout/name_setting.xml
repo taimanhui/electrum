@@ -65,7 +65,7 @@
                 <EditText
                     android:id="@+id/name_edit"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/dp_16"
                     android:layout_weight="1"

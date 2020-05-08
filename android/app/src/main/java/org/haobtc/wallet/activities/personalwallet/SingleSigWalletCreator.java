@@ -212,7 +212,6 @@ public class SingleSigWalletCreator extends BaseActivity {
 
     private Runnable runnable2 = () -> showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
 
-
     private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub) {
         //set see view
         View view = View.inflate(context, resource, null);
@@ -223,7 +222,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
         defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
+        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 

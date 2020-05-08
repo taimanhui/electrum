@@ -7,8 +7,11 @@ import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.text.Editable;
 import android.view.View;
+import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.event.SecondEvent;
 
 public class NumKeyboardUtil {
     private KeyboardView keyboardView;
@@ -64,6 +67,7 @@ public class NumKeyboardUtil {
                         }
                     }
                 } else if (primaryCode == Keyboard.KEYCODE_CANCEL) {// finish
+                    EventBus.getDefault().post(new SecondEvent("Keyboard"));
                     hideKeyboard();
                 } else if (primaryCode == 48) {
                     editable.clear();

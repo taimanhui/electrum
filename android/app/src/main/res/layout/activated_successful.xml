@@ -45,7 +45,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="567dp"
         android:background="@drawable/button_bk"
-        android:text="@string/back"
+        android:text="@string/next"
         android:textAllCaps="false"
         android:textColor="@android:color/white" />
 </RelativeLayout>

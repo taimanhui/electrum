@@ -100,7 +100,7 @@ public class ImportHistoryWalletActivity extends BaseActivity {
         textView.setText(xpub);
         int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
         defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("BixinKEY%s", String.valueOf(defaultKeyNameNum)));
+        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 

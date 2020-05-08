@@ -113,10 +113,11 @@ public class ReceivedPageActivity extends BaseActivity {
                                 File file = saveImageToGallery(this, bitmap);
                                 if (file != null) {
                                     String imgUri = insertImageToSystem(ReceivedPageActivity.this, file.getPath());
-                                    Intent shareIntent = new Intent();
-                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                     shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(imgUri));
                                     shareIntent.setType("image/*");
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, textView5.getText().toString());
+                                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     shareIntent = Intent.createChooser(shareIntent, "Here is the title of Select box");
                                     startActivity(shareIntent);
 
