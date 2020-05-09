@@ -159,10 +159,9 @@ class AndroidCommands(commands.Commands):
         self.ccy = self.daemon.fx.get_currency()
         self.m = 0
         self.n = 0
+        self.sync_timer = None
         self.config.set_key('auto_connect', True, True)
-        from threading import Timer
-        t = Timer(5.0, self.timer_action)
-        t.start()
+        self.timer_action()
         if callback is not None:
             self.set_callback_fun(callback)
         self.start()
@@ -335,6 +334,8 @@ class AndroidCommands(commands.Commands):
     def timer_action(self):
         self.update_wallet()
         self.update_interfaces()
+        t = threading.Timer(5.0, self.timer_action)
+        t.start()
 
     def daemon_action(self):
         self.daemon_running = True
@@ -510,11 +511,13 @@ class AndroidCommands(commands.Commands):
                 data = self.label_plugin.pull_tx(self.wallet)
                 data_list = json.loads(data)
                 except_list = []
+                data_list.reverse()
                 for txinfo in data_list:
                     try:
                         tx = tx_from_any(txinfo['tx'])
                         tx.deserialize()
                         self.do_save(tx)
+                        print(f"pull_tx_infos============ save ok {txinfo['tx_hash']}")
                     except BaseException as e:
                         print(f"except-------- {txinfo['tx_hash'],txinfo['tx']}")
                         temp_data = {}
@@ -522,9 +525,13 @@ class AndroidCommands(commands.Commands):
                         temp_data['error'] = str(e)
                         except_list.append(temp_data)
                         pass
-                return json.dumps(except_list)
+                #return json.dumps(except_list)
+            self.sync_timer = threading.Timer(30.0, self.pull_tx_infos)
+            self.sync_timer.start()
         except BaseException as e:
+            print(f"eeeeeeeeeeeeeee {str(e)}")
             raise BaseException(e)
+        
 
     def bulk_create_wallet(self, wallets_info):
         wallets_list = json.loads(wallets_info)
@@ -791,7 +798,6 @@ class AndroidCommands(commands.Commands):
             for i in tx.inputs():
                 in_info = {}
                 in_info['addr'] = i.address
-                print(f"-----------------{in_info}")
                 if not in_list.__contains__(in_info):
                     in_list.append(in_info)
         out_list = []
@@ -1586,10 +1592,6 @@ class AndroidCommands(commands.Commands):
                 self.wallet = self.daemon._wallets[self._wallet_path(name)]
 
             self.wallet.use_change = self.config.get('use_change', False)
-            # import time
-            # time.sleep(0.5)
-            # self.update_wallet()
-            # self.update_interfaces()
 
             c, u, x = self.wallet.get_balance()
             print("console.select_wallet %s %s %s==============" % (c, u, x))
@@ -1605,6 +1607,9 @@ class AndroidCommands(commands.Commands):
             }
             if self.label_flag:
                 self.label_plugin.load_wallet(self.wallet)
+                if self.sync_timer is not None:
+                    self.sync_timer.cancel()
+                self.pull_tx_infos()
 
             return json.dumps(info)
         except BaseException as e:
