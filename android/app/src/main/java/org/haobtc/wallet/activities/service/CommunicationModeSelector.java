@@ -10,7 +10,6 @@ import android.hardware.usb.UsbDevice;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,13 +29,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -92,8 +92,11 @@ import org.haobtc.wallet.utils.CustomerUsbManager;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -460,12 +463,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     if (SignActivity.TAG2.equals(tag)) {
                         //hide wallet sign transaction -->set_pass_state
                         customerUI.callAttr("set_pass_state", 1);
-                    } else {
-                        // todo: 收到交易传输完成的信号，才能跳转，👇代码要删除
-
-                        //  if (features.isPinCached() || !features.isPinProtection())
-                        runOnUiThread(runnables.get(0));
-                        //  }
                     }
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, extras);
                 }
@@ -608,7 +605,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void showReading(ReadingEvent event) {
         dialogFragment = showReadingDialog(R.string.reading_dot);
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void  onButtonRequest(ButtonRequestEvent event) {
+       if (isSign) {
+           runOnUiThread(runnables.get(0));
+       }
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

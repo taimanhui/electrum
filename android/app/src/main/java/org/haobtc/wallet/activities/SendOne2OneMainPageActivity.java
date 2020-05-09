@@ -656,7 +656,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         bundle.putString("pay_address", payAddress);
         bundle.putString("fee", tetamount.getText().toString());
         intentCon.putExtra("outputs", bundle);
-        startActivityForResult(intentCon, 1);
+        startActivity(intentCon);
     }
 
     @Override

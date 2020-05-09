@@ -10,14 +10,12 @@ import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
 import org.haobtc.wallet.event.ResultEvent;

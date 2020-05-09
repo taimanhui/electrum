@@ -505,7 +505,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         bundle.putString("pay_address", strPayAddress);
         bundle.putString("fee", fee);
         intentCon.putExtra("outputs", bundle);
-        startActivityForResult(intentCon, 1);
+        startActivity(intentCon);
     }
 
     @SingleClick
@@ -545,7 +545,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent1 = new Intent(this, CommunicationModeSelector.class);
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent1.putExtra("tag", TAG);
                         intent1.putExtra("extras", rawtx);
                         startActivity(intent1);

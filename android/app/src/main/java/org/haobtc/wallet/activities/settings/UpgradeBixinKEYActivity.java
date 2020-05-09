@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -28,18 +29,27 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ExceptionEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
-import org.haobtc.wallet.utils.NfcUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import no.nordicsemi.android.dfu.DfuBaseService;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadListener {
@@ -59,24 +69,78 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
     private MyTask mTask;
     private int tag;
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
-    private boolean done;
-    private DownloadManager manager;
+    private final Object lock= new Object();
+    private void  waiting() throws InterruptedException {
+        synchronized (lock) {
+            lock.wait(10000 * 2);
+        }
+    }
+    private void getUpdateInfo() {
+        // version_testnet.json version_regtest.json
+        String url = "https://key.bixin.com/version.json";
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_LONG).show());
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("获取更新信息失败");
+            }
 
-    private void updateFiles() {
-        // todo: 从服务器获取最新 版本信息
-        UpdateConfiguration configuration = new UpdateConfiguration()
-                .setEnableLog(true)
-                .setJumpInstallPage(false)
-                .setShowBgdToast(true)
-                .setOnDownloadListener(this);
-        manager = DownloadManager.getInstance(this);
-        manager.setConfiguration(configuration)
-                .setApkName(tag == 1  ? "bixin.bin" : "bixin.zip")
-                .setApkUrl(tag == 1 ? "https://key.bixin.com/bixin.bin" : "https://key.bixin.com/bixin.zip")
-                .setShowNewerToast(true)
-                .setSmallIcon(R.drawable.app_icon)
-                .setApkMD5("")
-                .download();
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                assert response.body() != null;
+                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+                String locate = preferences.getString("language", "");
+                String info = response.body().string();
+                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+                String urlNrf = updateInfo.getNrf().getUrl();
+                String versionNrf = updateInfo.getNrf().getVersion();
+                String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
+                String urlStm32 = updateInfo.getStm32().getUrl();
+                String versionStm32 = updateInfo.getStm32().getBootloaderVersion().toString();
+                String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
+                if (tag == 1) {
+                    updateFiles(String.format("https://key.bixin.com/%s", urlStm32));
+                } else {
+                    updateFiles(String.format("https://key.bixin.com/%s", urlNrf));
+                }
+            }
+        });
+    }
+    private void updateFiles(String url) {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+        Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("文件下载失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String name = "";
+                if (tag == 1) {
+                    name = "bixin.bin";
+                } else {
+                    name = "bixin.zip";
+                }
+                File file = new File(String.format("%s/%s", getExternalCacheDir().getPath(), name));
+                byte[] buf = new byte[2048];
+                int len = 0;
+                assert response.body() != null;
+                try (InputStream is = response.body().byteStream(); FileOutputStream fos = new FileOutputStream(file)) {
+                    while ((len = is.read(buf)) != -1) {
+                        fos.write(buf, 0, len);
+                    }
+                    fos.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
@@ -91,8 +155,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
 
     @Override
     public void done(File apk) {
-        done = true;
-
+        lock.notify();
     }
 
     @Override
@@ -108,18 +171,19 @@ public class UpgradeBixinKEYActivity extends BaseActivity implements OnDownloadL
     public class MyTask extends AsyncTask<String, Object, Void> {
         @Override
         protected void onPreExecute() {
-            /*updateFiles();
-            for (;;) {
-               if (done) {
-                   break;
-               }
-            }*/
             progressUpgrade.setIndeterminate(true);
             tetUpgradeTest.setText(getString(R.string.upgradeing));
+
         }
 
         @Override
         protected Void doInBackground(String... params) {
+            getUpdateInfo();
+            try {
+                waiting();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
                 try {
                         protocol.put("PROCESS_REPORTER", this);

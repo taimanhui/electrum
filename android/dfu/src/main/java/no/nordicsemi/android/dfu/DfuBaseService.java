@@ -892,7 +892,7 @@ public abstract class DfuBaseService extends IntentService implements DfuProgres
 
 					// Attempts to discover services after successful connection.
 					sendLogBroadcast(LOG_LEVEL_VERBOSE, "Discovering services...");
-					refreshDeviceCache(gatt, false);
+					refreshDeviceCache(gatt, true);
 					sendLogBroadcast(LOG_LEVEL_DEBUG, "gatt.discoverServices()");
 					final boolean success = gatt.discoverServices();
 					logi("Attempting to start service discovery... " + (success ? "succeed" : "failed"));
