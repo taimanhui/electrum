@@ -463,9 +463,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     } else {
                         // todo: 收到交易传输完成的信号，才能跳转，👇代码要删除
 
-                      //  if (features.isPinCached() || !features.isPinProtection())
-                            runOnUiThread(runnables.get(0));
-                      //  }
+                        //  if (features.isPinCached() || !features.isPinProtection())
+                        runOnUiThread(runnables.get(0));
+                        //  }
                     }
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, extras);
                 }
@@ -559,6 +559,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void doInit(InitEvent event) {
         new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, event.getName());
     }
+
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void doDfu(DfuEvent dfuEvent) {
         if (dfuEvent.getType() == DfuEvent.START_DFU) {
@@ -566,6 +567,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             EventBus.getDefault().post(new DfuEvent(1));
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doWipe(WipeEvent event) {
         new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
@@ -587,12 +589,14 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             customerUI.put("pin", event.getPinCode());
         }
     }
+
     @Subscribe
     public void changePin(ChangePinEvent event) {
         if (!Strings.isNullOrEmpty(event.toString())) {
             customerUI.put("pin", event.toString());
         }
     }
+
     @Subscribe
     public void setPassphrass(PinEvent event) {
         if (!Strings.isNullOrEmpty(event.getPassphrass())) {
@@ -678,7 +682,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         dialogFragment.dismiss();
         EventBus.getDefault().post(new SendingFailedEvent(e));
         Log.i("TAG-ErrorMsgDialog", "onException: " + e.getMessage());
-        if ("BaseException: (7, 'PIN invalid')".equals(e.getMessage())) {
+        if (e.getMessage().contains("(7, 'PIN invalid')")) {
             showErrorDialog(0, R.string.pin_wrong);
         } else if ("DeviceUnpairableError: BiXin cannot pair with your Trezor.".equals(e.getMessage())) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);
@@ -719,7 +723,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
             // todo: 收到传输完成的结果再跳转
-           // runOnUiThread(runnables.get(0));
+            // runOnUiThread(runnables.get(0));
         } else if (BackupRecoveryActivity.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
                 // TODO: 获取加密后的私钥
@@ -727,10 +731,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             } else {
                 // todo: 恢复结果
             }
-        } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag)) {
-            EventBus.getDefault().post(new ResultEvent(s));
-        } else if (SettingActivity.TAG.equals(tag)) {
-            EventBus.getDefault().post(new ResultEvent(s));
+        } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
+            EventBus.getDefault().postSticky(new ResultEvent(s));
         }
         finish();
     }

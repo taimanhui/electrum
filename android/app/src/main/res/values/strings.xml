@@ -603,4 +603,5 @@
     <string name="original_pin_wrong">Original PIN code error</string>
     <string name="reset_device_failed">BixinKey failed to restore factory settings</string>
     <string name="agent_tips">Using a proxy server,hide network traces</string>
+    <string name="last_check_time">Last verified on </string>
 </resources>

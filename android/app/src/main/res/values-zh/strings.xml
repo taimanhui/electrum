@@ -575,4 +575,5 @@
     <string name="original_pin_wrong">原PIN码错误</string>
     <string name="reset_device_failed">BixinKey恢复出厂设置失败</string>
     <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>
+    <string name="last_check_time">上次验证时间为 </string>
 </resources>

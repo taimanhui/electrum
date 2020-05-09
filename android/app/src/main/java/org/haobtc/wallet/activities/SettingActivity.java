@@ -114,6 +114,7 @@ public class SettingActivity extends BaseActivity {
                 CommunicationModeSelector.runnables.clear();
                 CommunicationModeSelector.runnables.add(runnable);
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
                 break;

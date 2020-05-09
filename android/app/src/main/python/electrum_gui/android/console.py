@@ -1135,15 +1135,16 @@ class AndroidCommands(commands.Commands):
 
     ##connection with terzorlib#########################
     def hardware_verify(self, msg, path='nfc'):
-        client = self.get_client(path=path)
-        try:
-            response = client.anti_counterfeiting_verify(inputmessage=msg)
-        except Exception as e:
-            raise BaseException(e)
-        verify_info = {}
-        verify_info['sign'] = response
-        verify_info['seq'] = client.features.device_id
-        return json.dumps(verify_info)
+        #client = self.get_client(path=path)
+        #try:
+            #response = client.anti_counterfeiting_verify(inputmessage=msg)
+        #except Exception as e:
+            #raise BaseException(e)
+        #verify_info = {}
+        #verify_info['sign'] = response
+        #verify_info['seq'] = client.features.device_id
+        #return json.dumps(verify_info)
+        return "hello word"
 
     def backup_wallet(self, path='nfc'):
         client = self.get_client(path=path)

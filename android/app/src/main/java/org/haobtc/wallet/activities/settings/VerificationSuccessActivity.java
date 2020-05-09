@@ -1,5 +1,8 @@
 package org.haobtc.wallet.activities.settings;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -8,6 +11,7 @@ import android.widget.TextView;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.utils.DateUitls;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +29,9 @@ public class VerificationSuccessActivity extends BaseActivity {
     TextView testContent;
     @BindView(R.id.btn_finish)
     Button btnFinish;
+    @BindView(R.id.test_last_time)
+    TextView testLastTime;
+    private int status = 0;
 
     @Override
     public int getLayoutId() {
@@ -34,12 +41,22 @@ public class VerificationSuccessActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-
+        Intent intent = getIntent();
+        String verification_fail = intent.getStringExtra("verification_fail");
+        if (!TextUtils.isEmpty(verification_fail)) {
+            status = 1;
+        } else {
+            String last_check_time = intent.getStringExtra("last_check_time");
+            if (!TextUtils.isEmpty(last_check_time)){
+                Long aLong = Long.valueOf(last_check_time);
+                String lastCheckTime = DateUitls.getDateToStringX(aLong);
+                testLastTime.setText(String.format("%s%s", getString(R.string.last_check_time), lastCheckTime));
+            }
+        }
+        datas();
     }
 
-    @Override
-    public void initData() {
-        int status = 0;
+    private void datas() {
         switch (status) {
             case 0:
                 imgStatus.setImageDrawable(getDrawable(R.drawable.tongguo));
@@ -57,6 +74,11 @@ public class VerificationSuccessActivity extends BaseActivity {
                 testContent.setText(getString(R.string.verifying_retry));
                 break;
         }
+    }
+
+    @Override
+    public void initData() {
+
     }
 
     @SingleClick

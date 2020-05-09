@@ -1,9 +1,16 @@
 package org.haobtc.wallet.activities;
 
+import android.animation.ObjectAnimator;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.okhttp.Request;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -14,24 +21,39 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.settings.VerificationSuccessActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ResultEvent;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+
 public class VerificationKEYActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+    @BindView(R.id.first_promote)
+    TextView firstPromote;
+    @BindView(R.id.second_promote)
+    TextView secondPromote;
+    int MAX_LEVEL = 10000;
+    @BindView(R.id.third_promote)
+    TextView thirdPromote;
 
     @Override
     public int getLayoutId() {
-        return CommunicationModeSelector.isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
+        return isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
 
     }
 
@@ -41,40 +63,94 @@ public class VerificationKEYActivity extends BaseActivity {
         // 设置沉浸式状态栏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         EventBus.getDefault().register(this);
+        List<Drawable> drawables = new ArrayList<>();
+        if (isNFC) {
+            secondPromote.setText(R.string.order_sending);
+        } else {
+            firstPromote.setText(R.string.order_sending);
+        }
+        drawables.addAll(Arrays.asList(firstPromote.getCompoundDrawables()));
+        drawables.addAll(Arrays.asList(secondPromote.getCompoundDrawables()));
+        drawables.addAll(Arrays.asList(thirdPromote.getCompoundDrawables()));
+        drawables.stream().filter(Objects::nonNull)
+                .forEach(drawable -> {
+                    ObjectAnimator animator = ObjectAnimator.ofInt(drawable, "level", 0, MAX_LEVEL);
+                    animator.setDuration(800);
+                    animator.setRepeatCount(-1);
+                    animator.setInterpolator(new LinearInterpolator());
+                    animator.start();
+                });
     }
 
     @Override
     public void initData() {
-//        verification();
 
     }
 
-    private void verification() {
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onSuccess(ResultEvent event) {
+        String result = event.getResult();
+        EventBus.getDefault().removeStickyEvent(ResultEvent.class);
+        verification(result);
+
+    }
+
+    private void verification(String result) {
         HashMap<String, String> pramas = new HashMap<>();
-        pramas.put("serialno", "");
-        pramas.put("signature", "");
+        pramas.put("serialno", result);
+//        pramas.put("signature", "");
         OkHttpUtils.post().url("https://key.bixin.com/lengqian.bo/")
                 .params(pramas)
                 .build()
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Request request, Exception e) {
-                        Log.i("onError", "onError: ---- "+request);
+                        Log.i("strVerification", "onError: ---- " + request);
+                        Drawable drawableStartFail = getDrawable(R.drawable.fail);
+                        Objects.requireNonNull(drawableStartFail).setBounds(0, 0, drawableStartFail.getMinimumWidth(), drawableStartFail.getMinimumHeight());
+                        if (isNFC) {
+                            secondPromote.setText(R.string.active_failed);
+                            secondPromote.setCompoundDrawables(drawableStartFail, null, null, null);
+                        } else {
+                            firstPromote.setText(R.string.active_failed);
+                            firstPromote.setCompoundDrawables(drawableStartFail, null, null, null);
+                        }
+                        thirdPromote.setCompoundDrawables(drawableStartFail, null, null, null);
                     }
 
                     @Override
                     public void onResponse(String response) {
-                        Log.i("onResponse", "onResponse:------- "+response);
+                        Log.i("strVerification", "onResponse:------- " + response);
+                        Drawable drawableStart = getDrawable(R.drawable.chenggong);
+                        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+                        firstPromote.setCompoundDrawables(drawableStart, null, null, null);
+                        secondPromote.setCompoundDrawables(drawableStart, null, null, null);
+                        thirdPromote.setCompoundDrawables(drawableStart, null, null, null);
+                        if (response.contains("is_verified")) {
+                            try {
+                                Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
+                                JSONObject jsonObject = new JSONObject(response);
+                                boolean is_verified = jsonObject.getBoolean("is_verified");
+                                if (is_verified) {
+                                    String last_check_time = jsonObject.getString("last_check_time");
+                                    if (!TextUtils.isEmpty(last_check_time)) {
+                                        intent.putExtra("last_check_time", last_check_time);
+                                    }
+                                }
+                                startActivity(intent);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        } else {
+                            Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
+                            intent.putExtra("verification_fail", "verification_fail");
+                            startActivity(intent);
+                        }
                     }
                 });
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onSuccess(ResultEvent event) {
-        Log.i("strVerification", "initView: "+ event.getResult());
-        // todo: 调用接口，验证返回，跳转成功页面
-        //                Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
-//                startActivity(intent);
-    }
+
     @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
