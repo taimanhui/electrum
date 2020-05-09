@@ -1346,7 +1346,7 @@ class AndroidCommands(commands.Commands):
                 else:
                     with open(filename, "rb") as file:
                         data = file.read()
-             except Exception as e:
+            except Exception as e:
                 raise BaseException(e)
         else:
             raise BaseException("Please Give The File Name")
