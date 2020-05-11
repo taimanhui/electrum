@@ -1288,9 +1288,8 @@ class AndroidCommands(commands.Commands):
         plugin = self.plugin.get_plugin("trezor")
         client_list = plugin.enumerate()
         print(f"total device====={client_list}")
-        device = [cli for cli in client_list if cli.path == path]
+        device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
         assert len(device) != 0, "Not found the point device"
-        print(f"======{device[0]}====")
         client = plugin.create_client(device[0], ui)
         client.set_bixin_app(True)
         self.client = client

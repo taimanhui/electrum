@@ -8,12 +8,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.utils.Global;
 
@@ -53,9 +57,21 @@ public class HideWalletSetPassActivity extends BaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void timeout(OperationTimeoutEvent event) {
+        Toast.makeText(this, "passphrase 输入超时", Toast.LENGTH_LONG).show();
+        finish();
+    }
+
     @Override
     public void initData() {
+        EventBus.getDefault().register(this);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @SingleClick

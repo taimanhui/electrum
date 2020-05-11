@@ -9,10 +9,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
 
@@ -48,7 +52,7 @@ public class PinNewActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        EventBus.getDefault().register(this);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -58,7 +62,11 @@ public class PinNewActivity extends BaseActivity {
             return false;
         });
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void timeout(OperationTimeoutEvent event) {
+        Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();
+        finish();
+    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -69,6 +77,11 @@ public class PinNewActivity extends BaseActivity {
         return super.onTouchEvent(event);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.bn_next})

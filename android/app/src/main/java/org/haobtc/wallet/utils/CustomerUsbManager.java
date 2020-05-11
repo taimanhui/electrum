@@ -9,11 +9,15 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.hardware.usb.UsbRequest;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.activities.base.MyApplication;
 import org.haobtc.wallet.event.HandlerEvent;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Optional;
 
@@ -59,10 +63,11 @@ public class CustomerUsbManager {
                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                if (device != null) {
                    // call your method that cleans up and closes communication with the device
-                   UsbInterface intf = device.getInterface(0);
-                   UsbDeviceConnection connection = usbManager.openDevice(device);
-                   connection.releaseInterface(intf);
-                   connection.close();
+//                   UsbInterface intf = device.getInterface(0);
+//                   UsbDeviceConnection connection = usbManager.openDevice(device);
+//                   connection.releaseInterface(intf);
+//                   connection.close();
+                   Toast.makeText(MyApplication.getInstance(), "USB设备断开链接", Toast.LENGTH_SHORT).show();
                }
            } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
                assert usbManager != null;

@@ -1,9 +1,7 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -34,14 +32,13 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.com.heaton.blelibrary.ble.Ble;
-import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import dr.android.fileselector.FileSelectConstant;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
-import no.nordicsemi.android.dfu.DfuServiceController;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
 
 public class VersionUpgradeActivity extends BaseActivity {
 
@@ -115,6 +112,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
+                isDfu = false;
                 finish();
                 break;
             case R.id.btn_toUpgrade:
@@ -135,6 +133,7 @@ public class VersionUpgradeActivity extends BaseActivity {
                         intent1.putExtra("tag", TAG);
                         intent1.putExtra("extras", "ble");
                         startActivity(intent1);
+                        isDfu = true;
                         break;
                 }
                 break;
@@ -158,14 +157,27 @@ public class VersionUpgradeActivity extends BaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.POSTING, sticky = true)
+    public void doDfu(DfuEvent dfuEvent) {
+        if (dfuEvent.getType() == DfuEvent.START_DFU) {
+            Intent intent = new Intent(this, UpgradeBixinKEYActivity.class);
+            intent.putExtra("tag", 2);
+            startActivity(intent);
+            EventBus.getDefault().removeStickyEvent(DfuEvent.class);
+            EventBus.getDefault().postSticky(new DfuEvent(1));
+        }
+    }
 
 
     private final DfuProgressListener dfuProgressListener = new DfuProgressListenerAdapter() {
         @Override
         public void onDfuCompleted(@NonNull String deviceAddress) {
             super.onDfuCompleted(deviceAddress);
+            final Intent pauseAction = new Intent(DfuBaseService.BROADCAST_ACTION);
+            pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
+            LocalBroadcastManager.getInstance(VersionUpgradeActivity.this).sendBroadcast(pauseAction);
             VersionUpgradeActivity.filePath = "";
-            CommunicationModeSelector.isDfu = false;
+            isDfu = false;
             mIntent(UpgradeFinishedActivity.class);
 //            Ble.getInstance().disconnectAll();
         }
@@ -212,9 +224,6 @@ public class VersionUpgradeActivity extends BaseActivity {
         @Override
         public void onEnablingDfuMode(@NonNull String deviceAddress) {
             super.onEnablingDfuMode(deviceAddress);
-            Intent intent = new Intent(VersionUpgradeActivity.this, UpgradeBixinKEYActivity.class);
-            intent.putExtra("tag", 2);
-            startActivity(intent);
         }
 
         @Override
@@ -222,14 +231,6 @@ public class VersionUpgradeActivity extends BaseActivity {
             super.onDeviceDisconnected(deviceAddress);
         }
     };
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDfu(DfuEvent event) {
-        if (event.getType() == DfuEvent.DFU_SHOW_PROCESS) {
-            Intent intent = new Intent(VersionUpgradeActivity.this, UpgradeBixinKEYActivity.class);
-            intent.putExtra("tag", 2);
-            startActivity(intent);
-        }
-    }
 
     @Override
     protected void onResume() {
@@ -239,6 +240,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        DfuServiceListenerHelper.registerProgressListener(this, dfuProgressListener);
         EventBus.getDefault().unregister(this);
     }
 

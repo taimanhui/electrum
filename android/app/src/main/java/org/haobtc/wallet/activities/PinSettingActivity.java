@@ -22,7 +22,9 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
+import org.haobtc.wallet.event.ReadingEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
@@ -90,7 +92,6 @@ public class PinSettingActivity extends BaseActivity {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (getCurrentFocus() != null && getCurrentFocus().getWindowToken() != null) {
                 relativeLayout_key.setVisibility(View.GONE);
-                mToast("dffff");
                 keyboardUtil.hideKeyboard();
             }
         }
@@ -149,6 +150,11 @@ public class PinSettingActivity extends BaseActivity {
         if ("Keyboard".equals(msgVote)){
             relativeLayout_key.setVisibility(View.GONE);
         }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void timeout(OperationTimeoutEvent event) {
+        Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();
+        finish();
     }
 
     @Override

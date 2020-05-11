@@ -140,6 +140,7 @@ public final class BleRequestImpl<T extends BleDevice> {
                 notifyIndex = 0;
                 //Start setting notification feature
                 if (gatt.getServices().size() <= 3) {
+                    refreshDeviceCache(gatt.getDevice().getAddress());
                     gatt.discoverServices();
                     return;
                 }

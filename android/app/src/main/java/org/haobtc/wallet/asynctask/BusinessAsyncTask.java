@@ -3,6 +3,8 @@ package org.haobtc.wallet.asynctask;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import cn.com.heaton.blelibrary.ble.Ble;
@@ -66,17 +68,16 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
 
     private void onException(Exception e) {
         Log.e(TAG, e.getMessage() == null ? "unknown exception" : e.getMessage());
-        //  if ("BaseException: waiting passphrase timeout".equals(e.getMessage()) || "BaseException: waiting pin timeout".equals(e.getMessage())) {
-        // 操作超时，忽略！！！！！！
-        // } else {
+          if ("BaseException: waiting passphrase timeout".equals(e.getMessage()) || "BaseException: waiting pin timeout".equals(e.getMessage())) {
+              EventBus.getDefault().post(new OperationTimeoutEvent());
+         } else {
         helper.onException(e);
-        //  }
+          }
     }
 
     @Override
     protected void onCancelled() {
         super.onCancelled();
-        Ble.getInstance().disconnectAll();
         helper.onCancelled();
     }
 

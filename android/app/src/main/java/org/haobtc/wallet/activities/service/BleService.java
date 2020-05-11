@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -101,24 +102,16 @@ public class BleService extends Service {
         public void onConnectException(BleDevice device, int errorCode) {
             super.onConnectException(device, errorCode);
             Log.e(TAG, String.format("连接异常，异常状态码: %d", errorCode));
-            if (isDfu) {
-                return;
-            }
             switch (errorCode) {
                 case 2523:
                     Toast.makeText(BleService.this, getString(R.string.bluetooth_abnormal), Toast.LENGTH_LONG).show();
-                    break;
                 case 133:
-                    Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
-                    break;
                 case 8:
                 case 2521:
                 case 59:
                     Toast.makeText(BleService.this, getString(R.string.bluetooth_fail), Toast.LENGTH_LONG).show();
-//                    Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
-                    stopSelf();
-                    break;
                 default:
+                    Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
             }
         }
 
@@ -176,8 +169,9 @@ public class BleService extends Service {
             }
             mBleDevice = BleDeviceRecyclerViewAdapter.mBleDevice;
             bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mBleDevice.getBleAddress());
-            if (bluetoothDevice.getName().endsWith("_DFU")) {
-                EventBus.getDefault().post(new DfuEvent(0));
+            if (isDfu) {
+                mBle.disconnectAll();
+                new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new DfuEvent(DfuEvent.START_DFU)), 2000);
             } else {
                 isBonded = false;
                 switch (bluetoothDevice.getBondState()) {

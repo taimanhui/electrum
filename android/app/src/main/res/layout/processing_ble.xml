@@ -73,7 +73,7 @@
             android:text="@string/pin_seted"
             android:drawableStart="@drawable/connecting"
             android:drawablePadding="@dimen/dp_9"
-            android:visibility="visible"
+            android:visibility="gone"
             android:textColor="@color/text"
             android:textSize="@dimen/smaller_text_size"/>
         <TextView

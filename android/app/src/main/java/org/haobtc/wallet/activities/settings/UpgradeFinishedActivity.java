@@ -1,9 +1,12 @@
 package org.haobtc.wallet.activities.settings;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -13,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
+import no.nordicsemi.android.dfu.DfuBaseService;
 
 public class UpgradeFinishedActivity extends BaseActivity {
     @BindView(R.id.img_back)
@@ -34,7 +38,9 @@ public class UpgradeFinishedActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        final Intent pauseAction = new Intent(DfuBaseService.BROADCAST_ACTION);
+        pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(pauseAction);
     }
 
     @SingleClick

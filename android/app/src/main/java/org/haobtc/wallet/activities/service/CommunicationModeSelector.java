@@ -35,8 +35,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -67,7 +65,6 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
-import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
 import org.haobtc.wallet.event.ConnectingEvent;
@@ -92,11 +89,7 @@ import org.haobtc.wallet.utils.CustomerUsbManager;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.File;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -111,7 +104,6 @@ import java.util.concurrent.TimeoutException;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
-import no.nordicsemi.android.dfu.DfuServiceInitiator;
 
 import static org.haobtc.wallet.activities.sign.SignActivity.strinputAddress;
 
@@ -147,8 +139,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     private BluetoothFragment bleFragment;
     public static volatile boolean isDfu;
     private RxPermissions permissions;
-    private static final String COMMUNICATION_MODE_BLE = "bluetooth";
+    public static final String COMMUNICATION_MODE_BLE = "bluetooth";
     public static final String COMMUNICATION_MODE_NFC = "nfc";
+    private CustomerUsbManager usbManager;
+    private UsbDevice device;
 
 
     @Override
@@ -172,9 +166,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (!bluetoothStatus || SetNameActivity.TAG.equals(tag) || HideWalletSetPassActivity.TAG.equals(tag)) {
             radioBle.setVisibility(View.GONE);
         }
-        mBle = Ble.getInstance();
-        adapter = new BleDeviceRecyclerViewAdapter(this);
-        bleFragment = new BluetoothFragment(adapter);
+
         nfc = Global.py.getModule("trezorlib.transport.nfc");
         ble = Global.py.getModule("trezorlib.transport.bluetooth");
         usb = Global.py.getModule("trezorlib.transport.android_usb");
@@ -186,20 +178,25 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
         handler = MyHandler.getInstance(this);
         customerUI.put("handler", handler);
-        NfcUtils.nfc(this, true);
         EventBus.getDefault().register(this);
         extras = getIntent().getStringExtra("extras");
         if (!MultiSigWalletCreator.TAG.equals(tag)) {
             relativeLayout.setVisibility(View.GONE);
         }
+
         // usb init
-        CustomerUsbManager usbManager = CustomerUsbManager.getInstance(this);
+        usbManager = CustomerUsbManager.getInstance(this);
         usbManager.register(this);
-        UsbDevice device = usbManager.findBixinKEYDevice();
+        device = usbManager.findBixinKEYDevice();
         if (device != null) {
+            radioGroup.setVisibility(View.GONE);
             usbManager.doBusiness(device);
-        }
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+        } else {
+            adapter = new BleDeviceRecyclerViewAdapter(this);
+            bleFragment = new BluetoothFragment(adapter);
+            mBle = Ble.getInstance();
+            NfcUtils.nfc(this, true);
+            radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             switch (checkedId) {
                 case R.id.radio_ble:
                     frameLayout.setVisibility(View.VISIBLE);
@@ -228,6 +225,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     frameLayout.setVisibility(View.GONE);
             }
         });
+        }
         Window window = getWindow();
         if (window != null) {
             WindowManager.LayoutParams wlp = window.getAttributes();
@@ -276,7 +274,11 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             if (isNFC) {
                 return;
             }
-            startService(new Intent(CommunicationModeSelector.this, BleService.class));
+            if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                startService(new Intent(CommunicationModeSelector.this, BleService.class));
+            } else {
+                usbManager.doBusiness(device);
+            }
         }
     };
 
@@ -342,8 +344,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     intent.putExtra("tag", 2);
                     startActivity(intent);
                     new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
-                } else {
-                    dfu();
                 }
             }
         } else if (HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag)) {
@@ -398,7 +398,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
 
     }
-
+    /** dealwith the wipe device logic
+     * @param isNFC  which communication way we use
+     * */
     private void dealWithWipeDevice(boolean isNFC) {
         HardwareFeatures features;
         try {
@@ -412,7 +414,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
         if (features.isInitialized()) {
             new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-            // todo: 跳转PIN码页面，验证PIN
             Intent intent = new Intent(this, PinSettingActivity.class);
             intent.putExtra("tag", tag);
             intent.putExtra("pin_type", 1);
@@ -422,7 +423,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             finish();
         }
     }
-
+    /** dealwith the create wallet 、sign、init logic
+     * @param isNFC  which communication way we use
+     * */
     private void dealWithBusiness(boolean isNFC) {
         HardwareFeatures features;
         try {
@@ -442,6 +445,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     Intent intent = new Intent(this, PinSettingActivity.class);
                     intent.putExtra("tag", tag);
                     startActivity(intent);
+                    dialogFragment = showReadingDialog(R.string.reading_dot);
                 }
                 if (SingleSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag)) {
                     if (HideWalletActivity.TAG.equals(tag)) {
@@ -492,40 +496,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
     }
 
-    private void dfu() {
-        BleDevice device = BleDeviceRecyclerViewAdapter.mBleDevice;
-        Ble.getInstance().disconnect(device);
-        new Handler().postDelayed(() -> {
-            final DfuServiceInitiator starter = new DfuServiceInitiator(device.getBleAddress());
-            starter.setDeviceName(device.getBleName());
-            starter.setKeepBond(true);
-        /*
-           Call this method to put Nordic nrf52832 into bootloader mode
-        */
-            starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
-            if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
-                File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
-                if (!file.exists()) {
-                    Toast.makeText(this, R.string.update_file_not_exist, Toast.LENGTH_LONG).show();
-
-                    EventBus.getDefault().post(new ExecuteEvent());
-                    finish();
-                    return;
-                }
-            } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
-                Toast.makeText(this, R.string.update_file_format_error, Toast.LENGTH_LONG).show();
-                EventBus.getDefault().post(new ExecuteEvent());
-                finish();
-                return;
-            }
-            starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath);
-            DfuServiceInitiator.createDfuNotificationChannel(this);
-            starter.start(this, DfuService.class);
-            isDfu = true;
-        }, 2000);
-
-    }
-
     private void showConnecting() {
         runOnUiThread(() -> {
             if (fragment == null) {
@@ -555,14 +525,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doInit(InitEvent event) {
         new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, event.getName());
-    }
-
-    @Subscribe(threadMode = ThreadMode.POSTING)
-    public void doDfu(DfuEvent dfuEvent) {
-        if (dfuEvent.getType() == DfuEvent.START_DFU) {
-            dfu();
-            EventBus.getDefault().post(new DfuEvent(1));
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -608,14 +570,23 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void  onButtonRequest(ButtonRequestEvent event) {
        if (isSign) {
-           runOnUiThread(runnables.get(0));
+
+           if (runnables.size() != 0) {
+               runOnUiThread(runnables.get(0));
+               // in order to prevent repeat invoke
+               runnables.clear();
+           }
+
        }
     }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_cancel:
-                refreshDeviceList(false);
+                if (mBle != null) {
+                    refreshDeviceList(false);
+                    mBle.disconnectAll();
+                }
                 finish();
                 break;
             case R.id.text_input_publickey_by_hand:
