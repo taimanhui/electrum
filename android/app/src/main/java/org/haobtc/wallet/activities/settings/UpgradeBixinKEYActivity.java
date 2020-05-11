@@ -115,7 +115,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 e.printStackTrace();
                 cancel(true);
             }
-            getUpdateInfo();
             PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
                 try {
                         protocol.put("PROCESS_REPORTER", this);
@@ -179,51 +178,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             showPromptMessage(R.string.update_failed);
             new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
         }
-        private void getUpdateInfo() {
-            // version_testnet.json version_regtest.json
-            String url = "https://key.bixin.com/version.json";
-            OkHttpClient okHttpClient = new OkHttpClient();
-            Request request = new Request.Builder().url(url).build();
-            Call call = okHttpClient.newCall(request);
-            runOnUiThread(() -> Toast.makeText(UpgradeBixinKEYActivity.this, "正在检查更新信息", Toast.LENGTH_LONG).show());
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    System.out.println("获取更新信息失败");
-                }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    assert response.body() != null;
-                    SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-                    String locate = preferences.getString("language", "");
-                    String info = response.body().string();
-                    UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
-                    String urlNrf = updateInfo.getNrf().getUrl();
-                    String versionNrf = updateInfo.getNrf().getVersion();
-                    String versionStm32 = updateInfo.getStm32().getBootloaderVersion().toString();
-                    int i = versionNrf.compareTo(nrfVersion);
-                    int n = versionStm32.compareTo(loaderVersion);
-
-                    String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
-                    String urlStm32 = updateInfo.getStm32().getUrl();
-                    String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
-                    if (tag == 1) {
-                        if (n > 0) {
-                            updateFiles(String.format("https://key.bixin.com/%s", urlStm32));
-                        } else {
-                            runOnUiThread(() -> Toast.makeText(UpgradeBixinKEYActivity.this, "已是最新版本，无需升级", Toast.LENGTH_LONG).show());
-                        }
-                    } else {
-                        if (i > 0) {
-                            updateFiles(String.format("https://key.bixin.com/%s", urlNrf));
-                        } else {
-                            runOnUiThread(() -> Toast.makeText(UpgradeBixinKEYActivity.this, "已是最新版本，无需升级", Toast.LENGTH_LONG).show());
-                        }
-                    }
-                }
-            });
-        }
         private void updateFiles(String url) {
             OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
             Request request = new Request.Builder().url(url).build();

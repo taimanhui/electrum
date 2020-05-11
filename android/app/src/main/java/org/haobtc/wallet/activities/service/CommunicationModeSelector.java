@@ -183,7 +183,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (!MultiSigWalletCreator.TAG.equals(tag)) {
             relativeLayout.setVisibility(View.GONE);
         }
-
+        adapter = new BleDeviceRecyclerViewAdapter(this);
+        bleFragment = new BluetoothFragment(adapter);
         // usb init
         usbManager = CustomerUsbManager.getInstance(this);
         usbManager.register(this);
@@ -192,8 +193,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             radioGroup.setVisibility(View.GONE);
             usbManager.doBusiness(device);
         } else {
-            adapter = new BleDeviceRecyclerViewAdapter(this);
-            bleFragment = new BluetoothFragment(adapter);
             mBle = Ble.getInstance();
             NfcUtils.nfc(this, true);
             radioGroup.setOnCheckedChangeListener((group, checkedId) -> {

@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities.settings;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,14 +20,17 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -37,6 +41,11 @@ import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
 
@@ -116,26 +125,7 @@ public class VersionUpgradeActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_toUpgrade:
-                switch (checkWitch) {
-                    case 0:
-                        mToast(getString(R.string.please_choose_firmware));
-                        break;
-                    case 1:
-                        Intent intent = new Intent(this, CommunicationModeSelector.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("tag", TAG);
-                        intent.putExtra("extras", "hardware");
-                        startActivity(intent);
-                        break;
-                    case 2:
-                        Intent intent1 = new Intent(this, CommunicationModeSelector.class);
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent1.putExtra("tag", TAG);
-                        intent1.putExtra("extras", "ble");
-                        startActivity(intent1);
-                        isDfu = true;
-                        break;
-                }
+                getUpdateInfo();
                 break;
             case R.id.btn_import_file:
                 rxPermissions
@@ -156,7 +146,64 @@ public class VersionUpgradeActivity extends BaseActivity {
                 break;
         }
     }
+    private void getUpdateInfo() {
+        // version_testnet.json version_regtest.json
+        String appId = BuildConfig.APPLICATION_ID;
+        String urlPrefix = "https://key.bixin.com/";
+        String url = "";
+        if (appId.endsWith("mainnet")) {
+            url = urlPrefix + "version.json";
+        } else if (appId.endsWith("testnet")) {
+            url = urlPrefix + "version_testnet.json";
+        } else if(appId.endsWith("regnet")) {
+            url = urlPrefix + "version_regtest.json";
+        }
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_LONG).show());
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("获取更新信息失败");
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                assert response.body() != null;
+                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+                String locate = preferences.getString("language", "");
+                String info = response.body().string();
+                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+                String urlNrf = updateInfo.getNrf().getUrl();
+                String versionNrf = updateInfo.getNrf().getVersion();
+                String versionStm32 = updateInfo.getStm32().getBootloaderVersion().toString();
+                String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
+                String urlStm32 = updateInfo.getStm32().getUrl();
+                String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
+                switch (checkWitch) {
+                    case 0:
+                        mToast(getString(R.string.please_choose_firmware));
+                        break;
+                    case 1:
+                        Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("tag", TAG);
+                        intent.putExtra("extras", "hardware");
+                        startActivity(intent);
+                        break;
+                    case 2:
+                        Intent intent1 = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent1.putExtra("tag", TAG);
+                        intent1.putExtra("extras", "ble");
+                        startActivity(intent1);
+                        isDfu = true;
+                        break;
+                }
+            }
+        });
+    }
     @Subscribe(threadMode = ThreadMode.POSTING, sticky = true)
     public void doDfu(DfuEvent dfuEvent) {
         if (dfuEvent.getType() == DfuEvent.START_DFU) {
