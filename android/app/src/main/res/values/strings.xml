@@ -145,11 +145,9 @@
     <string name="alreadychoose">Confirmed</string>
     <string name="co_signer">Cosigner</string>
     <string name="unsigned">Unsigned</string>
-    <string name="you_are_signed">To be signed (You have signed)</string>
     <string name="wait_broadcast">To propagate</string>
     <string name="broadcast">Propagate transaction</string>
     <string name="trans_details">Transaction details</string>
-    <string name="forWord_orther">Forward to others</string>
     <string name="check_trsaction">View on-chain transactions</string>
     <string name="completed">Completed</string>
     <string name="be_carefl">You have turned on transaction auto syncing, other signers can receive the transaction via Bixin HD, or you can forward the transaction to other co-signers</string>
@@ -604,4 +602,5 @@
     <string name="reset_device_failed">BixinKey failed to restore factory settings</string>
     <string name="agent_tips">Using a proxy server,hide network traces</string>
     <string name="last_check_time">Last verified on </string>
+    <string name="broad_fail">Broadcast failed</string>
 </resources>

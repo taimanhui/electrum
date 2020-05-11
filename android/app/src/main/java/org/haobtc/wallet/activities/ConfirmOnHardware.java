@@ -167,8 +167,8 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 Log.i("onSignSuccessful", "onSignSuccessful:++ "+tx);
                 Daemon.commands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {
+                mToast(getString(R.string.broad_fail));
                 e.printStackTrace();
-                return;
             }
             EventBus.getDefault().post(new SecondEvent("finish"));
             EventBus.getDefault().post(new FirstEvent("22"));

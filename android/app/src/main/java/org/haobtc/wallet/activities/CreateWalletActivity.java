@@ -29,8 +29,8 @@ public class CreateWalletActivity extends BaseActivity {
     ImageView imgBackCreat;
     @BindView(R.id.lin_input_helpWord)
     LinearLayout linInputHelpWord;
-    @BindView(R.id.cardHistryWallet)
-    CardView cardHistryWallet;
+    @BindView(R.id.linear_input_wallet)
+    LinearLayout linearInputWallet;
     private String intentWhere;
 
 
@@ -47,9 +47,9 @@ public class CreateWalletActivity extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
         if (set_syn_server) {
-            cardHistryWallet.setVisibility(View.VISIBLE);
+            linearInputWallet.setVisibility(View.VISIBLE);
         } else {
-            cardHistryWallet.setVisibility(View.INVISIBLE);
+            linearInputWallet.setVisibility(View.GONE);
         }
     }
 

@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chaquo.python.PyObject;
@@ -61,14 +60,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     TextView tetTrthree;
     @BindView(R.id.tet_Trfore)
     TextView tetTrfore;
-    @BindView(R.id.img_back)
-    ImageView imgBack;
     @BindView(R.id.tv_in_tb2)
     TextView tvInTb2;
-    @BindView(R.id.img_share)
-    ImageView imgShare;
-    @BindView(R.id.tb2)
-    RelativeLayout tb2;
     @BindView(R.id.tet_getMoneyaddress)
     TextView tetGetMoneyaddress;
     @BindView(R.id.tet_payAddress)
@@ -172,8 +165,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             isIsmine = intent.getBooleanExtra("isIsmine", false);//isIsmine -->recevid or send
             tetTrsactionTime.setText(dataTime);
         }
-
-        Log.i("listType", "listType--: " + listType + "   tx_hash--: " + tx_hash + "   isIsmine -- : " + isIsmine + "   publicTrsation -- : " + publicTrsation);
     }
 
     @Override
@@ -257,7 +248,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                 get_tx_info = Daemon.commands.callAttr("get_tx_info", tx_hash);
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.i("printStackTrace", "tr----- " + e.getMessage());
                 return;
             }
             if (get_tx_info != null) {
@@ -288,7 +278,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //intent ->histry or create
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String jsondef_get) {
-        Log.i("jsonDetailData", "jsonDetail==== " + jsondef_get);
+        Log.i("jsonDetailData", "transactionDetail==== " + jsondef_get);
         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
         try {
             Gson gson = new Gson();
@@ -483,9 +473,9 @@ public class TransactionDetailsActivity extends BaseActivity {
                 imgProgressfour.setVisibility(View.GONE);
                 tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
 
-            } else if (tx_status.contains("Partially signed")) {//you are signer
-                tetState.setText(R.string.you_are_signed);
-                sigTrans.setText(R.string.forWord_orther);
+            } else if (tx_status.contains("Partially signed")) {//
+                tetState.setText(R.string.transaction_waitting);
+                sigTrans.setText(R.string.signature_trans);
                 //progress
                 imgProgressone.setVisibility(View.VISIBLE);
                 imgProgressthree.setVisibility(View.GONE);
@@ -498,7 +488,6 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     private void gotoConfirmOnHardware() {
         String strPayAddress = tetPayAddress.getText().toString();
-        Log.i("jsdhujbejnfksndml", "output_addr: " + output_addr);
         Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", output_addr);
@@ -523,13 +512,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 break;
             case R.id.sig_trans:
                 String strBtncontent = sigTrans.getText().toString();
-                if (strBtncontent.equals(getString(R.string.forWord_orther))) {
-                    Intent intent1 = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
-                    intent1.putExtra("rowTrsaction", tx_hash);
-                    intent1.putExtra("rowTx", rawtx);
-                    startActivity(intent1);
-
-                } else if (strBtncontent.equals(getString(R.string.broadcast))) {
+                if (strBtncontent.equals(getString(R.string.broadcast))) {
                     //broadcast transaction
                     braodcastTrsaction();
 
@@ -586,7 +569,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     //Radio broadcast
     private void braodcastTrsaction() {
         String signedRowTrsation = preferences.getString("signedRowtrsation", "");
-        Log.d(TAG, "braodcastTrsaction: " + signedRowTrsation);
         try {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
         } catch (Exception e) {
@@ -685,7 +667,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             e.printStackTrace();
         }
         if (create_bump_fee != null) {
-            Log.i("create_bump_fee", "confirmedSpeed: " + create_bump_fee.toString());
             String strNewTX = create_bump_fee.toString();
             Gson gson = new Gson();
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);

@@ -22,6 +22,7 @@ public class WalletUnActivatedActivity extends BaseActivity {
     Button buttonActivate;
     @BindView(R.id.button_recover)
     Button buttonRecover;
+    private String tag_xpub = "";
 
 
     @Override
@@ -31,6 +32,8 @@ public class WalletUnActivatedActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        tag_xpub = intent.getStringExtra("tag_Xpub");
     }
 
     @Override
@@ -47,7 +50,9 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.button_activate:
-                startActivity(new Intent(this, SetNameActivity.class));
+                Intent intent = new Intent(this, ActivatedProcessing.class);
+                intent.putExtra("tag_xpub",tag_xpub);
+                startActivity(intent);
                 finish();
                 break;
             case R.id.button_recover:

@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,6 +77,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     TextView textCheckSign;
     @BindView(R.id.test_sign_tips)
     TextView testSignTips;
+    @BindView(R.id.radioSignMsg)
+    RadioButton radioSignMsg;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private boolean signWhich = true;
@@ -108,6 +111,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     public void initData() {
         //get sign address
         mGeneratecode();
+        if (!"1-1".equals(personceType) && !"standard".equals(personceType)) {
+            radioSignMsg.setVisibility(View.GONE);
+        }
     }
 
     //get sign address
@@ -223,7 +229,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         signDialog();
                     }
                 } else { //Hardware wallet signature
-
                     String strTest = editTrsactionTest.getText().toString();
                     if (signWhich) { //sign trsaction
                         CommunicationModeSelector.runnables.clear();
@@ -348,7 +353,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-         if (requestCode == 0 && resultCode == RESULT_OK) {
+        if (requestCode == 0 && resultCode == RESULT_OK) {
             //scan
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
@@ -375,6 +380,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignMessage(SignMessageEvent event) {
         strSoftMsg = editTrsactionTest.getText().toString();
@@ -385,10 +391,17 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         intentMsg.putExtra("signedFinish", signedMsg);
         startActivity(intentMsg);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }

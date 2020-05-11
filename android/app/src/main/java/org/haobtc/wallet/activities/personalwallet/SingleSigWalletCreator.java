@@ -30,11 +30,16 @@ import androidx.annotation.Nullable;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.InitEvent;
+import org.haobtc.wallet.event.ReceiveXpub;
+import org.haobtc.wallet.event.SendXpubToSigwallet;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.haobtc.wallet.utils.MyDialog;
@@ -73,6 +78,7 @@ public class SingleSigWalletCreator extends BaseActivity {
     private int pub;
     private int defaultKeyNum;
     private int defaultKeyNameNum;
+    private String strBixinname;
 
     @Override
     public int getLayoutId() {
@@ -82,8 +88,8 @@ public class SingleSigWalletCreator extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         myDialog = MyDialog.showDialog(this);
-
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         defaultName = preferences.getInt("defaultName", 0);
@@ -282,7 +288,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (msg.what == 1) {
-                String strBixinname = edit_bixinName.getText().toString();
+                strBixinname = edit_bixinName.getText().toString();
                 String strSweep = textView.getText().toString();
                 walletName = editWalletNameSetting.getText().toString();
                 if (TextUtils.isEmpty(strBixinname)) {
@@ -295,7 +301,7 @@ public class SingleSigWalletCreator extends BaseActivity {
                 }
                 String strXpub = "[\"" + strSweep + "\"]";
                 try {
-                    Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, pub, strXpub);
+                    Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, 1, strXpub);
                 } catch (Exception e) {
                     e.printStackTrace();
                     myDialog.dismiss();
@@ -324,4 +330,43 @@ public class SingleSigWalletCreator extends BaseActivity {
 
         }
     };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void doInit(ReceiveXpub event) {
+        String xpub = event.getXpub();
+        Log.i("SingleSigWalletCreator", "xpub--------------------------------------: "+xpub);
+        String strXpub = "[\"" + xpub + "\"]";
+        try {
+            Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, 1, strXpub);
+        } catch (Exception e) {
+            e.printStackTrace();
+            myDialog.dismiss();
+            String message = e.getMessage();
+            if ("BaseException: file already exists at path".equals(message)) {
+                mToast(getString(R.string.changewalletname));
+            } else if (message.contains("The same xpubs have create wallet")) {
+                mToast(getString(R.string.xpub_have_wallet));
+            }
+            return;
+        }
+        Log.i("SingleSigWalletCreator", "SingleSigWalletCreator: "+xpub);
+        edit.putInt("defaultName", walletNameNum);
+        edit.putInt("defaultKeyNum",defaultKeyNameNum);
+        edit.apply();
+        myDialog.dismiss();
+        walletName = editWalletNameSetting.getText().toString();
+        EventBus.getDefault().post(new FirstEvent("11"));
+        Intent intent = new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
+        intent.putExtra("walletNames", walletName);
+        intent.putExtra("flagTag", "personal");
+        intent.putExtra("strBixinname", xpub);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

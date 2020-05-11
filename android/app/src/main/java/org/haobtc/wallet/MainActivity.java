@@ -235,6 +235,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             public void onPageSelected(int position) {
                 scrollPos = position;
                 if (position == (fragmentList.size() - 1) || position == (fragmentList.size() - 2)) {
+                    refreshLayout.setEnableRefresh(false);
                     if (position == (fragmentList.size() - 1)) {
                         tetNone.setText(getString(R.string.hide_wallet_tips));
                         tetNone.setVisibility(View.VISIBLE);
@@ -246,6 +247,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }
 
                 } else {
+                    refreshLayout.setEnableRefresh(true);
                     strNames = walletnameList.get(position).getName();
                     strType = walletnameList.get(position).getType();
                     Handler handler = new Handler();
@@ -255,7 +257,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             //refresh only wallet
                             ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
                         }
-                    }, 350);
+                    }, 500);
                 }
             }
 
@@ -349,6 +351,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 private String tx_hash1;
                 private boolean status;
+
                 @SingleClick
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
@@ -427,6 +430,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void mInitState() {
         ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0.2f).navigationBarColor(R.color.button_bk_ddake).init();
     }
+
     @SingleClick
     @Override
     public void onClick(View v) {
@@ -499,10 +503,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(MainpageWalletEvent updataHint) {
         String status = updataHint.getStatus();
-        if (status.equals("22")){
+        if (status.equals("22")) {
             int walletPos = updataHint.getPos();
             viewPager.setCurrentItem(walletPos);
-            Log.i("viewPagernihao", "event:------ "+walletPos);
+            Log.i("viewPagernihao", "event:------ " + walletPos);
         }
     }
 

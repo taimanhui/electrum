@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,6 +19,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.fixpin.ActiveFailedActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ConfirmActivity;
@@ -26,6 +28,7 @@ import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SendXpubToSigwallet;
 import org.haobtc.wallet.event.SendingFailedEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
@@ -53,6 +56,7 @@ public class ActivatedProcessing extends BaseActivity {
 */
     int MAX_LEVEL = 10000;
     private String  name;
+    private String tag_sendxpub;
 
     public int getLayoutId() {
         return isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
@@ -62,6 +66,7 @@ public class ActivatedProcessing extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        tag_sendxpub = getIntent().getStringExtra("tag_xpub");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         List<Drawable> drawables = new ArrayList<>();
         if (isNFC) {
@@ -87,25 +92,29 @@ public class ActivatedProcessing extends BaseActivity {
     @Override
     public void initData() {
         NfcUtils.nfc(this, false);
+        EventBus.getDefault().post(new InitEvent("Activate"));
         /*if (!isNFC) {
             EventBus.getDefault().post(new PinEvent(pin, ""));
         }*/
-        name = getIntent().getStringExtra("name");
-        if (!isNFC) {
-            EventBus.getDefault().post(new InitEvent(name));
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showProcessing(ResultEvent resultEvent) {
+        Log.i("SingleSigWalletCreator", "-------------getResult(): "+resultEvent.getResult());
         switch (resultEvent.getResult()) {
             case "1":
                 Drawable drawableStart = getDrawable(R.drawable.chenggong);
                 Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
                 firstPromote.setCompoundDrawables(drawableStart, null, null, null);
                 secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-                startActivity(new Intent(this, ActivateSuccessActivity.class));
-                finish();
+                if (SingleSigWalletCreator.TAG.equals(tag_sendxpub)){
+                    Log.i("SingleSigWalletCreator", "--------------------ActivatedProcessing: "+tag_sendxpub);
+                    EventBus.getDefault().post(new SendXpubToSigwallet("get_xpub_and_send"));
+                }else{
+                    startActivity(new Intent(this, ActivateSuccessActivity.class));
+                    finish();
+                }
+
                 break;
             case "0":
                 Log.d(TAG, "设备激活失败");
@@ -148,7 +157,6 @@ public class ActivatedProcessing extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
-            EventBus.getDefault().post(new InitEvent(name));
         }
     }
 

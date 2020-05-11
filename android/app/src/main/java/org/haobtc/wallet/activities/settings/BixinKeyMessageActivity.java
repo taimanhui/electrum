@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -34,7 +35,12 @@ public class BixinKeyMessageActivity extends BaseActivity {
         String label = intent.getStringExtra("label");
         String bleName = intent.getStringExtra("bleName");
         String device_id = intent.getStringExtra("device_id");
-        tetKeyName.setText(label);
+        if (!TextUtils.isEmpty(label)){
+            tetKeyName.setText(label);
+        } else {
+            tetKeyName.setText(String.format("%s", "BixinKEY"));
+        }
+
         tetCode.setText(device_id);
         tetBluetoose.setText(bleName);
     }

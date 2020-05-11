@@ -41,7 +41,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case GET_EXTEND_PUBLIC_KEY_SINGLE:
             case RECOVER:
             case SIGN_MESSAGE:
-            case INIT_DEVICE:
             case COUNTER_VERIFICATION:
                 try {
                     result = Daemon.commands.callAttr(strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0], strings[1], strings[2]).toString();
@@ -53,6 +52,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case GET_EXTEND_PUBLIC_KEY:
             case CHANGE_PIN:
             case WIPE_DEVICE:
+            case INIT_DEVICE:
             case BACK_UP:
             case SIGN_TX:
                 try {

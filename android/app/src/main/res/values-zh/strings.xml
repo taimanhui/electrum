@@ -144,11 +144,9 @@
     <string name="alreadychoose">已确认</string>
     <string name="co_signer">联署人</string>
     <string name="unsigned">未签名</string>
-    <string name="you_are_signed">待签名（你已签名）</string>
     <string name="wait_broadcast">待广播</string>
     <string name="broadcast">广播交易</string>
     <string name="trans_details">交易详情</string>
-    <string name="forWord_orther">转发给其他人</string>
     <string name="check_trsaction">查看链上交易</string>
     <string name="completed">已完成</string>
     <string name="be_carefl">你已打开自动同步交易，其他联署人可通过币信HD获取交易或使用以下方式将交易转发给其他联署人进行签名</string>
@@ -576,4 +574,5 @@
     <string name="reset_device_failed">BixinKey恢复出厂设置失败</string>
     <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>
     <string name="last_check_time">上次验证时间为 </string>
+    <string name="broad_fail">广播失败</string>
 </resources>

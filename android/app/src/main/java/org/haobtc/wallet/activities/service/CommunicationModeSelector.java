@@ -41,6 +41,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.ActivatedProcessing;
 import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.SendOne2ManyMainPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
@@ -74,8 +75,10 @@ import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ReadingEvent;
+import org.haobtc.wallet.event.ReceiveXpub;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SendSignBroadcastEvent;
+import org.haobtc.wallet.event.SendXpubToSigwallet;
 import org.haobtc.wallet.event.SendingFailedEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
@@ -353,12 +356,11 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
             new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
             startActivity(new Intent(this, VerificationKEYActivity.class));
-        } else if (SetNameActivity.TAG.equals(tag)) {
+        } else if (ActivatedProcessing.TAG.equals(tag)) {
             Intent intent = new Intent(this, PinSettingActivity.class);
             intent.putExtra("tag", tag);
             intent.putExtra("pin_type", 2);
             startActivity(intent);
-            doInit(new InitEvent(getIntent().getStringExtra("name")));
             finish();
         } else if (HideWalletSetPassActivity.TAG.equals(tag)) {
             String passphrase = getIntent().getStringExtra("passphrase");
@@ -436,7 +438,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             }
             return;
         }
-        boolean isInit = features.isInitialized();
+        boolean isInit = features.isInitialized();//isInit -->  Judge whether it is activated
         if (isInit) {
             if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
                 // todo: remove the below pin about code
@@ -490,6 +492,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         } else {
             isActive = true;
             Intent intent = new Intent(this, WalletUnActivatedActivity.class);
+            if (SingleSigWalletCreator.TAG.equals(tag)) {
+                Log.i("SingleSigWalletCreator", "--------------------CommunicationModeSelector: " + tag);
+                intent.putExtra("tag_Xpub", tag);
+            }
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(intent);
         }
@@ -508,7 +514,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     }
 
     public ReadingOrSendingDialogFragment showReadingDialog(int res) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commitAllowingStateLoss();
         ReadingOrSendingDialogFragment fragment = new ReadingOrSendingDialogFragment(res);
         fragment.show(getSupportFragmentManager(), "");
         return fragment;
@@ -521,9 +527,23 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         fragment.show(getSupportFragmentManager(), "");
     }
 
+    //Activate interface
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doInit(InitEvent event) {
-        new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, event.getName());
+        if ("Activate".equals(event.getName())) {
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+        }
+    }
+
+    //Activate success ,then,get xpub and to back
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void backXpub(SendXpubToSigwallet event) {
+        isActive = false;
+        //TODO: 获取xpub
+        if ("get_xpub_and_send".equals(event.getXpub())) {
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
+
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -645,7 +665,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             dialogFragment = showReadingDialog(R.string.transaction_loading);
         } else if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
             // 获取公钥之前需完成的工作
-            dialogFragment = showReadingDialog(R.string.reading_dot);
+            if (!SingleSigWalletCreator.TAG.equals(tag)) {
+                dialogFragment = showReadingDialog(R.string.reading_dot);
+            }
         }
     }
 
@@ -670,6 +692,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
+        Log.i("SingleSigWalletCreator", "isActive:+++++++++++++++++++++++++++++++++++++ " + isActive);
         if (isActive) {
             EventBus.getDefault().post(new ResultEvent(s));
             finish();
@@ -682,8 +705,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 Intent intent1 = new Intent(this, ChooseHistryWalletActivity.class);
                 intent1.putExtra("histry_xpub", xpub);
                 startActivity(intent1);
+                finish();
+            } else if (SingleSigWalletCreator.TAG.equals(tag)) {
+                EventBus.getDefault().post(new ReceiveXpub(xpub));
             } else {
                 runOnUiThread(runnables.get(1));
+                finish();
             }
         } else if (isSign) {
             // todo : 获取签名后的动作, 传输交易结果，签名结果需要重新读取
@@ -694,19 +721,20 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             } else {
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
+            finish();
             // todo: 收到传输完成的结果再跳转
             // runOnUiThread(runnables.get(0));
         } else if (BackupRecoveryActivity.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
                 // TODO: 获取加密后的私钥
-
             } else {
                 // todo: 恢复结果
             }
+            finish();
         } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().postSticky(new ResultEvent(s));
+            finish();
         }
-        finish();
     }
 
     @Override

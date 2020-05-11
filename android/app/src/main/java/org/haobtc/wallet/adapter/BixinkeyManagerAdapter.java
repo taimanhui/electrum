@@ -1,5 +1,7 @@
 package org.haobtc.wallet.adapter;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -17,7 +19,12 @@ public class BixinkeyManagerAdapter extends BaseQuickAdapter<HardwareFeatures, B
 
     @Override
     protected void convert(BaseViewHolder helper, HardwareFeatures item) {
-        helper.setText(R.id.tet_keyName,item.getBleName());
+        if (!TextUtils.isEmpty(item.getLabel())){
+            helper.setText(R.id.tet_keyName,item.getLabel());
+        } else {
+            helper.setText(R.id.tet_keyName,"BixinKEY");
+        }
+
         helper.addOnClickListener(R.id.relativeLayout_bixinkey);
         helper.addOnClickListener(R.id.linear_delete);
     }
