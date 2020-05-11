@@ -89,7 +89,7 @@ public class ChangePinProcessingActivity extends BaseActivity {
         //                finish();
         //                break;
         if ("0".equals(resultEvent.getResult())) {
-            Drawable drawable = getDrawable(R.drawable.fail);
+            Drawable drawable = getDrawable(R.drawable.shibai);
             Objects.requireNonNull(drawable).setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
             if (isNFC) {
                 secondPromote.setText(R.string.original_pin_wrong);

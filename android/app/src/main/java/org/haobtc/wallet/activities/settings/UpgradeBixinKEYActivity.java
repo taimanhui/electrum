@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.base.MyApplication;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.UpdateInfo;
@@ -91,7 +92,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             feature = futureTask.get(5, TimeUnit.SECONDS).toString();
             return new Gson().fromJson(feature, HardwareFeatures.class);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
+         //   Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             throw e;
         }

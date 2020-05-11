@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.common.base.Strings;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -116,7 +117,7 @@ public class VersionUpgradeActivity extends BaseActivity {
             }
         });
     }
-    @SingleClick
+    @SingleClick(value = 5000)
     @OnClick({R.id.img_back, R.id.btn_toUpgrade, R.id.btn_import_file})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -125,7 +126,30 @@ public class VersionUpgradeActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_toUpgrade:
-                getUpdateInfo();
+                if (Strings.isNullOrEmpty(filePath)) {
+                    getUpdateInfo();
+                } else {
+                    switch (checkWitch) {
+                        case 0:
+                            mToast(getString(R.string.please_choose_firmware));
+                            break;
+                        case 1:
+                            Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra("tag", TAG);
+                            intent.putExtra("extras", "hardware");
+                            startActivity(intent);
+                            break;
+                        case 2:
+                            Intent intent1 = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
+                            intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent1.putExtra("tag", TAG);
+                            intent1.putExtra("extras", "ble");
+                            startActivity(intent1);
+                            isDfu = true;
+                            break;
+                    }
+                }
                 break;
             case R.id.btn_import_file:
                 rxPermissions
@@ -165,7 +189,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                System.out.println("获取更新信息失败");
+                runOnUiThread(() -> Toast.makeText(VersionUpgradeActivity.this, "获取更新信息失败", Toast.LENGTH_LONG).show());
             }
 
             @Override

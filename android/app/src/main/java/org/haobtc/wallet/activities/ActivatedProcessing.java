@@ -109,7 +109,7 @@ public class ActivatedProcessing extends BaseActivity {
                 break;
             case "0":
                 Log.d(TAG, "设备激活失败");
-                Drawable drawableStartFail = getDrawable(R.drawable.fail);
+                Drawable drawableStartFail = getDrawable(R.drawable.shibai);
                 Objects.requireNonNull(drawableStartFail).setBounds(0, 0, drawableStartFail.getMinimumWidth(), drawableStartFail.getMinimumHeight());
                 if (isNFC) {
                     secondPromote.setText(R.string.active_failed);

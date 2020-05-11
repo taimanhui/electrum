@@ -85,7 +85,7 @@ public class ResetDeviceProcessing extends BaseActivity {
         //                break;
         if ("0".equals(resultEvent.getResult())) {
             Log.d("RESET", "恢复出厂设置失败");
-            Drawable drawableStart = getDrawable(R.drawable.fail);
+            Drawable drawableStart = getDrawable(R.drawable.shibai);
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             if (isNFC) {
                 secondPromote.setText(R.string.pin_wrong);

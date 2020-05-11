@@ -1291,7 +1291,8 @@ class AndroidCommands(commands.Commands):
         device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
         assert len(device) != 0, "Not found the point device"
         client = plugin.create_client(device[0], ui)
-        client.set_bixin_app(True)
+        if not client.features.bootloader_mode:
+            client.set_bixin_app(True)
         self.client = client
         self.path = path
         return client
