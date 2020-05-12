@@ -11,7 +11,7 @@ import pkgutil
 import unittest
 import threading
 from electrum.bitcoin import base_decode, is_address
-from electrum.keystore import bip44_derivation
+from electrum.keystore import bip84_derivation
 from electrum.plugin import Plugins
 from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
@@ -159,9 +159,10 @@ class AndroidCommands(commands.Commands):
         self.ccy = self.daemon.fx.get_currency()
         self.m = 0
         self.n = 0
-        self.sync_timer = None
+        #self.sync_timer = None
         self.config.set_key('auto_connect', True, True)
-        self.timer_action()
+        t = threading.Timer(5.0, self.timer_action())
+        t.start()
         if callback is not None:
             self.set_callback_fun(callback)
         self.start()
@@ -409,6 +410,10 @@ class AndroidCommands(commands.Commands):
     def set_syn_server(self, flag):
         self.label_flag = flag
         self.config.set_key('use_labels', bool(flag))
+        if self.label_flag:
+            self.label_plugin.load_wallet(self.wallet)
+
+
 
     ##set callback##############################
     def set_callback_fun(self, callbackIntent):
@@ -470,7 +475,11 @@ class AndroidCommands(commands.Commands):
             keystores = self.get_keystores_info()
             print(f"keystores---------------{keystores}")
             for key, value in self.local_wallet_info.items():
-                if value['xpubs'] == keystores:
+                num = 0
+                for xpub in keystores:
+                    if value['xpubs'].__contains__(xpub):
+                        num += 1
+                if num == len(keystores):
                     raise BaseException("The same xpubs have create wallet")
             storage, db = self.wizard.create_storage(path=path, password='', hide_type=hide_type)
         except Exception as e:
@@ -526,8 +535,8 @@ class AndroidCommands(commands.Commands):
                         except_list.append(temp_data)
                         pass
                 #return json.dumps(except_list)
-            self.sync_timer = threading.Timer(30.0, self.pull_tx_infos)
-            self.sync_timer.start()
+            # self.sync_timer = threading.Timer(5.0, self.pull_tx_infos)
+            # self.sync_timer.start()
         except BaseException as e:
             print(f"eeeeeeeeeeeeeee {str(e)}")
             raise BaseException(e)
@@ -882,6 +891,8 @@ class AndroidCommands(commands.Commands):
 
     ##get history
     def get_all_tx_list(self, search_type=None):
+        if self.label_flag:
+            self.pull_tx_infos()
         history_data = []
         try:
             history_info = self.get_history_tx()
@@ -1124,7 +1135,6 @@ class AndroidCommands(commands.Commands):
     def sign_tx(self, tx, password=None):
         try:
             self._assert_wallet_isvalid()
-            old_tx = tx
             tx = tx_from_any(tx)
             tx.deserialize()
             sign_tx = self.wallet.sign_transaction(tx, password)
@@ -1309,7 +1319,7 @@ class AndroidCommands(commands.Commands):
 
     def get_xpub_from_hw(self, path='android_usb', _type='p2wsh', is_creating=True):
         client = self.get_client(path=path)
-        derivation = bip44_derivation(0)
+        derivation = bip84_derivation(0)
         try:
             xpub = client.get_xpub(derivation, _type, creating=is_creating)
         except Exception as e:
@@ -1607,9 +1617,9 @@ class AndroidCommands(commands.Commands):
             }
             if self.label_flag:
                 self.label_plugin.load_wallet(self.wallet)
-                if self.sync_timer is not None:
-                    self.sync_timer.cancel()
-                self.pull_tx_infos()
+                # if self.sync_timer is not None:
+                #     self.sync_timer.cancel()
+                # self.pull_tx_infos()
 
             return json.dumps(info)
         except BaseException as e:

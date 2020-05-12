@@ -1506,9 +1506,9 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             except Exception as e:
                 sig_num += 1
                 continue
-
+        
         if sig_num == len(self.get_keystores()):
-            raise BaseException("Sign failed, May be BiXin cannot pair with your device")
+            raise BaseException("Sign failed, May be BiXin cannot pair with your device or invaild password")
 
         # remove sensitive info; then copy back details from temporary tx
         tmp_tx.remove_xpubs_and_bip32_paths()
