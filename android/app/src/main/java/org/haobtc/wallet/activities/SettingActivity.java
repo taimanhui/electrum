@@ -9,12 +9,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.azhon.appupdate.utils.ApkUtil;
+import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
@@ -24,12 +27,21 @@ import org.haobtc.wallet.activities.settings.CurrencyActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.SecondEvent;
+
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
 
 public class SettingActivity extends BaseActivity {
@@ -91,7 +103,7 @@ public class SettingActivity extends BaseActivity {
     }
 
 
-    @SingleClick
+    @SingleClick(value = 5000)
     @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -131,8 +143,7 @@ public class SettingActivity extends BaseActivity {
                 mIntent(BlueToothStatusActivity.class);
                 break;
             case R.id.hardware_update:
-                Intent intentVersion = new Intent(SettingActivity.this, VersionUpgradeActivity.class);
-                startActivity(intentVersion);
+                getUpdateInfo();
                 break;
             case R.id.change_pin:
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);
@@ -143,6 +154,55 @@ public class SettingActivity extends BaseActivity {
         }
     }
 
+    private void getUpdateInfo() {
+        // version_testnet.json version_regtest.json
+        String appId = BuildConfig.APPLICATION_ID;
+        String urlPrefix = "https://key.bixin.com/";
+        String url = "";
+        if (appId.endsWith("mainnet")) {
+            url = urlPrefix + "version.json";
+        } else if (appId.endsWith("testnet")) {
+            url = urlPrefix + "version_testnet.json";
+        } else if(appId.endsWith("regnet")) {
+            url = urlPrefix + "version_regtest.json";
+        }
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_LONG).show());
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(SettingActivity.this, "获取更新信息失败", Toast.LENGTH_LONG).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                assert response.body() != null;
+                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+                String locate = preferences.getString("language", "");
+                String info = response.body().string();
+                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+                String urlNrf = updateInfo.getNrf().getUrl();
+                String urlStm32 = updateInfo.getStm32().getUrl();
+                String versionNrf = updateInfo.getNrf().getVersion();
+                String versionStm32 = updateInfo.getStm32().getBootloaderVersion().toString().replace(",", ".");
+                versionStm32 = versionStm32.substring(1, versionStm32.length() -1).replaceAll("\\s+", "");
+                String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
+                String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
+                Bundle bundle = new Bundle();
+                bundle.putString("nrf_url", urlPrefix + urlNrf);
+                bundle.putString("stm32_url", urlPrefix + urlStm32);
+                bundle.putString("nrf_version", versionNrf);
+                bundle.putString("stm32_version", versionStm32);
+                bundle.putString("nrf_description", descriptionNrf);
+                bundle.putString("stm32_description", descriptionStm32);
+                Intent intentVersion = new Intent(SettingActivity.this, VersionUpgradeActivity.class);
+                intentVersion.putExtras(bundle);
+                startActivity(intentVersion);
+            }
+        });
+    }
 
     private Runnable runnable = this::gotoConfirmVerification;
 

@@ -2,6 +2,8 @@ package org.haobtc.wallet.activities.base;
 
 import android.app.Application;
 
+import androidx.lifecycle.ProcessLifecycleOwner;
+
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
@@ -21,6 +23,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new ApplicationObserver());
         mInstance = this;
         initBle();
         initChaquo();
@@ -44,7 +47,7 @@ public class MyApplication extends Application {
                 .setFilterScan(true)//Set whether to filter the founded devices
                 .setConnectFailedRetryCount(3)
                 .setConnectTimeout(10 * 1000)// Set the connection timeout
-                .setScanPeriod(6 * 1000)// Set the Scanning period
+                .setScanPeriod(12 * 1000)// Set the Scanning period
                 .setServiceBindFailedRetryCount(3)
                 .setUuidService(UUID.fromString(PRIMARY_SERVICE))
                 .setUuidWriteCha(UUID.fromString(WRITE_CHARACTERISTIC))

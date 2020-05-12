@@ -19,6 +19,7 @@ import androidx.annotation.StringRes;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
@@ -27,6 +28,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.base.MyApplication;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.UpdateInfo;
@@ -61,6 +63,7 @@ import okhttp3.Response;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.futureTask;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
 
 
 public class UpgradeBixinKEYActivity extends BaseActivity {
@@ -79,8 +82,10 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     ImageView imgdhksjks;
     private MyTask mTask;
     private int tag;
-    String nrfVersion;
-    String loaderVersion;
+    private String newNrfVersion;
+    private String newLoaderVersion;
+    private boolean isNew;
+
 
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
 
@@ -109,51 +114,39 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected Void doInBackground(String... params) {
             try {
-                HardwareFeatures features = getFeatures(params[0]);
-                 nrfVersion = features.getBleVer();
-                 loaderVersion = String.format("%s.%s.%s", features.getMajorVersion(), features.getMinorVersion(), features.getPatchVersion());
+                if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                    HardwareFeatures features = getFeatures(params[0]);
+                    String nrfVersion = features.getBleVer();
+                    String loaderVersion = String.format("%s.%s.%s", features.getMajorVersion(), features.getMinorVersion(), features.getPatchVersion());
+                    switch (tag) {
+                        case 1:
+                            assert newLoaderVersion != null;
+                            if (newLoaderVersion.compareTo(loaderVersion) <= 0) {
+                                isNew = true;
+                                cancel(true);
+                            } else {
+                                runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
+                                updateFiles(getIntent().getExtras().getString("stm32_url"));
+                            }
+                            break;
+                        case 2:
+                            assert newNrfVersion != null;
+                            if (newNrfVersion.compareTo(nrfVersion) <= 0) {
+                                isNew = true;
+                                cancel(true);
+                            } else {
+                                runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
+                                updateFiles(getIntent().getExtras().getString("nrf_url"));
+                            }
+                    }
+                } else {
+                    doUpdate(params[0]);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 cancel(true);
             }
-            PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
-                try {
-                        protocol.put("PROCESS_REPORTER", this);
-                        switch (tag) {
-                            case 1:
-                                if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
-                                    File file = new File(String.format("%s/bixin.bin", getExternalCacheDir().getPath()));
-                                    if (!file.exists()) {
-                                        showPromptMessage(R.string.update_file_not_exist);
-                                        cancel(true);
-                                    }
-                                }
-                                Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, params[0]);
-                                break;
-                            case 2:
-                                if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
-                                    File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
-                                    if (!file.exists()) {
-                                        showPromptMessage(R.string.update_file_not_exist);
-                                        cancel(true);
-                                    }
-                                } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
-                                    showPromptMessage(R.string.update_file_format_error);
-                                    cancel(true);
-                                }
-                                Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, params[0], "ble_ota");
-                                break;
-                            default:
-                        }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // clear state
-                    protocol.put("HTTP", false);
-                    protocol.put("OFFSET", 0);
-                    protocol.put("PROCESS_REPORTER", null);
-                    cancel(true);
-                }
             return null;
         }
 
@@ -163,6 +156,47 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             progressUpgrade.setProgress(Integer.parseInt(((progresses[0]).toString())));
             tetUpgradeNum.setText(String.format("%s%%", String.valueOf(progresses[0])));
 
+        }
+
+        private void doUpdate(String path) {
+            PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
+            try {
+                protocol.put("PROCESS_REPORTER", this);
+                switch (tag) {
+                    case 1:
+                        if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                            File file = new File(String.format("%s/bixin.bin", getExternalCacheDir().getPath()));
+                            if (!file.exists()) {
+                                showPromptMessage(R.string.update_file_not_exist);
+                                cancel(true);
+                            }
+                        }
+                        Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, path);
+                        break;
+                    case 2:
+                        if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                            File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
+                            if (!file.exists()) {
+                                showPromptMessage(R.string.update_file_not_exist);
+                                cancel(true);
+                            }
+                        } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
+                            showPromptMessage(R.string.update_file_format_error);
+                            cancel(true);
+                        }
+                        Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, path, "ble_ota");
+                        break;
+                    default:
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                // clear state
+                protocol.put("HTTP", false);
+                protocol.put("OFFSET", 0);
+                protocol.put("PROCESS_REPORTER", null);
+                cancel(true);
+            }
         }
 
         @Override
@@ -176,44 +210,42 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         protected void onCancelled() {
             VersionUpgradeActivity.filePath = "";
             tetUpgradeTest.setText(getString(R.string.Cancelled));
-            showPromptMessage(R.string.update_failed);
+            if (isNew) {
+                isNew = false;
+                showPromptMessage(R.string.is_new);
+            } else {
+                showPromptMessage(R.string.update_failed);
+            }
             new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
         }
 
-        private void updateFiles(String url) {
-            OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
-            Request request = new Request.Builder().url(url).build();
-            Call call = okHttpClient.newCall(request);
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    System.out.println("文件下载失败");
-                }
+    }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String name = "";
-                    if (tag == 1) {
-                        name = "bixin.bin";
-                    } else {
-                        name = "bixin.zip";
-                    }
-                    File file = new File(String.format("%s/%s", getExternalCacheDir().getPath(), name));
-                    byte[] buf = new byte[2048];
-                    int len = 0;
-                    assert response.body() != null;
-                    try (InputStream is = response.body().byteStream(); FileOutputStream fos = new FileOutputStream(file)) {
-                        while ((len = is.read(buf)) != -1) {
-                            fos.write(buf, 0, len);
-                        }
-                        fos.flush();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+    private void updateFiles(String url) {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+        Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        String name = "";
+        if (tag == 1) {
+            name = "bixin.bin";
+        } else {
+            name = "bixin.zip";
         }
-
+        File file = new File(String.format("%s/%s", getExternalCacheDir().getPath(), name));
+        byte[] buf = new byte[2048];
+        int len = 0;
+        try (Response response = call.execute(); InputStream is = response.body().byteStream(); FileOutputStream fos = new FileOutputStream(file)) {
+            while ((len = is.read(buf)) != -1) {
+                fos.write(buf, 0, len);
+            }
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        runOnUiThread(() -> tetUpgradeTest.setText("升级文件下载完毕，正在升级至 v" + newNrfVersion));
+        if (isDfu) {
+            dfu();
+        }
     }
 
     private void showPromptMessage(@StringRes int id) {
@@ -236,6 +268,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        newNrfVersion = getIntent().getExtras().getString("nrf_version");
+        newLoaderVersion = getIntent().getExtras().getString("stm32_version");
         mTask = new MyTask();
         if ("bluetooth".equals(getIntent().getStringExtra("way"))) {
             mTask.execute("bluetooth");
@@ -286,7 +320,25 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onDfu(DfuEvent event) {
         if (event.getType() == DfuEvent.DFU_SHOW_PROCESS) {
-            dfu();
+            if (Strings.isNullOrEmpty(VersionUpgradeActivity.filePath)) {
+                SharedPreferences sharedPreferences = getSharedPreferences("devices", MODE_PRIVATE);
+                String device = sharedPreferences.getString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), "");
+                if (Strings.isNullOrEmpty(device)) {
+                    showPromptMessage(R.string.un_bonded);
+                    return;
+                }
+                HardwareFeatures features = new Gson().fromJson(device, HardwareFeatures.class);
+                String nrfVersion = features.getBleVer();
+                if (newNrfVersion.compareTo(nrfVersion) <= 0) {
+                    showPromptMessage(R.string.is_new);
+                    return;
+                } else {
+                    runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
+                    executorService.execute(() -> updateFiles(getIntent().getExtras().getString("nrf_url")));
+                }
+            } else {
+                dfu();
+            }
             EventBus.getDefault().removeStickyEvent(DfuEvent.class);
         }
     }

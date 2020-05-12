@@ -1237,12 +1237,12 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def init(self, path='android_usb', label="BixinKEY"):
+    def init(self, path='android_usb', label="BixinKEY", language='english'):
         self.client = None
         self.path = ''
         client = self.get_client(path=path)
         try:
-            response = client.reset_device(label=label)
+            response = client.reset_device(label=label, language=language)
         except Exception as e:
             raise BaseException(e)
         if response == "Device successfully initialized":

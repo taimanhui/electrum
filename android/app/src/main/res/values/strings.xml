@@ -603,4 +603,6 @@
     <string name="agent_tips">Using a proxy server,hide network traces</string>
     <string name="last_check_time">Last verified on </string>
     <string name="broad_fail">Broadcast failed</string>
+    <string name="is_new">当前已是最新版本</string>
+    <string name="un_bonded">设备未绑定</string>
 </resources>

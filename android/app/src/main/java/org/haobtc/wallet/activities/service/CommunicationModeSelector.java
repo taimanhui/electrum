@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -146,6 +147,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public static final String COMMUNICATION_MODE_NFC = "nfc";
     private CustomerUsbManager usbManager;
     private UsbDevice device;
+    private HardwareFeatures features;
 
 
     @Override
@@ -310,14 +312,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             executorService.submit(futureTask);
             feature = futureTask.get(5, TimeUnit.SECONDS).toString();
             HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
-            if (features.isBootloaderMode()) {
-                throw new Exception("bootloader mode");
-            }
             if (features.isInitialized()) {
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
-                if (!devices.contains(features.getDeviceId())) {
-                    devices.edit().putString(features.getDeviceId(), feature).apply();
-                }
+                devices.edit().putString(features.getBleName(), feature).apply();
             }
             return features;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
@@ -330,20 +327,29 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     private void handlerEverything(boolean isNFC) {
         isSign = false;
         isActive = false;
+        try {
+           features =  getFeatures(isNFC);
+        } catch (Exception e) {
+            return;
+        }
         if (VersionUpgradeActivity.TAG.equals(tag)) {
+            // stm32 firmware update by nfc or ble
             if ("hardware".equals(extras)) {
                 Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
                 intent.putExtra("way", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                intent.putExtras(getIntent().getExtras());
                 intent.putExtra("tag", 1);
                 startActivity(intent);
                 if (isNFC) {
                     new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 1000);
                 }
+                // ble firmware update by nfc only
             } else if ("ble".equals(extras)) {
                 if (isNFC) {
                     Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
                     intent.putExtra("way", COMMUNICATION_MODE_NFC);
                     intent.putExtra("tag", 2);
+                    intent.putExtras(getIntent().getExtras());
                     startActivity(intent);
                     new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
                 }
@@ -372,16 +378,11 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     }
 
     private void dealWithChangePin(boolean isNFC) {
-        HardwareFeatures features;
-        try {
-            features = getFeatures(isNFC);
-        } catch (Exception e) {
-            if ("bootloader mode".equals(e.getMessage())) {
+            if (features.isBootloaderMode()) {
                 Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
                 finish();
+                return;
             }
-            return;
-        }
         if (features.isInitialized()) {
             Intent intent = new Intent(this, PinSettingActivity.class);
             if (SettingActivity.TAG_CHANGE_PIN.equals(tag)) {
@@ -403,14 +404,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
      * @param isNFC  which communication way we use
      * */
     private void dealWithWipeDevice(boolean isNFC) {
-        HardwareFeatures features;
-        try {
-            features = getFeatures(isNFC);
-        } catch (Exception e) {
-            if ("bootloader mode".equals(e.getMessage())) {
-                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
-                finish();
-            }
+        if (features.isBootloaderMode()) {
+            Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+            finish();
             return;
         }
         if (features.isInitialized()) {
@@ -428,14 +424,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
      * @param isNFC  which communication way we use
      * */
     private void dealWithBusiness(boolean isNFC) {
-        HardwareFeatures features;
-        try {
-            features = getFeatures(isNFC);
-        } catch (Exception e) {
-            if ("bootloader mode".equals(e.getMessage())) {
-                Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
-                finish();
-            }
+        if (features.isBootloaderMode()) {
+            Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
+            finish();
             return;
         }
         boolean isInit = features.isInitialized();//isInit -->  Judge whether it is activated
@@ -514,7 +505,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     }
 
     public ReadingOrSendingDialogFragment showReadingDialog(int res) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
         ReadingOrSendingDialogFragment fragment = new ReadingOrSendingDialogFragment(res);
         fragment.show(getSupportFragmentManager(), "");
         return fragment;
@@ -531,7 +522,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doInit(InitEvent event) {
         if ("Activate".equals(event.getName())) {
-            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+            SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+            String locate = preferences.getString("language", "");
+            String language = "English".equals(locate) ? "english" : "chinese";
+            new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "BiXinKEY", language);
         }
     }
 

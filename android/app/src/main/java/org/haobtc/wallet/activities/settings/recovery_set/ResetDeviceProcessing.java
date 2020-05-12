@@ -83,6 +83,7 @@ public class ResetDeviceProcessing extends BaseActivity {
         //                startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
         //                finish();
         //                break;
+        EventBus.getDefault().removeStickyEvent(ResultEvent.class);
         if ("0".equals(resultEvent.getResult())) {
             Log.d("RESET", "恢复出厂设置失败");
             Drawable drawableStart = getDrawable(R.drawable.shibai);

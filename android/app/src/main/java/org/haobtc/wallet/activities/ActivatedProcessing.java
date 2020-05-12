@@ -101,6 +101,7 @@ public class ActivatedProcessing extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showProcessing(ResultEvent resultEvent) {
         Log.i("SingleSigWalletCreator", "-------------getResult(): "+resultEvent.getResult());
+        EventBus.getDefault().removeStickyEvent(ResultEvent.class);
         switch (resultEvent.getResult()) {
             case "1":
                 Drawable drawableStart = getDrawable(R.drawable.chenggong);

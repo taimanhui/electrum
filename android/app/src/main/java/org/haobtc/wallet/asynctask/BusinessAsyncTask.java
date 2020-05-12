@@ -52,7 +52,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case GET_EXTEND_PUBLIC_KEY:
             case CHANGE_PIN:
             case WIPE_DEVICE:
-            case INIT_DEVICE:
             case BACK_UP:
             case SIGN_TX:
                 try {
@@ -62,6 +61,14 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                     onException(e);
                 }
                 break;
+            case INIT_DEVICE:
+                try {
+                    result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3]).toString();
+                } catch (Exception e) {
+                    cancel(true);
+                    onException(e);
+                }
+
         }
         return result;
     }

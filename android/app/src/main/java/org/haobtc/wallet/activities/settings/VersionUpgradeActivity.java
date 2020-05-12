@@ -2,7 +2,8 @@ package org.haobtc.wallet.activities.settings;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,23 +16,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.google.common.base.Strings;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -42,11 +39,6 @@ import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
 
@@ -65,10 +57,20 @@ public class VersionUpgradeActivity extends BaseActivity {
     public final static String TAG = VersionUpgradeActivity.class.getSimpleName();
     @BindView(R.id.btn_import_file)
     Button btnImportFile;
+    @BindView(R.id.stm32_version_tip)
+    TextView stm32VersionTip;
+    @BindView(R.id.stm32_version_detail)
+    TextView stm32VersionDetail;
+    @BindView(R.id.nrf_version_tip)
+    TextView nrfVersionTip;
+    @BindView(R.id.nrf_version_detail)
+    TextView nrfVersionDetail;
+
     private int checkWitch = 1;
     public static final String UPDATE_PROCESS = "org.haobtc.wallet.activities.settings.percent";
     private RxPermissions rxPermissions;
     public static String filePath;
+    private Bundle bundle;
 
     @Override
     public int getLayoutId() {
@@ -82,8 +84,17 @@ public class VersionUpgradeActivity extends BaseActivity {
         Intent intent = getIntent();
         String firmwareVersion = intent.getStringExtra("firmwareVersion");
         String bleVerson = intent.getStringExtra("bleVerson");
-        tetFirmware.setText(firmwareVersion);
-        tetBluetooth.setText(bleVerson);
+        bundle = intent.getExtras();
+        if (bundle != null) {
+            firmwareVersion = bundle.getString("stm32_version");
+            bleVerson = bundle.getString("nrf_version");
+            stm32VersionTip.setText(String.format("V%s 版本更新", firmwareVersion));
+            nrfVersionTip.setText(String.format("V%s 版本更新", bleVerson));
+            stm32VersionDetail.setText(bundle.getString("stm32_description"));
+            nrfVersionDetail.setText(bundle.getString("nrf_description"));
+        }
+        tetFirmware.setText(String.format("v%s", firmwareVersion));
+        tetBluetooth.setText(String.format("v%s", bleVerson));
 
     }
 
@@ -117,6 +128,7 @@ public class VersionUpgradeActivity extends BaseActivity {
             }
         });
     }
+
     @SingleClick(value = 5000)
     @OnClick({R.id.img_back, R.id.btn_toUpgrade, R.id.btn_import_file})
     public void onViewClicked(View view) {
@@ -126,30 +138,28 @@ public class VersionUpgradeActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_toUpgrade:
-                if (Strings.isNullOrEmpty(filePath)) {
-                    getUpdateInfo();
-                } else {
                     switch (checkWitch) {
                         case 0:
                             mToast(getString(R.string.please_choose_firmware));
                             break;
                         case 1:
                             Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("tag", TAG);
+                            intent.putExtras(bundle);
                             intent.putExtra("extras", "hardware");
                             startActivity(intent);
                             break;
                         case 2:
                             Intent intent1 = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
-                            intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent1.putExtra("tag", TAG);
+                            intent1.putExtras(bundle);
                             intent1.putExtra("extras", "ble");
                             startActivity(intent1);
                             isDfu = true;
                             break;
                     }
-                }
                 break;
             case R.id.btn_import_file:
                 rxPermissions
@@ -170,72 +180,16 @@ public class VersionUpgradeActivity extends BaseActivity {
                 break;
         }
     }
-    private void getUpdateInfo() {
-        // version_testnet.json version_regtest.json
-        String appId = BuildConfig.APPLICATION_ID;
-        String urlPrefix = "https://key.bixin.com/";
-        String url = "";
-        if (appId.endsWith("mainnet")) {
-            url = urlPrefix + "version.json";
-        } else if (appId.endsWith("testnet")) {
-            url = urlPrefix + "version_testnet.json";
-        } else if(appId.endsWith("regnet")) {
-            url = urlPrefix + "version_regtest.json";
-        }
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_LONG).show());
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(VersionUpgradeActivity.this, "获取更新信息失败", Toast.LENGTH_LONG).show());
-            }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                assert response.body() != null;
-                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-                String locate = preferences.getString("language", "");
-                String info = response.body().string();
-                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
-                String urlNrf = updateInfo.getNrf().getUrl();
-                String versionNrf = updateInfo.getNrf().getVersion();
-                String versionStm32 = updateInfo.getStm32().getBootloaderVersion().toString();
-                String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
-                String urlStm32 = updateInfo.getStm32().getUrl();
-                String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
-                switch (checkWitch) {
-                    case 0:
-                        mToast(getString(R.string.please_choose_firmware));
-                        break;
-                    case 1:
-                        Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("tag", TAG);
-                        intent.putExtra("extras", "hardware");
-                        startActivity(intent);
-                        break;
-                    case 2:
-                        Intent intent1 = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent1.putExtra("tag", TAG);
-                        intent1.putExtra("extras", "ble");
-                        startActivity(intent1);
-                        isDfu = true;
-                        break;
-                }
-            }
-        });
-    }
     @Subscribe(threadMode = ThreadMode.POSTING, sticky = true)
     public void doDfu(DfuEvent dfuEvent) {
         if (dfuEvent.getType() == DfuEvent.START_DFU) {
             Intent intent = new Intent(this, UpgradeBixinKEYActivity.class);
             intent.putExtra("tag", 2);
+            intent.putExtras(bundle);
             startActivity(intent);
             EventBus.getDefault().removeStickyEvent(DfuEvent.class);
-            EventBus.getDefault().postSticky(new DfuEvent(1));
+            new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new DfuEvent(1)), 2000);
         }
     }
 
@@ -308,6 +262,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         super.onResume();
         DfuServiceListenerHelper.registerProgressListener(this, dfuProgressListener);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
