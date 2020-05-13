@@ -95,7 +95,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
                 String url = updateInfo.getAPK().getUrl();
                 String versionName = updateInfo.getAPK().getVersionName();
                 int versionCode = updateInfo.getAPK().getVersionCode();
-                String size = updateInfo.getAPK().getSize();
+                String size = updateInfo.getAPK().getSize().replace("M", "");
                 String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
                runOnUiThread(() -> attemptUpdate(url, versionName, versionCode, size, description));
             }

@@ -176,7 +176,6 @@
                             android:layout_weight="1"
                             android:gravity="center_vertical|end"
                             android:singleLine="true"
-                            android:text="@string/v_1_2_3"
                             android:textColor="@color/graytext_color"
                             android:textSize="@dimen/sp_13" />
 

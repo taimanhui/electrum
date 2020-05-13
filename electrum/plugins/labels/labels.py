@@ -328,7 +328,7 @@ class LabelsPlugin(BasePlugin):
         wallet_id = wallet_data[2]
         try:
             response = await self.do_get("/transactions/%s"%(wallet_id))
-            print("respose ---11111---= %s" %response)
+            # print("respose ---11111---= %s" %response)
         except Exception as e:
             raise ErrorConnectingServer(e) from e
         if not response.__contains__("Transactions"):
@@ -347,7 +347,7 @@ class LabelsPlugin(BasePlugin):
                 continue
             out.append(result)
         self.logger.info(f"received {len(response)} transactions")
-        print("tx info is %s---" %json.dumps(out))
+        # print("tx info is %s---" %json.dumps(out))
         return json.dumps(out)
         
 

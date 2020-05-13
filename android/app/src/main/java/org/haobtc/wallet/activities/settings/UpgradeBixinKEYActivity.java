@@ -107,7 +107,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected void onPreExecute() {
             progressUpgrade.setIndeterminate(true);
-            tetUpgradeTest.setText(getString(R.string.upgradeing));
+            switch (tag) {
+                case 1:
+                    tetUpgradeTest.setText("v" + getIntent().getExtras().getString("stm32_version"));
+                    break;
+                case 2:
+                    tetUpgradeTest.setText("v" + getIntent().getExtras().getString("nrf_version"));
+            }
 
         }
 
@@ -118,15 +124,18 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                     HardwareFeatures features = getFeatures(params[0]);
                     String nrfVersion = features.getBleVer();
                     String loaderVersion = String.format("%s.%s.%s", features.getMajorVersion(), features.getMinorVersion(), features.getPatchVersion());
+                    System.out.println("==============path" + tag);
                     switch (tag) {
                         case 1:
                             assert newLoaderVersion != null;
                             if (newLoaderVersion.compareTo(loaderVersion) <= 0) {
+                                System.out.println("==============path1" + tag);
                                 isNew = true;
                                 cancel(true);
                             } else {
                                 runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
                                 updateFiles(getIntent().getExtras().getString("stm32_url"));
+                                doUpdate(params[0]);
                             }
                             break;
                         case 2:
@@ -137,6 +146,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                             } else {
                                 runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
                                 updateFiles(getIntent().getExtras().getString("nrf_url"));
+                                doUpdate(params[0]);
                             }
                     }
                 } else {

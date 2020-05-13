@@ -462,6 +462,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                         //hide wallet sign transaction -->set_pass_state
                         customerUI.callAttr("set_pass_state", 1);
                     }
+                    System.out.println("=================get_xpub===========");
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.SIGN_TX, extras);
                 }
                 // todo: remove the if , pin always required
