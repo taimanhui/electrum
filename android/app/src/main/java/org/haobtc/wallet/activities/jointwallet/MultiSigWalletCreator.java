@@ -464,7 +464,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                         }
                     }).dispose();
 
-
         });
         //stick
         view.findViewById(R.id.paste_cosigner_popup1).setOnClickListener(v -> {
@@ -515,6 +514,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                 }
                 if (!exist) {
                     addBixinKeyEvent = new AddBixinKeyEvent();
+                    addBixinKeyEvent.setKeyname(strBixinname);
                     addBixinKeyEvent.setKeyaddress(strSweep);
                     addEventsDatas.add(addBixinKeyEvent);
                     dialogBtoms.cancel();
@@ -565,14 +565,12 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                     }
                 }
             });
-
         });
 
         //cancel dialog
         view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
             dialogBtoms.cancel();
         });
-
 
         dialogBtoms.setContentView(view);
         Window window = dialogBtoms.getWindow();
@@ -642,6 +640,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                 }
                 if (!exist) {
                     addBixinKeyEvent = new AddBixinKeyEvent();
+                    addBixinKeyEvent.setKeyname(strBixinname);
                     addBixinKeyEvent.setKeyaddress(strSweep);
                     addEventsDatas.add(addBixinKeyEvent);
                     dialogBtoms.cancel();

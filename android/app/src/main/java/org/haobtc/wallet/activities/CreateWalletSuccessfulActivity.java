@@ -88,7 +88,6 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
                 Toast.makeText(CreateWalletSuccessfulActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_enter_wallet:
-                EventBus.getDefault().post(new FirstEvent("11"));
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 finishAffinity();

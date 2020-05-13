@@ -603,6 +603,10 @@
     <string name="agent_tips">Using a proxy server,hide network traces</string>
     <string name="last_check_time">Last verified on </string>
     <string name="broad_fail">Broadcast failed</string>
-    <string name="is_new">当前已是最新版本</string>
-    <string name="un_bonded">设备未绑定</string>
+    <string name="is_new">Is currently the latest version</string>
+    <string name="un_bonded">Device not bound</string>
+    <string name="if_set_PIN">Set pin?</string>
+    <string name="not_yet">Not yet</string>
+    <string name="goto_set">To set</string>
+    <string name="some_wallet_existence">Some wallets already exist, import completed</string>
 </resources>

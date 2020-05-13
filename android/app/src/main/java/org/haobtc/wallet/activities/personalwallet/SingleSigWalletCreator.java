@@ -361,7 +361,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         intent.putExtra("flagTag", "personal");
         intent.putExtra("strBixinname", xpub);
         startActivity(intent);
-        finish();
+//        finish();
     }
 
     @Override

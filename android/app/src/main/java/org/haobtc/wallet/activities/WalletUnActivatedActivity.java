@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +24,8 @@ public class WalletUnActivatedActivity extends BaseActivity {
     @BindView(R.id.button_recover)
     Button buttonRecover;
     private String tag_xpub = "";
+    private SharedPreferences.Editor edit;
+    private boolean active_set_pin;
 
 
     @Override
@@ -32,6 +35,9 @@ public class WalletUnActivatedActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
+        active_set_pin = preferences.getBoolean("Active_set_PIN", false);
         Intent intent = getIntent();
         tag_xpub = intent.getStringExtra("tag_Xpub");
     }
@@ -50,8 +56,12 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.button_activate:
+                if (!active_set_pin) {
+                    edit.putBoolean("Active_set_PIN",true);
+                    edit.apply();
+                }
                 Intent intent = new Intent(this, ActivatedProcessing.class);
-                intent.putExtra("tag_xpub",tag_xpub);
+                intent.putExtra("tag_xpub", tag_xpub);
                 startActivity(intent);
                 finish();
                 break;

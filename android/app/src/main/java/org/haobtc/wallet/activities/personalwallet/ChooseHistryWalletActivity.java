@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.personalwallet;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import org.haobtc.wallet.adapter.ImportHistryWalletAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.ImportHistryWalletBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
+import org.haobtc.wallet.event.BatchInputWalletEvent;
 import org.haobtc.wallet.event.InputHistoryWalletEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
@@ -31,6 +33,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -48,12 +51,13 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     @BindView(R.id.test_no_wallet)
     TextView testNoWallet;
     private String histry_xpub;
-    private ArrayList<AddBixinKeyEvent> xpubList;
-    private boolean chooseWallet = false;
     private String keyaddress;
     private String walletType;
     private ArrayList<InputHistoryWalletEvent> walletList;
     private InputHistoryWalletEvent inputHistoryWalletEvent;
+    private ImportHistryWalletAdapter histryWalletAdapter;
+    private ArrayList<InputHistoryWalletEvent> list;
+    private ArrayList<ArrayList<Object>> listDates;
 
     @Override
     public int getLayoutId() {
@@ -71,77 +75,10 @@ public class ChooseHistryWalletActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        xpubList = new ArrayList<>();
+        listDates = new ArrayList<>();//choose wallet data list
+        walletList = new ArrayList<>();
         //get histry wallet
         getHistryWallet();
-
-//        walletList = new ArrayList<>();
-//
-//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//        inputHistoryWalletEvent.setName("共管钱包");
-//        inputHistoryWalletEvent.setType("2-3");
-//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
-//        walletList.add(inputHistoryWalletEvent);
-//
-//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//        inputHistoryWalletEvent.setName("共管钱包");
-//        inputHistoryWalletEvent.setType("3-5");
-//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
-//        walletList.add(inputHistoryWalletEvent);
-//
-//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//        inputHistoryWalletEvent.setName("name");
-//        inputHistoryWalletEvent.setType("1-1");
-//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
-//        walletList.add(inputHistoryWalletEvent);
-//
-//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//        inputHistoryWalletEvent.setName("name");
-//        inputHistoryWalletEvent.setType("1-5");
-//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
-//        walletList.add(inputHistoryWalletEvent);
-//
-//        inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//        inputHistoryWalletEvent.setName("table");
-//        inputHistoryWalletEvent.setType("1-1");
-//        inputHistoryWalletEvent.setXpubs("xpubsxpubsxpubsxpubsxpubsxpubsxpubs");
-//        walletList.add(inputHistoryWalletEvent);
-//
-//        ArrayList<InputHistoryWalletEvent> list = new ArrayList<>();
-//        boolean flag = false;
-//        for (int i = 0; i < walletList.size(); i++) {
-//            String c = walletList.get(i).getName();
-//            if (list.size() > 0) {
-//                InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//                int index = 1;
-//                for (int j = 0; j < list.size(); j++) {
-//                    if (list.get(j).getName().contains(c)) {
-//                        list.get(j).setName(c + "(" + index + ")");
-//                        flag = true;
-//                        index++;
-//                    }
-//                }
-//                inputHistoryWalletEvent.setType(walletList.get(i).getType());
-//                inputHistoryWalletEvent.setXpubs(walletList.get(i).getXpubs());
-//                if (flag) {
-//                    inputHistoryWalletEvent.setName(c + "(" + index + ")");
-//                    list.add(inputHistoryWalletEvent);
-//                } else {
-//                    inputHistoryWalletEvent.setName(c);
-//                    list.add(inputHistoryWalletEvent);
-//                }
-//            } else {
-//                InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
-//                inputHistoryWalletEvent.setName(c);
-//                inputHistoryWalletEvent.setType(walletList.get(i).getType());
-//                inputHistoryWalletEvent.setXpubs(walletList.get(i).getXpubs());
-//                list.add(inputHistoryWalletEvent);
-//            }
-//            flag = false;
-//        }
-//
-//        ImportHistryWalletAdapter histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, list);
-//        reclImportWallet.setAdapter(histryWalletAdapter);
 
     }
 
@@ -151,7 +88,6 @@ public class ChooseHistryWalletActivity extends BaseActivity {
             infoFromServer = Daemon.commands.callAttr("get_wallet_info_from_server", histry_xpub);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("infoFromServer", "Exception: " + e.getMessage());
         }
         if (infoFromServer != null) {
             String strfromServer = infoFromServer.toString();
@@ -163,24 +99,48 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         walletType = jsonObject.getString("walletType");
                         String xpubs = jsonObject.getString("xpubs");
-                        AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-                        addBixinKeyEvent.setKeyname(walletType);
-                        addBixinKeyEvent.setKeyaddress(xpubs);
-                        xpubList.add(addBixinKeyEvent);
-
-                        ImportHistryWalletAdapter histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, xpubList);
-                        reclImportWallet.setAdapter(histryWalletAdapter);
-                        histryWalletAdapter.setOnItemClickListener(new ImportHistryWalletAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(int position) {
-                                btnFinish.setBackground(getDrawable(R.drawable.little_radio_blue));
-                                btnFinish.setEnabled(true);
-                                chooseWallet = true;
-                                keyaddress = xpubList.get(position).getKeyaddress();
-                                walletType = xpubList.get(position).getKeyname();
-                            }
-                        });
+                        String name = jsonObject.getString("walletName");
+                        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+                        inputHistoryWalletEvent.setType(walletType);
+                        inputHistoryWalletEvent.setXpubs(xpubs);
+                        inputHistoryWalletEvent.setName(name);
+                        walletList.add(inputHistoryWalletEvent);
                     }
+
+                    list = new ArrayList<>();
+                    boolean flag = false;
+                    for (int i = 0; i < walletList.size(); i++) {
+                        String c = walletList.get(i).getName();
+                        if (list.size() > 0) {
+                            InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
+                            int index = 1;
+                            for (int j = 0; j < list.size(); j++) {
+                                if (list.get(j).getName().contains(c)) {
+                                    list.get(j).setName(c + "(" + index + ")");
+                                    flag = true;
+                                    index++;
+                                }
+                            }
+                            inputHistoryWalletEvent.setType(walletList.get(i).getType());
+                            inputHistoryWalletEvent.setXpubs(walletList.get(i).getXpubs());
+                            if (flag) {
+                                inputHistoryWalletEvent.setName(c + "(" + index + ")");
+                                list.add(inputHistoryWalletEvent);
+                            } else {
+                                inputHistoryWalletEvent.setName(c);
+                                list.add(inputHistoryWalletEvent);
+                            }
+                        } else {
+                            InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
+                            inputHistoryWalletEvent.setName(c);
+                            inputHistoryWalletEvent.setType(walletList.get(i).getType());
+                            inputHistoryWalletEvent.setXpubs(walletList.get(i).getXpubs());
+                            list.add(inputHistoryWalletEvent);
+                        }
+                        flag = false;
+                    }
+                    histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, list);
+                    reclImportWallet.setAdapter(histryWalletAdapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -198,54 +158,41 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_Finish:
-                setWalletnameDialog();
+                ArrayList<Object> onlyData = new ArrayList<>();
+                listDates.clear();
+                Map<Integer, Boolean> map = histryWalletAdapter.getMap();
+                for (int i = 0; i < list.size(); i++) {
+                    onlyData = new ArrayList<>();
+                    if (map.get(i)) {
+                        String type = list.get(i).getType();
+                        String m = type.substring(0, type.indexOf("-"));
+                        String n = type.substring(type.indexOf("-") + 1);
+                        onlyData.add(Integer.parseInt(m));
+                        onlyData.add(Integer.parseInt(n));
+                        onlyData.add(list.get(i).getName());
+                        onlyData.add(list.get(i).getXpubs());
+                        listDates.add(onlyData);
+                    }
+                }
+                importWallet(new Gson().toJson(listDates));
                 break;
         }
     }
 
-    private void setWalletnameDialog() {
-        if (chooseWallet) {
-            View view1 = LayoutInflater.from(ChooseHistryWalletActivity.this).inflate(R.layout.set_walletname, null, false);
-            AlertDialog alertDialog = new AlertDialog.Builder(ChooseHistryWalletActivity.this).setView(view1).create();
-            EditText walletName = view1.findViewById(R.id.inputName);
-            view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-                String wallet_name = walletName.getText().toString();
-                importWallet(wallet_name);
-
-            });
-            view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
-
-                alertDialog.dismiss();
-            });
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.show();
-        } else {
-            mToast(getString(R.string.please_import_wallet));
-        }
-
-    }
-
-    private void importWallet(String wallet_name) {
-        if (walletType.contains("-")) {
-            //signum
-            String strsigNum = walletType.substring(0, walletType.indexOf("-"));
-            int sigNum = Integer.parseInt(strsigNum);
-            //public  num
-            String strpubNum = walletType.substring(walletType.indexOf("-") + 1);
-            int pubNum = Integer.parseInt(strpubNum);
-            try {
-                Daemon.commands.callAttr("import_create_hw_wallet", wallet_name, sigNum, pubNum, keyaddress);
-            } catch (Exception e) {
-                e.printStackTrace();
-                String message = e.getMessage();
-                if ("BaseException: file already exists at path".equals(message)) {
-                    mToast(getString(R.string.changewalletname));
-                } else if (message.contains("The same xpubs have create wallet")) {
-                    mToast(getString(R.string.xpub_have_wallet));
-                }
-                return;
+    private void importWallet(String listDates) {
+        try {
+            PyObject bulk_create_wallet = Daemon.commands.callAttr("bulk_create_wallet", listDates);
+            String errorStr = bulk_create_wallet.toString();
+            if (!TextUtils.isEmpty(errorStr)){
+                mToast(getString(R.string.some_wallet_existence));
             }
-            mIntent(MainActivity.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mToast(e.getMessage());
+            return;
         }
+        mIntent(MainActivity.class);
+
     }
 }

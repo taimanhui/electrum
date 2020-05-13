@@ -549,7 +549,7 @@ class AndroidCommands(commands.Commands):
             try:
                 self.import_create_hw_wallet(name, m, n, xpubs)
             except BaseException as e:
-                create_failed_into['name'] = str(e)
+                create_failed_into[name] = str(e)
         return json.dumps(create_failed_into)
 
     def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False):

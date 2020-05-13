@@ -106,8 +106,7 @@
             android:layout_width="343dp"
             android:layout_height="@dimen/dp_40"
             android:layout_centerInParent="true"
-            android:enabled="false"
-            android:background="@drawable/little_radio_qian"
+            android:background="@drawable/little_radio_blue"
             android:text="@string/confirm_import"
             android:textAllCaps="false"
             android:textColor="@android:color/white">

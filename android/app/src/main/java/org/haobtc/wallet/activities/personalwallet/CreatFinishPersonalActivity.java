@@ -1,6 +1,9 @@
 package org.haobtc.wallet.activities.personalwallet;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
@@ -18,6 +21,8 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.CreateWalletSuccessfulActivity;
+import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.aop.SingleClick;
@@ -51,6 +56,8 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     private ArrayList<AddBixinKeyEvent> keyList;
     private String strBixinname;
     private Intent intent;
+    private SharedPreferences.Editor edit;
+    private boolean active_set_pin;
 
     @Override
     public int getLayoutId() {
@@ -60,6 +67,10 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
+        //Whether to set pin after activation
+        active_set_pin = preferences.getBoolean("Active_set_PIN", false);
         intent = getIntent();
         walletNames = intent.getStringExtra("walletNames");
         flagTag = intent.getStringExtra("flagTag");
@@ -69,12 +80,40 @@ public class CreatFinishPersonalActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        if (active_set_pin) {
+            edit.putBoolean("Active_set_PIN", false);
+            edit.apply();
+            //show set PIN dialog
+            showSetPINDialog();
+        }
+
         keyList = new ArrayList<>();
         //get wallet QR code
         mGeneratecode();
         //all bixinkey
         checkAllBixinkey();
 
+    }
+
+    //show Whether to set pin after activation dialog
+    private void showSetPINDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreatFinishPersonalActivity.this);
+        builder.setTitle(getString(R.string.if_set_PIN));
+        builder.setNegativeButton(getString(R.string.not_yet), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                builder.create().cancel();
+            }
+        });
+        builder.setPositiveButton(getString(R.string.goto_set), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(CreatFinishPersonalActivity.this, SettingActivity.class);
+                intent.putExtra("ActiveSetPIN", "ActiveSetPIN");
+                startActivity(intent);
+            }
+        });
+        builder.create().show();
     }
 
     private void checkAllBixinkey() {

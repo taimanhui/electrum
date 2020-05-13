@@ -18,6 +18,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.BuildConfig;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
@@ -77,6 +78,7 @@ public class SettingActivity extends BaseActivity {
     private boolean bluetoothStatus;
     private SharedPreferences preferences;
     public String pin = "";
+    private String activeSetPIN;
 
     @Override
     public int getLayoutId() {
@@ -93,6 +95,13 @@ public class SettingActivity extends BaseActivity {
             bluetoothStatusText.setText(getString(R.string.close));
         } else {
             bluetoothStatusText.setText(getString(R.string.open));
+        }
+        activeSetPIN = getIntent().getStringExtra("ActiveSetPIN");
+        if ("ActiveSetPIN".equals(activeSetPIN)){
+            Intent intent1 = new Intent(this, CommunicationModeSelector.class);
+            intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent1.putExtra("tag", TAG_CHANGE_PIN);
+            startActivity(intent1);
         }
     }
 
@@ -134,7 +143,12 @@ public class SettingActivity extends BaseActivity {
                 mIntent(AboutActivity.class);
                 break;
             case R.id.img_back:
-                finish();
+                String FIRST_RUN = "is_first_run";
+                if (preferences.getBoolean(FIRST_RUN, false)) {
+                    finish();
+                }else if ("ActiveSetPIN".equals(activeSetPIN)){
+                    mIntent(MainActivity.class);
+                }
                 break;
             case R.id.tet_Faru:
                 mIntent(CurrencyActivity.class);
