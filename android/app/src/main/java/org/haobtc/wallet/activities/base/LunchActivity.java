@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import com.chaquo.python.Kwarg;
+import com.chaquo.python.PyObject;
+
 import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
@@ -11,6 +13,8 @@ import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.GuideActivity;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+
+import java.util.Optional;
 
 
 public class LunchActivity extends BaseActivity {
@@ -92,7 +96,6 @@ public class LunchActivity extends BaseActivity {
             try {
                 Daemon.commands = Global.guiConsole.callAttr("AndroidCommands", new Kwarg("callback", Daemon.getInstance()));
             } catch (Exception ignored) {
-                Daemon.commands.callAttr("start", Daemon.getInstance());
                 ignored.printStackTrace();
             }
             //Daemon.commands.callAttr("start", Daemon.getInstance());

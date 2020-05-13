@@ -54,4 +54,6 @@
     <dimen name="dp_86">86dp</dimen>
     <dimen name="sp_53">53dp</dimen>
     <dimen name="dp_117">117dp</dimen>
+    <dimen name="dp_36">36dp</dimen>
+    <dimen name="dp_52">52dp</dimen>
 </resources>

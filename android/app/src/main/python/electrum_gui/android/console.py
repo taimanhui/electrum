@@ -406,7 +406,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         self.daemon.stop_wallet(self._wallet_path(name))
 
-    ###syn server
+
     def set_syn_server(self, flag): 
         try:
             self.label_flag = flag
@@ -416,7 +416,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    ##set callback##############################
+    # #set callback##############################
     def set_callback_fun(self, callbackIntent):
         self.callbackIntent = callbackIntent
 
@@ -542,7 +542,6 @@ class AndroidCommands(commands.Commands):
             print(f"eeeeeeeeeeeeeee {str(e)}")
             raise BaseException(e)
         
-
     def bulk_create_wallet(self, wallets_info):
         wallets_list = json.loads(wallets_info)
         create_failed_into = {}
@@ -577,7 +576,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    ##create tx#########################
+    # #create tx#########################
     def get_default_fee_status(self):
         try:
             return self.config.get_fee_status()
@@ -731,7 +730,7 @@ class AndroidCommands(commands.Commands):
             text += ' (%s)' % x
         return text
 
-    ##proxy
+    # #proxy
     def set_proxy(self, proxy_mode, proxy_host, proxy_port, proxy_user, proxy_password):
         try:
             net_params = self.network.get_parameters()
@@ -748,7 +747,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    ##qr api
+    # #qr api
     def get_raw_tx_from_qr_data(self, data):
         try:
             from electrum.util import bh2u
@@ -774,7 +773,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    ## get tx info from raw_tx
+    # # get tx info from raw_tx
     def get_tx_info_from_raw(self, raw_tx):
         try:
             print("console:get_tx_info_from_raw:tx===%s" % raw_tx)
@@ -1113,8 +1112,8 @@ class AndroidCommands(commands.Commands):
             sig = self.wallet.sign_message(address, message, password)
             import base64
             return base64.b64encode(sig).decode('ascii')
-        except BaseException as e:
-            raise e
+        except Exception as e:
+            raise BaseException(e)
 
     def verify_message(self, address, message, signature):
         address = address.strip()
@@ -1146,7 +1145,7 @@ class AndroidCommands(commands.Commands):
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.push_tx(self.wallet, 'signtx', tx.txid(), sign_tx.serialize_as_bytes().hex())
             return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
-        except BaseException as e:
+        except Exception as e:
             raise BaseException(e)
 
     ##connection with terzorlib#########################

@@ -609,4 +609,8 @@
     <string name="not_yet">Not yet</string>
     <string name="goto_set">To set</string>
     <string name="some_wallet_existence">Some wallets already exist, import completed</string>
+    <string name="get_xpub">查看BiXinKEY扩展公钥</string>
+    <string name="check_xpub">查看扩展公钥</string>
+    <string name="copy_xpub">复制扩展公钥</string>
+    <string name="diy_hardware">自定义固件文件</string>
 </resources>

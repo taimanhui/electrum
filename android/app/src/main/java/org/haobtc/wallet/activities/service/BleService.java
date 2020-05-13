@@ -169,6 +169,9 @@ public class BleService extends Service {
             }
             mBleDevice = BleDeviceRecyclerViewAdapter.mBleDevice;
             bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mBleDevice.getBleAddress());
+            // 禁止同时连接多个BiXinKEY设备
+            mBle.getConnetedDevices().stream().filter(bleDevice -> !bleDevice.getBleAddress().equals(mBleDevice.getBleAddress()))
+                    .forEach(bleDevice -> mBle.disconnect(bleDevice));
             if (isDfu) {
                 mBle.disconnectAll();
                 new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new DfuEvent(DfuEvent.START_DFU)), 2000);

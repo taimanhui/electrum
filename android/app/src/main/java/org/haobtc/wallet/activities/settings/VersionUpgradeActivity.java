@@ -56,7 +56,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     CheckBox checkBoxBluetooth;
     public final static String TAG = VersionUpgradeActivity.class.getSimpleName();
     @BindView(R.id.btn_import_file)
-    Button btnImportFile;
+    TextView btnImportFile;
     @BindView(R.id.stm32_version_tip)
     TextView stm32VersionTip;
     @BindView(R.id.stm32_version_detail)

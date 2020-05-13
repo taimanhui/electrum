@@ -12,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.azhon.appupdate.utils.ApkUtil;
-import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,7 +41,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
 
 public class SettingActivity extends BaseActivity {
@@ -61,7 +59,7 @@ public class SettingActivity extends BaseActivity {
     TextView tetVerification;
     @BindView(R.id.tetAbout)
     TextView tetAbout;
-    @BindView(R.id.img_back)
+    @BindView(R.id.img_back_1)
     ImageView imgBack;
     @BindView(R.id.tet_bixinKey)
     TextView tetBixinKey;
@@ -75,6 +73,8 @@ public class SettingActivity extends BaseActivity {
     LinearLayout changePin;
     @BindView(R.id.hardware_update)
     LinearLayout hardwareUpdate;
+    @BindView(R.id.check_xpub)
+    TextView checkXpub;
     private boolean bluetoothStatus;
     private SharedPreferences preferences;
     public String pin = "";
@@ -113,7 +113,7 @@ public class SettingActivity extends BaseActivity {
 
 
     @SingleClick(value = 5000)
-    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update})
+    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back_1, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update, R.id.check_xpub})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_bixinKey:
@@ -142,12 +142,11 @@ public class SettingActivity extends BaseActivity {
             case R.id.tetAbout:
                 mIntent(AboutActivity.class);
                 break;
-            case R.id.img_back:
-                String FIRST_RUN = "is_first_run";
-                if (preferences.getBoolean(FIRST_RUN, false)) {
-                    finish();
-                }else if ("ActiveSetPIN".equals(activeSetPIN)){
+            case R.id.img_back_1:
+                if ("ActiveSetPIN".equals(activeSetPIN)) {
                     mIntent(MainActivity.class);
+                } else {
+                    finish();
                 }
                 break;
             case R.id.tet_Faru:
@@ -165,6 +164,14 @@ public class SettingActivity extends BaseActivity {
                 intent1.putExtra("tag", TAG_CHANGE_PIN);
                 startActivity(intent1);
                 break;
+            case R.id.check_xpub:
+                Intent intent2 = new Intent(this, CommunicationModeSelector.class);
+                intent2.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent2.putExtra("tag", "check_xpub");
+                startActivity(intent2);
+                break;
+
+
         }
     }
 
@@ -177,7 +184,7 @@ public class SettingActivity extends BaseActivity {
             url = urlPrefix + "version.json";
         } else if (appId.endsWith("testnet")) {
             url = urlPrefix + "version_testnet.json";
-        } else if(appId.endsWith("regnet")) {
+        } else if (appId.endsWith("regnet")) {
             url = urlPrefix + "version_regtest.json";
         }
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -200,8 +207,8 @@ public class SettingActivity extends BaseActivity {
                 String urlNrf = updateInfo.getNrf().getUrl();
                 String urlStm32 = updateInfo.getStm32().getUrl();
                 String versionNrf = updateInfo.getNrf().getVersion();
-                String versionStm32 = updateInfo.getStm32().getBootloaderVersion().toString().replace(",", ".");
-                versionStm32 = versionStm32.substring(1, versionStm32.length() -1).replaceAll("\\s+", "");
+                String versionStm32 = updateInfo.getStm32().getVersion().toString().replace(",", ".");
+                versionStm32 = versionStm32.substring(1, versionStm32.length() - 1).replaceAll("\\s+", "");
                 String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
                 String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
                 Bundle bundle = new Bundle();

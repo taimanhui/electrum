@@ -58,6 +58,7 @@ import org.haobtc.wallet.activities.personalwallet.PersonalMultiSigWalletCreator
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
+import org.haobtc.wallet.activities.settings.CheckXpubResultActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
@@ -67,6 +68,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.bean.XpubCheckResultEvent;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
 import org.haobtc.wallet.event.ConnectingEvent;
@@ -431,7 +433,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
         boolean isInit = features.isInitialized();//isInit -->  Judge whether it is activated
         if (isInit) {
-            if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
+            if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag) || "check_xpub".equals(tag)) {
                 // todo: remove the below pin about code
                 if (!features.isPinCached() && features.isPinProtection()) {
                     Intent intent = new Intent(this, PinSettingActivity.class);
@@ -676,6 +678,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             showErrorDialog(R.string.try_another_key, R.string.unpair);
         } else if ("BaseException: failed to recognize transaction encoding for txt: craft fury pig target diagram ...".equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
+        } else if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(e.getMessage())) {
+            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
         } else {
             showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
         }
@@ -692,7 +696,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             finish();
             return;
         }
-        if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
+        if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || HideWalletActivity.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag) || "check_xpub".equals(tag)) {
             // todo: 获取公钥
             xpub = s;
             if (ImportHistoryWalletActivity.TAG.equals(tag)) {
@@ -702,7 +706,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 finish();
             } else if (SingleSigWalletCreator.TAG.equals(tag)) {
                 EventBus.getDefault().post(new ReceiveXpub(xpub));
-            } else {
+            } else if ("check_xpub".equals(tag)) {
+                Intent intent = new Intent(this, CheckXpubResultActivity.class);
+                intent.putExtra("label", features.getLabel());
+                intent.putExtra("xpub", s);
+                startActivity(intent);
+            }else {
                 runOnUiThread(runnables.get(1));
                 finish();
             }

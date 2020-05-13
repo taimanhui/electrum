@@ -346,7 +346,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         BleDevice device = BleDeviceRecyclerViewAdapter.mBleDevice;
             final DfuServiceInitiator starter = new DfuServiceInitiator(device.getBleAddress());
             starter.setDeviceName(device.getBleName());
-            starter.setKeepBond(true);
+            starter.setKeepBond(false);
         /*
            Call this method to put Nordic nrf52832 into bootloader mode
         */

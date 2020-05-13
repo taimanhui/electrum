@@ -58,7 +58,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
         holder.mIdView.setText(mValues.get(position).getBleName() == null ?
                 mValues.get(position).getBleAddress() : mValues.get(position).getBleName());
         holder.mView.setOnClickListener(new View.OnClickListener() {
-            @SingleClick(value = 5000)
+            @SingleClick(value = 10000)
             @Override
             public void onClick(View v) {
                 mBleDevice = holder.device;

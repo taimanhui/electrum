@@ -101,7 +101,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
         //get transaction list
         if (!get_history_tx.isEmpty()) {
             String strHistory = get_history_tx.toString();
-            Log.i("strHistory", "onPage----: " + strHistory);
+           // Log.i("strHistory", "onPage----: " + strHistory);
             if (TextUtils.isEmpty(strHistory) || strHistory.length() == 2) {
                 tetNone.setVisibility(View.VISIBLE);
                 recyJylist.setVisibility(View.GONE);
