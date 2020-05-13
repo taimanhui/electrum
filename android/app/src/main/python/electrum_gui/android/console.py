@@ -407,13 +407,14 @@ class AndroidCommands(commands.Commands):
         self.daemon.stop_wallet(self._wallet_path(name))
 
     ###syn server
-    def set_syn_server(self, flag):
-        self.label_flag = flag
-        self.config.set_key('use_labels', bool(flag))
-        if self.label_flag:
-            self.label_plugin.load_wallet(self.wallet)
-
-
+    def set_syn_server(self, flag): 
+        try:
+            self.label_flag = flag
+            self.config.set_key('use_labels', bool(flag))
+            if self.label_flag and self.wallet and self.wallet.wallet_type != "standard":
+                self.label_plugin.load_wallet(self.wallet)
+        except Exception as e:
+            raise BaseException(e)
 
     ##set callback##############################
     def set_callback_fun(self, callbackIntent):
@@ -516,7 +517,7 @@ class AndroidCommands(commands.Commands):
     def pull_tx_infos(self):
         try:
             self._assert_wallet_isvalid()
-            if self.label_flag:
+            if self.label_flag and self.wallet.wallet_type != "standard":
                 data = self.label_plugin.pull_tx(self.wallet)
                 data_list = json.loads(data)
                 except_list = []
@@ -649,7 +650,7 @@ class AndroidCommands(commands.Commands):
         ret_data = {
             'tx': str(self.tx)
         }
-        if self.label_flag:
+        if self.label_flag and self.wallet.wallet_type != "standard":
             self.label_plugin.push_tx(self.wallet, 'createtx', tx.txid(), self.tx)
         json_str = json.dumps(ret_data)
         return json_str
@@ -891,8 +892,7 @@ class AndroidCommands(commands.Commands):
 
     ##get history
     def get_all_tx_list(self, search_type=None):
-        if self.label_flag:
-            self.pull_tx_infos()
+        self.pull_tx_infos()
         history_data = []
         try:
             history_info = self.get_history_tx()
@@ -1143,7 +1143,7 @@ class AndroidCommands(commands.Commands):
                 self.do_save(sign_tx)
             except:
                 pass
-            if self.label_flag:
+            if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.push_tx(self.wallet, 'signtx', tx.txid(), sign_tx.serialize_as_bytes().hex())
             return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
         except BaseException as e:
@@ -1552,7 +1552,7 @@ class AndroidCommands(commands.Commands):
             self.do_save(new_tx)
         except:
             pass
-        if self.label_flag:
+        if self.label_flag and self.wallet.wallet_type != "standard":
             self.label_plugin.push_tx(self.wallet, 'rbftx', new_tx.txid(), new_tx.serialize_as_bytes().hex(), tx_hash_old=tx_hash)
         # self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
         return json.dumps(out)
@@ -1615,7 +1615,7 @@ class AndroidCommands(commands.Commands):
                 "balance": self.format_amount(c) + ' (%s)' % fait,
                 "name": name
             }
-            if self.label_flag:
+            if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.load_wallet(self.wallet)
                 # if self.sync_timer is not None:
                 #     self.sync_timer.cancel()
