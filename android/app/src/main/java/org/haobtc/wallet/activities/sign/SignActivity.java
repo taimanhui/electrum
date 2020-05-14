@@ -111,8 +111,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     public void initData() {
         //get sign address
         mGeneratecode();
-        if (!"1-1".equals(personceType) && !"standard".equals(personceType)) {
-            radioSignMsg.setVisibility(View.GONE);
+        if (!TextUtils.isEmpty(personceType)){
+            if (!"1-1".equals(personceType) && !personceType.contains("standard")) {
+                radioSignMsg.setVisibility(View.GONE);
+            }
         }
     }
 

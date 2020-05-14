@@ -560,7 +560,7 @@
     <string name="software_wallet">Software Wallet</string>
     <string name="please_change_xpub">This xpub already exists, please replace it</string>
     <string name="error_wallet_transaction">Transaction is unrelated to this wallet</string>
-    <string name="key_wrong_prompte">The format of the public key read is wrong. Please keep the phone and BixinKEY fit during reading</string>
+    <string name="key_wrong_prompte">Please keep the phone and BixinKEY fit during reading</string>
     <string name="security_risks">BixinKEY has security risks</string>
     <string name="official_firmware_suggest">It is detected that the official firmware is not used. Please replace the official firmware</string>
     <string name="pin_confirm_hardware">Please confirm the pin code on the hardware</string>
@@ -599,7 +599,7 @@
     <string name="_0_16">0/16</string>
     <string name="confirm_fix">Confirm modification</string>
     <string name="original_pin_wrong">Original PIN code error</string>
-    <string name="reset_device_failed">BixinKey failed to restore factory settings</string>
+    <string name="reset_device_failed">BixinKEY failed to restore factory settings</string>
     <string name="agent_tips">Using a proxy server,hide network traces</string>
     <string name="last_check_time">Last verified on </string>
     <string name="broad_fail">Broadcast failed</string>
@@ -609,8 +609,10 @@
     <string name="not_yet">Not yet</string>
     <string name="goto_set">To set</string>
     <string name="some_wallet_existence">Some wallets already exist, import completed</string>
-    <string name="get_xpub">查看BiXinKEY扩展公钥</string>
-    <string name="check_xpub">查看扩展公钥</string>
-    <string name="copy_xpub">复制扩展公钥</string>
-    <string name="diy_hardware">自定义固件文件</string>
+    <string name="get_xpub">View BixinKEY extended public key</string>
+    <string name="check_xpub">View extended public key</string>
+    <string name="copy_xpub">Copy extended public key</string>
+    <string name="diy_hardware">Custom firmware file</string>
+    <string name="input_backup_pass">Enter backup password</string>
+    <string name="input_key_pass">Please enter the password displayed by BixinKEY</string>
 </resources>

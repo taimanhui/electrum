@@ -12,11 +12,12 @@
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_10"
+        android:outlineSpotShadowColor="@color/button_bk_disableok"
         app:cardCornerRadius="@dimen/dp_14"
         app:cardElevation="20dp"
-        app:cardPreventCornerOverlap="true">
-
-
+        app:cardPreventCornerOverlap="true"
+        tools:ignore="UnusedAttribute">
+        
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/conlay_back"
             android:layout_width="300dp"

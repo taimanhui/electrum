@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="@dimen/dp_60"
     android:layout_marginTop="@dimen/dp_10"
     android:background="@drawable/white_tuo"
     android:orientation="horizontal">
@@ -35,25 +35,6 @@
                 android:padding="15dp"
                 android:src="@drawable/jiantou" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
-                android:layout_marginStart="@dimen/sp_16"
-                android:layout_marginTop="@dimen/dp_59"
-                android:layout_marginEnd="@dimen/dp_40"
-                android:background="@color/separation_line" />
-
-            <TextView
-                android:id="@+id/test_xpub"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_60"
-                android:layout_alignParentBottom="true"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/dp_40"
-                android:gravity="center_vertical"
-                android:textColor="@color/black_gray_color"
-                android:textSize="@dimen/sp_14"
-                android:text="@string/lnbcdfd4fdsk" />
         </RelativeLayout>
 
         <LinearLayout

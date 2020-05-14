@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,22 +86,43 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     }
 
     private void currency() {
+        edit.putBoolean("bluetoothStatus", true);//open bluetooth
+        edit.apply();
         try {
             Daemon.commands.callAttr("set_currency", "CNY");
             Daemon.commands.callAttr("set_base_uint", "mBTC");
-            Daemon.commands.callAttr("set_rbf", true);
-            Daemon.commands.callAttr("set_unconf", false);
-            Daemon.commands.callAttr("set_syn_server", true);
+            edit.putString("base_unit", "mBTC");
+            edit.apply();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Daemon.commands.callAttr("set_rbf", true);
+            edit.putBoolean("set_rbf", true);
+            edit.apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Daemon.commands.callAttr("set_unconf", false);
+            edit.putBoolean("set_unconf", true);
+            edit.apply();
+        } catch (Exception e) {
+            Log.i("TAGjixoain", "currency:------------- "+e.getMessage());
+            e.printStackTrace();
+        }
+
+        try {
+            Daemon.commands.callAttr("set_syn_server", true);
+            edit.putBoolean("set_syn_server", true);//setting synchronize server
+            edit.apply();
+        } catch (Exception e) {
+            Log.i("TAGjixoain", "currency:------------- "+e.getMessage());
             e.printStackTrace();
             return;
         }
-        edit.putBoolean("set_rbf", true);
-        edit.putBoolean("set_unconf", true);
-        edit.putString("base_unit", "mBTC");
-        edit.putBoolean("set_syn_server", true);//setting synchronize server
-        edit.putBoolean("bluetoothStatus",true);//open bluetooth
-        edit.apply();
     }
 
     private void initDots() {
@@ -112,7 +134,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
 
     private void startNewPage() {
         Intent intent = new Intent(this, CreateWalletActivity.class);
-        intent.putExtra("intentWhere","guide");
+        intent.putExtra("intentWhere", "guide");
         startActivity(intent);
         finish();
     }

@@ -72,6 +72,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     private String strmapBtc;
     private String wallet_type;
     private String base_unit;
+    private String hideRefresh;
 
     public int getLayoutId() {
         return R.layout.send_to_many;
@@ -111,6 +112,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
         wallet_type = intent.getStringExtra("wallet_type");
+        hideRefresh = intent.getStringExtra("hideRefresh");
         totalAmount = new BigDecimal("0");
         setEditTextComments();
     }
@@ -190,6 +192,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                     intent.putExtra("addressNum", size);
                     intent.putExtra("totalAmount", bigAmont);
                     intent.putExtra("strmapBtc", strmapBtc);
+                    intent.putExtra("hideRefresh", hideRefresh);
                     startActivity(intent);
                 }
 

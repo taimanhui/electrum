@@ -97,7 +97,7 @@ public class SettingActivity extends BaseActivity {
             bluetoothStatusText.setText(getString(R.string.open));
         }
         activeSetPIN = getIntent().getStringExtra("ActiveSetPIN");
-        if ("ActiveSetPIN".equals(activeSetPIN)){
+        if ("ActiveSetPIN".equals(activeSetPIN)) {
             Intent intent1 = new Intent(this, CommunicationModeSelector.class);
             intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent1.putExtra("tag", TAG_CHANGE_PIN);

@@ -40,6 +40,7 @@
         android:theme="@style/AppTheme"
         tools:replace="label"
         tools:targetApi="q">
+        <activity android:name=".activities.settings.recovery_set.InputBackupPassActivity"/>
         <activity android:name=".activities.settings.FixBixinkeyNameActivity" />
         <activity android:name=".activities.settings.BixinKeyBluetoothSettingActivity" />
         <activity android:name=".activities.settings.BlueToothStatusActivity" /> <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->

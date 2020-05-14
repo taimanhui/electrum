@@ -48,6 +48,7 @@ import butterknife.OnClick;
 
 public class TransactionDetailsActivity extends BaseActivity {
 
+    public static final String TAG_HIDE_WALLET = "TAG_HIDE_WALLET_TRANSACTION";
     @BindView(R.id.img_progressone)
     ImageView imgProgressone;
     @BindView(R.id.img_progressthree)
@@ -133,6 +134,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddrScan;
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
     private String unConfirmStatus;
+    private String hideWallet;
 
 
     @Override
@@ -153,6 +155,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (!TextUtils.isEmpty(intent.getStringExtra("signed_raw_tx"))) {
             signedRawTx = intent.getStringExtra("signed_raw_tx");
         } else {
+            hideWallet = intent.getStringExtra("hideWallet");//hide wallet transaction
             publicTrsation = intent.getStringExtra("txCreatTrsaction");
             keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
             tx_hash = intent.getStringExtra("tx_hash");
@@ -528,7 +531,11 @@ public class TransactionDetailsActivity extends BaseActivity {
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent1 = new Intent(this, CommunicationModeSelector.class);
-                        intent1.putExtra("tag", TAG);
+                        if (!TextUtils.isEmpty(hideWallet)) {
+                            intent1.putExtra("tag", TAG_HIDE_WALLET);
+                        } else {
+                            intent1.putExtra("tag", TAG);
+                        }
                         intent1.putExtra("extras", rawtx);
                         startActivity(intent1);
                     }

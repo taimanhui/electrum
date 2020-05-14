@@ -534,7 +534,7 @@
     <string name="software_wallet">软件钱包</string>
     <string name="please_change_xpub">此xpub已存在，请更换</string>
     <string name="error_wallet_transaction">此交易与当前钱包无关</string>
-    <string name="key_wrong_prompte">读取到的公钥格式错误，读取过程中，请保持手机与BixinKEY贴合</string>
+    <string name="key_wrong_prompte">读取过程中，请保持手机与BixinKEY贴合</string>
     <string name="security_risks">BinKEY存在安全风险</string>
     <string name="official_firmware_suggest">检测到未使用官方固件，请更换官方固件</string>
     <string name="pin_confirm_hardware">请在硬件上确认PIN码</string>
@@ -585,4 +585,6 @@
     <string name="check_xpub">查看扩展公钥</string>
     <string name="copy_xpub">复制扩展公钥</string>
     <string name="diy_hardware">自定义固件文件</string>
+    <string name="input_backup_pass">输入备份密码</string>
+    <string name="input_key_pass">请输入备份是BixinKey展示的密码</string>
 </resources>

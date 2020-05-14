@@ -490,6 +490,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 Intent intent = new Intent(this, Send2ManyActivity.class);
                 intent.putExtra("wallet_name", wallet_name);
                 intent.putExtra("wallet_type", waletType);
+                intent.putExtra("hideRefresh", hideRefresh);
                 startActivity(intent);
                 break;
             case R.id.create_trans_one2one:
@@ -583,7 +584,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             rowtx = getAddressBean.getTx();
             if (!TextUtils.isEmpty(rowtx)) {
-                if (wallet_type_to_sign.contains("1-")) {
+                if (wallet_type_to_sign.contains("1-")&&TextUtils.isEmpty(hideRefresh)) {
                     try {
                         PyObject get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
                         gson = new Gson();
