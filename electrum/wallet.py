@@ -1504,7 +1504,8 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             except InvalidPassword as e:
                 raise BaseException(e)
             except Exception as e:
-                if e.args[1] == "PIN invalid":
+                msg = str(e)
+                if -1 != msg.find("PIN invalid"):
                     raise BaseException(e)
                 sig_num += 1
                 continue
