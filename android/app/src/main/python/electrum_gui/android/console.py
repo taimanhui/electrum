@@ -36,6 +36,7 @@ from trezorlib import (
     firmware,
     protobuf,
     messages,
+    device,
 )
 from trezorlib.cli import trezorctl
 from electrum.wallet_db import WalletDB
@@ -1149,7 +1150,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     ##connection with terzorlib#########################
-    def hardware_verify(self, msg, path='nfc'):
+    def hardware_verify(self, msg, path='android_usb'):
         #client = self.get_client(path=path)
         #try:
             #response = client.anti_counterfeiting_verify(inputmessage=msg)
@@ -1161,7 +1162,7 @@ class AndroidCommands(commands.Commands):
         #return json.dumps(verify_info)
         return "hello word"
 
-    def backup_wallet(self, path='nfc'):
+    def backup_wallet(self, path='android_usb'):
         client = self.get_client(path=path)
         try:
             response = client.backup_and_recovry(type=1)
@@ -1169,7 +1170,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return response
 
-    def recovery_wallet(self, msg, path='nfc'):
+    def recovery_wallet(self, msg, path='android_usb'):
         client = self.get_client(path=path)
         try:
             response = client.backup_and_recovry(type=2, seed_importData=msg)
@@ -1179,60 +1180,28 @@ class AndroidCommands(commands.Commands):
             return 1
         else:
             return 0
-
-    def change_use_pin(self, x, path='path'):
+    
+    #def apply_setting(self, path='bloot', **kwargs):
+    def apply_setting(self, path='nfc', 
+        label=None,
+        language=None,
+        use_passphrase=None,
+        homescreen=None,
+        auto_lock_delay_ms=None,
+        display_rotation=None,
+        passphrase_always_on_device: bool = None,
+        fee_pay_pin: bool = None,
+        use_ble: bool = None,
+        use_se: bool = None,
+        is_bixinapp: bool = None,
+        fee_pay_confirm: bool = None,
+        fee_pay_money_limit: int = None,
+        fee_pay_times: int = None,
+    ):
         client = self.get_client(path=path)
         try:
-            client.change_use_pin(x)
-        except Exception as e:
-            raise BaseException(e)
-
-    def change_use_confirm(self, x, path='path'):
-        client = self.get_client(path=path)
-        try:
-            client.change_use_confirm(x)
-        except Exception as e:
-            raise BaseException(e)
-
-    def set_times(self, times, path='path'):
-        client = self.get_client(path=path)
-        try:
-            client.set_times(times)
-        except Exception as e:
-            raise BaseException(e)
-
-    def set_limit(self, limit, path='path'):
-        client = self.get_client(path=path)
-        try:
-            client.set_limit(limit)
-        except Exception as e:
-            raise BaseException(e)
-
-    def change_exportseeds(self, use_exportseeds, path='android_usb'):
-        client = self.get_client(path=path)
-        try:
-            client.change_use_exportseeds(use_exportseeds)
-        except Exception as e:
-            raise BaseException(e)
-
-    def change_use_ble(self, use_ble, path='path'):
-        client = self.get_client(path=path)
-        try:
-            client.change_use_ble(use_ble)
-        except Exception as e:
-            raise BaseException(e)
-
-    def change_language(self, language, path='nfc'):
-        client = self.get_client(path=path)
-        try:
-            client.change_language(language)
-        except Exception as e:
-            raise BaseException(e)
-
-    def change_use_se(self, use_se, path='android'):
-        client = self.get_client(path=path)
-        try:
-            client.change_use_se(use_se=use_se)
+            #device.apply_setting(client, **kwargs)
+            device.apply_setting(client, label, language, use_passphrase, homescreen, passphrase_always_on_device, auto_lock_delay_ms, display_rotation, fee_pay_pin, use_ble, use_se, is_bixinapp, fee_pay_confirm, fee_pay_money_limit, fee_pay_times)
         except Exception as e:
             raise BaseException(e)
 
@@ -1462,7 +1431,7 @@ class AndroidCommands(commands.Commands):
                 ks = keystore.from_seed(seed, passphrase, False)
         db.put('keystore', ks.dump())
         wallet = Standard_Wallet(db, storage, config=self.config)
-        wallet.update_password(old_pw=None, new_pw=password, encrypt_storage=True)
+        wallet.update_password(old_pw=None, new_pw=password, encrypt_storage=False)
         wallet.start_network(self.daemon.network)
         wallet.save_db()
         self.daemon.add_wallet(wallet)

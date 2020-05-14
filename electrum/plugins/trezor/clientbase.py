@@ -165,34 +165,6 @@ class TrezorClientBase(HardwareClientBase, Logger):
         with self.run_flow(_("Confirm the new language on your {} device")):
             trezorlib.device.apply_settings(self.client, language=language)
 
-    def change_use_se(self, use_se):
-        with self.run_flow(_("Confirm use se on your {} device")):
-            trezorlib.device.apply_settings(self.client, use_se=use_se)
-
-    def change_use_ble(self, use_ble):
-        with self.run_flow(_("Confirm use ble on your {} device")):
-            trezorlib.device.apply_settings(self.client, use_ble=use_ble)
-
-    def change_use_exportseeds(self, use_exportseeds):
-        with self.run_flow(_("Confirm use exportseeds on your {} device")):
-            trezorlib.device.apply_settings(self.client, use_exportseeds=use_exportseeds)
-
-    def change_use_pin(self, use_pin):
-        with self.run_flow(_("Confirm use pin on your {} device")):
-            trezorlib.device.apply_settings(self.client, use_fee_pay=use_pin)
-
-    def change_use_confirm(self, use_confirm):
-        with self.run_flow(_("Confirm use confirm on your {} device")):
-            trezorlib.device.apply_settings(self.client, use_fee_pay=use_confirm)
-
-    def set_times(self, times):
-        with self.run_flow(_("Confirm set times on your {} device")):
-            trezorlib.device.apply_settings(self.client, use_fee_pay=times)
-
-    def set_limit(self, limit):
-        with self.run_flow(_("Confirm set limit on your {} device")):
-            trezorlib.device.apply_settings(self.client, use_fee_pay=limit)
-
     def change_label(self, label):
         with self.run_flow(_("Confirm the new label on your {} device")):
             trezorlib.device.apply_settings(self.client, label=label)
