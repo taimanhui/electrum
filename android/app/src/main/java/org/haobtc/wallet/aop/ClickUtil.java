@@ -2,6 +2,8 @@ package org.haobtc.wallet.aop;
 
 import android.view.View;
 
+import org.haobtc.wallet.R;
+
 public class ClickUtil {
     /**
      * the last click time
@@ -21,6 +23,9 @@ public class ClickUtil {
      */
     public static boolean isFastDoubleClick(View v, long intervalMillis) {
         int viewId = v.getId();
+        if (viewId == R.id.img_back) {
+            return false;
+        }
         long time = System.currentTimeMillis();
         long timeInterval = Math.abs(time - mLastClickTime);
         if (timeInterval < intervalMillis && viewId == mLastClickViewId) {

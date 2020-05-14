@@ -7,8 +7,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.utils.Daemon;
 
-import cn.com.heaton.blelibrary.ble.Ble;
-
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     private Helper helper;
     private final static String TAG = BusinessAsyncTask.class.getSimpleName();

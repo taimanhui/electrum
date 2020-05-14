@@ -59,7 +59,7 @@ public class SettingActivity extends BaseActivity {
     TextView tetVerification;
     @BindView(R.id.tetAbout)
     TextView tetAbout;
-    @BindView(R.id.img_back_1)
+    @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.tet_bixinKey)
     TextView tetBixinKey;
@@ -113,7 +113,7 @@ public class SettingActivity extends BaseActivity {
 
 
     @SingleClick(value = 5000)
-    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back_1, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update, R.id.check_xpub})
+    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update, R.id.check_xpub})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tet_bixinKey:
@@ -142,7 +142,7 @@ public class SettingActivity extends BaseActivity {
             case R.id.tetAbout:
                 mIntent(AboutActivity.class);
                 break;
-            case R.id.img_back_1:
+            case R.id.img_back:
                 if ("ActiveSetPIN".equals(activeSetPIN)) {
                     mIntent(MainActivity.class);
                 } else {

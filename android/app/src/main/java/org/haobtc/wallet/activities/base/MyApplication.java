@@ -15,7 +15,7 @@ import cn.com.heaton.blelibrary.ble.Ble;
 
 public class MyApplication extends Application {
     private static volatile MyApplication mInstance;
-    private static final String PRIMARY_SERVICE =      "00000001-0000-1000-8000-00805f9b34fb";//"6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    private static final String PRIMARY_SERVICE =      "00000001-0000-1000-8000-00805f9b34fb";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC =  "00000003-0000-1000-8000-00805f9b34fb";//
 

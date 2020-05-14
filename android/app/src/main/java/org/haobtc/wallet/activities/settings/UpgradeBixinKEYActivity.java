@@ -124,12 +124,10 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                     HardwareFeatures features = getFeatures(params[0]);
                     String nrfVersion = features.getBleVer();
                     String loaderVersion = String.format("%s.%s.%s", features.getMajorVersion(), features.getMinorVersion(), features.getPatchVersion());
-                    System.out.println("==============path" + tag);
                     switch (tag) {
                         case 1:
                             assert newLoaderVersion != null;
                             if (newLoaderVersion.compareTo(loaderVersion) <= 0) {
-                                System.out.println("==============path1" + tag);
                                 isNew = true;
                                 cancel(true);
                             } else {
@@ -252,7 +250,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        runOnUiThread(() -> tetUpgradeTest.setText("升级文件下载完毕，正在升级至 v" + newNrfVersion));
+        runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newLoaderVersion));
         if (isDfu) {
             dfu();
         }
@@ -365,14 +363,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
                 if (!file.exists()) {
                     Toast.makeText(this, R.string.update_file_not_exist, Toast.LENGTH_LONG).show();
-
-                    EventBus.getDefault().post(new ExecuteEvent());
+//                    EventBus.getDefault().post(new ExecuteEvent());
                     finish();
                     return;
                 }
             } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
                 Toast.makeText(this, R.string.update_file_format_error, Toast.LENGTH_LONG).show();
-                EventBus.getDefault().post(new ExecuteEvent());
+//                EventBus.getDefault().post(new ExecuteEvent());
                 finish();
                 return;
             }

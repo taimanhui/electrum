@@ -79,7 +79,7 @@ public class HideWalletSetPassActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-              //  Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
+                Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
                 finish();
                 break;
             case R.id.bn_next:

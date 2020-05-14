@@ -281,7 +281,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //intent ->histry or create
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String jsondef_get) {
-        Log.i("jsonDetailData", "transactionDetail==== " + jsondef_get);
+       // Log.d("jsonDetailData", "transactionDetail==== " + jsondef_get);
         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
         try {
             Gson gson = new Gson();

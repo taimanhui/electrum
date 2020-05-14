@@ -13,7 +13,7 @@
         android:layout_height="@dimen/dp_50">
 
         <ImageView
-            android:id="@+id/img_back_1"
+            android:id="@+id/img_back"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"

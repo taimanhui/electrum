@@ -2,8 +2,6 @@ package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +25,7 @@ import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ReadingEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
+import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
 
@@ -104,7 +103,7 @@ public class PinSettingActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                // Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
+                Global.py.getModule("trezorlib.customer_ui").get("CustomerUI").put("user_cancel", 1);
                 finish();
                 break;
             case R.id.bn_next:
@@ -153,7 +152,7 @@ public class PinSettingActivity extends BaseActivity {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void timeout(OperationTimeoutEvent event) {
-        Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();
+       // Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();
         finish();
     }
 
