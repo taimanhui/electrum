@@ -1151,21 +1151,20 @@ class AndroidCommands(commands.Commands):
 
     ##connection with terzorlib#########################
     def hardware_verify(self, msg, path='android_usb'):
-        #client = self.get_client(path=path)
-        #try:
-            #response = client.anti_counterfeiting_verify(inputmessage=msg)
-        #except Exception as e:
-            #raise BaseException(e)
-        #verify_info = {}
-        #verify_info['sign'] = response
-        #verify_info['seq'] = client.features.device_id
-        #return json.dumps(verify_info)
-        return "hello word"
+        client = self.get_client(path=path)
+        try:
+            response = device.se_verify(client.client, msg)
+        except Exception as e:
+            raise BaseException(e)
+        verify_info = {}
+        verify_info['sign'] = response
+        verify_info['seq'] = client.features.device_id
+        return json.dumps(verify_info)
 
     def backup_wallet(self, path='android_usb'):
         client = self.get_client(path=path)
         try:
-            response = client.backup_and_recovry(type=1)
+            response = device.se_backup(client.client)
         except Exception as e:
             raise BaseException(e)
         return response
@@ -1173,15 +1172,11 @@ class AndroidCommands(commands.Commands):
     def recovery_wallet(self, msg, path='android_usb'):
         client = self.get_client(path=path)
         try:
-            response = client.backup_and_recovry(type=2, seed_importData=msg)
+            response = device.se_restore(client.client, msg)
         except Exception as e:
             raise BaseException(e)
-        if response == "seed import success":
-            return 1
-        else:
-            return 0
+        return response
     
-    #def apply_setting(self, path='bloot', **kwargs):
     def apply_setting(self, path='nfc', 
         label=None,
         language=None,
@@ -1200,8 +1195,7 @@ class AndroidCommands(commands.Commands):
     ):
         client = self.get_client(path=path)
         try:
-            #device.apply_setting(client, **kwargs)
-            device.apply_setting(client, label, language, use_passphrase, homescreen, passphrase_always_on_device, auto_lock_delay_ms, display_rotation, fee_pay_pin, use_ble, use_se, is_bixinapp, fee_pay_confirm, fee_pay_money_limit, fee_pay_times)
+            device.apply_setting(client.client, label, language, use_passphrase, homescreen, passphrase_always_on_device, auto_lock_delay_ms, display_rotation, fee_pay_pin, use_ble, use_se, is_bixinapp, fee_pay_confirm, fee_pay_money_limit, fee_pay_times)
         except Exception as e:
             raise BaseException(e)
 

@@ -140,18 +140,6 @@ class TrezorClientBase(HardwareClientBase, Logger):
                          fingerprint=self.i4b(node.fingerprint),
                          child_number=self.i4b(node.child_num)).to_xpub()
 
-    def backup_and_recovry(self, type, seed_importData=None):
-        if type == 1:
-            msg = ("Confirm backup your {} device")
-        elif type == 2:
-            msg = ("Confirm recovry your {} device")
-        with self.run_flow(msg):
-            return trezorlib.device.backup_and_recovry(self.client, type=type, seed_importData=seed_importData)
-
-    def anti_counterfeiting_verify(self, inputmessage):
-        with self.run_flow(_("Confirm anti_counterfeiting_verify on your {} device")):
-            return trezorlib.device.anti_counterfeiting_verify(self.client, inputmessage=inputmessage)
-
     def toggle_passphrase(self):
         if self.features.passphrase_protection:
             msg = _("Confirm on your {} device to disable passphrases")

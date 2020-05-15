@@ -59,6 +59,7 @@ class AbstractNet:
 
 class BitcoinMainnet(AbstractNet):
 
+    NET = "Bitcoin"
     TESTNET = False
     WIF_PREFIX = 0x80
     ADDRTYPE_P2PKH = 0
@@ -96,6 +97,7 @@ class BitcoinMainnet(AbstractNet):
 
 class BitcoinTestnet(AbstractNet):
 
+    NET = "Testnet"
     TESTNET = True
     WIF_PREFIX = 0xef
     ADDRTYPE_P2PKH = 111
@@ -132,6 +134,7 @@ class BitcoinTestnet(AbstractNet):
 
 class BitcoinRegtest(BitcoinTestnet):
 
+    NET = "Regtest"
     SEGWIT_HRP = "bcrt"
     GENESIS = "0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"
     DEFAULT_SERVERS = read_json('servers_regtest.json', {})

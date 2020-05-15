@@ -184,7 +184,8 @@ class TrezorPlugin(HW_PluginBase):
         return client
 
     def get_coin_name(self):
-        return "Regtest" if constants.net.TESTNET else "Bitcoin"
+        print(f"get_conin_name============{constants.net.NET}")
+        return constants.net.NET
 
     def initialize_device(self, device_id, wizard, handler):
         # Initialization method
