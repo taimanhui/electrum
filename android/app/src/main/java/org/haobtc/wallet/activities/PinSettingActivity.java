@@ -146,10 +146,11 @@ public class PinSettingActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if ("Keyboard".equals(msgVote)){
+        if ("Keyboard".equals(msgVote)) {
             relativeLayout_key.setVisibility(View.GONE);
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void timeout(OperationTimeoutEvent event) {
        // Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();

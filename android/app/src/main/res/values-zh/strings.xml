@@ -136,6 +136,7 @@
     <string name="dontsmall">联署人数不能小于签名人数</string>
     <string name="inoutnum">请输入转账数量</string>
     <string name="moreinput_text">您最多能输入20个字</string>
+    <string name="moreinput_text_fixbixinkey">您最多能输入16个字</string>
     <string name="photopersion">相机权限被拒绝，无法扫描二维码</string>
     <string name="reservatpion_photo">权限被拒绝，无法执行</string>
     <string name="copysuccess">复制成功!</string>
@@ -587,4 +588,5 @@
     <string name="diy_hardware">自定义固件文件</string>
     <string name="input_backup_pass">输入备份密码</string>
     <string name="input_key_pass">请输入备份是BixinKey展示的密码</string>
+    <string name="message_loading">消息传输中</string>
 </resources>

@@ -97,23 +97,23 @@ public class CreatFinishPersonalActivity extends BaseActivity {
 
     //show Whether to set pin after activation dialog
     private void showSetPINDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(CreatFinishPersonalActivity.this);
-        builder.setTitle(getString(R.string.if_set_PIN));
-        builder.setNegativeButton(getString(R.string.not_yet), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                builder.create().cancel();
-            }
-        });
-        builder.setPositiveButton(getString(R.string.goto_set), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(CreatFinishPersonalActivity.this, SettingActivity.class);
-                intent.putExtra("ActiveSetPIN", "ActiveSetPIN");
-                startActivity(intent);
-            }
-        });
-        builder.create().show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(CreatFinishPersonalActivity.this);
+            builder.setTitle(getString(R.string.if_set_PIN));
+            builder.setNegativeButton(getString(R.string.not_yet), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    builder.create().cancel();
+                }
+            });
+            builder.setPositiveButton(getString(R.string.goto_set), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(CreatFinishPersonalActivity.this, SettingActivity.class);
+                    intent.putExtra("ActiveSetPIN", "ActiveSetPIN");
+                    startActivity(intent);
+                }
+            });
+            builder.create().show();
     }
 
     private void checkAllBixinkey() {

@@ -87,6 +87,7 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="@dimen/dp_100"
+        android:enabled="false"
         android:background="@drawable/button_bk_grey"
         android:text="@string/confirm_fix"
         android:textAllCaps="false"

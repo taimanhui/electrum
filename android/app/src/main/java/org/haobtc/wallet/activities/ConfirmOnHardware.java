@@ -59,6 +59,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     RecyclerView reclMsg;
     private TextView signSuccess;
     private String txHash;
+    private int intentAction = 0;
 
     public int getLayoutId() {
         return R.layout.confirm_on_hardware;
@@ -130,6 +131,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignSuccessful(SignResultEvent resultEvent) {
+        Log.i(TAG, "onSignSuccessful------------: " + resultEvent);
         if (dialog == null) {
             showPopupSignProcessing();
         }
@@ -151,12 +153,14 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onSignSuccessful(SendSignBroadcastEvent resultEvent) {
-        if (dialog == null) {
-            showPopupSignProcessing();
+//        if (dialog == null) {
+//            showPopupSignProcessing();
+//        }
+        if (intentAction == 0) {
+            Intent intent = new Intent(this, ActivatedProcessing.class);
+            startActivity(intent);
+            finish();
         }
-        Drawable drawableStart = getDrawable(R.drawable.chenggong);
-        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        signSuccess.setCompoundDrawables(drawableStart, null, null, null);
         String signedTx = resultEvent.getSignTx();
         if (!TextUtils.isEmpty(signedTx)) {
             try {
@@ -164,21 +168,23 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(signedTx, GetnewcreatTrsactionListBean.class);
                 String tx = getnewcreatTrsactionListBean.getTx();
                 txHash = getnewcreatTrsactionListBean.getTxid();
-                Log.i("onSignSuccessful", "onSignSuccessful:++ "+tx);
+                Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
                 Daemon.commands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {
                 mToast(getString(R.string.broad_fail));
                 e.printStackTrace();
             }
+
             EventBus.getDefault().post(new SecondEvent("finish"));
             EventBus.getDefault().post(new FirstEvent("22"));
+            EventBus.getDefault().postSticky(new SecondEvent("ActivateFinish"));
             Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
             intent1.putExtra(TouchHardwareActivity.FROM, TAG);
             intent1.putExtra("listType", "history");
             intent1.putExtra("keyValue", "B");
             intent1.putExtra("tx_hash", txHash);
             intent1.putExtra("isIsmine", true);
-            intent1.putExtra("unConfirmStatus","broadcast_complete");
+            intent1.putExtra("unConfirmStatus", "broadcast_complete");
             startActivity(intent1);
             dialog.dismiss();
             finish();
@@ -205,10 +211,10 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.confirm_on_hardware:
-                showPopupSignProcessing();
-//                Intent intent = new Intent(this, PinSettingActivity.class);
-//                intent.putExtra("tag", TAG);
-//                startActivity(intent);
+                intentAction = 1;
+                Intent intent = new Intent(this, ActivatedProcessing.class);
+                startActivity(intent);
+                finish();
                 break;
             case R.id.img_back:
                 finish();
@@ -217,7 +223,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 dialog.dismiss();
         }
     }
-
 
     @Override
     protected void onDestroy() {

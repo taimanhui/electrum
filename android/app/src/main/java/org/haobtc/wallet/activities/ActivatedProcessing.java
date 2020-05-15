@@ -28,6 +28,7 @@ import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
 import org.haobtc.wallet.event.SendingFailedEvent;
 import org.haobtc.wallet.utils.NfcUtils;
@@ -51,11 +52,11 @@ public class ActivatedProcessing extends BaseActivity {
     TextView firstPromote;
     @BindView(R.id.second_promote)
     TextView secondPromote;
-/*
-    private String pin;
-*/
+    /*
+        private String pin;
+    */
     int MAX_LEVEL = 10000;
-    private String  name;
+    private String name;
     private String tag_sendxpub;
 
     public int getLayoutId() {
@@ -70,7 +71,7 @@ public class ActivatedProcessing extends BaseActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         List<Drawable> drawables = new ArrayList<>();
         if (isNFC) {
-           secondPromote.setText(R.string.order_sending);
+            secondPromote.setText(R.string.order_sending);
         } else {
             firstPromote.setText(R.string.order_sending);
         }
@@ -78,7 +79,7 @@ public class ActivatedProcessing extends BaseActivity {
         drawables.addAll(Arrays.asList(secondPromote.getCompoundDrawables()));
         drawables.stream().filter(Objects::nonNull)
                 .forEach(drawable -> {
-                    ObjectAnimator  animator = ObjectAnimator.ofInt(drawable, "level", 0, MAX_LEVEL);
+                    ObjectAnimator animator = ObjectAnimator.ofInt(drawable, "level", 0, MAX_LEVEL);
                     animator.setDuration(800);
                     animator.setRepeatCount(-1);
                     animator.setInterpolator(new LinearInterpolator());
@@ -100,7 +101,6 @@ public class ActivatedProcessing extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showProcessing(ResultEvent resultEvent) {
-        Log.i("SingleSigWalletCreator", "-------------getResult(): "+resultEvent.getResult());
         EventBus.getDefault().removeStickyEvent(ResultEvent.class);
         switch (resultEvent.getResult()) {
             case "1":
@@ -108,10 +108,9 @@ public class ActivatedProcessing extends BaseActivity {
                 Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
                 firstPromote.setCompoundDrawables(drawableStart, null, null, null);
                 secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-                if (SingleSigWalletCreator.TAG.equals(tag_sendxpub)){
-                    Log.i("SingleSigWalletCreator", "--------------------ActivatedProcessing: "+tag_sendxpub);
+                if (SingleSigWalletCreator.TAG.equals(tag_sendxpub)) {
                     EventBus.getDefault().post(new SendXpubToSigwallet("get_xpub_and_send"));
-                }else{
+                } else {
                     startActivity(new Intent(this, ActivateSuccessActivity.class));
                     finish();
                 }
@@ -125,14 +124,15 @@ public class ActivatedProcessing extends BaseActivity {
                     secondPromote.setText(R.string.active_failed);
                     secondPromote.setCompoundDrawables(drawableStartFail, null, null, null);
                 } else {
-                   firstPromote.setText(R.string.active_failed);
-                   firstPromote.setCompoundDrawables(drawableStartFail, null, null, null);
+                    firstPromote.setText(R.string.active_failed);
+                    firstPromote.setCompoundDrawables(drawableStartFail, null, null, null);
                 }
                 startActivity(new Intent(this, ActiveFailedActivity.class));
                 finish();
         }
     }
-//    @Subscribe(threadMode = ThreadMode.MAIN)
+
+    //    @Subscribe(threadMode = ThreadMode.MAIN)
 //    public void onButtonRequest(ButtonRequestEvent event) {
 //        Drawable drawableStart = getDrawable(R.drawable.chenggong);
 //        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
@@ -195,4 +195,14 @@ public class ActivatedProcessing extends BaseActivity {
             finishAffinity();
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if (msgVote.equals("ActivateFinish")) {
+            finish();
+        }
+        EventBus.getDefault().removeStickyEvent(SecondEvent.class);
+    }
+
 }

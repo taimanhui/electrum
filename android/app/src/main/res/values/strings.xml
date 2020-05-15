@@ -137,6 +137,7 @@
     <string name="dontsmall">Number of co-signers cannot be less than number of signatures</string>
     <string name="inoutnum">Enter amount to transfer</string>
     <string name="moreinput_text">Enter 20 characters at most</string>
+    <string name="moreinput_text_fixbixinkey">Enter 16 characters at most</string>
     <string name="photopersion">Camera permission denied, cannot read QR code</string>
     <string name="reservatpion_photo">Permission denied, cannot execute</string>
     <string name="copysuccess">Copied!</string>
@@ -615,4 +616,5 @@
     <string name="diy_hardware">Custom firmware file</string>
     <string name="input_backup_pass">Enter backup password</string>
     <string name="input_key_pass">Please enter the password displayed by BixinKEY</string>
+    <string name="message_loading">Message transmission in progress</string>
 </resources>

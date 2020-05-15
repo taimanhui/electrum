@@ -589,13 +589,11 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isSign) {
-
             if (runnables.size() != 0) {
                 runOnUiThread(runnables.get(0));
                 // in order to prevent repeat invoke
                 runnables.clear();
             }
-
         }
     }
 
@@ -663,7 +661,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             return;
         }
         if (isSign) {
-            dialogFragment = showReadingDialog(R.string.transaction_loading);
+            if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
+                dialogFragment = showReadingDialog(R.string.message_loading);
+            }else{
+                dialogFragment = showReadingDialog(R.string.transaction_loading);
+            }
+
         } else if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
             // 获取公钥之前需完成的工作
             if (!SingleSigWalletCreator.TAG.equals(tag)) {
@@ -709,6 +712,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 startActivity(intent1);
                 finish();
             } else if (SingleSigWalletCreator.TAG.equals(tag)) {
+
+
+
                 EventBus.getDefault().post(new ReceiveXpub(xpub));
             } else if ("check_xpub".equals(tag)) {
                 Intent intent = new Intent(this, CheckXpubResultActivity.class);
