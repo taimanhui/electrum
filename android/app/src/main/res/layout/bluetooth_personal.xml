@@ -63,7 +63,7 @@
         <View
             android:id="@+id/ln"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_1"
+            android:layout_height="@dimen/line_hight"
             android:layout_below="@id/radio_group"
             android:background="@color/separation_line" />
 

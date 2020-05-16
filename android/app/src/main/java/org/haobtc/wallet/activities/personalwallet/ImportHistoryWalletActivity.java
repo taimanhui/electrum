@@ -87,67 +87,67 @@ public class ImportHistoryWalletActivity extends BaseActivity {
         }
     }
 
-    private Runnable runnable2 = () -> showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+    private Runnable runnable2 = () -> showConfirmPubDialog(xpub);
 
-    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub) {
+    private void showConfirmPubDialog(String xpub) {
         //set see view
-        View view = View.inflate(context, resource, null);
-        dialogBtoms = new Dialog(context, R.style.dialog);
-
-        edit_bixinName = view.findViewById(R.id.edit_keyName);
-        TextView tet_Num = view.findViewById(R.id.txt_textNum);
-        textView = view.findViewById(R.id.text_public_key_cosigner_popup);
-        textView.setText(xpub);
-        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
-        defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
-        edit_bixinName.addTextChangedListener(new TextWatcher() {
-            CharSequence input;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                input = s;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tet_Num.setText(String.format(Locale.CHINA, "%d/20", input.length()));
-                if (input.length() > 19) {
-                    Toast.makeText(ImportHistoryWalletActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
-            if (TextUtils.isEmpty(edit_bixinName.getText().toString())){
-                mToast(getString(R.string.input_name));
-                return;
-            }
-            edit.putInt("defaultKeyNum",defaultKeyNameNum);
-            edit.apply();
-            Intent intent1 = new Intent(ImportHistoryWalletActivity.this, ChooseHistryWalletActivity.class);
-            intent1.putExtra("histry_xpub", xpub);
-            startActivity(intent1);
-            finish();
-        });
+//        View view = View.inflate(context, resource, null);
+//        dialogBtoms = new Dialog(context, R.style.dialog);
+//
+//        edit_bixinName = view.findViewById(R.id.edit_keyName);
+//        TextView tet_Num = view.findViewById(R.id.txt_textNum);
+//        textView = view.findViewById(R.id.text_public_key_cosigner_popup);
+//        textView.setText(xpub);
+//        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
+//        defaultKeyNameNum = defaultKeyNum + 1;
+//        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
+//        edit_bixinName.addTextChangedListener(new TextWatcher() {
+//            CharSequence input;
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                input = s;
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                tet_Num.setText(String.format(Locale.CHINA, "%d/20", input.length()));
+//                if (input.length() > 19) {
+//                    Toast.makeText(ImportHistoryWalletActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//
+//            }
+//        });
+//        view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
+//            if (TextUtils.isEmpty(edit_bixinName.getText().toString())){
+//                mToast(getString(R.string.input_name));
+//                return;
+//            }
+//        edit.putInt("defaultKeyNum", defaultKeyNameNum);
+//        edit.apply();
+        Intent intent1 = new Intent(ImportHistoryWalletActivity.this, ChooseHistryWalletActivity.class);
+        intent1.putExtra("histry_xpub", xpub);
+        startActivity(intent1);
+        finish();
+//        });
 
         //cancel dialog
-        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
-            dialogBtoms.cancel();
-        });
-
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.show();
+//        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
+//            dialogBtoms.cancel();
+//        });
+//
+//        dialogBtoms.setContentView(view);
+//        Window window = dialogBtoms.getWindow();
+//        //set pop_up size
+//        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+//        //set locate
+//        window.setGravity(Gravity.BOTTOM);
+//        //set animal
+//        window.setWindowAnimations(R.style.AnimBottom);
+//        dialogBtoms.show();
     }
 }

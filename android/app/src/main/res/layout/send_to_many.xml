@@ -18,8 +18,8 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
             android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
         <TextView
@@ -28,6 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/send2many"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -47,7 +48,10 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -109,8 +113,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="21dp"
-                    android:gravity="center_vertical"
                     android:layout_marginTop="19.5dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -119,7 +123,6 @@
                         android:layout_height="wrap_content"
                         android:text="@string/send_num"
                         android:textColor="@color/text" />
-
 
 
                 </LinearLayout>
@@ -134,14 +137,14 @@
                     <EditText
                         android:id="@+id/edit_amount_2many"
                         android:layout_width="0dp"
-                        android:textSize="15sp"
-                        android:paddingEnd="@dimen/dp_10"
-                        android:paddingStart="@dimen/dp_10"
                         android:layout_height="match_parent"
-                        android:inputType="numberDecimal"
                         android:layout_weight="1"
                         android:background="@null"
-                        android:hint="@string/input_send_num" />
+                        android:hint="@string/input_send_num"
+                        android:inputType="numberDecimal"
+                        android:paddingStart="@dimen/dp_10"
+                        android:paddingEnd="@dimen/dp_10"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/test_unit"
@@ -154,6 +157,7 @@
                         android:textSize="15sp" />
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp_50"
@@ -164,13 +168,13 @@
                     <EditText
                         android:id="@+id/edit_Context"
                         android:layout_width="0dp"
-                        android:textSize="15sp"
-                        android:paddingEnd="@dimen/dp_10"
-                        android:paddingStart="@dimen/dp_10"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@null"
-                        android:hint="@string/introduce_choose" />
+                        android:hint="@string/introduce_choose"
+                        android:paddingStart="@dimen/dp_10"
+                        android:paddingEnd="@dimen/dp_10"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/byte_count"
@@ -183,7 +187,6 @@
                         android:textSize="15sp" />
 
                 </LinearLayout>
-
 
 
                 <LinearLayout
@@ -248,22 +251,22 @@
 
             <TextView
                 android:id="@+id/test_units"
-                android:layout_toEndOf="@+id/total"
                 android:layout_width="wrap_content"
-                android:layout_centerVertical="true"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/corner_radius"
-                tools:text="@string/btc"
-                android:textSize="@dimen/smaller_text_size" />
+                android:layout_toEndOf="@+id/total"
+                android:textSize="@dimen/smaller_text_size"
+                tools:text="@string/btc" />
 
             <Button
                 android:id="@+id/bn_send2many_next"
-                android:layout_alignParentEnd="true"
                 android:layout_width="190dp"
                 android:layout_height="@dimen/dp_40"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/dp_16"
-                android:background="@color/button_bk"
+                android:background="@drawable/little_conner_btn"
                 android:text="@string/next"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white" />

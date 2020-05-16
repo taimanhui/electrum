@@ -8,6 +8,7 @@
     <dimen name="pop_h">440dp</dimen>
     <dimen name="dp_44">44dp</dimen>
     <dimen name="corner_radius">12dp</dimen>
+    <dimen name="line_hight">0.5dp</dimen>
     <dimen name="dp_1">1dp</dimen>
     <dimen name="sp_14">14sp</dimen>
     <dimen name="sp_13">13sp</dimen>
@@ -57,4 +58,6 @@
     <dimen name="dp_36">36dp</dimen>
     <dimen name="dp_52">52dp</dimen>
     <dimen name="dp_39">39dp</dimen>
+    <dimen name="dp_240">240</dimen>
+    <dimen name="dp_335">335</dimen>
 </resources>

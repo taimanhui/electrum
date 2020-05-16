@@ -26,6 +26,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/create_hide_wallet"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -34,9 +35,9 @@
 
 
     <LinearLayout
-        android:layout_below="@+id/RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/RelativeLayout"
         android:layout_margin="@dimen/dp_10"
         android:background="@drawable/white_tuo"
         android:orientation="vertical">
@@ -44,18 +45,18 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"
-            android:gravity="center_vertical"
             android:layout_marginStart="@dimen/dp_16"
+            android:gravity="center_vertical"
             android:text="@string/please_input_pass"
             android:textColor="@color/text_color"
             android:textSize="@dimen/sp_18" />
 
         <View
             android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginEnd="@dimen/dp_16"
-            android:background="@color/line_color"
-            android:layout_height="@dimen/dp_1"/>
+            android:background="@color/line_color" />
 
         <EditText
             android:id="@+id/editInputPass"
@@ -74,8 +75,8 @@
         android:id="@+id/bn_next"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
         android:layout_marginBottom="@dimen/dp_30"
         android:background="@drawable/button_bk"

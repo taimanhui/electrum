@@ -27,6 +27,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/hide_wallet"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -220,8 +221,8 @@
                 android:id="@+id/textView_more"
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:background="?android:attr/selectableItemBackground"
+                android:gravity="center"
                 android:text="@string/more"
                 android:textColor="@color/button_bk"
                 android:textStyle="bold" />
@@ -230,7 +231,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_1"
+            android:layout_height="@dimen/line_hight"
             android:layout_marginTop="49.5dp"
             android:background="@color/separation_line" />
 

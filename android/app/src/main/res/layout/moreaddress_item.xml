@@ -34,7 +34,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
+        android:layout_height="@dimen/line_hight"
         android:layout_marginStart="@dimen/text_margin"
         android:layout_marginTop="@dimen/dp_18"
         android:background="@color/separation_line" />

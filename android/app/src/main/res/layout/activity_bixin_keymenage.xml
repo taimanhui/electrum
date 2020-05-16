@@ -8,14 +8,15 @@
     tools:context=".activities.settings.BixinKEYManageActivity">
 
     <LinearLayout
-        android:background="@color/bk_page"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bk_page"
+        android:orientation="vertical">
+
         <RelativeLayout
-            android:background="@color/button_bk_ddake"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50">
+            android:layout_height="@dimen/dp_50"
+            android:background="@color/button_bk_ddake">
 
             <ImageView
                 android:id="@+id/img_back"
@@ -32,6 +33,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
+                android:fontFamily="sans-serif-medium"
                 android:text="@string/bixinkey_manage"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
@@ -40,14 +42,14 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recl_bixinKey_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
             android:layout_marginTop="@dimen/dp_6"
             android:layout_marginEnd="@dimen/dp_10"
-            android:layout_marginStart="@dimen/dp_10"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/bixinkey_check_item"
             tools:itemCount="6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            tools:listitem="@layout/bixinkey_check_item">
 
         </androidx.recyclerview.widget.RecyclerView>
 

@@ -25,6 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif-medium"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:text="@string/hardware_i"
@@ -66,7 +67,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:background="@color/separation_line" />
 
                 <TextView
@@ -81,7 +82,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:background="@color/separation_line" />
 
                 <TextView

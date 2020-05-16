@@ -20,6 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_14"
                 android:text="@string/choose_payaddress"
+                android:fontFamily="sans-serif-medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +38,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:background="@color/separation_line"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="50dp"/>

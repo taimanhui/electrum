@@ -108,6 +108,8 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             }
         }
     };
+    private SharedPreferences preferences;
+    private int defaultKeyNameNum;
 
     @Override
     public int getLayoutId() {
@@ -118,7 +120,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         myDialog = MyDialog.showDialog(this);
         Intent intent = getIntent();
@@ -173,6 +175,9 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         TextView textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
+        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
+        defaultKeyNameNum = defaultKeyNum + 1;
+        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -219,6 +224,8 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
+            edit.putInt("defaultKeyNum",defaultKeyNameNum);
+            edit.apply();
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
@@ -266,7 +273,6 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("CODED_CONTENT", "content=----: " + content);
             }
         }
     }

@@ -34,6 +34,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
+                android:fontFamily="sans-serif-medium"
                 android:text="@string/creat_ggwallet"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
@@ -116,10 +117,10 @@
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
-            android:paddingBottom="@dimen/dp_70"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bk_page">
+            android:background="@color/bk_page"
+            android:paddingBottom="@dimen/dp_70">
 
 
             <LinearLayout
@@ -137,8 +138,11 @@
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
                     android:layout_marginBottom="@dimen/dp_2"
+                    android:outlineSpotShadowColor="@color/shadow_color"
                     android:visibility="visible"
-                    app:cardCornerRadius="@dimen/corner_radius">
+                    app:cardCornerRadius="@dimen/dp_8"
+                    app:cardElevation="@dimen/dp_8"
+                    tools:ignore="UnusedAttribute">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -154,6 +158,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="59.5dp"
                                 android:layout_marginStart="@dimen/dp_16"
+                                android:fontFamily="sans-serif-medium"
                                 android:gravity="center"
                                 android:text="@string/set_wallet_name"
                                 android:textColor="#494949"
@@ -163,14 +168,14 @@
                                 android:id="@+id/edit_Walletname"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/dp_5"
                                 android:layout_weight="1"
                                 android:background="@null"
-                                android:maxLength="20"
-                                android:layout_marginStart="@dimen/dp_5"
                                 android:gravity="center|end"
-                                android:singleLine="true"
                                 android:hint="@string/please_input"
+                                android:maxLength="20"
                                 android:paddingEnd="@dimen/dp_16"
+                                android:singleLine="true"
                                 android:textColor="@color/text_color"
                                 android:textSize="15sp"
                                 tools:ignore="RtlSymmetry" />
@@ -179,7 +184,7 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dp_1"
+                            android:layout_height="@dimen/line_hight"
                             android:layout_marginStart="@dimen/dp_16"
                             android:layout_marginEnd="@dimen/dp_16"
                             android:background="@color/line_color" />
@@ -195,6 +200,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
                                 android:text="@string/together_num"
                                 android:textColor="@color/text_color"
                                 android:textSize="15sp" />
@@ -277,7 +283,7 @@
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dp_1"
+                            android:layout_height="@dimen/line_hight"
                             android:layout_marginStart="@dimen/dp_16"
                             android:layout_marginTop="20.5dp"
                             android:layout_marginEnd="@dimen/dp_16"
@@ -295,6 +301,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
                                 android:text="@string/signed_num"
                                 android:textColor="@color/text_color"
                                 android:textSize="15sp" />
@@ -387,8 +394,12 @@
                     android:layout_marginStart="@dimen/layout_margin"
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
+                    android:layout_marginBottom="@dimen/dp_1"
                     android:visibility="gone"
-                    app:cardCornerRadius="@dimen/corner_radius">
+                    android:outlineSpotShadowColor="@color/shadow_color"
+                    app:cardCornerRadius="@dimen/dp_8"
+                    app:cardElevation="@dimen/dp_8"
+                    tools:ignore="UnusedAttribute">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -404,7 +415,7 @@
                             android:layout_marginTop="@dimen/dp_20"
                             android:text="@string/xiaomi_walet"
                             android:textColor="@color/text"
-                            android:textSize="@dimen/big_text_size"/>
+                            android:textSize="@dimen/big_text_size" />
 
                         <TextView
                             android:id="@+id/tet_many_key"
@@ -429,10 +440,10 @@
                             android:id="@+id/tet_Preservation"
                             android:layout_width="wrap_content"
                             android:layout_height="@dimen/dp_40"
-                            android:gravity="center_vertical"
                             android:layout_gravity="center"
                             android:layout_marginTop="@dimen/dp_10"
                             android:layout_marginBottom="@dimen/dp_20"
+                            android:gravity="center_vertical"
                             android:text="@string/preservation"
                             android:textColor="@color/button_bk_disableok"
                             android:textSize="@dimen/text_size" />
@@ -450,7 +461,10 @@
                     android:layout_marginEnd="@dimen/layout_margin"
                     android:layout_marginBottom="90dp"
                     android:visibility="gone"
-                    app:cardCornerRadius="@dimen/corner_radius">
+                    android:outlineSpotShadowColor="@color/shadow_color"
+                    app:cardCornerRadius="@dimen/dp_8"
+                    app:cardElevation="@dimen/dp_8"
+                    tools:ignore="UnusedAttribute">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -463,13 +477,13 @@
                             android:layout_marginStart="@dimen/dp_16"
                             android:layout_marginTop="@dimen/dp_18"
                             android:layout_marginBottom="@dimen/dp_18"
+                            android:text="@string/publicer"
                             android:textColor="#494949"
-                            android:textSize="18sp"
-                            android:text="@string/publicer" />
+                            android:textSize="18sp" />
 
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dp_1"
+                            android:layout_height="@dimen/line_hight"
                             android:background="@color/line_color" />
 
                         <androidx.recyclerview.widget.RecyclerView
@@ -517,6 +531,7 @@
                         android:layout_height="25dp"
                         android:drawableStart="@drawable/add"
                         android:drawablePadding="@dimen/dp_5"
+                        android:fontFamily="sans-serif-medium"
                         android:gravity="center"
                         android:text="@string/add_bixin_key"
                         android:textColor="@color/button_bk"

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/button_bk_ddake"
     android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
     tools:context=".activities.settings.recovery_set.ConfirmBackupActivity">
 
     <RelativeLayout
@@ -32,6 +32,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/bixinkey_backup"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -39,35 +40,35 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_marginTop="@dimen/dp_50"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_50"
         android:orientation="vertical">
 
 
         <TextView
-            android:text="@string/input_dcrypt_pin"
-            android:layout_marginTop="@dimen/dp_20"
-            android:textColor="@color/text_color"
-            android:textSize="22sp"
-            android:layout_marginStart="@dimen/dp_30"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginTop="@dimen/dp_20"
+            android:text="@string/input_dcrypt_pin"
+            android:textColor="@color/text_color"
+            android:textSize="22sp" />
 
         <TextView
-            android:text="@string/duizhao_pin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_30"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_marginBottom="@dimen/dp_30"
+            android:text="@string/duizhao_pin"
             android:textColor="@color/light_text"
-            android:textSize="13sp"
-            android:layout_marginStart="@dimen/dp_30"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:textSize="13sp" />
 
         <RelativeLayout
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="0dp">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <org.haobtc.wallet.utils.PasswordInputView
                 android:id="@+id/trader_pwd_set_pwd_edittext"
@@ -80,14 +81,14 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginEnd="@dimen/dp_30"
                 android:background="@color/light_text" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginTop="@dimen/dp_50"
                 android:layout_marginEnd="@dimen/dp_30"
@@ -113,14 +114,14 @@
         <Button
             android:id="@+id/btn_setPin"
             android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:layout_marginStart="38dp"
-            android:textAllCaps="false"
             android:layout_marginEnd="38dp"
             android:layout_marginBottom="26dp"
-            android:layout_height="50dp"
             android:background="@drawable/button_bk"
             android:text="@string/next"
-            android:textColor="@android:color/white"/>
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
 
         <android.inputmethodservice.KeyboardView
             android:id="@+id/keyboard_view"

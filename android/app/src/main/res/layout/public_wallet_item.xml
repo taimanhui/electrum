@@ -32,7 +32,7 @@
         <View
             android:id="@+id/ewrwerw"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_1"
+            android:layout_height="@dimen/line_hight"
             android:layout_below="@+id/img_deleteKey"
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginTop="13.5dp"

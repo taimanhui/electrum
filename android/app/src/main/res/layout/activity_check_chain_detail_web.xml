@@ -28,6 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/check_trsaction"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -36,16 +37,17 @@
 
     <WebView
         android:id="@+id/web_heckChain"
-        android:layout_below="@+id/ksdhkhskdj"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </WebView>
-    <LinearLayout
-        android:id="@+id/lin_Nonet"
-        android:background="#fff"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/ksdhkhskdj">
+
+    </WebView>
+
+    <LinearLayout
+        android:id="@+id/lin_Nonet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">

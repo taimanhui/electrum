@@ -5,7 +5,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -31,15 +33,12 @@ import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MnemonicWordActivity extends BaseActivity {
-
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -88,6 +87,23 @@ public class MnemonicWordActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        inits();
+    }
+
+    private void inits() {
+        TextWatcher1 textWatcher1 = new TextWatcher1();
+        editOne.addTextChangedListener(textWatcher1);
+        editTwo.addTextChangedListener(textWatcher1);
+        editThree.addTextChangedListener(textWatcher1);
+        editFour.addTextChangedListener(textWatcher1);
+        editFive.addTextChangedListener(textWatcher1);
+        editSix.addTextChangedListener(textWatcher1);
+        editSeven.addTextChangedListener(textWatcher1);
+        editEight.addTextChangedListener(textWatcher1);
+        editNine.addTextChangedListener(textWatcher1);
+        editTen.addTextChangedListener(textWatcher1);
+        editEleven.addTextChangedListener(textWatcher1);
+        editTwelve.addTextChangedListener(textWatcher1);
 
     }
 
@@ -267,4 +283,28 @@ public class MnemonicWordActivity extends BaseActivity {
         });
     }
 
+    class TextWatcher1 implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if ((editOne.length() > 0 && editTwo.length() > 0 && editThree.length() > 0 && editFour.length() > 0)
+                    && editFive.length() > 0 && editSix.length() > 0 && editSeven.length() > 0 && editEight.length() > 0
+                    && editNine.length() > 0 && editTen.length() > 0 && editEleven.length() > 0 && editTwelve.length() > 0) {
+                btnSetPin.setEnabled(true);
+                btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
+            } else {
+                btnSetPin.setEnabled(false);
+                btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
+            }
+        }
+    }
 }

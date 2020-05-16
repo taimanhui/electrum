@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
@@ -24,6 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif-medium"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:text="@string/language"
@@ -43,7 +45,10 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
 
             <LinearLayout
@@ -65,7 +70,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:layout_marginStart="@dimen/dp_16"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:background="@color/separation_line" />
@@ -83,7 +88,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:background="@color/separation_line"
                     android:visibility="gone" />
 
@@ -99,7 +104,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:background="@color/separation_line"
                     android:visibility="invisible" />
 
@@ -116,7 +121,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:background="@color/separation_line"
                     android:visibility="invisible" />
 

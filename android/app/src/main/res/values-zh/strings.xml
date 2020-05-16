@@ -272,7 +272,6 @@
     <string name="doller">美元（USD）</string>
     <string name="korean_money">韩元（KMR）</string>
     <string name="synchroniz_service">同步服务器</string>
-    <string name="service_text">使用同步服务器，可备份和恢复多钱钱包，并可在多个联署人间同步并签名交易；</string>
     <string name="electrum_select">Electrum节点选择</string>
     <string name="add_custom_node">添加自定义节点</string>
     <string name="restore_factory">恢复出厂设置</string>
@@ -591,4 +590,8 @@
     <string name="pin_change_failed">原PIN码错误，请重试</string>
     <string name="set_pin_confirm">请在BixinKey上确认新PIN码</string>
     <string name="message_loading">消息传输中</string>
+    <string name="sign_error">签名异常</string>
+    <string name="reansaction_error">交易签名失败</string>
+    <string name="sign_timeout">签名超时</string>
+    <string name="service_text">使用同步服务器，可备份和恢复共管钱包，并可在多个联署人间同步并签名交易；</string>
 </resources>

@@ -67,21 +67,21 @@
             <View
                 android:id="@+id/ln"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:layout_below="@id/radio_group"
                 android:background="@color/separation_line" />
 
 
             <ImageView
                 android:id="@+id/touch_nfc"
-                android:layout_width="355dp"
-                android:layout_height="370dp"
-                android:layout_centerHorizontal="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_below="@id/ln"
-                android:layout_marginTop="@dimen/dp_30"
-                android:src="@drawable/touch_with_hardware"
-                android:visibility="visible"
-                android:contentDescription="@string/picture" />
+                android:layout_marginTop="32dp"
+                android:contentDescription="@string/picture"
+                android:background="@drawable/tiehe"
+                android:visibility="visible" />
+
             <TextView
                 android:id="@+id/text_prompt"
                 android:layout_width="match_parent"
@@ -98,14 +98,15 @@
             <FrameLayout
                 android:id="@+id/ble_device"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/dp_80"
                 android:layout_below="@id/ln"
                 android:layout_marginTop="@dimen/dp_30"
                 android:visibility="gone"/>
             <RelativeLayout
                 android:id="@+id/input_layout"
                 android:layout_width="match_parent"
-                android:layout_height="94dp"
+                android:layout_height="@dimen/dp_80"
                 android:background="@android:color/white"
                 android:layout_alignParentBottom="true"
                 android:visibility="visible">
@@ -138,7 +139,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="@dimen/dp_20"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:background="@color/onclick" />
             </RelativeLayout>
         </RelativeLayout>

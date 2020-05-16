@@ -33,13 +33,8 @@ public class HideWalletSetPassActivity extends BaseActivity {
     ImageView imgBack;
     @BindView(R.id.editNewPass)
     EditText editNewPass;
-    @BindView(R.id.editOldPass)
-    EditText editOldPass;
     @BindView(R.id.bn_next)
     Button bnNext;
-    @BindView(R.id.linearNextInputPass)
-    LinearLayout linearNextInputPass;
-    private String createOrcheck;
     public static final String TAG = "org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity";
 
     @Override
@@ -51,10 +46,7 @@ public class HideWalletSetPassActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        createOrcheck = preferences.getString("createOrcheck", "");//createOrcheck -->  judge create hide wallet or check hide wallet
-        if (createOrcheck.equals("check")) {//check -->  is check hide wallet
-            linearNextInputPass.setVisibility(View.GONE);
-        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -84,42 +76,19 @@ public class HideWalletSetPassActivity extends BaseActivity {
                 break;
             case R.id.bn_next:
                 String strNewpass = editNewPass.getText().toString();
-                String strNextpass = editOldPass.getText().toString();
-                if (createOrcheck.equals("check")) {
-                    if (TextUtils.isEmpty(strNewpass)) {
-                        mToast(getString(R.string.please_input_pass));
-                        return;
-                    }
-                    if (!isNFC) {
-                        EventBus.getDefault().post(new PinEvent("", strNewpass));
-                    } else {
-                        Intent intent = new Intent(this, CommunicationModeSelector.class);
-                        intent.putExtra("tag", TAG);
-                        intent.putExtra("passphrase", strNewpass);
-                        startActivity(intent);
-                    }
-                } else {
-                    if (TextUtils.isEmpty(strNewpass)) {
-                        mToast(getString(R.string.please_input_pass));
-                        return;
-                    }
-                    if (TextUtils.isEmpty(strNextpass)) {
-                        mToast(getString(R.string.please_next_input_pass));
-                        return;
-                    }
-                    if (!strNewpass.equals(strNextpass)) {
-                        mToast(getString(R.string.two_different_pass));
-                        return;
-                    }
-                    if (!isNFC) {
-                        EventBus.getDefault().post(new PinEvent("", strNewpass));
-                    } else {
-                        Intent intent = new Intent(this, CommunicationModeSelector.class);
-                        intent.putExtra("tag", TAG);
-                        intent.putExtra("passphrase", strNewpass);
-                        startActivity(intent);
-                    }
+                if (TextUtils.isEmpty(strNewpass)) {
+                    mToast(getString(R.string.please_input_pass));
+                    return;
                 }
+                if (!isNFC) {
+                    EventBus.getDefault().post(new PinEvent("", strNewpass));
+                } else {
+                    Intent intent = new Intent(this, CommunicationModeSelector.class);
+                    intent.putExtra("tag", TAG);
+                    intent.putExtra("passphrase", strNewpass);
+                    startActivity(intent);
+                }
+
                 finish();
                 break;
         }

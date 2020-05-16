@@ -219,10 +219,10 @@ public class TransactionsSettingActivity extends BaseActivity {
         }
         edit.putBoolean("set_rbf", true);
         edit.putBoolean("set_use_change", false);
-        edit.putBoolean("set_unconf", false);
+        edit.putBoolean("set_unconf", true);
         edit.apply();
         switchRbf.setChecked(true);
-        switchNoConfirm.setChecked(false);
+        switchNoConfirm.setChecked(true);
         switchFind.setChecked(false);
         myDialog.dismiss();
         mToast(getString(R.string.recovery_succse));

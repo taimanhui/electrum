@@ -26,6 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
@@ -72,7 +73,10 @@
                     android:layout_marginStart="@dimen/layout_margin"
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
-                    app:cardCornerRadius="@dimen/corner_radius"
+                    android:outlineSpotShadowColor="@color/shadow_color"
+                    app:cardCornerRadius="@dimen/dp_8"
+                    app:cardElevation="@dimen/dp_8"
+                    tools:ignore="UnusedAttribute"
                     app:layout_constraintTop_toBottomOf="@+id/textView24">
 
                     <LinearLayout
@@ -140,7 +144,10 @@
                     android:layout_marginStart="@dimen/layout_margin"
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
-                    app:cardCornerRadius="@dimen/corner_radius"
+                    android:outlineSpotShadowColor="@color/shadow_color"
+                    app:cardCornerRadius="@dimen/dp_8"
+                    app:cardElevation="@dimen/dp_8"
+                    tools:ignore="UnusedAttribute"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/card1">
 
@@ -206,7 +213,10 @@
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
                     android:layout_marginBottom="@dimen/dp_50"
-                    app:cardCornerRadius="@dimen/corner_radius"
+                    android:outlineSpotShadowColor="@color/shadow_color"
+                    app:cardCornerRadius="@dimen/dp_8"
+                    app:cardElevation="@dimen/dp_8"
+                    tools:ignore="UnusedAttribute"
                     app:layout_constraintTop_toBottomOf="@id/card2">
 
                     <LinearLayout

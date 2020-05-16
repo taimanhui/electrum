@@ -83,15 +83,16 @@
 
                 <TextView
                     android:id="@+id/tet_Addmoney"
-                    android:layout_width="70dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/dp_60"
+                    android:layout_height="@dimen/dp_24"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/gray_shentuo"
                     android:drawableStart="@drawable/add_small"
                     android:gravity="center"
-                    android:paddingStart="15dp"
-                    android:paddingEnd="@dimen/layout_margin"
+                    android:textSize="@dimen/sp_13"
+                    android:paddingStart="@dimen/dp_9"
+                    android:paddingEnd="@dimen/dp_10"
                     android:text="@string/add_"
                     android:textColor="@android:color/white" />
 
@@ -120,7 +121,10 @@
             android:layout_marginTop="295dp"
             android:layout_marginEnd="@dimen/layout_margin"
             android:layout_marginBottom="@dimen/dp_19"
-            app:cardCornerRadius="@dimen/corner_radius"
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute"
             app:layout_constraintTop_toBottomOf="@id/linearLayout">
 
             <LinearLayout
@@ -153,7 +157,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:layout_marginTop="49.5dp"
                 android:background="@color/separation_line" />
 

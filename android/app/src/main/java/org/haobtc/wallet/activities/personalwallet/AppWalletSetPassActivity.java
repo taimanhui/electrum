@@ -3,7 +3,9 @@ package org.haobtc.wallet.activities.personalwallet;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +16,7 @@ import com.chaquo.python.PyObject;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.MnemonicEvent;
@@ -62,7 +65,9 @@ public class AppWalletSetPassActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        TextWatcher1 textWatcher1 = new TextWatcher1();
+        edtPass1.addTextChangedListener(textWatcher1);
+        edtPass2.addTextChangedListener(textWatcher1);
     }
 
 
@@ -102,7 +107,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                             e.printStackTrace();
                             if (e.getMessage().contains("path is exist")) {
                                 mToast(getString(R.string.changewalletname));
-                            }else if (e.getMessage().contains("The same seed have create wallet")){
+                            } else if (e.getMessage().contains("The same seed have create wallet")) {
                                 mToast(getString(R.string.same_seed_have));
                             }
                             return;
@@ -118,6 +123,29 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     }
                 });
                 break;
+        }
+    }
+
+    class TextWatcher1 implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if ((edtPass1.length() > 0 && edtPass2.length() > 0)) {
+                btnSetPin.setEnabled(true);
+                btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
+            } else {
+                btnSetPin.setEnabled(false);
+                btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
+            }
         }
     }
 

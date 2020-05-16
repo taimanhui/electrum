@@ -17,8 +17,8 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
             android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
         <TextView
@@ -27,6 +27,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/bixinkey_backups"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -35,7 +36,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
+        android:layout_height="@dimen/line_hight"
         android:background="@color/line_color" />
 
     <TextView
@@ -61,21 +62,21 @@
             android:layout_height="@dimen/dp_50"
             android:layout_marginStart="@dimen/dp_10"
             android:layout_weight="1"
+            android:autofillHints=""
             android:background="@null"
             android:ellipsize="end"
             android:hint="@string/please_clode_text"
+            android:inputType="text"
             android:singleLine="true"
-            android:textSize="@dimen/text_size"
-            android:autofillHints=""
-            android:inputType="text"/>
+            android:textSize="@dimen/text_size" />
 
         <ImageView
             android:id="@+id/bn_scan"
             android:layout_width="@dimen/dp_30"
             android:layout_height="@dimen/dp_50"
+            android:contentDescription="@string/scaning"
             android:padding="@dimen/dp_8"
-            android:src="@drawable/saoyisao"
-            android:contentDescription="@string/scaning" />
+            android:src="@drawable/saoyisao" />
 
         <TextView
             android:id="@+id/bn_paste"
@@ -129,9 +130,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="26dp"
         android:layout_marginTop="@dimen/dp_20"
-        android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dp_5">
 
         <LinearLayout

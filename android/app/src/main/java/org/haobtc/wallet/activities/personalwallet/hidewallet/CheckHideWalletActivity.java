@@ -65,7 +65,6 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     TextView tetNone;
     @BindView(R.id.wallet_card_tv3)
     TextView walletCard;
-    private String hideWalletName;
     private PyObject select_wallet;
     private MaindowndatalistAdapetr trsactionlistAdapter;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
@@ -93,7 +92,6 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
         EventBus.getDefault().register(this);
         myDialog = MyDialog.showDialog(CheckHideWalletActivity.this);
         Intent intent = getIntent();
-        hideWalletName = intent.getStringExtra("hideWalletName");
         inits();
     }
 
@@ -101,7 +99,6 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
         //get wallet unit
         String base_unit = preferences.getString("base_unit", "");
         walletCard.setText(String.format("%s（%s）", getString(R.string.balance), base_unit));
-        walletCardName.setText(hideWalletName);
         refreshLayout.setEnableLoadMore(false);
         refreshLayout.setEnableRefresh(true);
         refreshLayout.setOnRefreshListener(this);
@@ -121,7 +118,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     //get wallet message
     public void getWalletMsg() {
         try {
-            select_wallet = Daemon.commands.callAttr("select_wallet", hideWalletName);
+            select_wallet = Daemon.commands.callAttr("select_wallet", "隐藏钱包");
         } catch (Exception e) {
             Log.i("select_wallet", "--------- " + e.getMessage());
             e.printStackTrace();
@@ -330,7 +327,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 edit.putString("wallet_type_to_sign", "1-1");
                 edit.apply();
                 Intent intent1 = new Intent(CheckHideWalletActivity.this, SendOne2OneMainPageActivity.class);
-                intent1.putExtra("wallet_name", hideWalletName);
+                intent1.putExtra("wallet_name", "隐藏钱包");
                 intent1.putExtra("wallet_type", "1-1");
                 intent1.putExtra("strNowBtc", walletCardTv4.getText().toString());
                 intent1.putExtra("strNowCny", tetCny.getText().toString());
@@ -349,7 +346,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 break;
             case R.id.conlay_back:
                 Intent intent = new Intent(CheckHideWalletActivity.this, WalletDetailsActivity.class);
-                intent.putExtra("wallet_name", hideWalletName);
+                intent.putExtra("wallet_name", "隐藏钱包");
                 startActivity(intent);
                 break;
             case R.id.textView_more:

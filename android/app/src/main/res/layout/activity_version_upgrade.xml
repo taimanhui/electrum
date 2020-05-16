@@ -30,6 +30,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/hardware"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -61,7 +62,10 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -107,7 +111,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:background="@color/separation_line" />
@@ -142,7 +146,10 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -180,13 +187,13 @@
                         android:layout_width="@dimen/dp_20"
                         android:layout_height="@dimen/dp_20"
                         android:background="@drawable/circle_checkbox"
-                        android:button="@null"/>
+                        android:button="@null" />
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:background="@color/separation_line" />
@@ -218,19 +225,23 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_80"
-            android:layout_marginTop="@dimen/dp_10"
             android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
             android:layout_marginEnd="@dimen/dp_10"
-            app:cardCornerRadius="@dimen/dp_8">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
+
             <TextView
                 android:id="@+id/btn_import_file"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_80"
-                android:text="@string/diy_hardware"
                 android:gravity="center"
+                android:text="@string/diy_hardware"
                 android:textColor="@color/button_bk"
-                android:textStyle="bold"
-                android:textSize="@dimen/sp_16"/>
+                android:textSize="@dimen/sp_16"
+                android:textStyle="bold" />
         </androidx.cardview.widget.CardView>
 
     </LinearLayout>

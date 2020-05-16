@@ -26,6 +26,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/import_mutiSig"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />

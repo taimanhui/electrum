@@ -20,7 +20,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_14"
-                android:text="交易签名失败"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/reansaction_error"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +39,7 @@
             <View
                 android:id="@+id/view7"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:layout_marginTop="50dp"
                 android:background="@color/separation_line"
                 app:layout_constraintTop_toTopOf="parent" />

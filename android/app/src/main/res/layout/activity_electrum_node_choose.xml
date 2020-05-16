@@ -28,6 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/electrum_select"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -45,7 +46,11 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/dp_16"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:layout_marginBottom="65dp"
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,17 +60,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_20"
                     android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_20"
                     android:gravity="center_vertical"
                     android:text="@string/electrum_select"
                     android:textColor="@color/text"
                     android:textSize="@dimen/sp_14" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_5"
                     android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_5"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:gravity="center_vertical"
                     android:text="@string/electrum_tips"
@@ -74,9 +80,9 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_marginTop="@dimen/dp_16"
                     android:layout_height="0.5dp"
                     android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_16"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:background="@color/line_color" />
 
@@ -84,7 +90,6 @@
                     android:id="@+id/recl_nodeChose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="65dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="3"
                     tools:listitem="@layout/node_item">
@@ -104,10 +109,10 @@
             <Button
                 android:id="@+id/btn_Finish"
                 android:layout_width="match_parent"
-                android:layout_marginEnd="@dimen/dp_16"
-                android:layout_marginStart="@dimen/dp_16"
                 android:layout_height="@dimen/dp_40"
                 android:layout_centerInParent="true"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
                 android:background="@drawable/little_radio_blue"
                 android:text="@string/add_custom_node"
                 android:textAllCaps="false"

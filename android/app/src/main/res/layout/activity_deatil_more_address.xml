@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
-    android:fitsSystemWindows="true"
     android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".activities.transaction.DeatilMoreAddressActivity">
 
@@ -23,8 +23,8 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:layout_gravity="end"
-            android:background="?android:attr/selectableItemBackground"
             android:layout_marginEnd="15.3dp"
+            android:background="?android:attr/selectableItemBackground"
             android:padding="8dp"
             app:srcCompat="@drawable/back" />
 
@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/to"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -42,15 +43,15 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recy_moreAddress"
-        android:paddingStart="@dimen/dp_12"
-        android:paddingEnd="@dimen/dp_12"
-        android:paddingTop="@dimen/dp_12"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:background="@color/bk_page"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bk_page"
+        android:paddingStart="@dimen/dp_12"
+        android:paddingTop="@dimen/dp_12"
+        android:paddingEnd="@dimen/dp_12"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="3"
-        tools:listitem="@layout/moreaddress_item"
-        android:layout_height="match_parent">
+        tools:listitem="@layout/moreaddress_item">
 
     </androidx.recyclerview.widget.RecyclerView>
 

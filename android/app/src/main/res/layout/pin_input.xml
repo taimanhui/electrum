@@ -84,14 +84,14 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginEnd="@dimen/dp_30"
                 android:background="@color/light_text" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginTop="@dimen/dp_50"
                 android:layout_marginEnd="@dimen/dp_30"

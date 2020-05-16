@@ -19,8 +19,8 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
             android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
         <TextView
@@ -29,6 +29,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/transaction_records"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -125,7 +126,10 @@
             android:layout_marginEnd="@dimen/layout_margin"
             android:layout_marginBottom="@dimen/layout_margin"
             android:elevation="@dimen/dp_4"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
             <com.scwang.smartrefresh.layout.SmartRefreshLayout
                 android:id="@+id/smart_RefreshLayout"

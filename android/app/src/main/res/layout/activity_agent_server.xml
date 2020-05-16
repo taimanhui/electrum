@@ -18,8 +18,8 @@
             android:id="@+id/img_back"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
-            android:background="?android:attr/selectableItemBackground"
             android:layout_centerVertical="true"
+            android:background="?android:attr/selectableItemBackground"
             android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
@@ -29,6 +29,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/agent_server"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -49,7 +50,10 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -101,7 +105,10 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -116,10 +123,10 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="?android:attr/selectableItemBackground"
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:paddingStart="@dimen/dp_16"
-                        android:background="?android:attr/selectableItemBackground"
                         android:text="@string/node_type"
                         android:textColor="@color/text"
                         tools:ignore="RtlSymmetry" />
@@ -132,8 +139,8 @@
                         android:drawableEnd="@drawable/jiantou"
                         android:drawablePadding="@dimen/dp_10"
                         android:focusable="true"
-                        android:hint="@string/select"
                         android:gravity="center_vertical|end"
+                        android:hint="@string/select"
                         android:paddingEnd="@dimen/dp_16"
                         android:textColor="@color/text"
                         android:textSize="@dimen/sp_14"
@@ -142,7 +149,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:layout_marginStart="@dimen/dp_16"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:background="@color/line_color" />
@@ -179,7 +186,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:layout_marginStart="@dimen/dp_16"
                     android:layout_marginTop="@dimen/dp_15"
                     android:layout_marginEnd="@dimen/dp_16"
@@ -208,9 +215,9 @@
                     android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:layout_marginBottom="@dimen/dp_20"
-                    android:inputType="textPassword"
                     android:background="@drawable/gray_tuo_6"
                     android:hint="@string/password"
+                    android:inputType="textPassword"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_16"
                     android:singleLine="true"
@@ -233,8 +240,8 @@
             android:layout_width="343dp"
             android:layout_height="@dimen/dp_40"
             android:layout_centerInParent="true"
-            android:enabled="false"
             android:background="@drawable/little_radio_qian"
+            android:enabled="false"
             android:text="@string/comfirm"
             android:textAllCaps="false"
             android:textColor="@android:color/white">

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
@@ -24,6 +25,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
@@ -49,7 +51,10 @@
                 android:layout_marginLeft="@dimen/layout_margin"
                 android:layout_marginTop="@dimen/dp_16"
                 android:layout_marginRight="@dimen/layout_margin"
-                app:cardCornerRadius="@dimen/corner_radius">
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -73,7 +78,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -93,7 +98,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -113,7 +118,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line"
                         android:visibility="visible" />
 
@@ -150,7 +155,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <LinearLayout
@@ -188,7 +193,7 @@
                     </LinearLayout>
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line"
                         android:visibility="visible" />
 
@@ -218,7 +223,10 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="@dimen/layout_margin"
                 android:layout_marginBottom="@dimen/dp_10"
-                app:cardCornerRadius="@dimen/corner_radius">
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -244,7 +252,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -265,7 +273,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -287,7 +295,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -308,7 +316,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <RelativeLayout
@@ -342,7 +350,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <RelativeLayout

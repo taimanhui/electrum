@@ -83,8 +83,6 @@ public class HideWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btnNext:
-                edit.putString("createOrcheck", "create");
-                edit.apply();
                 CommunicationModeSelector.runnables.clear();
                 CommunicationModeSelector.runnables.add(null);
                 CommunicationModeSelector.runnables.add(runnable2);

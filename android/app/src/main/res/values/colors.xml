@@ -49,5 +49,7 @@
     <color name="key_bk">#e6d2d5db</color>
     <color name="text_blue">#6182f5</color>
     <color name="processing_bk">#7b99ff</color>
+    <color name="app_name_text">#4a5066</color>
+    <color name="shadow_color">#D2D2D2</color>
 
 </resources>

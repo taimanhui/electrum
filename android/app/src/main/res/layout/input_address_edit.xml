@@ -25,6 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif-medium"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:text="@string/import_mutiSig"
@@ -64,7 +65,7 @@
 
                 <View
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:layout_marginTop="19.5dp"
                     android:background="@color/separation_line" />
 

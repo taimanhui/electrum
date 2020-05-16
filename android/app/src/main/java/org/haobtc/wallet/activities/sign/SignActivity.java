@@ -7,6 +7,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,6 +16,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -111,7 +115,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     public void initData() {
         //get sign address
         mGeneratecode();
-        if (!TextUtils.isEmpty(personceType)){
+        if (!TextUtils.isEmpty(personceType)) {
             if (!"1-1".equals(personceType) && !personceType.contains("standard")) {
                 radioSignMsg.setVisibility(View.GONE);
             }
@@ -217,8 +221,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 pasteMessage(editTrsactionTest);
                 break;
             case R.id.btnConfirm:
-                edit.putString("createOrcheck", "check");
-                edit.apply();
                 if ("standard".equals(personceType)) {//Software Wallet sign
                     strSoftMsg = editTrsactionTest.getText().toString();
                     if (TextUtils.isEmpty(strSoftMsg)) {
@@ -258,6 +260,16 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private void signDialog() {
         View view1 = LayoutInflater.from(SignActivity.this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(SignActivity.this).setView(view1).create();
+
+        Window window = alertDialog.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setDimAmount(0f);
+        lp.width = getResources().getDimensionPixelOffset(R.dimen.dp_335);
+        lp.height = getResources().getDimensionPixelOffset(R.dimen.dp_200);
+        alertDialog.getWindow().setAttributes(lp);
+
+
         EditText str_pass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
             String strPassword = str_pass.getText().toString();

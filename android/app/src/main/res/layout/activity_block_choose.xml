@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/button_bk_ddake"
+    android:orientation="vertical"
     tools:context=".activities.settings.BlockChooseActivity">
 
     <RelativeLayout
-        android:background="@color/button_bk_ddake"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50">
+        android:layout_height="@dimen/dp_50"
+        android:background="@color/button_bk_ddake">
 
         <ImageView
             android:id="@+id/img_back"
@@ -28,6 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/block_choose"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -39,17 +40,29 @@
         android:layout_height="match_parent"
         android:background="@color/bk_page">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recl_Quetation"
-            android:background="@drawable/white_tuo"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/dp_10"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="3"
-            tools:listitem="@layout/chooseaddress">
+            android:layout_marginBottom="@dimen/dp_10"
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recl_Quetation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white_tuo"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/chooseaddress">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </androidx.cardview.widget.CardView>
+
     </LinearLayout>
 
 </LinearLayout>

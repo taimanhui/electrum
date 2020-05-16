@@ -273,7 +273,6 @@
     <string name="doller">US dollar (USD)</string>
     <string name="korean_money">Korean dollar (KRW)</string>
     <string name="synchroniz_service">Syncing server</string>
-    <string name="service_text">Use syncing server to back up and recover multiple wallets, or sync and sign transactions among several co-signers;</string>
     <string name="electrum_select">Select Electrum node</string>
     <string name="add_custom_node">Add customized node</string>
     <string name="restore_factory">Restore factory settings</string>
@@ -497,6 +496,7 @@
     <string name="send_shortcut_access">Shortcut to send</string>
     <string name="please_input_walletname">Enter wallet name</string>
     <string name="import_wallet">Import wallet</string>
+    <string name="_0_0">0/0</string>
     <string name="Cancelled">Cancelled</string>
     <string name="choose_import_wallet">Choose wallet to import</string>
     <string name="key_check">Found wallets of BixinKEY\'s public keys. Please select and import</string>
@@ -619,4 +619,9 @@
     <string name="pin_change_failed">The original pin incorrect , please retry</string>
     <string name="set_pin_confirm">Please confirm the new PIN on BixinKey</string>
     <string name="message_loading">Message transmission in progress</string>
+    <string name="sign_error">签名异常</string>
+    <string name="reansaction_error">交易签名失败</string>
+    <string name="sign_timeout">签名超时</string>
+    <string name="service_text">With synchronous server, the wallet can be backed up and recovered, and the transaction can be synchronized and signed among multiple joint signers;</string>
+
 </resources>

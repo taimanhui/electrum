@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:clipToPadding="true"
     android:fitsSystemWindows="true">
@@ -18,8 +18,8 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
             android:background="?attr/selectableItemBackground"
+            android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
         <TextView
@@ -28,6 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/confirm_trans_d"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -106,8 +107,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="17dp"
                         android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginTop="17dp"
                         android:text="@string/bitcoin"
                         android:textColor="#b3b3b3"
                         android:textSize="15sp" />
@@ -115,7 +116,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:layout_marginStart="@dimen/dp_16"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:background="@color/line_color" />
@@ -143,15 +144,15 @@
                         android:layout_marginTop="17dp"
                         android:layout_marginEnd="@dimen/dp_20"
                         android:maxLines="1"
-                        tools:text="ksdhiunrfjskmdliweu893rj98"
                         android:textColor="#494949"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        tools:text="ksdhiunrfjskmdliweu893rj98" />
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:layout_marginStart="@dimen/dp_16"
                     android:layout_marginEnd="@dimen/dp_16"
                     android:background="@color/line_color" />
@@ -179,9 +180,9 @@
                         android:layout_marginTop="17dp"
                         android:layout_marginEnd="@dimen/dp_20"
                         android:maxLines="1"
-                        tools:text="0.00005BTC"
                         android:textColor="#494949"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        tools:text="0.00005BTC" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -189,13 +190,13 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recl_Msg"
                 android:layout_width="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/hardware_item"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/layout_margin"
                 android:layout_marginTop="@dimen/dp_10"
-                android:layout_marginEnd="@dimen/layout_margin" />
+                android:layout_marginEnd="@dimen/layout_margin"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/hardware_item" />
 
         </LinearLayout>
 

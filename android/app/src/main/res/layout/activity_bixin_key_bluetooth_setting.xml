@@ -27,6 +27,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/bluetooth_setting"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -46,7 +47,11 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius">
+            android:layout_marginBottom="@dimen/dp_10"
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -84,7 +89,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/line_hight"
                     android:background="@color/separation_line" />
 
                 <TextView

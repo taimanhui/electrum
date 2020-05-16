@@ -22,6 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
+                android:fontFamily="sans-serif-medium"
                 android:text="@string/file_name"
                 android:textColor="@color/text_color1"
                 android:textSize="@dimen/sp_16" />
@@ -38,7 +39,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_1"
+            android:layout_height="@dimen/line_hight"
             android:background="@color/line_color" />
 
         <EditText

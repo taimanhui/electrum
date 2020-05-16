@@ -77,6 +77,9 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     public void initData() {
         listDates = new ArrayList<>();//choose wallet data list
         walletList = new ArrayList<>();
+        list = new ArrayList<>();
+        histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, list);
+        reclImportWallet.setAdapter(histryWalletAdapter);
         //get histry wallet
         getHistryWallet();
 
@@ -107,7 +110,6 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                         walletList.add(inputHistoryWalletEvent);
                     }
 
-                    list = new ArrayList<>();
                     boolean flag = false;
                     for (int i = 0; i < walletList.size(); i++) {
                         String c = walletList.get(i).getName();
@@ -174,7 +176,11 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                         listDates.add(onlyData);
                     }
                 }
-                importWallet(new Gson().toJson(listDates));
+                if (listDates != null && listDates.size() > 0) {
+                    importWallet(new Gson().toJson(listDates));
+                } else {
+                    mToast(getString(R.string.please_import_wallet));
+                }
                 break;
         }
     }
@@ -183,7 +189,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         try {
             PyObject bulk_create_wallet = Daemon.commands.callAttr("bulk_create_wallet", listDates);
             String errorStr = bulk_create_wallet.toString();
-            if (!TextUtils.isEmpty(errorStr)){
+            if (!TextUtils.isEmpty(errorStr)) {
                 mToast(getString(R.string.some_wallet_existence));
             }
 

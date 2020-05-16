@@ -43,7 +43,7 @@ public class ImportHistryWalletAdapter extends RecyclerView.Adapter<ImportHistry
         }
     }
 
-    //获取最终的map存储数据
+    //Get the final map storage data
     public Map<Integer, Boolean> getMap() {
         return checkStatus;
     }

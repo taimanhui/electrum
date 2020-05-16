@@ -29,6 +29,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/settings"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -46,49 +47,62 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/layout_margin"
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/layout_margin"
-                android:background="@drawable/white_tuo">
+                android:layout_marginBottom="@dimen/dp_10"
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
-                <TextView
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:text="@string/walletname"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/sp_16" />
+                    android:layout_height="60dp"
+                    android:background="@drawable/white_tuo">
 
-                <TextView
-                    android:id="@+id/tet_Name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:drawablePadding="@dimen/dp_10"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:text="@string/wallet_name"
-                    android:textColor="@color/text"
-                    android:textSize="@dimen/sp_16" />
-            </RelativeLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:text="@string/walletname"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/sp_16" />
 
+                    <TextView
+                        android:id="@+id/tet_Name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:drawablePadding="@dimen/dp_10"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:text="@string/wallet_name"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/sp_16" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/layout_margin"
-                android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/layout_margin"
-                app:cardCornerRadius="@dimen/corner_radius"
+                android:layout_marginBottom="@dimen/dp_20"
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -131,22 +145,27 @@
 
             </androidx.cardview.widget.CardView>
 
-
-            <Button
-                android:id="@+id/tet_deleteWallet"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@drawable/white_tuo"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_10"
-                android:text="@string/delete_wallet"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/red_text"
-                android:textSize="15sp"
+                android:layout_marginEnd="@dimen/dp_10"
                 android:layout_marginBottom="@dimen/dp_5"
-                android:layout_marginEnd="@dimen/dp_10"/>
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
+                <Button
+                    android:id="@+id/tet_deleteWallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/white_tuo"
+                    android:text="@string/delete_wallet"
+                    android:textColor="@color/red_text"
+                    android:textSize="15sp" />
 
-
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

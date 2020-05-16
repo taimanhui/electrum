@@ -4,20 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginStart="@dimen/dp_5"
+    android:layout_marginEnd="@dimen/dp_5"
     tools:context=".fragment.mainwheel.WheelViewpagerFragment">
 
     <androidx.cardview.widget.CardView
         android:layout_width="315dp"
         android:layout_height="180dp"
-        android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_10"
-        android:layout_marginEnd="@dimen/dp_10"
-        android:outlineSpotShadowColor="@color/button_bk_disableok"
         app:cardCornerRadius="@dimen/dp_14"
-        app:cardElevation="20dp"
         app:cardPreventCornerOverlap="true"
         tools:ignore="UnusedAttribute">
-        
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/conlay_back"
             android:layout_width="match_parent"
@@ -45,23 +43,22 @@
                 android:layout_marginEnd="26dp"
                 android:drawableStart="@drawable/rule_white"
                 android:drawablePadding="5dp"
-                tools:text="0/0"
                 android:textColor="@android:color/white"
                 android:visibility="visible"
                 app:layout_constraintBaseline_toBaselineOf="@id/wallet_card_name"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="0/0" />
 
             <TextView
                 android:id="@+id/app_wallet"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_width="@dimen/dp_45"
+                android:layout_height="17dp"
                 android:layout_marginEnd="26dp"
                 android:background="@drawable/appwallet_text_back"
-                android:paddingStart="@dimen/corner_radius"
-                android:paddingEnd="@dimen/corner_radius"
+                android:gravity="center"
                 android:text="@string/app_walt"
-                android:textColor="@color/text"
-                android:textSize="@dimen/sp_12"
+                android:textColor="@color/app_name_text"
+                android:textSize="@dimen/sp_10"
                 android:visibility="gone"
                 app:layout_constraintBaseline_toBaselineOf="@id/wallet_card_name"
                 app:layout_constraintEnd_toEndOf="parent" />

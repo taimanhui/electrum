@@ -23,6 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
@@ -49,7 +50,10 @@
                 android:layout_marginStart="@dimen/layout_margin"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="@dimen/layout_margin"
-                app:cardCornerRadius="@dimen/corner_radius">
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -87,7 +91,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -116,7 +120,10 @@
                 android:layout_marginStart="@dimen/dp_10"
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_10"
-                app:cardCornerRadius="6dp">
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -163,7 +170,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -186,7 +193,10 @@
                 android:layout_marginStart="@dimen/dp_10"
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_10"
-                app:cardCornerRadius="6dp">
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -233,7 +243,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -256,7 +266,10 @@
                 android:layout_marginStart="@dimen/dp_10"
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_10"
-                app:cardCornerRadius="6dp">
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -303,7 +316,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -327,7 +340,10 @@
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_10"
                 android:layout_marginBottom="@dimen/dp_5"
-                app:cardCornerRadius="6dp">
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -369,7 +385,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_1"
+                        android:layout_height="@dimen/line_hight"
                         android:background="@color/separation_line" />
 
                     <TextView

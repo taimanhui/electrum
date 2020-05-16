@@ -40,7 +40,7 @@
             <View
                 android:id="@+id/view7"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_1"
+                android:layout_height="@dimen/line_hight"
                 android:layout_marginTop="50dp"
                 android:background="@color/separation_line"
                 app:layout_constraintTop_toTopOf="parent" />

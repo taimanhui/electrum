@@ -28,6 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/send"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -47,9 +48,12 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius"
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:id="@+id/lin_chooseAddress"
@@ -103,8 +107,11 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/layout_margin"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:layout_constraintTop_toBottomOf="@id/cardView5">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            app:layout_constraintTop_toBottomOf="@id/cardView5"
+            tools:ignore="UnusedAttribute">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -118,7 +125,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/text_margin"
                         android:layout_weight="1"
@@ -180,8 +187,11 @@
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="@dimen/layout_margin"
             android:layout_marginEnd="@dimen/layout_margin"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:layout_constraintTop_toBottomOf="@id/cardView6">
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            app:layout_constraintTop_toBottomOf="@id/cardView6"
+            tools:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -227,18 +237,18 @@
 
                 <LinearLayout
                     android:id="@+id/linear_seek"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <org.haobtc.wallet.utils.IndicatorSeekBar
                         android:id="@+id/seed_Bar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:min="1"
                         android:layout_marginTop="@dimen/dp_10"
                         android:max="100"
+                        android:min="1"
                         android:overScrollMode="never" />
 
                     <RelativeLayout
