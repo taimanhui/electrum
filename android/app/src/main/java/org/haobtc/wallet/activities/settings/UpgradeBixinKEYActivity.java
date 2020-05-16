@@ -22,6 +22,7 @@ import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
+import org.acra.data.StringFormat;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -36,6 +37,7 @@ import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
+import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -107,14 +109,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected void onPreExecute() {
             progressUpgrade.setIndeterminate(true);
-            switch (tag) {
-                case 1:
-                    tetUpgradeTest.setText("v" + getIntent().getExtras().getString("stm32_version"));
-                    break;
-                case 2:
-                    tetUpgradeTest.setText("v" + getIntent().getExtras().getString("nrf_version"));
-            }
-
         }
 
         @Override
@@ -218,6 +212,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         protected void onCancelled() {
             VersionUpgradeActivity.filePath = "";
             tetUpgradeTest.setText(getString(R.string.Cancelled));
+            EventBus.getDefault().post(new ExistEvent());
             if (isNew) {
                 isNew = false;
                 showPromptMessage(R.string.is_new);
@@ -250,7 +245,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newLoaderVersion));
+        if (tag == 1) {
+            runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newLoaderVersion));
+        } else {
+            runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newNrfVersion));
+        }
         if (isDfu) {
             dfu();
         }
@@ -278,6 +277,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     public void initData() {
         newNrfVersion = getIntent().getExtras().getString("nrf_version");
         newLoaderVersion = getIntent().getExtras().getString("stm32_version");
+        switch (tag) {
+            case 1:
+                tetUpgradeTest.setText("V" + newLoaderVersion);
+                break;
+            case 2:
+                tetUpgradeTest.setText("V" + newNrfVersion);
+        }
         mTask = new MyTask();
         if ("bluetooth".equals(getIntent().getStringExtra("way"))) {
             mTask.execute("bluetooth");
@@ -313,6 +319,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
             finish();
+            if (mTask != null) {
+                mTask.cancel(true);
+            }
             final Intent pauseAction = new Intent(DfuBaseService.BROADCAST_ACTION);
             pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
             LocalBroadcastManager.getInstance(this).sendBroadcast(pauseAction);
@@ -332,13 +341,16 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 SharedPreferences sharedPreferences = getSharedPreferences("devices", MODE_PRIVATE);
                 String device = sharedPreferences.getString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), "");
                 if (Strings.isNullOrEmpty(device)) {
+                    EventBus.getDefault().post(new ExistEvent());
                     showPromptMessage(R.string.un_bonded);
                     return;
                 }
                 HardwareFeatures features = new Gson().fromJson(device, HardwareFeatures.class);
                 String nrfVersion = features.getBleVer();
                 if (newNrfVersion.compareTo(nrfVersion) <= 0) {
+                    EventBus.getDefault().post(new ExistEvent());
                     showPromptMessage(R.string.is_new);
+                    finish();
                     return;
                 } else {
                     runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
@@ -362,14 +374,14 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
                 File file = new File(String.format("%s/bixin.zip", getExternalCacheDir().getPath()));
                 if (!file.exists()) {
+                    EventBus.getDefault().post(new ExistEvent());
                     Toast.makeText(this, R.string.update_file_not_exist, Toast.LENGTH_LONG).show();
-//                    EventBus.getDefault().post(new ExecuteEvent());
                     finish();
                     return;
                 }
             } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
+                EventBus.getDefault().post(new ExistEvent());
                 Toast.makeText(this, R.string.update_file_format_error, Toast.LENGTH_LONG).show();
-//                EventBus.getDefault().post(new ExecuteEvent());
                 finish();
                 return;
             }

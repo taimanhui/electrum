@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/button_bk_ddake"
-    android:layout_centerHorizontal="true"
-    tools:context=".activities.settings.fixpin.ConfirmActivity">
+    android:background="@color/button_bk_ddake">
 
     <RelativeLayout
         android:id="@+id/snkdfnksjndkjsd"
@@ -19,37 +15,40 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackground"
             android:src="@drawable/back" />
 
     </RelativeLayout>
 
     <ImageView
-        android:id="@+id/imgtongguo"
+        android:id="@+id/imgStatus"
         android:layout_width="@dimen/dp_80"
         android:layout_height="@dimen/dp_80"
         android:layout_below="@+id/snkdfnksjndkjsd"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="62dp"
-        android:src="@drawable/queren" />
+        android:src="@drawable/fail" />
 
     <TextView
+        android:id="@+id/testStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imgtongguo"
+        android:layout_below="@+id/imgStatus"
         android:layout_marginTop="@dimen/dp_30"
         android:gravity="center_horizontal"
-        android:textColor="#494949"
-        android:textSize="18sp"
-        android:text="@string/active_failed" />
+        android:textStyle="bold"
+        android:text="@string/pin_change_failed"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/sp_18" />
+
 
     <Button
         android:id="@+id/btn_finish"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/dp_30"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dp_30"
         android:background="@drawable/button_bk"
         android:text="@string/finish"
         android:textAllCaps="false"

@@ -19,7 +19,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
-import org.haobtc.wallet.activities.settings.fixpin.ActiveFailedActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ConfirmActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ButtonRequestEvent;

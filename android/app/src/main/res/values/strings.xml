@@ -488,7 +488,7 @@
     <string name="please_inputIp">Please enter IP</string>
     <string name="please_inputPort">Please enter port NO.</string>
     <string name="add_finished">Added</string>
-    <string name="upgradeed">Upgraded to v1.2【string name 里有拼写错误】</string>
+    <string name="upgradeed">Upgraded to newest version</string>
     <string name="please_confirmKEY">Please confirm new PIN code on BixinKEY</string>
     <string name="hours_24">24-hour Limit</string>
     <string name="no_need_PIN">No need for PIN code</string>
@@ -616,5 +616,7 @@
     <string name="diy_hardware">Custom firmware file</string>
     <string name="input_backup_pass">Enter backup password</string>
     <string name="input_key_pass">Please enter the password displayed by BixinKEY</string>
+    <string name="pin_change_failed">The original pin incorrect , please retry</string>
+    <string name="set_pin_confirm">Please confirm the new PIN on BixinKey</string>
     <string name="message_loading">Message transmission in progress</string>
 </resources>

@@ -7,8 +7,8 @@
     tools:context=".fragment.mainwheel.WheelViewpagerFragment">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="315dp"
+        android:layout_height="180dp"
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_10"
@@ -20,8 +20,8 @@
         
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/conlay_back"
-            android:layout_width="300dp"
-            android:layout_height="160dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@drawable/home_bg"
             android:visibility="visible">
 

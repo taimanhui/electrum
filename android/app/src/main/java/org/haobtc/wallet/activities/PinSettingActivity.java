@@ -16,15 +16,16 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
+import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
+import org.haobtc.wallet.activities.settings.fixpin.ConfirmActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
-import org.haobtc.wallet.event.ReadingEvent;
 import org.haobtc.wallet.event.SecondEvent;
-import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
@@ -46,6 +47,7 @@ public class PinSettingActivity extends BaseActivity {
     private String tag;
     public static final String TAG = PinSettingActivity.class.getSimpleName();
     private RelativeLayout relativeLayout_key;
+    private int pinType;
 
     @Override
     public int getLayoutId() {
@@ -57,7 +59,7 @@ public class PinSettingActivity extends BaseActivity {
         EventBus.getDefault().register(this);
         relativeLayout_key = findViewById(R.id.relativeLayout_key);
         keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
-        int pinType = getIntent().getIntExtra("pin_type", 0);
+        pinType = getIntent().getIntExtra("pin_type", 0);
         tag = getIntent().getStringExtra("tag");
         switch (pinType) {
             case 2:
@@ -65,6 +67,7 @@ public class PinSettingActivity extends BaseActivity {
                 break;
             case 3:
                 textViewPinDescription.setText(getString(R.string.pin_original));
+                break;
             default:
                 textViewPinDescription.setText(getString(R.string.pin_input));
 
@@ -117,9 +120,15 @@ public class PinSettingActivity extends BaseActivity {
 //                            break;
                         case SettingActivity.TAG_CHANGE_PIN:
                         case HardwareDetailsActivity.TAG: // change pin
-                            Intent intent1 = new Intent(this, PinNewActivity.class);
-                            intent1.putExtra("pin_origin", pin);
-                            startActivity(intent1);
+                            if (pinType == 2) {
+                                Intent intent =  new Intent(this, ChangePinProcessingActivity.class);
+                                intent.putExtra("pin_new", pin);
+                                startActivity(intent);
+                            } else {
+                                Intent intent1 = new Intent(this, PinNewActivity.class);
+                                intent1.putExtra("pin_origin", pin);
+                                startActivity(intent1);
+                            }
                             break;
                         case RecoverySetActivity.TAG:
                             Intent intent2 = new Intent(this, ResetDeviceProcessing.class);
@@ -153,7 +162,10 @@ public class PinSettingActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void timeout(OperationTimeoutEvent event) {
-       // Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();
+        if (hasWindowFocus()) {
+            Toast.makeText(this, "pin 输入超时", Toast.LENGTH_SHORT).show();
+        }
+        EventBus.getDefault().post(new ExistEvent());
         finish();
     }
 

@@ -140,6 +140,22 @@ class TrezorClientBase(HardwareClientBase, Logger):
                          fingerprint=self.i4b(node.fingerprint),
                          child_number=self.i4b(node.child_num)).to_xpub()
 
+    def backup(self) -> str:
+        if type == 1:
+            msg = ("Confirm backup your {} device")
+        elif type == 2:
+            msg = ("Confirm recovry your {} device")
+        with self.run_flow(''):
+            return trezorlib.device.se_backup(self.client).hex()
+
+    def recovry(self, data):
+        with self.run_flow(''):
+            return trezorlib.device.se_restore(self.client, data)
+
+    def anti_counterfeiting_verify(self, inputmessage):
+        with self.run_flow(_("Confirm anti_counterfeiting_verify on your {} device")):
+            return trezorlib.device.anti_counterfeiting_verify(self.client, inputmessage=inputmessage)
+
     def toggle_passphrase(self):
         if self.features.passphrase_protection:
             msg = _("Confirm on your {} device to disable passphrases")
@@ -163,6 +179,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
 
     def set_bixin_app(self, is_bixin):
         with self.run_flow(_("")):
+            print(f"=======set is is_bixinapp=========clientbase.py L206")
             trezorlib.device.apply_settings(self.client, is_bixinapp=is_bixin)
 
     def set_pin(self, remove):
@@ -173,7 +190,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
         else:
             msg = _("Confirm on your {} device to set a PIN")
         with self.run_flow(msg):
-         return  trezorlib.device.change_pin(self.client, remove)
+            return trezorlib.device.change_pin(self.client, remove)
 
     def clear_session(self):
         '''Clear the session to force pin (and passphrase if enabled)

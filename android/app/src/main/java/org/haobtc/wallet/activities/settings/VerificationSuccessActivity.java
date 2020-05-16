@@ -87,7 +87,7 @@ public class VerificationSuccessActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.btn_finish:
-                Ble.getInstance().disconnectAll();
+                //Ble.getInstance().disconnectAll();
                 finishAffinity();
                 break;
         }

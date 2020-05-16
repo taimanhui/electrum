@@ -11,6 +11,9 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.common.base.Strings;
+import com.google.zxing.common.StringUtils;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -18,6 +21,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
+import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
@@ -74,7 +78,11 @@ public class ChangePinProcessingActivity extends BaseActivity {
     @Override
     public void initData() {
         if (!isNFC) {
-            EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
+            if (Strings.isNullOrEmpty(pinOrigin)) {
+                EventBus.getDefault().post(new PinEvent(pinNew, ""));
+            } else {
+                EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
+            }
         }
 
     }
@@ -98,7 +106,8 @@ public class ChangePinProcessingActivity extends BaseActivity {
                 firstPromote.setText(R.string.original_pin_wrong);
                 firstPromote.setCompoundDrawables(drawable, null, null, null);
             }
-            finishAffinity();
+            startActivity(new Intent(this, ChangePinFailedActivity.class));
+            finish();
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -113,7 +122,11 @@ public class ChangePinProcessingActivity extends BaseActivity {
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
         }
         Intent intent = new Intent(this, ConfirmActivity.class);
-        intent.putExtra("tag", TAG);
+        if (Strings.isNullOrEmpty(pinOrigin)) {
+            intent.putExtra("tag", "set_pin");
+        } else {
+            intent.putExtra("tag", TAG);
+        }
         startActivity(intent);
     }
     @OnClick(R.id.img_back)
@@ -134,7 +147,11 @@ public class ChangePinProcessingActivity extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
-            EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
+            if (Strings.isNullOrEmpty(pinOrigin)) {
+                EventBus.getDefault().post(new PinEvent(pinNew, ""));
+            } else {
+                EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
+            }
         }
     }
 

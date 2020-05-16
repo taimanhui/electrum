@@ -4,15 +4,12 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
-import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -20,17 +17,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
-import org.haobtc.wallet.activities.service.CommunicationModeSelector;
-import org.haobtc.wallet.activities.settings.fixpin.ActiveFailedActivity;
-import org.haobtc.wallet.activities.settings.fixpin.ConfirmActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.InitEvent;
-import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
-import org.haobtc.wallet.event.SendingFailedEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.ArrayList;
@@ -93,7 +84,9 @@ public class ActivatedProcessing extends BaseActivity {
     @Override
     public void initData() {
         NfcUtils.nfc(this, false);
-        EventBus.getDefault().post(new InitEvent("Activate"));
+        if (!isNFC) {
+            EventBus.getDefault().post(new InitEvent("Activate"));
+        }
         /*if (!isNFC) {
             EventBus.getDefault().post(new PinEvent(pin, ""));
         }*/
@@ -158,6 +151,7 @@ public class ActivatedProcessing extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
+            EventBus.getDefault().post(new InitEvent("Activate"));
         }
     }
 

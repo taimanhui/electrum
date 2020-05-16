@@ -82,7 +82,7 @@ public class HardwareDetailsActivity extends BaseActivity {
         } else {
             tetKeyName.setText(String.format("%s", "BixinKEY"));
         }
-        tetCode.setText(firmwareVersion);
+//        tetCode.setText(firmwareVersion);
 
     }
 
@@ -140,11 +140,11 @@ public class HardwareDetailsActivity extends BaseActivity {
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
-        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_LONG).show());
+        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_SHORT).show());
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(HardwareDetailsActivity.this, "获取更新信息失败", Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> Toast.makeText(HardwareDetailsActivity.this, "获取更新信息失败", Toast.LENGTH_SHORT).show());
             }
 
             @Override

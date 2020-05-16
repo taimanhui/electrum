@@ -33,6 +33,8 @@ public class ConfirmActivity extends BaseActivity {
         String tag = getIntent().getStringExtra("tag");
         if (ChangePinProcessingActivity.TAG.equals(tag)) {
             promoteMessage.setText(R.string.pin_change_confirm);
+        } else if ("set_pin".equals(tag)) {
+            promoteMessage.setText(R.string.set_pin_confirm);
         }
     }
 

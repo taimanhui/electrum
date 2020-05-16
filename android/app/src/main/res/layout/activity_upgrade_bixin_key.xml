@@ -69,7 +69,6 @@
             android:layout_marginBottom="38dp"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="@string/upgradeing"
             android:textColor="@color/text_color"
             android:textSize="@dimen/sp_13" />
         <TextView

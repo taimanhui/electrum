@@ -54,7 +54,7 @@ public class CheckXpubResultActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
                 finishAffinity();
-                Ble.getInstance().disconnectAll();
+               // Ble.getInstance().disconnectAll();
                 break;
             case R.id.copy_xpub:
                 ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);

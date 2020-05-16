@@ -16,6 +16,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
@@ -27,7 +28,7 @@ import butterknife.OnClick;
 public class PinNewActivity extends BaseActivity {
     @BindView(R.id.trader_pwd_set_pwd_edittext)
     PasswordInputView edtPwd;
-    @BindView(R.id.img_back)
+    @BindView(R.id.img_back_pin)
     ImageView imgBack;
     @BindView(R.id.bn_next)
     Button bnCreateWallet;
@@ -39,7 +40,7 @@ public class PinNewActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
-        return R.layout.pin_input;
+        return R.layout.pin_input_new;
     }
 
     public void initView() {
@@ -65,6 +66,7 @@ public class PinNewActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void timeout(OperationTimeoutEvent event) {
         Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();
+        EventBus.getDefault().post(new ExistEvent());
         finish();
     }
     @Override
@@ -84,10 +86,10 @@ public class PinNewActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.bn_next})
+    @OnClick({R.id.img_back_pin, R.id.bn_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.img_back:
+            case R.id.img_back_pin:
                 finish();
                 break;
             case R.id.bn_next:

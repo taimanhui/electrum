@@ -1,4 +1,4 @@
-package org.haobtc.wallet.activities.settings.recovery_set;
+package org.haobtc.wallet.activities.settings.fixpin;
 
 import android.view.View;
 import android.widget.Button;
@@ -11,9 +11,8 @@ import org.haobtc.wallet.aop.SingleClick;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.com.heaton.blelibrary.ble.Ble;
 
-public class ResetDeviceFailedActivity extends BaseActivity {
+public class ChangePinFailedActivity extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.btn_finish)
@@ -21,7 +20,7 @@ public class ResetDeviceFailedActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
-        return R.layout.reset_devcie_failed;
+        return R.layout.change_pin_failed;
     }
 
     @Override
@@ -40,7 +39,7 @@ public class ResetDeviceFailedActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.btn_finish:
-               // Ble.getInstance().disconnectAll();
+                // Ble.getInstance().disconnectAll();
                 finishAffinity();
                 break;
         }

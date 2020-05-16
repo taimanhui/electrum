@@ -28,6 +28,7 @@ import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
+import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.SecondEvent;
 
 import java.io.IOException;
@@ -98,6 +99,7 @@ public class SettingActivity extends BaseActivity {
         }
         activeSetPIN = getIntent().getStringExtra("ActiveSetPIN");
         if ("ActiveSetPIN".equals(activeSetPIN)) {
+            EventBus.getDefault().post(new ExistEvent());
             Intent intent1 = new Intent(this, CommunicationModeSelector.class);
             intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent1.putExtra("tag", TAG_CHANGE_PIN);
@@ -190,11 +192,11 @@ public class SettingActivity extends BaseActivity {
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
-        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_LONG).show());
+        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_SHORT).show());
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(SettingActivity.this, "获取更新信息失败", Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> Toast.makeText(SettingActivity.this, "获取更新信息失败", Toast.LENGTH_SHORT).show());
             }
 
             @Override

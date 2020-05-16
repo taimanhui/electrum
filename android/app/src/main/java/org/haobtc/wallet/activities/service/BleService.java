@@ -17,14 +17,22 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.common.io.ByteStreams;
+import com.google.common.primitives.Bytes;
+
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.DfuEvent;
+import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
+import org.haobtc.wallet.utils.CommonUtil;
 import org.haobtc.wallet.utils.CommonUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import cn.com.heaton.blelibrary.ble.Ble;
@@ -32,6 +40,7 @@ import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import okio.Buffer;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleHandler;
@@ -66,7 +75,7 @@ public class BleService extends Service {
 
         @Override
         public void onWriteSuccess(BleDevice device, BluetoothGattCharacteristic characteristic) {
-            Log.d(TAG, "send successful:" + CommonUtils.bytes2hex(characteristic.getValue()));
+           // Log.d(TAG, "send successful:" + CommonUtils.bytes2hex(characteristic.getValue()));
             ble.put("WRITE_SUCCESS", true);
         }
     };
@@ -104,12 +113,12 @@ public class BleService extends Service {
             Log.e(TAG, String.format("连接异常，异常状态码: %d", errorCode));
             switch (errorCode) {
                 case 2523:
-                    Toast.makeText(BleService.this, getString(R.string.bluetooth_abnormal), Toast.LENGTH_LONG).show();
+                   // Toast.makeText(BleService.this, getString(R.string.bluetooth_abnormal), Toast.LENGTH_LONG).show();
                 case 133:
                 case 8:
                 case 2521:
                 case 59:
-                    Toast.makeText(BleService.this, getString(R.string.bluetooth_fail), Toast.LENGTH_LONG).show();
+                   // Toast.makeText(BleService.this, getString(R.string.bluetooth_fail), Toast.LENGTH_LONG).show();
                 default:
                     Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
             }
@@ -126,7 +135,8 @@ public class BleService extends Service {
         public void onConnectTimeOut(BleDevice device) {
             super.onConnectTimeOut(device);
             Log.e(TAG, String.format("连接设备==%s超时", device.getBleName()));
-            stopSelf();
+            EventBus.getDefault().post(new ExistEvent());
+//            stopSelf();
         }
     };
     private void handle() {
@@ -135,13 +145,17 @@ public class BleService extends Service {
     }
     private void setNotify(BleDevice device) {
         /*Set up notifications when the connection is successful*/
+        StringBuffer buffer = new StringBuffer();
         mBle.enableNotify(device, true, new BleNotiftCallback<BleDevice>() {
             @Override
             public void onChanged(BleDevice device, BluetoothGattCharacteristic characteristic) {
+                buffer.append(CommonUtils.bytes2hex(characteristic.getValue()));
                 Log.e(TAG, "receive from hardware: " + CommonUtils.bytes2hex(characteristic.getValue()));
-                bleHandler.put("RESPONSE", characteristic.getValue());
+                if ((Integer.parseInt(buffer.substring(10, 18), 16) + 9) == buffer.toString().length()/2) {
+                    bleHandler.put("RESPONSE", buffer.toString());
+                    buffer.delete(0, buffer.length());
+                }
             }
-
             @Override
             public void onNotifySuccess(BleDevice device) {
                 super.onNotifySuccess(device);
@@ -191,6 +205,7 @@ public class BleService extends Service {
                     case BluetoothDevice.BOND_NONE:
                         boolean bond =  bluetoothDevice.createBond();
                         if (!bond) {
+                            EventBus.getDefault().post(new ExistEvent());
                             Log.e("BLE", "无法绑定设备");
                             Toast.makeText(this, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
                         }
@@ -219,6 +234,11 @@ public class BleService extends Service {
                     }
                     if (state == BluetoothDevice.BOND_BONDING && previousState == BluetoothDevice.BOND_NONE) {
                         EventBus.getDefault().post(new ConnectingEvent());
+                        return;
+                    }
+                    if (state == BluetoothDevice.BOND_NONE && previousState == BluetoothDevice.BOND_BONDING) {
+                        EventBus.getDefault().post(new ExistEvent());
+                        Log.d(TAG, String.format("您已拒绝与设备==%s==配对", bluetoothDevice.getName()));
                         return;
                     }
                     if (state == BluetoothDevice.BOND_BONDED && previousState == BluetoothDevice.BOND_BONDING  && isBonded) {

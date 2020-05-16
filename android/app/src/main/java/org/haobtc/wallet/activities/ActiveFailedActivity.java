@@ -1,4 +1,4 @@
-package org.haobtc.wallet.activities.settings.fixpin;
+package org.haobtc.wallet.activities;
 
 import android.view.View;
 import android.widget.Button;
@@ -42,7 +42,7 @@ public class ActiveFailedActivity extends BaseActivity {
             case R.id.img_back:
             case R.id.btn_finish:
                 finishAffinity();
-                Ble.getInstance().disconnectAll();
+                // Ble.getInstance().disconnectAll();
                 break;
         }
     }

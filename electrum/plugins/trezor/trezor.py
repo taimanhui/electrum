@@ -158,6 +158,7 @@ class TrezorPlugin(HW_PluginBase):
                 for d in devices]
 
     def create_client(self, device, handler):
+        print(f"get_client =======in trezor=========trezor.py-L161")
         try:
             self.logger.info(f"connecting to device at {device.path}")
             transport = trezorlib.transport.get_transport(device.path)

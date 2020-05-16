@@ -283,7 +283,7 @@ public class VersionUpgradeActivity extends BaseActivity {
             String substring = str.substring(1);
             filePath = substring.substring(0, substring.length() - 1);
             Log.i("listExtra", "listExtra--: " + listExtra + "   strPath ---  " + filePath);
-            mToast(filePath);
+            //mToast(filePath);
         }
     }
 }

@@ -356,8 +356,9 @@ public final class BleRequestImpl<T extends BleDevice> {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean connect(final String address) {
         if (connectedAddressList.contains(address)) {
+            connectedAddressList.remove(address);
             BleLog.d(TAG, "This is device already connected.");
-            return true;
+           // return true;
         }
         if (bluetoothAdapter == null) {
             BleLog.w(TAG, "BluetoothAdapter not initialized");

@@ -493,7 +493,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
-            Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
+           // Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
             //Rolling Wallet
             ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
 

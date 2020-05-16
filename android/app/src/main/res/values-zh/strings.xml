@@ -414,7 +414,7 @@
     <string name="please_inputIp">请输入IP</string>
     <string name="please_inputPort">请输入端口号</string>
     <string name="add_finished">添加成功</string>
-    <string name="upgradeed">已升级至v1.2</string>
+    <string name="upgradeed">已升级至最新版本</string>
     <string name="pin_change_success">PIN码修改成功</string>
     <string name="hours_24">24小时限额</string>
     <string name="no_need_PIN">不需要PIN码</string>
@@ -588,5 +588,7 @@
     <string name="diy_hardware">自定义固件文件</string>
     <string name="input_backup_pass">输入备份密码</string>
     <string name="input_key_pass">请输入备份是BixinKey展示的密码</string>
+    <string name="pin_change_failed">原PIN码错误，请重试</string>
+    <string name="set_pin_confirm">请在BixinKey上确认新PIN码</string>
     <string name="message_loading">消息传输中</string>
 </resources>

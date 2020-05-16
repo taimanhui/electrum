@@ -139,6 +139,7 @@ class AndroidCommands(commands.Commands):
         self.wallet = None
         self.client = None
         self.path = ''
+        self.lock = threading.RLock()
         self.update_local_wallet_info()
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
@@ -528,7 +529,7 @@ class AndroidCommands(commands.Commands):
                         tx = tx_from_any(txinfo['tx'])
                         tx.deserialize()
                         self.do_save(tx)
-                        print(f"pull_tx_infos============ save ok {txinfo['tx_hash']}")
+                        # print(f"pull_tx_infos============ save ok {txinfo['tx_hash']}")
                     except BaseException as e:
                         print(f"except-------- {txinfo['tx_hash'],txinfo['tx']}")
                         temp_data = {}
@@ -1164,7 +1165,7 @@ class AndroidCommands(commands.Commands):
     def backup_wallet(self, path='android_usb'):
         client = self.get_client(path=path)
         try:
-            response = device.se_backup(client.client)
+            response = client.backup()
         except Exception as e:
             raise BaseException(e)
         return response
@@ -1172,39 +1173,28 @@ class AndroidCommands(commands.Commands):
     def recovery_wallet(self, msg, path='android_usb'):
         client = self.get_client(path=path)
         try:
-            response = device.se_restore(client.client, msg)
+            response = client.recovry(msg)
         except Exception as e:
             raise BaseException(e)
         return response
     
-    def apply_setting(self, path='nfc', 
-        label=None,
-        language=None,
-        use_passphrase=None,
-        homescreen=None,
-        auto_lock_delay_ms=None,
-        display_rotation=None,
-        passphrase_always_on_device: bool = None,
-        fee_pay_pin: bool = None,
-        use_ble: bool = None,
-        use_se: bool = None,
-        is_bixinapp: bool = None,
-        fee_pay_confirm: bool = None,
-        fee_pay_money_limit: int = None,
-        fee_pay_times: int = None,
-    ):
+    def apply_setting(self, path='nfc', **kwargs):
         client = self.get_client(path=path)
         try:
-            device.apply_setting(client.client, label, language, use_passphrase, homescreen, passphrase_always_on_device, auto_lock_delay_ms, display_rotation, fee_pay_pin, use_ble, use_se, is_bixinapp, fee_pay_confirm, fee_pay_money_limit, fee_pay_times)
+            device.apply_settings(client.client, **kwargs)
         except Exception as e:
             raise BaseException(e)
 
-    def init(self, path='android_usb', label="BixinKEY", language='english'):
-        self.client = None
-        self.path = ''
+    def init(self, path='android_usb', label="BixinKEY", language='english', use_se=True):
+        # self.client = None
+        # self.path = ''
         client = self.get_client(path=path)
+        pin_protection = True
         try:
-            response = client.reset_device(label=label, language=language)
+            if use_se:
+                device.apply_settings(client.client, use_se=True)
+                pin_protection = False
+            response = client.reset_device(label=label, language=language, pin_protection=pin_protection)
         except Exception as e:
             raise BaseException(e)
         if response == "Device successfully initialized":
@@ -1213,8 +1203,8 @@ class AndroidCommands(commands.Commands):
             return 0
 
     def reset_pin(self, path='android_usb') -> int:
-        self.client = None
-        self.path = ''
+        # self.client = None
+        # self.path = ''
         try:
             client = self.get_client(path)
             resp = client.set_pin(False)
@@ -1229,8 +1219,8 @@ class AndroidCommands(commands.Commands):
             return 0
 
     def wipe_device(self, path='android_usb') -> int:
-        self.client = None
-        self.path = ''
+        # self.client = None
+        # self.path = ''
         try:
             client = self.get_client(path)
             resp = client.wipe_device()
@@ -1249,8 +1239,8 @@ class AndroidCommands(commands.Commands):
         client.toggle_passphrase()
 
     def get_passphrase_status(self, path='android_usb'):
-        self.client = None
-        self.path = ''
+        # self.client = None
+        # self.path = ''
         client = self.get_client(path=path)
         return client.features.passphrase_protection
 
@@ -1262,9 +1252,13 @@ class AndroidCommands(commands.Commands):
         print(f"total device====={client_list}")
         device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
         assert len(device) != 0, "Not found the point device"
+        print(f"creating client ======")
         client = plugin.create_client(device[0], ui)
+        print(f"get client {client}=======")
         if not client.features.bootloader_mode:
+            print(f"set is set_bixin_app==============")
             client.set_bixin_app(True)
+        print(f"get result=================")
         self.client = client
         self.path = path
         return client
@@ -1276,10 +1270,12 @@ class AndroidCommands(commands.Commands):
     def get_feature(self, path='android_usb'):
         self.client = None
         self.path = ''
-        client = self.get_client(path=path)
+        with self.lock:
+            client = self.get_client(path=path)
         return json.dumps(protobuf.to_dict(client.features))
 
     def get_xpub_from_hw(self, path='android_usb', _type='p2wsh', is_creating=True):
+        print(f"=====get xpub py ==============")
         client = self.get_client(path=path)
         derivation = bip84_derivation(0)
         try:
@@ -1311,8 +1307,8 @@ class AndroidCommands(commands.Commands):
             if not dry_run and not isinstance(resp, messages.Success):
                 raise RuntimeError("Device turn into bootloader failed")
             time.sleep(2)
-            features = client.client.init_device()
-        if not dry_run and not features.bootloader_mode:
+            client.client.init_device()
+        if not dry_run and not client.features.bootloader_mode:
             raise BaseException("Please switch your device to bootloader mode.")
 
         bootloader_onev2 = features.major_version == 1 and features.minor_version >= 8
@@ -1628,7 +1624,8 @@ class AndroidCommands(commands.Commands):
 
     def _assert_daemon_running(self):
         if not self.daemon_running:
-            raise BaseException("Daemon not running")  # Same wording as in electrum script.
+            raise BaseException("Daemon not running")
+            # Same wording as in electrum script.
 
     def _assert_wizard_isvalid(self):
         if self.wizard is None:
