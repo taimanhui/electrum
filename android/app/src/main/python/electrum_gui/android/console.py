@@ -1307,7 +1307,7 @@ class AndroidCommands(commands.Commands):
         client = self.get_client(path)
         features = client.features
         if not features.bootloader_mode:
-            resp = client.client.call(messages.BixinUpgrade())
+            resp = client.client.call(messages.BixinReboot())
             if not dry_run and not isinstance(resp, messages.Success):
                 raise RuntimeError("Device turn into bootloader failed")
             time.sleep(2)
