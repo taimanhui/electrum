@@ -483,7 +483,7 @@ class AndroidCommands(commands.Commands):
                     if value['xpubs'].__contains__(xpub):
                         num += 1
                 if num == len(keystores):
-                    raise BaseException("The same xpubs have create wallet")
+                    raise BaseException(f"The same xpubs have create wallet, name={key}")
             storage, db = self.wizard.create_storage(path=path, password='', hide_type=hide_type)
         except Exception as e:
             raise BaseException(e)
@@ -1389,7 +1389,7 @@ class AndroidCommands(commands.Commands):
         print(f"is exist seed...............{seed}")
         for key, value in self.local_wallet_info.items():
             if value['seed'] == seed:
-                raise BaseException("The same seed have create wallet")
+                raise BaseException(f"The same seed have create wallet, name={key}")
 
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
