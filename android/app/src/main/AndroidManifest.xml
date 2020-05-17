@@ -52,7 +52,8 @@
         <activity android:name=".activities.settings.ConfidentialPaymentSettings" />
         <activity android:name=".activities.settings.fixpin.ConfirmActivity" />
         <activity android:name=".activities.settings.UpgradeFinishedActivity" />
-        <activity android:name=".activities.settings.UpgradeBixinKEYActivity" />
+        <activity android:name=".activities.settings.UpgradeBixinKEYActivity"
+            android:noHistory="true"/>
         <activity android:name=".activities.personalwallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreatePersonalHelpPassActivity" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreateHelpWordWalletActivity" />
@@ -113,15 +114,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.settings.VersionUpgradeActivity">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/usb_device_filter" />
-            -->
         </activity>
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.TransactionRecordsActivity" />
@@ -137,26 +129,8 @@
         <activity android:name=".activities.Send2ManyActivity" />
         <activity android:name=".activities.SendOne2ManyMainPageActivity" />
         <activity android:name=".activities.TransactionDetailsActivity" />
-        <activity android:name=".activities.TouchHardwareActivity">
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.TAG_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.TECH_DISCOVERED" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/nfc_tech_filter" />
-        </activity>
         <activity android:name=".activities.ConfirmOnHardware" />
         <activity android:name=".activities.CreateWalletActivity" />
-        <activity android:name=".activities.ImportWalletPageActivity" />
         <activity android:name=".activities.PublicKeyInputEditActivity" />
         <activity android:name=".activities.SelectMultiSigWalletActivity" />
         <activity

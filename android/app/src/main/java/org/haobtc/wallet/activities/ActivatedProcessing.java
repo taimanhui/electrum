@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,6 +45,8 @@ public class ActivatedProcessing extends BaseActivity {
     TextView firstPromote;
     @BindView(R.id.second_promote)
     TextView secondPromote;
+    private boolean useSe;
+    private Timer timer;
     /*
         private String pin;
     */
@@ -76,6 +80,7 @@ public class ActivatedProcessing extends BaseActivity {
                     animator.setInterpolator(new LinearInterpolator());
                     animator.start();
                 });
+        useSe = getIntent().getBooleanExtra("use_se", true);
 /*
         pin = getIntent().getStringExtra("pin");
 */
@@ -84,8 +89,18 @@ public class ActivatedProcessing extends BaseActivity {
     @Override
     public void initData() {
         NfcUtils.nfc(this, false);
+        timer = new Timer();
         if (!isNFC) {
-            EventBus.getDefault().post(new InitEvent("Activate"));
+            EventBus.getDefault().post(new InitEvent("Activate", useSe));
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (hasWindowFocus()) {
+                        Log.d(TAG, "something went wrong");
+                        finishAffinity();
+                    }
+                }
+            }, 30 * 1000L);
         }
         /*if (!isNFC) {
             EventBus.getDefault().post(new PinEvent(pin, ""));
@@ -151,7 +166,16 @@ public class ActivatedProcessing extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
-            EventBus.getDefault().post(new InitEvent("Activate"));
+            EventBus.getDefault().post(new InitEvent("Activate", useSe));
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (hasWindowFocus()) {
+                        Log.d(TAG, "something went wrong");
+                        finishAffinity();
+                    }
+                }
+            }, 30 * 1000L);
         }
     }
 

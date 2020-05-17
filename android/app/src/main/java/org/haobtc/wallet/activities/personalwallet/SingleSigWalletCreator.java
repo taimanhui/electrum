@@ -63,6 +63,7 @@ public class SingleSigWalletCreator extends BaseActivity {
     private int defaultKeyNum;
     private int defaultKeyNameNum;
     private String strBixinname;
+    private long lastNotify;
 
     @Override
     public int getLayoutId() {
@@ -212,6 +213,11 @@ public class SingleSigWalletCreator extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doInit(ReceiveXpub event) {
+        if (System.currentTimeMillis() - lastNotify > 10 * 1000L) {
+            lastNotify = System.currentTimeMillis();
+        } else {
+            return;
+        }
         String xpub = event.getXpub();
         String strXpub = "[\"" + xpub + "\"]";
         try {

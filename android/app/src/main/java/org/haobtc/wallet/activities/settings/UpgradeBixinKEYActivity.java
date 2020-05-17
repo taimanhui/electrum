@@ -219,7 +219,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             } else {
                 showPromptMessage(R.string.update_failed);
             }
-            new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
+            finish();
         }
 
     }
@@ -244,13 +244,14 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             fos.flush();
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
         if (tag == 1) {
             runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newLoaderVersion));
         } else {
             runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newNrfVersion));
         }
-        if (isDfu) {
+        if (isDfu && tag == 2) {
             dfu();
         }
     }
@@ -269,12 +270,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        tag = getIntent().getIntExtra("tag", 1);
         EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void initData() {
+        tag = getIntent().getIntExtra("tag", 1);
         newNrfVersion = getIntent().getExtras().getString("nrf_version");
         newLoaderVersion = getIntent().getExtras().getString("stm32_version");
         switch (tag) {
@@ -284,6 +281,10 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             case 2:
                 tetUpgradeTest.setText("V" + newNrfVersion);
         }
+    }
+
+    @Override
+    public void initData() {
         mTask = new MyTask();
         if ("bluetooth".equals(getIntent().getStringExtra("way"))) {
             mTask.execute("bluetooth");
@@ -304,15 +305,15 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void executeTask(ExecuteEvent executeEvent) {
-        mTask.execute("nfc");
         EventBus.getDefault().removeStickyEvent(ExecuteEvent.class);
+        mTask.execute("nfc");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDfuException(ExceptionEvent event) {
         tetUpgradeTest.setText(getString(R.string.Cancelled));
         showPromptMessage(R.string.update_failed);
-        new Handler().postDelayed(UpgradeBixinKEYActivity.this::finish, 2000);
+        finish();
     }
     @SingleClick
     @OnClick({R.id.img_back})
@@ -322,10 +323,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             if (mTask != null) {
                 mTask.cancel(true);
             }
-            final Intent pauseAction = new Intent(DfuBaseService.BROADCAST_ACTION);
-            pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(pauseAction);
+           cancelDfu();
         }
+    }
+    private void cancelDfu() {
+        final Intent pauseAction = new Intent(DfuBaseService.BROADCAST_ACTION);
+        pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(pauseAction);
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -336,6 +340,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     }
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onDfu(DfuEvent event) {
+        EventBus.getDefault().removeStickyEvent(DfuEvent.class);
         if (event.getType() == DfuEvent.DFU_SHOW_PROCESS) {
             if (Strings.isNullOrEmpty(VersionUpgradeActivity.filePath)) {
                 SharedPreferences sharedPreferences = getSharedPreferences("devices", MODE_PRIVATE);
@@ -351,7 +356,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                     EventBus.getDefault().post(new ExistEvent());
                     showPromptMessage(R.string.is_new);
                     finish();
-                    return;
                 } else {
                     runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
                     executorService.execute(() -> updateFiles(getIntent().getExtras().getString("nrf_url")));
@@ -359,7 +363,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             } else {
                 dfu();
             }
-            EventBus.getDefault().removeStickyEvent(DfuEvent.class);
         }
     }
     private void dfu() {

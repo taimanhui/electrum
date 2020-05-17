@@ -114,7 +114,7 @@ public class SettingActivity extends BaseActivity {
     }
 
 
-    @SingleClick(value = 5000)
+    @SingleClick(value = 1000)
     @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update, R.id.check_xpub})
     public void onViewClicked(View view) {
         switch (view.getId()) {

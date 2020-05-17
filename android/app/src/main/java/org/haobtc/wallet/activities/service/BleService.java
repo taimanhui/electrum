@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,22 +16,14 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.google.common.io.ByteStreams;
-import com.google.common.primitives.Bytes;
-
 import org.greenrobot.eventbus.EventBus;
-import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
-import org.haobtc.wallet.utils.CommonUtil;
 import org.haobtc.wallet.utils.CommonUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 import cn.com.heaton.blelibrary.ble.Ble;
@@ -40,7 +31,6 @@ import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
-import okio.Buffer;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleHandler;
@@ -136,7 +126,6 @@ public class BleService extends Service {
             super.onConnectTimeOut(device);
             Log.e(TAG, String.format("连接设备==%s超时", device.getBleName()));
             EventBus.getDefault().post(new ExistEvent());
-//            stopSelf();
         }
     };
     private void handle() {

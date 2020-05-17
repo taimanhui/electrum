@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
-import com.google.zxing.common.StringUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,12 +22,15 @@ import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.TimeoutEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +49,7 @@ public class ChangePinProcessingActivity extends BaseActivity {
     TextView secondPromote;
     private String pinOrigin, pinNew;
     static final int MAX_LEVEL = 10000;
+    private Timer timer;
 
     @Override
     public int getLayoutId() {
@@ -77,14 +80,23 @@ public class ChangePinProcessingActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        timer = new Timer();
         if (!isNFC) {
             if (Strings.isNullOrEmpty(pinOrigin)) {
                 EventBus.getDefault().post(new PinEvent(pinNew, ""));
             } else {
                 EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
             }
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (hasWindowFocus()) {
+                        Log.d(TAG, "something went wrong");
+                        finishAffinity();
+                    }
+                }
+            }, 30 * 1000L);
         }
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -128,12 +140,17 @@ public class ChangePinProcessingActivity extends BaseActivity {
             intent.putExtra("tag", TAG);
         }
         startActivity(intent);
+        finish();
     }
     @OnClick(R.id.img_back)
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
             finishAffinity();
         }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTimeout(TimeoutEvent event) {
+
     }
 
     @Override
@@ -152,6 +169,15 @@ public class ChangePinProcessingActivity extends BaseActivity {
             } else {
                 EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
             }
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (hasWindowFocus()) {
+                        Log.d(TAG, "something went wrong");
+                        finishAffinity();
+                    }
+                }
+            }, 30 * 1000L);
         }
     }
 
@@ -178,6 +204,7 @@ public class ChangePinProcessingActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        timer.cancel();
         NfcUtils.mNfcAdapter = null;
         EventBus.getDefault().unregister(this);
     }

@@ -26,10 +26,13 @@ import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,6 +52,8 @@ public class ResetDeviceProcessing extends BaseActivity {
     @BindView(R.id.third_promote)
     TextView thirdPromote;
     private String pin;
+    private Timer timer;
+    private final static String TAG = ResetDeviceProcessing.class.getSimpleName();
 
     public int getLayoutId() {
         return isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
@@ -75,14 +80,6 @@ public class ResetDeviceProcessing extends BaseActivity {
 
     @Subscribe
     public void onEventMainThread(ResultEvent resultEvent) {
-        //            case "1":
-        //                Drawable drawableStart = getDrawable(R.drawable.chenggong);
-        //                Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        //                firstPromote.setCompoundDrawables(drawableStart, null, null, null);
-        //                secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-        //                startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
-        //                finish();
-        //                break;
         EventBus.getDefault().removeStickyEvent(ResultEvent.class);
         if ("0".equals(resultEvent.getResult())) {
             Log.d("RESET", "恢复出厂设置失败");
@@ -114,9 +111,19 @@ public class ResetDeviceProcessing extends BaseActivity {
     }
     @Override
     public void initData() {
+        timer = new Timer();
         NfcUtils.nfc(this, false);
         if (!isNFC) {
             EventBus.getDefault().post(new PinEvent(pin, ""));
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (hasWindowFocus()) {
+                        Log.d(TAG, "something went wrong");
+                        finishAffinity();
+                    }
+                }
+            }, 30 * 1000L);
         }
     }
 
@@ -146,6 +153,15 @@ public class ResetDeviceProcessing extends BaseActivity {
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
             EventBus.getDefault().post(new PinEvent(pin, ""));
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (hasWindowFocus()) {
+                        Log.d(TAG, "something went wrong");
+                        finishAffinity();
+                    }
+                }
+            }, 30 * 1000L);
         }
     }
 

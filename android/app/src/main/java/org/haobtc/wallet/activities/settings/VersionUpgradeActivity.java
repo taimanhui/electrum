@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +32,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
 import no.nordicsemi.android.dfu.DfuBaseService;
@@ -103,28 +103,21 @@ public class VersionUpgradeActivity extends BaseActivity {
         checkBoxClick();
         EventBus.getDefault().register(this);
     }
-
     private void checkBoxClick() {
-        checkBoxFirmware.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    checkBoxBluetooth.setChecked(false);
-                    checkWitch = 1;
-                } else {
-                    checkWitch = 0;
-                }
+        checkBoxFirmware.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                checkBoxBluetooth.setChecked(false);
+                checkWitch = 1;
+            } else {
+                checkWitch = 0;
             }
         });
-        checkBoxBluetooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    checkBoxFirmware.setChecked(false);
-                    checkWitch = 2;
-                } else {
-                    checkWitch = 0;
-                }
+        checkBoxBluetooth.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                checkBoxFirmware.setChecked(false);
+                checkWitch = 2;
+            } else {
+                checkWitch = 0;
             }
         });
     }
@@ -183,6 +176,7 @@ public class VersionUpgradeActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.POSTING, sticky = true)
     public void doDfu(DfuEvent dfuEvent) {
+        isDfu = false;
         if (dfuEvent.getType() == DfuEvent.START_DFU) {
             Intent intent = new Intent(this, UpgradeBixinKEYActivity.class);
             intent.putExtra("tag", 2);
@@ -202,7 +196,6 @@ public class VersionUpgradeActivity extends BaseActivity {
             pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
             LocalBroadcastManager.getInstance(VersionUpgradeActivity.this).sendBroadcast(pauseAction);
             VersionUpgradeActivity.filePath = "";
-            isDfu = false;
             mIntent(UpgradeFinishedActivity.class);
 //            Ble.getInstance().disconnectAll();
         }
@@ -283,7 +276,6 @@ public class VersionUpgradeActivity extends BaseActivity {
             String substring = str.substring(1);
             filePath = substring.substring(0, substring.length() - 1);
             Log.i("listExtra", "listExtra--: " + listExtra + "   strPath ---  " + filePath);
-            //mToast(filePath);
         }
     }
 }

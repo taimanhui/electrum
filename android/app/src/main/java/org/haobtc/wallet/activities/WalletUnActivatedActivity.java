@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import org.haobtc.wallet.R;
@@ -23,6 +24,8 @@ public class WalletUnActivatedActivity extends BaseActivity {
     Button buttonActivate;
     @BindView(R.id.button_recover)
     Button buttonRecover;
+    @BindView(R.id.use_se)
+    CheckBox useSe;
     private String tag_xpub = "";
     private SharedPreferences.Editor edit;
     private boolean active_set_pin;
@@ -57,11 +60,12 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 break;
             case R.id.button_activate:
                 if (!active_set_pin) {
-                    edit.putBoolean("Active_set_PIN",true);
+                    edit.putBoolean("Active_set_PIN", true);
                     edit.apply();
                 }
                 Intent intent = new Intent(this, ActivatedProcessing.class);
                 intent.putExtra("tag_xpub", tag_xpub);
+                intent.putExtra("use_se", useSe.isChecked());
                 startActivity(intent);
                 finish();
                 break;

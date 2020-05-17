@@ -61,7 +61,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 break;
             case INIT_DEVICE:
                 try {
-                    result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3]).toString();
+                    result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3], strings[4]).toString();
                 } catch (Exception e) {
                     cancel(true);
                     onException(e);

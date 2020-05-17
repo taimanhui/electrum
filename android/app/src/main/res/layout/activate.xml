@@ -48,17 +48,31 @@
             android:layout_marginTop="@dimen/dp_30"
             android:layout_below="@id/picture"
             android:text="@string/active_prompt" />
+
+        <CheckBox
+            android:id="@+id/use_se"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
+            android:background="@drawable/circle_checkbox"
+            android:button="@null"
+            android:layout_below="@id/text"
+            android:layout_toStartOf="@id/se"
+            android:layout_alignBaseline="@id/se"
+            android:layout_marginTop="@dimen/dp_53"
+            android:checked="true"/>
+
         <TextView
+            android:id="@+id/se"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/sp_12"
             android:layout_below="@id/text"
-            android:text="@string/use_se"
-            android:layout_marginTop="@dimen/sp_53"
-            android:drawablePadding="@dimen/dp_4"
-            android:drawableStart="@drawable/chenggong"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/light_text"/>
+            android:layout_marginTop="@dimen/dp_53"
+            android:text="@string/use_se"
+            android:paddingStart="@dimen/dp_6"
+            android:paddingEnd="@dimen/dp_6"
+            android:textColor="@color/light_text"
+            android:textSize="@dimen/sp_12" />
 
         <Button
             android:id="@+id/button_activate"
