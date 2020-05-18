@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -54,6 +55,7 @@ import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.PersonalMultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
+import org.haobtc.wallet.activities.settings.BixinKeyBluetoothSettingActivity;
 import org.haobtc.wallet.activities.settings.CheckXpubResultActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
@@ -77,6 +79,7 @@ import org.haobtc.wallet.event.ReceiveXpub;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SendSignBroadcastEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
+import org.haobtc.wallet.event.SetBluetoothEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.event.WipeEvent;
@@ -364,7 +367,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             dealWithWipeDevice(isNFC);
         } else if (SettingActivity.TAG.equals(tag)) {
             String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
-            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
             startActivity(new Intent(this, VerificationKEYActivity.class));
 //        } else if (ActivatedProcessing.TAG.equals(tag)) {
 //            Intent intent = new Intent(this, PinSettingActivity.class);
@@ -372,7 +375,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //            intent.putExtra("pin_type", 2);
 //            startActivity(intent);
 //            finish();
-       } else if (HideWalletSetPassActivity.TAG.equals(tag)) {
+        } else if (HideWalletSetPassActivity.TAG.equals(tag)) {
             String passphrase = getIntent().getStringExtra("passphrase");
             setPassphrass(new PinEvent("", passphrase));
             finish();
@@ -389,7 +392,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
         if (features.isInitialized()) {
             isChangePin = true;
-            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.CHANGE_PIN, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.CHANGE_PIN, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
         } else {
             Toast.makeText(this, R.string.wallet_un_activated_pin, Toast.LENGTH_LONG).show();
             finish();
@@ -408,7 +411,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             return;
         }
         if (features.isInitialized()) {
-            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
 //            Intent intent = new Intent(this, PinSettingActivity.class);
 //            intent.putExtra("tag", tag);
 //            intent.putExtra("pin_type", 1);
@@ -444,9 +447,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     if (CheckHideWalletFragment.TAG.equals(tag)) {
                         customerUI.callAttr("set_pass_state", 1);
                     }
-                    new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
                 } else {
-                    new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 }
             } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag) || SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)) {
                 isSign = true;
@@ -455,13 +458,13 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                         //hide wallet sign message -->set_pass_state
                         customerUI.callAttr("set_pass_state", 1);
                     }
-                    new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras);
                 } else {
                     if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)) {
                         //hide wallet sign transaction -->set_pass_state
                         customerUI.callAttr("set_pass_state", 1);
                     }
-                    new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.SIGN_TX, extras);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras);
                 }
 //                // todo: remove the if , pin always required
 //                if (!features.isPinCached() && features.isPinProtection()) {
@@ -471,15 +474,21 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //                }
             } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) {
                 if (!TextUtils.isEmpty(extras)) {
-                    new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras);
                 } else {
                     Log.i(TAG, "java ==== backup");
-                    new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 }
             } else if (SettingActivity.TAG.equals(tag)) {
                 String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
                 //Anti counterfeiting verification
-                new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+            } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
+                if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag)) {
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "1");
+                } else {
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "0");
+                }
             }
         } else {
             isActive = true;
@@ -526,7 +535,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             String locate = preferences.getString("language", "");
             String language = "English".equals(locate) ? "english" : "chinese";
             boolean useSe = Optional.of(event.isUseSE()).orElse(true);
-            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "BiXinKEY", language, useSe ? "1" : "");
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "BiXinKEY", language, useSe ? "1" : "");
         }
     }
 
@@ -536,13 +545,13 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         isActive = false;
         //TODO: 获取xpub
         if ("get_xpub_and_send".equals(event.getXpub())) {
-            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doWipe(WipeEvent event) {
-        new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -591,10 +600,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             }
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void exist(ExistEvent event) {
         finish();
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -661,7 +672,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (isSign) {
             if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
                 dialogFragment = showReadingDialog(R.string.message_loading);
-            }else{
+            } else {
                 dialogFragment = showReadingDialog(R.string.transaction_loading);
             }
 
@@ -680,18 +691,18 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
         // EventBus.getDefault().post(new SendingFailedEvent(e));
 //        if (hasWindowFocus()) {
-            Log.i("TAG-ErrorMsgDialog", "onException: " + e.getMessage());
-            if (e.getMessage().contains("(7, 'PIN invalid')") || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
-                showErrorDialog(0, R.string.pin_wrong);
-            } else if ("BaseException: BiXin cannot pair with your Trezor.".equals(e.getMessage())) {
-                showErrorDialog(R.string.try_another_key, R.string.unpair);
-            } else if ("BaseException: failed to recognize transaction encoding for txt: craft fury pig target diagram ...".equals(e.getMessage())) {
-                showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
-            } else if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(e.getMessage())) {
-                showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
-            } else {
-                showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
-            }
+        Log.i("TAG-ErrorMsgDialog", "onException: " + e.getMessage());
+        if (e.getMessage().contains("(7, 'PIN invalid')") || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
+            showErrorDialog(0, R.string.pin_wrong);
+        } else if ("BaseException: BiXin cannot pair with your Trezor.".equals(e.getMessage())) {
+            showErrorDialog(R.string.try_another_key, R.string.unpair);
+        } else if ("BaseException: failed to recognize transaction encoding for txt: craft fury pig target diagram ...".equals(e.getMessage())) {
+            showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
+        } else if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(e.getMessage())) {
+            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
+        } else {
+            showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
+        }
 //        }
 
     }
@@ -740,6 +751,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             }
         } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().postSticky(new ResultEvent(s));
+        } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
+            EventBus.getDefault().post(new SetBluetoothEvent(s));
         }
         finish();
     }

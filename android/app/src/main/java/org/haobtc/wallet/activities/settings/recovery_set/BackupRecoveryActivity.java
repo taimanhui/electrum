@@ -8,11 +8,14 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
+import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
@@ -35,6 +38,7 @@ public class BackupRecoveryActivity extends BaseActivity {
     RecyclerView reclCheckKey;
     public final static  String TAG = BackupRecoveryActivity.class.getSimpleName();
     private List<HardwareFeatures> deviceValue;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
@@ -46,6 +50,7 @@ public class BackupRecoveryActivity extends BaseActivity {
         ButterKnife.bind(this);
         deviceValue = new ArrayList<>();
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+        edit = devices.edit();
         Map<String, ?> devicesAll = devices.getAll();
         //key
         for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
@@ -60,11 +65,28 @@ public class BackupRecoveryActivity extends BaseActivity {
         if (deviceValue != null) {
             BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
             reclCheckKey.setAdapter(bixinkeyManagerAdapter);
-            bixinkeyManagerAdapter.setOnItemClickListener((adapter, view, position) -> {
-                Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
-                intent.putExtra("strKeyname",deviceValue.get(position).getBleName());
-                intent.putExtra("flagWhere","Backup");
-                startActivity(intent);
+            bixinkeyManagerAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                @SingleClick
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    switch (view.getId()) {
+                        case R.id.relativeLayout_bixinkey:
+                            Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
+                            intent.putExtra("strKeyname",deviceValue.get(position).getBleName());
+                            intent.putExtra("flagWhere","Backup");
+                            startActivity(intent);
+                            break;
+                        case R.id.linear_delete:
+                            String key_deviceId = deviceValue.get(position).getLabel();
+                            edit.remove(key_deviceId);
+                            edit.apply();
+                            deviceValue.remove(position);
+                            bixinkeyManagerAdapter.notifyItemChanged(position);
+                            bixinkeyManagerAdapter.notifyDataSetChanged();
+                            mToast(getString(R.string.delete_succse));
+                            break;
+                    }
+                }
             });
         }
     }

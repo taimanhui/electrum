@@ -76,7 +76,7 @@ public class BixinKEYManageActivity extends BaseActivity {
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:
-                            String key_deviceId = deviceValue.get(position).getDeviceId();
+                            String key_deviceId = deviceValue.get(position).getLabel();
                             edit.remove(key_deviceId);
                             edit.apply();
                             deviceValue.remove(position);
