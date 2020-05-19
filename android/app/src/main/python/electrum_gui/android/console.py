@@ -794,19 +794,19 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         tx_details = self.wallet.get_tx_info(tx)
-        print(f"get_details_info...............{tx_details.status}")
         if 'Partially signed' in tx_details.status:
-            r = len(tx.inputs())
-            temp_s, temp_r = tx.signature_count()
-            print(f"........get_tailes_info.....{temp_s, temp_r}")
-            s, r = int(temp_s / r), int(temp_r / r)
+            temp_s, _ = tx.signature_count()
+            s = int(temp_s / len(tx.inputs()))
+            r = len(self.wallet.get_keystores())
         elif 'Unsigned' in tx_details.status:
             s = 0
             r = len(self.wallet.get_keystores())
         else:
-            s = r = len(self.wallet.get_keystores())
-
-        type = self.wallet.wallet_type
+            if self.wallet.wallet_type == "standard":
+                s = r = len(self.wallet.get_keystores())
+            else:
+                s, r = self.wallet.wallet_type.split("of", 1)
+        
         in_list = []
         if isinstance(tx, PartialTransaction):
             for i in tx.inputs():
