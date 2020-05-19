@@ -14,10 +14,15 @@ import androidx.cardview.widget.CardView;
 
 import com.chaquo.python.Kwarg;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.CheckHideWalletActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.CheckHideWalletEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
@@ -34,6 +39,7 @@ public class CheckHideWalletFragment extends WheelViewpagerFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_check_hide_wallet, container, false);
+        EventBus.getDefault().register(this);
         initview(view);
         return view;
     }
@@ -90,14 +96,15 @@ public class CheckHideWalletFragment extends WheelViewpagerFragment {
 //        view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
         String strXpub = "[\"" + xpub + "\"]";
         try {
-            Daemon.commands.callAttr("import_create_hw_wallet", "隐藏钱包" , 1, 1, strXpub, new Kwarg("hide_type", true));
+            Daemon.commands.callAttr("import_create_hw_wallet", "隐藏钱包", 1, 1, strXpub, new Kwarg("hide_type", true));
         } catch (Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
             if ("BaseException: file already exists at path".equals(message)) {
                 Toast.makeText(getActivity(), getString(R.string.changewalletname), Toast.LENGTH_SHORT).show();
             } else if (message.contains("The same xpubs have create wallet")) {
-                Toast.makeText(getActivity(), getString(R.string.xpub_have_wallet), Toast.LENGTH_SHORT).show();
+                String haveWalletName = message.substring(message.indexOf("name=") + 5);
+                Toast.makeText(getActivity(), getString(R.string.xpub_have_wallet) + haveWalletName, Toast.LENGTH_SHORT).show();
             }
             return;
         }
@@ -125,5 +132,33 @@ public class CheckHideWalletFragment extends WheelViewpagerFragment {
 
     @Override
     public void setValue(String msgVote) {
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(CheckHideWalletEvent updataHint) {
+        String xpub = updataHint.getXpub();
+        String strXpub = "[\"" + xpub + "\"]";
+        try {
+            Daemon.commands.callAttr("import_create_hw_wallet", "隐藏钱包", 1, 1, strXpub, new Kwarg("hide_type", true));
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            if ("BaseException: file already exists at path".equals(message)) {
+                Toast.makeText(getActivity(), getString(R.string.changewalletname), Toast.LENGTH_SHORT).show();
+            } else if (message.contains("The same xpubs have create wallet")) {
+                String haveWalletName = message.substring(message.indexOf("name=") + 5);
+                Toast.makeText(getActivity(), getString(R.string.xpub_have_wallet) + haveWalletName, Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        // todo: 弹窗关闭
+        Intent intent = new Intent(getActivity(), CheckHideWalletActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

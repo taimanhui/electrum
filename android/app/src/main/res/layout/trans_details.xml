@@ -111,7 +111,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="end"
                 android:layout_marginEnd="15.3dp"
-                android:background="?attr/selectableItemBackground"
+
                 android:padding="8dp"
                 android:src="@drawable/back" />
 
@@ -134,7 +134,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="end"
                 android:layout_marginEnd="5.3dp"
-                android:background="?attr/selectableItemBackground"
+
                 android:padding="8dp"
                 android:src="@drawable/share" />
         </RelativeLayout>
@@ -268,7 +268,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/dp_5"
-                            android:background="?attr/selectableItemBackground"
+
                             android:textColor="@color/light_text"
                             android:textSize="@dimen/sp_13"
                             tools:text="@string/waitmoredres" />

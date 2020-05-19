@@ -431,7 +431,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0.2f).navigationBarColor(R.color.button_bk_ddake).init();
     }
 
-    @SingleClick
+    @SingleClick(value = 1000)
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

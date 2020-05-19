@@ -260,16 +260,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private void signDialog() {
         View view1 = LayoutInflater.from(SignActivity.this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(SignActivity.this).setView(view1).create();
-
         Window window = alertDialog.getWindow();
         WindowManager.LayoutParams lp = window.getAttributes();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setDimAmount(0f);
-        lp.width = getResources().getDimensionPixelOffset(R.dimen.dp_335);
+        lp.width = getResources().getDimensionPixelOffset(R.dimen.dp_300);
         lp.height = getResources().getDimensionPixelOffset(R.dimen.dp_200);
         alertDialog.getWindow().setAttributes(lp);
-
-
         EditText str_pass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
             String strPassword = str_pass.getText().toString();

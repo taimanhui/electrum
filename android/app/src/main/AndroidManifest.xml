@@ -40,7 +40,8 @@
         android:theme="@style/AppTheme"
         tools:replace="label"
         tools:targetApi="q">
-        <activity android:name=".activities.settings.recovery_set.InputBackupPassActivity"/>
+        <activity android:name=".activities.UserAgreementActivity"/>
+        <activity android:name=".activities.settings.recovery_set.InputBackupPassActivity" />
         <activity android:name=".activities.settings.FixBixinkeyNameActivity" />
         <activity android:name=".activities.settings.BixinKeyBluetoothSettingActivity" />
         <activity android:name=".activities.settings.BlueToothStatusActivity" /> <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->
@@ -52,8 +53,9 @@
         <activity android:name=".activities.settings.ConfidentialPaymentSettings" />
         <activity android:name=".activities.settings.fixpin.ConfirmActivity" />
         <activity android:name=".activities.settings.UpgradeFinishedActivity" />
-        <activity android:name=".activities.settings.UpgradeBixinKEYActivity"
-            android:noHistory="true"/>
+        <activity
+            android:name=".activities.settings.UpgradeBixinKEYActivity"
+            android:noHistory="true" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreatePersonalHelpPassActivity" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreateHelpWordWalletActivity" />
@@ -113,8 +115,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.settings.VersionUpgradeActivity">
-        </activity>
+        <activity android:name=".activities.settings.VersionUpgradeActivity"/>
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.TransactionRecordsActivity" />
         <activity android:name=".activities.HardwareInfoActivity" />

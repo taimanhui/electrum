@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -645,6 +647,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             String strNewfee = get_rbf_fee_info.toString();
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
             try {

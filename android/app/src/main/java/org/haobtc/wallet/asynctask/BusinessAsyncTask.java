@@ -3,6 +3,8 @@ package org.haobtc.wallet.asynctask;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.chaquo.python.Kwarg;
+
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -41,7 +43,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case RECOVER:
             case SIGN_MESSAGE:
             case COUNTER_VERIFICATION:
-            case APPLY_SETTING:
                 try {
                     result = Daemon.commands.callAttr(strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0], strings[1], strings[2]).toString();
                 } catch (Exception e) {
@@ -68,18 +69,27 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                     cancel(true);
                     onException(e);
                 }
-
+                break;
+            case APPLY_SETTING:
+                Log.i("DaemonNNNcommands", "doInBackground:：：：：：：：：：：：：：：：：：：：：：：： " + Daemon.commands);
+                try {
+                    Daemon.commands.callAttr(strings[0], strings[1], strings[2].equals("one") ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false));
+                } catch (Exception e) {
+                    cancel(true);
+                    onException(e);
+                }
+                break;
         }
         return result;
     }
 
     private void onException(Exception e) {
         Log.e(TAG, e.getMessage() == null ? "unknown exception" : e.getMessage());
-          if ("BaseException: waiting passphrase timeout".equals(e.getMessage()) || "BaseException: waiting pin timeout".equals(e.getMessage())) {
-              EventBus.getDefault().post(new OperationTimeoutEvent());
-         } else {
-        helper.onException(e);
-          }
+        if ("BaseException: waiting passphrase timeout".equals(e.getMessage()) || "BaseException: waiting pin timeout".equals(e.getMessage())) {
+            EventBus.getDefault().post(new OperationTimeoutEvent());
+        } else {
+            helper.onException(e);
+        }
     }
 
     @Override

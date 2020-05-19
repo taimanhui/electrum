@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.settings;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -77,12 +78,17 @@ public class BixinKEYManageActivity extends BaseActivity {
                             break;
                         case R.id.linear_delete:
                             String key_deviceId = deviceValue.get(position).getLabel();
-                            edit.remove(key_deviceId);
-                            edit.apply();
-                            deviceValue.remove(position);
-                            bixinkeyManagerAdapter.notifyItemChanged(position);
-                            bixinkeyManagerAdapter.notifyDataSetChanged();
-                            mToast(getString(R.string.delete_succse));
+                            if (!TextUtils.isEmpty(key_deviceId)){
+                                edit.remove(key_deviceId);
+                                edit.apply();
+                                deviceValue.remove(position);
+                                bixinkeyManagerAdapter.notifyItemChanged(position);
+                                bixinkeyManagerAdapter.notifyDataSetChanged();
+                                mToast(getString(R.string.delete_succse));
+                            }else{
+                                mToast(getString(R.string.delete_fail));
+                            }
+
                             break;
                     }
                 }

@@ -784,7 +784,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getString(R.string.changewalletname));
                     } else if (message.contains("The same xpubs have create wallet")) {
-                        mToast(getString(R.string.xpub_have_wallet));
+                        String haveWalletName = message.substring(message.indexOf("name=")+5);
+                        mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
                     } else if (message.contains("invaild type of xpub")) {
                         mToast(getString(R.string.xpub_wrong));
                     } else if (message.contains("Wrong key type p2wpkh")) {

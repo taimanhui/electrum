@@ -52,7 +52,7 @@
                     android:layout_height="@dimen/dp_30"
                     android:layout_marginTop="3dp"
                     android:layout_marginEnd="3dp"
-                    android:background="?attr/selectableItemBackground"
+
                     android:contentDescription="@string/close"
                     android:padding="@dimen/dp_8"
                     android:src="@drawable/close_big_black"

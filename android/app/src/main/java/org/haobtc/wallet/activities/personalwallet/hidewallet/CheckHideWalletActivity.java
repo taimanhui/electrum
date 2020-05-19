@@ -49,8 +49,6 @@ import butterknife.OnClick;
 
 public class CheckHideWalletActivity extends BaseActivity implements OnRefreshListener {
 
-    @BindView(R.id.wallet_card_name)
-    TextView walletCardName;
     @BindView(R.id.wallet_card_tv4)
     TextView walletCardTv4;
     @BindView(R.id.tet_fiat)

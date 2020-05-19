@@ -88,8 +88,8 @@ public class VersionUpgradeActivity extends BaseActivity {
         if (bundle != null) {
             firmwareVersion = bundle.getString("stm32_version");
             bleVerson = bundle.getString("nrf_version");
-            stm32VersionTip.setText(String.format("V%s 版本更新", firmwareVersion));
-            nrfVersionTip.setText(String.format("V%s 版本更新", bleVerson));
+            stm32VersionTip.setText(String.format("V%s " + getString(R.string.verson_updates), firmwareVersion));
+            nrfVersionTip.setText(String.format("V%s " + getString(R.string.verson_updates), bleVerson));
             stm32VersionDetail.setText(bundle.getString("stm32_description"));
             nrfVersionDetail.setText(bundle.getString("nrf_description"));
         }
@@ -103,6 +103,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         checkBoxClick();
         EventBus.getDefault().register(this);
     }
+
     private void checkBoxClick() {
         checkBoxFirmware.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -131,28 +132,28 @@ public class VersionUpgradeActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_toUpgrade:
-                    switch (checkWitch) {
-                        case 0:
-                            mToast(getString(R.string.please_choose_firmware));
-                            break;
-                        case 1:
-                            Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("tag", TAG);
-                            intent.putExtras(bundle);
-                            intent.putExtra("extras", "hardware");
-                            startActivity(intent);
-                            break;
-                        case 2:
-                            Intent intent1 = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
-                            intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent1.putExtra("tag", TAG);
-                            intent1.putExtras(bundle);
-                            intent1.putExtra("extras", "ble");
-                            startActivity(intent1);
-                            isDfu = true;
-                            break;
-                    }
+                switch (checkWitch) {
+                    case 0:
+                        mToast(getString(R.string.please_choose_firmware));
+                        break;
+                    case 1:
+                        Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("tag", TAG);
+                        intent.putExtras(bundle);
+                        intent.putExtra("extras", "hardware");
+                        startActivity(intent);
+                        break;
+                    case 2:
+                        Intent intent1 = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent1.putExtra("tag", TAG);
+                        intent1.putExtras(bundle);
+                        intent1.putExtra("extras", "ble");
+                        startActivity(intent1);
+                        isDfu = true;
+                        break;
+                }
                 break;
             case R.id.btn_import_file:
                 rxPermissions

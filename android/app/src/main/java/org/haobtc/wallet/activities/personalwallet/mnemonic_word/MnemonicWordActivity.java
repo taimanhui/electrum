@@ -225,7 +225,8 @@ public class MnemonicWordActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (e.getMessage().contains("The same seed have create wallet")) {
-                        mToast(getString(R.string.xpub_have_wallet));
+                        String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=")+5);
+                        mToast(getString(R.string.same_seed_have)+haveWalletName);
                     }
                     return;
                 }

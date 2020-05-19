@@ -2,6 +2,8 @@ package org.haobtc.wallet.activities.settings;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -79,7 +81,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
         if (get_server_list != null) {
             SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
             String get_server = get_server_list.toString();
-            Log.i("get_server_list", "get_server_list: "+get_server);
+            Log.i("get_server_list", "get_server_list: " + get_server);
             Map<String, Object> jsonToMap = JSONObject.parseObject(get_server);
             Set<String> keySets = jsonToMap.keySet();
             for (String k : keySets) {
@@ -99,7 +101,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     }
                 }
             }
-            edit.putString("electrumTest",electrumList.get(0).getName());
+            edit.putString("electrumTest", electrumList.get(0).getName());
             edit.apply();
             ElectrumListAdapter electrumListAdapter = new ElectrumListAdapter(ElectrumNodeChooseActivity.this, electrumList, electrumNode);
             reclNodeChose.setAdapter(electrumListAdapter);
@@ -112,7 +114,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                     edit.putInt("electrumNode", pos);
-                    edit.putString("electrumTest",electrumList.get(pos).getName());
+                    edit.putString("electrumTest", electrumList.get(pos).getName());
                     edit.apply();
                     EventBus.getDefault().post(new FirstEvent("changeElectrumNode"));
                 }
@@ -132,7 +134,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                 View view1 = LayoutInflater.from(this).inflate(R.layout.add_node_layout, null, false);
                 AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
                 ImageView img_Cancle = view1.findViewById(R.id.cancel_select_wallet);
-
+                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
                     EditText edit_ip = view1.findViewById(R.id.edit_ip);
                     EditText edit_port = view1.findViewById(R.id.edit_port);
@@ -149,7 +151,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                         Daemon.commands.callAttr("set_server", edit_ip.getText().toString(), edit_port.getText().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
-                        if (e.getMessage().contains("ValueError")){
+                        if (e.getMessage().contains("ValueError")) {
                             mToast(getString(R.string.ipOrportWrong));
                         }
                         return;

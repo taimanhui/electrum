@@ -30,7 +30,7 @@
                 android:layout_height="@dimen/dp_40"
                 android:layout_marginTop="@dimen/dp_4"
                 android:padding="@dimen/dp_14"
-                android:background="?attr/selectableItemBackground"
+
                 android:src="@drawable/close_big_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

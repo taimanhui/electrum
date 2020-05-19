@@ -20,7 +20,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-            android:background="?attr/selectableItemBackground"
+
             android:src="@drawable/back" />
 
         <TextView
@@ -159,7 +159,7 @@
                     android:gravity="center"
                     android:text="@string/restore_default_set"
                     android:textColor="@color/button_bk_disableok"
-                    android:background="?attr/selectableItemBackground"
+
                     android:textSize="15sp" />
 
             </LinearLayout>

@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -22,8 +23,6 @@ import org.haobtc.wallet.bean.UpdateInfo;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +43,8 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     TextView versionCodetext;
     @BindView(R.id.update_version)
     TextView updateVersion;
+    @BindView(R.id.tet_s5)
+    TextView tetS5;
     private DownloadManager manager;
 
     @Override
@@ -62,6 +63,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
         versionCodetext.setText(String.format("V%s", versionName));
         updateVersion.setText(String.format("V%s", versionName));
     }
+
     private void getUpdateInfo() {
         // version_testnet.json version_regtest.json
         String appId = BuildConfig.APPLICATION_ID;
@@ -70,8 +72,8 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
         if (appId.endsWith("mainnet")) {
             url = urlPrefix + "version.json";
         } else if (appId.endsWith("testnet")) {
-           url = urlPrefix + "version_testnet.json";
-        } else if(appId.endsWith("regnet")) {
+            url = urlPrefix + "version_testnet.json";
+        } else if (appId.endsWith("regnet")) {
             url = urlPrefix + "version_regtest.json";
         }
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -97,10 +99,11 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
                 int versionCode = updateInfo.getAPK().getVersionCode();
                 String size = updateInfo.getAPK().getSize().replace("M", "");
                 String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
-               runOnUiThread(() -> attemptUpdate(url, versionName, versionCode, size, description));
+                runOnUiThread(() -> attemptUpdate(url, versionName, versionCode, size, description));
             }
         });
     }
+
     private void attemptUpdate(String uri, String versionName, int versionCode, String size, String description) {
         String url = "https://key.bixin.com/" + uri;
         UpdateConfiguration configuration = new UpdateConfiguration()
@@ -131,7 +134,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.attempt_update})
+    @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -139,6 +142,9 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
                 break;
             case R.id.attempt_update:
                 getUpdateInfo();
+            case R.id.tet_s5:
+                mIntent(UserAgreementActivity.class);
+                break;
         }
     }
 
@@ -171,5 +177,4 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     public void error(Exception e) {
 
     }
-
 }

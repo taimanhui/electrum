@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -68,6 +69,7 @@ import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
+import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExistEvent;
@@ -489,9 +491,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
             } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
                 if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag)) {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "1");
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "one");
                 } else {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "0");
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "zero");
                 }
             }
         } else {
@@ -584,6 +586,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Subscribe
     public void setPassphrass(PinEvent event) {
+        Log.i("CheckHideWalletFragment", "setPa..........................."+event.getPassphrass());
         if (!Strings.isNullOrEmpty(event.getPassphrass())) {
             customerUI.put("passphrase", event.getPassphrass());
         }
@@ -713,6 +716,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Override
     public void onResult(String s) {
+        Log.i("CheckHideWalletFragment", "onResult:sssssssssssssssssssss:::::: "+s);
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -734,6 +738,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 intent.putExtra("label", features.getLabel());
                 intent.putExtra("xpub", s);
                 startActivity(intent);
+            } else if (CheckHideWalletFragment.TAG.equals(tag)) {
+                EventBus.getDefault().post(new CheckHideWalletEvent(xpub));
             } else {
                 runOnUiThread(runnables.get(1));
             }

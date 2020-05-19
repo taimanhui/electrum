@@ -340,8 +340,7 @@
     <string name="add_speed">Accelerate</string>
     <string name="tips_addspeed">Hint</string>
     <string name="Confirm_speed">Confirm acceleration</string>
-    <string name="finish_tips">Refer to on-chain information for actual transaction execution</string>
-    <string name="new_trsaction_tips">New transaction will be generated after acceleration; new transactions will need to be signed and propagated again!</string>
+    <string name="new_trsaction_tips">New transaction will be generated after acceleration; new transactions will need to be signed and propagated again!Refer to on-chain information for actual transaction execution!</string>
     <string name="speed_fee">After acceleration fee rate becomes</string>
     <string name="dontRBF">Transaction does not support rbf functionality</string>
     <string name="about_only">About</string>
@@ -543,9 +542,9 @@
     <string name="single_sign_only">Signature message only supports single signature</string>
     <string name="unrelated_transaction">This transaction is not related to the current Wallet</string>
     <string name="please_open_unconfirmed">Please turn on the \"spend unconfirmed revenue\" button in the settings to create a transaction</string>
-    <string name="xpub_have_wallet">Wallet created by this xpub already exists</string>
+    <string name="xpub_have_wallet">Wallet created by this xpub already exists,wallet named</string>
     <string name="dont_support_hide">Hidden wallet is not supported in current hardware status</string>
-    <string name="same_seed_have">Wallet created by this seed already exists</string>
+    <string name="same_seed_have">Wallet created by this seed already exists,wallet named</string>
     <string name="fail">Fail</string>
     <string name="update_failed">Update failed, we would exit this page 2 second later</string>
     <string name="file_not_exist">Update file not exist</string>
@@ -619,9 +618,16 @@
     <string name="pin_change_failed">The original pin incorrect , please retry</string>
     <string name="set_pin_confirm">Please confirm the new PIN on BixinKey</string>
     <string name="message_loading">Message transmission in progress</string>
-    <string name="sign_error">签名异常</string>
-    <string name="reansaction_error">交易签名失败</string>
-    <string name="sign_timeout">签名超时</string>
+    <string name="sign_error">Sign exception</string>
+    <string name="reansaction_error">Transaction signing failed</string>
+    <string name="sign_timeout">Sign timeout</string>
     <string name="service_text">With synchronous server, the wallet can be backed up and recovered, and the transaction can be synchronized and signed among multiple joint signers;</string>
+    <string name="user_agreement_content">"\t\t\t\tThis agreement is a contract between you (hereinafter referred to as "the user") and Bixin Global CO,. Ltd. (hereinafter referred to as "the platform") as the owner of the official platform (including web end, mobile end and application program, hereinafter referred to as "the platform") for the cold wallet service and other related matters, which is legally binding on the user and the credit. In particular, we hereby remind you to carefully read and fully understand the terms of this agreement, especially the terms in this agreement related to the exemption or limitation of platform liability, as well as the terms of exclusion or restriction of user rights. The user shall carefully read and choose to accept or not to accept this agreement. Unless the user accepts all terms of this agreement, the user has no right to use the services provided by the platform based on this agreement. If the user disagrees with the content of this agreement or refuses to recognize the right of the platform to unilaterally modify this agreement at any time, the user shall immediately stop using and no longer access the platform. The user's use of the platform services (including but not limited to use, browsing, etc.) shall be deemed as full understanding and acceptance of all terms of this Agreement (including any modification made to this agreement from time to time by hixin), and this Agreement shall be established and take effect immediately.<font color="#000000"><b>In addition to this agreement, users shall also abide by other agreements and rules publicized by the platform, including but not limited to use license agreement, privacy policy, after-sales service policy and legal statement, as well as other agreements, rules, announcements, statements, instructions or guidelines that have been published or may be published in the future on the platform (including as amended from time to time, as follows Collectively, the "rules").
+        \n\nArticle 1 interpretation
+        \n\n1.1  </b></font>  "Agreement" means this user service agreement, as amended from time to time.
+        \n\n<font color="#000000"><b>1.2 </b></font> "Cold wallet" refers to the hardware product that realizes the secure storage of digital assets based on the technical scheme of hierarchical deterministic (hd).
+        Cold wallet uses two technical schemes to generate private keys of different currencies: one is to randomly generate seed passwords and set payment passwords, which jointly generate private keys of different currencies; the other is to randomly generate mnemonics, which generate private keys of different currencies.
+        Finally, the private key generates the public key, and the public key generates the asset address to realize the secure storage of digital assets."</string>
+    <string name="delete_fail">Delete failed</string>
 
 </resources>
