@@ -11,7 +11,7 @@ import pkgutil
 import unittest
 import threading
 from electrum.bitcoin import base_decode, is_address
-from electrum.keystore import bip84_derivation
+from electrum.keystore import bip84_derivation, bip49_derivation
 from electrum.plugin import Plugins
 from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
@@ -475,15 +475,17 @@ class AndroidCommands(commands.Commands):
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             path = self._wallet_path(name)
+            wallet_type = "%s-%s" % (self.m, self.n)
             keystores = self.get_keystores_info()
             print(f"keystores---------------{keystores}")
-            for key, value in self.local_wallet_info.items():
-                num = 0
-                for xpub in keystores:
-                    if value['xpubs'].__contains__(xpub):
-                        num += 1
-                if num == len(keystores):
-                    raise BaseException(f"The same xpubs have create wallet, name={key}")
+            if not hide_type:
+                for key, value in self.local_wallet_info.items():
+                    num = 0
+                    for xpub in keystores:
+                        if value['xpubs'].__contains__(xpub):
+                            num += 1
+                    if num == len(keystores) and value['type'] == wallet_type:
+                        raise BaseException(f"The same xpubs have create wallet, name={key}")
             storage, db = self.wizard.create_storage(path=path, password='', hide_type=hide_type)
         except Exception as e:
             raise BaseException(e)
@@ -492,7 +494,6 @@ class AndroidCommands(commands.Commands):
             wallet.hide_type = hide_type
             wallet.start_network(self.daemon.network)
             self.daemon.add_wallet(wallet)
-            wallet_type = "%s-%s" % (self.m, self.n)
             if not hide_type:
                 wallet_info = {}
                 wallet_info['type'] = wallet_type
@@ -793,9 +794,11 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         tx_details = self.wallet.get_tx_info(tx)
+        print(f"get_details_info...............{tx_details.status}")
         if 'Partially signed' in tx_details.status:
             r = len(tx.inputs())
             temp_s, temp_r = tx.signature_count()
+            print(f"........get_tailes_info.....{temp_s, temp_r}")
             s, r = int(temp_s / r), int(temp_r / r)
         elif 'Unsigned' in tx_details.status:
             s = 0
@@ -1181,7 +1184,11 @@ class AndroidCommands(commands.Commands):
     def apply_setting(self, path='nfc', **kwargs):
         client = self.get_client(path=path)
         try:
-            device.apply_settings(client.client, **kwargs)
+            resp = device.apply_settings(client.client, **kwargs)
+            if resp == "Settings applied":
+                return 1
+            else:
+                return 0
         except Exception as e:
             raise BaseException(e)
 
@@ -1386,10 +1393,26 @@ class AndroidCommands(commands.Commands):
         return mnemonic.is_seed(x)
 
     def is_exist_seed(self, seed):
-        print(f"is exist seed...............{seed}")
         for key, value in self.local_wallet_info.items():
             if value['seed'] == seed:
                 raise BaseException(f"The same seed have create wallet, name={key}")
+    
+    def bitpie_derivation(self):
+        return ""
+    def cobo_derivation(self):
+        return ""
+    def trezor_derivation(self):
+        return bip49_derivation(0)
+    def ledger_derivation(self):
+        return ""
+    def get_bip39_derivation(self, name):
+        switch = {'bitpie' : self.bitpie_derivation,
+                  'cobo' : self.cobo_derivation,
+                  'trezor' : self.trezor_derivation,
+                  'ledger' : self.ledger_derivation, 
+                  'electrum' : "",
+                 }
+        return switch.get(name)
 
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
