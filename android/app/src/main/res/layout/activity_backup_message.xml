@@ -57,7 +57,7 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/img_orcode"
+                    android:id="@+id/backup_image"
                     android:layout_width="248dp"
                     android:layout_height="248dp"
                     android:layout_marginTop="52dp"
@@ -75,12 +75,11 @@
                     android:textSize="@dimen/text_size" />
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/backup_message"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:text="@string/lnbcdfd4fdsk"
                     android:textColor="@color/text_page"
                     android:textSize="@dimen/sp_13" />
 

@@ -71,7 +71,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 }
                 break;
             case APPLY_SETTING:
-                Log.i("DaemonNNNcommands", "doInBackground:：：：：：：：：：：：：：：：：：：：：：：： " + Daemon.commands);
                 try {
                     Daemon.commands.callAttr(strings[0], strings[1], strings[2].equals("one") ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false));
                 } catch (Exception e) {

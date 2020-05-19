@@ -59,7 +59,7 @@
             android:layout_toStartOf="@id/se"
             android:layout_alignBaseline="@id/se"
             android:layout_marginTop="@dimen/dp_53"
-            android:checked="true"/>
+            android:checked="false"/>
 
         <TextView
             android:id="@+id/se"

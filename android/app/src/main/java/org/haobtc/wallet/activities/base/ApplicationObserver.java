@@ -10,6 +10,7 @@ import cn.com.heaton.blelibrary.ble.Ble;
 
 public class ApplicationObserver implements LifecycleObserver {
     private String TAG = this.getClass().getName();
+    public static boolean tryUpdate;
 
     public ApplicationObserver() {
 
@@ -17,6 +18,7 @@ public class ApplicationObserver implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     public void onCreate() {
+        tryUpdate = true;
         Log.d(TAG, "Lifecycle.Event.ON_CREATE");
     }
 

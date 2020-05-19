@@ -1,7 +1,9 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -24,9 +26,12 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
+import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -197,6 +202,15 @@ public class VersionUpgradeActivity extends BaseActivity {
             pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
             LocalBroadcastManager.getInstance(VersionUpgradeActivity.this).sendBroadcast(pauseAction);
             VersionUpgradeActivity.filePath = "";
+            SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
+            SharedPreferences upgradeInfo = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+            String info = upgradeInfo.getString("upgrade_info", "");
+            if (deviceAddress.equals(BleDeviceRecyclerViewAdapter.mBleDevice.getBleAddress())) {
+                String features = devices.getString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), "");
+                HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
+                features1.setBleVer(UpdateInfo.objectFromData(info).getNrf().getVersion());
+                devices.edit().putString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), features1.toString()).apply();
+            }
             mIntent(UpgradeFinishedActivity.class);
 //            Ble.getInstance().disconnectAll();
         }

@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities.settings.recovery_set;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.thirdgoddess.tnt.clipboard.Clipboard;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
@@ -33,24 +35,27 @@ import butterknife.OnClick;
 
 public class BackupMessageActivity extends BaseActivity {
 
+
     @BindView(R.id.img_back)
     ImageView imgBack;
+    @BindView(R.id.tet_Keyname)
+    TextView tetKeyname;
+    @BindView(R.id.backup_image)
+    ImageView backupImage;
     @BindView(R.id.tet_preversation)
     TextView tetPreversation;
-    @BindView(R.id.textView5)
-    TextView textView5;
+    @BindView(R.id.backup_message)
+    TextView backupMessage;
     @BindView(R.id.copy_tet)
     TextView copyTet;
     @BindView(R.id.btn_continue)
-    Button btncontinue;
-    @BindView(R.id.tet_Keyname)
-    TextView tetKeyname;
-    @BindView(R.id.img_orcode)
-    ImageView imgOrcode;
+    Button btnContinue;
     private RxPermissions rxPermissions;
     private Intent intent;
-    private String flagWhere;
+    private String tag;
+    private String message;
     private Bitmap bitmap;
+    public final static  String TAG = BackupMessageActivity.class.getSimpleName();
 
     @Override
     public int getLayoutId() {
@@ -66,22 +71,22 @@ public class BackupMessageActivity extends BaseActivity {
     }
 
     private void inits() {
-        String strKeyname = intent.getStringExtra("strKeyname");
-        flagWhere = intent.getStringExtra("flagWhere");
-        String backupMessage = intent.getStringExtra("backupMessage");
 
-        textView5.setText(backupMessage);
+        String strKeyname = intent.getStringExtra("label");
+        tag = intent.getStringExtra("tag");
+        message = intent.getStringExtra("message");
         tetKeyname.setText(strKeyname);
-        if (!TextUtils.isEmpty(flagWhere)) {
-            if ("Backup".equals(flagWhere)) {
-                btncontinue.setText(getString(R.string.recover_backup));
+        backupMessage.setText(message);
+        if (!TextUtils.isEmpty(tag)) {
+            if ("recovery".equals(tag)) {
+                btnContinue.setText(getString(R.string.recover_backup));
             } else {
-                btncontinue.setText(getString(R.string.finish));
+                btnContinue.setText(getString(R.string.finish));
             }
         }
-        if (!TextUtils.isEmpty(backupMessage)){
-            bitmap = CodeCreator.createQRCode(backupMessage, 248, 248, null);
-            imgOrcode.setImageBitmap(bitmap);
+        if (!TextUtils.isEmpty(message)){
+            bitmap = CodeCreator.createQRCode(message, 248, 248, null);
+            backupImage.setImageBitmap(bitmap);
         }
     }
 
@@ -118,13 +123,16 @@ public class BackupMessageActivity extends BaseActivity {
                 //copy text
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
-                cm.setText(textView5.getText());
+                assert cm != null;
+                cm.setPrimaryClip(ClipData.newPlainText(null, backupMessage.getText()));
                 Toast.makeText(BackupMessageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_continue:
-                if ("Backup".equals(flagWhere)) {
+                if ("recovery".equals(tag)) {
                     // new version code
                     Intent intent = new Intent(this, CommunicationModeSelector.class);
+                    intent.putExtra("tag", TAG);
+                    intent.putExtra("extras", message);
                     startActivity(intent);
                 } else {
                     finish();

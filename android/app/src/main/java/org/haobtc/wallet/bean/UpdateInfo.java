@@ -1,5 +1,7 @@
 package org.haobtc.wallet.bean;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -323,5 +325,11 @@ public class UpdateInfo {
         public void setChangelogEn(String changelogEn) {
             this.changelogEn = changelogEn;
         }
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

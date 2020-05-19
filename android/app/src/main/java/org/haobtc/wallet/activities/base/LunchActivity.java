@@ -3,8 +3,8 @@ package org.haobtc.wallet.activities.base;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+
 import com.chaquo.python.Kwarg;
-import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.MainActivity;
@@ -13,8 +13,6 @@ import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.GuideActivity;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
-
-import java.util.Optional;
 
 
 public class LunchActivity extends BaseActivity {

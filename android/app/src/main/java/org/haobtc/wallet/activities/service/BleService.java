@@ -110,6 +110,7 @@ public class BleService extends Service {
                 case 59:
                    // Toast.makeText(BleService.this, getString(R.string.bluetooth_fail), Toast.LENGTH_LONG).show();
                 default:
+                    EventBus.getDefault().post(new ExistEvent());
                     Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
             }
         }

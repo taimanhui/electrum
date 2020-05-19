@@ -251,7 +251,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         } else {
             runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newNrfVersion));
         }
-        if (isDfu && tag == 2) {
+        if (tag == 2) {
             dfu();
         }
     }

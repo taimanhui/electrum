@@ -148,7 +148,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
         with self.run_flow(''):
             return trezorlib.device.se_backup(self.client).hex()
 
-    def recovry(self, data):
+    def recovery(self, data):
         with self.run_flow(''):
             return trezorlib.device.se_restore(self.client, data)
 

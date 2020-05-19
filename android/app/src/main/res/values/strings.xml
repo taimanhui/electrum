@@ -629,5 +629,6 @@
         Cold wallet uses two technical schemes to generate private keys of different currencies: one is to randomly generate seed passwords and set payment passwords, which jointly generate private keys of different currencies; the other is to randomly generate mnemonics, which generate private keys of different currencies.
         Finally, the private key generates the public key, and the public key generates the asset address to realize the secure storage of digital assets."</string>
     <string name="delete_fail">Delete failed</string>
+    <string name="recovery_failed">Wallet recovery failed</string>
 
 </resources>

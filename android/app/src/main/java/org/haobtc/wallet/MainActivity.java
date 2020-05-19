@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -19,6 +20,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.azhon.appupdate.config.UpdateConfiguration;
+import com.azhon.appupdate.listener.OnButtonClickListener;
+import com.azhon.appupdate.listener.OnDownloadListener;
+import com.azhon.appupdate.manager.DownloadManager;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
@@ -40,12 +45,14 @@ import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
+import org.haobtc.wallet.activities.base.ApplicationObserver;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
+import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -57,16 +64,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener, OnButtonClickListener, OnDownloadListener {
 
     private ViewPager viewPager;
     SharedPreferences sharedPreferences;
@@ -89,6 +104,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private String strType;
     private int scrollPos = 0;//scrollPos --> recyclerview position != The last one || second to last
     PyObject get_wallets_list_info = null;
+    private DownloadManager manager;
 
     @Override
     public int getLayoutId() {
@@ -139,6 +155,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         recy_data.setAdapter(trsactionlistAdapter);
         //Rolling Wallet
         mWheelplanting();
+        if (ApplicationObserver.tryUpdate) {
+            ApplicationObserver.tryUpdate = false;
+            getUpdateInfo();
+        }
     }
 
     private void mWheelplanting() {
@@ -509,10 +529,78 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             Log.i("viewPagernihao", "event:------ " + walletPos);
         }
     }
+    private void getUpdateInfo() {
+        // version_testnet.json version_regtest.json
+        String appId = BuildConfig.APPLICATION_ID;
+        String urlPrefix = "https://key.bixin.com/";
+        String url = "";
+        if (appId.endsWith("mainnet")) {
+            url = urlPrefix + "version.json";
+        } else if (appId.endsWith("testnet")) {
+            url = urlPrefix + "version_testnet.json";
+        } else if(appId.endsWith("regnet")) {
+            url = urlPrefix + "version_regtest.json";
+        }
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        Call call = okHttpClient.newCall(request);
+        Log.d("Main", "正在检查更新信息");
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("Main", "获取更新信息失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                assert response.body() != null;
+                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+                String locate = preferences.getString("language", "");
+                String info = response.body().string();
+                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+                preferences.edit().putString("upgrade_info", updateInfo.toString()).apply();
+                String url = updateInfo.getAPK().getUrl();
+                String versionName = updateInfo.getAPK().getVersionName();
+                int versionCode = updateInfo.getAPK().getVersionCode();
+                String size = updateInfo.getAPK().getSize().replace("M", "");
+                String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
+                runOnUiThread(() -> attemptUpdate(url, versionName, versionCode, size, description));
+            }
+        });
+    }
+    private void attemptUpdate(String uri, String versionName, int versionCode, String size, String description) {
+        String url = "https://key.bixin.com/" + uri;
+        UpdateConfiguration configuration = new UpdateConfiguration()
+                .setEnableLog(true)
+                //.setHttpManager()
+                .setJumpInstallPage(true)
+                .setDialogButtonTextColor(Color.WHITE)
+                .setDialogButtonColor(getColor(R.color.button_bk))
+                .setDialogImage(R.drawable.update)
+                .setShowNotification(true)
+                .setShowBgdToast(true)
+                .setForcedUpgrade(false)
+                .setButtonClickListener(this)
+                .setOnDownloadListener(this);
+
+        manager = DownloadManager.getInstance(this);
+        manager.setApkName("BixinKEY.apk")
+                .setApkUrl(url)
+                .setSmallIcon(R.drawable.app_icon)
+                .setShowNewerToast(true)
+                .setConfiguration(configuration)
+                .setApkVersionCode(versionCode)
+                .setApkVersionName(versionName)
+                .setApkSize(size)
+                .setApkDescription(description)
+//                .setApkMD5("DC501F04BBAA458C9DC33008EFED5E7F")
+                .download();
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        manager.release();
         EventBus.getDefault().unregister(this);
     }
 
@@ -611,4 +699,33 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     };
 
+    @Override
+    public void onButtonClick(int id) {
+
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void downloading(int max, int progress) {
+
+    }
+
+    @Override
+    public void done(File apk) {
+        manager.release();
+    }
+
+    @Override
+    public void cancel() {
+        manager.release();
+    }
+
+    @Override
+    public void error(Exception e) {
+        manager.release();
+    }
 }

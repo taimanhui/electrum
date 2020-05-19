@@ -178,53 +178,28 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void getUpdateInfo() {
-        // version_testnet.json version_regtest.json
-        String appId = BuildConfig.APPLICATION_ID;
         String urlPrefix = "https://key.bixin.com/";
-        String url = "";
-        if (appId.endsWith("mainnet")) {
-            url = urlPrefix + "version.json";
-        } else if (appId.endsWith("testnet")) {
-            url = urlPrefix + "version_testnet.json";
-        } else if (appId.endsWith("regnet")) {
-            url = urlPrefix + "version_regtest.json";
-        }
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder().url(url).build();
-        Call call = okHttpClient.newCall(request);
-        runOnUiThread(() -> Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_SHORT).show());
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(SettingActivity.this, "获取更新信息失败", Toast.LENGTH_SHORT).show());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                assert response.body() != null;
-                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-                String locate = preferences.getString("language", "");
-                String info = response.body().string();
-                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
-                String urlNrf = updateInfo.getNrf().getUrl();
-                String urlStm32 = updateInfo.getStm32().getUrl();
-                String versionNrf = updateInfo.getNrf().getVersion();
-                String versionStm32 = updateInfo.getStm32().getVersion().toString().replace(",", ".");
-                versionStm32 = versionStm32.substring(1, versionStm32.length() - 1).replaceAll("\\s+", "");
-                String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
-                String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
-                Bundle bundle = new Bundle();
-                bundle.putString("nrf_url", urlPrefix + urlNrf);
-                bundle.putString("stm32_url", urlPrefix + urlStm32);
-                bundle.putString("nrf_version", versionNrf);
-                bundle.putString("stm32_version", versionStm32);
-                bundle.putString("nrf_description", descriptionNrf);
-                bundle.putString("stm32_description", descriptionStm32);
-                Intent intentVersion = new Intent(SettingActivity.this, VersionUpgradeActivity.class);
-                intentVersion.putExtras(bundle);
-                startActivity(intentVersion);
-            }
-        });
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        String locate = preferences.getString("language", "");
+        String info = preferences.getString("upgrade_info", "");
+        UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+        String urlNrf = updateInfo.getNrf().getUrl();
+        String urlStm32 = updateInfo.getStm32().getUrl();
+        String versionNrf = updateInfo.getNrf().getVersion();
+        String versionStm32 = updateInfo.getStm32().getVersion().toString().replace(",", ".");
+        versionStm32 = versionStm32.substring(1, versionStm32.length() - 1).replaceAll("\\s+", "");
+        String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
+        String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getStm32().getChangelogCn();
+        Bundle bundle = new Bundle();
+        bundle.putString("nrf_url", urlPrefix + urlNrf);
+        bundle.putString("stm32_url", urlPrefix + urlStm32);
+        bundle.putString("nrf_version", versionNrf);
+        bundle.putString("stm32_version", versionStm32);
+        bundle.putString("nrf_description", descriptionNrf);
+        bundle.putString("stm32_description", descriptionStm32);
+        Intent intentVersion = new Intent(SettingActivity.this, VersionUpgradeActivity.class);
+        intentVersion.putExtras(bundle);
+        startActivity(intentVersion);
     }
 
     private Runnable runnable = this::gotoConfirmVerification;

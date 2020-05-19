@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import org.haobtc.wallet.R;
@@ -76,9 +77,9 @@ public class BackupRecoveryActivity extends BaseActivity {
                     switch (view.getId()) {
                         case R.id.relativeLayout_bixinkey:
                             Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
-                            intent.putExtra("strKeyname",deviceValue.get(position).getBleName());
-                            intent.putExtra("backupMessage",deviceValue.get(position).getBackupMessage());
-                            intent.putExtra("flagWhere","Backup");
+                            intent.putExtra("label", Strings.isNullOrEmpty(deviceValue.get(position).getLabel()) ? deviceValue.get(position).getBleName(): deviceValue.get(position).getLabel());
+                            intent.putExtra("message",deviceValue.get(position).getBackupMessage());
+                            intent.putExtra("tag","recovery");
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:

@@ -64,6 +64,7 @@ import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupMessageActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.RecoveryResult;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
@@ -479,10 +480,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //                    intent.putExtra("tag", "signature");
 //                    startActivity(intent);
 //                }
-            } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) {
-                if (!TextUtils.isEmpty(extras)) {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras);
-                } else {
+            } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag)) {
+                if (TextUtils.isEmpty(extras)) {
                     Log.i(TAG, "java ==== backup");
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 }
@@ -498,6 +497,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 }
             }
         } else {
+            if (!TextUtils.isEmpty(extras) && BackupMessageActivity.TAG.equals(tag)) {
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras);
+                return;
+            }
             isActive = true;
             Intent intent = new Intent(this, WalletUnActivatedActivity.class);
             if (SingleSigWalletCreator.TAG.equals(tag)) {
@@ -587,7 +590,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Subscribe
     public void setPassphrass(PinEvent event) {
-        Log.i("CheckHideWalletFragment", "setPa..........................."+event.getPassphrass());
         if (!Strings.isNullOrEmpty(event.getPassphrass())) {
             customerUI.put("passphrase", event.getPassphrass());
         }
@@ -753,16 +755,21 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
             // runOnUiThread(runnables.get(0));
-        } else if (BackupRecoveryActivity.TAG.equals(tag)) {
-            SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
-            features.setBackupMessage(s);
-            devices.edit().putString(features.getBleName(), features.toString()).apply();
-            Intent intent = new Intent(this, BackupMessageActivity.class);
-            intent.putExtra("label", features.getLabel());
-            intent.putExtra("tag", "backup");
-            intent.putExtra("strKeyname",features.getBleName());
-            intent.putExtra("backupMessage", s);
-            startActivity(intent);
+        } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag)) {
+            if (TextUtils.isEmpty(extras)) {
+                SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
+                features.setBackupMessage(s);
+                devices.edit().putString(features.getBleName(), features.toString()).apply();
+                Intent intent = new Intent(this, BackupMessageActivity.class);
+                intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName(): features.getLabel());
+                intent.putExtra("tag", "backup");
+                intent.putExtra("message", s);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(this, RecoveryResult.class);
+                intent.putExtra("tag", s);
+                startActivity(intent);
+            }
         } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().postSticky(new ResultEvent(s));
         } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {

@@ -18,6 +18,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -98,6 +99,7 @@ public class ActivatedProcessing extends BaseActivity {
                     if (hasWindowFocus()) {
                         Log.d(TAG, "something went wrong");
                         finishAffinity();
+                        EventBus.getDefault().post(new ExistEvent());
                     }
                 }
             }, 30 * 1000L);
@@ -173,6 +175,7 @@ public class ActivatedProcessing extends BaseActivity {
                     if (hasWindowFocus()) {
                         Log.d(TAG, "something went wrong");
                         finishAffinity();
+                        EventBus.getDefault().post(new ExistEvent());
                     }
                 }
             }, 30 * 1000L);
