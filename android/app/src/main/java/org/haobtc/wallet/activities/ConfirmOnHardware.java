@@ -145,7 +145,9 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             intent1.putExtra("signed_raw_tx", signedRaw);
             intent1.putExtra("isIsmine", true);
             startActivity(intent1);
-            dialog.dismiss();
+            if (dialog != null) {
+                dialog.dismiss();
+            }
             finish();
         }
     }
@@ -155,6 +157,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 //        if (dialog == null) {
 //            showPopupSignProcessing();
 //        }
+        EventBus.getDefault().removeStickyEvent(SendSignBroadcastEvent.class);
         if (intentAction == 0) {
             Intent intent = new Intent(this, ActivatedProcessing.class);
             startActivity(intent);
@@ -184,10 +187,11 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             intent1.putExtra("isIsmine", true);
             intent1.putExtra("unConfirmStatus", "broadcast_complete");
             startActivity(intent1);
-            dialog.dismiss();
+            if (dialog != null) {
+                dialog.dismiss();
+            }
             finish();
         }
-        EventBus.getDefault().removeStickyEvent(SendSignBroadcastEvent.class);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

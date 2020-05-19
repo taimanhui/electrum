@@ -37,8 +37,6 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
 
     public void add(BleDevice device) {
         mValues.add(device);
-        // 由于设备被连接时，会停止广播导致该设备无法被搜索到,所以要添加本APP以连接的设备到列表中
-        mValues.addAll(Ble.getInstance().getConnetedDevices());
         mValues = mValues.stream().distinct().
                 filter(bleDevice -> bleDevice.getBleName() != null && bleDevice.getBleName().startsWith("BixinKEY")).collect(Collectors.toList());
         notifyDataSetChanged();

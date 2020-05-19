@@ -6,10 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
-import android.hardware.usb.UsbRequest;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,7 +14,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.activities.base.MyApplication;
 import org.haobtc.wallet.event.HandlerEvent;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Optional;
 

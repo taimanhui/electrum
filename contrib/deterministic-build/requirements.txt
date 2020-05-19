@@ -197,10 +197,10 @@ async_timeout==3.0.1 \
     --hash=sha256:4291ca197d287d274d0b6cb5d6f8f8f82d434ed288f962539ff18cc9012f9ea3
 idna-ssl==1.1.0 \
     --hash=sha256:a933e3bb13da54383f9e8f35dc4f9cb9eb9b3b78c6b36f311254d6d0d92c6c7c
-trezor==0.11.5 \
-    --hash=sha256:711137bb83e7e0aef4009745e0da1b7d258146f246b43e3f7f5b849405088ef1
+
 mnemonic==0.19 \
     --hash=sha256:a8d78c5100acfa7df9bab6b9db7390831b0e54490934b718ff9efd68f0d731a6
+    
 click==7.0 \
     --hash=sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13
 construct==2.9.45 \

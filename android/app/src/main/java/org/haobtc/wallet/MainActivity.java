@@ -288,7 +288,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             tetNone.setVisibility(View.GONE);
             recy_data.setVisibility(View.VISIBLE);
             String strHistory = get_history_tx.toString();
-            Log.i("strHistory", "onPage----: " + strHistory);
+           // Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
                 tetNone.setText(getString(R.string.no_records));

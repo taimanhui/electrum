@@ -197,7 +197,11 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (device != null) {
             radioGroup.setVisibility(View.GONE);
             setVisible(false);
-            usbManager.doBusiness(device);
+            try {
+                usbManager.doBusiness(device);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             mBle = Ble.getInstance();
             NfcUtils.nfc(this, true);
@@ -266,6 +270,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             mBle.stopScan();
         }
         BleDeviceRecyclerViewAdapter.mValues.clear();
+        // 由于设备被连接时，会停止广播导致该设备无法被搜索到,所以要添加本APP以连接的设备到列表中
+        BleDeviceRecyclerViewAdapter.mValues.addAll(Ble.getInstance().getConnetedDevices());
         adapter.notifyDataSetChanged();
         if (start) {
             mBle.startScan(scanCallback);
@@ -310,20 +316,18 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         String feature;
         try {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE));
-            System.out.println("-----------submit futureTask-----------");
             executorService.submit(futureTask);
             feature = futureTask.get(5, TimeUnit.SECONDS).toString();
             if (!futureTask.isDone()) {
-                System.out.println("futureTask is not done=========");
                 futureTask.cancel(true);
             }
-            HardwareFeatures features = new Gson().fromJson(feature, HardwareFeatures.class);
+            HardwareFeatures features = HardwareFeatures.objectFromData(feature);
             if (features.isInitialized()) {
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
                 devices.edit().putString(features.getBleName(), feature).apply();
             }
             return features;
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (Exception e) {
             Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             throw e;

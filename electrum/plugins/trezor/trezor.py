@@ -113,7 +113,7 @@ class TrezorPlugin(HW_PluginBase):
     minimum_firmware = (1, 5, 2)
     keystore_class = TrezorKeyStore
     minimum_library = (0, 11, 5)
-    maximum_library = (0, 12)
+    maximum_library = (0, 13)
     SUPPORTED_XTYPES = ('standard', 'p2wpkh-p2sh', 'p2wpkh', 'p2wsh-p2sh', 'p2wsh')
     DEVICE_IDS = (TREZOR_PRODUCT_KEY,)
 
@@ -158,7 +158,6 @@ class TrezorPlugin(HW_PluginBase):
                 for d in devices]
 
     def create_client(self, device, handler):
-        print(f"get_client =======in trezor=========trezor.py-L161")
         try:
             self.logger.info(f"connecting to device at {device.path}")
             transport = trezorlib.transport.get_transport(device.path)

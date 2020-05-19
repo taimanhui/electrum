@@ -17,7 +17,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
-import org.haobtc.wallet.activities.settings.fixpin.ConfirmActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
@@ -29,6 +28,8 @@ import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
+
+import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,7 +61,7 @@ public class PinSettingActivity extends BaseActivity {
         relativeLayout_key = findViewById(R.id.relativeLayout_key);
         keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
         pinType = getIntent().getIntExtra("pin_type", 0);
-        tag = getIntent().getStringExtra("tag");
+        tag = Optional.ofNullable(getIntent().getStringExtra("tag")).orElse("");
         switch (pinType) {
             case 2:
                 textViewPinDescription.setText(getString(R.string.pin_setting));

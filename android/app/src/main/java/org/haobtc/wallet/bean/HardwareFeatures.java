@@ -12,25 +12,28 @@ public class HardwareFeatures {
      * vendor : trezor.io
      * bootloader_mode:
      * major_version : 1
-     * minor_version : 8
-     * patch_version : 4
-     * device_id : 80F417CB404FC5186EBE3899
-     * pin_protection : true
-     * passphrase_protection : false
+     * minor_version : 9
+     * patch_version : 2
+     * device_id : 0B00000059B244CA5875D78F
+     * pin_protection : false
+     * passphrase_protection : true
      * language : en-US
-     * label: liyan
+     * label : BiXinKEY
      * initialized : true
-     * revision : 901a3ef288fff3be8cabc0af5efd204c8550ceb4
-     * bootloader_hash : 58f0235afaee90cc7640cae76ab92f28d2516e82de4e7b5252b5d7e89e619308
-     * pin_cached : true
-     * passphrase_cached : false
-     * needs_backup : true
+     * revision : 641932dd27a887c1042501566494758e99bd8a77
+     * bootloader_hash : 003590dab9bf34e04180f2fa1b1c69826c0dd81eb5e2132c40347df839d60a51
+     * imported : false
+     * pin_cached : false
+     * needs_backup : false
+     * flags : 4294967295
      * model : 1
      * unfinished_backup : false
      * no_backup : false
-     * capabilities : [1,2,5,7,8,10,12,14]
-     * 'ble_name': 'BixinKEY1013113806',
-     * 'ble_ver': '1.0.1'
+     * capabilities : ["Bitcoin","Bitcoin_like","Crypto","Ethereum","Lisk","NEM","Stellar","U2F"]
+     * wipe_code_protection : false
+     * session_id : 9e77cabf6d9c8d605a7dcf2bbda3693ce11fa59284bf639dfbb3d056d1abbd0b
+     * ble_name : BixinKEY1114131433
+     * ble_ver : 1.0.5
      */
 
     @SerializedName("vendor")
@@ -57,26 +60,38 @@ public class HardwareFeatures {
     private String revision;
     @SerializedName("bootloader_hash")
     private String bootloaderHash;
+    @SerializedName("imported")
+    private boolean imported;
     @SerializedName("pin_cached")
     private boolean pinCached;
-    @SerializedName("passphrase_cached")
-    private boolean passphraseCached;
     @SerializedName("needs_backup")
     private boolean needsBackup;
+    @SerializedName("flags")
+    private long flags;
     @SerializedName("model")
     private String model;
     @SerializedName("unfinished_backup")
     private boolean unfinishedBackup;
     @SerializedName("no_backup")
     private boolean noBackup;
-    @SerializedName("capabilities")
-    private List<Integer> capabilities;
+    @SerializedName("wipe_code_protection")
+    private boolean wipeCodeProtection;
+    @SerializedName("session_id")
+    private String sessionId;
     @SerializedName("ble_name")
     private String bleName;
     @SerializedName("ble_ver")
     private String bleVer;
+    @SerializedName("capabilities")
+    private List<String> capabilities;
     @SerializedName("bootloader_mode")
     private boolean bootloaderMode;
+
+    public static HardwareFeatures objectFromData(String str) {
+
+        return new Gson().fromJson(str, HardwareFeatures.class);
+    }
+
 
     public String getVendor() {
         return vendor;
@@ -142,12 +157,12 @@ public class HardwareFeatures {
         this.language = language;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     public String getLabel() {
         return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public boolean isInitialized() {
@@ -174,6 +189,14 @@ public class HardwareFeatures {
         this.bootloaderHash = bootloaderHash;
     }
 
+    public boolean isImported() {
+        return imported;
+    }
+
+    public void setImported(boolean imported) {
+        this.imported = imported;
+    }
+
     public boolean isPinCached() {
         return pinCached;
     }
@@ -182,20 +205,20 @@ public class HardwareFeatures {
         this.pinCached = pinCached;
     }
 
-    public boolean isPassphraseCached() {
-        return passphraseCached;
-    }
-
-    public void setPassphraseCached(boolean passphraseCached) {
-        this.passphraseCached = passphraseCached;
-    }
-
     public boolean isNeedsBackup() {
         return needsBackup;
     }
 
     public void setNeedsBackup(boolean needsBackup) {
         this.needsBackup = needsBackup;
+    }
+
+    public long getFlags() {
+        return flags;
+    }
+
+    public void setFlags(long flags) {
+        this.flags = flags;
     }
 
     public String getModel() {
@@ -222,31 +245,51 @@ public class HardwareFeatures {
         this.noBackup = noBackup;
     }
 
-    public List<Integer> getCapabilities() {
-        return capabilities;
+    public boolean isWipeCodeProtection() {
+        return wipeCodeProtection;
     }
 
-    public void setCapabilities(List<Integer> capabilities) {
-        this.capabilities = capabilities;
+    public void setWipeCodeProtection(boolean wipeCodeProtection) {
+        this.wipeCodeProtection = wipeCodeProtection;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getBleName() {
+        return bleName;
     }
 
     public void setBleName(String bleName) {
         this.bleName = bleName;
     }
-    public String getBleName() {
-        return bleName;
-    }
+
     public String getBleVer() {
         return bleVer;
     }
+
     public void setBleVer(String bleVer) {
         this.bleVer = bleVer;
     }
+
+    public List<String> getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(List<String> capabilities) {
+        this.capabilities = capabilities;
+    }
+
     public boolean isBootloaderMode() {
         return bootloaderMode;
     }
 
-    public void setBootloaderMode(boolean bootloaderMode) {
+    public void setBootloader_mode(boolean bootloaderMode) {
         this.bootloaderMode = bootloaderMode;
     }
 

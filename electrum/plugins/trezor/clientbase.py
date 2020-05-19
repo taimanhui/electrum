@@ -31,7 +31,7 @@ MESSAGES = {
         _("Confirm the total amount spent and the transaction fee on your {} device"),
     ButtonRequestType.Address:
         _("Confirm wallet address on your {} device"),
-    ButtonRequestType.PassphraseType:
+    ButtonRequestType._Deprecated_ButtonRequest_PassphraseType:
         _("Choose on your {} device where to enter your passphrase"),
     'default': _("Check your {} device to continue"),
 }
@@ -179,7 +179,6 @@ class TrezorClientBase(HardwareClientBase, Logger):
 
     def set_bixin_app(self, is_bixin):
         with self.run_flow(_("")):
-            print(f"=======set is is_bixinapp=========clientbase.py L206")
             trezorlib.device.apply_settings(self.client, is_bixinapp=is_bixin)
 
     def set_pin(self, remove):
@@ -286,7 +285,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
             raise Cancelled
         return pin
 
-    def get_passphrase(self):
+    def get_passphrase(self, available_on_device= None):
         if self.creating_wallet:
             msg = _("Enter a passphrase to generate this wallet.  Each time "
                     "you use this wallet your {} will prompt you for the "
