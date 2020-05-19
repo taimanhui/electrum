@@ -77,9 +77,9 @@ public class BixinKEYManageActivity extends BaseActivity {
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:
-                            String key_deviceId = deviceValue.get(position).getLabel();
-                            if (!TextUtils.isEmpty(key_deviceId)){
-                                edit.remove(key_deviceId);
+                            String blename = deviceValue.get(position).getBleName();
+                            if (!TextUtils.isEmpty(blename)){
+                                edit.remove(blename);
                                 edit.apply();
                                 deviceValue.remove(position);
                                 bixinkeyManagerAdapter.notifyItemChanged(position);

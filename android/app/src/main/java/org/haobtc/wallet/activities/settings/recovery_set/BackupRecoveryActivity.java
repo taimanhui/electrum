@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities.settings.recovery_set;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,7 +57,10 @@ public class BackupRecoveryActivity extends BaseActivity {
         for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
             String mapValue = (String) entry.getValue();
             HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
-            deviceValue.add(hardwareFeatures);
+            String backupMessage = hardwareFeatures.getBackupMessage();
+            if (!TextUtils.isEmpty(backupMessage)){
+                deviceValue.add(hardwareFeatures);
+            }
         }
     }
 
@@ -73,6 +77,7 @@ public class BackupRecoveryActivity extends BaseActivity {
                         case R.id.relativeLayout_bixinkey:
                             Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
                             intent.putExtra("strKeyname",deviceValue.get(position).getBleName());
+                            intent.putExtra("backupMessage",deviceValue.get(position).getBackupMessage());
                             intent.putExtra("flagWhere","Backup");
                             startActivity(intent);
                             break;

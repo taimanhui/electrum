@@ -61,6 +61,7 @@ import org.haobtc.wallet.activities.settings.CheckXpubResultActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.BackupMessageActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
@@ -753,12 +754,15 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             }
             // runOnUiThread(runnables.get(0));
         } else if (BackupRecoveryActivity.TAG.equals(tag)) {
-            if (TextUtils.isEmpty(extras)) {
-                Toast.makeText(this, "备份成功", Toast.LENGTH_SHORT).show();
-                System.out.println("backup successful======" + s);
-            } else {
-                System.out.println("recovery======successful====");
-            }
+            SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
+            features.setBackupMessage(s);
+            devices.edit().putString(features.getBleName(), features.toString()).apply();
+            Intent intent = new Intent(this, BackupMessageActivity.class);
+            intent.putExtra("label", features.getLabel());
+            intent.putExtra("tag", "backup");
+            intent.putExtra("strKeyname",features.getBleName());
+            intent.putExtra("backupMessage", s);
+            startActivity(intent);
         } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().postSticky(new ResultEvent(s));
         } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {

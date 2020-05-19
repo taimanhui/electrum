@@ -5,8 +5,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -42,9 +45,12 @@ public class BackupMessageActivity extends BaseActivity {
     Button btncontinue;
     @BindView(R.id.tet_Keyname)
     TextView tetKeyname;
+    @BindView(R.id.img_orcode)
+    ImageView imgOrcode;
     private RxPermissions rxPermissions;
     private Intent intent;
     private String flagWhere;
+    private Bitmap bitmap;
 
     @Override
     public int getLayoutId() {
@@ -62,13 +68,20 @@ public class BackupMessageActivity extends BaseActivity {
     private void inits() {
         String strKeyname = intent.getStringExtra("strKeyname");
         flagWhere = intent.getStringExtra("flagWhere");
+        String backupMessage = intent.getStringExtra("backupMessage");
+
+        textView5.setText(backupMessage);
         tetKeyname.setText(strKeyname);
-        if (!TextUtils.isEmpty(flagWhere)){
-            if (flagWhere.equals("Backup")){
+        if (!TextUtils.isEmpty(flagWhere)) {
+            if ("Backup".equals(flagWhere)) {
                 btncontinue.setText(getString(R.string.recover_backup));
-            }else{
+            } else {
                 btncontinue.setText(getString(R.string.finish));
             }
+        }
+        if (!TextUtils.isEmpty(backupMessage)){
+            bitmap = CodeCreator.createQRCode(backupMessage, 248, 248, null);
+            imgOrcode.setImageBitmap(bitmap);
         }
     }
 
@@ -89,12 +102,12 @@ public class BackupMessageActivity extends BaseActivity {
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-//                                boolean toGallery = saveBitmap(bitmap);
-//                                if (toGallery) {
-//                                    mToast(getString(R.string.preservationbitmappic));
-//                                } else {
-//                                    Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
-//                                }
+                                boolean toGallery = saveBitmap(bitmap);
+                                if (toGallery) {
+                                    mToast(getString(R.string.preservationbitmappic));
+                                } else {
+                                    Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
+                                }
 
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
@@ -109,11 +122,11 @@ public class BackupMessageActivity extends BaseActivity {
                 Toast.makeText(BackupMessageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn_continue:
-                if (flagWhere.equals("Backup")){
+                if ("Backup".equals(flagWhere)) {
                     // new version code
                     Intent intent = new Intent(this, CommunicationModeSelector.class);
                     startActivity(intent);
-                }else{
+                } else {
                     finish();
                 }
                 break;
