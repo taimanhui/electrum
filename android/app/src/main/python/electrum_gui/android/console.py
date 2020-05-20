@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
+import binascii
 import copy
 from code import InteractiveConsole
 import json
@@ -1173,10 +1174,11 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return response
 
-    def recovery_wallet(self, msg, path='android_usb'):
+    def recovery_wallet(self, path='android_usb', *args):
         client = self.get_client(path=path)
         try:
-            response = client.recovry(msg)
+            device.apply_settings(client.client, use_se=True)
+            response = client.recovery(binascii.unhexlify(args[0]))
         except Exception as e:
             raise BaseException(e)
         return response

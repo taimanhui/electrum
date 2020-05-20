@@ -333,7 +333,18 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             HardwareFeatures features = HardwareFeatures.objectFromData(feature);
             if (features.isInitialized()) {
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
-                devices.edit().putString(features.getBleName(), feature).apply();
+                HardwareFeatures old;
+                String backupMessage = "";
+                if (devices.contains(features.getBleName())) {
+                   old = HardwareFeatures.objectFromData(devices.getString(features.getBleName(), ""));
+                   backupMessage = old.getBackupMessage();
+                }
+                if (!Strings.isNullOrEmpty(backupMessage)) {
+                   features.setBackupMessage(backupMessage);
+                   devices.edit().putString(features.getBleName(), features.toString()).apply();
+                } else {
+                    devices.edit().putString(features.getBleName(), feature).apply();
+                }
             }
             return features;
         } catch (Exception e) {
@@ -368,8 +379,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 if (isNFC) {
                     Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
                     intent.putExtra("way", COMMUNICATION_MODE_NFC);
-                    intent.putExtra("tag", 2);
                     intent.putExtras(getIntent().getExtras());
+                    intent.putExtra("tag", 2);
                     startActivity(intent);
                     new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
                 }
