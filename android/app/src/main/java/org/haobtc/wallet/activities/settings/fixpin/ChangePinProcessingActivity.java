@@ -18,6 +18,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
 import org.haobtc.wallet.event.ExistEvent;
@@ -144,6 +145,7 @@ public class ChangePinProcessingActivity extends BaseActivity {
         startActivity(intent);
         finish();
     }
+    @SingleClick
     @OnClick(R.id.img_back)
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {

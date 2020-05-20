@@ -67,6 +67,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryResult;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
+import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.ButtonRequestEvent;
@@ -230,6 +231,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                         ).dispose();
                         break;
                     case R.id.radio_nfc:
+                        ble.put("IS_CANCEL", true);
                         group.check(R.id.radio_nfc);
                         mBle.disconnectAll();
                         refreshDeviceList(false);
@@ -615,7 +617,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void exist(ExistEvent event) {
         finish();
     }
-
+    @SingleClick
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

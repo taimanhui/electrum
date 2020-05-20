@@ -6,6 +6,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.ExistEvent;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
+
 public class ClickUtil {
     /**
      * the last click time
@@ -25,8 +27,9 @@ public class ClickUtil {
      */
     public static boolean isFastDoubleClick(View v, long intervalMillis) {
         int viewId = v.getId();
-        if (viewId == R.id.img_back) {
+        if (viewId == R.id.img_back || viewId == R.id.img_cancel) {
             EventBus.getDefault().post(new ExistEvent());
+            ble.put("IS_CANCEL", true);
             return false;
         }
         long time = System.currentTimeMillis();
