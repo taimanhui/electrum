@@ -1201,7 +1201,7 @@ class AndroidCommands(commands.Commands):
             if use_se:
                 device.apply_settings(client.client, use_se=True)
                 pin_protection = False
-            response = client.reset_device(skip_backup=True, language=language, pin_protection=pin_protection)
+            response = client.reset_device(skip_backup=True, language=language, pin_protection=pin_protection, passphrase_protection=True)
         except Exception as e:
             raise BaseException(e)
         if response == "Device successfully initialized":
