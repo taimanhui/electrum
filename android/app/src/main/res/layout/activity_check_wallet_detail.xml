@@ -160,7 +160,7 @@
                     android:id="@+id/tet_deleteWallet"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:background="@drawable/white_tuo"
+                    android:background="@color/t_white"
                     android:text="@string/delete_wallet"
                     android:textColor="@color/red_text"
                     android:textSize="15sp" />

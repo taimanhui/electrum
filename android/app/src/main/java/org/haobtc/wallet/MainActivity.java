@@ -308,7 +308,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             tetNone.setVisibility(View.GONE);
             recy_data.setVisibility(View.VISIBLE);
             String strHistory = get_history_tx.toString();
-           // Log.i("strHistory", "onPage----: " + strHistory);
+            // Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
                 tetNone.setText(getString(R.string.no_records));
@@ -333,7 +333,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         maintrsactionlistEvents.clear();
         try {
             jsonArray = new JSONArray(strHistory);
-           // Log.i("showTrsactionlist", "showTrsactionlist========: " + strHistory);
+            // Log.i("showTrsactionlist", "showTrsactionlist========: " + strHistory);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
@@ -513,10 +513,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
-           // Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
+            // Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
             //Rolling Wallet
-            ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
-
+            Log.i("fragmentList", "event.........: " + fragmentList.size());
+            if (fragmentList != null && fragmentList.size() > 0){
+                ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
+            }
         }
     }
 
@@ -611,7 +613,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("ddddd", "onActivityResult: " + content);
                 //bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
                 if (!TextUtils.isEmpty(content)) {
                     PyObject parse_qr;

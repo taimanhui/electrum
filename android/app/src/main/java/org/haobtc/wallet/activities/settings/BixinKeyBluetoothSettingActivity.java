@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
@@ -27,11 +28,13 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpu
 
 public class BixinKeyBluetoothSettingActivity extends BaseActivity {
 
-    public static final String TAG_TRUE = BixinKeyBluetoothSettingActivity.class.getSimpleName();
-    public static final String TAG_FALSE = "CHECKED_FALSE";
+    public static final String TAG = BixinKeyBluetoothSettingActivity.class.getSimpleName();
     @BindView(R.id.switchHideBluetooth)
     Switch switchHideBluetooth;
     private SharedPreferences.Editor edit;
+    private boolean change_use_ble;
+    private SharedPreferences preferences;
+    private boolean now_status = true;
 
     @Override
     public int getLayoutId() {
@@ -42,9 +45,10 @@ public class BixinKeyBluetoothSettingActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        EventBus.getDefault().register(this);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
-        boolean change_use_ble = preferences.getBoolean("change_use_ble", false);
+        change_use_ble = preferences.getBoolean("change_use_ble", true);
         if (change_use_ble) {
             switchHideBluetooth.setChecked(true);
         } else {
@@ -84,40 +88,64 @@ public class BixinKeyBluetoothSettingActivity extends BaseActivity {
         switchHideBluetooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(!buttonView.isPressed())return;
+                nModeSelector();
                 if (isChecked) {
-                    nModeSelector(true);
+                    now_status = true;
                 } else {
-                    nModeSelector(false);
+                    now_status = false;
                 }
             }
         });
     }
 
-    private void nModeSelector(boolean isChecked){
-        if (isChecked){
-//            CommunicationModeSelector.runnables.clear();
-//            CommunicationModeSelector.runnables.add(runnable);
-            Intent intent = new Intent(BixinKeyBluetoothSettingActivity.this, CommunicationModeSelector.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            intent.putExtra("tag", TAG_TRUE);
-            startActivity(intent);
-        }else{
-//            CommunicationModeSelector.runnables.clear();
-//            CommunicationModeSelector.runnables.add(runnable);
-            Intent intent = new Intent(BixinKeyBluetoothSettingActivity.this, CommunicationModeSelector.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            intent.putExtra("tag", TAG_FALSE);
-            startActivity(intent);
-        }
+    private void nModeSelector() {
+        Intent intent = new Intent(BixinKeyBluetoothSettingActivity.this, CommunicationModeSelector.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra("tag", TAG);
+        startActivity(intent);
+
 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SetBluetoothEvent updataHint) {
         String msgStatus = updataHint.getStatus();
-        if (!TextUtils.isEmpty(msgStatus)){
-            Log.i("SetBluetoothEvent", "event:::::::::::: "+updataHint);
+        Log.i("SetBluetoothEvent", "event:::::::::::: " + updataHint);
+        if ("recovery_status".equals(msgStatus)) {
+            if (now_status) {
+                switchHideBluetooth.setChecked(false);
+            } else {
+                switchHideBluetooth.setChecked(true);
+            }
+
+        } else if ("1".equals(msgStatus)) {
+            change_use_ble = preferences.getBoolean("change_use_ble", false);
+            if (change_use_ble) {
+                edit.putBoolean("change_use_ble", false);
+                edit.apply();
+            } else {
+                edit.putBoolean("change_use_ble", true);
+                edit.apply();
+            }
+            mToast(getString(R.string.set_success));
+
+        } else {
+            change_use_ble = preferences.getBoolean("change_use_ble", false);
+            if (change_use_ble) {
+                switchHideBluetooth.setChecked(true);
+            } else {
+                switchHideBluetooth.setChecked(false);
+            }
+            mToast(getString(R.string.set_fail));
         }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @OnClick({R.id.img_back})

@@ -68,7 +68,7 @@
                 android:layout_height="@dimen/line_hight"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginEnd="@dimen/dp_30"
-                android:background="@color/light_text" />
+                android:background="@color/separation_line" />
 
             <View
                 android:layout_width="match_parent"
@@ -76,21 +76,21 @@
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginTop="@dimen/dp_50"
                 android:layout_marginEnd="@dimen/dp_30"
-                android:background="@color/light_text" />
+                android:background="@color/separation_line" />
 
             <View
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="@dimen/dp_50"
                 android:layout_marginStart="@dimen/dp_30"
                 android:layout_marginEnd="@dimen/corner_radius"
-                android:background="@color/light_text" />
+                android:background="@color/separation_line" />
 
             <View
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="@dimen/dp_50"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="@dimen/dp_30"
-                android:background="@color/light_text" />
+                android:background="@color/separation_line" />
 
         </RelativeLayout>
 

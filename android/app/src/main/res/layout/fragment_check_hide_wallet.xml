@@ -22,10 +22,9 @@
 
             <ImageView
                 android:id="@+id/img_Addmoney"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:padding="@dimen/dp_15"
+                android:layout_width="@dimen/dp_50"
+                android:layout_height="50dp"
+                android:layout_marginTop="48dp"
                 android:src="@drawable/yincang"
                 android:layout_centerHorizontal="true"
                 android:contentDescription="@string/add" />
@@ -33,6 +32,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
                 android:layout_below="@+id/img_Addmoney"
                 android:layout_centerHorizontal="true"
                 android:text="@string/check_hide_wallet"

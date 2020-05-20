@@ -72,11 +72,13 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 break;
             case APPLY_SETTING:
                 try {
-                    Daemon.commands.callAttr(strings[0], strings[1], strings[2].equals("one") ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false));
+                    result = Daemon.commands.callAttr(strings[0], strings[1], strings[2].equals("one") ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false)).toString();
                 } catch (Exception e) {
+                    Log.i("SetBluetoothEvent", "@@/.................... " + e.getMessage());
                     cancel(true);
                     onException(e);
                 }
+                Log.i("SetBluetoothEvent", "event::::::::::::............ " + result);
                 break;
         }
         return result;

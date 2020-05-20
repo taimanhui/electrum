@@ -29,7 +29,9 @@ public class ClickUtil {
         int viewId = v.getId();
         if (viewId == R.id.img_back || viewId == R.id.img_cancel) {
             EventBus.getDefault().post(new ExistEvent());
-            ble.put("IS_CANCEL", true);
+            if (ble != null) {
+                ble.put("IS_CANCEL", true);
+            }
             return false;
         }
         long time = System.currentTimeMillis();

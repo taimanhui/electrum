@@ -397,7 +397,7 @@
     <string name="the_only_bixinkey">BixinKEY中任意一个授权转账</string>
     <string name="iknow_risk">我已知晓以上风险</string>
     <string name="key_backup">BixinKEY备份&#38;恢复</string>
-    <string name="pin_wrong">PIN码输入有误，请从新输入</string>
+    <string name="pin_wrong">PIN码输入有误，请重新输入</string>
     <string name="recover_backup">恢复备份钱包</string>
     <string name="improt_wrong">请求失败</string>
     <string name="band_bixinkey">绑定的BixinKEY</string>
@@ -601,5 +601,6 @@
         最终都由私钥生成公钥，最后由公钥生成资产地址来实现数字资产的安全存储。 "</string>
     <string name="delete_fail">删除失败</string>
     <string name="recovery_failed">钱包恢复失败</string>
+    <string name="set_fail">设置失败</string>
 
 </resources>

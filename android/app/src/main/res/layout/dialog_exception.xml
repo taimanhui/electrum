@@ -6,7 +6,7 @@
     android:background="@color/t_white">
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="440dp"
+        android:layout_height="419dp"
         app:cardCornerRadius="@dimen/corner_radius"
         android:layout_marginStart="@dimen/layout_margin"
         android:layout_marginEnd="@dimen/layout_margin"
@@ -21,7 +21,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/dp_18"
-
                 app:srcCompat="@drawable/close_big_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -71,6 +70,7 @@
                 android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:textAllCaps="false"
+                android:textColor="@color/button_bk_ddake"
                 android:layout_marginBottom="30dp"
                 android:text="@string/retry"
                 android:background="@drawable/button_bk"

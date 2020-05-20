@@ -630,5 +630,6 @@
         Finally, the private key generates the public key, and the public key generates the asset address to realize the secure storage of digital assets."</string>
     <string name="delete_fail">Delete failed</string>
     <string name="recovery_failed">Wallet recovery failed</string>
+    <string name="set_fail">Setting failed</string>
 
 </resources>

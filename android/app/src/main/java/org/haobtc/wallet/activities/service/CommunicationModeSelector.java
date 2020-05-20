@@ -491,12 +491,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
                 //Anti counterfeiting verification
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-            } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
-                if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag)) {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "one");
-                } else {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "zero");
-                }
+            } else if (BixinKeyBluetoothSettingActivity.TAG.equals(tag)) {
+                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "one");
+
             }
         } else {
             if (!TextUtils.isEmpty(extras) && BackupMessageActivity.TAG.equals(tag)) {
@@ -622,6 +619,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_cancel:
+                if (BixinKeyBluetoothSettingActivity.TAG.equals(tag)) {
+                    EventBus.getDefault().post(new SetBluetoothEvent("recovery_status"));
+                }
                 if (mBle != null) {
                     refreshDeviceList(false);
                     mBle.disconnectAll();
@@ -712,6 +712,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
         } else if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(e.getMessage())) {
             showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
+        } else if (e.getMessage().contains("read ble response timeout")) {
+            showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
         } else {
             showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
         }
@@ -721,7 +723,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Override
     public void onResult(String s) {
-        Log.i("CheckHideWalletFragment", "onResult:sssssssssssssssssssss:::::: "+s);
+        Log.i("CheckHideWalletFragment", "onResult:sssssssssssssssssssss:::::: " + s);
+        Log.i("CheckHideWalletFragment", "onResult:。。。。。。。。。。。。。。。。:::::: " + tag);
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -730,6 +733,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             finish();
             return;
         }
+
         if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag) || "check_xpub".equals(tag)) {
             xpub = s;
             if (ImportHistoryWalletActivity.TAG.equals(tag)) {
@@ -774,7 +778,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             }
         } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().postSticky(new ResultEvent(s));
-        } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
+        } else if (BixinKeyBluetoothSettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().post(new SetBluetoothEvent(s));
         }
         finish();
