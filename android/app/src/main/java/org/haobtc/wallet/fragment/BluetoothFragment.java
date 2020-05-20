@@ -16,7 +16,9 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.event.RefreshEvent;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 
 import butterknife.BindView;
@@ -52,14 +54,7 @@ public class BluetoothFragment extends Fragment implements OnRefreshListener {
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        Toast.makeText(getActivity(), "刷新蓝牙列表", Toast.LENGTH_SHORT).show();
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                refreshLayout.finishRefresh();
-            }
-        }, 300);
-
+        EventBus.getDefault().post(new RefreshEvent());
+        new Handler().postDelayed(refreshLayout::finishRefresh, 300);
     }
 }

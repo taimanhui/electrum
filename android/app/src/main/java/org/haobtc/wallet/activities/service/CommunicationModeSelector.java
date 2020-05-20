@@ -34,9 +34,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -82,6 +79,7 @@ import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ReadingEvent;
 import org.haobtc.wallet.event.ReceiveXpub;
+import org.haobtc.wallet.event.RefreshEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SendSignBroadcastEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
@@ -110,8 +108,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
@@ -284,6 +280,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             mBle.startScan(scanCallback);
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefresh(RefreshEvent event) {
+        refreshDeviceList(true);
+    }
 
 
     private final Runnable retry = new Runnable() {
@@ -315,7 +315,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             bleHandler.put("ENABLED", false);
             usbTransport.put("ENABLED", false);
             nfcHandler.put("device", tags);
-            handlerEverything(true);
+            if (HideWalletSetPassActivity.TAG.equals(tag)) {
+                String passphrase = getIntent().getStringExtra("passphrase");
+                setPassphrass(new PinEvent("", passphrase));
+            } else {
+                handlerEverything(true);
+            }
         }
 
     }
@@ -399,10 +404,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //            intent.putExtra("pin_type", 2);
 //            startActivity(intent);
 //            finish();
-        } else if (HideWalletSetPassActivity.TAG.equals(tag)) {
-            String passphrase = getIntent().getStringExtra("passphrase");
-            setPassphrass(new PinEvent("", passphrase));
-            finish();
         } else {
             dealWithBusiness(isNFC);
         }
