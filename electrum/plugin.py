@@ -389,9 +389,9 @@ class DeviceMgr(ThreadJob):
 
     def create_client(self, device: 'Device', handler, plugin: 'HW_PluginBase') -> Optional['HardwareClientBase']:
         # Get from cache first
-        client = self.client_lookup(device.id_)
-        if client:
-            return client
+        # client = self.client_lookup(device.id_)
+        # if client:
+        #     return client
         client = plugin.create_client(device, handler)
         if client:
             self.logger.info(f"Registering {client}")
@@ -564,6 +564,7 @@ class DeviceMgr(ThreadJob):
             devices = None
         if len(infos) == 1:
             return infos[0]
+        print(f"devices infos ======{infos}========plugin.py L567")
         # select device by label automatically;
         # but only if not a placeholder label and only if there is no collision
         device_labels = [info.label for info in infos]

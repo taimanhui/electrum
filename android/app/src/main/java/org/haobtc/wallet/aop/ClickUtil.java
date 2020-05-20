@@ -7,6 +7,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.ExistEvent;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
 
 public class ClickUtil {
     /**
@@ -31,6 +32,7 @@ public class ClickUtil {
             EventBus.getDefault().post(new ExistEvent());
             if (ble != null) {
                 ble.put("IS_CANCEL", true);
+                nfc.put("IS_CANCEL", true);
             }
             return false;
         }

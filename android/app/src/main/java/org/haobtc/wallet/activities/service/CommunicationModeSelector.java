@@ -294,7 +294,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             if (Ble.getInstance().getConnetedDevices().size() != 0) {
                 startService(new Intent(CommunicationModeSelector.this, BleService.class));
             } else {
-                usbManager.doBusiness(device);
+                if (device != null) {
+                    usbManager.doBusiness(device);
+                }
             }
         }
     };
@@ -486,6 +488,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 if (TextUtils.isEmpty(extras)) {
                     Log.i(TAG, "java ==== backup");
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                } else {
+                    Toast.makeText(this, R.string.recovery_unsupport, Toast.LENGTH_SHORT).show();
                 }
             } else if (SettingActivity.TAG.equals(tag)) {
                 String strRandom = UUID.randomUUID().toString().replaceAll("-", "");

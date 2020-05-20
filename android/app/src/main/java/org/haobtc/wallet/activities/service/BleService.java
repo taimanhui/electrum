@@ -156,6 +156,7 @@ public class BleService extends Service {
                 bleHandler.put("BLE", mBle);
                 bleHandler.put("BLE_DEVICE", device);
                 bleHandler.put("CALL_BACK", writeCallBack);
+                ble.put("WRITE_SUCCESS", true);
                 handle();
             }
 

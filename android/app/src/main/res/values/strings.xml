@@ -631,5 +631,6 @@
     <string name="delete_fail">Delete failed</string>
     <string name="recovery_failed">Wallet recovery failed</string>
     <string name="set_fail">Setting failed</string>
+    <string name="recovery_unsupport">Wallet is inited, please wipe device first</string>
 
 </resources>

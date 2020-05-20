@@ -141,7 +141,7 @@
                 android:background="@color/key_bk"
                 android:focusableInTouchMode="true"
                 android:keyBackground="@drawable/keyboard_selector"
-                android:keyTextColor="@color/black_key"
+                android:keyTextColor="@color/set_txt"
                 android:paddingTop="@dimen/dp_6"
                 android:paddingEnd="@dimen/dp_6"
                 tools:ignore="RtlSymmetry" />

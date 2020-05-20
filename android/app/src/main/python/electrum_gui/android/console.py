@@ -1259,13 +1259,9 @@ class AndroidCommands(commands.Commands):
         print(f"total device====={client_list}")
         device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
         assert len(device) != 0, "Not found the point device"
-        print(f"creating client ======")
         client = plugin.create_client(device[0], ui)
-        print(f"get client {client}=======")
         if not client.features.bootloader_mode:
-            print(f"set is set_bixin_app==============")
             client.set_bixin_app(True)
-        print(f"get result=================")
         self.client = client
         self.path = path
         return client

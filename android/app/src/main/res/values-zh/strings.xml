@@ -602,5 +602,5 @@
     <string name="delete_fail">删除失败</string>
     <string name="recovery_failed">钱包恢复失败</string>
     <string name="set_fail">设置失败</string>
-
+    <string name="recovery_unsupport">如需恢复备份，请先恢复出厂设置</string>
 </resources>
