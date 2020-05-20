@@ -98,7 +98,7 @@ public class ActivatedProcessing extends BaseActivity {
                 public void run() {
                     if (hasWindowFocus()) {
                         Log.d(TAG, "something went wrong");
-                        finishAffinity();
+                        finish();
                         EventBus.getDefault().post(new ExistEvent());
                     }
                 }
@@ -174,7 +174,7 @@ public class ActivatedProcessing extends BaseActivity {
                 public void run() {
                     if (hasWindowFocus()) {
                         Log.d(TAG, "something went wrong");
-                        finishAffinity();
+                        finish();
                         EventBus.getDefault().post(new ExistEvent());
                     }
                 }

@@ -17,6 +17,7 @@ import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.VerificationKEYActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SetBluetoothEvent;
 
@@ -28,7 +29,8 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpu
 
 public class BixinKeyBluetoothSettingActivity extends BaseActivity {
 
-    public static final String TAG = BixinKeyBluetoothSettingActivity.class.getSimpleName();
+    public static final String TAG_TRUE = BixinKeyBluetoothSettingActivity.class.getSimpleName();
+    public static final String TAG_FALSE = "TAG_FALSE_BLUETOOTH_CLOSE";
     @BindView(R.id.switchHideBluetooth)
     Switch switchHideBluetooth;
     private SharedPreferences.Editor edit;
@@ -89,29 +91,35 @@ public class BixinKeyBluetoothSettingActivity extends BaseActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(!buttonView.isPressed())return;
-                nModeSelector();
                 if (isChecked) {
+                    nModeSelector(true);
                     now_status = true;
                 } else {
+                    nModeSelector(false);
                     now_status = false;
                 }
             }
         });
     }
 
-    private void nModeSelector() {
-        Intent intent = new Intent(BixinKeyBluetoothSettingActivity.this, CommunicationModeSelector.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        intent.putExtra("tag", TAG);
-        startActivity(intent);
-
-
+    private void nModeSelector(boolean status) {
+        if (status){
+            Intent intent = new Intent(BixinKeyBluetoothSettingActivity.this, CommunicationModeSelector.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            intent.putExtra("tag", TAG_TRUE);
+            startActivity(intent);
+        }else{
+            Intent intent = new Intent(BixinKeyBluetoothSettingActivity.this, CommunicationModeSelector.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            intent.putExtra("tag", TAG_FALSE);
+            startActivity(intent);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SetBluetoothEvent updataHint) {
         String msgStatus = updataHint.getStatus();
-        Log.i("SetBluetoothEvent", "event:::::::::::: " + updataHint);
+        Log.i("SetBluetoothEvent", "event:::::::::::: " + msgStatus);
         if ("recovery_status".equals(msgStatus)) {
             if (now_status) {
                 switchHideBluetooth.setChecked(false);
@@ -119,26 +127,43 @@ public class BixinKeyBluetoothSettingActivity extends BaseActivity {
                 switchHideBluetooth.setChecked(true);
             }
 
-        } else if ("1".equals(msgStatus)) {
-            change_use_ble = preferences.getBoolean("change_use_ble", false);
-            if (change_use_ble) {
-                edit.putBoolean("change_use_ble", false);
-                edit.apply();
-            } else {
-                edit.putBoolean("change_use_ble", true);
-                edit.apply();
-            }
-            mToast(getString(R.string.set_success));
-
-        } else {
-            change_use_ble = preferences.getBoolean("change_use_ble", false);
-            if (change_use_ble) {
-                switchHideBluetooth.setChecked(true);
-            } else {
-                switchHideBluetooth.setChecked(false);
-            }
-            mToast(getString(R.string.set_fail));
         }
+//        else if ("1".equals(msgStatus)) {
+////            change_use_ble = preferences.getBoolean("change_use_ble", true);
+////            if (change_use_ble) {
+////                edit.putBoolean("change_use_ble", false);
+////                edit.apply();
+////            } else {
+////                edit.putBoolean("change_use_ble", true);
+////                edit.apply();
+////            }
+////            mToast(getString(R.string.set_success));
+////
+////        }
+//        else {
+//            change_use_ble = preferences.getBoolean("change_use_ble", true);
+//            if (change_use_ble) {
+//                switchHideBluetooth.setChecked(true);
+//            } else {
+//                switchHideBluetooth.setChecked(false);
+//            }
+//            mToast(getString(R.string.set_fail));
+//        }
+
+    }
+
+    //Click the confirm button to indicate success
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventa(ButtonRequestEvent event) {
+        change_use_ble = preferences.getBoolean("change_use_ble", true);
+        if (change_use_ble) {
+            edit.putBoolean("change_use_ble", false);
+            edit.apply();
+        } else {
+            edit.putBoolean("change_use_ble", true);
+            edit.apply();
+        }
+        mToast(getString(R.string.set_success));
 
     }
 

@@ -515,8 +515,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
             // Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
             //Rolling Wallet
-            Log.i("fragmentList", "event.........: " + fragmentList.size());
-            if (fragmentList != null && fragmentList.size() > 0){
+            if (fragmentList != null && fragmentList.size() > 0) {
                 ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
             }
         }
@@ -531,6 +530,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             Log.i("viewPagernihao", "event:------ " + walletPos);
         }
     }
+
     private void getUpdateInfo() {
         // version_testnet.json version_regtest.json
         String appId = BuildConfig.APPLICATION_ID;
@@ -540,7 +540,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             url = urlPrefix + "version.json";
         } else if (appId.endsWith("testnet")) {
             url = urlPrefix + "version_testnet.json";
-        } else if(appId.endsWith("regnet")) {
+        } else if (appId.endsWith("regnet")) {
             url = urlPrefix + "version_regtest.json";
         }
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -570,6 +570,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
     }
+
     private void attemptUpdate(String uri, String versionName, int versionCode, String size, String description) {
         String url = "https://key.bixin.com/" + uri;
         UpdateConfiguration configuration = new UpdateConfiguration()
@@ -602,7 +603,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        manager.release();
+        if (manager != null) {
+            manager.release();
+        }
         EventBus.getDefault().unregister(this);
     }
 

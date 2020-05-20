@@ -32,10 +32,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
-import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -104,13 +105,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
@@ -495,9 +496,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
                 //Anti counterfeiting verification
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-            } else if (BixinKeyBluetoothSettingActivity.TAG.equals(tag)) {
-                new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "one");
-
+            } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
+                if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag)) {
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "one");
+                } else {
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "zero");
+                }
             }
         } else {
             if (!TextUtils.isEmpty(extras) && BackupMessageActivity.TAG.equals(tag)) {
@@ -593,6 +597,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Subscribe
     public void setPassphrass(PinEvent event) {
+        Log.i(TAG, "setPassphrass:。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。 " + event.getPassphrass());
         if (!Strings.isNullOrEmpty(event.getPassphrass())) {
             customerUI.put("passphrase", event.getPassphrass());
         }
@@ -618,12 +623,13 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void exist(ExistEvent event) {
         finish();
     }
+
     @SingleClick
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_cancel:
-                if (BixinKeyBluetoothSettingActivity.TAG.equals(tag)) {
+                if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
                     EventBus.getDefault().post(new SetBluetoothEvent("recovery_status"));
                 }
                 if (mBle != null) {
@@ -771,7 +777,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 features.setBackupMessage(s);
                 devices.edit().putString(features.getBleName(), features.toString()).apply();
                 Intent intent = new Intent(this, BackupMessageActivity.class);
-                intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName(): features.getLabel());
+                intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() : features.getLabel());
                 intent.putExtra("tag", "backup");
                 intent.putExtra("message", s);
                 startActivity(intent);
@@ -782,7 +788,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             }
         } else if (RecoverySetActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().postSticky(new ResultEvent(s));
-        } else if (BixinKeyBluetoothSettingActivity.TAG.equals(tag)) {
+        } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
             EventBus.getDefault().post(new SetBluetoothEvent(s));
         }
         finish();

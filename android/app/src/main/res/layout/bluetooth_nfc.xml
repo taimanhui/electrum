@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="419dp"
-        app:cardCornerRadius="@dimen/corner_radius"
         android:layout_marginStart="@dimen/layout_margin"
         android:layout_marginEnd="@dimen/layout_margin"
-        android:layout_marginBottom="@dimen/layout_margin">
+        android:layout_marginBottom="@dimen/layout_margin"
+        app:cardCornerRadius="@dimen/corner_radius">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <RadioGroup
                 android:id="@+id/radio_group"
                 android:layout_width="wrap_content"
@@ -33,9 +36,9 @@
                     android:drawableBottom="@drawable/src_qiye"
                     android:gravity="center"
                     android:text="@string/blue_toose"
-                    android:textStyle="bold"
                     android:textColor="@drawable/textcolor"
-                    android:textSize="@dimen/sp_16" />
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
 
                 <RadioButton
                     android:id="@+id/radio_nfc"
@@ -43,13 +46,13 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/dp_20"
                     android:button="@null"
+                    android:checked="true"
                     android:drawableBottom="@drawable/src_qiye"
                     android:gravity="center"
-                    android:checked="true"
                     android:text="@string/nfc_line"
                     android:textColor="@drawable/textcolor"
                     android:textSize="@dimen/sp_16"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
             </RadioGroup>
 
@@ -58,9 +61,9 @@
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="47.5dp"
                 android:layout_alignParentEnd="true"
+                android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="@string/use_hardware"
                 android:padding="@dimen/dp_14"
-                android:background="?android:attr/selectableItemBackground"
                 android:src="@drawable/close_big_black"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -78,38 +81,39 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/ln"
                 android:layout_marginTop="32dp"
-                android:contentDescription="@string/picture"
                 android:background="@drawable/tiehe"
+                android:contentDescription="@string/picture"
                 android:visibility="visible" />
 
             <TextView
                 android:id="@+id/text_prompt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/sp_18"
-                android:textColor="@color/text"
-                android:textStyle="bold"
                 android:layout_below="@id/ln"
                 android:layout_marginTop="@dimen/dp_21"
                 android:gravity="center"
                 android:text="@string/bixinkey_fit"
-                android:visibility="visible"/>
+                android:textColor="@color/text"
+                android:textSize="@dimen/sp_18"
+                android:textStyle="bold"
+                android:visibility="visible" />
 
             <FrameLayout
                 android:id="@+id/ble_device"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/dp_80"
                 android:layout_below="@id/ln"
                 android:layout_marginTop="@dimen/dp_30"
-                android:visibility="gone"/>
+                android:visibility="gone" />
+
             <RelativeLayout
                 android:id="@+id/input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_80"
-                android:background="@android:color/white"
                 android:layout_alignParentBottom="true"
+                android:background="@android:color/white"
                 android:visibility="visible">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="17dp"
@@ -119,27 +123,29 @@
                     android:gravity="center_horizontal"
                     android:text="@string/have_bixinkey"
                     android:textColor="@color/text_color1"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/sp_12" />
+                    android:textSize="@dimen/sp_12"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/text_input_publickey_by_hand"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/dp_20"
-                    android:gravity="center_horizontal"
-                    android:layout_centerHorizontal="true"
                     android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="@dimen/dp_20"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:gravity="center_horizontal"
+                    android:text="@string/input_public_key"
                     android:textColor="@color/onclick"
                     android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:text="@string/input_public_key"/>
+                    android:textStyle="bold" />
+
                 <View
                     android:layout_width="73dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/dp_20"
                     android:layout_height="@dimen/line_hight"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="@dimen/dp_20"
                     android:background="@color/onclick" />
             </RelativeLayout>
         </RelativeLayout>
