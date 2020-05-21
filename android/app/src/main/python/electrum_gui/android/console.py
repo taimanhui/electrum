@@ -1162,8 +1162,8 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         verify_info = {}
-        verify_info['sign'] = response
-        verify_info['seq'] = client.features.device_id
+        verify_info['cert'] = response.cert
+        verify_info['signature'] = response.signature
         return json.dumps(verify_info)
 
     def backup_wallet(self, path='android_usb'):
