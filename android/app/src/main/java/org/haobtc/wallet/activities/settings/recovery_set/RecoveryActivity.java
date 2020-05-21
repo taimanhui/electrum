@@ -109,4 +109,10 @@ public class RecoveryActivity extends BaseActivity {
             }
         }
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
+    }
 }

@@ -35,6 +35,8 @@ public class HardwareFeatures {
      * session_id : 9e77cabf6d9c8d605a7dcf2bbda3693ce11fa59284bf639dfbb3d056d1abbd0b
      * ble_name : BixinKEY1114131433
      * ble_ver : 1.0.5
+     * ble_enable: true
+     * se_enable: false
      * backup_message: ""
      */
 
@@ -88,6 +90,10 @@ public class HardwareFeatures {
     private List<String> capabilities;
     @SerializedName("bootloader_mode")
     private boolean bootloaderMode;
+    @SerializedName("ble_enable")
+    private boolean bleEnable;
+    @SerializedName("se_enable")
+    private boolean seEnable;
     @SerializedName("backup_message")
     private String backupMessage;
 
@@ -296,7 +302,18 @@ public class HardwareFeatures {
     public void setBootloader_mode(boolean bootloaderMode) {
         this.bootloaderMode = bootloaderMode;
     }
-
+    public void setBleEnable(boolean bleEnable) {
+        this.bleEnable = bleEnable;
+    }
+    public boolean isSeEnable() {
+        return seEnable;
+    }
+    public boolean isBleEnable() {
+        return bleEnable;
+    }
+    public void setSeEnable(boolean seEnable) {
+        this.seEnable = seEnable;
+    }
     public void setBackupMessage(String backupMessage) {
         this.backupMessage = backupMessage;
     }

@@ -37,14 +37,23 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... strings) {
+        System.out.println(String.format("method==%s===in thread===%d", strings[0], Thread.currentThread().getId()));
         String result = "";
         switch (strings[0]) {
             case GET_EXTEND_PUBLIC_KEY_SINGLE:
             case RECOVER:
-            case SIGN_MESSAGE:
+            case SIGN_TX:
             case COUNTER_VERIFICATION:
                 try {
                     result = Daemon.commands.callAttr(strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0], strings[1], strings[2]).toString();
+                } catch (Exception e) {
+                    cancel(true);
+                    onException(e);
+                }
+                break;
+            case SIGN_MESSAGE:
+                try {
+                    result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3]).toString();
                 } catch (Exception e) {
                     cancel(true);
                     onException(e);
@@ -54,7 +63,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case CHANGE_PIN:
             case WIPE_DEVICE:
             case BACK_UP:
-            case SIGN_TX:
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1]).toString();
                 } catch (Exception e) {
@@ -74,11 +82,9 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1], strings[2].equals("one") ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false)).toString();
                 } catch (Exception e) {
-                    Log.i("SetBluetoothEvent", "@@/.................... " + e.getMessage());
                     cancel(true);
                     onException(e);
                 }
-                Log.i("SetBluetoothEvent", "event::::::::::::............ " + result);
                 break;
         }
         return result;

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -613,7 +614,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 return;
             }
             try {
-                PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rawtx, strPassword);
+                PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rawtx, new Kwarg("password", strPassword));
                 if (sign_tx != null) {
                     jsonDetailData(sign_tx.toString());
                     alertDialog.dismiss();

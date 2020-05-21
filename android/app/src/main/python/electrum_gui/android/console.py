@@ -1119,7 +1119,7 @@ class AndroidCommands(commands.Commands):
         self.wallet.use_change = status_change
 
     #####sign message###########
-    def sign_message(self, address, message, password=None, path=None):
+    def sign_message(self, address, message, path='android_usb', password=None):
         try:
             if path:
                 self.get_client(path=path)
@@ -1157,7 +1157,7 @@ class AndroidCommands(commands.Commands):
 
     ###############
 
-    def sign_tx(self, tx, password=None, path=None):
+    def sign_tx(self, tx, path='android_usb', password=None):
         try:
             if path:
                 self.get_client(path=path)
@@ -1199,7 +1199,6 @@ class AndroidCommands(commands.Commands):
     def recovery_wallet(self, path='android_usb', *args):
         client = self.get_client(path=path)
         try:
-            device.apply_settings(client.client, use_se=True)
             response = client.recovery(binascii.unhexlify(args[0]))
         except Exception as e:
             raise BaseException(e)
@@ -1275,8 +1274,10 @@ class AndroidCommands(commands.Commands):
         client = self.get_client(path=path)
         return client.features.passphrase_protection
 
-    def get_client(self, path='android_usb',  ui=CustomerUI()):
+    def get_client(self, path='android_usb',  ui=CustomerUI(), clean=False):
         plugin = self.plugin.get_plugin("trezor")
+        if clean:
+            plugin.clean()
         return plugin.get_client(path=path, ui=ui)
 
     def is_encrypted_with_hw_device(self):
@@ -1287,11 +1288,10 @@ class AndroidCommands(commands.Commands):
         self.client = None
         self.path = ''
         with self.lock:
-            client = self.get_client(path=path)
+            client = self.get_client(path=path, clean=True)
         return json.dumps(protobuf.to_dict(client.features))
 
     def get_xpub_from_hw(self, path='android_usb', _type='p2wsh', is_creating=True):
-        print(f"=====get xpub py ==============")
         client = self.get_client(path=path)
         derivation = bip84_derivation(0)
         try:

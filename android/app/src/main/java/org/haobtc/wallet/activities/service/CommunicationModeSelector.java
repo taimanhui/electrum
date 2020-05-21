@@ -127,7 +127,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public static PyObject ble, customerUI, nfc, usb, bleHandler, nfcHandler, bleTransport, nfcTransport, usbTransport;
     public static MyHandler handler;
     public static FutureTask<PyObject> futureTask;
-    public static ExecutorService executorService = Executors.newCachedThreadPool();
+    public static ExecutorService executorService = Executors.newSingleThreadExecutor();
     public static String xpub;
     private boolean isActive = false;
     private boolean isSign = false;
@@ -329,7 +329,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     private HardwareFeatures getFeatures(boolean isNFC) throws Exception {
         String feature;
         try {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE));
+            futureTask = new FutureTask<>(() -> {
+                System.out.println(String.format("method==get_feature===in thread===%d", Thread.currentThread().getId()));
+                return   Daemon.commands.callAttr("get_feature", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+            });
             executorService.submit(futureTask);
             feature = futureTask.get(5, TimeUnit.SECONDS).toString();
             if (!futureTask.isDone()) {
@@ -354,6 +357,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             return features;
         } catch (Exception e) {
             Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
+            ble.put("IS_CANCEL", true);
+            nfc.put("IS_CANCEL", true);
             e.printStackTrace();
             throw e;
         }
@@ -461,13 +466,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         boolean isInit = features.isInitialized();//isInit -->  Judge whether it is activated
         if (isInit) {
             if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag) || "check_xpub".equals(tag)) {
-//                // todo: remove the below pin about code
-//                if (!features.isPinCached() && features.isPinProtection()) {
-//                    Intent intent = new Intent(this, PinSettingActivity.class);
-//                    intent.putExtra("tag", tag);
-//                    startActivity(intent);
-//                    dialogFragment = showReadingDialog(R.string.reading_dot);
-//                }
                 if (SingleSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag)) {
                     if (CheckHideWalletFragment.TAG.equals(tag)) {
                         if (features.isPassphraseProtection()){
@@ -488,26 +486,21 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                         //hide wallet sign message -->set_pass_state
                         customerUI.callAttr("set_pass_state", 1);
                     }
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 } else {
                     if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)) {
                         //hide wallet sign transaction -->set_pass_state
                         customerUI.callAttr("set_pass_state", 1);
                     }
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 }
-//                // todo: remove the if , pin always required
-//                if (!features.isPinCached() && features.isPinProtection()) {
-//                    Intent intent = new Intent(this, PinSettingActivity.class);
-//                    intent.putExtra("tag", "signature");
-//                    startActivity(intent);
-//                }
             } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag)) {
                 if (TextUtils.isEmpty(extras)) {
                     Log.i(TAG, "java ==== backup");
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 } else {
                     Toast.makeText(this, R.string.recovery_unsupport, Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             } else if (SettingActivity.TAG.equals(tag)) {
                 String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
@@ -521,7 +514,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 }
             }
         } else {
-            if (!TextUtils.isEmpty(extras) && BackupMessageActivity.TAG.equals(tag)) {
+            if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag))) {
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras);
                 return;
             }
@@ -627,10 +620,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isSign) {
-            if (runnables.size() != 0) {
-                runOnUiThread(runnables.get(0));
-                // in order to prevent repeat invoke
-                runnables.clear();
+            synchronized (CommunicationModeSelector.class) {
+                if (runnables.size() != 0) {
+                    runOnUiThread(runnables.get(0));
+                    // in order to prevent repeat invoke
+                    runnables.clear();
+                }
             }
         }
     }
@@ -785,7 +780,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
             // runOnUiThread(runnables.get(0));
-        } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag)) {
+        } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
                 features.setBackupMessage(s);

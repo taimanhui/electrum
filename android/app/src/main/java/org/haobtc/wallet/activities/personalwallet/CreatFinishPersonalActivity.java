@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +20,6 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.CreateWalletSuccessfulActivity;
 import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;

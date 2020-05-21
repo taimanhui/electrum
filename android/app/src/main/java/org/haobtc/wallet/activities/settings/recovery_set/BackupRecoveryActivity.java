@@ -16,8 +16,6 @@ import com.google.gson.Gson;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
-import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
-import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
@@ -105,7 +103,7 @@ public class BackupRecoveryActivity extends BaseActivity {
         }
     }
 
-    @SingleClick
+    @SingleClick(value = 2000)
     @OnClick({R.id.img_back, R.id.tet_keyName})
     public void onViewClicked(View view) {
         switch (view.getId()) {

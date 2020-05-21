@@ -89,17 +89,18 @@ public class CustomerUsbManager {
     }
 
     public void doBusiness(UsbDevice device) {
-        if (!usbManager.hasPermission(device)) {
-            usbManager.requestPermission(device, permissionIntent);
-        } else {
-            usb.put("USB_Manager", usbManager);
-            usb.put("USB_DEVICE", device);
-            usbTransport.put("ENABLED", true);
-            bleTransport.put("ENABLED", false);
-            nfcTransport.put("ENABLED", false);
-            EventBus.getDefault().post(new HandlerEvent());
+        synchronized (CustomerUsbManager.class) {
+            if (!usbManager.hasPermission(device)) {
+                usbManager.requestPermission(device, permissionIntent);
+            } else {
+                usb.put("USB_Manager", usbManager);
+                usb.put("USB_DEVICE", device);
+                usbTransport.put("ENABLED", true);
+                bleTransport.put("ENABLED", false);
+                nfcTransport.put("ENABLED", false);
+                EventBus.getDefault().post(new HandlerEvent());
+            }
         }
-
     }
 
     private final BroadcastReceiver permissionGrantedStateChangeReceiver = new BroadcastReceiver() {

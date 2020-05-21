@@ -219,11 +219,11 @@ public class ActivatedProcessing extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void event(SecondEvent updataHint) {
+        EventBus.getDefault().removeStickyEvent(SecondEvent.class);
         String msgVote = updataHint.getMsg();
         if (msgVote.equals("ActivateFinish")) {
             finish();
         }
-        EventBus.getDefault().removeStickyEvent(SecondEvent.class);
     }
 
 }

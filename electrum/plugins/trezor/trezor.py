@@ -194,7 +194,9 @@ class TrezorPlugin(HW_PluginBase):
         self.path = path
         return client
 
-    
+    def clean(self):
+        self.client = None
+        self.path = ''
     # def get_client(self, keystore, force_pair=True) -> Optional['TrezorClientBase']:
     #     devmgr = self.device_manager()
     #     handler = keystore.handler
@@ -206,7 +208,6 @@ class TrezorPlugin(HW_PluginBase):
     #     return client
 
     def get_coin_name(self):
-        print(f"get_conin_name============{constants.net.NET}")
         return constants.net.NET
 
     def initialize_device(self, device_id, wizard, handler):

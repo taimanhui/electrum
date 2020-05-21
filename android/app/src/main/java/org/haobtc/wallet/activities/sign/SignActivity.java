@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -275,7 +276,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
             PyObject sign_message = null;
             try {
-                sign_message = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, strPassword);
+                sign_message = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, new Kwarg("password", strPassword));
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
@@ -314,7 +315,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
             PyObject sign_message = null;
             try {
-                sign_message = Daemon.commands.callAttr("sign_tx", strTest, strPassword);
+                sign_message = Daemon.commands.callAttr("sign_tx", strTest, new Kwarg("password", strPassword));
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));

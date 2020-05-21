@@ -1,14 +1,10 @@
 package org.haobtc.wallet.activities.personalwallet;
 
-import android.app.AlertDialog;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,9 +18,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ImportHistryWalletAdapter;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.bean.ImportHistryWalletBean;
-import org.haobtc.wallet.event.AddBixinKeyEvent;
-import org.haobtc.wallet.event.BatchInputWalletEvent;
 import org.haobtc.wallet.event.InputHistoryWalletEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONArray;
@@ -32,9 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

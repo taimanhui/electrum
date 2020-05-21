@@ -142,6 +142,8 @@
                 android:focusableInTouchMode="true"
                 android:keyBackground="@drawable/keyboard_selector"
                 android:keyTextColor="@color/set_txt"
+                android:shadowRadius="0.0"
+                android:shadowColor="@android:color/white"
                 android:paddingTop="@dimen/dp_6"
                 android:paddingEnd="@dimen/dp_6"
                 tools:ignore="RtlSymmetry" />
