@@ -72,9 +72,14 @@ class TrezorKeyStore(Hardware_KeyStore):
         raise UserFacingException(_('Encryption and decryption are not implemented by {}').format(self.device))
 
     def sign_message(self, sequence, message, password):
-        client = self.get_client()
+        if not self.plugin.client:
+            raise Exception("client is None")
+        xpub = self.xpub
+        derivation = self.get_derivation_prefix()
+        if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
+            raise Exception("Can't Pair With You Device When Sign Message")
         address_path = self.get_derivation_prefix() + "/%d/%d"%sequence
-        msg_sig = client.sign_message(address_path, message)
+        msg_sig = self.plugin.client.sign_message(address_path, message)
         return msg_sig.signature
 
     def sign_transaction(self, tx, password):
@@ -121,7 +126,8 @@ class TrezorPlugin(HW_PluginBase):
 
     def __init__(self, parent, config, name):
         super().__init__(parent, config, name)
-
+        self.client = None
+        self.path = None
         self.libraries_available = self.check_libraries_available()
         if not self.libraries_available:
             return
@@ -173,15 +179,31 @@ class TrezorPlugin(HW_PluginBase):
         # note that this call can still raise!
         return TrezorClientBase(transport, handler, self)
 
-    def get_client(self, keystore, force_pair=True) -> Optional['TrezorClientBase']:
-        devmgr = self.device_manager()
-        handler = keystore.handler
-        with devmgr.hid_lock:
-            client = devmgr.client_for_keystore(self, handler, keystore, force_pair)
-        # returns the client for a given keystore. can use xpub
-        if client:
-            client.used()
+    def get_client(self, path='android_usb', ui=None, force_pair=None) -> 'TrezorClientBase':
+        if self.client is not None and self.path == path:
+            return self.client
+        #plugin = self.plugin.get_plugin("trezor")
+        client_list = self.enumerate()
+        print(f"total device====={client_list}")
+        device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
+        assert len(device) != 0, "Not found the point device"
+        client = self.create_client(device[0], ui)
+        if not client.features.bootloader_mode:
+            client.set_bixin_app(True)
+        self.client = client
+        self.path = path
         return client
+
+    
+    # def get_client(self, keystore, force_pair=True) -> Optional['TrezorClientBase']:
+    #     devmgr = self.device_manager()
+    #     handler = keystore.handler
+    #     with devmgr.hid_lock:
+    #         client = devmgr.client_for_keystore(self, handler, keystore, path, force_pair)
+    #     # returns the client for a given keystore. can use xpub
+    #     if client:
+    #         client.used()
+    #     return client
 
     def get_coin_name(self):
         print(f"get_conin_name============{constants.net.NET}")
@@ -323,15 +345,35 @@ class TrezorPlugin(HW_PluginBase):
             return OutputScriptType.PAYTOMULTISIG
         raise ValueError('unexpected txin type: {}'.format(electrum_txin_type))
 
+    def force_pair_with_xpub(self, client, xpub, derivation):
+        from electrum import bip32
+        xtype = bip32.xpub_type(xpub)
+        if client:
+            try:
+                client_xpub = client.get_xpub(derivation, xtype)
+            except (UserCancelled, RuntimeError):
+                 # Bad / cancelled PIN / passphrase
+                client_xpub = None
+            if client_xpub == xpub:
+                return True
+            else:
+                return False
+
     def sign_transaction(self, keystore, tx: PartialTransaction, prev_tx):
         prev_tx = { bfh(txhash): self.electrum_tx_to_txtype(tx) for txhash, tx in prev_tx.items() }
-        client = self.get_client(keystore)
+        if not self.client:
+            raise Exception("client is None")
+        xpub = keystore.xpub
+        derivation = keystore.get_derivation_prefix()
+        if not self.force_pair_with_xpub(self.client, xpub, derivation):
+            raise Exception("Can't Pair With You Device When Sign tx")
         inputs = self.tx_inputs(tx, for_sig=True, keystore=keystore)
         outputs = self.tx_outputs(tx, keystore=keystore)
         details = SignTx(lock_time=tx.locktime, version=tx.version)
-        signatures, _ = client.sign_tx(self.get_coin_name(), inputs, outputs, details=details, prev_txes=prev_tx)
+        signatures, _ = self.client.sign_tx(self.get_coin_name(), inputs, outputs, details=details, prev_txes=prev_tx)
         signatures = [(bh2u(x) + '01') for x in signatures]
         tx.update_signatures(signatures)
+        raise Exception("sign success")
 
     def show_address(self, wallet, address, keystore=None):
         if keystore is None:

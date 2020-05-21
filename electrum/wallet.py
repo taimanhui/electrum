@@ -1508,6 +1508,8 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 print(f"wallet:L1510======={e}======")
                 if -1 != msg.find("PIN invalid"):
                     raise BaseException(e)
+                if -1 != msg.find("sign success"):
+                    break
                 sig_num += 1
                 continue
         

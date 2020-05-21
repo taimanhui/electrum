@@ -777,7 +777,8 @@ class Hardware_KeyStore(Xpub, KeyStore):
         return client.has_usable_connection_with_device()
 
     def ready_to_sign(self):
-        return super().ready_to_sign() and self.has_usable_connection_with_device()
+        #return super().ready_to_sign() and self.has_usable_connection_with_device()
+        return super().ready_to_sign()
 
     def opportunistically_fill_in_missing_info_from_device(self, client: 'HardwareClientBase'):
         assert client is not None

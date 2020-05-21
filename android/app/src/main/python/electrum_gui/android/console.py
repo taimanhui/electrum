@@ -986,6 +986,24 @@ class AndroidCommands(commands.Commands):
         data_json['addr'] = self.wallet.get_addresses()[0]
         return json.dumps(data_json)
 
+    def get_all_funded_address(self):
+        try:
+            self._assert_wallet_isvalid()
+            all_addr = self.wallet.get_addresses()
+            funded_addrs_list = []
+            for addr in all_addr:
+                c, u, x = self.wallet.get_addr_balance(addr)
+                balance = c + u + x
+                if balance == 0:
+                    continue
+                funded_addr = {}
+                funded_addr['address'] = addr
+                funded_addr['balance'] = self.format_amount_and_units(balance)
+                funded_addrs_list.append(funded_addr)
+                return json.dumps(funded_addrs_list)
+        except Exception as e:
+            raise BaseException(e)
+
     ##save tx to file
     def save_tx_to_file(self, path, tx):
         try:
@@ -1101,8 +1119,10 @@ class AndroidCommands(commands.Commands):
         self.wallet.use_change = status_change
 
     #####sign message###########
-    def sign_message(self, address, message, password=None):
+    def sign_message(self, address, message, password=None, path=None):
         try:
+            if path:
+                self.get_client(path=path)
             self._assert_wallet_isvalid()
             address = address.strip()
             message = message.strip()
@@ -1137,8 +1157,10 @@ class AndroidCommands(commands.Commands):
 
     ###############
 
-    def sign_tx(self, tx, password=None):
+    def sign_tx(self, tx, password=None, path=None):
         try:
+            if path:
+                self.get_client(path=path)
             self._assert_wallet_isvalid()
             tx = tx_from_any(tx)
             tx.deserialize()
@@ -1253,20 +1275,9 @@ class AndroidCommands(commands.Commands):
         client = self.get_client(path=path)
         return client.features.passphrase_protection
 
-    def get_client(self, path='android_usb', ui=CustomerUI()) -> 'TrezorClientBase':
-        if self.client is not None and self.path == path:
-            return self.client
+    def get_client(self, path='android_usb',  ui=CustomerUI()):
         plugin = self.plugin.get_plugin("trezor")
-        client_list = plugin.enumerate()
-        print(f"total device====={client_list}")
-        device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
-        assert len(device) != 0, "Not found the point device"
-        client = plugin.create_client(device[0], ui)
-        if not client.features.bootloader_mode:
-            client.set_bixin_app(True)
-        self.client = client
-        self.path = path
-        return client
+        return plugin.get_client(path=path, ui=ui)
 
     def is_encrypted_with_hw_device(self):
         ret = self.wallet.storage.is_encrypted_with_hw_device()
