@@ -41,6 +41,7 @@ public class BackupRecoveryActivity extends BaseActivity {
     public final static  String TAG = BackupRecoveryActivity.class.getSimpleName();
     private List<HardwareFeatures> deviceValue;
     private SharedPreferences.Editor edit;
+    private SharedPreferences devices;
 
     @Override
     public int getLayoutId() {
@@ -50,8 +51,19 @@ public class BackupRecoveryActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+
+    }
+
+    @Override
+    public void initData() {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         deviceValue = new ArrayList<>();
-        SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+        devices = getSharedPreferences("devices", MODE_PRIVATE);
         edit = devices.edit();
         Map<String, ?> devicesAll = devices.getAll();
         //key
@@ -63,10 +75,6 @@ public class BackupRecoveryActivity extends BaseActivity {
                 deviceValue.add(hardwareFeatures);
             }
         }
-    }
-
-    @Override
-    public void initData() {
         if (deviceValue != null) {
             BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
             reclCheckKey.setAdapter(bixinkeyManagerAdapter);
@@ -83,8 +91,8 @@ public class BackupRecoveryActivity extends BaseActivity {
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:
-                            String key_deviceId = deviceValue.get(position).getLabel();
-                            edit.remove(key_deviceId);
+                            String blename = deviceValue.get(position).getBleName();
+                            edit.remove(blename);
                             edit.apply();
                             deviceValue.remove(position);
                             bixinkeyManagerAdapter.notifyItemChanged(position);

@@ -259,7 +259,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:background="@null"
-                                android:gravity="center|start"
                                 android:inputType="numberDecimal"
                                 android:paddingStart="@dimen/dp_10"
                                 android:textColor="@color/text"

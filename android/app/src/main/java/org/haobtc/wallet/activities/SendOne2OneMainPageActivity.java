@@ -871,12 +871,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             if (!TextUtils.isEmpty(strAmount)) {
                 if (flag) {
                     flag = false;
-                    BigDecimal bigmBTC = new BigDecimal(strAmount);
                     try {
-                        pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", bigmBTC);
+                        pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", strAmount);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        mToast(e.getMessage());
+                        return;
                     }
                     if (pyObject != null) {
                         editChangeMoney.setText(pyObject.toString());
@@ -914,7 +913,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         pyObject = Daemon.commands.callAttr("get_exchange_currency", "fiat", editable.toString());
                     } catch (Exception e) {
                         e.printStackTrace();
-                        mToast(e.getMessage());
+                        return;
                     }
                     if (pyObject != null) {
                         tetamount.setText(pyObject.toString());

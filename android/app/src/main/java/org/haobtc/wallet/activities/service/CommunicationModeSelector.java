@@ -470,7 +470,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //                }
                 if (SingleSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag)) {
                     if (CheckHideWalletFragment.TAG.equals(tag)) {
-                        customerUI.callAttr("set_pass_state", 1);
+                        if (features.isPassphraseProtection()){
+                            customerUI.callAttr("set_pass_state", 1);
+                        }else{
+                            Toast.makeText(this, getString(R.string.dont_create), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                     }
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
                 } else {
@@ -609,7 +614,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Subscribe
     public void setPassphrass(PinEvent event) {
-        Log.i(TAG, "setPassphrass:。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。 " + event.getPassphrass());
         if (!Strings.isNullOrEmpty(event.getPassphrass())) {
             customerUI.put("passphrase", event.getPassphrass());
         }
@@ -745,8 +749,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Override
     public void onResult(String s) {
-        Log.i("CheckHideWalletFragment", "onResult:sssssssssssssssssssss:::::: " + s);
-        Log.i("CheckHideWalletFragment", "onResult:。。。。。。。。。。。。。。。。:::::: " + tag);
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
