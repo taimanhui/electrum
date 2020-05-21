@@ -281,13 +281,13 @@ public class ShareOtherActivity extends BaseActivity {
                         strCode = get_qr_data_from_raw_tx.toString();
                         Log.i("strCode", "onView: " + strCode);
                         if (!TextUtils.isEmpty(strCode)) {
-                            if (strCode.length() >= 150) {
-                                tetBigMessage.setVisibility(View.VISIBLE);
-                                imgOrcode.setVisibility(View.GONE);
-                            } else {
+//                            if (strCode.length() >= 150) {
+//                                tetBigMessage.setVisibility(View.VISIBLE);
+//                                imgOrcode.setVisibility(View.GONE);
+//                            } else {
                                 bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
                                 imgOrcode.setImageBitmap(bitmap);
-                            }
+//                            }
                         }
                     }
                     break;

@@ -2,15 +2,21 @@ package org.haobtc.wallet;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -105,6 +111,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private int scrollPos = 0;//scrollPos --> recyclerview position != The last one || second to last
     PyObject get_wallets_list_info = null;
     private DownloadManager manager;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
@@ -116,7 +123,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         //Eventbus register
         EventBus.getDefault().register(this);
         sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit = sharedPreferences.edit();
+
         //FIRST_RUN,if frist run
         String FIRST_RUN = "is_first_run";
         edit.putBoolean(FIRST_RUN, true);
@@ -125,6 +133,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void init() {
+        boolean user_agreement = sharedPreferences.getBoolean("user_agreement", false);
+        if (!user_agreement){
+            //User agreement dialog
+            userAgreementDialog();
+        }
         rxPermissions = new RxPermissions(this);
         ImageView imageViewSweep = findViewById(R.id.img_sweep);
         TextView btnAddmoney = findViewById(R.id.tet_Addmoney);
@@ -666,6 +679,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         }
+    }
+
+    private void userAgreementDialog() {
+        View view1 = LayoutInflater.from(this).inflate(R.layout.user_agreement, null, false);
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        view1.findViewById(R.id.btn_agree).setOnClickListener(v -> {
+            edit.putBoolean("user_agreement",true);
+            edit.apply();
+            alertDialog.dismiss();
+        });
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+        WindowManager.LayoutParams lp =  alertDialog.getWindow().getAttributes();
+        lp.width = 900;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        alertDialog.getWindow().setAttributes(lp);
     }
 
     /**

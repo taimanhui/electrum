@@ -64,6 +64,22 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
         updateVersion.setText(String.format("V%s", versionName));
     }
 
+    @SingleClick
+    @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.img_back:
+                finish();
+                break;
+            case R.id.attempt_update:
+                getUpdateInfo();
+                break;
+            case R.id.tet_s5:
+                mIntent(UserAgreementActivity.class);
+                break;
+        }
+    }
+
     private void getUpdateInfo() {
         // version_testnet.json version_regtest.json
         String appId = BuildConfig.APPLICATION_ID;
@@ -131,21 +147,6 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
                 .setApkDescription(description)
 //                .setApkMD5("DC501F04BBAA458C9DC33008EFED5E7F")
                 .download();
-    }
-
-    @SingleClick
-    @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
-            case R.id.attempt_update:
-                getUpdateInfo();
-            case R.id.tet_s5:
-                mIntent(UserAgreementActivity.class);
-                break;
-        }
     }
 
     @Override

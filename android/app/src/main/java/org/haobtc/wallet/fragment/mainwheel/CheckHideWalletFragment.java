@@ -20,9 +20,6 @@ import org.haobtc.wallet.utils.Daemon;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
 
-/**
- * .
- */
 public class CheckHideWalletFragment extends WheelViewpagerFragment {
     public static final String TAG = CheckHideWalletFragment.class.getSimpleName();
 
