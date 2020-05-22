@@ -164,7 +164,7 @@ class AndroidCommands(commands.Commands):
         self.n = 0
         #self.sync_timer = None
         self.config.set_key('auto_connect', True, True)
-        t = threading.Timer(5.0, self.timer_action())
+        t = threading.Timer(5.0, self.timer_action)
         t.start()
         if callback is not None:
             self.set_callback_fun(callback)
@@ -897,7 +897,11 @@ class AndroidCommands(commands.Commands):
 
     ##get history
     def get_all_tx_list(self, search_type=None):
-        self.pull_tx_infos()
+        try:
+            self.pull_tx_infos()
+        except BaseException as e:
+            print(f"get_all_tx_list......{e}")
+            pass
         history_data = []
         try:
             history_info = self.get_history_tx()
@@ -1000,7 +1004,7 @@ class AndroidCommands(commands.Commands):
                 funded_addr['address'] = addr
                 funded_addr['balance'] = self.format_amount_and_units(balance)
                 funded_addrs_list.append(funded_addr)
-                return json.dumps(funded_addrs_list)
+            return json.dumps(funded_addrs_list)
         except Exception as e:
             raise BaseException(e)
 
@@ -1610,7 +1614,6 @@ class AndroidCommands(commands.Commands):
                 # if self.sync_timer is not None:
                 #     self.sync_timer.cancel()
                 # self.pull_tx_infos()
-
             return json.dumps(info)
         except BaseException as e:
             raise BaseException(e)
