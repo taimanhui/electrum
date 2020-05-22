@@ -1,6 +1,7 @@
 package org.haobtc.wallet.adapter;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -63,7 +64,8 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
             if (anInt > 0) {//Confirmed
                 helper.setText(R.id.tet_zt, R.string.alreadychoose);
                 TextView tetview = helper.getView(R.id.tet_zt);
-                tetview.setTextColor(Color.parseColor("#FF6182F5"));
+                tetview.setTextColor(Color.parseColor("#FF838383"));
+                tetview.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
                 linearDelete.setVisibility(View.GONE);//hide delete button
             } else if (tx_status.contains("Unconfirmed")) {//Unconfirmed

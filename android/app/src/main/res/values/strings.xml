@@ -282,7 +282,7 @@
     <string name="verson_update">Firmware version (upgrade)</string>
     <string name="v_1_2_3">V 1.2.3</string>
     <string name="fix_pin">Change Pin code</string>
-    <string name="nopass_pay">Password-free payment</string>
+    <string name="nopass_pay">Fast payment</string>
     <string name="opened">Turned on</string>
     <string name="bluetooth_name">Bluetooth name</string>
     <string name="bixinkey_name">Name</string>
@@ -488,7 +488,7 @@
     <string name="add_finished">Added</string>
     <string name="upgradeed">Upgraded to newest version</string>
     <string name="please_confirmKEY">Please confirm new PIN code on BixinKEY</string>
-    <string name="hours_24">24-hour Limit</string>
+    <string name="hours_24">Secret free times</string>
     <string name="no_need_PIN">No need for PIN code</string>
     <string name="no_need_hardware">No need for confirmation on device</string>
     <string name="set_to_Bixinkey">Set to BixinKEY</string>
@@ -765,5 +765,10 @@
     <string name="dont_create">This hardware does not support creating hidden wallets</string>
     <string name="user_server_agreement">User service agreement</string>
     <string name="agree">agree</string>
+    <string name="unclassified_quota">免密额度</string>
+    <string name="open_bt">打开</string>
+    <string name="fix_name">修改名称</string>
+    <string name="wallet_addr">钱包找零地址</string>
+    <string name="wallet_msg">钱包信息</string>
 
 </resources>

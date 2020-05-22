@@ -36,9 +36,9 @@
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="47.5dp"
                 android:layout_alignParentEnd="true"
+                android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="@string/use_hardware"
                 android:padding="@dimen/dp_14"
-                android:background="?android:attr/selectableItemBackground"
                 android:src="@drawable/close_big_black"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -77,13 +77,13 @@
                     android:id="@+id/edit_keyName"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:maxLength="20"
-                    android:text="@string/default_key"
                     android:layout_weight="1"
                     android:background="@null"
                     android:hint="@string/make_aname"
+                    android:maxLength="20"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_10"
+                    android:text="@string/default_key"
                     android:textColor="#494949"
                     android:textSize="15sp" />
 
@@ -100,10 +100,11 @@
 
             <LinearLayout
                 android:id="@+id/textView9"
-                android:layout_below="@id/lin_Useset"
-                android:layout_marginTop="@dimen/dp_20"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lin_Useset"
+                android:layout_marginTop="@dimen/dp_20">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -111,20 +112,20 @@
                     android:text="@string/public_address"
                     android:textColor="@color/graytext_color"
                     android:textSize="@dimen/smaller_text_size" />
+
                 <TextView
                     android:id="@+id/tet_Error"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
                     android:layout_marginStart="@dimen/sp_16"
+                    android:gravity="center_vertical"
                     android:text="@string/pin_input_again"
                     android:textColor="#F26A3A"
                     android:textSize="@dimen/sp_12"
                     android:visibility="invisible" />
             </LinearLayout>
 
-
-            <androidx.cardview.widget.CardView
+            <LinearLayout
                 android:id="@+id/cardView2"
                 android:layout_width="match_parent"
                 android:layout_height="137dp"
@@ -132,75 +133,69 @@
                 android:layout_marginStart="@dimen/text_margin"
                 android:layout_marginTop="@dimen/dp_14"
                 android:layout_marginEnd="@dimen/text_margin"
-                app:cardCornerRadius="@dimen/dp_4">
+                android:background="@color/edit_text_bk"
+                android:orientation="vertical">
 
-                <LinearLayout
+                <EditText
+                    android:id="@+id/edit_public_key_cosigner_popup"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/edit_text_bk"
-                    android:orientation="vertical">
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_weight="1"
+                    android:autofillHints="@string/input_address"
+                    android:background="@null"
+                    android:gravity="start"
+                    android:hint="@string/input_address"
+                    android:inputType="textMultiLine"
+                    android:padding="@dimen/layout_margin"
+                    android:textColor="@color/set_txt"
+                    android:textSize="@dimen/text_size"
+                    tools:targetApi="26" />
 
-                    <EditText
-                        android:id="@+id/edit_public_key_cosigner_popup"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:layout_weight="1"
-                        android:autofillHints="@string/input_address"
-                        android:background="@null"
-                        android:gravity="start"
-                        android:hint="@string/input_address"
-                        android:inputType="textMultiLine"
-                        android:padding="@dimen/layout_margin"
-                        android:textColor="@color/set_txt"
-                        android:textSize="@dimen/text_size"
-                        tools:targetApi="26" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:layout_marginBottom="@dimen/dp_16"
+                    android:orientation="horizontal">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    <Button
+                        android:id="@+id/sweep_cosigner_popup"
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:layout_width="100dp"
                         android:layout_height="36dp"
-                        android:layout_marginTop="@dimen/text_margin"
-                        android:layout_marginEnd="@dimen/text_margin"
-                        android:layout_marginBottom="@dimen/dp_16"
-                        android:orientation="horizontal">
+                        android:layout_toStartOf="@+id/paste_cosigner_popup1"
+                        android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/saoyisao"
+                        android:gravity="center"
+                        android:paddingStart="17.8dp"
+                        android:paddingEnd="17dp"
+                        android:text="@string/scaning"
+                        android:textAllCaps="false"
+                        android:textColor="@color/button_bk"
+                        android:textSize="16sp" />
 
-                        <Button
-                            android:id="@+id/sweep_cosigner_popup"
-                            style="?android:attr/buttonBarButtonStyle"
-                            android:layout_width="100dp"
-                            android:layout_height="36dp"
-                            android:layout_toStartOf="@+id/paste_cosigner_popup1"
-                            android:background="@color/paste_bk"
-                            android:drawableStart="@drawable/saoyisao"
-                            android:gravity="center"
-                            android:paddingStart="17.8dp"
-                            android:paddingEnd="17dp"
-                            android:text="@string/scaning"
-                            android:textAllCaps="false"
-                            android:textColor="@color/button_bk"
-                            android:textSize="16sp" />
+                    <Button
+                        android:id="@+id/paste_cosigner_popup1"
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:layout_width="100dp"
+                        android:layout_height="36dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="@dimen/layout_margin"
+                        android:background="@color/paste_bk"
+                        android:drawableStart="@drawable/zhantie"
+                        android:gravity="center"
+                        android:paddingStart="26.8dp"
+                        android:paddingEnd="24dp"
+                        android:text="@string/paste"
+                        android:textAllCaps="false"
+                        android:textColor="@color/button_bk"
+                        android:textSize="16sp" />
+                </RelativeLayout>
 
-                        <Button
-                            android:id="@+id/paste_cosigner_popup1"
-                            style="?android:attr/buttonBarButtonStyle"
-                            android:layout_width="100dp"
-                            android:layout_height="36dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginStart="@dimen/layout_margin"
-                            android:background="@color/paste_bk"
-                            android:drawableStart="@drawable/zhantie"
-                            android:gravity="center"
-                            android:paddingStart="26.8dp"
-                            android:paddingEnd="24dp"
-                            android:text="@string/paste"
-                            android:textAllCaps="false"
-                            android:textColor="@color/button_bk"
-                            android:textSize="16sp" />
-                    </RelativeLayout>
+            </LinearLayout>
 
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/lin_ComfirmAll"
@@ -242,7 +237,6 @@
                 android:id="@+id/btn_ConfirmAll"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:visibility="visible"
                 android:layout_below="@+id/cardView2"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="@dimen/dp_16"
@@ -252,7 +246,8 @@
                 android:text="@string/confirm"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/sp_14" />
+                android:textSize="@dimen/sp_14"
+                android:visibility="visible" />
 
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

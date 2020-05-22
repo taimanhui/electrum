@@ -50,7 +50,7 @@
             android:keyLabel="C" />
         <Key
             android:codes="-5"
-            android:keyIcon="@drawable/close_big_black"
+            android:keyIcon="@drawable/delete_num"
             android:keyEdgeFlags="right"/>
     </Row>
 

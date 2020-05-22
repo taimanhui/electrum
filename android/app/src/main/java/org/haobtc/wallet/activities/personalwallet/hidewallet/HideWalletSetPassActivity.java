@@ -21,8 +21,10 @@ import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.HideInputPassFinishEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
@@ -120,5 +122,8 @@ public class HideWalletSetPassActivity extends BaseActivity {
         finish();
     }
 
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(HideInputPassFinishEvent event) {
+        finish();
+    }
 }

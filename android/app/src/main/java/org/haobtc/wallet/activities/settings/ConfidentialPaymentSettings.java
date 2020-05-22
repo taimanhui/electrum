@@ -18,8 +18,6 @@ public class ConfidentialPaymentSettings extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
-    @BindView(R.id.switch_noPass)
-    Switch switchNoPass;
     @BindView(R.id.tetHour24)
     TextView tetHour24;
     @BindView(R.id.switch_noPin)

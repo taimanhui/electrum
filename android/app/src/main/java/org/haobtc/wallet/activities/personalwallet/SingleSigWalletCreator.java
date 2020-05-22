@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities.personalwallet;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
@@ -38,7 +37,6 @@ import butterknife.OnClick;
 
 public class SingleSigWalletCreator extends BaseActivity {
 
-
     @BindView(R.id.img_backCreat)
     ImageView imgBackCreat;
     @BindView(R.id.edit_walletName_setting)
@@ -54,15 +52,9 @@ public class SingleSigWalletCreator extends BaseActivity {
     private int walletNameNum;
     public String pin = "";
     public static final String TAG = SingleSigWalletCreator.class.getSimpleName();
-    private TextView textView;
     private String walletName;
     private MyDialog myDialog;
-    private EditText edit_bixinName;
-    private Dialog dialogBtoms;
     private int pub;
-    private int defaultKeyNum;
-    private int defaultKeyNameNum;
-    private String strBixinname;
     private long lastNotify;
 
     @Override
@@ -78,7 +70,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         defaultName = preferences.getInt("defaultName", 0);
-        defaultKeyNum = preferences.getInt("defaultKeyNum", 0);//default key name
         init();
 
     }
@@ -236,7 +227,6 @@ public class SingleSigWalletCreator extends BaseActivity {
             return;
         }
         edit.putInt("defaultName", walletNameNum);
-        edit.putInt("defaultKeyNum", defaultKeyNameNum);
         edit.apply();
         myDialog.dismiss();
         walletName = editWalletNameSetting.getText().toString();
@@ -245,7 +235,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         intent.putExtra("flagTag", "personal");
         intent.putExtra("strBixinname", xpub);
         startActivity(intent);
-//        finish();
     }
 
     @Override

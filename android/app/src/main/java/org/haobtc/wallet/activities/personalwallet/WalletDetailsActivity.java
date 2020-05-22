@@ -1,10 +1,8 @@
 package org.haobtc.wallet.activities.personalwallet;
 
 import android.app.Dialog;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -13,13 +11,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
@@ -40,12 +36,6 @@ public class WalletDetailsActivity extends BaseActivity {
     ImageView imgBack;
     @BindView(R.id.tet_Name)
     TextView tetName;
-    @BindView(R.id.img_Code)
-    ImageView imgCode;
-    @BindView(R.id.tet_getBTC)
-    TextView tetGetBTC;
-    @BindView(R.id.tet_Copy)
-    TextView tetCopy;
     @BindView(R.id.tet_deleteWallet)
     Button tetDeleteWallet;
     private String wallet_name;
@@ -69,55 +59,30 @@ public class WalletDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        //Generate QR code
-        mGeneratecode();
-
+        getAllFundedAddress();
     }
 
-    private void mGeneratecode() {
-        PyObject walletAddressShowUi = null;
+    private void getAllFundedAddress() {
+        PyObject get_all_funded_address = null;
         try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            get_all_funded_address = Daemon.commands.callAttr("get_all_funded_address");
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-        if (walletAddressShowUi != null) {
-            String strCode = walletAddressShowUi.toString();
-            Log.i("strCode", "mGenerate--: " + strCode);
-            Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qr_data = getCodeAddressBean.getQr_data();
-            String addr = getCodeAddressBean.getAddr();
-            tetGetBTC.setText(addr);
-            Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
-            imgCode.setImageBitmap(bitmap);
-        }
+        Log.i("WalletDetailsActivity", "getAllFundedAddress: "+get_all_funded_address.toString());
 
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.tet_Copy, R.id.tet_deleteWallet})
+    @OnClick({R.id.img_back, R.id.tet_deleteWallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.tet_Copy:
-                //copy text
-                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                // The text is placed on the system clipboard.
-                cm.setText(tetGetBTC.getText());
-                Toast.makeText(WalletDetailsActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
-
-                break;
             case R.id.tet_deleteWallet:
                 //delete wallet dialog
                 showDialogs(WalletDetailsActivity.this, R.layout.delete_wallet);
-
-
-                //delete wallet
-//                deleteWallet();
                 break;
         }
     }
@@ -126,18 +91,17 @@ public class WalletDetailsActivity extends BaseActivity {
         //set see view
         View view = View.inflate(context, resource, null);
         dialogBtom = new Dialog(context, R.style.dialog);
-        //delete
         //cancel dialog
         view.findViewById(R.id.tet_ConfirmDelete).setOnClickListener(v -> {
             myDialog.show();
-            Log.i("wallet_name", "showDialogs: "+wallet_name);
+            Log.i("wallet_name", "showDialogs: " + wallet_name);
             try {
                 Daemon.commands.callAttr("delete_wallet", wallet_name);
                 EventBus.getDefault().post(new FirstEvent("11"));
                 mToast(getString(R.string.delete_succse));
                 finish();
             } catch (Exception e) {
-                Log.i("delete_wallet", "===========: "+e.getMessage());
+                Log.i("delete_wallet", "===========: " + e.getMessage());
                 e.printStackTrace();
             }
             myDialog.dismiss();

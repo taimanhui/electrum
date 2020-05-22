@@ -9,9 +9,12 @@ import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.HideInputPassFinishEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import butterknife.BindView;
@@ -49,7 +52,7 @@ public class CheckSignMessageActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        EventBus.getDefault().post(new HideInputPassFinishEvent());
     }
 
     @SingleClick

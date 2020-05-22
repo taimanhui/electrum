@@ -49,30 +49,36 @@
             android:layout_below="@id/picture"
             android:text="@string/active_prompt" />
 
-        <CheckBox
-            android:id="@+id/use_se"
-            android:layout_width="@dimen/dp_20"
-            android:layout_height="@dimen/dp_20"
-            android:background="@drawable/circle_checkbox"
-            android:button="@null"
-            android:layout_below="@id/text"
-            android:layout_toStartOf="@id/se"
-            android:layout_alignBaseline="@id/se"
-            android:layout_marginTop="@dimen/dp_53"
-            android:checked="false"/>
 
-        <TextView
-            android:id="@+id/se"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:id="@+id/LinearLayout"
+            android:orientation="horizontal"
             android:layout_below="@id/text"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/dp_53"
-            android:text="@string/use_se"
-            android:paddingStart="@dimen/dp_6"
-            android:paddingEnd="@dimen/dp_6"
-            android:textColor="@color/light_text"
-            android:textSize="@dimen/sp_12" />
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:id="@+id/use_se"
+                android:layout_width="@dimen/dp_14"
+                android:layout_height="@dimen/dp_14"
+                android:background="@drawable/circle_checkbox"
+                android:button="@null"
+                android:checked="false" />
+
+            <TextView
+                android:id="@+id/se"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/dp_6"
+                android:paddingEnd="@dimen/dp_6"
+                android:text="@string/use_se"
+                android:textColor="@color/light_text"
+                android:textSize="@dimen/sp_12" />
+
+        </LinearLayout>
+
 
         <Button
             android:id="@+id/button_activate"
@@ -82,8 +88,8 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/button_bk"
             android:text="@string/active"
-            android:layout_marginTop="@dimen/dp_86"
-            android:layout_below="@id/text"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_below="@id/LinearLayout"
             android:textColor="@android:color/white" />
         <TextView
             android:layout_width="wrap_content"

@@ -34,6 +34,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -56,6 +57,7 @@ import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
 import org.haobtc.wallet.activities.settings.BixinKeyBluetoothSettingActivity;
 import org.haobtc.wallet.activities.settings.CheckXpubResultActivity;
+import org.haobtc.wallet.activities.settings.FixBixinkeyNameActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
@@ -100,6 +102,7 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -280,6 +283,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             mBle.startScan(scanCallback);
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent event) {
         refreshDeviceList(true);
@@ -344,12 +348,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 HardwareFeatures old;
                 String backupMessage = "";
                 if (devices.contains(features.getBleName())) {
-                   old = HardwareFeatures.objectFromData(devices.getString(features.getBleName(), ""));
-                   backupMessage = old.getBackupMessage();
+                    old = HardwareFeatures.objectFromData(devices.getString(features.getBleName(), ""));
+                    backupMessage = old.getBackupMessage();
                 }
                 if (!Strings.isNullOrEmpty(backupMessage)) {
-                   features.setBackupMessage(backupMessage);
-                   devices.edit().putString(features.getBleName(), features.toString()).apply();
+                    features.setBackupMessage(backupMessage);
+                    devices.edit().putString(features.getBleName(), features.toString()).apply();
                 } else {
                     devices.edit().putString(features.getBleName(), feature).apply();
                 }
@@ -468,9 +472,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag) || "check_xpub".equals(tag)) {
                 if (SingleSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag)) {
                     if (CheckHideWalletFragment.TAG.equals(tag)) {
-                        if (features.isPassphraseProtection()){
+                        if (features.isPassphraseProtection()) {
                             customerUI.callAttr("set_pass_state", 1);
-                        }else{
+                        } else {
                             Toast.makeText(this, getString(R.string.dont_create), Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -512,6 +516,17 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 } else {
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "zero");
                 }
+            } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
+                String fixNamed = getIntent().getStringExtra("fixName");
+                SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
+                Map<String, ?> devicesAll = devices.getAll();
+                //key
+                for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
+                    String mapValue = (String) entry.getValue();
+                    HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
+                    hardwareFeatures.setLabel(fixNamed);
+                }
+
             }
         } else {
             if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag))) {

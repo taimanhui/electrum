@@ -281,7 +281,7 @@
     <string name="verson_update">固件版本（升级）</string>
     <string name="v_1_2_3">V 1.2.3</string>
     <string name="fix_pin">修改PIN码</string>
-    <string name="nopass_pay">免密支付</string>
+    <string name="nopass_pay">快捷支付</string>
     <string name="opened">已开启</string>
     <string name="bluetooth_name">蓝牙名称</string>
     <string name="bixinkey_name">名称</string>
@@ -414,7 +414,7 @@
     <string name="add_finished">添加成功</string>
     <string name="upgradeed">已升级至最新版本</string>
     <string name="pin_change_success">PIN码修改成功</string>
-    <string name="hours_24">24小时限额</string>
+    <string name="hours_24">免密次数</string>
     <string name="no_need_PIN">不需要PIN码</string>
     <string name="no_need_hardware">不需要硬件确认交易</string>
     <string name="set_to_Bixinkey">设置到BixinKEY</string>
@@ -736,4 +736,9 @@
     <string name="dont_create">该硬件不支持创建隐藏钱包</string>
     <string name="user_server_agreement">用户服务协议</string>
     <string name="agree">同意</string>
+    <string name="unclassified_quota">免密额度</string>
+    <string name="open_bt">打开</string>
+    <string name="fix_name">修改名称</string>
+    <string name="wallet_addr">钱包找零地址</string>
+    <string name="wallet_msg">钱包信息</string>
 </resources>

@@ -30,7 +30,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-medium"
-            android:text="@string/settings"
+            android:text="@string/wallet_msg"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
@@ -43,6 +43,8 @@
 
 
         <LinearLayout
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_10"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -51,98 +53,132 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/layout_margin"
-                android:layout_marginTop="@dimen/dp_10"
-                android:layout_marginEnd="@dimen/layout_margin"
-                android:layout_marginBottom="@dimen/dp_10"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
-
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="@drawable/white_tuo">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:text="@string/walletname"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/sp_16" />
-
-                    <TextView
-                        android:id="@+id/tet_Name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:drawablePadding="@dimen/dp_10"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:text="@string/wallet_name"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/sp_16" />
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/layout_margin"
                 android:layout_marginEnd="@dimen/layout_margin"
                 android:layout_marginBottom="@dimen/dp_20"
                 android:outlineSpotShadowColor="@color/shadow_color"
                 app:cardCornerRadius="@dimen/dp_8"
                 app:cardElevation="@dimen/dp_8"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 tools:ignore="UnusedAttribute">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:id="@+id/img_Code"
-                        android:layout_width="248.3dp"
-                        android:layout_height="248.3dp"
-                        android:layout_marginTop="32dp"
-                        android:background="@color/bk_page" />
+                        <TextView
+                            android:id="@+id/tet_Name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:drawablePadding="@dimen/dp_10"
+                            android:focusable="true"
+                            android:text="@string/wallet_name"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/sp_16" />
+
+
+                        <TextView
+                            android:id="@+id/text_fix_name"
+                            android:layout_width="150dp"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="@dimen/dp_16"
+                            android:drawableEnd="@drawable/jiantou"
+                            android:drawablePadding="@dimen/dp_10"
+                            android:focusable="true"
+                            android:gravity="end"
+                            android:paddingTop="@dimen/dp_20"
+                            android:paddingBottom="@dimen/dp_10"
+                            android:text="@string/fix_name"
+                            android:textColor="@color/graytext_color" />
+
+                    </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/tet_getBTC"
+                        android:id="@+id/tet_many_key"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:text="@string/choose_onekey"
+                        android:textColor="@color/light_text"
+                        android:textSize="@dimen/sp_12" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:drawablePadding="@dimen/dp_10"
+                        android:focusable="true"
+                        android:text="@string/wallet_addr"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/sp_16" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recl_wallet_addr"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_20"
-                        android:layout_marginTop="@dimen/dp_20"
-                        android:layout_marginEnd="@dimen/dp_20"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/sp_13"
-                        tools:text="lnbcdfd4fdsk4j5gb5...h6jd0sjsadrrfgg55678hhhddddejekejkejkejek3ddkddd" />
+                        android:layout_marginTop="@dimen/dp_5"
+                        android:layout_marginBottom="@dimen/dp_16"
+                        tools:itemCount="6"
+                        tools:listitem="@layout/wallet_addr">
 
-                    <TextView
-                        android:id="@+id/tet_Copy"
-                        android:layout_width="@dimen/dp_50"
-                        android:layout_height="@dimen/dp_30"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginBottom="25dp"
-                        android:gravity="center"
-                        android:text="@string/copy_self"
-                        android:textColor="@color/button_bk"
-                        android:textSize="@dimen/text_size" />
-
+                    </androidx.recyclerview.widget.RecyclerView>
 
                 </LinearLayout>
 
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_three_public"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginBottom="@dimen/dp_20"
+                android:layout_marginEnd="@dimen/layout_margin"
+                android:outlineSpotShadowColor="@color/shadow_color"
+                android:visibility="gone"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginTop="@dimen/dp_18"
+                        android:layout_marginBottom="@dimen/dp_18"
+                        android:text="@string/band_bixinkey"
+                        android:textColor="#494949"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_hight"
+                        android:background="@color/line_color" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recl_publicPerson"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+                        tools:itemCount="3"
+                        tools:listitem="@layout/public_person">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -150,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:layout_marginBottom="@dimen/dp_5"
+               android:layout_marginBottom="@dimen/dp_10"
                 android:outlineSpotShadowColor="@color/shadow_color"
                 app:cardCornerRadius="@dimen/dp_8"
                 app:cardElevation="@dimen/dp_8"

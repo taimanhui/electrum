@@ -26,7 +26,7 @@ import butterknife.OnClick;
 
 public class FixBixinkeyNameActivity extends BaseActivity {
 
-    private static final String TAG = FixBixinkeyNameActivity.class.getSimpleName();
+    public static final String TAG = FixBixinkeyNameActivity.class.getSimpleName();
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.name_edit)
@@ -96,6 +96,7 @@ public class FixBixinkeyNameActivity extends BaseActivity {
                 CommunicationModeSelector.runnables.add(null);
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
+                intent.putExtra("fixName",nameEdit.getText().toString());
                 startActivity(intent);
                 break;
         }

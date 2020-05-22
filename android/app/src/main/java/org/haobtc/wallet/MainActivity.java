@@ -134,7 +134,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void init() {
         boolean user_agreement = sharedPreferences.getBoolean("user_agreement", false);
-        if (!user_agreement){
+        if (!user_agreement) {
             //User agreement dialog
             userAgreementDialog();
         }
@@ -343,6 +343,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
+        Log.i("strHistory", "showTrsactionlist---: " + strHistory);
         maintrsactionlistEvents.clear();
         try {
             jsonArray = new JSONArray(strHistory);
@@ -383,7 +384,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             trsactionlistAdapter.notifyDataSetChanged();
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 private String tx_hash1;
-                private boolean status;
+                private boolean status = false;
 
                 @SingleClick
                 @Override
@@ -436,14 +437,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             if (status) {
                                 try {
                                     Daemon.commands.callAttr("remove_local_tx", tx_hash1);
-                                    maintrsactionlistEvents.remove(position);
-                                    trsactionlistAdapter.notifyItemChanged(position);
-                                    //Rolling Wallet
-                                    mWheelplanting();
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
+                                maintrsactionlistEvents.remove(position);
+//                                trsactionlistAdapter.notifyItemChanged(position);
+//                                //trsaction list data
+//                                downMainListdata();
                             } else {
                                 mToast(getString(R.string.delete_unBroad));
                             }
@@ -686,13 +687,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         view1.findViewById(R.id.btn_agree).setOnClickListener(v -> {
-            edit.putBoolean("user_agreement",true);
+            edit.putBoolean("user_agreement", true);
             edit.apply();
             alertDialog.dismiss();
         });
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
-        WindowManager.LayoutParams lp =  alertDialog.getWindow().getAttributes();
+        WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
         lp.width = 900;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         alertDialog.getWindow().setAttributes(lp);
