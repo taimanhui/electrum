@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities.service;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -78,6 +79,7 @@ import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.FastPayEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.InitEvent;
@@ -460,6 +462,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
      *
      * @param isNFC which communication way we use
      */
+    @SuppressLint("CommitPrefEdits")
     private void dealWithBusiness(boolean isNFC) {
         if (features.isBootloaderMode()) {
             Toast.makeText(this, R.string.bootloader_mode, Toast.LENGTH_LONG).show();
@@ -510,12 +513,14 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 //Anti counterfeiting verification
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
             } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
+                //bluetooth set to hardware
                 if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag)) {
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "one");
                 } else {
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "zero");
                 }
             } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
+                //fix bixinkey name
                 String fixNamed = getIntent().getStringExtra("fixName");
                 String oldBleName = getIntent().getStringExtra("oldBleName");
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
@@ -533,12 +538,29 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 EventBus.getDefault().post(new FixBixinkeyNameEvent(fixNamed));
                 finish();
             } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
+                //Fast pay
                 String limit = getIntent().getStringExtra("limit");
                 String times = getIntent().getStringExtra("times");
                 String noPIN = getIntent().getStringExtra("noPIN");
                 String noHard = getIntent().getStringExtra("noHard");
+                int moneyLimit = Integer.parseInt(limit);
+                int money_times = Integer.parseInt(times);
                 try {
-                    Daemon.commands.callAttr("apply_setting", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, new Kwarg("fee_pay_money_limit", limit), new Kwarg("fee_pay_times", times), new Kwarg("fee_pay_pin", noPIN), new Kwarg("fee_pay_pin", noHard));
+                    PyObject pyObject = Daemon.commands.callAttr("apply_setting", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, new Kwarg("fastpay_money_limit", moneyLimit), new Kwarg("fastpay_times", money_times), "true".equals(noPIN) ? new Kwarg("fastpay_pin", true) : new Kwarg("fastpay_pin", false), "true".equals(noHard) ? new Kwarg("fastpay_confirm", true) : new Kwarg("fastpay_confirm", false));
+                    assert noPIN != null;
+                    if (noPIN.equals("true")) {
+                        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", true).apply();
+                    } else if (noPIN.equals("false")) {
+                        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", false).apply();
+                    }
+                    assert noHard != null;
+                    if (noHard.equals("true")) {
+                        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("noHard_set", true).apply();
+                    } else if (noHard.equals("false")) {
+                        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("noHard_set", false).apply();
+                    }
+                    EventBus.getDefault().post(new FastPayEvent(pyObject.toString()));
+                    finish();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -830,7 +852,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
             EventBus.getDefault().post(new SetBluetoothEvent(s));
         } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
-            Log.i("ConfidentialPaymentSettings", "onResult: =========================="+s);
+            Log.i("ConfidentialPaymentSettings", "onResult: ==========================" + s);
         }
         finish();
     }

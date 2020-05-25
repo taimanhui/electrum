@@ -2,6 +2,9 @@ package org.haobtc.wallet.activities.settings;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -10,10 +13,15 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.FastPayEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +55,7 @@ public class ConfidentialPaymentSettings extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         boolean boPIN_set = preferences.getBoolean("boPIN_set", false);
         boolean noHard_set = preferences.getBoolean("noHard_set", false);
@@ -62,7 +71,9 @@ public class ConfidentialPaymentSettings extends BaseActivity {
         } else {
             switchNoHard.setChecked(false);
         }
-
+        TextWatcher1 textWatcher1 = new TextWatcher1();
+        unclassifiedPay.addTextChangedListener(textWatcher1);
+        editTimes.addTextChangedListener(textWatcher1);
     }
 
     @Override
@@ -113,4 +124,65 @@ public class ConfidentialPaymentSettings extends BaseActivity {
         }
     }
 
+    class TextWatcher1 implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+            if (s.toString().contains(".")) {
+                if (s.length() - 1 - s.toString().indexOf(".") > 7) {
+                    s = s.toString().subSequence(0,
+                            s.toString().indexOf(".") + 8);
+                    unclassifiedPay.setText(s);
+                    unclassifiedPay.setSelection(s.length());
+                }
+            }
+            if (s.toString().trim().substring(0).equals(".")) {
+                s = "0" + s;
+                unclassifiedPay.setText(s);
+                unclassifiedPay.setSelection(2);
+            }
+            if (s.toString().startsWith("0")
+                    && s.toString().trim().length() > 1) {
+                if (!s.toString().substring(1, 2).equals(".")) {
+                    unclassifiedPay.setText(s.subSequence(0, 1));
+                    unclassifiedPay.setSelection(1);
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if ((unclassifiedPay.length() > 0 && editTimes.length() > 0)) {
+                btnSetKey.setEnabled(true);
+                btnSetKey.setBackground(getDrawable(R.drawable.button_bk));
+            } else {
+                btnSetKey.setEnabled(false);
+                btnSetKey.setBackground(getDrawable(R.drawable.button_bk_grey));
+            }
+        }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void doBusiness(FastPayEvent event) {
+        if (!TextUtils.isEmpty(event.getCode())) {
+            if (event.getCode().equals("1")) {
+                unclassifiedPay.setText("");
+                editTimes.setText("");
+                mToast(getString(R.string.set_success));
+            }else{
+                mToast(getString(R.string.set_fail));
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }
