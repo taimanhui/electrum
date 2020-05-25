@@ -261,12 +261,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private void signDialog() {
         View view1 = LayoutInflater.from(SignActivity.this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(SignActivity.this).setView(view1).create();
-        Window window = alertDialog.getWindow();
-        WindowManager.LayoutParams lp = window.getAttributes();
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        lp.width = getResources().getDimensionPixelOffset(R.dimen.dp_300);
-        lp.height = getResources().getDimensionPixelOffset(R.dimen.dp_200);
-        alertDialog.getWindow().setAttributes(lp);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText str_pass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
             String strPassword = str_pass.getText().toString();
@@ -300,6 +295,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             alertDialog.dismiss();
         });
         alertDialog.show();
+        WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
+        lp.width = 950;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        alertDialog.getWindow().setAttributes(lp);
 
     }
 
@@ -307,6 +306,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         View view1 = LayoutInflater.from(SignActivity.this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(SignActivity.this).setView(view1).create();
         EditText str_pass = view1.findViewById(R.id.edit_password);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
             String strPassword = str_pass.getText().toString();
             if (TextUtils.isEmpty(strPassword)) {
@@ -339,7 +339,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             alertDialog.dismiss();
         });
         alertDialog.show();
-
+        WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
+        lp.width = 950;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        alertDialog.getWindow().setAttributes(lp);
     }
 
     private Runnable runnable = this::gotoConfirmOnHardware;

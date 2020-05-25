@@ -95,7 +95,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
-        Toast.makeText(this, "正在检查更新信息", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.updating_dialog), Toast.LENGTH_LONG).show();
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

@@ -18,7 +18,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-            android:background="?android:attr/selectableItemBackground"
+
             android:src="@drawable/back" />
 
     </RelativeLayout>
@@ -36,6 +36,7 @@
         android:id="@+id/testStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
         android:layout_below="@+id/imgStatus"
         android:layout_marginTop="@dimen/dp_30"
         android:gravity="center_horizontal"

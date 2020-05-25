@@ -12,11 +12,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.FixBixinkeyNameEvent;
+import org.haobtc.wallet.event.ReadingEvent;
 
 import java.util.Locale;
 
@@ -35,6 +40,7 @@ public class FixBixinkeyNameActivity extends BaseActivity {
     TextView number;
     @BindView(R.id.btn_next)
     Button btnNext;
+    private String oldBleName;
 
     @Override
     public int getLayoutId() {
@@ -44,7 +50,8 @@ public class FixBixinkeyNameActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-
+        EventBus.getDefault().register(this);
+        oldBleName = getIntent().getStringExtra("oldBleName");
     }
 
     @Override
@@ -72,16 +79,15 @@ public class FixBixinkeyNameActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s)){
+                if (!TextUtils.isEmpty(s)) {
                     btnNext.setEnabled(true);
                     btnNext.setBackground(getDrawable(R.drawable.button_bk));
-                }else{
+                } else {
                     btnNext.setEnabled(false);
                     btnNext.setBackground(getDrawable(R.drawable.button_bk_grey));
                 }
             }
         });
-
     }
 
     @SingleClick
@@ -96,11 +102,21 @@ public class FixBixinkeyNameActivity extends BaseActivity {
                 CommunicationModeSelector.runnables.add(null);
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
-                intent.putExtra("fixName",nameEdit.getText().toString());
+                intent.putExtra("oldBleName",oldBleName);
+                intent.putExtra("fixName", nameEdit.getText().toString());
                 startActivity(intent);
                 break;
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showReading(FixBixinkeyNameEvent event) {
+        nameEdit.setText("");
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

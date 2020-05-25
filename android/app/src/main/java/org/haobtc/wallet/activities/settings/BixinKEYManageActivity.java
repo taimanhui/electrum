@@ -12,11 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +48,15 @@ public class BixinKEYManageActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void initData() {
+        getKeylist();
+    }
+
+    private void getKeylist() {
         deviceValue = new ArrayList<>();
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
         edit = devices.edit();
@@ -54,10 +67,6 @@ public class BixinKEYManageActivity extends BaseActivity {
             HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
             deviceValue.add(hardwareFeatures);
         }
-    }
-
-    @Override
-    public void initData() {
         if (deviceValue != null) {
             BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
             reclBixinKeyList.setAdapter(bixinkeyManagerAdapter);
@@ -69,7 +78,7 @@ public class BixinKEYManageActivity extends BaseActivity {
                         case R.id.relativeLayout_bixinkey:
                             String firmwareVersion = "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
                             Intent intent = new Intent(BixinKEYManageActivity.this, HardwareDetailsActivity.class);
-                            intent.putExtra("label",deviceValue.get(position).getLabel());
+                            intent.putExtra("label", deviceValue.get(position).getLabel());
                             intent.putExtra("bleName", deviceValue.get(position).getBleName());
                             intent.putExtra("firmwareVersion", firmwareVersion);
                             intent.putExtra("bleVerson", "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getPatchVersion());
@@ -78,14 +87,14 @@ public class BixinKEYManageActivity extends BaseActivity {
                             break;
                         case R.id.linear_delete:
                             String blename = deviceValue.get(position).getBleName();
-                            if (!TextUtils.isEmpty(blename)){
+                            if (!TextUtils.isEmpty(blename)) {
                                 edit.remove(blename);
                                 edit.apply();
                                 deviceValue.remove(position);
                                 bixinkeyManagerAdapter.notifyItemChanged(position);
                                 bixinkeyManagerAdapter.notifyDataSetChanged();
                                 mToast(getString(R.string.delete_succse));
-                            }else{
+                            } else {
                                 mToast(getString(R.string.delete_fail));
                             }
 
@@ -102,6 +111,17 @@ public class BixinKEYManageActivity extends BaseActivity {
         if (view.getId() == R.id.img_back) {
             finish();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showReading(FixBixinkeyNameEvent event) {
+        getKeylist();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }
 

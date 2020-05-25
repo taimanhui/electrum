@@ -51,7 +51,7 @@ public class BixinKeyBluetoothSettingActivity extends BaseActivity {
     //Click the confirm button to indicate success
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventa(ButtonRequestEvent event) {
-        mToast(getString(R.string.set_success));
+        mToast(getString(R.string.confirm_hardware_msg));
     }
 
     @Override

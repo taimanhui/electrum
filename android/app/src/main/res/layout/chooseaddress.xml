@@ -8,12 +8,11 @@
     <TextView
         android:id="@+id/tet_WalletName"
         android:text="@string/wallet_name"
-        android:textColor="#494949"
+        android:textColor="@color/text_color"
         android:layout_centerVertical="true"
         android:gravity="center_vertical"
         android:layout_marginStart="@dimen/sp_16"
         android:textSize="15sp"
-
         android:layout_width="match_parent"
         android:layout_height="60dp"/>
 
@@ -30,8 +29,7 @@
         android:layout_height="60dp"/>
 
     <View
-        android:id="@+id/view_line"
-        android:background="#f1f1f1"
+        android:background="@color/line_color"
         android:layout_marginEnd="@dimen/sp_16"
         android:layout_marginStart="@dimen/sp_16"
         android:layout_alignParentBottom="true"

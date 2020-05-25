@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -166,6 +167,10 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     alertDialog.dismiss();
                 });
                 alertDialog.show();
+                WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
+                lp.width = 950;
+                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                alertDialog.getWindow().setAttributes(lp);
                 break;
         }
     }

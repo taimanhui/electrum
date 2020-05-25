@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/t_white">
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -49,6 +50,8 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:layout_marginTop="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                tools:itemCount="5"
+                tools:listitem="@layout/chooseaddress"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 

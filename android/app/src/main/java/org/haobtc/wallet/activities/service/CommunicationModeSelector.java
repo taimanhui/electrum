@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -57,6 +58,7 @@ import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
 import org.haobtc.wallet.activities.settings.BixinKeyBluetoothSettingActivity;
 import org.haobtc.wallet.activities.settings.CheckXpubResultActivity;
+import org.haobtc.wallet.activities.settings.ConfidentialPaymentSettings;
 import org.haobtc.wallet.activities.settings.FixBixinkeyNameActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
@@ -76,6 +78,7 @@ import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.PinEvent;
@@ -335,7 +338,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         try {
             futureTask = new FutureTask<>(() -> {
                 System.out.println(String.format("method==get_feature===in thread===%d", Thread.currentThread().getId()));
-                return   Daemon.commands.callAttr("get_feature", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                return Daemon.commands.callAttr("get_feature", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
             });
             executorService.submit(futureTask);
             feature = futureTask.get(5, TimeUnit.SECONDS).toString();
@@ -518,13 +521,30 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 }
             } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
                 String fixNamed = getIntent().getStringExtra("fixName");
+                String oldBleName = getIntent().getStringExtra("oldBleName");
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
                 Map<String, ?> devicesAll = devices.getAll();
                 //key
                 for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
                     String mapValue = (String) entry.getValue();
-                    HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
-                    hardwareFeatures.setLabel(fixNamed);
+                    HardwareFeatures hardwareFeaturesfix = new Gson().fromJson(mapValue, HardwareFeatures.class);
+                    if (oldBleName.equals(hardwareFeaturesfix.getBleName())) {
+                        hardwareFeaturesfix.setLabel(fixNamed);
+                        devices.edit().putString(oldBleName, hardwareFeaturesfix.toString()).apply();
+                    }
+                }
+                Toast.makeText(this, getString(R.string.fix_success), Toast.LENGTH_SHORT).show();
+                EventBus.getDefault().post(new FixBixinkeyNameEvent(fixNamed));
+                finish();
+            } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
+                String limit = getIntent().getStringExtra("limit");
+                String times = getIntent().getStringExtra("times");
+                String noPIN = getIntent().getStringExtra("noPIN");
+                String noHard = getIntent().getStringExtra("noHard");
+                try {
+                    Daemon.commands.callAttr("apply_setting", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, new Kwarg("fee_pay_money_limit", limit), new Kwarg("fee_pay_times", times), new Kwarg("fee_pay_pin", noPIN), new Kwarg("fee_pay_pin", noHard));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -814,6 +834,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             EventBus.getDefault().postSticky(new ResultEvent(s));
         } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
             EventBus.getDefault().post(new SetBluetoothEvent(s));
+        } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
+            Log.i("ConfidentialPaymentSettings", "onResult: =========================="+s);
         }
         finish();
     }

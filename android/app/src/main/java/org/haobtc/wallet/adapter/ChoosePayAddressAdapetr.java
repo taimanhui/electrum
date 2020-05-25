@@ -37,14 +37,12 @@ public class ChoosePayAddressAdapetr extends RecyclerView.Adapter<ChoosePayAddre
         TextView tet_WalletName;
         TextView tet_WalletType;
         RelativeLayout rel_background;
-        View view_line;
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
             tet_WalletName = itemView.findViewById(R.id.tet_WalletName);
             tet_WalletType = itemView.findViewById(R.id.tet_WalletType);
             rel_background = itemView.findViewById(R.id.rel_background);
-            view_line = itemView.findViewById(R.id.view_line);
         }
     }
 
@@ -82,15 +80,9 @@ public class ChoosePayAddressAdapetr extends RecyclerView.Adapter<ChoosePayAddre
         holder.itemView.setTag(holder.tet_WalletType);
 
         if (isClicks.get(position)) {
-            holder.tet_WalletName.setTextColor(Color.parseColor("#ffffff"));
-            holder.tet_WalletType.setTextColor(Color.parseColor("#ffffff"));
-            holder.rel_background.setBackgroundColor(Color.parseColor("#6182F5"));
-            holder.view_line.setBackgroundColor(Color.parseColor("#6182F5"));
+            holder.rel_background.setBackgroundColor(Color.parseColor("#F6F7F8"));
         } else {
-            holder.tet_WalletName.setTextColor(Color.parseColor("#494949"));
-            holder.tet_WalletType.setTextColor(Color.parseColor("#6182F5"));
             holder.rel_background.setBackgroundColor(Color.parseColor("#ffffff"));
-            holder.view_line.setBackgroundColor(Color.parseColor("#f1f1f1"));
         }
 
     }

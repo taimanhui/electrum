@@ -38,7 +38,7 @@
                 android:layout_alignParentEnd="true"
                 android:contentDescription="@string/use_hardware"
                 android:padding="@dimen/dp_14"
-                android:background="?android:attr/selectableItemBackground"
+
                 android:src="@drawable/close_big_black"
                 app:layout_constraintTop_toTopOf="parent" />
 

@@ -10,6 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.SettingActivity;
@@ -19,6 +22,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.UpdateInfo;
+import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 
 import java.io.IOException;
 
@@ -67,7 +71,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-
+        EventBus.getDefault().register(this);
         inits();
     }
 
@@ -108,7 +112,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
             case R.id.lin_OnckTwo:
                 getUpdateInfo();
-            break;
+                break;
             case R.id.change_pin:
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);
                 intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
@@ -126,6 +130,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
         }
     }
+
     private void getUpdateInfo() {
         String urlPrefix = "https://key.bixin.com/";
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
@@ -151,4 +156,14 @@ public class HardwareDetailsActivity extends BaseActivity {
         startActivity(intentVersion);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showReading(FixBixinkeyNameEvent event) {
+        tetKeyName.setText(event.getKeyname());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

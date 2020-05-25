@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -283,7 +284,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //intent ->histry or create
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String jsondef_get) {
-       // Log.d("jsonDetailData", "transactionDetail==== " + jsondef_get);
+        // Log.d("jsonDetailData", "transactionDetail==== " + jsondef_get);
         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
         try {
             Gson gson = new Gson();
@@ -662,6 +663,10 @@ public class TransactionDetailsActivity extends BaseActivity {
                     confirmedSpeed();
                 });
                 alertDialog.show();
+                WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
+                lp.width = 950;
+                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                alertDialog.getWindow().setAttributes(lp);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

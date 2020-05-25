@@ -1,6 +1,7 @@
 package org.haobtc.wallet.asynctask;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.chaquo.python.Kwarg;
@@ -86,6 +87,14 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                     onException(e);
                 }
                 break;
+//            case PAY_APPLY_SETTING:
+//                try {
+//                    result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("fee_pay_money_limit",strings[2]), new Kwarg("fee_pay_times",strings[3]), strings[4].equals("true") ? new Kwarg("fee_pay_pin", true) : new Kwarg("fee_pay_pin", false), strings[5].equals("true") ? new Kwarg("fee_pay_confirm", true) : new Kwarg("fee_pay_confirm", false)).toString();
+//                } catch (Exception e) {
+//                    cancel(true);
+//                    onException(e);
+//                }
+//                break;
         }
         return result;
     }
