@@ -168,7 +168,7 @@ public class SignatureProcessing extends BaseActivity {
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
-            finishAffinity();
+            finish();
         }
     }
 

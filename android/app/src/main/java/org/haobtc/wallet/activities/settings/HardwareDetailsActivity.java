@@ -8,32 +8,25 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.haobtc.wallet.BuildConfig;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.UpdateInfo;
+import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class HardwareDetailsActivity extends BaseActivity {
 
@@ -93,7 +86,7 @@ public class HardwareDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        EventBus.getDefault().register(this);
     }
 
     @SingleClick
@@ -154,6 +147,13 @@ public class HardwareDetailsActivity extends BaseActivity {
         Intent intentVersion = new Intent(this, VersionUpgradeActivity.class);
         intentVersion.putExtras(bundle);
         startActivity(intentVersion);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        if (isNFC) {
+            EventBus.getDefault().removeStickyEvent(event);
+            startActivity(new Intent(this, NfcNotifyHelper.class));
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

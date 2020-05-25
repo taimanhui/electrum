@@ -8,6 +8,7 @@ import com.chaquo.python.Kwarg;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
+import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.utils.Daemon;
 
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
@@ -101,7 +102,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
 
     private void onException(Exception e) {
         Log.e(TAG, e.getMessage() == null ? "unknown exception" : e.getMessage());
-        if ("BaseException: waiting passphrase timeout".equals(e.getMessage()) || "BaseException: waiting pin timeout".equals(e.getMessage())) {
+        if (BixinExceptions.PASSPHRASE_OPERATION_TIMEOUT.getMessage().equals(e.getMessage()) || BixinExceptions.PIN_OPERATION_TIMEOUT.getMessage().equals(e.getMessage())) {
             EventBus.getDefault().post(new OperationTimeoutEvent());
         } else {
             helper.onException(e);

@@ -8,16 +8,10 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.asynctask.BusinessAsyncTask;
-import org.haobtc.wallet.event.ExistEvent;
-import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import butterknife.BindView;
@@ -26,7 +20,7 @@ import butterknife.OnClick;
 
 
 
-public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, BusinessAsyncTask.Helper {
+public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -93,24 +87,5 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
     protected void onRestart() {
         super.onRestart();
         finish();
-    }
-
-    @Override
-    public void onPreExecute() {
-
-    }
-
-    @Override
-    public void onException(Exception e) {
-    }
-
-    @Override
-    public void onResult(String s) {
-        EventBus.getDefault().post(new ResultEvent(s));
-    }
-
-    @Override
-    public void onCancelled() {
-
     }
 }

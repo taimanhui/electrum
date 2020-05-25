@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.settings.recovery_set.BackupMessageActivity;
 import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
@@ -53,7 +52,7 @@ public class CheckXpubResultActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                finishAffinity();
+                finish();
                // Ble.getInstance().disconnectAll();
                 break;
             case R.id.copy_xpub:

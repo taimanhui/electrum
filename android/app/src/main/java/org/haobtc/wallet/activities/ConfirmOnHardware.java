@@ -24,8 +24,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.adapter.HardwareAdapter;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
@@ -39,6 +41,8 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class ConfirmOnHardware extends BaseActivity implements View.OnClickListener {
     public static final String TAG = "org.haobtc.wallet.activities.ConfirmOnHardware";
@@ -60,6 +64,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     private TextView signSuccess;
     private String txHash;
     private int intentAction = 0;
+    private boolean needTouch;
 
     public int getLayoutId() {
         return R.layout.confirm_on_hardware;
@@ -204,7 +209,13 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         }
         showPopupSignFailed();
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
+        if (isNFC) {
+            needTouch = true;
+        }
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -213,10 +224,15 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.confirm_on_hardware:
-                intentAction = 1;
-                Intent intent = new Intent(this, ActivatedProcessing.class);
-                startActivity(intent);
-                finish();
+                if (isNFC && needTouch) {
+                    startActivity(new Intent(this, NfcNotifyHelper.class));
+                    needTouch = false;
+                } else {
+                    intentAction = 1;
+                    Intent intent = new Intent(this, ActivatedProcessing.class);
+                    startActivity(intent);
+                    finish();
+                }
                 break;
             case R.id.img_back:
                 finish();

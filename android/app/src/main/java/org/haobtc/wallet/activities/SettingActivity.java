@@ -21,6 +21,7 @@ import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
 import org.haobtc.wallet.activities.settings.BlueToothStatusActivity;
 import org.haobtc.wallet.activities.settings.CurrencyActivity;
@@ -28,6 +29,7 @@ import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
+import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.SecondEvent;
 
@@ -42,6 +44,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
 
 public class SettingActivity extends BaseActivity {
@@ -210,7 +213,13 @@ public class SettingActivity extends BaseActivity {
         startActivity(intentCon);
 
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        if (isNFC) {
+            EventBus.getDefault().removeStickyEvent(event);
+            startActivity(new Intent(this, NfcNotifyHelper.class));
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();

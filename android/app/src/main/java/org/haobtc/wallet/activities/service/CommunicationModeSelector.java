@@ -92,6 +92,7 @@ import org.haobtc.wallet.event.SetBluetoothEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.event.WipeEvent;
+import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
 import org.haobtc.wallet.fragment.BluetoothFragment;
@@ -130,7 +131,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public static final int PASS_NEW_PASSPHRASS = 6;
     public static final int PASS_PASSPHRASS = 3;
     private static final int REQUEST_ENABLE_BT = 1;
-    public static PyObject ble, customerUI, nfc, usb, bleHandler, nfcHandler, bleTransport, nfcTransport, usbTransport;
+    public static PyObject ble, customerUI, nfc, usb, bleHandler, nfcHandler, bleTransport, nfcTransport, usbTransport, protocol;
     public static MyHandler handler;
     public static FutureTask<PyObject> futureTask;
     public static ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -176,13 +177,13 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         textViewInputByHand.setOnClickListener(this);
         imageViewCancel.setOnClickListener(this);
         tag = getIntent().getStringExtra("tag");
-        if (!bluetoothStatus || SetNameActivity.TAG.equals(tag) || HideWalletSetPassActivity.TAG.equals(tag)) {
+        if (!bluetoothStatus || SetNameActivity.TAG.equals(tag)) {
             radioBle.setVisibility(View.GONE);
         }
-
         nfc = Global.py.getModule("trezorlib.transport.nfc");
         ble = Global.py.getModule("trezorlib.transport.bluetooth");
         usb = Global.py.getModule("trezorlib.transport.android_usb");
+        protocol = Global.py.getModule("trezorlib.transport.protocol");
         bleHandler = ble.get("BlueToothHandler");
         nfcHandler = nfc.get("NFCHandle");
         usbTransport = usb.get("AndroidUsbTransport");
@@ -322,12 +323,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             bleHandler.put("ENABLED", false);
             usbTransport.put("ENABLED", false);
             nfcHandler.put("device", tags);
-            if (HideWalletSetPassActivity.TAG.equals(tag)) {
-                String passphrase = getIntent().getStringExtra("passphrase");
-                setPassphrass(new PinEvent("", passphrase));
-            } else {
-                handlerEverything(true);
-            }
+            handlerEverything(true);
         }
 
     }
@@ -759,16 +755,15 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
         // EventBus.getDefault().post(new SendingFailedEvent(e));
 //        if (hasWindowFocus()) {
-        Log.i("TAG-ErrorMsgDialog", "onException: " + e.getMessage());
-        if (e.getMessage().contains("(7, 'PIN invalid')") || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
+        if (e.getMessage().contains(BixinExceptions.PIN_INVALID.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
             showErrorDialog(0, R.string.pin_wrong);
-        } else if ("BaseException: BiXin cannot pair with your Trezor.".equals(e.getMessage())) {
+        } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage())) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);
-        } else if ("BaseException: failed to recognize transaction encoding for txt: craft fury pig target diagram ...".equals(e.getMessage())) {
+        } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
         } else if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(e.getMessage())) {
             showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
-        } else if (e.getMessage().contains("read ble response timeout")) {
+        } else if (e.getMessage().contains(BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage())) {
             showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
         } else {
             showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
@@ -888,7 +883,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     fragmentActivity.startActivity(intent1);
                     break;
                 case BUTTON_REQUEST:
-                    EventBus.getDefault().post(new ButtonRequestEvent());
+                    EventBus.getDefault().postSticky(new ButtonRequestEvent());
                     break;
                 case PASS_NEW_PASSPHRASS:
                 case PASS_PASSPHRASS:

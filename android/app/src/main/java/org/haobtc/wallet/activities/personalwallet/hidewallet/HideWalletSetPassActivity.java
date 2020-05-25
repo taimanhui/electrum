@@ -18,13 +18,14 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.HideInputPassFinishEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
-import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
@@ -90,14 +91,17 @@ public class HideWalletSetPassActivity extends BaseActivity {
                 if (!isNFC) {
                     EventBus.getDefault().post(new PinEvent("", strNewpass));
                 } else {
-                    EventBus.getDefault().post(new ExistEvent());
-                    Intent intent = new Intent(this, CommunicationModeSelector.class);
-                    intent.putExtra("tag", TAG);
+                    Intent intent = new Intent(this, NfcNotifyHelper.class);
+                    intent.putExtra("tag", "Passphrase");
                     intent.putExtra("passphrase", strNewpass);
                     startActivity(intent);
                 }
                 break;
         }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(FinishEvent event) {
+        finish();
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(CheckHideWalletEvent updataHint) {

@@ -44,9 +44,11 @@ import org.haobtc.wallet.activities.ConfirmOnHardware;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.entries.FsActivity;
+import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -57,6 +59,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class SignActivity extends BaseActivity implements TextWatcher, RadioGroup.OnCheckedChangeListener {
 
@@ -405,7 +409,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         intentMsg.putExtra("signedFinish", signedMsg);
         startActivity(intentMsg);
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        if (isNFC) {
+            startActivity(new Intent(this, NfcNotifyHelper.class));
+        }
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -415,7 +424,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
     }
 }

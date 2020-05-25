@@ -15,6 +15,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
@@ -22,6 +23,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -34,6 +36,8 @@ import java.util.Optional;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class PinSettingActivity extends BaseActivity {
     @BindView(R.id.trader_pwd_set_pwd_edittext)
@@ -142,8 +146,14 @@ public class PinSettingActivity extends BaseActivity {
                             startActivity(intent3);
                             break;
                         default:
-                            EventBus.getDefault().post(new PinEvent(pin, ""));
-                            finish();
+                            if (isNFC) {
+                                Intent intent = new Intent(this, NfcNotifyHelper.class);
+                                intent.putExtra("tag", "PIN");
+                                intent.putExtra("pin", pin);
+                                startActivity(intent);
+                            } else {
+                                EventBus.getDefault().post(new PinEvent(pin, ""));
+                            }
                     }
 
                 } else {
@@ -169,7 +179,10 @@ public class PinSettingActivity extends BaseActivity {
         EventBus.getDefault().post(new ExistEvent());
         finish();
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(FinishEvent event) {
+        finish();
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
