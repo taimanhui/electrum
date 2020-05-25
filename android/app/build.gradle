@@ -23,8 +23,23 @@ android {
         if (ecVersion == null) {
             throw new GradleException("Couldn't find version number")
         }
-        def BUILD_NUM = 0
-        versionName "$ecVersion-$BUILD_NUM"
+        File versionPropsFile = file('version.properties')
+
+        def BUILD_NUM
+        if (versionPropsFile.canRead()) {
+            def Properties versionProps = new Properties()
+
+            versionProps.load(new FileInputStream(versionPropsFile))
+
+            BUILD_NUM = versionProps['VERSION_CODE'].toInteger() + 1
+
+            versionProps['VERSION_CODE'] = BUILD_NUM.toString()
+            versionProps.store(versionPropsFile.newWriter(), null)
+            println "VERSION_CODE incremented to "+BUILD_NUM
+        } else {
+            throw new GradleException("Could not read version.properties!")
+        } 
+        versionName "$ecVersion.$BUILD_NUM"
         def verParsed = ecVersion.split(/\./).collect { Integer.parseInt(it) }
         versionCode = (verParsed[0] * 1000000) + (verParsed[1] * 10000) + (verParsed[2] * 100) + BUILD_NUM
 
