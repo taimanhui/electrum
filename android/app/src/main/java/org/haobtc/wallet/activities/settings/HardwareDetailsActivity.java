@@ -86,7 +86,6 @@ public class HardwareDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        EventBus.getDefault().register(this);
     }
 
     @SingleClick

@@ -604,7 +604,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         manager.setApkName("BixinKEY.apk")
                 .setApkUrl(url)
                 .setSmallIcon(R.drawable.app_icon)
-                .setShowNewerToast(true)
+                .setShowNewerToast(false)
                 .setConfiguration(configuration)
                 .setApkVersionCode(versionCode)
                 .setApkVersionName(versionName)
