@@ -99,10 +99,7 @@ public class HideWalletSetPassActivity extends BaseActivity {
                 break;
         }
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFinish(FinishEvent event) {
-        finish();
-    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(CheckHideWalletEvent updataHint) {
         String xpub = updataHint.getXpub();
