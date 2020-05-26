@@ -413,7 +413,7 @@
     <string name="add_finished">添加成功</string>
     <string name="upgradeed">已升级至最新版本</string>
     <string name="pin_change_success">PIN码修改成功</string>
-    <string name="hours_24">免密次数</string>
+    <string name="hours_24">允许次数</string>
     <string name="no_need_PIN">不需要PIN码</string>
     <string name="no_need_hardware">不需要硬件确认交易</string>
     <string name="set_to_Bixinkey">设置到BixinKey</string>
@@ -735,13 +735,13 @@
     <string name="dont_create">该硬件不支持创建隐藏钱包</string>
     <string name="user_server_agreement">用户服务协议</string>
     <string name="agree">同意</string>
-    <string name="unclassified_quota">免密额度</string>
+    <string name="unclassified_quota">单次限额</string>
     <string name="open_bt">打开</string>
     <string name="fix_name">修改名称</string>
     <string name="wallet_addr">钱包地址</string>
     <string name="wallet_msg">钱包信息</string>
     <string name="fix_success">修改成功</string>
-    <string name="fast_send_tips">开启快捷通道后，24小时内累计发币微超过限额，无需验证PIN码和BixinKey确认</string>
+    <string name="fast_send_tips">开启快捷通道后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 重复使用多次达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时候不允许关闭pin检查)</string>
     <string name="deletewallet_tips">软件钱包删除后，可通过备份恢复</string>
     <string name="updating_dialog">正在检查更新信息</string>
 
