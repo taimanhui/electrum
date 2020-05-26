@@ -32,7 +32,7 @@ class LabelsPlugin(BasePlugin):
         BasePlugin.__init__(self, parent, config, name)
         #self.target_host = 'labels.electrum.org'
         self.target_host = '39.105.86.163:8080'
-        #self.target_host = '127.0.0.1:8080'
+        #self.target_host = '192.168.1.43:8080'
         self.wallets = {}
         self.create_wallets = {}
         self.get_wallet_loop = asyncio.get_event_loop()
@@ -302,19 +302,19 @@ class LabelsPlugin(BasePlugin):
         if not wallet.network: raise Exception(_('You are offline.'))
         return asyncio.run_coroutine_threadsafe(self.pull_tx_thread(wallet), wallet.network.asyncio_loop).result()
 
-    def push_tx(self, wallet, action, tx_hash, tx, tx_hash_old=None):
+    def push_tx(self, wallet, action, tx_hash, tx=None, tx_hash_old=None):
         if not wallet.network: raise Exception(_('You are offline.'))
         return asyncio.run_coroutine_threadsafe(self.push_tx_thread(wallet, action, tx_hash, tx, tx_hash_old), wallet.network.asyncio_loop).result()
 
-    async def push_tx_thread(self, wallet, action, tx_hash, tx, tx_hash_old=None):
+    async def push_tx_thread(self, wallet, action, tx_hash, tx=None, tx_hash_old=None):
         wallet_data = self.wallets.get(wallet, None)
         if not wallet_data:
             raise Exception('Wallet {} not loaded'.format(wallet))
         wallet_id = wallet_data[2]
         bundle = {"walletId": wallet_id,
-                  "txHash": self.encode(wallet, tx_hash),
-                  "tx": self.encode(wallet, tx)}
-            
+                  "txHash": self.encode(wallet, tx_hash)}
+        if action != "deltx":
+            bundle['tx'] = self.encode(wallet, tx)
         if action == "rbftx":
             bundle['txHashOld'] = self.encode(wallet, tx_hash_old)
 
