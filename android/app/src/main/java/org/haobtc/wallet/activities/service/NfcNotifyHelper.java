@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FinishEvent;
@@ -23,6 +25,7 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
 //
@@ -32,6 +35,7 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
     private String tag;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        EventBus.getDefault().post(new FinishEvent());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bluetooth_nfc);
         ImageView imageViewCancel;
@@ -42,6 +46,7 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
         radioBle.setVisibility(View.GONE);
         NfcUtils.nfc(this, true);
         tag = getIntent().getStringExtra("tag");
+        EventBus.getDefault().register(this);
         Window window = getWindow();
         if (window != null) {
             WindowManager.LayoutParams wlp = window.getAttributes();
@@ -55,6 +60,7 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.img_cancel) {
+            nfc.put("IS_CANCEL", true);
             protocol.callAttr("notify");
             finish();
         }
@@ -73,11 +79,10 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
             } else if ("Passphrase".equals(tag)) {
                 String passphrase = getIntent().getStringExtra("passphrase");
                 EventBus.getDefault().post(new PinEvent("", passphrase));
-            } else {
-                protocol.callAttr("notify");
             }
+            protocol.callAttr("notify");
             EventBus.getDefault().post(new FinishEvent());
-            finish();
+//            finish();
         }
     }
 
@@ -101,6 +106,17 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+//        nfc.put("IS_CANCEL", true);
+//        protocol.callAttr("notify");
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(FinishEvent event) {
+        finish();
+    }
     @Override
     protected void onRestart() {
         super.onRestart();

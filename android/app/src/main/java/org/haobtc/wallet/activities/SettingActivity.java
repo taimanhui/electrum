@@ -83,6 +83,7 @@ public class SettingActivity extends BaseActivity {
     private SharedPreferences preferences;
     public String pin = "";
     private String activeSetPIN;
+    private boolean isChangePIN;
 
     @Override
     public int getLayoutId() {
@@ -120,6 +121,7 @@ public class SettingActivity extends BaseActivity {
     @SingleClick(value = 1000)
     @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update, R.id.check_xpub})
     public void onViewClicked(View view) {
+        isChangePIN = false;
         switch (view.getId()) {
             case R.id.tet_bixinKey:
                 mIntent(BixinKEYManageActivity.class);
@@ -164,6 +166,7 @@ public class SettingActivity extends BaseActivity {
                 getUpdateInfo();
                 break;
             case R.id.change_pin:
+                isChangePIN = true;
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);
                 intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent1.putExtra("tag", TAG_CHANGE_PIN);
@@ -215,7 +218,7 @@ public class SettingActivity extends BaseActivity {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
-        if (isNFC) {
+        if (isNFC && isChangePIN) {
             EventBus.getDefault().removeStickyEvent(event);
             startActivity(new Intent(this, NfcNotifyHelper.class));
         }

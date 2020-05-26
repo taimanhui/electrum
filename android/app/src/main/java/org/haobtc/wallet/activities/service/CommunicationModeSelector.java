@@ -80,6 +80,7 @@ import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.FastPayEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.InitEvent;
@@ -775,9 +776,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
+        EventBus.getDefault().post(new FinishEvent());
         // EventBus.getDefault().post(new SendingFailedEvent(e));
 //        if (hasWindowFocus()) {
-        if (e.getMessage().contains(BixinExceptions.PIN_INVALID.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
+        if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
             showErrorDialog(0, R.string.pin_wrong);
         } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage())) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);
@@ -807,6 +809,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
         if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag) || "check_xpub".equals(tag)) {
             xpub = s;
+            EventBus.getDefault().post(new FinishEvent());
             if (ImportHistoryWalletActivity.TAG.equals(tag)) {
                 Intent intent1 = new Intent(this, ChooseHistryWalletActivity.class);
                 intent1.putExtra("histry_xpub", xpub);
@@ -852,7 +855,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
             EventBus.getDefault().post(new SetBluetoothEvent(s));
         } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
-            Log.i("ConfidentialPaymentSettings", "onResult: ==========================" + s);
+         //   Log.i("ConfidentialPaymentSettings", "onResult: =========================="+s);
         }
         finish();
     }

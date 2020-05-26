@@ -153,6 +153,7 @@ public class PinSettingActivity extends BaseActivity {
                                 startActivity(intent);
                             } else {
                                 EventBus.getDefault().post(new PinEvent(pin, ""));
+                                finish();
                             }
                     }
 

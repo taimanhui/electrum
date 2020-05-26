@@ -12,7 +12,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.utils.NfcUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,11 +77,6 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        NfcUtils.mNfcAdapter = null;
-    }
     @Override
     protected void onRestart() {
         super.onRestart();

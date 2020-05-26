@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -27,9 +30,9 @@ import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +40,6 @@ import butterknife.OnClick;
 
 public class ReceivedPageActivity extends BaseActivity {
 
-    private static final String SHARE_PIC_NAME = "";
     @BindView(R.id.imageView2)
     ImageView imageView2;
     @BindView(R.id.textView5)
@@ -80,7 +82,7 @@ public class ReceivedPageActivity extends BaseActivity {
         }
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
-            Log.i("strCode", "mGenerate--: " + strCode);
+          //  Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qr_data = getCodeAddressBean.getQr_data();
@@ -101,7 +103,7 @@ public class ReceivedPageActivity extends BaseActivity {
                 //copy text
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
-                cm.setText(textView5.getText());
+                Objects.requireNonNull(cm, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textView5.getText()));
                 Toast.makeText(ReceivedPageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
 
                 break;
@@ -110,11 +112,10 @@ public class ReceivedPageActivity extends BaseActivity {
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                File file = saveImageToGallery(this, bitmap);
-                                if (file != null) {
-                                    String imgUri = insertImageToSystem(ReceivedPageActivity.this, file.getPath());
+                                String uri = saveImageToGallery(this, bitmap);
+                                if (uri != null) {
                                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(imgUri));
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(uri));
                                     shareIntent.setType("image/*");
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, textView5.getText().toString());
                                     shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -137,17 +138,8 @@ public class ReceivedPageActivity extends BaseActivity {
         }
     }
 
-    private static String insertImageToSystem(Context context, String imagePath) {
-        String url = "";
-        try {
-            url = MediaStore.Images.Media.insertImage(context.getContentResolver(), imagePath, SHARE_PIC_NAME, "");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return url;
-    }
 
-    private File saveImageToGallery(Context context, Bitmap bmp) {
+    private String saveImageToGallery(Context context, @NonNull Bitmap bmp) {
         // Save picture
         String storePath = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
         Log.i("storePath", "storePath: " + storePath);
@@ -157,30 +149,31 @@ public class ReceivedPageActivity extends BaseActivity {
         }
         String fileName = System.currentTimeMillis() + ".png";
         File file = new File(appDir, fileName);
+        FileOutputStream fos = null;
         try {
-            FileOutputStream fos = new FileOutputStream(file);
+            fos = new FileOutputStream(file);
             //Compress and save pictures by IO stream
-            boolean isSuccess = false;
-            if (bmp != null) {
-                isSuccess = bmp.compress(Bitmap.CompressFormat.PNG, 60, fos);
-            }
+            boolean isSuccess;
+            isSuccess = bmp.compress(Bitmap.CompressFormat.PNG, 60, fos);
             fos.flush();
-            fos.close();
-
             //Insert file into system library
-            MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
-
-            //Send broadcast notice to update database after saving picture
-            Uri uri = Uri.fromFile(file);
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-            if (isSuccess) {
-                return file;
-            } else {
+            if (!isSuccess) {
                 mToast(getString(R.string.fail));
                 return null;
             }
+            String uri = MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
+            //Send broadcast notice to update database after saving picture
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(uri)));
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
