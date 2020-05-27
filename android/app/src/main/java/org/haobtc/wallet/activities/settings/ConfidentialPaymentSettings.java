@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -22,6 +23,8 @@ import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FastPayEvent;
 import org.haobtc.wallet.event.HandlerEvent;
+
+import java.math.BigDecimal;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +49,8 @@ public class ConfidentialPaymentSettings extends BaseActivity {
     Button btnSetKey;
     private String noPIN = "false";
     private String noHard = "false";
+    private String base_unit;
+    private BigDecimal limit;
 
     @Override
     public int getLayoutId() {
@@ -59,7 +64,7 @@ public class ConfidentialPaymentSettings extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         boolean boPIN_set = preferences.getBoolean("boPIN_set", false);
         boolean noHard_set = preferences.getBoolean("noHard_set", false);
-        String base_unit = preferences.getString("base_unit", "mBTC");
+        base_unit = preferences.getString("base_unit", "mBTC");
         payUnit.setText(base_unit);
         if (boPIN_set) {
             switchNoPin.setChecked(true);
@@ -116,9 +121,25 @@ public class ConfidentialPaymentSettings extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_set_key:
+                String strClassifiedPay = unclassifiedPay.getText().toString();
+                if ("BTC".equals(base_unit)) {
+                    limit = BigDecimal.valueOf(Double.parseDouble(strClassifiedPay)).multiply(BigDecimal.valueOf(100000000L)).setScale(0);
+                } else if ("mBTC".equals(base_unit)) {
+                    limit = BigDecimal.valueOf(Double.parseDouble(strClassifiedPay)).multiply(BigDecimal.valueOf(100000L)).setScale(0);
+                } else if ("bits".equals(base_unit)) {
+                    limit = BigDecimal.valueOf(Double.parseDouble(strClassifiedPay)).multiply(BigDecimal.valueOf(100L)).setScale(0);
+                } else if ("sat".equals(base_unit)) {
+                    limit = BigDecimal.valueOf(Double.parseDouble(strClassifiedPay));
+                }
+                BigDecimal one = new BigDecimal(1);
+                int mathMax = limit.compareTo(one);
+                if (mathMax < 0) {
+                    mToast(getString(R.string.limit_input_wrong));
+                    return;
+                }
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
-                intent.putExtra("limit", unclassifiedPay.getText().toString());
+                intent.putExtra("limit", String.valueOf(limit));
                 intent.putExtra("times", editTimes.getText().toString());
                 intent.putExtra("noPIN", noPIN);
                 intent.putExtra("noHard", noHard);
@@ -175,10 +196,20 @@ public class ConfidentialPaymentSettings extends BaseActivity {
     public void doBusiness(FastPayEvent event) {
         if (!TextUtils.isEmpty(event.getCode())) {
             if (event.getCode().equals("1")) {
+                if (noPIN.equals("true")) {
+                    getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", true).apply();
+                } else if (noPIN.equals("false")) {
+                    getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", false).apply();
+                }
+                if (noHard.equals("true")) {
+                    getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("noHard_set", true).apply();
+                } else if (noHard.equals("false")) {
+                    getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("noHard_set", false).apply();
+                }
                 unclassifiedPay.setText("");
                 editTimes.setText("");
                 mToast(getString(R.string.set_success));
-            }else{
+            } else {
                 mToast(getString(R.string.set_fail));
             }
         }

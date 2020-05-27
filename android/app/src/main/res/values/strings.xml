@@ -772,6 +772,7 @@
     <string name="fast_send_tips">After the channel is opened, the accumulated micro amount of issuing currency exceeds the limit within 24 hours without verification of pin code and BixinKey</string>
     <string name="deletewallet_tips">Software wallet can be recovered through backup</string>
     <string name="updating_dialog">Checking for updates</string>
-    <string name="send_shortcut_access">Express currency setting</string>
+    <string name="send_shortcut_access">Quick payment settings</string>
+    <string name="limit_input_wrong">Limit input error</string>
 
 </resources>

@@ -81,6 +81,7 @@ import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.FastPayEvent;
 import org.haobtc.wallet.event.FinishEvent;
+import org.haobtc.wallet.event.FixAllLabelnameEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.InitEvent;
@@ -516,52 +517,26 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
                 //bluetooth set to hardware
                 if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag)) {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "one");
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "setBluetooth", "one");
                 } else {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "zero");
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "setBluetooth", "zero");
                 }
             } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
                 //fix bixinkey name
                 String fixNamed = getIntent().getStringExtra("fixName");
-                String oldBleName = features.getBleName();
-                SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
-                Map<String, ?> devicesAll = devices.getAll();
-                //key
-                for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
-                    String mapValue = (String) entry.getValue();
-                    HardwareFeatures hardwareFeaturesfix = new Gson().fromJson(mapValue, HardwareFeatures.class);
-                    if (oldBleName.equals(hardwareFeaturesfix.getBleName())) {
-                        hardwareFeaturesfix.setLabel(fixNamed);
-                        devices.edit().putString(oldBleName, hardwareFeaturesfix.toString()).apply();
-                    }
+                try {
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "label", fixNamed);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                Toast.makeText(this, getString(R.string.fix_success), Toast.LENGTH_SHORT).show();
-                EventBus.getDefault().post(new FixBixinkeyNameEvent(fixNamed));
-                finish();
             } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
                 //Fast pay
                 String limit = getIntent().getStringExtra("limit");
                 String times = getIntent().getStringExtra("times");
                 String noPIN = getIntent().getStringExtra("noPIN");
                 String noHard = getIntent().getStringExtra("noHard");
-                int moneyLimit = Integer.parseInt(limit);
-                int money_times = Integer.parseInt(times);
                 try {
-                    PyObject pyObject = Daemon.commands.callAttr("apply_setting", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, new Kwarg("fastpay_money_limit", moneyLimit), new Kwarg("fastpay_times", money_times), "true".equals(noPIN) ? new Kwarg("fastpay_pin", false) : new Kwarg("fastpay_pin", true), "true".equals(noHard) ? new Kwarg("fastpay_confirm", true) : new Kwarg("fastpay_confirm", false));
-                    assert noPIN != null;
-                    if (noPIN.equals("true")) {
-                        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", true).apply();
-                    } else if (noPIN.equals("false")) {
-                        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", false).apply();
-                    }
-                    assert noHard != null;
-                    if (noHard.equals("true")) {
-                        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("noHard_set", true).apply();
-                    } else if (noHard.equals("false")) {
-                        getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("noHard_set", false).apply();
-                    }
-                    EventBus.getDefault().post(new FastPayEvent(pyObject.toString()));
-                    finish();
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fastPay", limit, times, noPIN, noHard);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -785,7 +760,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             showErrorDialog(R.string.try_another_key, R.string.unpair);
         } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
-        } else if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(e.getMessage())) {
+        } else if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(e.getMessage()) || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
             showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
         } else if (e.getMessage().contains(BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage())) {
             showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
@@ -855,7 +830,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
             EventBus.getDefault().post(new SetBluetoothEvent(s));
         } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
-         //   Log.i("ConfidentialPaymentSettings", "onResult: =========================="+s);
+            EventBus.getDefault().post(new FastPayEvent(s));
+        } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
+            String oldBleName = features.getBleName();
+            EventBus.getDefault().post(new FixAllLabelnameEvent(oldBleName, s));
         }
         finish();
     }

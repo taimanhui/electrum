@@ -491,7 +491,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
                             tools:itemCount="3"
                             tools:listitem="@layout/public_person">
 

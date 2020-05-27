@@ -230,7 +230,7 @@ public class ShareOtherActivity extends BaseActivity {
         View view1 = LayoutInflater.from(this).inflate(R.layout.dialog_view, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
         ImageView img_Cancle = view1.findViewById(R.id.img_Cancle);
-        String newPath = stPath.replace("内部存储","/storage/emulated/0");
+        String newPath = stPath.replace("内部存储", "/storage/emulated/0");
         view1.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
             EditText editFilename = view1.findViewById(R.id.edit_Filename);
             String strFilename = editFilename.getText().toString();
@@ -285,8 +285,10 @@ public class ShareOtherActivity extends BaseActivity {
 //                                tetBigMessage.setVisibility(View.VISIBLE);
 //                                imgOrcode.setVisibility(View.GONE);
 //                            } else {
-                                bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
-                                imgOrcode.setImageBitmap(bitmap);
+                            bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
+                            Log.i("ddddjxm", "handleMessage:---- " + bitmap);
+                            Log.i("ddddjxm", "handleMessage:+++++ " + strCode.length());
+                            imgOrcode.setImageBitmap(bitmap);
 //                            }
                         }
                     }

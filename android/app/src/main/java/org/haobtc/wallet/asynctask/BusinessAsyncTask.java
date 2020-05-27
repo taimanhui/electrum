@@ -1,5 +1,6 @@
 package org.haobtc.wallet.asynctask;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
@@ -37,6 +38,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
         helper.onPreExecute();
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     protected String doInBackground(String... strings) {
         System.out.println(String.format("method==%s===in thread===%d", strings[0], Thread.currentThread().getId()));
@@ -82,20 +84,20 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 break;
             case APPLY_SETTING:
                 try {
-                    result = Daemon.commands.callAttr(strings[0], strings[1], strings[2].equals("one") ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false)).toString();
+                    if ("setBluetooth".equals(strings[2])) {
+                        result = Daemon.commands.callAttr(strings[0], strings[1], strings[3].equals("one") ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false)).toString();
+                    } else if ("fastPay".equals(strings[2])) {
+                        int moneyLimit = Integer.parseInt(strings[3]);
+                        int money_times = Integer.parseInt(strings[4]);
+                        result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("fastpay_money_limit", moneyLimit), new Kwarg("fastpay_times", money_times), "true".equals(strings[5]) ? new Kwarg("fastpay_pin", true) : new Kwarg("fastpay_pin", false), "true".equals(strings[6]) ? new Kwarg("fastpay_confirm", true) : new Kwarg("fastpay_confirm", false)).toString();
+                    } else if ("label".equals(strings[2])) {
+                        result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("label", strings[3])).toString();
+                    }
                 } catch (Exception e) {
                     cancel(true);
                     onException(e);
                 }
                 break;
-//            case PAY_APPLY_SETTING:
-//                try {
-//                    result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("fee_pay_money_limit",strings[2]), new Kwarg("fee_pay_times",strings[3]), strings[4].equals("true") ? new Kwarg("fee_pay_pin", true) : new Kwarg("fee_pay_pin", false), strings[5].equals("true") ? new Kwarg("fee_pay_confirm", true) : new Kwarg("fee_pay_confirm", false)).toString();
-//                } catch (Exception e) {
-//                    cancel(true);
-//                    onException(e);
-//                }
-//                break;
         }
         return result;
     }

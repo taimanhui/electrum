@@ -163,7 +163,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
         editWalletname.addTextChangedListener(this);
         walletNameNum = defaultName + 1;
         editWalletname.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
-
+        reclPublicPerson.setNestedScrollingEnabled(false);
     }
 
     @Override

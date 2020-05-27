@@ -744,5 +744,6 @@
     <string name="deletewallet_tips">软件钱包删除后，可通过备份恢复</string>
     <string name="updating_dialog">正在检查更新信息</string>
     <string name="send_shortcut_access">快捷支付设置</string>
+    <string name="limit_input_wrong">额度输入错误</string>
 
 </resources>
