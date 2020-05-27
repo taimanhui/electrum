@@ -266,9 +266,9 @@ class AndroidCommands(commands.Commands):
     def remove_local_tx(self, delete_tx):
         to_delete = {delete_tx}
         to_delete |= self.wallet.get_depending_transactions(delete_tx)
-
         for tx in to_delete:
             self.wallet.remove_transaction(tx)
+            self.delete_tx(tx)
         self.wallet.save_db()
         # need to update at least: history_list, utxo_list, address_list
         # self.parent.need_update.set()
@@ -278,7 +278,8 @@ class AndroidCommands(commands.Commands):
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.push_tx(self.wallet, 'deltx', hash)
         except Exception as e:
-            raise BaseException(e)
+            print(f"push_tx delete_tx error {e}")
+            pass
 
     def save_tx_to_file(self, path, tx):
         try:
@@ -664,7 +665,8 @@ class AndroidCommands(commands.Commands):
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.push_tx(self.wallet, 'createtx', tx.txid(), self.tx)
         except Exception as e:
-            raise BaseException(e)
+            print(f"push_tx createtx error {e}")
+            pass
         json_str = json.dumps(ret_data)
         return json_str
 
@@ -1188,7 +1190,8 @@ class AndroidCommands(commands.Commands):
                 if self.label_flag and self.wallet.wallet_type != "standard":
                     self.label_plugin.push_tx(self.wallet, 'signtx', tx.txid(), sign_tx.serialize_as_bytes().hex())
             except Exception as e:
-                raise BaseException(e)
+                print(f"push_tx signtx error {e}")
+                pass
             return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
         except Exception as e:
             raise BaseException(e)
@@ -1559,7 +1562,8 @@ class AndroidCommands(commands.Commands):
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.push_tx(self.wallet, 'rbftx', new_tx.txid(), new_tx.serialize_as_bytes().hex(), tx_hash_old=tx_hash)
         except Exception as e:
-            raise BaseException(e)
+            print(f"push_tx rbftx error {e}")
+            pass
         # self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
         return json.dumps(out)
 

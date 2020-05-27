@@ -437,7 +437,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             if (status) {
                                 try {
                                     Daemon.commands.callAttr("remove_local_tx", tx_hash1);
-                                    Daemon.commands.callAttr("delete_tx", tx_hash1);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
