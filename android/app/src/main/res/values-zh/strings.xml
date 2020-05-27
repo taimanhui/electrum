@@ -525,7 +525,7 @@
     <string name="no_delete_xpub">删除的xpub不存在</string>
     <string name="xpub_wrong">添加xpub类型错误</string>
     <string name="wrong_key_type">错误的密钥类型p2wpkh</string>
-    <string name="sign_failed_device">签名失败，BiXin无法与您的设备配对</string>
+    <string name="sign_failed_device">签名失败，当前钱包和设备不匹配</string>
     <string name="file_name">文件名称</string>
     <string name="addspeed_success">加速成功！</string>
     <string name="software_wallet">软件钱包</string>
@@ -740,7 +740,7 @@
     <string name="wallet_addr">钱包地址</string>
     <string name="wallet_msg">钱包信息</string>
     <string name="fix_success">修改成功</string>
-    <string name="fast_send_tips">开启快捷通道后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 多次重复使用达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时, 如果设置了pin保护,第一次支付仍然会检查pin)</string>
+    <string name="fast_send_tips">开启快捷支付后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 多次重复使用达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时, 如果设置了pin保护,第一次支付仍然会检查pin)</string>
     <string name="deletewallet_tips">软件钱包删除后，可通过备份恢复</string>
     <string name="updating_dialog">正在检查更新信息</string>
     <string name="send_shortcut_access">快捷支付设置</string>
