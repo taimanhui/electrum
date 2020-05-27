@@ -5,6 +5,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.common.Constant;
@@ -21,7 +25,12 @@ import com.yzq.zxinglibrary.common.Constant;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.adapter.BixinkeyBackupAdapter;
 import org.haobtc.wallet.aop.SingleClick;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +48,10 @@ public class RecoveryActivity extends BaseActivity {
     @BindView(R.id.btn_recovery)
     Button btnRecovery1;
     public final static String TAG = "org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity";
+    @BindView(R.id.backup_list)
+    RecyclerView backupList;
+    private List<String> deviceValue;
+
 
     @Override
     public int getLayoutId() {
@@ -55,7 +68,51 @@ public class RecoveryActivity extends BaseActivity {
 
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        deviceValue = new ArrayList<>();
+        SharedPreferences backup = getSharedPreferences("backup", MODE_PRIVATE);
+        Map<String, ?> backAll = backup.getAll();
+        //key
+        for (Map.Entry<String, ?> entry : backAll.entrySet()) {
+            String mapValue = (String) entry.getValue();
+            if (!TextUtils.isEmpty(mapValue)){
+                deviceValue.add(entry.getKey() + ":" + mapValue);
+            }
+        }
+        if (deviceValue != null) {
+            BixinkeyBackupAdapter backupAdapter = new BixinkeyBackupAdapter(deviceValue);
+            backupList.setAdapter(backupAdapter);
+            backupAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                @SingleClick
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    switch (view.getId()) {
+                        case R.id.relativeLayout_bixinkey:
+//                            Intent intent = new Intent(RecoveryActivity.this, BackupMessageActivity.class);
+//                            intent.putExtra("label", Strings.isNullOrEmpty(deviceValue.get(position).getLabel()) ? deviceValue.get(position).getBleName(): deviceValue.get(position).getLabel());
+//                            intent.putExtra("message",deviceValue.get(position).getBackupMessage());
+//                            intent.putExtra("tag","recovery");
+//                            startActivity(intent);
+                              editText1.getText().clear();
+                              editText1.setText(deviceValue.get(position).split(":", 3)[2]);
+                            break;
+                        case R.id.linear_delete:
+//                            String blename = deviceValue.get(position).getBleName();
+//                            edit.remove(blename);
+//                            edit.apply();
+//                            deviceValue.remove(position);
+//                            bixinkeyManagerAdapter.notifyItemChanged(position);
+//                            bixinkeyManagerAdapter.notifyDataSetChanged();
+//                            mToast(getString(R.string.delete_succse));
+                            mlToast("delete is forbidden");
+                            break;
+                    }
+                }
+            });
+        }
+    }
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.bn_scan, R.id.bn_paste, R.id.btn_recovery})
@@ -66,7 +123,7 @@ public class RecoveryActivity extends BaseActivity {
                 break;
             case R.id.bn_scan:
                 RxPermissions rxPermissions = new RxPermissions(this);
-                        rxPermissions.request(Manifest.permission.CAMERA)
+                rxPermissions.request(Manifest.permission.CAMERA)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
                                 //If you have already authorized it, you can directly jump to the QR code scanning interface

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
@@ -108,63 +109,65 @@
     </RelativeLayout>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_18"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="@dimen/dp_50"
-        android:text="@string/phone_choose"
-        android:textColor="@color/set_txt"
-        android:textSize="13sp" />
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="@dimen/dp_18"-->
+<!--        android:layout_marginStart="26dp"-->
+<!--        android:layout_marginTop="@dimen/dp_50"-->
+<!--        android:text="@string/phone_choose"-->
+<!--        android:textColor="@color/set_txt"-->
+<!--        android:textSize="13sp" />-->
 
-    <!--    <androidx.recyclerview.widget.RecyclerView-->
-    <!--        android:layout_marginStart="26dp"-->
-    <!--        tools:listitem="@layout/recovery_item"-->
-    <!--        tools:itemCount="1"-->
-    <!--        android:layout_marginTop="@dimen/dp_20"-->
-    <!--        android:layout_marginBottom="@dimen/dp_10"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content">-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/backup_list"
+            android:layout_marginStart="26dp"
+            tools:listitem="@layout/recovery_item"
+            tools:itemCount="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <!--    </androidx.recyclerview.widget.RecyclerView>-->
+        </androidx.recyclerview.widget.RecyclerView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="@dimen/dp_20"
-        android:layout_marginBottom="@dimen/dp_5">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="26dp"-->
+<!--        android:layout_marginTop="@dimen/dp_20"-->
+<!--        android:layout_marginBottom="@dimen/dp_5">-->
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="41dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+<!--        <LinearLayout-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="41dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:orientation="vertical">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/sp_16"
-                tools:text="BixinKEY-ORSPR" />
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="22dp"-->
+<!--                android:textColor="@color/text_color"-->
+<!--                android:textSize="@dimen/sp_16"-->
+<!--                tools:text="BixinKEY-ORSPR" />-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="17dp"
-                android:layout_marginTop="@dimen/dp_2"
-                android:textColor="#b1b7c5"
-                android:textSize="@dimen/sp_12"
-                tools:text="备注：家庭共用1号" />
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="17dp"-->
+<!--                android:layout_marginTop="@dimen/dp_2"-->
+<!--                android:textColor="#b1b7c5"-->
+<!--                android:textSize="@dimen/sp_12"-->
+<!--                tools:text="备注：家庭共用1号" />-->
 
-        </LinearLayout>
+<!--        </LinearLayout>-->
 
-        <ImageView
-            android:layout_width="@dimen/dp_50"
-            android:layout_height="41dp"
-            android:padding="@dimen/sp_14"
-            android:src="@drawable/jiantou" />
+<!--        <ImageView-->
+<!--            android:layout_width="@dimen/dp_50"-->
+<!--            android:layout_height="41dp"-->
+<!--            android:padding="@dimen/dp_14"-->
+<!--            android:src="@drawable/jiantou" />-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
 
 </LinearLayout>

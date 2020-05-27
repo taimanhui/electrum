@@ -33,7 +33,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
-import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -72,6 +71,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
+import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
@@ -81,8 +81,8 @@ import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExistEvent;
 import org.haobtc.wallet.event.FastPayEvent;
 import org.haobtc.wallet.event.FinishEvent;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.FixAllLabelnameEvent;
-import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.PinEvent;
@@ -90,6 +90,7 @@ import org.haobtc.wallet.event.ReadingEvent;
 import org.haobtc.wallet.event.ReceiveXpub;
 import org.haobtc.wallet.event.RefreshEvent;
 import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendSignBroadcastEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
 import org.haobtc.wallet.event.SetBluetoothEvent;
@@ -110,7 +111,6 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -664,6 +664,50 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         finish();
     }
 
+    public void onSignSuccessful(SignResultEvent resultEvent) {
+        String signedRaw = resultEvent.getSignedRaw();
+        if (!TextUtils.isEmpty(signedRaw)) {
+            EventBus.getDefault().post(new SecondEvent("finish"));
+            Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
+            intent1.putExtra("signed_raw_tx", signedRaw);
+            intent1.putExtra("isIsmine", true);
+            startActivity(intent1);
+            finish();
+        }
+    }
+
+    public void onSignSuccessful(SendSignBroadcastEvent resultEvent) {
+        EventBus.getDefault().removeStickyEvent(SendSignBroadcastEvent.class);
+        String signedTx = resultEvent.getSignTx();
+        String txHash;
+        if (!TextUtils.isEmpty(signedTx)) {
+            try {
+                Gson gson = new Gson();
+                GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(signedTx, GetnewcreatTrsactionListBean.class);
+                String tx = getnewcreatTrsactionListBean.getTx();
+                txHash = getnewcreatTrsactionListBean.getTxid();
+                //  Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
+                Daemon.commands.callAttr("broadcast_tx", tx);
+            } catch (Exception e) {
+                Toast.makeText(this, getString(R.string.broad_fail), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+                return;
+            }
+            EventBus.getDefault().post(new SecondEvent("finish"));
+            EventBus.getDefault().post(new FirstEvent("22"));
+            EventBus.getDefault().postSticky(new SecondEvent("ActivateFinish"));
+            Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
+            intent1.putExtra("listType", "history");
+            intent1.putExtra("keyValue", "B");
+            intent1.putExtra("tx_hash", txHash);
+            intent1.putExtra("isIsmine", true);
+            intent1.putExtra("unConfirmStatus", "broadcast_complete");
+            startActivity(intent1);
+            finish();
+        }
+    }
+
+
     @SingleClick
     @Override
     public void onClick(View v) {
@@ -805,16 +849,23 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
                 EventBus.getDefault().post(new SignMessageEvent(s));
             } else if (SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag)) {
+                if (runnables.size() != 0) {
+                   onSignSuccessful(new SendSignBroadcastEvent(s));
+                   return;
+                }
                 EventBus.getDefault().postSticky(new SendSignBroadcastEvent(s));
             } else {
+                if (runnables.size() != 0) {
+                    onSignSuccessful(new SignResultEvent(s));
+                    return;
+                }
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
             // runOnUiThread(runnables.get(0));
         } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
-                SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
-                features.setBackupMessage(s);
-                devices.edit().putString(features.getBleName(), features.toString()).apply();
+                SharedPreferences backup = getSharedPreferences("backup", Context.MODE_PRIVATE);
+                backup.edit().putString(features.getDeviceId(), Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() + ":" + s : features.getLabel() + ":" + s).apply();
                 Intent intent = new Intent(this, BackupMessageActivity.class);
                 intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() : features.getLabel());
                 intent.putExtra("tag", "backup");

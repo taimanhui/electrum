@@ -10,15 +10,13 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.common.base.Strings;
-import com.google.gson.Gson;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.adapter.BixinkeyBackupAdapter;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.bean.HardwareFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +35,8 @@ public class BackupRecoveryActivity extends BaseActivity {
     @BindView(R.id.reclCheckKey)
     RecyclerView reclCheckKey;
     public final static  String TAG = BackupRecoveryActivity.class.getSimpleName();
-    private List<HardwareFeatures> deviceValue;
+    private List<String> deviceValue;
     private SharedPreferences.Editor edit;
-    private SharedPreferences devices;
 
     @Override
     public int getLayoutId() {
@@ -61,40 +58,37 @@ public class BackupRecoveryActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         deviceValue = new ArrayList<>();
-        devices = getSharedPreferences("devices", MODE_PRIVATE);
-        edit = devices.edit();
-        Map<String, ?> devicesAll = devices.getAll();
+        SharedPreferences backup = getSharedPreferences("backup", MODE_PRIVATE);
+        edit = backup.edit();
+        Map<String, ?> backAll = backup.getAll();
         //key
-        for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
+        for (Map.Entry<String, ?> entry : backAll.entrySet()) {
             String mapValue = (String) entry.getValue();
-            HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
-            String backupMessage = hardwareFeatures.getBackupMessage();
-            if (!TextUtils.isEmpty(backupMessage)){
-                deviceValue.add(hardwareFeatures);
+            if (!TextUtils.isEmpty(mapValue)){
+                deviceValue.add(entry.getKey() + ":" + mapValue);
             }
         }
         if (deviceValue != null) {
-            BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
-            reclCheckKey.setAdapter(bixinkeyManagerAdapter);
-            bixinkeyManagerAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            BixinkeyBackupAdapter backupAdapter = new BixinkeyBackupAdapter(deviceValue);
+            reclCheckKey.setAdapter(backupAdapter);
+            backupAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @SingleClick
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     switch (view.getId()) {
                         case R.id.relativeLayout_bixinkey:
                             Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
-                            intent.putExtra("label", Strings.isNullOrEmpty(deviceValue.get(position).getLabel()) ? deviceValue.get(position).getBleName(): deviceValue.get(position).getLabel());
-                            intent.putExtra("message",deviceValue.get(position).getBackupMessage());
+                            intent.putExtra("label", deviceValue.get(position).split(":", 3)[1]);
+                            intent.putExtra("message",deviceValue.get(position).split(":", 3)[2]);
                             intent.putExtra("tag","recovery");
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:
-                            String blename = deviceValue.get(position).getBleName();
-                            edit.remove(blename);
-                            edit.apply();
+                            String deviceID = deviceValue.get(position).split(":", 3)[0];
+                            edit.remove(deviceID).apply();
                             deviceValue.remove(position);
-                            bixinkeyManagerAdapter.notifyItemChanged(position);
-                            bixinkeyManagerAdapter.notifyDataSetChanged();
+                            backupAdapter.notifyItemChanged(position);
+                            backupAdapter.notifyDataSetChanged();
                             mToast(getString(R.string.delete_succse));
                             break;
                     }

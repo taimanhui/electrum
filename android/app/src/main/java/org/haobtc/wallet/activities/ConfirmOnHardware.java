@@ -2,15 +2,14 @@ package org.haobtc.wallet.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,12 +36,13 @@ import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
 public class ConfirmOnHardware extends BaseActivity implements View.OnClickListener {
     public static final String TAG = "org.haobtc.wallet.activities.ConfirmOnHardware";
@@ -50,6 +50,10 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     LinearLayout linBitcoin;
     @BindView(R.id.testConfirmMsg)
     TextView testConfirmMsg;
+    @BindView(R.id.confirm_layout)
+    LinearLayout confirmLayout;
+    @BindView(R.id.confirm_on_hardware)
+    Button confirmOnHardware;
     private Dialog dialog;
     private View view;
     private ImageView imageViewCancel;
@@ -61,9 +65,8 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     TextView tetFeeNum;
     @BindView(R.id.recl_Msg)
     RecyclerView reclMsg;
-    private TextView signSuccess;
+//    private TextView signSuccess;
     private String txHash;
-    private int intentAction = 0;
     private boolean needTouch;
 
     public int getLayoutId() {
@@ -76,6 +79,9 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         findViewById(R.id.confirm_on_hardware).setOnClickListener(this);
         findViewById(R.id.img_back).setOnClickListener(this);
         EventBus.getDefault().register(this);
+        if (!isNFC) {
+            confirmLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -95,7 +101,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                     sendMoreAddressEvent.setInputAmount(amount);
                     addressEventList.add(sendMoreAddressEvent);
                 }
-                Log.i("addressEventList", "-----: " + addressEventList);
+                //    Log.i("addressEventList", "-----: " + addressEventList);
             }
             tetPayAddress.setText(payAddress);
             tetFeeNum.setText(fee);
@@ -107,6 +113,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         }
     }
 
+/*
     private void showPopupSignProcessing() {
         view = LayoutInflater.from(this).inflate(R.layout.touch_process_popupwindow, null);
         imageViewCancel = view.findViewById(R.id.cancel_touch);
@@ -120,6 +127,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         window.setWindowAnimations(R.style.AnimBottom);
         dialog.show();
     }
+*/
 
     private void showPopupSignFailed() {
         view = LayoutInflater.from(this).inflate(R.layout.signature_fail_popupwindow, null);
@@ -136,13 +144,10 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignSuccessful(SignResultEvent resultEvent) {
-        Log.i(TAG, "onSignSuccessful------------: " + resultEvent);
-        if (dialog == null) {
-            showPopupSignProcessing();
-        }
-        Drawable drawableStart = getDrawable(R.drawable.chenggong);
-        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        signSuccess.setCompoundDrawables(drawableStart, null, null, null);
+
+//        Drawable drawableStart = getDrawable(R.drawable.chenggong);
+//        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+//        signSuccess.setCompoundDrawables(drawableStart, null, null, null);
         String signedRaw = resultEvent.getSignedRaw();
         if (!TextUtils.isEmpty(signedRaw)) {
             EventBus.getDefault().post(new SecondEvent("finish"));
@@ -150,24 +155,13 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             intent1.putExtra("signed_raw_tx", signedRaw);
             intent1.putExtra("isIsmine", true);
             startActivity(intent1);
-            if (dialog != null) {
-                dialog.dismiss();
-            }
             finish();
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onSignSuccessful(SendSignBroadcastEvent resultEvent) {
-//        if (dialog == null) {
-//            showPopupSignProcessing();
-//        }
         EventBus.getDefault().removeStickyEvent(SendSignBroadcastEvent.class);
-        if (intentAction == 0) {
-            Intent intent = new Intent(this, ActivatedProcessing.class);
-            startActivity(intent);
-            finish();
-        }
         String signedTx = resultEvent.getSignTx();
         if (!TextUtils.isEmpty(signedTx)) {
             try {
@@ -175,13 +169,12 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(signedTx, GetnewcreatTrsactionListBean.class);
                 String tx = getnewcreatTrsactionListBean.getTx();
                 txHash = getnewcreatTrsactionListBean.getTxid();
-                Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
+                //  Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
                 Daemon.commands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {
                 mToast(getString(R.string.broad_fail));
                 e.printStackTrace();
             }
-
             EventBus.getDefault().post(new SecondEvent("finish"));
             EventBus.getDefault().post(new FirstEvent("22"));
             EventBus.getDefault().postSticky(new SecondEvent("ActivateFinish"));
@@ -192,23 +185,18 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             intent1.putExtra("isIsmine", true);
             intent1.putExtra("unConfirmStatus", "broadcast_complete");
             startActivity(intent1);
-            if (dialog != null) {
-                dialog.dismiss();
-            }
             finish();
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignFailed(SignFailedEvent failedEvent) {
-        if (dialog != null) {
-            dialog.dismiss();
-        }
         if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(failedEvent.getException().getMessage())) {
             mToast(getString(R.string.sign_failed_device));
         }
         showPopupSignFailed();
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onButtonRequest(ButtonRequestEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
@@ -216,29 +204,29 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             needTouch = true;
         }
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_again:
-                dialog.dismiss();
+            case R.id.img_back:
+                nfc.put("IS_CANCEL", true);
+                protocol.callAttr("notify");
                 finish();
                 break;
             case R.id.confirm_on_hardware:
                 if (isNFC && needTouch) {
                     startActivity(new Intent(this, NfcNotifyHelper.class));
                     needTouch = false;
-                } else {
-                    intentAction = 1;
-                    Intent intent = new Intent(this, ActivatedProcessing.class);
-                    startActivity(intent);
-                    finish();
                 }
-                break;
-            case R.id.img_back:
-                finish();
+//                 else {
+//                    intentAction = 1;
+//                    Intent intent = new Intent(this, ActivatedProcessing.class);
+//                    startActivity(intent);
+//                    finish();
+//                }
                 break;
             default:
-                dialog.dismiss();
         }
     }
 

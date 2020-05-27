@@ -164,6 +164,7 @@ public class ReceivedPageActivity extends BaseActivity {
             String uri = MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
             //Send broadcast notice to update database after saving picture
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(uri)));
+            return uri;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

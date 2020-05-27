@@ -343,7 +343,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
-        Log.i("strHistory", "showTrsactionlist---: " + strHistory);
+//        Log.i("strHistory", "showTrsactionlist---: " + strHistory);
         maintrsactionlistEvents.clear();
         try {
             jsonArray = new JSONArray(strHistory);

@@ -52,7 +52,6 @@ public class ActivatedProcessing extends BaseActivity {
         private String pin;
     */
     int MAX_LEVEL = 10000;
-    private String name;
     private String tag_sendxpub;
 
     public int getLayoutId() {
@@ -213,7 +212,7 @@ public class ActivatedProcessing extends BaseActivity {
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
-            finishAffinity();
+            finish();
         }
     }
 
