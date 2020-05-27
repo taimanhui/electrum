@@ -415,7 +415,7 @@
     <string name="pin_change_success">PIN码修改成功</string>
     <string name="hours_24">允许次数</string>
     <string name="no_need_PIN">不需要PIN码</string>
-    <string name="no_need_hardware">不需要硬件确认交易</string>
+    <string name="no_need_hardware">不需要在硬件按键确认</string>
     <string name="set_to_Bixinkey">设置到BixinKey</string>
     <string name="please_input_walletname">请输入钱包名称</string>
     <string name="import_wallet">导入钱包</string>
@@ -740,9 +740,9 @@
     <string name="wallet_addr">钱包地址</string>
     <string name="wallet_msg">钱包信息</string>
     <string name="fix_success">修改成功</string>
-    <string name="fast_send_tips">开启快捷通道后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 重复使用多次达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时候不允许关闭pin检查)</string>
+    <string name="fast_send_tips">开启快捷通道后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 多次重复使用达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时, 如果设置了pin保护,第一次支付仍然会检查pin)</string>
     <string name="deletewallet_tips">软件钱包删除后，可通过备份恢复</string>
     <string name="updating_dialog">正在检查更新信息</string>
-    <string name="send_shortcut_access">快捷发币设置</string>
+    <string name="send_shortcut_access">快捷支付设置</string>
 
 </resources>
