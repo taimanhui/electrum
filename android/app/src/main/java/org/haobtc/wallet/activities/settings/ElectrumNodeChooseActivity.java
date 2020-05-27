@@ -147,7 +147,6 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                         mToast(getString(R.string.please_inputPort));
                         return;
                     }
-
                     try {
                         Daemon.commands.callAttr("set_server", edit_ip.getText().toString(), edit_port.getText().toString());
                     } catch (Exception e) {
@@ -167,10 +166,6 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     alertDialog.dismiss();
                 });
                 alertDialog.show();
-                WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
-                lp.width = 950;
-                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-                alertDialog.getWindow().setAttributes(lp);
                 break;
         }
     }

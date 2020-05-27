@@ -268,7 +268,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         PyObject mktx;
         switch (view.getId()) {
             case R.id.lin_chooseAddress:
-                Log.i("wallet_type_to_sign", "onItemClick: "+wallet_type_to_sign);
+                Log.i("wallet_type_to_sign", "onItemClick: " + wallet_type_to_sign);
                 //check wallet
                 showDialogs(SendOne2ManyMainPageActivity.this, R.layout.select_send_wallet_popwindow);
                 break;
@@ -336,15 +336,15 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                             startActivity(intent2);
                         } else {
                             EventBus.getDefault().post(new SecondEvent("finish"));
-                            if (!TextUtils.isEmpty(hideRefresh)) {
-                                EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
+//                            if (!TextUtils.isEmpty(hideRefresh)) {
+//                                EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
+//                            } else {
+                            if (onlickName.equals(wallet_name)) {
+                                EventBus.getDefault().post(new FirstEvent("22"));
                             } else {
-                                if (onlickName.equals(wallet_name)) {
-                                    EventBus.getDefault().post(new FirstEvent("22"));
-                                } else {
-                                    EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
-                                }
+                                EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                             }
+//                            }
                             Intent intent = new Intent(SendOne2ManyMainPageActivity.this, TransactionDetailsActivity.class);
                             intent.putExtra("tx_hash", rowtx);
                             intent.putExtra("keyValue", "A");
@@ -388,7 +388,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
             String strScrollPass = preferences.getString(wallet_name, "");
             boolean haveCreateNopass = preferences.getBoolean("haveCreateNopass", false);
-            if (!TextUtils.isEmpty(strScrollPass)){
+            if (!TextUtils.isEmpty(strScrollPass)) {
                 try {
                     Daemon.commands.callAttr("load_wallet", wallet_name);
                     Daemon.commands.callAttr("select_wallet", wallet_name);
@@ -399,8 +399,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 walletName.setText(wallet_name);
                 dialogBtom.cancel();
                 mGeneratecode();
-            }else{
-                if (haveCreateNopass){
+            } else {
+                if (haveCreateNopass) {
                     try {
                         Daemon.commands.callAttr("load_wallet", wallet_name);
                         Daemon.commands.callAttr("select_wallet", wallet_name);
@@ -411,7 +411,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                     walletName.setText(wallet_name);
                     dialogBtom.cancel();
                     mGeneratecode();
-                }else{
+                } else {
                     //When no password has been entered for switching Wallet
                     inputWalletPass();
                 }

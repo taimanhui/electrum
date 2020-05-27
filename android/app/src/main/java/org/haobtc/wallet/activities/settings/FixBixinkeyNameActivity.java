@@ -40,7 +40,6 @@ public class FixBixinkeyNameActivity extends BaseActivity {
     TextView number;
     @BindView(R.id.btn_next)
     Button btnNext;
-    private String oldBleName;
 
     @Override
     public int getLayoutId() {
@@ -51,7 +50,6 @@ public class FixBixinkeyNameActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        oldBleName = getIntent().getStringExtra("oldBleName");
     }
 
     @Override
@@ -102,7 +100,6 @@ public class FixBixinkeyNameActivity extends BaseActivity {
                 CommunicationModeSelector.runnables.add(null);
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
-                intent.putExtra("oldBleName",oldBleName);
                 intent.putExtra("fixName", nameEdit.getText().toString());
                 startActivity(intent);
                 break;

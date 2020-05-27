@@ -63,13 +63,17 @@ public class ConfidentialPaymentSettings extends BaseActivity {
         payUnit.setText(base_unit);
         if (boPIN_set) {
             switchNoPin.setChecked(true);
+            noPIN = "true";
         } else {
             switchNoPin.setChecked(false);
+            noPIN = "false";
         }
         if (noHard_set) {
             switchNoHard.setChecked(true);
+            noHard = "true";
         } else {
             switchNoHard.setChecked(false);
+            noHard = "false";
         }
         TextWatcher1 textWatcher1 = new TextWatcher1();
         unclassifiedPay.addTextChangedListener(textWatcher1);

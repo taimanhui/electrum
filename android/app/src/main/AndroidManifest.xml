@@ -118,7 +118,6 @@
         <activity android:name=".activities.settings.VersionUpgradeActivity"/>
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.TransactionRecordsActivity" />
-        <activity android:name=".activities.HardwareInfoActivity" />
         <activity android:name=".activities.LanguageSettingActivity" />
         <activity android:name=".activities.ServerSettingActivity" />
         <activity android:name=".activities.TransactionsSettingActivity" />

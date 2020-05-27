@@ -523,7 +523,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
                 //fix bixinkey name
                 String fixNamed = getIntent().getStringExtra("fixName");
-                String oldBleName = getIntent().getStringExtra("oldBleName");
+                String oldBleName = features.getBleName();
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
                 Map<String, ?> devicesAll = devices.getAll();
                 //key
@@ -547,7 +547,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 int moneyLimit = Integer.parseInt(limit);
                 int money_times = Integer.parseInt(times);
                 try {
-                    PyObject pyObject = Daemon.commands.callAttr("apply_setting", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, new Kwarg("fastpay_money_limit", moneyLimit), new Kwarg("fastpay_times", money_times), "true".equals(noPIN) ? new Kwarg("fastpay_pin", true) : new Kwarg("fastpay_pin", false), "true".equals(noHard) ? new Kwarg("fastpay_confirm", true) : new Kwarg("fastpay_confirm", false));
+                    PyObject pyObject = Daemon.commands.callAttr("apply_setting", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, new Kwarg("fastpay_money_limit", moneyLimit), new Kwarg("fastpay_times", money_times), "true".equals(noPIN) ? new Kwarg("fastpay_pin", false) : new Kwarg("fastpay_pin", true), "true".equals(noHard) ? new Kwarg("fastpay_confirm", true) : new Kwarg("fastpay_confirm", false));
                     assert noPIN != null;
                     if (noPIN.equals("true")) {
                         getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", true).apply();
@@ -781,7 +781,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //        if (hasWindowFocus()) {
         if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
             showErrorDialog(0, R.string.pin_wrong);
-        } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage())) {
+        } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage()) || e.getMessage().contains("(7, 'PIN invalid')")) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);
         } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);

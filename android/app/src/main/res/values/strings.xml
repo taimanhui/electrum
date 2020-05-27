@@ -16,7 +16,7 @@
     <string name="japanese">Japanese</string>
     <string name="arrows">Left arrow</string>
     <string name="hardware_i">Hardware information</string>
-    <string name="seq">Sequence number</string>
+    <string name="seq">Device ID</string>
     <string name="hardware">Firmware version</string>
     <string name="hardware_v">Hardware version (upgrade)</string>
     <string name="address">Address</string>
@@ -385,7 +385,7 @@
     <string name="lnbcdfd4fdsk">aksdhkjdakjldkajsliieihdihsdkjsjda</string>
     <string name="_BTC">BTC</string>
     <string name="mbtc_0_001_btc">mBTC=0.001BTC</string>
-    <string name="bits_btc">bits=0.0000001BTC</string>
+    <string name="bits_btc">bits=0.000001BTC</string>
     <string name="sat_0_00000001_btc">sat=0.00000001BTC</string>
     <string name="begin_num1">1</string>
     <string name="text_5">5</string>
@@ -491,7 +491,6 @@
     <string name="no_need_PIN">No need for PIN code</string>
     <string name="no_need_hardware">No need for confirmation on device</string>
     <string name="set_to_Bixinkey">Set to BixinKey</string>
-    <string name="send_shortcut_access">Shortcut to send</string>
     <string name="please_input_walletname">Enter wallet name</string>
     <string name="import_wallet">Import wallet</string>
     <string name="_0_0">0/0</string>
@@ -773,5 +772,6 @@
     <string name="fast_send_tips">After the channel is opened, the accumulated micro amount of issuing currency exceeds the limit within 24 hours without verification of pin code and BixinKey</string>
     <string name="deletewallet_tips">Software wallet can be recovered through backup</string>
     <string name="updating_dialog">Checking for updates</string>
+    <string name="send_shortcut_access">Express currency setting</string>
 
 </resources>

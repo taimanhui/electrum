@@ -383,6 +383,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
         imgProgree1.setVisibility(View.GONE);
         imgProgree2.setVisibility(View.VISIBLE);
         imgProgree3.setVisibility(View.GONE);
+        reclBinxinKey.setNestedScrollingEnabled(false);
         reclBinxinKey.setVisibility(View.VISIBLE);
         bnAddKey.setVisibility(View.VISIBLE);
         relTwoNext1.setVisibility(View.VISIBLE);

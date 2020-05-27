@@ -183,32 +183,20 @@
                     android:layout_height="59.5dp">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:text="@string/nopass_pay"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tet_noPasspay"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/dp_16"
                         android:layout_weight="1"
-                        android:gravity="center_vertical|end"
-                        android:singleLine="true"
-                        android:text="@string/opened"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_13" />
+                        android:gravity="center_vertical"
+                        android:text="@string/nopass_pay"
+                        android:textColor="@color/text_color"
+                        android:textSize="15sp" />
 
                     <ImageView
                         android:layout_width="37dp"
                         android:layout_height="match_parent"
                         android:padding="15dp"
                         android:src="@drawable/jiantou" />
-
 
                 </LinearLayout>
 

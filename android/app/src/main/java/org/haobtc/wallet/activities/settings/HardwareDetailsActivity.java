@@ -43,8 +43,6 @@ public class HardwareDetailsActivity extends BaseActivity {
     LinearLayout linOnckTwo;
     @BindView(R.id.change_pin)
     LinearLayout changePin;
-    @BindView(R.id.tet_noPasspay)
-    TextView tetNoPasspay;
     @BindView(R.id.lin_OnckFour)
     LinearLayout linOnckFour;
     @BindView(R.id.wipe_device)

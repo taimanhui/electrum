@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -56,6 +57,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private String strCNY;
     private String substring;
     private TextView walletCard;
+    private LinearLayout linearSend;
+    private LinearLayout linearReceive;
+    private LinearLayout linearSign;
 
     public WheelViewpagerFragment() {
 
@@ -89,6 +93,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         tetCny = view.findViewById(R.id.tet_Cny);
         conlayBback = view.findViewById(R.id.conlay_back);
         walletCard = view.findViewById(R.id.wallet_card_tv3);
+        linearSend = view.findViewById(R.id.linear_send);
+        linearReceive = view.findViewById(R.id.linear_receive);
+        linearSign = view.findViewById(R.id.linear_sign);
         init();
         initdata();
 
@@ -96,9 +103,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     }
 
     private void init() {
-        btnLeft.setOnClickListener(this);
-        btncenetr.setOnClickListener(this);
-        btnRight.setOnClickListener(this);
+        linearSend.setOnClickListener(this);
+        linearReceive.setOnClickListener(this);
+        linearSign.setOnClickListener(this);
         conlayBback.setOnClickListener(this);
         wallet_card_name.setText(name);
         if (getActivity() != null) {
@@ -214,7 +221,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 intent.putExtra("wallet_name", name);
                 startActivity(intent);
                 break;
-            case R.id.wallet_card_bn1:
+            case R.id.linear_send:
                 edit.putString("wallet_type_to_sign", personce);
                 edit.apply();
                 Intent intent1 = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
@@ -224,11 +231,11 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 intent1.putExtra("strNowCny", strCNY);
                 startActivity(intent1);
                 break;
-            case R.id.wallet_card_bn2:
+            case R.id.linear_receive:
                 Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
                 startActivity(intent2);
                 break;
-            case R.id.wallet_card_bn3:
+            case R.id.linear_sign:
                 Intent intent3 = new Intent(getActivity(), SignActivity.class);
                 intent3.putExtra("personceType", personce);
                 startActivity(intent3);

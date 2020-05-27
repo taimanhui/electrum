@@ -16,7 +16,7 @@
     <string name="japanese">日语</string>
     <string name="arrows">左箭头</string>
     <string name="hardware_i">硬件信息</string>
-    <string name="seq">序列号</string>
+    <string name="seq">设备ID</string>
     <string name="hardware">固件版本</string>
     <string name="hardware_v">固件版本(升级)</string>
     <string name="address">地址</string>
@@ -417,7 +417,6 @@
     <string name="no_need_PIN">不需要PIN码</string>
     <string name="no_need_hardware">不需要硬件确认交易</string>
     <string name="set_to_Bixinkey">设置到BixinKey</string>
-    <string name="send_shortcut_access">发币快捷通道</string>
     <string name="please_input_walletname">请输入钱包名称</string>
     <string name="import_wallet">导入钱包</string>
     <string name="Cancelled">已取消</string>
@@ -744,6 +743,6 @@
     <string name="fast_send_tips">开启快捷通道后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 重复使用多次达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时候不允许关闭pin检查)</string>
     <string name="deletewallet_tips">软件钱包删除后，可通过备份恢复</string>
     <string name="updating_dialog">正在检查更新信息</string>
-
+    <string name="send_shortcut_access">快捷发币设置</string>
 
 </resources>

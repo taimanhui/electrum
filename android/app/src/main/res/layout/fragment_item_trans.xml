@@ -92,6 +92,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/tet_zt"
+                        android:maxLines="1"
                         android:layout_alignParentEnd="true"
                         android:fontFamily="sans-serif-medium"
                         android:layout_marginTop="@dimen/dp_5"

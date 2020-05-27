@@ -693,10 +693,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         });
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
-        WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
-        lp.width = 900;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        alertDialog.getWindow().setAttributes(lp);
     }
 
     /**

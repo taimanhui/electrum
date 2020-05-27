@@ -299,10 +299,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             alertDialog.dismiss();
         });
         alertDialog.show();
-        WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
-        lp.width = 950;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        alertDialog.getWindow().setAttributes(lp);
 
     }
 
@@ -343,10 +339,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             alertDialog.dismiss();
         });
         alertDialog.show();
-        WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
-        lp.width = 950;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        alertDialog.getWindow().setAttributes(lp);
     }
 
     private Runnable runnable = this::gotoConfirmOnHardware;

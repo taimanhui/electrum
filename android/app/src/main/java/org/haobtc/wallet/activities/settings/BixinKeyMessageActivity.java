@@ -64,9 +64,7 @@ public class BixinKeyMessageActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.linear_fix_key:
-                Intent intent = new Intent(BixinKeyMessageActivity.this, FixBixinkeyNameActivity.class);
-                intent.putExtra("oldBleName",bleName);
-                startActivity(intent);
+                mIntent(FixBixinkeyNameActivity.class);
                 break;
         }
     }

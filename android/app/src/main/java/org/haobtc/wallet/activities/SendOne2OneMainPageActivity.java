@@ -584,7 +584,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             rowtx = getAddressBean.getTx();
             if (!TextUtils.isEmpty(rowtx)) {
-                if (wallet_type_to_sign.contains("1-")&&TextUtils.isEmpty(hideRefresh)) {
+                if (wallet_type_to_sign.contains("1-") && TextUtils.isEmpty(hideRefresh)) {
                     try {
                         PyObject get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
                         gson = new Gson();
@@ -608,15 +608,15 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     startActivity(intent1);
 
                 } else {
-                    if (!TextUtils.isEmpty(hideRefresh)) {
-                        EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
+//                    if (!TextUtils.isEmpty(hideRefresh)) {
+//                        EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
+//                    } else {
+                    if (onlickName.equals(wallet_name)) {
+                        EventBus.getDefault().post(new FirstEvent("22"));
                     } else {
-                        if (onlickName.equals(wallet_name)) {
-                            EventBus.getDefault().post(new FirstEvent("22"));
-                        } else {
-                            EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
-                        }
+                        EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                     }
+//                    }
                     Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                     intent.putExtra("tx_hash", rowtx);
                     intent.putExtra("keyValue", "A");

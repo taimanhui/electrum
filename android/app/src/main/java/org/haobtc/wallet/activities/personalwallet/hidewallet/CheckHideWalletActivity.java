@@ -247,29 +247,20 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                                 is_mine = jsonObject.getBoolean("is_mine");
                                 date = jsonObject.getString("date");
                                 Intent intent = new Intent(CheckHideWalletActivity.this, TransactionDetailsActivity.class);
-                                if (typeDele.equals("tx")) {
+                                intent.putExtra("hideWallet", "hideWallet");
+                                intent.putExtra("keyValue", "B");
+                                intent.putExtra("dataTime", date);
+                                intent.putExtra("isIsmine", is_mine);
+                                intent.putExtra("tx_hash", tx_hash1);
+                                intent.putExtra("strwalletType", "1-1");
+                                intent.putExtra("listType", typeDele);
+                                if ("tx".equals(typeDele)) {
                                     String tx_Onclick = jsonObject.getString("tx");
-                                    intent.putExtra("keyValue", "B");
-                                    intent.putExtra("tx_hash", tx_hash1);
-                                    intent.putExtra("isIsmine", is_mine);
-                                    intent.putExtra("strwalletType", "1-1");
-                                    intent.putExtra("listType", typeDele);
-                                    intent.putExtra("dataTime", date);
-                                    intent.putExtra("hideWallet", "hideWallet");
                                     intent.putExtra("txCreatTrsaction", tx_Onclick);
                                     startActivity(intent);
-
                                 } else {
-                                    intent.putExtra("tx_hash", tx_hash1);
-                                    intent.putExtra("isIsmine", is_mine);
-                                    intent.putExtra("dataTime", date);
-                                    intent.putExtra("strwalletType", "1-1");
-                                    intent.putExtra("keyValue", "B");
-                                    intent.putExtra("hideWallet", "hideWallet");
-                                    intent.putExtra("listType", typeDele);
                                     startActivity(intent);
                                 }
-
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -363,6 +354,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
+        Log.i("JXMmsgVote", "event: " + msgVote);
         if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
             //Rolling Wallet
             try {
