@@ -574,7 +574,7 @@
     <string name="broad_fail">广播失败</string>
     <string name="is_new">当前已是最新版本</string>
     <string name="un_bonded">设备未绑定</string>
-    <string name="if_set_PIN">当前key没有备份</string>
+    <string name="if_set_PIN">是否马上备份钱包? 稍后也可去设置页备份</string>
     <string name="not_yet">暂不</string>
     <string name="goto_set">前去备份</string>
     <string name="some_wallet_existence">部分钱包已存在，导入完成</string>
