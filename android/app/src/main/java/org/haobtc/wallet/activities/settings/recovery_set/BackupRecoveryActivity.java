@@ -11,12 +11,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.adapter.BixinkeyBackupAdapter;
 import org.haobtc.wallet.adapter.BixinkeyManagerAdapter;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.ExistEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,7 @@ public class BackupRecoveryActivity extends BaseActivity {
     public final static  String TAG = BackupRecoveryActivity.class.getSimpleName();
     private List<String> deviceValue;
     private SharedPreferences.Editor edit;
+    private String activeSetPIN;
 
     @Override
     public int getLayoutId() {
@@ -46,7 +50,14 @@ public class BackupRecoveryActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-
+        activeSetPIN = getIntent().getStringExtra("ActiveSetPIN");
+//        if ("ActiveSetPIN".equals(activeSetPIN)) {
+//            EventBus.getDefault().post(new ExistEvent());
+//            Intent intent1 = new Intent(this, CommunicationModeSelector.class);
+//            intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent1.putExtra("tag", TAG_CHANGE_PIN);
+//            startActivity(intent1);
+//        }
     }
 
     @Override
@@ -102,7 +113,11 @@ public class BackupRecoveryActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                finish();
+                if ("ActiveSetPIN".equals(activeSetPIN)) {
+                    mIntent(MainActivity.class);
+                } else {
+                    finish();
+                }
                 break;
             case R.id.tet_keyName:
                 Intent intent = new Intent(this, CommunicationModeSelector.class);

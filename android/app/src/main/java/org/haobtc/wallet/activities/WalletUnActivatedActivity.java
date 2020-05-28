@@ -27,9 +27,6 @@ public class WalletUnActivatedActivity extends BaseActivity {
     @BindView(R.id.use_se)
     CheckBox useSe;
     private String tag_xpub = "";
-    private SharedPreferences.Editor edit;
-    private boolean active_set_pin;
-
 
     @Override
     public int getLayoutId() {
@@ -38,9 +35,6 @@ public class WalletUnActivatedActivity extends BaseActivity {
 
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
-        active_set_pin = preferences.getBoolean("Active_set_PIN", false);
         Intent intent = getIntent();
         tag_xpub = intent.getStringExtra("tag_Xpub");
     }
@@ -59,10 +53,6 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.button_activate:
-                if (!active_set_pin) {
-                    edit.putBoolean("Active_set_PIN", true);
-                    edit.apply();
-                }
                 Intent intent = new Intent(this, ActivatedProcessing.class);
                 intent.putExtra("tag_xpub", tag_xpub);
                 intent.putExtra("use_se", useSe.isChecked());

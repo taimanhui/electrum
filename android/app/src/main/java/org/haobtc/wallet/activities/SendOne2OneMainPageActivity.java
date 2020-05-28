@@ -608,20 +608,17 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     startActivity(intent1);
 
                 } else {
-//                    if (!TextUtils.isEmpty(hideRefresh)) {
-//                        EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
-//                    } else {
                     if (onlickName.equals(wallet_name)) {
                         EventBus.getDefault().post(new FirstEvent("22"));
                     } else {
                         EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                     }
-//                    }
                     Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                     intent.putExtra("tx_hash", rowtx);
                     intent.putExtra("keyValue", "A");
                     intent.putExtra("isIsmine", true);
                     intent.putExtra("strwalletType", waletType);
+                    intent.putExtra("hideWallet", "hideWallet");
                     intent.putExtra("txCreatTrsaction", rowtx);
                     startActivity(intent);
                     finish();

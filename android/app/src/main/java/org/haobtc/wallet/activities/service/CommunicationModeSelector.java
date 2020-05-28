@@ -850,8 +850,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 EventBus.getDefault().post(new SignMessageEvent(s));
             } else if (SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag)) {
                 if (runnables.size() != 0) {
-                   onSignSuccessful(new SendSignBroadcastEvent(s));
-                   return;
+                    onSignSuccessful(new SendSignBroadcastEvent(s));
+                    return;
                 }
                 EventBus.getDefault().postSticky(new SendSignBroadcastEvent(s));
             } else {

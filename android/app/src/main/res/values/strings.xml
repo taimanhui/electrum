@@ -603,9 +603,9 @@
     <string name="broad_fail">Broadcast failed</string>
     <string name="is_new">Is currently the latest version</string>
     <string name="un_bonded">Device not bound</string>
-    <string name="if_set_PIN">Set pin?</string>
+    <string name="if_set_PIN">The current key is not backed up</string>
     <string name="not_yet">Not yet</string>
-    <string name="goto_set">To set</string>
+    <string name="goto_set">To backup</string>
     <string name="some_wallet_existence">Some wallets already exist, import completed</string>
     <string name="get_xpub">View BixinKey extended public key</string>
     <string name="check_xpub">View extended public key</string>

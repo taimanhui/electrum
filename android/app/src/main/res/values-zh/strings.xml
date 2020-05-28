@@ -574,9 +574,9 @@
     <string name="broad_fail">广播失败</string>
     <string name="is_new">当前已是最新版本</string>
     <string name="un_bonded">设备未绑定</string>
-    <string name="if_set_PIN">是否设置PIN码？</string>
+    <string name="if_set_PIN">当前key没有备份</string>
     <string name="not_yet">暂不</string>
-    <string name="goto_set">去设置</string>
+    <string name="goto_set">前去备份</string>
     <string name="some_wallet_existence">部分钱包已存在，导入完成</string>
     <string name="get_xpub">查看BiXinKEY扩展公钥</string>
     <string name="check_xpub">查看扩展公钥</string>

@@ -355,7 +355,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
         Log.i("JXMmsgVote", "event: " + msgVote);
-        if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2) {
+        if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2 && !"finish".equals(msgVote)) {
             //Rolling Wallet
             try {
                 JSONObject jsonObject = new JSONObject(msgVote);

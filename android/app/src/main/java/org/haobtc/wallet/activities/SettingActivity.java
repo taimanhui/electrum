@@ -82,7 +82,6 @@ public class SettingActivity extends BaseActivity {
     private boolean bluetoothStatus;
     private SharedPreferences preferences;
     public String pin = "";
-    private String activeSetPIN;
     private boolean isChangePIN;
 
     @Override
@@ -100,14 +99,6 @@ public class SettingActivity extends BaseActivity {
             bluetoothStatusText.setText(getString(R.string.close));
         } else {
             bluetoothStatusText.setText(getString(R.string.open));
-        }
-        activeSetPIN = getIntent().getStringExtra("ActiveSetPIN");
-        if ("ActiveSetPIN".equals(activeSetPIN)) {
-            EventBus.getDefault().post(new ExistEvent());
-            Intent intent1 = new Intent(this, CommunicationModeSelector.class);
-            intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent1.putExtra("tag", TAG_CHANGE_PIN);
-            startActivity(intent1);
         }
     }
 
@@ -150,11 +141,7 @@ public class SettingActivity extends BaseActivity {
                 mIntent(AboutActivity.class);
                 break;
             case R.id.img_back:
-                if ("ActiveSetPIN".equals(activeSetPIN)) {
-                    mIntent(MainActivity.class);
-                } else {
-                    finish();
-                }
+                finish();
                 break;
             case R.id.tet_Faru:
                 mIntent(CurrencyActivity.class);
@@ -216,6 +203,7 @@ public class SettingActivity extends BaseActivity {
         startActivity(intentCon);
 
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isNFC && isChangePIN) {
@@ -223,6 +211,7 @@ public class SettingActivity extends BaseActivity {
             startActivity(new Intent(this, NfcNotifyHelper.class));
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
