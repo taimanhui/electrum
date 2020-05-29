@@ -316,7 +316,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             if (strFee.contains("sat/byte")) {
                 strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
-                String strMax = strFeeamont.replaceAll(" ", "");
+                String strMaxTemp = strFeeamont.replaceAll(" ", "");
+                String strMax = strMaxTemp.split("\\.", 2)[0];
                 intmaxFee = Integer.parseInt(strMax);//fee
                 seekBar.setMax(intmaxFee * 2);
                 seekBar.setProgress(intmaxFee);

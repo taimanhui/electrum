@@ -195,7 +195,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             if (strFee.contains("sat/byte")) {
                 strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
-                String strMax = strFeeamont.replaceAll(" ", "");
+                String strMax = strFeeamont.replaceAll(" ", "").split("\\.", 2)[0];
                 textBlocks.setText(strFeemontAs);
                 intmaxFee = Integer.parseInt(strMax);
                 seedBar.setMax(intmaxFee * 2);

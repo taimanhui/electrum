@@ -51,7 +51,7 @@ public class RecoveryActivity extends BaseActivity {
     @BindView(R.id.backup_list)
     RecyclerView backupList;
     private List<String> deviceValue;
-
+    private boolean isScan;
 
     @Override
     public int getLayoutId() {
@@ -161,6 +161,7 @@ public class RecoveryActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
+                isScan = true;
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 editText1.setText(content);
             }
@@ -170,6 +171,9 @@ public class RecoveryActivity extends BaseActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        finish();
+        if (!isScan) {
+            finish();
+        }
     }
 }
+
