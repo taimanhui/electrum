@@ -27,11 +27,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.dfu.service.DfuService;
-import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
@@ -63,7 +61,6 @@ import okhttp3.Response;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.futureTask;
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.way;
 
 
@@ -132,6 +129,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                             break;
                         case 2:
                             assert newNrfVersion != null;
+                            System.out.println("=======" + newNrfVersion + "========" + nrfVersion);
                             if (newNrfVersion.compareTo(nrfVersion) <= 0) {
                                 isNew = true;
                                 cancel(true);
@@ -319,13 +317,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         showPromptMessage(R.string.update_failed);
         finish();
     }
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onButtonRequest(ButtonRequestEvent event) {
-        EventBus.getDefault().removeStickyEvent(event);
-        if (isNFC) {
-           startActivity(new Intent(this, NfcNotifyHelper.class));
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+//    public void onButtonRequest(ButtonRequestEvent event) {
+//        EventBus.getDefault().removeStickyEvent(event);
+//        if (isNFC) {
+//           startActivity(new Intent(this, NfcNotifyHelper.class));
+//        }
+//    }
     @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {

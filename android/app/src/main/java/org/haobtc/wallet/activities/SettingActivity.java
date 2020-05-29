@@ -25,6 +25,7 @@ import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
 import org.haobtc.wallet.activities.settings.BlueToothStatusActivity;
 import org.haobtc.wallet.activities.settings.CurrencyActivity;
+import org.haobtc.wallet.activities.settings.SelectorActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.aop.SingleClick;
@@ -79,8 +80,6 @@ public class SettingActivity extends BaseActivity {
     LinearLayout hardwareUpdate;
     @BindView(R.id.check_xpub)
     TextView checkXpub;
-    private boolean bluetoothStatus;
-    private SharedPreferences preferences;
     public String pin = "";
     private boolean isChangePIN;
 
@@ -93,13 +92,6 @@ public class SettingActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);
-        if (!bluetoothStatus) {
-            bluetoothStatusText.setText(getString(R.string.close));
-        } else {
-            bluetoothStatusText.setText(getString(R.string.open));
-        }
     }
 
     @Override
@@ -147,7 +139,7 @@ public class SettingActivity extends BaseActivity {
                 mIntent(CurrencyActivity.class);
                 break;
             case R.id.bluetooth_set:
-                mIntent(BlueToothStatusActivity.class);
+                mIntent(SelectorActivity.class);
                 break;
             case R.id.hardware_update:
                 getUpdateInfo();
@@ -212,18 +204,6 @@ public class SettingActivity extends BaseActivity {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(SecondEvent updataHint) {
-        String msgVote = updataHint.getMsg();
-        if (msgVote.equals("bluetooth_status")) {
-            bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);
-            if (!bluetoothStatus) {
-                bluetoothStatusText.setText(getString(R.string.close));
-            } else {
-                bluetoothStatusText.setText(getString(R.string.open));
-            }
-        }
-    }
 
     @Override
     protected void onDestroy() {
