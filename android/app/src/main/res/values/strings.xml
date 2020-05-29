@@ -774,5 +774,7 @@
     <string name="updating_dialog">Checking for updates</string>
     <string name="send_shortcut_access">Quick payment settings</string>
     <string name="limit_input_wrong">Limit input error</string>
+    <string name="communication_way">连接方式</string>
+    <string name="ble">Bluetooth</string>
 
 </resources>

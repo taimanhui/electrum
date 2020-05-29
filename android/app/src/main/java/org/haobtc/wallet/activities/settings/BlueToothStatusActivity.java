@@ -50,10 +50,8 @@ public class BlueToothStatusActivity extends BaseActivity implements CompoundBut
     @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
+        if (view.getId() == R.id.img_back) {
+            finish();
         }
     }
 

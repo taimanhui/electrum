@@ -53,7 +53,6 @@ public class HideWalletSetPassActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
 
     }
 
@@ -111,13 +110,15 @@ public class HideWalletSetPassActivity extends BaseActivity {
             String message = e.getMessage();
             if ("BaseException: file already exists at path".equals(message)) {
                 Toast.makeText(this, getString(R.string.changewalletname), Toast.LENGTH_SHORT).show();
-            } else if (message.contains("The same xpubs have create wallet")) {
-                String haveWalletName = message.substring(message.indexOf("name=") + 5);
-                Toast.makeText(this, getString(R.string.xpub_have_wallet) + haveWalletName, Toast.LENGTH_SHORT).show();
+            } else {
+                assert message != null;
+                if (message.contains("The same xpubs have create wallet")) {
+                    String haveWalletName = message.substring(message.indexOf("name=") + 5);
+                    Toast.makeText(this, getString(R.string.xpub_have_wallet) + haveWalletName, Toast.LENGTH_SHORT).show();
+                }
             }
             return;
         }
-        // todo: 弹窗关闭
         Intent intent = new Intent(this, CheckHideWalletActivity.class);
         startActivity(intent);
         finish();
@@ -125,6 +126,12 @@ public class HideWalletSetPassActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(HideInputPassFinishEvent event) {
+        finish();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
         finish();
     }
 }

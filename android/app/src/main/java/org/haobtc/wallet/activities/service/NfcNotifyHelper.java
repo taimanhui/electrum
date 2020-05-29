@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities.service;
 
 import android.content.Intent;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -26,6 +27,7 @@ import org.haobtc.wallet.utils.NfcUtils;
 import java.util.Objects;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
 //
@@ -73,6 +75,8 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            nfcHandler.put("device", tags);
             if ("PIN".equals(tag)) {
                 String pin = getIntent().getStringExtra("pin");
                 EventBus.getDefault().post(new PinEvent(pin, ""));
@@ -82,7 +86,6 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
             }
             protocol.callAttr("notify");
             EventBus.getDefault().post(new FinishEvent());
-//            finish();
         }
     }
 
@@ -110,8 +113,6 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-//        nfc.put("IS_CANCEL", true);
-//        protocol.callAttr("notify");
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(FinishEvent event) {

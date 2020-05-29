@@ -45,7 +45,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.SendOne2ManyMainPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
-import org.haobtc.wallet.activities.SetNameActivity;
 import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.VerificationKEYActivity;
@@ -156,6 +155,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     private RxPermissions permissions;
     public static final String COMMUNICATION_MODE_BLE = "bluetooth";
     public static final String COMMUNICATION_MODE_NFC = "nfc";
+    public static volatile String way;
     private CustomerUsbManager usbManager;
     private UsbDevice device;
     private HardwareFeatures features;
@@ -169,21 +169,24 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         ImageView imageViewCancel;
         EventBus.getDefault().post(new ExistEvent());
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        boolean bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);
+//        boolean bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);
+        way = preferences.getString("way", COMMUNICATION_MODE_NFC);
+        isNFC = COMMUNICATION_MODE_NFC.equals(way);
         ImageView imageView = findViewById(R.id.touch_nfc);
         TextView textView = findViewById(R.id.text_prompt);
         FrameLayout frameLayout = findViewById(R.id.ble_device);
         RadioGroup radioGroup = findViewById(R.id.radio_group);
         RadioButton radioBle = findViewById(R.id.radio_ble);
+        RadioButton radioNfc = findViewById(R.id.radio_nfc);
         imageViewCancel = findViewById(R.id.img_cancel);
         TextView textViewInputByHand = findViewById(R.id.text_input_publickey_by_hand);
         relativeLayout = findViewById(R.id.input_layout);
         textViewInputByHand.setOnClickListener(this);
         imageViewCancel.setOnClickListener(this);
         tag = getIntent().getStringExtra("tag");
-        if (!bluetoothStatus || SetNameActivity.TAG.equals(tag)) {
-            radioBle.setVisibility(View.GONE);
-        }
+//        if (!bluetoothStatus || SetNameActivity.TAG.equals(tag)) {
+//            radioBle.setVisibility(View.GONE);
+//        }
         nfc = Global.py.getModule("trezorlib.transport.nfc");
         ble = Global.py.getModule("trezorlib.transport.bluetooth");
         usb = Global.py.getModule("trezorlib.transport.android_usb");
@@ -203,19 +206,47 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
         adapter = new BleDeviceRecyclerViewAdapter(this);
         bleFragment = new BluetoothFragment(adapter);
-        // usb init
-        usbManager = CustomerUsbManager.getInstance(this);
-        usbManager.register(this);
-        device = usbManager.findBixinKEYDevice();
-        if (device != null) {
+        if (COMMUNICATION_MODE_NFC.equals(way)) {
+            NfcUtils.nfc(this, true);
+            radioBle.setVisibility(View.GONE);
+        } else if ("ble".equals(way)) {
+            mBle = Ble.getInstance();
+            radioNfc.setVisibility(View.GONE);
+            frameLayout.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
+            getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
+            permissions = new RxPermissions(this);
+            radioGroup.check(R.id.radio_ble);
+            permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
+                    granted -> {
+                        if (granted) {
+                            turnOnBlueTooth();
+                            refreshDeviceList(true);
+                        } else {
+                            Toast.makeText(this, getString(R.string.blurtooth_need_permission), Toast.LENGTH_LONG).show();
+                        }
+                    }
+            ).dispose();
+        } else {
+            // usb init
             radioGroup.setVisibility(View.GONE);
             setVisible(false);
-            try {
-                usbManager.doBusiness(device);
-            } catch (Exception e) {
-                e.printStackTrace();
+            usbManager = CustomerUsbManager.getInstance(this);
+            usbManager.register(this);
+            device = usbManager.findBixinKEYDevice();
+            if (device != null) {
+                try {
+                    usbManager.doBusiness(device);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+               Toast.makeText(this, "未找到可用的USB设备", Toast.LENGTH_LONG).show();
+               new Handler().postDelayed(this::finish, 2000);
             }
-        } else {
+        }
+         /*else {
             mBle = Ble.getInstance();
             NfcUtils.nfc(this, true);
             radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
@@ -248,7 +279,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                         frameLayout.setVisibility(View.GONE);
                 }
             });
-        }
+        }*/
         Window window = getWindow();
         if (window != null) {
             WindowManager.LayoutParams wlp = window.getAttributes();
@@ -321,7 +352,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            isNFC = true;
+//            isNFC = true;
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             nfcTransport.put("ENABLED", true);
             bleHandler.put("ENABLED", false);
@@ -393,7 +424,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 }
                 // ble firmware update by nfc only
             } else if ("ble".equals(extras)) {
-                if (isNFC) {
+                if (isNFC || "usb".equals(way)) {
                     Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
                     intent.putExtra("way", COMMUNICATION_MODE_NFC);
                     intent.putExtras(getIntent().getExtras());
@@ -767,7 +798,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         super.onDestroy();
         MyHandler.myHandler = null;
         EventBus.getDefault().unregister(this);
-        CustomerUsbManager.getInstance(this).unRegister(this);
+        if ("usb".equals(way)) {
+            CustomerUsbManager.getInstance(this).unRegister(this);
+        }
     }
 
     @Override

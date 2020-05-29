@@ -82,23 +82,7 @@
         <activity android:name=".activities.settings.BixinKEYManageActivity" />
         <activity android:name=".activities.personalwallet.CreatFinishPersonalActivity" />
         <activity android:name=".activities.personalwallet.SingleSigWalletCreator" />
-        <activity android:name=".activities.jointwallet.MultiSigWalletCreator">
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.TAG_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.TECH_DISCOVERED" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/nfc_tech_filter" />
-        </activity>
+        <activity android:name=".activities.jointwallet.MultiSigWalletCreator"/>
         <activity android:name=".entries.FsActivity" />
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
         <activity android:name=".MainActivity">
@@ -136,19 +120,7 @@
         <activity
             android:name=".activities.WalletUnActivatedActivity"
             android:label="" />
-        <activity android:name=".activities.ActivatedProcessing">
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.TAG_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.TECH_DISCOVERED" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".activities.ActivatedProcessing"/>
         <activity android:name=".activities.ActivateSuccessActivity" />
         <activity android:name=".activities.settings.AgreementActivity" />
         <activity android:name=".activities.ShareOtherActivity" />
@@ -178,7 +150,8 @@
         <activity android:name=".activities.settings.fixpin.ChangePinFailedActivity" />
         <activity android:name=".activities.settings.recovery_set.RecoveryResult" />
         <activity android:name=".activities.service.NfcNotifyHelper"
-            android:theme="@style/dialog" android:noHistory="true"/> <!-- aotusize -->
+            android:theme="@style/dialog" android:noHistory="true"/>
+        <activity android:name=".activities.settings.SelectorActivity" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />

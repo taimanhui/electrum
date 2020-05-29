@@ -1301,8 +1301,8 @@ class AndroidCommands(commands.Commands):
         print(f"hw device....{ret}")
 
     def get_feature(self, path='android_usb'):
-        self.client = None
-        self.path = ''
+        # self.client = None
+        # self.path = ''
         with self.lock:
             client = self.get_client(path=path, clean=True)
         return json.dumps(protobuf.to_dict(client.features))
@@ -1330,8 +1330,8 @@ class AndroidCommands(commands.Commands):
         Upload new firmware to device.
         Note : Device must be in bootloader mode.
         """
-        self.client = None
-        self.path = ''
+        # self.client = None
+        # self.path = ''
         client = self.get_client(path)
         features = client.features
         if not features.bootloader_mode:

@@ -52,7 +52,6 @@ public class RecoveryActivity extends BaseActivity {
     RecyclerView backupList;
     private List<String> deviceValue;
     private boolean isScan;
-
     @Override
     public int getLayoutId() {
         return R.layout.recovery;
@@ -152,6 +151,7 @@ public class RecoveryActivity extends BaseActivity {
                 intent.putExtra("extras", editText1.getText().toString());
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
+                isScan = false;
                 break;
         }
     }

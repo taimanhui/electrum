@@ -24,6 +24,8 @@ import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.CommonUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import cn.com.heaton.blelibrary.ble.Ble;
@@ -31,6 +33,7 @@ import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import no.nordicsemi.android.dfu.DfuBaseService;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleHandler;
@@ -102,13 +105,12 @@ public class BleService extends Service {
             super.onConnectException(device, errorCode);
             Log.e(TAG, String.format("连接异常，异常状态码: %d", errorCode));
             switch (errorCode) {
+                case 2521:
+                 //   removeBond(bluetoothDevice);
                 case 2523:
-                   // Toast.makeText(BleService.this, getString(R.string.bluetooth_abnormal), Toast.LENGTH_LONG).show();
                 case 133:
                 case 8:
-                case 2521:
                 case 59:
-                   // Toast.makeText(BleService.this, getString(R.string.bluetooth_fail), Toast.LENGTH_LONG).show();
                 default:
                     EventBus.getDefault().post(new ExistEvent());
                     Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
@@ -130,7 +132,7 @@ public class BleService extends Service {
         }
     };
     private void handle() {
-        isNFC = false;
+//        isNFC = false;
         EventBus.getDefault().post(new HandlerEvent());
     }
     private void setNotify(BleDevice device) {
@@ -243,6 +245,17 @@ public class BleService extends Service {
              }
         }
     };
+    void removeBond(BluetoothDevice device) {
+        if (device.getBondState() == BluetoothDevice.BOND_NONE)
+            return;
+        try {
+            final Method removeBond = device.getClass().getMethod("removeBond");
+            removeBond.invoke(device);
+            } catch (final NoSuchMethodException ignored) {
+            } catch (IllegalAccessException | InvocationTargetException ex) {
+            ex.printStackTrace();
+        }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

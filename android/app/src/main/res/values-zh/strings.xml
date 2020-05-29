@@ -745,5 +745,7 @@
     <string name="updating_dialog">正在检查更新信息</string>
     <string name="send_shortcut_access">快捷支付设置</string>
     <string name="limit_input_wrong">额度输入错误</string>
+    <string name="communication_way">连接方式</string>
+    <string name="ble">蓝牙</string>
 
 </resources>

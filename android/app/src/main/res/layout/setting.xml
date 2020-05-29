@@ -315,7 +315,6 @@
                         android:id="@+id/bluetooth_set"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-
                         android:paddingStart="@dimen/text_margin"
                         android:paddingEnd="@dimen/text_margin">
 
@@ -324,7 +323,7 @@
                             android:layout_height="match_parent"
                             android:focusable="true"
                             android:gravity="center_vertical"
-                            android:text="@string/bluetooth"
+                            android:text="@string/communication_way"
                             android:textColor="@color/text" />
 
                         <TextView
@@ -335,9 +334,7 @@
                             android:drawableEnd="@drawable/jiantou"
                             android:drawablePadding="@dimen/dp_10"
                             android:focusable="true"
-                            android:gravity="center_vertical"
-                            android:text="@string/open"
-                            android:textColor="@color/graytext_color" />
+                            android:gravity="center_vertical" />
                     </RelativeLayout>
 
                     <View
