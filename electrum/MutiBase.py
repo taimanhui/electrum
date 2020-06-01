@@ -82,7 +82,7 @@ class MutiBase(Logger):
         self.path = path
         print("=================set_multi_wallet_info ok....")
 
-    def restore_from_xpub(self, xpub):
+    def restore_from_xpub(self, xpub, device_id):
         from .keystore import hardware_keystore
         print("restore_from_xpub in....")
         is_valid = keystore.is_bip32_key(xpub)
@@ -96,6 +96,7 @@ class MutiBase(Logger):
                     'derivation': bip84_derivation(0),
                     'xpub': xpub,
                     'label': 'device_info.label',
+                    'device_id': device_id,
                 }
                 k = hardware_keystore(d)
                 self.on_keystore(k)

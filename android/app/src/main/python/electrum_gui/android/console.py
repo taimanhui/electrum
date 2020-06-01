@@ -446,13 +446,22 @@ class AndroidCommands(commands.Commands):
         self.m = m
         self.n = n
 
-    def add_xpub(self, xpub):
+    def add_xpub(self, xpub, device_id=None):
         try:
+            print(f"add_xpub........{xpub, device_id}")
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
-            self.wizard.restore_from_xpub(xpub)
+            self.wizard.restore_from_xpub(xpub, device_id)
         except Exception as e:
             raise BaseException(e)
+
+    def get_device_info(self):
+        try:
+            self._assert_wallet_isvalid()
+            device_info = self.wallet.get_device_info()
+            return json.dumps(device_info)
+        except BaseException as e:
+            raise e
 
     def delete_xpub(self, xpub):
         try:
@@ -569,8 +578,12 @@ class AndroidCommands(commands.Commands):
             print(f"xpubs=========={m, n, xpubs}")
             self.set_multi_wallet_info(name, m, n)
             xpubs_list = json.loads(xpubs)
-            for xpub in xpubs_list:
-                self.add_xpub(xpub)
+            for xpub_info in xpubs_list:
+                if len(xpub_info) == 2:
+                    for xpub, device_id in xpub_info:
+                        self.add_xpub(xpub, device_id)
+                else:
+                    self.add_xpub(xpub_info)
             self.create_multi_wallet(name, hide_type=hide_type)
         except BaseException as e:
             raise e

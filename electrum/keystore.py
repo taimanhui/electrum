@@ -723,8 +723,12 @@ class Hardware_KeyStore(Xpub, KeyStore):
         # device reconnects
         self.xpub = d.get('xpub')
         self.label = d.get('label')
+        self.device_id = d.get('device_id')
         self.handler = None
         run_hook('init_keystore', self)
+
+    def get_device_info(self):
+        return self.device_id
 
     def set_label(self, label):
         self.label = label
@@ -746,6 +750,7 @@ class Hardware_KeyStore(Xpub, KeyStore):
             'derivation': self.get_derivation_prefix(),
             'root_fingerprint': self.get_root_fingerprint(),
             'label':self.label,
+            'device_id': self.device_id,
         }
 
     def unpaired(self):

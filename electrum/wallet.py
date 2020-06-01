@@ -2327,6 +2327,9 @@ class Deterministic_Wallet(Abstract_Wallet):
     def get_fingerprint(self):
         return self.get_master_public_key()
 
+    def get_device_info(self):
+        return self.keystore.get_device_info()
+
     def get_txin_type(self, address):
         return self.txin_type
 
@@ -2467,6 +2470,8 @@ class Multisig_Wallet(Deterministic_Wallet):
     def get_fingerprint(self):
         return ''.join(sorted(self.get_master_public_keys()))
 
+    def get_device_info(self):
+        return [k.get_device_info() for k in self.get_keystores()]
 
 wallet_types = ['standard', 'multisig', 'imported']
 
