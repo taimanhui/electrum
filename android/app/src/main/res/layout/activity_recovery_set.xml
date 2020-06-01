@@ -10,8 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal"
         android:background="@color/bk_page"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
 
 
@@ -34,8 +34,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:fontFamily="sans-serif-medium"
                 android:layout_gravity="center"
+                android:fontFamily="sans-serif-medium"
                 android:text="@string/restore_factory"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
@@ -139,11 +139,14 @@
 
             <CheckBox
                 android:id="@+id/checkbox_Know"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="@dimen/dp_14"
+                android:layout_height="@dimen/dp_14"
+                android:background="@drawable/circle_checkbox"
+                android:button="@null" />
 
             <TextView
                 android:layout_width="wrap_content"
+                android:layout_marginStart="@dimen/dp_7"
                 android:layout_height="wrap_content"
                 android:text="@string/iknow_risk"
                 android:textColor="#494949"
@@ -153,9 +156,9 @@
         <Button
             android:id="@+id/reset_device"
             android:layout_width="300dp"
-            android:enabled="false"
             android:layout_height="50dp"
             android:background="@drawable/button_bk_grey"
+            android:enabled="false"
             android:text="@string/confirm_recovery"
             android:textAllCaps="false"
             android:textColor="@android:color/white" />

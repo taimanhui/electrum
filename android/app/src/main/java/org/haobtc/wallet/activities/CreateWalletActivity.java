@@ -59,7 +59,7 @@ public class CreateWalletActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.lin_input_histry, R.id.bn_create_wallet, R.id.lin_input_helpWord, R.id.linHideWallet})
+    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.bn_create_wallet, R.id.lin_input_helpWord})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_backCreat:
@@ -75,17 +75,11 @@ public class CreateWalletActivity extends BaseActivity {
             case R.id.bn_import_wallet:
                 mIntent(MultiSigWalletCreator.class);
                 break;
-            case R.id.lin_input_histry:
-                mIntent(ImportHistoryWalletActivity.class);
-                break;
             case R.id.bn_create_wallet:
                 mIntent(CreatAppWalletActivity.class);
                 break;
             case R.id.lin_input_helpWord:
                 mIntent(MnemonicWordActivity.class);
-                break;
-            case R.id.linHideWallet:
-                mIntent(HideWalletActivity.class);
                 break;
 
         }

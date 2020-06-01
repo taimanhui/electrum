@@ -92,6 +92,9 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                         result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("fastpay_money_limit", moneyLimit), new Kwarg("fastpay_times", money_times), "true".equals(strings[5]) ? new Kwarg("fastpay_pin", true) : new Kwarg("fastpay_pin", false), "true".equals(strings[6]) ? new Kwarg("fastpay_confirm", true) : new Kwarg("fastpay_confirm", false)).toString();
                     } else if ("label".equals(strings[2])) {
                         result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("label", strings[3])).toString();
+                    } else if ("shutdown_time".equals(strings[2])) {
+                        int shutdownTime = Integer.parseInt(strings[3]);
+                        result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("auto_lock_delay_ms", shutdownTime * 1000)).toString();
                     }
                 } catch (Exception e) {
                     cancel(true);

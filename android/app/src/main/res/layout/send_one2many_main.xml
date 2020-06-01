@@ -194,6 +194,7 @@
             tools:ignore="UnusedAttribute">
 
             <LinearLayout
+                android:id="@+id/linear_feeSelect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/text_margin"

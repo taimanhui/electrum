@@ -98,6 +98,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             Intent intent = new Intent(CreatFinishPersonalActivity.this, BackupRecoveryActivity.class);
             intent.putExtra("ActiveSetPIN", "ActiveSetPIN");
             startActivity(intent);
+            finish();
         });
         alertDialog.show();
     }

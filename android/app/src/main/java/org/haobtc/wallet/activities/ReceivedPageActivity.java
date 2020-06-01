@@ -82,7 +82,7 @@ public class ReceivedPageActivity extends BaseActivity {
         }
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
-          //  Log.i("strCode", "mGenerate--: " + strCode);
+            Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qr_data = getCodeAddressBean.getQr_data();
@@ -142,7 +142,6 @@ public class ReceivedPageActivity extends BaseActivity {
     private String saveImageToGallery(Context context, @NonNull Bitmap bmp) {
         // Save picture
         String storePath = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
-        Log.i("storePath", "storePath: " + storePath);
         File appDir = new File(storePath);
         if (!appDir.exists()) {
             appDir.mkdir();

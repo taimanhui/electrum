@@ -35,7 +35,7 @@ android {
 
             versionProps['VERSION_CODE'] = BUILD_NUM.toString()
             versionProps.store(versionPropsFile.newWriter(), null)
-            println "VERSION_CODE incremented to "+BUILD_NUM
+            println "VERSION_CODE incremented to " + BUILD_NUM
         } else {
             throw new GradleException("Could not read version.properties!")
         } 

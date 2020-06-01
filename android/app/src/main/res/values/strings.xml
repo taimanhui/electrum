@@ -774,7 +774,16 @@
     <string name="updating_dialog">Checking for updates</string>
     <string name="send_shortcut_access">Quick payment settings</string>
     <string name="limit_input_wrong">Limit input error</string>
-    <string name="communication_way">连接方式</string>
+    <string name="communication_way">Connection mode</string>
     <string name="ble">Bluetooth</string>
+    <string name="check_key_name">BixinKey Name：</string>
+    <string name="check_pub_key">BixinKey Public key：</string>
+    <string name="set_shutdown_time">Set BixinKey auto shutdown time</string>
+    <string name="second">second</string>
+    <string name="please_input_time">Please enter the shutdown time</string>
+    <string name="little_time">The shortest time is 10 seconds!</string>
+    <string name="input_history_wallet">Historical wallet created through BixinKey, which can be imported immediately</string>
+    <string name="diy_hard">Custom firmware</string>
+    <string name="delete_diy_hardware">Delete custom firmware</string>
 
 </resources>

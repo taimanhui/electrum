@@ -747,5 +747,14 @@
     <string name="limit_input_wrong">额度输入错误</string>
     <string name="communication_way">连接方式</string>
     <string name="ble">蓝牙</string>
+    <string name="check_key_name">BiXinKEY 名称：</string>
+    <string name="check_pub_key">BiXinKEY 公钥：</string>
+    <string name="set_shutdown_time">设置bixinkey自动关机时间</string>
+    <string name="second">秒</string>
+    <string name="please_input_time">请输入关机时间</string>
+    <string name="little_time">时间最短为10秒哦！</string>
+    <string name="input_history_wallet">已通过BixinKey创建的历史钱包，可<font color="#6182F5">立即导入</font></string>
+    <string name="diy_hard">自定义固件</string>
+    <string name="delete_diy_hardware">删除自定义固件</string>
 
 </resources>

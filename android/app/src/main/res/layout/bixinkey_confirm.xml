@@ -77,10 +77,10 @@
                     android:id="@+id/edit_keyName"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:maxLength="20"
                     android:layout_weight="1"
                     android:background="@null"
                     android:hint="@string/make_aname"
+                    android:maxLength="20"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_10"
                     android:textColor="#494949"
@@ -99,10 +99,11 @@
 
             <LinearLayout
                 android:id="@+id/textView9"
-                android:layout_below="@id/lin_Useset"
-                android:layout_marginTop="@dimen/dp_20"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lin_Useset"
+                android:layout_marginTop="@dimen/dp_20">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -110,12 +111,13 @@
                     android:text="@string/public_address"
                     android:textColor="@color/graytext_color"
                     android:textSize="@dimen/smaller_text_size" />
+
                 <TextView
                     android:id="@+id/tet_Error"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
                     android:layout_marginStart="@dimen/sp_16"
+                    android:gravity="center_vertical"
                     android:text="@string/pin_input_again"
                     android:textColor="#F26A3A"
                     android:textSize="@dimen/sp_12"
@@ -131,7 +133,8 @@
                 android:layout_marginStart="@dimen/text_margin"
                 android:layout_marginTop="@dimen/dp_14"
                 android:layout_marginEnd="@dimen/text_margin"
-                app:cardCornerRadius="@dimen/dp_4">
+                app:cardCornerRadius="@dimen/dp_4"
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -160,7 +163,6 @@
                 android:id="@+id/btn_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:visibility="visible"
                 android:layout_below="@+id/cardView2"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="@dimen/dp_16"
@@ -170,7 +172,8 @@
                 android:text="@string/confirm"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/sp_14" />
+                android:textSize="@dimen/sp_14"
+                android:visibility="visible" />
 
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

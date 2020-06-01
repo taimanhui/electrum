@@ -40,7 +40,8 @@
         android:theme="@style/AppTheme"
         tools:replace="label"
         tools:targetApi="q">
-        <activity android:name=".activities.UserAgreementActivity"/>
+        <activity android:name=".activities.settings.SetShutdownTimeActivity" />
+        <activity android:name=".activities.UserAgreementActivity" />
         <activity android:name=".activities.settings.recovery_set.InputBackupPassActivity" />
         <activity android:name=".activities.settings.FixBixinkeyNameActivity" />
         <activity android:name=".activities.settings.BixinKeyBluetoothSettingActivity" />
@@ -82,7 +83,7 @@
         <activity android:name=".activities.settings.BixinKEYManageActivity" />
         <activity android:name=".activities.personalwallet.CreatFinishPersonalActivity" />
         <activity android:name=".activities.personalwallet.SingleSigWalletCreator" />
-        <activity android:name=".activities.jointwallet.MultiSigWalletCreator"/>
+        <activity android:name=".activities.jointwallet.MultiSigWalletCreator" />
         <activity android:name=".entries.FsActivity" />
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
         <activity android:name=".MainActivity">
@@ -99,7 +100,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.settings.VersionUpgradeActivity"/>
+        <activity android:name=".activities.settings.VersionUpgradeActivity" />
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.TransactionRecordsActivity" />
         <activity android:name=".activities.LanguageSettingActivity" />
@@ -120,7 +121,7 @@
         <activity
             android:name=".activities.WalletUnActivatedActivity"
             android:label="" />
-        <activity android:name=".activities.ActivatedProcessing"/>
+        <activity android:name=".activities.ActivatedProcessing" />
         <activity android:name=".activities.ActivateSuccessActivity" />
         <activity android:name=".activities.settings.AgreementActivity" />
         <activity android:name=".activities.ShareOtherActivity" />
@@ -149,9 +150,12 @@
         <activity android:name=".activities.settings.CheckXpubResultActivity" />
         <activity android:name=".activities.settings.fixpin.ChangePinFailedActivity" />
         <activity android:name=".activities.settings.recovery_set.RecoveryResult" />
-        <activity android:name=".activities.service.NfcNotifyHelper"
-            android:theme="@style/dialog" android:noHistory="true"/>
-        <activity android:name=".activities.settings.SelectorActivity" /> <!-- aotusize -->
+        <activity
+            android:name=".activities.service.NfcNotifyHelper"
+            android:noHistory="true"
+            android:theme="@style/dialog" />
+        <activity android:name=".activities.settings.SelectorActivity" />
+        <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />

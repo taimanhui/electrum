@@ -343,7 +343,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                 if (isIsmine) {
                     textView14.setText(String.format("-%s", amount));
                 } else {
-
                     textView14.setText(String.format("+%s", amount));
                 }
             }

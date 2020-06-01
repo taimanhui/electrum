@@ -137,6 +137,7 @@
         <LinearLayout
             android:id="@+id/linear_input_wallet"
             android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -157,7 +158,6 @@
                     android:id="@+id/lin_input_histry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -189,7 +189,6 @@
                 android:background="@color/button_bk_ddake"
                 android:focusable="false"
                 android:outlineSpotShadowColor="@color/shadow_color"
-                android:visibility="invisible"
                 app:cardCornerRadius="@dimen/dp_8"
                 app:cardElevation="@dimen/dp_4"
                 tools:ignore="UnusedAttribute">
@@ -282,6 +281,7 @@
                 android:layout_marginEnd="@dimen/dp_10"
                 android:layout_marginBottom="@dimen/dp_10"
                 android:layout_weight="1"
+                android:visibility="invisible"
                 android:background="@color/button_bk_ddake"
                 android:outlineSpotShadowColor="@color/shadow_color"
                 app:cardCornerRadius="@dimen/dp_8"
@@ -292,7 +292,6 @@
                     android:id="@+id/lin_input_helpWord"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-
                     android:gravity="center_vertical">
 
                     <ImageView

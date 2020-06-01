@@ -101,8 +101,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     TextView textBlocks;
     @BindView(R.id.linear_show)
     LinearLayout linearShow;
-    private LinearLayout selectSend;
-    private ImageView selectSigNum, buttonSweep;
+    private LinearLayout selectSend, selectSigNumLin;
+    private ImageView buttonSweep, selectSigNum;
     private EditText editTextComments, editAddress;
     private TextView bytesCount, buttonPaste;
     private Button buttonCreate;
@@ -158,6 +158,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         selectSend = findViewById(R.id.llt_select_wallet);
         tetMoneye = findViewById(R.id.tet_Money);
         tetamount = findViewById(R.id.amount);
+        selectSigNumLin = findViewById(R.id.linear_fee_select);
         selectSigNum = findViewById(R.id.fee_select);
         tetWalletname = findViewById(R.id.tet_WalletName);
         textView = findViewById(R.id.tv_send2many);
@@ -255,7 +256,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private void init() {
         rxPermissions = new RxPermissions(this);
         selectSend.setOnClickListener(this);
-        selectSigNum.setOnClickListener(this);
+        selectSigNumLin.setOnClickListener(this);
         textView.setOnClickListener(this);
         buttonCreate.setOnClickListener(this);
         buttonSweep.setOnClickListener(this);
@@ -476,7 +477,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 //check address
                 showPopupSelectWallet();
                 break;
-            case R.id.fee_select:
+            case R.id.linear_fee_select:
                 if (showSeek) {
                     selectSigNum.setImageDrawable(getDrawable(R.drawable.jiantou_up));
                     linearShow.setVisibility(View.VISIBLE);

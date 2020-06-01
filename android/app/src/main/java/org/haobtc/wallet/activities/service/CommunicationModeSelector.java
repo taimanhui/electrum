@@ -60,6 +60,7 @@ import org.haobtc.wallet.activities.settings.CheckXpubResultActivity;
 import org.haobtc.wallet.activities.settings.ConfidentialPaymentSettings;
 import org.haobtc.wallet.activities.settings.FixBixinkeyNameActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
+import org.haobtc.wallet.activities.settings.SetShutdownTimeActivity;
 import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupMessageActivity;
@@ -93,6 +94,7 @@ import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendSignBroadcastEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
 import org.haobtc.wallet.event.SetBluetoothEvent;
+import org.haobtc.wallet.event.ShutdownTimeEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
 import org.haobtc.wallet.event.WipeEvent;
@@ -572,6 +574,14 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     e.printStackTrace();
                 }
 
+            } else if (SetShutdownTimeActivity.TAG.equals(tag)) {
+                //fix bixinkey name
+                String shutdownTime = getIntent().getStringExtra("shutdown_time");
+                try {
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "shutdown_time", shutdownTime);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag))) {
@@ -918,6 +928,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
             String oldBleName = features.getBleName();
             EventBus.getDefault().post(new FixAllLabelnameEvent(oldBleName, s));
+        } else if (SetShutdownTimeActivity.TAG.equals(tag)) {
+            EventBus.getDefault().post(new ShutdownTimeEvent(s));
         }
         finish();
     }

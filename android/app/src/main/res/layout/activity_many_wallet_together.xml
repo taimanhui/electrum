@@ -14,7 +14,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50">
@@ -24,7 +23,6 @@
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_40"
                 android:layout_centerVertical="true"
-
                 android:padding="@dimen/dp_8"
                 android:src="@drawable/back" />
 
@@ -395,8 +393,8 @@
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
                     android:layout_marginBottom="@dimen/dp_1"
-                    android:visibility="gone"
                     android:outlineSpotShadowColor="@color/shadow_color"
+                    android:visibility="gone"
                     app:cardCornerRadius="@dimen/dp_8"
                     app:cardElevation="@dimen/dp_8"
                     tools:ignore="UnusedAttribute">
@@ -460,8 +458,8 @@
                     android:layout_marginTop="@dimen/layout_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
                     android:layout_marginBottom="90dp"
-                    android:visibility="gone"
                     android:outlineSpotShadowColor="@color/shadow_color"
+                    android:visibility="gone"
                     app:cardCornerRadius="@dimen/dp_8"
                     app:cardElevation="@dimen/dp_8"
                     tools:ignore="UnusedAttribute">
@@ -549,6 +547,16 @@
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/test_input_wallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:gravity="center_horizontal"
+                    android:text="@string/input_history_wallet"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

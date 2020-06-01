@@ -210,7 +210,6 @@
                             android:layout_marginEnd="@dimen/text_margin"
                             android:layout_weight="1"
                             android:ellipsize="end"
-                            android:maxLines="1"
                             android:textColor="@color/text_color"
                             android:textSize="15sp"
                             tools:text="xxxxxxxxxxxxxxxxxxxx" />
@@ -258,7 +257,6 @@
                             android:layout_marginEnd="@dimen/dp_10"
                             android:layout_weight="1"
                             android:ellipsize="end"
-                            android:maxLines="1"
                             android:textColor="@color/text_color"
                             android:textSize="15sp"
                             tools:text="xxxxxxxxxxxxxxxxxxxx" />
@@ -268,7 +266,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/dp_5"
-
                             android:textColor="@color/light_text"
                             android:textSize="@dimen/sp_13"
                             tools:text="@string/waitmoredres" />
@@ -311,14 +308,14 @@
                         <TextView
                             android:id="@+id/tet_addSpeed"
                             android:layout_width="@dimen/dp_50"
-                            android:layout_height="21dp"
+                            android:layout_height="@dimen/dp_24"
                             android:layout_marginEnd="@dimen/dp_10"
                             android:background="@drawable/black_tuo"
                             android:gravity="center"
                             android:text="@string/add_speed"
-                            android:textColor="@color/button_bk_ddake"
-                            android:textSize="@dimen/sp_12"
-                            android:visibility="gone" />
+                            android:textColor="@color/button_bk_disableok"
+                            android:textSize="@dimen/sp_13"
+                            android:visibility="visible" />
 
 
                     </LinearLayout>
@@ -399,7 +396,7 @@
                             android:id="@+id/textView20"
                             android:layout_width="42dp"
                             android:layout_height="wrap_content"
-                            android:background="@color/button_bk"
+                            android:background="@drawable/little_blue_back_2"
                             android:gravity="center"
                             android:paddingStart="5dp"
                             android:paddingEnd="5dp"
@@ -482,7 +479,7 @@
         <Button
             android:id="@+id/sig_trans"
             android:layout_width="300dp"
-            android:layout_height="@dimen/dp_40"
+            android:layout_height="@dimen/dp_50"
             android:layout_below="@+id/hjsdjhsbhm"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="@dimen/text_margin"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,10 +26,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/check_xpub"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -42,10 +42,14 @@
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_16"
         android:layout_marginEnd="@dimen/dp_10"
-        app:cardCornerRadius="@dimen/dp_12"
+        android:outlineSpotShadowColor="@color/shadow_color"
+        app:cardCornerRadius="@dimen/dp_8"
+        app:cardElevation="@dimen/dp_8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
+        tools:ignore="UnusedAttribute">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -54,11 +58,11 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginStart="@dimen/dp_16"
-                android:textSize="@dimen/sp_15"
+                android:layout_marginTop="@dimen/dp_20"
+                android:text="@string/check_key_name"
                 android:textColor="@color/text"
-                android:text="BiXinKEY 名称："
+                android:textSize="@dimen/sp_15"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,20 +70,20 @@
                 android:id="@+id/label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BiXinKEY"
-                android:textSize="@dimen/sp_15"
-                android:textColor="@color/text"
                 android:layout_marginStart="@dimen/dp_10"
                 android:layout_marginTop="@dimen/dp_20"
+                android:textColor="@color/text"
+                android:textSize="@dimen/sp_15"
                 app:layout_constraintStart_toEndOf="@id/name"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="BiXinKEY" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/line_color"
                 android:layout_marginTop="@dimen/dp_19"
-                app:layout_constraintTop_toBottomOf="@id/label"/>
+                android:background="@color/line_color"
+                app:layout_constraintTop_toBottomOf="@id/label" />
 
             <TextView
                 android:id="@+id/textView22"
@@ -87,9 +91,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_39"
+                android:text="@string/check_pub_key"
                 android:textColor="@color/text"
                 android:textSize="@dimen/sp_15"
-                android:text="BiXinKEY 公钥:"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/name" />
 
@@ -98,14 +102,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_12"
+                android:layout_marginEnd="@dimen/dp_16"
                 android:textColor="@color/text_0"
                 android:textSize="@dimen/sp_13"
-                android:text="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView22" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView22"
+                tools:text="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm" />
 
             <TextView
                 android:id="@+id/copy_xpub"
@@ -116,10 +120,10 @@
                 android:text="@string/copy_xpub"
                 android:textColor="@color/button_bk"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/xpub"/>
+                app:layout_constraintTop_toBottomOf="@+id/xpub" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

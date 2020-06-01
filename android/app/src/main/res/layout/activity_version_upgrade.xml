@@ -124,7 +124,9 @@
                     android:layout_marginTop="13dp"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:gravity="center_vertical"
-                    android:textColor="@color/text" />
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_12"
+                    tools:text="1.更新…用户体验更流畅" />
 
                 <TextView
                     android:id="@+id/stm32_version_detail"
@@ -134,8 +136,9 @@
                     android:layout_marginTop="13dp"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:gravity="center_vertical"
-                    android:textColor="@color/light_text"
-                    android:textSize="@dimen/sp_12" />
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_12"
+                    tools:text="1.更新…用户体验更流畅" />
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
@@ -206,7 +209,9 @@
                     android:layout_marginTop="13dp"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:gravity="center_vertical"
-                    android:textColor="@color/text" />
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_12"
+                    tools:text="1.更新…用户体验更流畅" />
 
                 <TextView
                     android:id="@+id/nrf_version_detail"
@@ -216,8 +221,80 @@
                     android:layout_marginTop="13dp"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:gravity="center_vertical"
-                    android:textColor="@color/light_text"
-                    android:textSize="@dimen/sp_12" />
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_12"
+                    tools:text="1.更新…用户体验更流畅" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="@dimen/layout_margin"
+            android:outlineSpotShadowColor="@color/shadow_color"
+            android:visibility="gone"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            tools:ignore="UnusedAttribute">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_50"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:text="@string/diy_hard"
+                        android:textColor="@color/text" />
+
+                    <TextView
+                        android:id="@+id/tet_hardware"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_10"
+                        android:layout_weight="1"
+                        android:text="@string/v_1_2_3"
+                        android:textColor="@color/light_text" />
+
+                    <CheckBox
+                        android:id="@+id/checkBox_hardware"
+                        android:layout_width="@dimen/dp_20"
+                        android:layout_height="@dimen/dp_20"
+                        android:background="@drawable/circle_checkbox"
+                        android:button="@null" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_hight"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:background="@color/separation_line" />
+
+                <TextView
+                    android:id="@+id/test_delete_hardware"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_50"
+                    android:gravity="center"
+                    android:text="@string/delete_diy_hardware"
+                    android:textColor="@color/button_bk"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -46,6 +47,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
@@ -69,7 +71,7 @@ import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
 
-public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
+public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -129,6 +131,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
     TextView testseekNum;
     public String pin = "";
     public static final String TAG = MultiSigWalletCreator.class.getSimpleName();
+    @BindView(R.id.test_input_wallet)
+    TextView testInputWallet;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private EditText edit_sweep;
@@ -268,7 +272,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key, R.id.btn_Finish, R.id.bn_complete_add_cosigner, R.id.tet_Preservation})
+    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key, R.id.btn_Finish, R.id.bn_complete_add_cosigner, R.id.tet_Preservation, R.id.test_input_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -310,6 +314,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                                 Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
                             }
                         }).dispose();
+                break;
+            case R.id.test_input_wallet:
+                mIntent(ImportHistoryWalletActivity.class);
                 break;
         }
     }
@@ -540,7 +547,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
-            edit.putInt("defaultKeyNum",defaultKeyNameNum);
+            edit.putInt("defaultKeyNum", defaultKeyNameNum);
             edit.apply();
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
@@ -666,7 +673,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
-            edit.putInt("defaultKeyNum",defaultKeyNameNum);
+            edit.putInt("defaultKeyNum", defaultKeyNameNum);
             edit.apply();
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
@@ -785,7 +792,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher{
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getString(R.string.changewalletname));
                     } else if (message.contains("The same xpubs have create wallet")) {
-                        String haveWalletName = message.substring(message.indexOf("name=")+5);
+                        String haveWalletName = message.substring(message.indexOf("name=") + 5);
                         mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
                     } else if (message.contains("invaild type of xpub")) {
                         mToast(getString(R.string.xpub_wrong));

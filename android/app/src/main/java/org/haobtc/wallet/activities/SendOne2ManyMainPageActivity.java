@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -263,7 +262,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
 
     @SingleClick
-    @OnClick({R.id.lin_chooseAddress, R.id.linearLayout10, R.id.img_feeSelect, R.id.img_back, R.id.create_trans_one2many})
+    @OnClick({R.id.lin_chooseAddress, R.id.linearLayout10, R.id.linear_feeSelect, R.id.img_back, R.id.create_trans_one2many})
     public void onViewClicked(View view) {
         PyObject mktx;
         switch (view.getId()) {
@@ -278,7 +277,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent1);
                 break;
-            case R.id.img_feeSelect:
+            case R.id.linear_feeSelect:
                 if (showSeek) {
                     feeSelect.setImageDrawable(getDrawable(R.drawable.jiantou_up));
                     linearSeek.setVisibility(View.VISIBLE);
