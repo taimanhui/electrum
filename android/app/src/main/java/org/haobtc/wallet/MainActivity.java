@@ -76,6 +76,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import okhttp3.Call;
@@ -529,7 +531,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             // Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
             //Rolling Wallet
             if (fragmentList != null && fragmentList.size() > 0) {
-                ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
+                Optional.ofNullable(fragmentList.get(scrollPos)).ifPresent(fragment -> ((WheelViewpagerFragment) fragment).setValue(msgVote));
             }
         }
     }
@@ -684,7 +686,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void userAgreementDialog() {
         View view1 = LayoutInflater.from(this).inflate(R.layout.user_agreement, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         view1.findViewById(R.id.btn_agree).setOnClickListener(v -> {
             edit.putBoolean("user_agreement", true);
             edit.apply();

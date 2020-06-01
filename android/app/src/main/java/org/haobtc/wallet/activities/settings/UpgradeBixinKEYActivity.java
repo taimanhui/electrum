@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -113,12 +114,12 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             try {
                 if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
                     HardwareFeatures features = getFeatures(params[0]);
-                    String nrfVersion = features.getBleVer();
+                    String nrfVersion = Optional.ofNullable(features.getBleVer()).orElse("0");
                     String loaderVersion = String.format("%s.%s.%s", features.getMajorVersion(), features.getMinorVersion(), features.getPatchVersion());
                     switch (tag) {
                         case 1:
                             assert newLoaderVersion != null;
-                            if (newLoaderVersion.compareTo(loaderVersion) <= 0) {
+                            if (newLoaderVersion.compareTo(loaderVersion) <= 0 && !features.isBootloaderMode()) {
                                 isNew = true;
                                 cancel(true);
                             } else {
@@ -129,8 +130,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                             break;
                         case 2:
                             assert newNrfVersion != null;
-                            System.out.println("=======" + newNrfVersion + "========" + nrfVersion);
-                            if (newNrfVersion.compareTo(nrfVersion) <= 0) {
+                            if (newNrfVersion.compareTo(nrfVersion) <= 0 && !features.isBootloaderMode()) {
                                 isNew = true;
                                 cancel(true);
                             } else {
@@ -354,14 +354,18 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             if (Strings.isNullOrEmpty(VersionUpgradeActivity.filePath)) {
                 SharedPreferences sharedPreferences = getSharedPreferences("devices", MODE_PRIVATE);
                 String device = sharedPreferences.getString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), "");
+                String nrfVersion;
                 if (Strings.isNullOrEmpty(device)) {
-                    EventBus.getDefault().post(new ExistEvent());
-                    showPromptMessage(R.string.un_bonded);
-                    finish();
-                    return;
+//                    EventBus.getDefault().post(new ExistEvent());
+//                    showPromptMessage(R.string.un_bonded);
+//                    finish();
+//                    return;
+                   nrfVersion = newNrfVersion.concat("1");
+                } else {
+                    HardwareFeatures features = new Gson().fromJson(device, HardwareFeatures.class);
+                    nrfVersion = features.getBleVer();
                 }
-                HardwareFeatures features = new Gson().fromJson(device, HardwareFeatures.class);
-                String nrfVersion = features.getBleVer();
+
                 if (newNrfVersion.compareTo(nrfVersion) <= 0) {
                     EventBus.getDefault().post(new ExistEvent());
                     showPromptMessage(R.string.is_new);

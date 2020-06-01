@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -62,8 +63,8 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.img_cancel) {
-            nfc.put("IS_CANCEL", true);
             protocol.callAttr("notify");
+            new Handler().postDelayed(() -> nfc.put("IS_CANCEL", true), 2);
             finish();
         }
     }

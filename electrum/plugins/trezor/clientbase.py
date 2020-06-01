@@ -15,7 +15,6 @@ from trezorlib.messages import WordRequestType, FailureType, RecoveryDeviceType,
 import trezorlib.btc
 import trezorlib.device
 
-
 MESSAGES = {
     ButtonRequestType.ConfirmOutput:
         _("Confirm the transaction output on your {} device"),
@@ -285,7 +284,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
             raise Cancelled
         return pin
 
-    def get_passphrase(self, available_on_device= None):
+    def get_passphrase(self, available_on_device=None):
         if self.creating_wallet:
             msg = _("Enter a passphrase to generate this wallet.  Each time "
                     "you use this wallet your {} will prompt you for the "
@@ -318,6 +317,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
             return self._matrix_char
 
         step = 0
+
         def word_callback(_ignored):
             nonlocal step
             step += 1
@@ -326,4 +326,5 @@ class TrezorClientBase(HardwareClientBase, Logger):
             if not word:
                 raise Cancelled
             return word
+
         return word_callback

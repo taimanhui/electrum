@@ -370,7 +370,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         String feature;
         try {
             futureTask = new FutureTask<>(() -> {
-                System.out.println(String.format("method==get_feature===in thread===%d", Thread.currentThread().getId()));
+                Log.d("Features", String.format("method==get_feature===in thread===%d", Thread.currentThread().getId()));
                 return Daemon.commands.callAttr("get_feature", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
             });
             executorService.submit(futureTask);
@@ -418,7 +418,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             if ("hardware".equals(extras)) {
                 Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
                 intent.putExtra("way", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-                intent.putExtras(getIntent().getExtras());
+                intent.putExtras(Objects.requireNonNull(getIntent().getExtras()));
                 intent.putExtra("tag", 1);
                 startActivity(intent);
                 if (isNFC) {
@@ -429,7 +429,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 if (isNFC || "usb".equals(way)) {
                     Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
                     intent.putExtra("way", COMMUNICATION_MODE_NFC);
-                    intent.putExtras(getIntent().getExtras());
+                    intent.putExtras(Objects.requireNonNull(getIntent().getExtras()));
                     intent.putExtra("tag", 2);
                     startActivity(intent);
                     new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
@@ -764,7 +764,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 finish();
                 break;
             case R.id.text_input_publickey_by_hand:
-                refreshDeviceList(false);
+                if (mBle != null) {
+                    refreshDeviceList(false);
+                }
                 runOnUiThread(runnables.get(0));
                 finish();
         }
