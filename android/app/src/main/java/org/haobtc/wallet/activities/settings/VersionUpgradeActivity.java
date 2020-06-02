@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.common.base.Strings;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -37,7 +38,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
 import no.nordicsemi.android.dfu.DfuBaseService;
@@ -207,9 +207,11 @@ public class VersionUpgradeActivity extends BaseActivity {
             String info = upgradeInfo.getString("upgrade_info", "");
             if (deviceAddress.equals(BleDeviceRecyclerViewAdapter.mBleDevice.getBleAddress())) {
                 String features = devices.getString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), "");
-                HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
-                features1.setBleVer(UpdateInfo.objectFromData(info).getNrf().getVersion());
-                devices.edit().putString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), features1.toString()).apply();
+                if (!Strings.isNullOrEmpty(features)) {
+                    HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
+                    features1.setBleVer(UpdateInfo.objectFromData(info).getNrf().getVersion());
+                    devices.edit().putString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), features1.toString()).apply();
+                }
             }
             mIntent(UpgradeFinishedActivity.class);
 //            Ble.getInstance().disconnectAll();

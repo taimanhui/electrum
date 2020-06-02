@@ -360,7 +360,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 //                    showPromptMessage(R.string.un_bonded);
 //                    finish();
 //                    return;
-                   nrfVersion = newNrfVersion.concat("1");
+                   nrfVersion = "0";
                 } else {
                     HardwareFeatures features = new Gson().fromJson(device, HardwareFeatures.class);
                     nrfVersion = features.getBleVer();

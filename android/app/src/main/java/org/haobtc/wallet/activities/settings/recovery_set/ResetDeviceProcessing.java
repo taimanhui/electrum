@@ -23,6 +23,7 @@ import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.utils.NfcUtils;
@@ -107,6 +108,7 @@ public class ResetDeviceProcessing extends BaseActivity {
         } else {
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
         }
+        EventBus.getDefault().post(new FinishEvent());
         startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
         finish();
     }
