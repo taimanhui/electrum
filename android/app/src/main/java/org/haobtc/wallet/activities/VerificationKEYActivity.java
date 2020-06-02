@@ -97,8 +97,14 @@ public class VerificationKEYActivity extends BaseActivity {
 
     private void verification(String result) {
         HashMap<String, String> pramas = new HashMap<>();
-        pramas.put("serialno", result);
-//        pramas.put("signature", "");
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            pramas.put("data", jsonObject.getString("data"));
+            pramas.put("signature", jsonObject.getString("signature"));
+            pramas.put("cert", jsonObject.getString("cert"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         OkHttpUtils.post().url("https://key.bixin.com/lengqian.bo/")
                 .params(pramas)
                 .build()

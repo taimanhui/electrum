@@ -1212,12 +1212,15 @@ class AndroidCommands(commands.Commands):
     def hardware_verify(self, msg, path='android_usb'):
         client = self.get_client(path=path)
         try:
-            response = device.se_verify(client.client, msg)
+            from hashlib import sha256
+            digest = sha256(msg.encode("utf-8")).digest()
+            response = device.se_verify(client.client, digest)
         except Exception as e:
             raise BaseException(e)
         verify_info = {}
-        verify_info['cert'] = response.cert
-        verify_info['signature'] = response.signature
+        verify_info['data'] = msg
+        verify_info['cert'] = response.cert.hex()
+        verify_info['signature'] = response.signature.hex()
         return json.dumps(verify_info)
 
     def backup_wallet(self, path='android_usb'):

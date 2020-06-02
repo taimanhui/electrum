@@ -49,7 +49,7 @@ public class VerificationSuccessActivity extends BaseActivity {
             String last_check_time = intent.getStringExtra("last_check_time");
             if (!TextUtils.isEmpty(last_check_time)){
                 Long aLong = Long.valueOf(last_check_time);
-                String lastCheckTime = DateUitls.getDateToStringX(aLong);
+                String lastCheckTime = DateUitls.getDateToStringX(aLong*1000);
                 testLastTime.setText(String.format("%s%s", getString(R.string.last_check_time), lastCheckTime));
             }
         }
