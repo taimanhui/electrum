@@ -81,6 +81,9 @@ public class WalletDetailsActivity extends BaseActivity {
         String wallet_type = intent.getStringExtra("wallet_type");
         if ("standard".equals(wallet_type)) {
             cardThreePublic.setVisibility(View.GONE);
+        } else {
+            addEventsDatas = new ArrayList<>();
+            getBixinKeyList();
         }
         tetName.setText(wallet_name);
 
@@ -89,25 +92,32 @@ public class WalletDetailsActivity extends BaseActivity {
     @Override
     public void initData() {
         walletAddressList = new ArrayList<>();
-        addEventsDatas = new ArrayList<>();
         getAllFundedAddress();
-        getBixinKeyList();
     }
 
     private void getBixinKeyList() {
         try {
             PyObject get_device_info = Daemon.commands.callAttr("get_device_info");
+            Log.i("TAGget_device_info", "getBixinKeyList:==== " + get_device_info);
             if (!TextUtils.isEmpty(get_device_info.toString())) {
                 String[] key_list = get_device_info.toString().split(",");
                 if (key_list.length != 0) {
                     for (int i = 0; i < key_list.length; i++) {
                         AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-                        String keyName = key_list[i].substring(key_list[i].indexOf("\"") + 1, key_list[i].lastIndexOf("\""));
-                        addBixinKeyEvent.setKeyname(keyName);
-                        addEventsDatas.add(addBixinKeyEvent);
+                        if (key_list[i].contains("\"")) {
+                            String keyName = key_list[i].substring(key_list[i].indexOf("\"") + 1, key_list[i].lastIndexOf("\""));
+                            addBixinKeyEvent.setKeyname(keyName);
+                            addEventsDatas.add(addBixinKeyEvent);
+                        }
                     }
-                    PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
-                    reclPublicPerson.setAdapter(publicPersonAdapter);
+                    if (addEventsDatas != null && addEventsDatas.size() > 0) {
+                        PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
+                        reclPublicPerson.setAdapter(publicPersonAdapter);
+                    } else {
+                        reclPublicPerson.setVisibility(View.GONE);
+                        testNoKey.setVisibility(View.VISIBLE);
+                    }
+
                 } else {
                     reclPublicPerson.setVisibility(View.GONE);
                     testNoKey.setVisibility(View.VISIBLE);

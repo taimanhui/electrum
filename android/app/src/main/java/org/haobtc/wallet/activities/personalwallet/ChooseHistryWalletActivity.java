@@ -42,7 +42,6 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     @BindView(R.id.test_no_wallet)
     TextView testNoWallet;
     private String histry_xpub;
-    private String keyaddress;
     private String walletType;
     private ArrayList<InputHistoryWalletEvent> walletList;
     private InputHistoryWalletEvent inputHistoryWalletEvent;

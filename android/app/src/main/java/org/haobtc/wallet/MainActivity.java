@@ -345,7 +345,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
-//        Log.i("strHistory", "showTrsactionlist---: " + strHistory);
+        Log.i("strHistory", "showTrsactionlist---: " + strHistory);
         maintrsactionlistEvents.clear();
         try {
             jsonArray = new JSONArray(strHistory);
@@ -531,6 +531,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             // Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
             //Rolling Wallet
             if (fragmentList != null && fragmentList.size() > 0) {
+//                ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
                 Optional.ofNullable(fragmentList.get(scrollPos)).ifPresent(fragment -> ((WheelViewpagerFragment) fragment).setValue(msgVote));
             }
         }

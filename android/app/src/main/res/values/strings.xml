@@ -785,7 +785,7 @@
     <string name="input_history_wallet">Historical wallet created through BixinKey, which can be imported immediately</string>
     <string name="diy_hard">Custom firmware</string>
     <string name="delete_diy_hardware">Delete custom firmware</string>
-    <string name="open_server_input">需开启同步服务器才可以导入历史钱包</string>
-    <string name="create_app_new_wallet">创建 App 新钱包</string>
+    <string name="open_server_input">You need to turn on the synchronization server to import the history Wallet</string>
+    <string name="create_app_new_wallet">Create new wallet for app</string>
 
 </resources>

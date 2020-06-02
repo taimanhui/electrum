@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.common.base.Strings;
@@ -60,8 +61,6 @@ public class VersionUpgradeActivity extends BaseActivity {
     @BindView(R.id.checkBox_bluetooth)
     CheckBox checkBoxBluetooth;
     public final static String TAG = VersionUpgradeActivity.class.getSimpleName();
-    @BindView(R.id.btn_import_file)
-    TextView btnImportFile;
     @BindView(R.id.stm32_version_tip)
     TextView stm32VersionTip;
     @BindView(R.id.stm32_version_detail)
@@ -128,7 +127,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         });
     }
 
-    @SingleClick(value = 5000)
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.btn_toUpgrade, R.id.btn_import_file})
     public void onViewClicked(View view) {
         switch (view.getId()) {

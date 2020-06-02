@@ -89,11 +89,17 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     private void inits() {
         if (!TextUtils.isEmpty(set_proxy)) {
             String[] wordsList = set_proxy.split(" ");
-            testNodeType.setText(wordsList[0]);
-            editAgentIP.setText(wordsList[1]);
-            editPort.setText(wordsList[2]);
-            editUsername.setText(wordsList[3]);
-            editPass.setText(wordsList[4]);
+            switch (wordsList.length) {
+                case 5:
+                    editPass.setText(wordsList[4]);
+                case 4:
+                    editUsername.setText(wordsList[3]);
+                case 3:
+                    testNodeType.setText(wordsList[0]);
+                    editAgentIP.setText(wordsList[1]);
+                    editPort.setText(wordsList[2]);
+
+            }
         }
     }
 
@@ -186,11 +192,16 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             editPass.setEnabled(true);
             if (!TextUtils.isEmpty(set_proxy)) {
                 String[] wordsList = set_proxy.split(" ");
-                testNodeType.setText(wordsList[0]);
-                editAgentIP.setText(wordsList[1]);
-                editPort.setText(wordsList[2]);
-                editUsername.setText(wordsList[3]);
-                editPass.setText(wordsList[4]);
+                switch (wordsList.length) {
+                    case 5:
+                        editPass.setText(wordsList[4]);
+                    case 4:
+                        editUsername.setText(wordsList[3]);
+                    case 3:
+                        testNodeType.setText(wordsList[0]);
+                        editAgentIP.setText(wordsList[1]);
+                        editPort.setText(wordsList[2]);
+                }
             }
 
         } else {

@@ -44,7 +44,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/corner_radius"
-                        android:ellipsize="middle"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:textColor="@color/text"
                         android:textSize="@dimen/sp_12"
                         tools:text="12222222222222222222222222222222222" />
@@ -61,7 +62,7 @@
                 </LinearLayout>
 
                 <RelativeLayout
-                    android:layout_width="100dp"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dp_5"
                     android:gravity="center_vertical"
