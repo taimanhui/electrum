@@ -18,7 +18,6 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-
             android:padding="@dimen/dp_8"
             android:src="@drawable/back" />
 
@@ -134,92 +133,6 @@
             </androidx.cardview.widget.CardView>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linear_input_wallet"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="@dimen/dp_80"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginEnd="5.5dp"
-                android:layout_marginBottom="@dimen/dp_10"
-                android:layout_weight="1"
-                android:background="@color/button_bk_ddake"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
-
-                <LinearLayout
-                    android:id="@+id/lin_input_histry"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="43dp"
-                        android:layout_height="43dp"
-                        android:layout_marginStart="13dp"
-                        android:src="@drawable/daoru" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_7"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="@string/input_histry"
-                        android:textColor="#494949"
-                        android:textSize="15sp" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="79dp"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginEnd="5.5dp"
-                android:layout_marginBottom="@dimen/dp_10"
-                android:layout_weight="1"
-                android:background="@color/button_bk_ddake"
-                android:focusable="false"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_4"
-                tools:ignore="UnusedAttribute">
-
-                <LinearLayout
-                    android:id="@+id/linHideWallet"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="43dp"
-                        android:layout_height="43dp"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:src="@drawable/daoru" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_7"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="@string/hide_wallet"
-                        android:textColor="#494949"
-                        android:textSize="15sp" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-
         <TextView
             android:id="@+id/tet_AppWallet"
             android:layout_width="wrap_content"
@@ -253,7 +166,6 @@
                     android:id="@+id/bn_create_wallet"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-
                     android:gravity="center_vertical">
 
                     <ImageView
@@ -274,47 +186,15 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
+            <View
                 android:layout_width="0dp"
                 android:layout_height="@dimen/dp_80"
                 android:layout_marginStart="5.5dp"
                 android:layout_marginEnd="@dimen/dp_10"
-                android:layout_marginBottom="@dimen/dp_10"
                 android:layout_weight="1"
-                android:visibility="invisible"
-                android:background="@color/button_bk_ddake"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
-
-                <LinearLayout
-                    android:id="@+id/lin_input_helpWord"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="43dp"
-                        android:layout_height="43dp"
-                        android:layout_marginStart="13dp"
-                        android:src="@drawable/helpword" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_7"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="@string/input_help_word"
-                        android:textColor="#494949"
-                        android:textSize="15sp" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
+                android:visibility="invisible" />
         </LinearLayout>
 
     </LinearLayout>
-
 
 </LinearLayout>

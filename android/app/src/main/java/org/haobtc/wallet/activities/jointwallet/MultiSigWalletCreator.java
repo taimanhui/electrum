@@ -44,6 +44,8 @@ import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -55,6 +57,8 @@ import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.MutiSigWalletEvent;
+import org.haobtc.wallet.event.PersonalMutiSigEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.haobtc.wallet.utils.MyDialog;
@@ -159,6 +163,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         int defaultName = preferences.getInt("defaultName", 0);
         edit = preferences.edit();
@@ -284,7 +289,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             case R.id.bn_add_key:
                 CommunicationModeSelector.runnables.clear();
                 CommunicationModeSelector.runnables.add(runnable);
-                CommunicationModeSelector.runnables.add(runnable2);
+                CommunicationModeSelector.runnables.add(null);
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
@@ -316,7 +321,12 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                         }).dispose();
                 break;
             case R.id.test_input_wallet:
-                mIntent(ImportHistoryWalletActivity.class);
+                boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
+                if (set_syn_server) {
+                    mIntent(ImportHistoryWalletActivity.class);
+                } else {
+                    mToast(getString(R.string.open_server_input));
+                }
                 break;
         }
     }
@@ -524,6 +534,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     addBixinKeyEvent = new AddBixinKeyEvent();
                     addBixinKeyEvent.setKeyname(strBixinname);
                     addBixinKeyEvent.setKeyaddress(strSweep);
+                    addBixinKeyEvent.setDevice_id("");
                     addEventsDatas.add(addBixinKeyEvent);
                     dialogBtoms.cancel();
                 }
@@ -591,7 +602,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         dialogBtoms.show();
     }
 
-    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub) {
+    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id) {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
@@ -656,6 +667,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             } else {
                 addBixinKeyEvent.setKeyname(strBixinname);
                 addBixinKeyEvent.setKeyaddress(strSweep);
+                addBixinKeyEvent.setDevice_id(device_id);
                 addEventsDatas.add(addBixinKeyEvent);
                 dialogBtoms.cancel();
             }
@@ -717,7 +729,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
 
     private Runnable runnable = () -> showInputDialogs(MultiSigWalletCreator.this, R.layout.bixinkey_input);
-    private Runnable runnable2 = () -> showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -780,7 +791,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 strInditor2 = tvIndicatorTwo.getText().toString();
                 for (int i = 0; i < addEventsDatas.size(); i++) {
                     String keyaddress = addEventsDatas.get(i).getKeyaddress();
-                    pubList.add("\"" + keyaddress + "\"");
+                    String device_id = addEventsDatas.get(i).getDevice_id();
+                    pubList.add("[\"" + keyaddress + "\",\"" + device_id + "\"]");
                 }
 
                 try {
@@ -825,4 +837,18 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             }
         }
     };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(MutiSigWalletEvent event) {
+        String xpub = event.getXpub();
+        String device_id = event.getDevice_id();
+
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, device_id);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

@@ -78,6 +78,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -97,6 +99,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -117,6 +121,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line"
                         android:visibility="visible" />
 
@@ -153,6 +159,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
                     <LinearLayout
@@ -191,6 +199,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line"
                         android:visibility="visible" />
 
@@ -248,6 +258,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -268,6 +280,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -289,6 +303,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
                     <TextView
@@ -309,6 +325,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
                     <RelativeLayout
@@ -340,6 +358,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
                     <RelativeLayout

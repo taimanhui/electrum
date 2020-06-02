@@ -756,5 +756,7 @@
     <string name="input_history_wallet">已通过BixinKey创建的历史钱包，可<font color="#6182F5">立即导入</font></string>
     <string name="diy_hard">自定义固件</string>
     <string name="delete_diy_hardware">删除自定义固件</string>
+    <string name="open_server_input">需开启同步服务器才可以导入历史钱包</string>
+    <string name="create_app_new_wallet">创建 App 新钱包</string>
 
 </resources>

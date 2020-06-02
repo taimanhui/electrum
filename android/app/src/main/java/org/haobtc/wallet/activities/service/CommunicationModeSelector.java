@@ -85,6 +85,8 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.FixAllLabelnameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.InitEvent;
+import org.haobtc.wallet.event.MutiSigWalletEvent;
+import org.haobtc.wallet.event.PersonalMutiSigEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ReadingEvent;
 import org.haobtc.wallet.event.ReceiveXpub;
@@ -244,8 +246,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     e.printStackTrace();
                 }
             } else {
-               Toast.makeText(this, "未找到可用的USB设备", Toast.LENGTH_LONG).show();
-               new Handler().postDelayed(this::finish, 2000);
+                Toast.makeText(this, "未找到可用的USB设备", Toast.LENGTH_LONG).show();
+                new Handler().postDelayed(this::finish, 2000);
             }
         }
          /*else {
@@ -879,14 +881,18 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 intent1.putExtra("histry_xpub", xpub);
                 startActivity(intent1);
             } else if (SingleSigWalletCreator.TAG.equals(tag)) {
-                EventBus.getDefault().post(new ReceiveXpub(xpub));
+                EventBus.getDefault().post(new ReceiveXpub(xpub, features.getDeviceId()));
             } else if ("check_xpub".equals(tag)) {
                 Intent intent = new Intent(this, CheckXpubResultActivity.class);
                 intent.putExtra("label", features.getLabel());
                 intent.putExtra("xpub", s);
                 startActivity(intent);
             } else if (CheckHideWalletFragment.TAG.equals(tag)) {
-                EventBus.getDefault().post(new CheckHideWalletEvent(xpub));
+                EventBus.getDefault().post(new CheckHideWalletEvent(xpub, features.getDeviceId()));
+            } else if (PersonalMultiSigWalletCreator.TAG.equals(tag)) {
+                EventBus.getDefault().post(new PersonalMutiSigEvent(xpub, features.getDeviceId()));
+            } else if (MultiSigWalletCreator.TAG.equals(tag)) {
+                EventBus.getDefault().post(new MutiSigWalletEvent(xpub, features.getDeviceId()));
             } else {
                 runOnUiThread(runnables.get(1));
             }

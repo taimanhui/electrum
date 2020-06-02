@@ -580,8 +580,7 @@ class AndroidCommands(commands.Commands):
             xpubs_list = json.loads(xpubs)
             for xpub_info in xpubs_list:
                 if len(xpub_info) == 2:
-                    for xpub, device_id in xpub_info:
-                        self.add_xpub(xpub, device_id)
+                    self.add_xpub(xpub_info[0], xpub_info[1])
                 else:
                     self.add_xpub(xpub_info)
             self.create_multi_wallet(name, hide_type=hide_type)

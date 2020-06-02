@@ -21,6 +21,7 @@ import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
+import org.haobtc.wallet.event.SetShutdownTimeEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,10 +49,10 @@ public class HardwareDetailsActivity extends BaseActivity {
     @BindView(R.id.wipe_device)
     LinearLayout wipe_device;
     public static boolean dismiss;
+    @BindView(R.id.test_shutdown_time)
+    TextView testShutdownTime;
     private String bleName;
-    private String firmwareVersion;
     private String device_id;
-    private String bleVerson;
     private String label;
 
     @Override
@@ -67,10 +68,11 @@ public class HardwareDetailsActivity extends BaseActivity {
     }
 
     private void inits() {
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         Intent intent = getIntent();
         bleName = intent.getStringExtra("bleName");
-        firmwareVersion = intent.getStringExtra("firmwareVersion");
-        bleVerson = intent.getStringExtra("bleVerson");
+        String firmwareVersion = intent.getStringExtra("firmwareVersion");
+        String bleVerson = intent.getStringExtra("bleVerson");
         device_id = intent.getStringExtra("device_id");
         label = intent.getStringExtra("label");
         if (!TextUtils.isEmpty(label)) {
@@ -79,7 +81,8 @@ public class HardwareDetailsActivity extends BaseActivity {
             tetKeyName.setText(String.format("%s", "BixinKEY"));
         }
 //        tetCode.setText(firmwareVersion);
-
+        String shutdownTime = preferences.getString("shutdownTime", "600");
+        testShutdownTime.setText(String.format("%s%s", shutdownTime, getString(R.string.second)));
     }
 
     @Override
@@ -87,7 +90,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.tetBluetoothSet})
+    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.tetBluetoothSet, R.id.linear_shutdown_time})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -118,6 +121,9 @@ public class HardwareDetailsActivity extends BaseActivity {
             case R.id.tetBluetoothSet:
                 mIntent(BixinKeyBluetoothSettingActivity.class);
                 break;
+            case R.id.linear_shutdown_time:
+                mIntent(SetShutdownTimeActivity.class);
+                break;
         }
     }
 
@@ -145,6 +151,7 @@ public class HardwareDetailsActivity extends BaseActivity {
         intentVersion.putExtras(bundle);
         startActivity(intentVersion);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isNFC) {
@@ -156,6 +163,11 @@ public class HardwareDetailsActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixBixinkeyNameEvent event) {
         tetKeyName.setText(event.getKeyname());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showtime(SetShutdownTimeEvent event) {
+        testShutdownTime.setText(String.format("%s%s", event.getTime(), getString(R.string.second)));
     }
 
     @Override

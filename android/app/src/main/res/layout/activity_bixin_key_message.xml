@@ -52,7 +52,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_240"
+                android:layout_height="180dp"
                 android:background="@drawable/white_tuo"
                 android:orientation="vertical">
 
@@ -161,46 +161,6 @@
 
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_marginStart="@dimen/sp_16"
-                    android:layout_marginEnd="@dimen/sp_16"
-                    android:background="@color/separation_line" />
-
-                <LinearLayout
-                    android:id="@+id/linear_shutdown_time"
-                    android:layout_width="match_parent"
-                    android:layout_height="59.5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:text="@string/set_shutdown_time"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/test_shutdown_time"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_weight="1"
-                        android:maxLines="1"
-                        android:gravity="center_vertical|end"
-                        android:singleLine="true"
-                        tools:text="20秒"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_13" />
-
-                    <ImageView
-                        android:layout_width="37dp"
-                        android:layout_height="match_parent"
-                        android:padding="15dp"
-                        android:src="@drawable/jiantou" />
-                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </RelativeLayout>

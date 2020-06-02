@@ -1,10 +1,10 @@
 package org.haobtc.wallet.event;
 
-public class CheckHideWalletEvent {
+public class PersonalMutiSigEvent {
     private String xpub;
     private String device_id;
 
-    public CheckHideWalletEvent(String xpub, String device_id) {
+    public PersonalMutiSigEvent(String xpub, String device_id) {
         this.xpub = xpub;
         this.device_id = device_id;
     }
@@ -16,4 +16,5 @@ public class CheckHideWalletEvent {
     public String getXpub() {
         return xpub;
     }
+
 }

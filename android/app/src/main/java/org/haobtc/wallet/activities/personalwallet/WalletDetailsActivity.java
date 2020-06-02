@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -22,8 +24,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.FixBixinkeyNameActivity;
+import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.adapter.WalletAddressAdapter;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.WalletAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -51,9 +55,16 @@ public class WalletDetailsActivity extends BaseActivity {
     RecyclerView reclPublicPerson;
     @BindView(R.id.text_fix_name)
     TextView textFixName;
+    @BindView(R.id.test_no_key)
+    TextView testNoKey;
+    @BindView(R.id.card_three_public)
+    CardView cardThreePublic;
+    @BindView(R.id.test_no_address)
+    TextView testNoAddress;
     private String wallet_name;
     private Dialog dialogBtom;
     private MyDialog myDialog;
+    private ArrayList<AddBixinKeyEvent> addEventsDatas;
     private ArrayList<WalletAddressEvent> walletAddressList;
 
     @Override
@@ -67,6 +78,10 @@ public class WalletDetailsActivity extends BaseActivity {
         myDialog = MyDialog.showDialog(WalletDetailsActivity.this);
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
+        String wallet_type = intent.getStringExtra("wallet_type");
+        if ("standard".equals(wallet_type)) {
+            cardThreePublic.setVisibility(View.GONE);
+        }
         tetName.setText(wallet_name);
 
     }
@@ -74,29 +89,62 @@ public class WalletDetailsActivity extends BaseActivity {
     @Override
     public void initData() {
         walletAddressList = new ArrayList<>();
+        addEventsDatas = new ArrayList<>();
         getAllFundedAddress();
+        getBixinKeyList();
+    }
+
+    private void getBixinKeyList() {
+        try {
+            PyObject get_device_info = Daemon.commands.callAttr("get_device_info");
+            if (!TextUtils.isEmpty(get_device_info.toString())) {
+                String[] key_list = get_device_info.toString().split(",");
+                if (key_list.length != 0) {
+                    for (int i = 0; i < key_list.length; i++) {
+                        AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
+                        String keyName = key_list[i].substring(key_list[i].indexOf("\"") + 1, key_list[i].lastIndexOf("\""));
+                        addBixinKeyEvent.setKeyname(keyName);
+                        addEventsDatas.add(addBixinKeyEvent);
+                    }
+                    PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
+                    reclPublicPerson.setAdapter(publicPersonAdapter);
+                } else {
+                    reclPublicPerson.setVisibility(View.GONE);
+                    testNoKey.setVisibility(View.VISIBLE);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            reclPublicPerson.setVisibility(View.GONE);
+            testNoKey.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private void getAllFundedAddress() {
         PyObject get_all_funded_address = null;
         try {
             get_all_funded_address = Daemon.commands.callAttr("get_all_funded_address");
-            Log.i("WalletDetailsActivity", "getAllFundedAddress: " + get_all_funded_address.toString());
             JSONArray jsonArray = new JSONArray(get_all_funded_address.toString());
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                WalletAddressEvent walletAddressEvent = new WalletAddressEvent();
-                walletAddressEvent.setAddress(jsonObject.getString("address"));
-                walletAddressEvent.setBalance(jsonObject.getString("balance"));
-                walletAddressList.add(walletAddressEvent);
-
+            if (jsonArray.length() != 0) {
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    WalletAddressEvent walletAddressEvent = new WalletAddressEvent();
+                    walletAddressEvent.setAddress(jsonObject.getString("address"));
+                    walletAddressEvent.setBalance(jsonObject.getString("balance"));
+                    walletAddressList.add(walletAddressEvent);
+                }
+                WalletAddressAdapter walletAddressAdapter = new WalletAddressAdapter(walletAddressList);
+                reclWalletAddr.setAdapter(walletAddressAdapter);
+            } else {
+                reclWalletAddr.setVisibility(View.GONE);
+                testNoAddress.setVisibility(View.VISIBLE);
             }
-            WalletAddressAdapter walletAddressAdapter = new WalletAddressAdapter(walletAddressList);
-            reclWalletAddr.setAdapter(walletAddressAdapter);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            reclWalletAddr.setVisibility(View.GONE);
+            testNoAddress.setVisibility(View.VISIBLE);
         }
     }
 
@@ -153,4 +201,10 @@ public class WalletDetailsActivity extends BaseActivity {
         dialogBtom.show();
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }

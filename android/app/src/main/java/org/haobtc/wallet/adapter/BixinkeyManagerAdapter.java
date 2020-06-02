@@ -14,7 +14,7 @@ import java.util.List;
 
 public class BixinkeyManagerAdapter extends BaseQuickAdapter<HardwareFeatures, BaseViewHolder> {
     public BixinkeyManagerAdapter( @Nullable List<HardwareFeatures> data) {
-        super(R.layout.bixinkey_check_item, data);
+        super(R.layout.key_item, data);
     }
 
     @Override

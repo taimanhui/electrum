@@ -169,10 +169,10 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             if (!TextUtils.isEmpty(balanceC)) {
                 if (balanceC.contains("(")) {
                     substring = balanceC.substring(0, balanceC.indexOf("("));
-                   // Log.e("substring", "substring: " + substring);
-                   // Log.e("substring", "balanceC: " + balanceC);
+                    // Log.e("substring", "substring: " + substring);
+                    // Log.e("substring", "balanceC: " + balanceC);
 
-                   // Log.i("getWalletMsgJXM", "substring:::" + substring);
+                    // Log.i("getWalletMsgJXM", "substring:::" + substring);
                     walletBlance.setText(substring);
 
                     strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
@@ -180,7 +180,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                         tetCny.setText(String.format("≈ %s", strCNY));
                     }
                 } else {
-                  //  Log.i("getWalletMsgJXM", "balanceC:::" + balanceC);
+                    //  Log.i("getWalletMsgJXM", "balanceC:::" + balanceC);
                     walletBlance.setText(balanceC);
                 }
             }
@@ -192,7 +192,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             JSONObject jsonObject = new JSONObject(msgVote);
             if (msgVote.contains("balance")) {
                 String balance = jsonObject.getString("balance");
-               // Log.i("getWalletMsgJXM", "event+substring:::" + balance);
+                // Log.i("getWalletMsgJXM", "event+substring:::" + balance);
                 walletBlance.setText(balance);
             }
             if (msgVote.contains("fiat")) {
@@ -219,6 +219,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             case R.id.conlay_back:
                 Intent intent = new Intent(getActivity(), WalletDetailsActivity.class);
                 intent.putExtra("wallet_name", name);
+                intent.putExtra("wallet_type", personce);
                 startActivity(intent);
                 break;
             case R.id.linear_send:

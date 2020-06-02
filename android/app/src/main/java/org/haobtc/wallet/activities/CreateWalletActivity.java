@@ -1,22 +1,24 @@
 package org.haobtc.wallet.activities;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.cardview.widget.CardView;
+import androidx.annotation.LayoutRes;
 
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.MultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.CreatAppWalletActivity;
-import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
-import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.wallet.aop.SingleClick;
 
@@ -27,12 +29,7 @@ import butterknife.OnClick;
 public class CreateWalletActivity extends BaseActivity {
     @BindView(R.id.img_backCreat)
     ImageView imgBackCreat;
-    @BindView(R.id.lin_input_helpWord)
-    LinearLayout linInputHelpWord;
-    @BindView(R.id.linear_input_wallet)
-    LinearLayout linearInputWallet;
     private String intentWhere;
-
 
     @Override
     public int getLayoutId() {
@@ -44,13 +41,7 @@ public class CreateWalletActivity extends BaseActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         intentWhere = intent.getStringExtra("intentWhere");
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
-        if (set_syn_server) {
-            linearInputWallet.setVisibility(View.VISIBLE);
-        } else {
-            linearInputWallet.setVisibility(View.GONE);
-        }
+
     }
 
     @Override
@@ -59,7 +50,7 @@ public class CreateWalletActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.bn_create_wallet, R.id.lin_input_helpWord})
+    @OnClick({R.id.img_backCreat, R.id.lin_personal_walt, R.id.bn_import_wallet, R.id.bn_create_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_backCreat:
@@ -76,13 +67,37 @@ public class CreateWalletActivity extends BaseActivity {
                 mIntent(MultiSigWalletCreator.class);
                 break;
             case R.id.bn_create_wallet:
-                mIntent(CreatAppWalletActivity.class);
-                break;
-            case R.id.lin_input_helpWord:
-                mIntent(MnemonicWordActivity.class);
+                createWalletChooseDialog(CreateWalletActivity.this, R.layout.choose_wallet);
                 break;
 
         }
+    }
+
+    private void createWalletChooseDialog(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.create_app_wallet).setOnClickListener(v -> {
+            mIntent(CreatAppWalletActivity.class);
+            dialogBtoms.dismiss();
+        });
+
+        view.findViewById(R.id.test_input_help_word).setOnClickListener(v -> {
+            mIntent(MnemonicWordActivity.class);
+            dialogBtoms.dismiss();
+        });
+
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
+
     }
 
 }

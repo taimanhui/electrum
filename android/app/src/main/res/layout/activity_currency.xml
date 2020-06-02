@@ -78,35 +78,35 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
                         android:layout_below="@+id/dnfjndjfns"
-                        android:layout_marginStart="@dimen/dp_10"
-                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/line_color" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
                         android:layout_below="@+id/dnfjndjfns"
-                        android:layout_marginStart="@dimen/dp_10"
+                        android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="60.5dp"
-                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/line_color" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
                         android:layout_below="@+id/dnfjndjfns"
-                        android:layout_marginStart="@dimen/dp_10"
+                        android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="119.5dp"
-                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/line_color" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
                         android:layout_below="@+id/dnfjndjfns"
-                        android:layout_marginStart="@dimen/dp_10"
+                        android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="178.5dp"
-                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/line_color" />
 
                     <RadioGroup
@@ -205,8 +205,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
                         android:layout_below="@+id/recl_cnyTable"
-                        android:layout_marginStart="@dimen/dp_10"
-                        android:layout_marginEnd="@dimen/dp_10"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/line_color" />
 
                     <TextView
@@ -214,7 +214,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_50"
                         android:layout_below="@+id/msjdhkjskdj"
-
                         android:gravity="center"
                         android:text="@string/check_all"
                         android:textColor="@color/button_bk_disableok"

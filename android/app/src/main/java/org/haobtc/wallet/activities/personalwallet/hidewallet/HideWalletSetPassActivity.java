@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.personalwallet.hidewallet;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -102,7 +103,8 @@ public class HideWalletSetPassActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(CheckHideWalletEvent updataHint) {
         String xpub = updataHint.getXpub();
-        String strXpub = "[\"" + xpub + "\"]";
+        String device_id = updataHint.getDevice_id();
+        String strXpub = "[[\"" + xpub + "\",\"" + device_id + "\"]]";
         try {
             Daemon.commands.callAttr("import_create_hw_wallet", "隐藏钱包", 1, 1, strXpub, new Kwarg("hide_type", true));
         } catch (Exception e) {

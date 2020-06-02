@@ -109,7 +109,6 @@
         <activity android:name=".activities.VerificationKEYActivity" />
         <activity android:name=".activities.AboutActivity" />
         <activity android:name=".activities.SendOne2OneMainPageActivity" />
-        <activity android:name=".activities.SignaturePageActivity" />
         <activity android:name=".activities.ReceivedPageActivity" />
         <activity android:name=".activities.Send2ManyActivity" />
         <activity android:name=".activities.SendOne2ManyMainPageActivity" />

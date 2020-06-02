@@ -210,7 +210,8 @@ public class SingleSigWalletCreator extends BaseActivity {
             return;
         }
         String xpub = event.getXpub();
-        String strXpub = "[\"" + xpub + "\"]";
+        String device_id = event.getDevice_id();
+        String strXpub = "[[\"" + xpub + "\",\"" + device_id + "\"]]";
         try {
             Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, 1, strXpub);
         } catch (Exception e) {

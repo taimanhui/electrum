@@ -10,6 +10,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -30,6 +31,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
@@ -37,6 +40,8 @@ import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.HideInputPassFinishEvent;
+import org.haobtc.wallet.event.PersonalMutiSigEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 
@@ -79,7 +84,8 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 ArrayList<String> pubList = new ArrayList<>();
                 for (int i = 0; i < addEventsDatas.size(); i++) {
                     String keyaddress = addEventsDatas.get(i).getKeyaddress();
-                    pubList.add("\"" + keyaddress + "\"");
+                    String device_id = addEventsDatas.get(i).getDevice_id();
+                    pubList.add("[\"" + keyaddress + "\",\"" + device_id + "\"]");
                 }
                 try {
                     Daemon.commands.callAttr("import_create_hw_wallet", walletNames, 1, sigNum, pubList.toString());
@@ -89,8 +95,8 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                     String message = e.getMessage();
                     if ("BaseException: file already exists at path".equals(message)) {
                         mToast(getString(R.string.changewalletname));
-                    }else if (message.contains("The same xpubs have create wallet")){
-                        String haveWalletName = message.substring(message.indexOf("name=")+5);
+                    } else if (message.contains("The same xpubs have create wallet")) {
+                        String haveWalletName = message.substring(message.indexOf("name=") + 5);
                         mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
 
                     }
@@ -121,6 +127,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         myDialog = MyDialog.showDialog(this);
@@ -153,7 +160,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 // new version code
                 CommunicationModeSelector.runnables.clear();
                 CommunicationModeSelector.runnables.add(null);
-                CommunicationModeSelector.runnables.add(runnable2);
+                CommunicationModeSelector.runnables.add(null);
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);
                 intent1.putExtra("tag", TAG);
                 startActivity(intent1);
@@ -164,14 +171,28 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
         }
     }
 
-    private Runnable runnable2 = () -> showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+            }
+        }
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(PersonalMutiSigEvent event) {
+        String xpub = event.getXpub();
+        String device_id = event.getDevice_id();
 
-    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub) {
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, device_id);
+    }
+
+    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id) {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-
         EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         TextView textView = view.findViewById(R.id.text_public_key_cosigner_popup);
@@ -202,18 +223,18 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
         });
         view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
             String strBixinname = edit_bixinName.getText().toString();
-            String strSweep = textView.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
                 mToast(getString(R.string.input_name));
                 return;
             }
-            if (TextUtils.isEmpty(strSweep)) {
+            if (TextUtils.isEmpty(xpub)) {
                 mToast(getString(R.string.input_public_address));
                 return;
             }
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             addBixinKeyEvent.setKeyname(strBixinname);
-            addBixinKeyEvent.setKeyaddress(strSweep);
+            addBixinKeyEvent.setKeyaddress(xpub);
+            addBixinKeyEvent.setDevice_id(device_id);
             addEventsDatas.add(addBixinKeyEvent);
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
@@ -225,14 +246,14 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
-            edit.putInt("defaultKeyNum",defaultKeyNameNum);
+            edit.putInt("defaultKeyNum", defaultKeyNameNum);
             edit.apply();
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     if (view.getId() == R.id.img_deleteKey) {
                         try {
-                            Daemon.commands.callAttr("delete_xpub", strSweep);
+                            Daemon.commands.callAttr("delete_xpub", xpub);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -247,16 +268,12 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 }
             });
             dialogBtoms.cancel();
-            // todo:关闭弹窗
 
         });
-
         //cancel dialog
         view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
             dialogBtoms.cancel();
         });
-
-
         dialogBtoms.setContentView(view);
         Window window = dialogBtoms.getWindow();
         //set pop_up size
@@ -269,12 +286,8 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == RESULT_OK) {
-            if (data != null) {
-                String content = data.getStringExtra(Constant.CODED_CONTENT);
-            }
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

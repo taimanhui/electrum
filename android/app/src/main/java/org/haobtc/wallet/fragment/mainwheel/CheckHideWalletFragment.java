@@ -41,33 +41,12 @@ public class CheckHideWalletFragment extends WheelViewpagerFragment {
             public void onClick(View v) {
                 CommunicationModeSelector.runnables.clear();
                 CommunicationModeSelector.runnables.add(null);
-                CommunicationModeSelector.runnables.add(runnable2);
+                CommunicationModeSelector.runnables.add(null);
                 Intent intent = new Intent(getActivity(), CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
             }
         });
-    }
-
-    private Runnable runnable2 = () -> createHideWallet(xpub);
-
-    private void createHideWallet(String xpub) {
-        String strXpub = "[\"" + xpub + "\"]";
-        try {
-            Daemon.commands.callAttr("import_create_hw_wallet", "隐藏钱包", 1, 1, strXpub, new Kwarg("hide_type", true));
-        } catch (Exception e) {
-            e.printStackTrace();
-            String message = e.getMessage();
-            if ("BaseException: file already exists at path".equals(message)) {
-                Toast.makeText(getActivity(), getString(R.string.changewalletname), Toast.LENGTH_SHORT).show();
-            } else if (message.contains("The same xpubs have create wallet")) {
-                String haveWalletName = message.substring(message.indexOf("name=") + 5);
-                Toast.makeText(getActivity(), getString(R.string.xpub_have_wallet) + haveWalletName, Toast.LENGTH_SHORT).show();
-            }
-            return;
-        }
-        Intent intent = new Intent(getActivity(), CheckHideWalletActivity.class);
-        startActivity(intent);
     }
 
     @Override
