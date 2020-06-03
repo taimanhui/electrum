@@ -286,7 +286,7 @@
     <string name="bluetooth_name">蓝牙名称</string>
     <string name="bixinkey_name">名称</string>
     <string name="bixinkey_set">BixinKey设置</string>
-    <string name="choose_update">请选择固件进行升级</string>
+    <string name="choose_update">请选择固件进行升级, 请确保升级前已经备份硬件钱包</string>
     <string name="bluetooth_code">蓝牙固件版本</string>
     <string name="input_old_pin">输入原始PIN码</string>
     <string name="bixinkey_fit">将手机与BixinKey贴合</string>

@@ -45,7 +45,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
         String result = "";
         switch (strings[0]) {
             case GET_EXTEND_PUBLIC_KEY_SINGLE:
-            case RECOVER:
             case SIGN_TX:
             case COUNTER_VERIFICATION:
                 try {
@@ -55,6 +54,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                     onException(e);
                 }
                 break;
+            case RECOVER:
             case SIGN_MESSAGE:
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3]).toString();

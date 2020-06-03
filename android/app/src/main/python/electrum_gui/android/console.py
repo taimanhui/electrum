@@ -1234,7 +1234,7 @@ class AndroidCommands(commands.Commands):
     def recovery_wallet(self, path='android_usb', *args):
         client = self.get_client(path=path)
         try:
-            response = client.recovery(binascii.unhexlify(args[0]))
+            response = client.recovery(*args)
         except Exception as e:
             raise BaseException(e)
         return response

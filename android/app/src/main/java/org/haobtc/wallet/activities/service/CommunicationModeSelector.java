@@ -587,7 +587,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             }
         } else {
             if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag))) {
-                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras);
+                SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+                String locate = preferences.getString("language", "");
+                String language = "English".equals(locate) ? "english" : "chinese";
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras, language);
                 return;
             }
             isActive = true;
