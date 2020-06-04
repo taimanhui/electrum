@@ -603,6 +603,9 @@ class AndroidCommands(commands.Commands):
     # #create tx#########################
     def get_default_fee_status(self):
         try:
+            x=2
+            self.config.set_key('mempool_fees', x==2)
+            self.config.set_key('dynamic_fees', x>0)
             return self.config.get_fee_status()
         except BaseException as e:
             raise e
@@ -763,13 +766,12 @@ class AndroidCommands(commands.Commands):
         try:
             net_params = self.network.get_parameters()
             proxy = None
-            if (proxy_mode != "" and proxy_host != "" and proxy_port != "" and proxy_user != ""):
+            if (proxy_mode != "" and proxy_host != "" and proxy_port != ""):
                 proxy = {'mode': str(proxy_mode).lower(),
                          'host': str(proxy_host),
                          'port': str(proxy_port),
                          'user': str(proxy_user),
                          'password': str(proxy_password)}
-
             net_params = net_params._replace(proxy=proxy)
             self.network.run_from_another_thread(self.network.set_parameters(net_params))
         except BaseException as e:
@@ -1617,6 +1619,17 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
         return json.dumps(servers)
+
+    def rename_wallet(self, old_name, new_name):
+        try:
+            self._assert_daemon_running()
+            if old_name is None or new_name is None:
+                raise BaseException("wallet_name can't be none")
+            else:
+                self.daemon.delete_wallet(old_name)
+                os.rename(self._wallet_path(old_name), self._wallet_path(new_name))
+        except BaseException as e:
+            raise e
 
     def select_wallet(self, name):
         try:

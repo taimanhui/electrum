@@ -741,8 +741,7 @@ class Network(Logger):
         except BaseException as e:
             self.logger.info(f"couldn't launch iface {server} -- {repr(e)}")
             await interface.close()
-            #print(f"could not launch iface {server} --- {repr(e)}")
-            #self.trigger_callback('set_server_status', server)
+            self.trigger_callback('set_server_status', server)
             return
         else:
             with self.interfaces_lock:
@@ -756,8 +755,7 @@ class Network(Logger):
             await self.switch_to_interface(server)
 
         self._add_recent_server(server)
-        self.trigger_callback('set_server_status', server)
-        #print(f"add_recent_server..................{server}")
+        #self.trigger_callback('set_server_status', server)
         self.trigger_callback('network_updated')
 
 
