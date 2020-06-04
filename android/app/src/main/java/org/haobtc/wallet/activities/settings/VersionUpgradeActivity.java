@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,6 +46,7 @@ import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class VersionUpgradeActivity extends BaseActivity {
 
@@ -160,6 +162,7 @@ public class VersionUpgradeActivity extends BaseActivity {
                         intent.putExtras(bundle);
                         intent.putExtra("extras", "hardware");
                         startActivity(intent);
+                        isDfu = false;
                         break;
                     case 2:
                         Intent intent1 = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
@@ -259,7 +262,11 @@ public class VersionUpgradeActivity extends BaseActivity {
         public void onError(@NonNull String deviceAddress, int error, int errorType, String message) {
             super.onError(deviceAddress, error, errorType, message);
 //            Ble.getInstance().disconnectAll();
-            EventBus.getDefault().post(new ExceptionEvent(message));
+            if ("DFU DEVICE NOT BONDED".equals(message)) {
+                BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress).createBond();
+            } else {
+                EventBus.getDefault().post(new ExceptionEvent(message));
+            }
         }
 
         @Override

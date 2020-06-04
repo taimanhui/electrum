@@ -14,9 +14,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -188,8 +185,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.i("mWheelplanting", "run: " + e.getMessage());
-                    addwalletFragment();
+                  //  addwalletFragment();
+                    System.exit(0);
                     return;
                 }
                 mainhandler.sendEmptyMessage(1);
@@ -530,8 +527,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
             // Log.i("threadMode", "event: " + msgVote + "------" + msgVote.length());
             //Rolling Wallet
-            if (fragmentList != null && fragmentList.size() > 0) {
-//                ((WheelViewpagerFragment) fragmentList.get(scrollPos)).setValue(msgVote);
+            if (fragmentList != null && fragmentList.size() > scrollPos) {
                 Optional.ofNullable(fragmentList.get(scrollPos)).ifPresent(fragment -> ((WheelViewpagerFragment) fragment).setValue(msgVote));
             }
         }
@@ -576,6 +572,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 String locate = preferences.getString("language", "");
                 String info = response.body().string();
                 UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+                String oldInfo = preferences.getString("upgrade_info", null);
+                Optional.ofNullable(oldInfo).ifPresent((s) -> {
+                    UpdateInfo old = UpdateInfo.objectFromData(s);
+                    if (!old.getStm32().getUrl().equals(updateInfo.getStm32().getUrl())) {
+                        updateInfo.getStm32().setNeedUpload(true);
+                    }
+                    if (!old.getNrf().getUrl().equals(updateInfo.getNrf().getUrl())) {
+                        updateInfo.getNrf().setNeedUpload(true);
+                    }
+                });
                 preferences.edit().putString("upgrade_info", updateInfo.toString()).apply();
                 String url = updateInfo.getAPK().getUrl();
                 String versionName = updateInfo.getAPK().getVersionName();

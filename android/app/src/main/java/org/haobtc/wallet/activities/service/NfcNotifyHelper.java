@@ -113,6 +113,7 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        NfcUtils.mNfcAdapter = null;
         EventBus.getDefault().unregister(this);
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

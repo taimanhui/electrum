@@ -12,6 +12,10 @@ import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.utils.Daemon;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
+
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     private Helper helper;
     private final static String TAG = BusinessAsyncTask.class.getSimpleName();
@@ -111,6 +115,11 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             EventBus.getDefault().post(new OperationTimeoutEvent());
         } else {
             helper.onException(e);
+        }
+        if (ble != null) {
+            ble.put("IS_CANCEL", true);
+            nfc.put("IS_CANCEL", true);
+            protocol.callAttr("notify");
         }
     }
 

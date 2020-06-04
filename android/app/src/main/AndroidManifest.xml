@@ -132,7 +132,7 @@
         <activity android:name=".activities.sign.SignActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity" />
         <activity android:name=".activities.settings.recovery_set.ResetDeviceProcessing" />
-        <activity android:name=".activities.settings.ResetDeviceSuccessActivity" />
+        <activity android:name=".activities.settings.recovery_set.ResetDeviceSuccessActivity" />
         <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" />
         <activity android:name=".dfu.NotificationActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.CheckHideWalletActivity" />

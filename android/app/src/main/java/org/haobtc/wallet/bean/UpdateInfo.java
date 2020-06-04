@@ -12,8 +12,8 @@ public class UpdateInfo {
 
     /**
      * APK : {"versionCode":4000000,"versionName":"4.0.0","url":"data/mainnet/1/bixin-4.0.0-0-RegTest-debug.apk","size":"47M","changelog_cn":"新特性","changelog_en":"New feature update"}
-     * stm32 : {"required":false,"version":[1,9,0,1],"bootloader_version":[1,8,0],"min_bridge_version":[2,0,25],"min_firmware_version":[1,6,2],"min_bootloader_version":[1,5,0],"url":"data/mainnet/1/bixin-1.9.0.1.bin","url_bitcoinonly":"","fingerprint":"e912cd6815df8ae9d374da841036fab737609dad4d3252ffb03c46241b413db9","fingerprint_bitcoinonly":"","changelog_cn":"新特性","changelog_en":"New feature update"}
-     * nrf : {"version":"1.0.1","url":"data/mainnet/1/bixin-1.0.1.zip","changelog_cn":"新特性","changelog_en":"New feature update"}
+     * stm32 : {"required":false,"version":[1,9,0,1],"bootloader_version":[1,8,0],"min_bridge_version":[2,0,25],"min_firmware_version":[1,6,2],"min_bootloader_version":[1,5,0],"url":"data/mainnet/1/bixin-1.9.0.1.bin","url_bitcoinonly":"","fingerprint":"e912cd6815df8ae9d374da841036fab737609dad4d3252ffb03c46241b413db9","fingerprint_bitcoinonly":"","changelog_cn":"新特性","changelog_en":"New feature update", "need_upload": false}
+     * nrf : {"version":"1.0.1","url":"data/mainnet/1/bixin-1.0.1.zip","changelog_cn":"新特性","changelog_en":"New feature update", "need_upload": false}
      */
 
     @SerializedName("APK")
@@ -60,6 +60,7 @@ public class UpdateInfo {
          * size : 47M
          * changelog_cn : 新特性
          * changelog_en : New feature update
+         * "need_upload": false
          */
 
         @SerializedName("versionCode")
@@ -143,6 +144,7 @@ public class UpdateInfo {
          * fingerprint_bitcoinonly :
          * changelog_cn : 新特性
          * changelog_en : New feature update
+         * "need_upload": false
          */
 
         @SerializedName("required")
@@ -169,6 +171,8 @@ public class UpdateInfo {
         private List<Integer> minFirmwareVersion;
         @SerializedName("min_bootloader_version")
         private List<Integer> minBootloaderVersion;
+        @SerializedName("need_upload")
+        private boolean needUpload;
 
         public static Stm32Bean objectFromData(String str) {
 
@@ -270,6 +274,14 @@ public class UpdateInfo {
         public void setMinBootloaderVersion(List<Integer> minBootloaderVersion) {
             this.minBootloaderVersion = minBootloaderVersion;
         }
+
+        public boolean isNeedUpload() {
+            return needUpload;
+        }
+
+        public void setNeedUpload(boolean needUpload) {
+            this.needUpload = needUpload;
+        }
     }
 
     public static class NrfBean {
@@ -278,6 +290,7 @@ public class UpdateInfo {
          * url : data/mainnet/1/bixin-1.0.1.zip
          * changelog_cn : 新特性
          * changelog_en : New feature update
+         * "need_upload": false
          */
 
         @SerializedName("version")
@@ -288,6 +301,8 @@ public class UpdateInfo {
         private String changelogCn;
         @SerializedName("changelog_en")
         private String changelogEn;
+        @SerializedName("need_upload")
+        private boolean needUpload;
 
         public static NrfBean objectFromData(String str) {
 
@@ -324,6 +339,14 @@ public class UpdateInfo {
 
         public void setChangelogEn(String changelogEn) {
             this.changelogEn = changelogEn;
+        }
+
+        public boolean isNeedUpload() {
+            return needUpload;
+        }
+
+        public void setNeedUpload(boolean needUpload) {
+            this.needUpload = needUpload;
         }
     }
 

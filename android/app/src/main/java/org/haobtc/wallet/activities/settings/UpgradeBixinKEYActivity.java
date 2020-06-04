@@ -29,11 +29,13 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
@@ -42,6 +44,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -60,8 +63,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.futureTask;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.way;
 
 
@@ -84,6 +92,10 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     private String newNrfVersion;
     private String newLoaderVersion;
     private boolean isNew;
+    private boolean isStm32Update;
+    private boolean isNrfUpdate;
+    private SharedPreferences preferences;
+    private UpdateInfo updateInfo;
 
 
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
@@ -97,6 +109,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             return new Gson().fromJson(feature, HardwareFeatures.class);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
          //   Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
+            ble.put("IS_CANCEL", true);
+            nfc.put("IS_CANCEL", true);
+            protocol.callAttr("notify");
             e.printStackTrace();
             throw e;
         }
@@ -123,8 +138,12 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                                 isNew = true;
                                 cancel(true);
                             } else {
-                                runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
-                                updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("stm32_url"));
+                                File file = new File(String.format("%s/bixin.bin", Objects.requireNonNull(getExternalCacheDir()).getPath()));
+                                if (isStm32Update || !file.exists()) {
+                                    runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
+                                    updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("stm32_url"));
+                                }
+                                showPromote();
                                 doUpdate(params[0]);
                             }
                             break;
@@ -134,19 +153,23 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                                 isNew = true;
                                 cancel(true);
                             } else {
-                                runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
-                                updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("nrf_url"));
+                                File file = new File(String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()));
+                                if (isNrfUpdate || !file.exists()) {
+                                    runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
+                                    updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("nrf_url"));
+                                }
+                                showPromote();
                                 doUpdate(params[0]);
                             }
                     }
                 } else {
+                    runOnUiThread(() -> tetUpgradeTest.setText("正在升级至自定义版本"));
                     doUpdate(params[0]);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 cancel(true);
             }
-
             return null;
         }
 
@@ -160,29 +183,33 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
         private void doUpdate(String path) {
             PyObject protocol = Global.py.getModule("trezorlib.transport.protocol");
+            File file = null;
             try {
                 protocol.put("PROCESS_REPORTER", this);
                 switch (tag) {
                     case 1:
                         if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
-                            File file = new File(String.format("%s/bixin.bin", Objects.requireNonNull(getExternalCacheDir()).getPath()));
+                            file = new File(String.format("%s/bixin.bin", Objects.requireNonNull(getExternalCacheDir()).getPath()));
                             if (!file.exists()) {
                                 showPromptMessage(R.string.update_file_not_exist);
                                 cancel(true);
+                                return;
                             }
                         }
                         Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, path);
                         break;
                     case 2:
                         if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
-                            File file = new File(String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()));
+                            file = new File(String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()));
                             if (!file.exists()) {
                                 showPromptMessage(R.string.update_file_not_exist);
                                 cancel(true);
+                                return;
                             }
                         } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
                             showPromptMessage(R.string.update_file_format_error);
                             cancel(true);
+                            return;
                         }
                         Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()) : VersionUpgradeActivity.filePath, path, "ble_ota");
                         break;
@@ -191,6 +218,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                if (BixinExceptions.FILE_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
+                    Optional.ofNullable(file).ifPresent(File::delete);
+                }
                 // clear state
                 protocol.put("HTTP", false);
                 protocol.put("OFFSET", 0);
@@ -217,6 +247,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             } else {
                 showPromptMessage(R.string.update_failed);
             }
+            ble.put("IS_CANCEL", true);
+            nfc.put("IS_CANCEL", true);
+            protocol.callAttr("notify");
             finish();
         }
 
@@ -244,14 +277,21 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             e.printStackTrace();
             return;
         }
-        if (tag == 1) {
-            runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newLoaderVersion));
-        } else {
-            runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newNrfVersion));
-        }
+        showPromote();
         if (tag == 2 && "ble".equals(way)) {
             dfu();
         }
+    }
+
+    private void showPromote() {
+        if (tag == 1) {
+            updateInfo.getStm32().setNeedUpload(false);
+            runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newLoaderVersion));
+        } else {
+            updateInfo.getNrf().setNeedUpload(false);
+            runOnUiThread(() -> tetUpgradeTest.setText("正在升级至 v" + newNrfVersion));
+        }
+        preferences.edit().putString("update_info", updateInfo.toString()).apply();
     }
 
     private void showPromptMessage(@StringRes int id) {
@@ -279,6 +319,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             case 2:
                 tetUpgradeTest.setText("V" + newNrfVersion);
         }
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        String info = preferences.getString("upgrade_info", null);
+        Optional.ofNullable(info).ifPresent((infos) -> {
+            updateInfo = UpdateInfo.objectFromData(infos);
+            isStm32Update = updateInfo.getStm32().isNeedUpload();
+            isNrfUpdate = updateInfo.getNrf().isNeedUpload();
+        });
     }
 
     @Override
@@ -296,7 +343,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 int percent = intent.getIntExtra("process", 0);
                 progressUpgrade.setIndeterminate(false);
                 progressUpgrade.setProgress(percent);
-                tetUpgradeNum.setText(String.format("%s%%", String.valueOf(percent)));
+                tetUpgradeNum.setText(String.format(Locale.ENGLISH, "%d%%", percent));
             }
         }
     };
@@ -330,6 +377,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         if (view.getId() == R.id.img_back) {
             finish();
             if (mTask != null) {
+                nfcTransport.put("ENABLED", false);
+                bleTransport.put("ENABLED", false);
                 mTask.cancel(true);
             }
            cancelDfu();
@@ -349,8 +398,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     }
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onDfu(DfuEvent event) {
-        EventBus.getDefault().removeStickyEvent(DfuEvent.class);
         if (event.getType() == DfuEvent.DFU_SHOW_PROCESS) {
+            EventBus.getDefault().removeStickyEvent(DfuEvent.class);
             if (Strings.isNullOrEmpty(VersionUpgradeActivity.filePath)) {
                 SharedPreferences sharedPreferences = getSharedPreferences("devices", MODE_PRIVATE);
                 String device = sharedPreferences.getString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), "");
@@ -375,6 +424,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                     executorService.execute(() -> updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("nrf_url")));
                 }
             } else {
+                runOnUiThread(() -> tetUpgradeTest.setText("正在升级至自定义版本"));
                 dfu();
             }
         }
@@ -405,9 +455,14 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath);
             DfuServiceInitiator.createDfuNotificationChannel(this);
             starter.start(this, DfuService.class);
-
     }
-
+    @Subscribe
+    public void doDFU(DfuEvent event) {
+        if (event.getType() ==3) {
+            EventBus.getDefault().removeStickyEvent(DfuEvent.class);
+            dfu();
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -425,11 +480,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         }
         mTask = null;
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
     protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 

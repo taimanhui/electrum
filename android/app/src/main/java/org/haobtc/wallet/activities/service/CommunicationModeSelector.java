@@ -213,7 +213,13 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         if (COMMUNICATION_MODE_NFC.equals(way)) {
             NfcUtils.nfc(this, true);
             radioBle.setVisibility(View.GONE);
+            usbTransport.put("ENABLED", false);
+            bleTransport.put("ENABLED", false);
+            nfcTransport.put("ENABLED", true);
         } else if ("ble".equals(way)) {
+            usbTransport.put("ENABLED", false);
+            bleTransport.put("ENABLED", true);
+            nfcTransport.put("ENABLED", false);
             mBle = Ble.getInstance();
             radioNfc.setVisibility(View.GONE);
             frameLayout.setVisibility(View.VISIBLE);
@@ -234,6 +240,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             ).dispose();
         } else {
             // usb init
+            usbTransport.put("ENABLED", true);
+            bleTransport.put("ENABLED", false);
+            nfcTransport.put("ENABLED", false);
             radioGroup.setVisibility(View.GONE);
             setVisible(false);
             usbManager = CustomerUsbManager.getInstance(this);
@@ -399,8 +408,11 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             return features;
         } catch (Exception e) {
             Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
-            ble.put("IS_CANCEL", true);
-            nfc.put("IS_CANCEL", true);
+            if (ble != null) {
+                ble.put("IS_CANCEL", true);
+                nfc.put("IS_CANCEL", true);
+                protocol.callAttr("notify");
+            }
             e.printStackTrace();
             throw e;
         }
@@ -814,6 +826,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void onDestroy() {
         super.onDestroy();
         MyHandler.myHandler = null;
+        NfcUtils.mNfcAdapter = null;
         EventBus.getDefault().unregister(this);
         if ("usb".equals(way)) {
             CustomerUsbManager.getInstance(this).unRegister(this);
@@ -888,7 +901,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 EventBus.getDefault().post(new ReceiveXpub(xpub, features.getDeviceId()));
             } else if ("check_xpub".equals(tag)) {
                 Intent intent = new Intent(this, CheckXpubResultActivity.class);
-                intent.putExtra("label", features.getLabel());
+                intent.putExtra("label", Optional.ofNullable(features.getLabel()).orElse("BixinKEY"));
                 intent.putExtra("xpub", s);
                 startActivity(intent);
             } else if (CheckHideWalletFragment.TAG.equals(tag)) {

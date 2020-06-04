@@ -10,7 +10,8 @@ public enum BixinExceptions {
    TRANSACTION_FORMAT_ERROR("BaseException: failed to recognize transaction encoding for txt: craft fury pig target diagram ...", 9),
    PIN_OPERATION_TIMEOUT("BaseException: waiting pin timeout", 10),
    PASSPHRASE_OPERATION_TIMEOUT("BaseException: waiting passphrase timeout", 11),
-   BLE_RESPONSE_READ_TIMEOUT("read ble response timeout", 12);
+   BLE_RESPONSE_READ_TIMEOUT("read ble response timeout", 12),
+   FILE_FORMAT_ERROR("BaseException: File is not a zip file", 13);
 
 
    private final String message;

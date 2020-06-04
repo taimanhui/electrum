@@ -112,6 +112,9 @@ public class BleService extends Service {
                 case 8:
                 case 59:
                 default:
+                    if (ble != null) {
+                        ble.put("IS_CANCEL", true);
+                    }
                     EventBus.getDefault().post(new ExistEvent());
                     Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
             }
@@ -219,6 +222,11 @@ public class BleService extends Service {
                     int previousState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
                     int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1);
                     Log.d(TAG, "receive broadcast===" + action + "state===" + bluetoothDevice.getBondState() + "===previous===" + previousState + "===STATE" + state);
+                    // In order to support pair and upgrade ble one time
+                    if (state == BluetoothDevice.BOND_BONDED && previousState == BluetoothDevice.BOND_BONDING && !isBonded) {
+                        new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new DfuEvent(3)), 2000);
+                        return;
+                    }
                     if (state == BluetoothDevice.BOND_NONE && previousState == BluetoothDevice.BOND_BONDED) {
                         Log.d(TAG, String.format("设备==%s==,配对信息已清除", bluetoothDevice.getName()));
                     }

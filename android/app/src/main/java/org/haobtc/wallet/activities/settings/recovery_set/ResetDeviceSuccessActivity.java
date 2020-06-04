@@ -1,4 +1,4 @@
-package org.haobtc.wallet.activities.settings;
+package org.haobtc.wallet.activities.settings.recovery_set;
 
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +11,6 @@ import org.haobtc.wallet.aop.SingleClick;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.com.heaton.blelibrary.ble.Ble;
 
 public class ResetDeviceSuccessActivity extends BaseActivity {
     @BindView(R.id.img_back)
@@ -40,7 +39,6 @@ public class ResetDeviceSuccessActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.btn_finish:
-//                Ble.getInstance().disconnectAll();
                 finishAffinity();
                 break;
         }
