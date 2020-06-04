@@ -43,7 +43,7 @@ from trezorlib.cli import trezorctl
 from electrum.wallet_db import WalletDB
 from enum import Enum
 from .firmware_sign_nordic_dfu import parse
-
+from electrum import constants
 
 class Status(Enum):
     net = 1
@@ -592,7 +592,8 @@ class AndroidCommands(commands.Commands):
         try:
             if self.label_flag:
                 Vpub_data = []
-                if xpub[0:4] == 'Vpub':
+                title = ('Vpub' if constants.net.TESTNET else 'Zpub')
+                if xpub[0:4] == title:
                     Vpub_data = json.loads(self.label_plugin.pull_xpub(xpub))
                     xpub = BIP32Node.get_p2wpkh_from_p2wsh(xpub)
                 vpub_data = json.loads(self.label_plugin.pull_xpub(xpub))
