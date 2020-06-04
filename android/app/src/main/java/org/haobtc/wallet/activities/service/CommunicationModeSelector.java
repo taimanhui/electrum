@@ -3,6 +3,8 @@ package org.haobtc.wallet.activities.service;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,10 +54,12 @@ import org.haobtc.wallet.activities.VerificationKEYActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
 import org.haobtc.wallet.activities.jointwallet.MultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.ChooseHistryWalletActivity;
+import org.haobtc.wallet.activities.personalwallet.CreatAppWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.PersonalMultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
+import org.haobtc.wallet.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.wallet.activities.settings.BixinKeyBluetoothSettingActivity;
 import org.haobtc.wallet.activities.settings.CheckXpubResultActivity;
 import org.haobtc.wallet.activities.settings.ConfidentialPaymentSettings;
@@ -633,14 +638,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         return fragment;
     }
 
-    public void showErrorDialog(int error, int title) {
-        Log.i("ddddjinxoiamin", "onException------: "+error);
-        ErrorDialogFragment fragment = new ErrorDialogFragment(error, title);
-        fragment.setRunnable(retry);
-        fragment.setActivity(this);
-        fragment.show(getSupportFragmentManager(), "");
-    }
-
     //Activate interface
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doInit(InitEvent event) {
@@ -855,7 +852,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Override
     public void onException(Exception e) {
-        Log.i("jinxoaminsssss", "onException-----: "+e.getMessage());
+        Log.i("jinxoaminsssss", "onException-----: " + e.getMessage());
+        Log.i("TAGgetMessageddd", "1234567687980----------"+e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device"));
+
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -868,8 +867,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             showErrorDialog(R.string.try_another_key, R.string.unpair);
         } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
-        } else if (e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device")|| e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
-            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
+        } else if (e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device")) {
+            Toast.makeText(this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
+            Log.i("TAGgetMessageddd", "1234567687980----------"+e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device"));
+//            errorDialogShow(CommunicationModeSelector.this,R.layout.pass_error);
         } else if (e.getMessage().contains(BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage())) {
             showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
         } else {
@@ -877,6 +878,13 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
 //        }
 
+    }
+
+    public void showErrorDialog(int error, int title) {
+        ErrorDialogFragment fragment = new ErrorDialogFragment(error, title);
+        fragment.setRunnable(retry);
+        fragment.setActivity(this);
+        fragment.show(getSupportFragmentManager(), "");
     }
 
     @Override
@@ -907,9 +915,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             } else if (CheckHideWalletFragment.TAG.equals(tag)) {
                 EventBus.getDefault().post(new CheckHideWalletEvent(xpub, features.getDeviceId()));
             } else if (PersonalMultiSigWalletCreator.TAG.equals(tag)) {
-                EventBus.getDefault().post(new PersonalMutiSigEvent(xpub, features.getDeviceId(),features.getLabel()));
+                EventBus.getDefault().post(new PersonalMutiSigEvent(xpub, features.getDeviceId(), features.getLabel()));
             } else if (MultiSigWalletCreator.TAG.equals(tag)) {
-                EventBus.getDefault().post(new MutiSigWalletEvent(xpub, features.getDeviceId(),features.getLabel()));
+                EventBus.getDefault().post(new MutiSigWalletEvent(xpub, features.getDeviceId(), features.getLabel()));
             } else {
                 runOnUiThread(runnables.get(1));
             }

@@ -41,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (getLayoutId() != R.layout.activity_lunch) {
             setContentView(getLayoutId());
         }
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); //Disable horizontal screen
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//Disable horizontal screen
         mBinitState();
         initView();
         initData();

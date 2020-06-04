@@ -789,7 +789,8 @@
     <string name="BixinKey">BixinKey</string>
     <string name="dont_use">（Not available）</string>
     <string name="node_have">Node already exists</string>
-    <string name="select_promote">请先选择自定义文件</string>
-    <string name="need_backup">升级前请先备份</string>
+    <string name="select_promote">Please select a customization file first</string>
+    <string name="need_backup">Please back up before upgrading</string>
+    <string name="key_wrong">Wrong password or wrong key</string>
 
 </resources>

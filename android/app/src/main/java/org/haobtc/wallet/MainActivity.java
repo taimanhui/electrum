@@ -185,8 +185,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
                 } catch (Exception e) {
                     e.printStackTrace();
-                  //  addwalletFragment();
-                    System.exit(0);
+                    addwalletFragment();
                     return;
                 }
                 mainhandler.sendEmptyMessage(1);

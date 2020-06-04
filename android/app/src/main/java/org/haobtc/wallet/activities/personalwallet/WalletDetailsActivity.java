@@ -37,6 +37,7 @@ import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.WalletAddressEvent;
+import org.haobtc.wallet.event.WalletDetailBixinKeyEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 import org.json.JSONArray;
@@ -73,7 +74,7 @@ public class WalletDetailsActivity extends BaseActivity {
     private String wallet_name;
     private Dialog dialogBtom;
     private MyDialog myDialog;
-    private ArrayList<AddBixinKeyEvent> addEventsDatas;
+    private ArrayList<WalletDetailBixinKeyEvent> addEventsDatas;
     private ArrayList<WalletAddressEvent> walletAddressList;
     private List<HardwareFeatures> deviceValue;
 
@@ -123,12 +124,17 @@ public class WalletDetailsActivity extends BaseActivity {
                 if (!TextUtils.isEmpty(str_deviceId)) {
                     for (HardwareFeatures entity : deviceValue) {
                         if (str_deviceId.contains(entity.getDeviceId())) {
-                            AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
+                            WalletDetailBixinKeyEvent addBixinKeyEvent = new WalletDetailBixinKeyEvent();
                             if (!TextUtils.isEmpty(entity.getLabel())) {
-                                addBixinKeyEvent.setKeyname(entity.getLabel());
+                                addBixinKeyEvent.setLabel(entity.getLabel());
                             } else {
-                                addBixinKeyEvent.setKeyname("BixinKey");
+                                addBixinKeyEvent.setLabel("BixinKey");
                             }
+                            addBixinKeyEvent.setBleName(entity.getBleName());
+                            addBixinKeyEvent.setDeviceId(entity.getDeviceId());
+                            addBixinKeyEvent.setMajorVersion(entity.getMajorVersion());
+                            addBixinKeyEvent.setMinorVersion(entity.getMinorVersion());
+                            addBixinKeyEvent.setPatchVersion(entity.getPatchVersion());
                             addEventsDatas.add(addBixinKeyEvent);
                         }
                     }
@@ -137,13 +143,13 @@ public class WalletDetailsActivity extends BaseActivity {
                     publicPersonAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                            String firmwareVersion = "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
+                            String firmwareVersion = "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getMinorVersion() + "." + addEventsDatas.get(position).getPatchVersion();
                             Intent intent = new Intent(WalletDetailsActivity.this, HardwareDetailsActivity.class);
-                            intent.putExtra("label", deviceValue.get(position).getLabel());
-                            intent.putExtra("bleName", deviceValue.get(position).getBleName());
+                            intent.putExtra("label", addEventsDatas.get(position).getLabel());
+                            intent.putExtra("bleName", addEventsDatas.get(position).getBleName());
                             intent.putExtra("firmwareVersion", firmwareVersion);
-                            intent.putExtra("bleVerson", "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getPatchVersion());
-                            intent.putExtra("device_id", deviceValue.get(position).getDeviceId());
+                            intent.putExtra("bleVerson", "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getPatchVersion());
+                            intent.putExtra("device_id", addEventsDatas.get(position).getDeviceId());
                             startActivity(intent);
                         }
                     });

@@ -105,13 +105,16 @@ public class VerificationKEYActivity extends BaseActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         OkHttpUtils.post().url("https://key.bixin.com/lengqian.bo/")
                 .params(pramas)
                 .build()
+                .connTimeOut(10000)
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Request request, Exception e) {
                         Log.i("strVerification", "onError: ---- " + request);
+                        mToast(e.getMessage());
                         Drawable drawableStartFail = getDrawable(R.drawable.fail);
                         Objects.requireNonNull(drawableStartFail).setBounds(0, 0, drawableStartFail.getMinimumWidth(), drawableStartFail.getMinimumHeight());
                         if (isNFC) {

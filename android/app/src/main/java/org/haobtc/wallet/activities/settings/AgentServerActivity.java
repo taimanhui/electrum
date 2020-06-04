@@ -62,6 +62,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private String set_proxy;
+    private boolean set_proxy_status;
 
     @Override
     public int getLayoutId() {
@@ -75,6 +76,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         set_proxy = preferences.getString("set_proxy", "");
+        set_proxy_status = preferences.getBoolean("set_proxy_status", false);
         TextChange textChange = new TextChange();
         editAgentIP.addTextChangedListener(textChange);
         editPort.addTextChangedListener(textChange);
@@ -87,19 +89,24 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     }
 
     private void inits() {
-        if (!TextUtils.isEmpty(set_proxy)) {
-            String[] wordsList = set_proxy.split(" ");
-            switch (wordsList.length) {
-                case 5:
-                    editPass.setText(wordsList[4]);
-                case 4:
-                    editUsername.setText(wordsList[3]);
-                case 3:
-                    testNodeType.setText(wordsList[0]);
-                    editAgentIP.setText(wordsList[1]);
-                    editPort.setText(wordsList[2]);
+        if (set_proxy_status){
+            switchAgent.setChecked(true);
+            if (!TextUtils.isEmpty(set_proxy)) {
+                String[] wordsList = set_proxy.split(" ");
+                switch (wordsList.length) {
+                    case 5:
+                        editPass.setText(wordsList[4]);
+                    case 4:
+                        editUsername.setText(wordsList[3]);
+                    case 3:
+                        testNodeType.setText(wordsList[0]);
+                        editAgentIP.setText(wordsList[1]);
+                        editPort.setText(wordsList[2]);
 
+                }
             }
+        }else{
+            switchAgent.setChecked(false);
         }
     }
 
@@ -203,6 +210,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editPort.setText(wordsList[2]);
                 }
             }
+            edit.putBoolean("set_proxy_status",true).apply();
 
         } else {
             testNodeType.setText("");
@@ -215,6 +223,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             editUsername.setEnabled(false);
             editPass.setEnabled(false);
             closeAgentServer();
+            edit.putBoolean("set_proxy_status",false).apply();
         }
     }
 
@@ -224,6 +233,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     class TextChange implements TextWatcher {
