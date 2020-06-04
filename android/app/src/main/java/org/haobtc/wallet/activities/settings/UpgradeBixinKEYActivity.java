@@ -71,6 +71,7 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.way;
+import static org.haobtc.wallet.activities.settings.VersionUpgradeActivity.isDIY;
 
 
 public class UpgradeBixinKEYActivity extends BaseActivity {
@@ -96,6 +97,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     private boolean isNrfUpdate;
     private SharedPreferences preferences;
     private UpdateInfo updateInfo;
+    private boolean isNeedBackup;
 
 
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
@@ -127,12 +129,17 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected Void doInBackground(String... params) {
             try {
-                if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
-                    HardwareFeatures features = getFeatures(params[0]);
+                HardwareFeatures features = getFeatures(params[0]);
+                if (!isDIY) {
                     String nrfVersion = Optional.ofNullable(features.getBleVer()).orElse("0");
                     String loaderVersion = String.format("%s.%s.%s", features.getMajorVersion(), features.getMinorVersion(), features.getPatchVersion());
                     switch (tag) {
                         case 1:
+                            if (features.isInitialized() && features.isNeedsBackup()) {
+                                isNeedBackup = true;
+                                cancel(true);
+                                break;
+                            }
                             assert newLoaderVersion != null;
                             if (newLoaderVersion.compareTo(loaderVersion) <= 0 && !features.isBootloaderMode()) {
                                 isNew = true;
@@ -163,8 +170,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                             }
                     }
                 } else {
-                    runOnUiThread(() -> tetUpgradeTest.setText("正在升级至自定义版本"));
-                    doUpdate(params[0]);
+                    if (features.isInitialized() && features.isNeedsBackup() && tag ==1) {
+                        isNeedBackup = true;
+                        cancel(true);
+                    } else {
+                        runOnUiThread(() -> tetUpgradeTest.setText("正在升级至自定义版本"));
+                        doUpdate(params[0]);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -231,19 +243,20 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            VersionUpgradeActivity.filePath = "";
             mIntent(UpgradeFinishedActivity.class);
             finishAffinity();
         }
 
         @Override
         protected void onCancelled() {
-            VersionUpgradeActivity.filePath = "";
             tetUpgradeTest.setText(getString(R.string.Cancelled));
             EventBus.getDefault().post(new ExistEvent());
             if (isNew) {
                 isNew = false;
                 showPromptMessage(R.string.is_new);
+            } else if (isNeedBackup) {
+                isNeedBackup = false;
+                showPromptMessage(R.string.need_backup);
             } else {
                 showPromptMessage(R.string.update_failed);
             }
@@ -312,12 +325,14 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         tag = getIntent().getIntExtra("tag", 1);
         newNrfVersion = Objects.requireNonNull(getIntent().getExtras()).getString("nrf_version");
         newLoaderVersion = getIntent().getExtras().getString("stm32_version");
-        switch (tag) {
-            case 1:
-                tetUpgradeTest.setText("V" + newLoaderVersion);
-                break;
-            case 2:
-                tetUpgradeTest.setText("V" + newNrfVersion);
+        if (!isDIY) {
+            switch (tag) {
+                case 1:
+                    tetUpgradeTest.setText("V" + newLoaderVersion);
+                    break;
+                case 2:
+                    tetUpgradeTest.setText("V" + newNrfVersion);
+            }
         }
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String info = preferences.getString("upgrade_info", null);
@@ -400,7 +415,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     public void onDfu(DfuEvent event) {
         if (event.getType() == DfuEvent.DFU_SHOW_PROCESS) {
             EventBus.getDefault().removeStickyEvent(DfuEvent.class);
-            if (Strings.isNullOrEmpty(VersionUpgradeActivity.filePath)) {
+            if (!isDIY) {
                 SharedPreferences sharedPreferences = getSharedPreferences("devices", MODE_PRIVATE);
                 String device = sharedPreferences.getString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), "");
                 String nrfVersion;

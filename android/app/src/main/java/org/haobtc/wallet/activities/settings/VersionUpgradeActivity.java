@@ -46,7 +46,6 @@ import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class VersionUpgradeActivity extends BaseActivity {
 
@@ -79,6 +78,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     private RxPermissions rxPermissions;
     public static String filePath;
     private Bundle bundle;
+    public static boolean isDIY;
 
     @Override
     public int getLayoutId() {
@@ -103,6 +103,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         }
         tetFirmware.setText(String.format("v%s", firmwareVersion));
         tetBluetooth.setText(String.format("v%s", bleVerson));
+        testFileLoad.setText(filePath);
 
     }
 
@@ -136,7 +137,9 @@ public class VersionUpgradeActivity extends BaseActivity {
                 checkBoxFirmware.setChecked(false);
                 checkBoxBluetooth.setChecked(false);
                 checkWitch = 3;
+                isDIY = true;
             } else {
+                isDIY = false;
                 checkWitch = 0;
             }
         });
@@ -156,23 +159,23 @@ public class VersionUpgradeActivity extends BaseActivity {
                         mToast(getString(R.string.please_choose_firmware));
                         break;
                     case 1:
-                        Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("tag", TAG);
-                        intent.putExtras(bundle);
-                        intent.putExtra("extras", "hardware");
-                        startActivity(intent);
-                        isDfu = false;
+                        upgrade("hardware", false);
                         break;
                     case 2:
-                        Intent intent1 = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent1.putExtra("tag", TAG);
-                        intent1.putExtras(bundle);
-                        intent1.putExtra("extras", "ble");
-                        startActivity(intent1);
-                        isDfu = true;
+                        upgrade("ble", true);
                         break;
+                    case 3:
+                        if (Strings.isNullOrEmpty(filePath)) {
+                            mToast(getString(R.string.select_promote));
+                        } else {
+                            if (filePath.endsWith(".bin")) {
+                                upgrade("hardware", false);
+                            } else if (filePath.endsWith(".zip")) {
+                                upgrade("ble", true);
+                            } else {
+                                mToast(getString(R.string.update_file_format_error));
+                            }
+                        }
                 }
                 break;
             case R.id.btn_import_file:
@@ -193,6 +196,20 @@ public class VersionUpgradeActivity extends BaseActivity {
                         }).dispose();
                 break;
         }
+    }
+    /**
+     *
+     * @param hardware which firmware to upgrade
+     * @param b use ble ota or not
+     * **/
+    private void upgrade(String hardware, boolean b) {
+        Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("tag", TAG);
+        intent.putExtras(bundle);
+        intent.putExtra("extras", hardware);
+        startActivity(intent);
+        isDfu = b;
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING, sticky = true)
@@ -216,7 +233,6 @@ public class VersionUpgradeActivity extends BaseActivity {
             final Intent pauseAction = new Intent(DfuBaseService.BROADCAST_ACTION);
             pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
             LocalBroadcastManager.getInstance(VersionUpgradeActivity.this).sendBroadcast(pauseAction);
-            VersionUpgradeActivity.filePath = "";
             SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
             SharedPreferences upgradeInfo = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
             String info = upgradeInfo.getString("upgrade_info", "");

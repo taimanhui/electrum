@@ -754,10 +754,12 @@
     <string name="please_input_time">请输入关机时间</string>
     <string name="little_time">时间最短为10秒哦！</string>
     <string name="input_history_wallet">已通过BixinKey创建的历史钱包，可<font color="#6182F5">立即导入</font></string>
-    <string name="diy_hard">自定义固件</string>
+    <string name="diy_hard">选择自定义固件</string>
     <string name="open_server_input">需开启同步服务器才可以导入历史钱包</string>
     <string name="create_app_new_wallet">创建 App 新钱包</string>
     <string name="dont_use">（不可用）</string>
     <string name="node_have">节点已存在</string>
+    <string name="select_promote">请先选择自定义文件</string>
+    <string name="need_backup">升级前请先备份</string>
 
 </resources>
