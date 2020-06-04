@@ -784,8 +784,10 @@
     <string name="little_time">The shortest time is 10 seconds!</string>
     <string name="input_history_wallet">Historical wallet created through BixinKey, which can be imported immediately</string>
     <string name="diy_hard">Custom firmware</string>
-    <string name="delete_diy_hardware">Delete custom firmware</string>
     <string name="open_server_input">You need to turn on the synchronization server to import the history Wallet</string>
     <string name="create_app_new_wallet">Create new wallet for app</string>
+    <string name="BixinKey">BixinKey</string>
+    <string name="dont_use">（Not available）</string>
+    <string name="node_have">Node already exists</string>
 
 </resources>

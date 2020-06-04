@@ -1,14 +1,16 @@
 package org.haobtc.wallet.activities.settings;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,11 +18,13 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.adapter.CustomElectrumAdapter;
 import org.haobtc.wallet.adapter.ElectrumListAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.CNYBean;
@@ -44,24 +48,30 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
     RecyclerView reclNodeChose;
     @BindView(R.id.btn_Finish)
     Button btnFinish;
+    @BindView(R.id.recl_addNode)
+    RecyclerView reclAddNode;
     private PyObject get_server_list;
     private ArrayList<CNYBean> electrumList;
     private int electrumNode;
     private SharedPreferences.Editor edit;
     private ArrayList<SendMoreAddressEvent> addressEvents;
+    private SharedPreferences pre_electrumNode;
+    private ArrayList<String> customElectrumList;
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_electrum_node_choose;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         electrumNode = preferences.getInt("electrumNode", 0);
-
+        reclNodeChose.setNestedScrollingEnabled(false);
+        reclAddNode.setNestedScrollingEnabled(false);
     }
 
     @Override
@@ -70,6 +80,8 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
         addressEvents = new ArrayList<>();
         //get electrum list
         getElectrumData();
+        //get custom electrum list
+        getCustomList();
 
     }
 
@@ -123,6 +135,44 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
         }
     }
 
+    //get custom electrum list
+    private void getCustomList() {
+        customElectrumList = new ArrayList<>();
+        pre_electrumNode = getSharedPreferences("ElectrumNode", MODE_PRIVATE);
+        Map<String, ?> electrum = pre_electrumNode.getAll();
+        //key
+        for (Map.Entry<String, ?> entry : electrum.entrySet()) {
+            String mapValue = (String) entry.getValue();
+            customElectrumList.add(mapValue);
+        }
+        for (int i = 0; i < customElectrumList.size(); i++) {
+            for (CNYBean b : electrumList) {
+                if (b.getName().equalsIgnoreCase(customElectrumList.get(i))) {
+                    pre_electrumNode.edit().remove(customElectrumList.get(i)).apply();
+                    customElectrumList.remove(i);
+                    if (i > 0) {
+                        i--;
+                    }
+                }
+            }
+        }
+
+        CustomElectrumAdapter customElectrumAdapter = new CustomElectrumAdapter(customElectrumList);
+        reclAddNode.setAdapter(customElectrumAdapter);
+        customElectrumAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @SingleClick
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                if (view.getId() == R.id.linear_delete) {
+                    String node = customElectrumList.get(position);
+                    pre_electrumNode.edit().remove(node).apply();
+                    customElectrumList.remove(position);
+                    customElectrumAdapter.notifyDataSetChanged();
+                    mToast(getString(R.string.delete_succse));
+                }
+            }
+        });
+    }
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.btn_Finish})
@@ -147,6 +197,20 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                         mToast(getString(R.string.please_inputPort));
                         return;
                     }
+                    String node = edit_ip.getText().toString() + ":" + edit_port.getText().toString();
+                    if (customElectrumList.toString().contains(node)) {
+                        mToast(getString(R.string.node_have));
+                        alertDialog.dismiss();
+                        return;
+                    }
+                    for (int i = 0; i < electrumList.size(); i++) {
+                        if (electrumList.get(i).getName().equals(node)) {
+                            mToast(getString(R.string.node_have));
+                            alertDialog.dismiss();
+                            return;
+                        }
+                    }
+
                     try {
                         Daemon.commands.callAttr("set_server", edit_ip.getText().toString(), edit_port.getText().toString());
                     } catch (Exception e) {
@@ -156,8 +220,9 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                         }
                         return;
                     }
-                    electrumList.clear();
-                    getElectrumData();
+                    pre_electrumNode.edit().putString(node, node).apply();
+                    //get custom electrum list
+                    getCustomList();
                     mToast(getString(R.string.add_finished));
                     alertDialog.dismiss();
 

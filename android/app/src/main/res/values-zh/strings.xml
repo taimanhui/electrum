@@ -495,7 +495,7 @@
     <string name="use_bluetooth_line">使用蓝牙连接BixinKey</string>
     <string name="bluetooth_tips">开启状态，可使用蓝牙与BixinKey进行通信</string>
     <string name="open">开</string>
-    <string name="bootloader_mode">前硬件处于bootloader模式，不支持该操作</string>
+    <string name="bootloader_mode">当前硬件处于bootloader模式,不支持该操作</string>
     <string name="not_bootloader_mode">请确认硬件处于BootLoader模式</string>
     <string name="clean_setting">设置已清除</string>
     <string name="clean_private_key">私钥已清除</string>
@@ -755,8 +755,9 @@
     <string name="little_time">时间最短为10秒哦！</string>
     <string name="input_history_wallet">已通过BixinKey创建的历史钱包，可<font color="#6182F5">立即导入</font></string>
     <string name="diy_hard">自定义固件</string>
-    <string name="delete_diy_hardware">删除自定义固件</string>
     <string name="open_server_input">需开启同步服务器才可以导入历史钱包</string>
     <string name="create_app_new_wallet">创建 App 新钱包</string>
+    <string name="dont_use">（不可用）</string>
+    <string name="node_have">节点已存在</string>
 
 </resources>

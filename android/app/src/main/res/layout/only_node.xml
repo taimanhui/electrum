@@ -2,43 +2,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_60">
+    android:layout_height="wrap_content">
 
     <com.mcxtzhang.swipemenulib.SwipeMenuLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <RelativeLayout
-            android:id="@+id/relativeLayout_bixinkey"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tet_electrumName"
+                android:layout_width="match_parent"
+                android:layout_height="59dp"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_10"
+                android:layout_toStartOf="@+id/TextView"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:textColor="@color/graytext_color"
+                android:textSize="15sp"
+                tools:text="bixin.com" />
+
+            <TextView
+                android:id="@+id/TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="59dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:gravity="center_vertical"
+                android:text="@string/dont_use"
+                android:textColor="@color/graytext_color"
+                android:textSize="15sp" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/line_hight"
-                android:layout_alignParentBottom="true"
+                android:layout_height="0.5dp"
+                android:layout_below="@+id/tet_electrumName"
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_16"
                 android:background="@color/line_color" />
-
-            <TextView
-                android:id="@+id/tet_keyName"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_60"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/dp_40"
-                android:gravity="center_vertical"
-                android:textColor="@color/text_color"
-                android:textSize="15sp"
-                tools:text="BixinKEY-1212" />
-
-            <ImageView
-                android:layout_width="37dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
-                android:padding="15dp"
-                android:src="@drawable/jiantou" />
-
         </RelativeLayout>
 
         <LinearLayout

@@ -130,7 +130,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String strUnit;
     private String strFeemontAs;
     private String errorMessage = "";
-    private String hideRefresh;
+    private String hideRefresh = "";
     private String wallet_type_to_sign;
     private CommunicationModeSelector modeSelector;
     private String payAddress;
@@ -620,7 +620,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     intent.putExtra("keyValue", "A");
                     intent.putExtra("isIsmine", true);
                     intent.putExtra("strwalletType", waletType);
-                    intent.putExtra("hideWallet", "hideWallet");
+                    if (!TextUtils.isEmpty(hideRefresh)) {
+                        intent.putExtra("hideWallet", "hideWallet");
+                    }
                     intent.putExtra("txCreatTrsaction", rowtx);
                     startActivity(intent);
                     finish();

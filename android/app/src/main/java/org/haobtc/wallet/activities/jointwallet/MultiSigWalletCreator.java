@@ -422,7 +422,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         edit_sweep = view.findViewById(R.id.edit_public_key_cosigner_popup);
         int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
         defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
+        edit_bixinName.setText(String.format("BixinKey%s", String.valueOf(defaultKeyNameNum)));
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -602,40 +602,19 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         dialogBtoms.show();
     }
 
-    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id) {
+    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id, String label) {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
 
-        EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
-        TextView tet_Num = view.findViewById(R.id.txt_textNum);
+        TextView edit_bixinName = view.findViewById(R.id.edit_keyName);
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
-        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
-        defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
-        edit_bixinName.addTextChangedListener(new TextWatcher() {
-            CharSequence input;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                input = s;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tet_Num.setText(String.format(Locale.CHINA, "%d/20", input.length()));
-                if (input.length() > 19) {
-                    Toast.makeText(MultiSigWalletCreator.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
-                }
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        if (!TextUtils.isEmpty(label)){
+            edit_bixinName.setText(label);
+        }else{
+            edit_bixinName.setText(getString(R.string.BixinKey));
+        }
         view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
             String strBixinname = edit_bixinName.getText().toString();
             String strSweep = textView.getText().toString();
@@ -661,6 +640,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     addBixinKeyEvent = new AddBixinKeyEvent();
                     addBixinKeyEvent.setKeyname(strBixinname);
                     addBixinKeyEvent.setKeyaddress(strSweep);
+                    addBixinKeyEvent.setDevice_id(device_id);
                     addEventsDatas.add(addBixinKeyEvent);
                     dialogBtoms.cancel();
                 }
@@ -685,8 +665,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
-            edit.putInt("defaultKeyNum", defaultKeyNameNum);
-            edit.apply();
+
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
@@ -842,8 +821,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     public void event(MutiSigWalletEvent event) {
         String xpub = event.getXpub();
         String device_id = event.getDevice_id();
-
-        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, device_id);
+        String label = event.getLable();
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, device_id, label);
     }
 
     @Override

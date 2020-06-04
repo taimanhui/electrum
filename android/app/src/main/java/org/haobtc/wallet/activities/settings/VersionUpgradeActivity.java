@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.common.base.Strings;
@@ -69,6 +67,10 @@ public class VersionUpgradeActivity extends BaseActivity {
     TextView nrfVersionTip;
     @BindView(R.id.nrf_version_detail)
     TextView nrfVersionDetail;
+    @BindView(R.id.test_file_load)
+    TextView testFileLoad;
+    @BindView(R.id.checkBox_hardware)
+    CheckBox checkBoxHardware;
 
     private int checkWitch = 1;
     public static final String UPDATE_PROCESS = "org.haobtc.wallet.activities.settings.percent";
@@ -112,6 +114,7 @@ public class VersionUpgradeActivity extends BaseActivity {
         checkBoxFirmware.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 checkBoxBluetooth.setChecked(false);
+                checkBoxHardware.setChecked(false);
                 checkWitch = 1;
             } else {
                 checkWitch = 0;
@@ -120,7 +123,17 @@ public class VersionUpgradeActivity extends BaseActivity {
         checkBoxBluetooth.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 checkBoxFirmware.setChecked(false);
+                checkBoxHardware.setChecked(false);
                 checkWitch = 2;
+            } else {
+                checkWitch = 0;
+            }
+        });
+        checkBoxHardware.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                checkBoxFirmware.setChecked(false);
+                checkBoxBluetooth.setChecked(false);
+                checkWitch = 3;
             } else {
                 checkWitch = 0;
             }
@@ -213,7 +226,6 @@ public class VersionUpgradeActivity extends BaseActivity {
                 }
             }
             mIntent(UpgradeFinishedActivity.class);
-//            Ble.getInstance().disconnectAll();
         }
 
         @Override
@@ -291,7 +303,7 @@ public class VersionUpgradeActivity extends BaseActivity {
             String str = listExtra.toString();
             String substring = str.substring(1);
             filePath = substring.substring(0, substring.length() - 1);
-            Log.i("listExtra", "listExtra--: " + listExtra + "   strPath ---  " + filePath);
+            testFileLoad.setText(filePath);
         }
     }
 }

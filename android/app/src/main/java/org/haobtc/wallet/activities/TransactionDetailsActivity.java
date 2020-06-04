@@ -138,7 +138,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddrScan;
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
     private String unConfirmStatus;
-    private String hideWallet;
+    private String hideWallet = "";
 
 
     @Override

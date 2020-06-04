@@ -47,6 +47,7 @@ import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
+import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.FirstEvent;
@@ -54,6 +55,7 @@ import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,8 +96,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private String personceType;
     private String strSoftMsg;
     public static String strinputAddress;
-    private SharedPreferences.Editor edit;
     String hide_phrass;
+    private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
+    private List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr;
+    private String fee;
 
     @Override
     public int getLayoutId() {
@@ -106,8 +110,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
         Intent intent = getIntent();
         personceType = intent.getStringExtra("personceType");
         hide_phrass = intent.getStringExtra("hide_phrass");
@@ -240,6 +242,23 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 } else { //Hardware wallet signature
                     String strTest = editTrsactionTest.getText().toString();
                     if (signWhich) { //sign trsaction
+                        PyObject def_get_tx_info_from_raw = null;
+                        try {
+                            def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", strTest);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            mToast(e.getMessage());
+                            return;
+                        }
+                        if (def_get_tx_info_from_raw != null) {
+                            String jsondef_get = def_get_tx_info_from_raw.toString();
+                            Gson gson = new Gson();
+                            GetnewcreatTrsactionListBean listBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
+                            outputAddr = listBean.getOutputAddr();
+                            inputAddr = listBean.getInputAddr();
+                            fee = listBean.getFee();
+
+                        }
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent = new Intent(this, CommunicationModeSelector.class);
@@ -346,6 +365,11 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private void gotoConfirmOnHardware() {
         if (signWhich) {
             Intent intentCon = new Intent(SignActivity.this, ConfirmOnHardware.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("output", outputAddr);
+            bundle.putString("pay_address", inputAddr.get(0).getAddr());
+            bundle.putString("fee", fee);
+            intentCon.putExtra("outputs", bundle);
             startActivity(intentCon);
         }
     }

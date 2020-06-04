@@ -539,7 +539,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 }
             } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag)) {
                 if (TextUtils.isEmpty(extras)) {
-                    Log.i(TAG, "java ==== backup");
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 } else {
                     Toast.makeText(this, R.string.recovery_unsupport, Toast.LENGTH_SHORT).show();
@@ -623,6 +622,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     }
 
     public void showErrorDialog(int error, int title) {
+        Log.i("ddddjinxoiamin", "onException------: "+error);
         ErrorDialogFragment fragment = new ErrorDialogFragment(error, title);
         fragment.setRunnable(retry);
         fragment.setActivity(this);
@@ -842,6 +842,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Override
     public void onException(Exception e) {
+        Log.i("jinxoaminsssss", "onException-----: "+e.getMessage());
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -854,7 +855,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             showErrorDialog(R.string.try_another_key, R.string.unpair);
         } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
-        } else if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(e.getMessage()) || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
+        } else if (e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device")|| e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
             showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
         } else if (e.getMessage().contains(BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage())) {
             showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
@@ -893,9 +894,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             } else if (CheckHideWalletFragment.TAG.equals(tag)) {
                 EventBus.getDefault().post(new CheckHideWalletEvent(xpub, features.getDeviceId()));
             } else if (PersonalMultiSigWalletCreator.TAG.equals(tag)) {
-                EventBus.getDefault().post(new PersonalMutiSigEvent(xpub, features.getDeviceId()));
+                EventBus.getDefault().post(new PersonalMutiSigEvent(xpub, features.getDeviceId(),features.getLabel()));
             } else if (MultiSigWalletCreator.TAG.equals(tag)) {
-                EventBus.getDefault().post(new MutiSigWalletEvent(xpub, features.getDeviceId()));
+                EventBus.getDefault().post(new MutiSigWalletEvent(xpub, features.getDeviceId(),features.getLabel()));
             } else {
                 runOnUiThread(runnables.get(1));
             }

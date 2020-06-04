@@ -229,6 +229,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 intent1.putExtra("wallet_name", name);
                 intent1.putExtra("wallet_type", personce);
                 intent1.putExtra("strNowBtc", substring);
+                intent1.putExtra("hideRefresh","");
                 intent1.putExtra("strNowCny", strCNY);
                 startActivity(intent1);
                 break;

@@ -115,8 +115,6 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             }
         }
     };
-    private SharedPreferences preferences;
-    private int defaultKeyNameNum;
 
     @Override
     public int getLayoutId() {
@@ -128,7 +126,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         myDialog = MyDialog.showDialog(this);
         Intent intent = getIntent();
@@ -185,21 +183,23 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     public void event(PersonalMutiSigEvent event) {
         String xpub = event.getXpub();
         String device_id = event.getDevice_id();
-
-        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, device_id);
+        String label = event.getLabel();
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, device_id, label);
     }
 
-    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id) {
+    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id, String label) {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
+        TextView edit_bixinName = view.findViewById(R.id.edit_keyName);
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
         TextView textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
-        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
-        defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
+        if (!TextUtils.isEmpty(label)){
+            edit_bixinName.setText(label);
+        }else{
+            edit_bixinName.setText(getString(R.string.BixinKey));
+        }
         edit_bixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
@@ -246,8 +246,6 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
-            edit.putInt("defaultKeyNum", defaultKeyNameNum);
-            edit.apply();
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {

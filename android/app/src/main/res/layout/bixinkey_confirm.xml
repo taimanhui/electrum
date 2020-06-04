@@ -73,27 +73,19 @@
                 android:background="@drawable/gray_tuo_6"
                 android:gravity="center_vertical">
 
-                <EditText
+                <TextView
                     android:id="@+id/edit_keyName"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="@string/make_aname"
-                    android:maxLength="20"
+                    android:gravity="center_vertical"
+                    tools:text="BixinKey"
                     android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_10"
+                    android:paddingEnd="@dimen/dp_16"
                     android:textColor="#494949"
                     android:textSize="15sp" />
 
-                <TextView
-                    android:id="@+id/txt_textNum"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:text="@string/limit"
-                    android:textColor="#b3b3b3"
-                    android:textSize="13sp" />
             </LinearLayout>
 
 

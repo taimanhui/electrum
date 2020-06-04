@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.personalwallet;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,15 +19,21 @@ import androidx.annotation.LayoutRes;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
 import org.haobtc.wallet.activities.settings.FixBixinkeyNameActivity;
+import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.adapter.WalletAddressAdapter;
+import org.haobtc.wallet.adapter.WalletDetailKeyAdapter;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.WalletAddressEvent;
@@ -36,6 +43,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,6 +75,7 @@ public class WalletDetailsActivity extends BaseActivity {
     private MyDialog myDialog;
     private ArrayList<AddBixinKeyEvent> addEventsDatas;
     private ArrayList<WalletAddressEvent> walletAddressList;
+    private List<HardwareFeatures> deviceValue;
 
     @Override
     public int getLayoutId() {
@@ -96,39 +106,57 @@ public class WalletDetailsActivity extends BaseActivity {
     }
 
     private void getBixinKeyList() {
-        try {
-            PyObject get_device_info = Daemon.commands.callAttr("get_device_info");
-            Log.i("TAGget_device_info", "getBixinKeyList:==== " + get_device_info);
-            if (!TextUtils.isEmpty(get_device_info.toString())) {
-                String[] key_list = get_device_info.toString().split(",");
-                if (key_list.length != 0) {
-                    for (int i = 0; i < key_list.length; i++) {
-                        AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-                        if (key_list[i].contains("\"")) {
-                            String keyName = key_list[i].substring(key_list[i].indexOf("\"") + 1, key_list[i].lastIndexOf("\""));
-                            addBixinKeyEvent.setKeyname(keyName);
+        deviceValue = new ArrayList<>();
+        SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+        Map<String, ?> devicesAll = devices.getAll();
+        //key
+        for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
+            String mapValue = (String) entry.getValue();
+            HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
+            deviceValue.add(hardwareFeatures);
+        }
+        if (deviceValue != null) {
+            try {
+                PyObject get_device_info = Daemon.commands.callAttr("get_device_info");
+                Log.i("TAGget_device_info", "getBixinKeyList:==== " + get_device_info);
+                String str_deviceId = get_device_info.toString();
+                if (!TextUtils.isEmpty(str_deviceId)) {
+                    for (HardwareFeatures entity : deviceValue) {
+                        if (str_deviceId.contains(entity.getDeviceId())) {
+                            AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
+                            if (!TextUtils.isEmpty(entity.getLabel())) {
+                                addBixinKeyEvent.setKeyname(entity.getLabel());
+                            } else {
+                                addBixinKeyEvent.setKeyname("BixinKey");
+                            }
                             addEventsDatas.add(addBixinKeyEvent);
                         }
                     }
-                    if (addEventsDatas != null && addEventsDatas.size() > 0) {
-                        PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
-                        reclPublicPerson.setAdapter(publicPersonAdapter);
-                    } else {
-                        reclPublicPerson.setVisibility(View.GONE);
-                        testNoKey.setVisibility(View.VISIBLE);
-                    }
-
-                } else {
-                    reclPublicPerson.setVisibility(View.GONE);
-                    testNoKey.setVisibility(View.VISIBLE);
+                    WalletDetailKeyAdapter publicPersonAdapter = new WalletDetailKeyAdapter(addEventsDatas);
+                    reclPublicPerson.setAdapter(publicPersonAdapter);
+                    publicPersonAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                            String firmwareVersion = "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
+                            Intent intent = new Intent(WalletDetailsActivity.this, HardwareDetailsActivity.class);
+                            intent.putExtra("label", deviceValue.get(position).getLabel());
+                            intent.putExtra("bleName", deviceValue.get(position).getBleName());
+                            intent.putExtra("firmwareVersion", firmwareVersion);
+                            intent.putExtra("bleVerson", "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getPatchVersion());
+                            intent.putExtra("device_id", deviceValue.get(position).getDeviceId());
+                            startActivity(intent);
+                        }
+                    });
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                reclPublicPerson.setVisibility(View.GONE);
+                testNoKey.setVisibility(View.VISIBLE);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
             reclPublicPerson.setVisibility(View.GONE);
             testNoKey.setVisibility(View.VISIBLE);
         }
-
     }
 
     private void getAllFundedAddress() {
