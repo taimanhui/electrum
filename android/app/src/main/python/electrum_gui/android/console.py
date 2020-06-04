@@ -1255,7 +1255,7 @@ class AndroidCommands(commands.Commands):
         try:
             if use_se:
                 device.apply_settings(client.client, use_se=True)
-            response = client.reset_device(skip_backup=True, language=language, pin_protection=False, passphrase_protection=True, label="BiXin Key")
+            response = client.reset_device(skip_backup=True, language=language, pin_protection=False, passphrase_protection=True, label="BiXin KEY")
         except Exception as e:
             raise BaseException(e)
         if response == "Device successfully initialized":
