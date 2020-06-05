@@ -167,7 +167,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public static volatile String way;
     private CustomerUsbManager usbManager;
     private UsbDevice device;
-    private HardwareFeatures features;
+    public static HardwareFeatures features;
     private boolean isChangePin;
 
 

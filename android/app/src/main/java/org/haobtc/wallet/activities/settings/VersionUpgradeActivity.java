@@ -110,6 +110,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     @Override
     public void initData() {
         checkBoxClick();
+        isDfu = false;
         EventBus.getDefault().register(this);
     }
 

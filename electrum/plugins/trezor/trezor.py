@@ -19,7 +19,6 @@ from ..hw_wallet.plugin import (is_any_tx_output_on_change_branch, trezor_valida
 
 _logger = get_logger(__name__)
 
-
 try:
     import trezorlib
     import trezorlib.transport
@@ -37,6 +36,7 @@ except Exception as e:
     _logger.exception('error importing trezorlib')
     TREZORLIB = False
 
+
     class _EnumMissing:
         def __init__(self):
             self.counter = 0
@@ -48,10 +48,10 @@ except Exception as e:
                 self.counter += 1
             return self.values[key]
 
+
     Capability = _EnumMissing()
     BackupType = _EnumMissing()
     RecoveryDeviceType = _EnumMissing()
-
 
 # Trezor initialization methods
 TIM_NEW, TIM_RECOVER = range(2)
@@ -78,7 +78,7 @@ class TrezorKeyStore(Hardware_KeyStore):
         derivation = self.get_derivation_prefix()
         if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
             raise Exception("Can't Pair With You Device When Sign Message")
-        address_path = self.get_derivation_prefix() + "/%d/%d"%sequence
+        address_path = self.get_derivation_prefix() + "/%d/%d" % sequence
         msg_sig = self.plugin.client.sign_message(address_path, message)
         return msg_sig.signature
 
@@ -163,7 +163,7 @@ class TrezorPlugin(HW_PluginBase):
                        transport_ui_string=d.get_path())
                 for d in devices]
 
-    def create_client(self, device, handler):
+    def create_client(self, device, handler) -> 'TrezorClientBase':
         try:
             self.logger.info(f"connecting to device at {device.path}")
             transport = trezorlib.transport.get_transport(device.path)
@@ -182,7 +182,7 @@ class TrezorPlugin(HW_PluginBase):
     def get_client(self, path='android_usb', ui=None, force_pair=None) -> 'TrezorClientBase':
         if self.client is not None and self.path == path:
             return self.client
-        #plugin = self.plugin.get_plugin("trezor")
+        # plugin = self.plugin.get_plugin("trezor")
         client_list = self.enumerate()
         print(f"total device====={client_list}")
         device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
@@ -197,6 +197,7 @@ class TrezorPlugin(HW_PluginBase):
     def clean(self):
         self.client = None
         self.path = ''
+
     # def get_client(self, keystore, force_pair=True) -> Optional['TrezorClientBase']:
     #     devmgr = self.device_manager()
     #     handler = keystore.handler
@@ -218,10 +219,12 @@ class TrezorPlugin(HW_PluginBase):
             (TIM_NEW, _("Let the device generate a completely new seed randomly")),
             (TIM_RECOVER, _("Recover from a seed you have previously written down")),
         ]
+
         def f(method):
             import threading
             settings = self.request_trezor_init_settings(wizard, method, device_id)
-            t = threading.Thread(target=self._initialize_device_safe, args=(settings, method, device_id, wizard, handler))
+            t = threading.Thread(target=self._initialize_device_safe,
+                                 args=(settings, method, device_id, wizard, handler))
             t.setDaemon(True)
             t.start()
             exit_code = wizard.loop.exec_()
@@ -230,6 +233,7 @@ class TrezorPlugin(HW_PluginBase):
                 # of leaving the device in an initialized state when finishing.
                 # signal that this is not the case:
                 raise UserCancelled()
+
         wizard.choice_dialog(title=_('Initialize Device'), message=msg, choices=choices, run_next=f)
 
     def _initialize_device_safe(self, settings, method, device_id, wizard, handler):
@@ -329,9 +333,9 @@ class TrezorPlugin(HW_PluginBase):
             return InputScriptType.SPENDWITNESS
         if electrum_txin_type in ('p2wpkh-p2sh', 'p2wsh-p2sh'):
             return InputScriptType.SPENDP2SHWITNESS
-        if electrum_txin_type in ('p2pkh', ):
+        if electrum_txin_type in ('p2pkh',):
             return InputScriptType.SPENDADDRESS
-        if electrum_txin_type in ('p2sh', ):
+        if electrum_txin_type in ('p2sh',):
             return InputScriptType.SPENDMULTISIG
         raise ValueError('unexpected txin type: {}'.format(electrum_txin_type))
 
@@ -340,9 +344,9 @@ class TrezorPlugin(HW_PluginBase):
             return OutputScriptType.PAYTOWITNESS
         if electrum_txin_type in ('p2wpkh-p2sh', 'p2wsh-p2sh'):
             return OutputScriptType.PAYTOP2SHWITNESS
-        if electrum_txin_type in ('p2pkh', ):
+        if electrum_txin_type in ('p2pkh',):
             return OutputScriptType.PAYTOADDRESS
-        if electrum_txin_type in ('p2sh', ):
+        if electrum_txin_type in ('p2sh',):
             return OutputScriptType.PAYTOMULTISIG
         raise ValueError('unexpected txin type: {}'.format(electrum_txin_type))
 
@@ -353,7 +357,7 @@ class TrezorPlugin(HW_PluginBase):
             try:
                 client_xpub = client.get_xpub(derivation, xtype)
             except (UserCancelled, RuntimeError):
-                 # Bad / cancelled PIN / passphrase
+                # Bad / cancelled PIN / passphrase
                 client_xpub = None
             if client_xpub == xpub:
                 return True
@@ -361,7 +365,7 @@ class TrezorPlugin(HW_PluginBase):
                 return False
 
     def sign_transaction(self, keystore, tx: PartialTransaction, prev_tx):
-        prev_tx = { bfh(txhash): self.electrum_tx_to_txtype(tx) for txhash, tx in prev_tx.items() }
+        prev_tx = {bfh(txhash): self.electrum_tx_to_txtype(tx) for txhash, tx in prev_tx.items()}
         if not self.client:
             raise Exception("client is None")
         xpub = keystore.xpub
@@ -383,7 +387,7 @@ class TrezorPlugin(HW_PluginBase):
             return
         deriv_suffix = wallet.get_address_index(address)
         derivation = keystore.get_derivation_prefix()
-        address_path = "%s/%d/%d"%(derivation, *deriv_suffix)
+        address_path = "%s/%d/%d" % (derivation, *deriv_suffix)
         script_type = self.get_trezor_input_script_type(wallet.txin_type)
 
         # prepare multisig, if available:
@@ -406,7 +410,7 @@ class TrezorPlugin(HW_PluginBase):
         for txin in tx.inputs():
             txinputtype = TxInputType()
             if txin.is_coinbase_input():
-                prev_hash = b"\x00"*32
+                prev_hash = b"\x00" * 32
                 prev_index = 0xffffffff  # signed int -1
             else:
                 if for_sig:

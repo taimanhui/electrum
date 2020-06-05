@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,21 +8,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.azhon.appupdate.utils.ApkUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.haobtc.wallet.BuildConfig;
-import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
-import org.haobtc.wallet.activities.settings.BlueToothStatusActivity;
 import org.haobtc.wallet.activities.settings.CurrencyActivity;
 import org.haobtc.wallet.activities.settings.SelectorActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
@@ -31,19 +26,10 @@ import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;
-import org.haobtc.wallet.event.ExistEvent;
-import org.haobtc.wallet.event.SecondEvent;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;

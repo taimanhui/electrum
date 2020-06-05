@@ -104,16 +104,16 @@ public class SignatureProcessing extends BaseActivity {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onButtonRequest(ButtonRequestEvent event) {
-        Drawable drawableStart = getDrawable(R.drawable.chenggong);
-        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        if (CommunicationModeSelector.isNFC) {
-            secondPromote.setText(R.string.order_sending_successful);
-            secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-            startActivity(new Intent(this, ConfirmActivity.class));
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onButtonRequest(ButtonRequestEvent event) {
+//        Drawable drawableStart = getDrawable(R.drawable.chenggong);
+//        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+//        if (CommunicationModeSelector.isNFC) {
+//            secondPromote.setText(R.string.order_sending_successful);
+//            secondPromote.setCompoundDrawables(drawableStart, null, null, null);
+//            startActivity(new Intent(this, ConfirmActivity.class));
+//        }
+//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSendingFailed(SendingFailedEvent event) {

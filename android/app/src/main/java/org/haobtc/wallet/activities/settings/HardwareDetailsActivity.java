@@ -20,6 +20,8 @@ import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.SetShutdownTimeEvent;
 
@@ -27,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class HardwareDetailsActivity extends BaseActivity {
@@ -54,7 +57,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     private String bleName;
     private String device_id;
     private String label;
-
+    private boolean isWipe;
     @Override
     public int getLayoutId() {
         return R.layout.activity_somemore;
@@ -92,6 +95,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     @SingleClick
     @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.tetBluetoothSet, R.id.linear_shutdown_time})
     public void onViewClicked(View view) {
+        isWipe = false;
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
@@ -116,6 +120,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 mIntent(ConfidentialPaymentSettings.class);
                 break;
             case R.id.wipe_device:
+                isWipe = true;
                 mIntent(RecoverySetActivity.class);
                 break;
             case R.id.tetBluetoothSet:
@@ -157,6 +162,10 @@ public class HardwareDetailsActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isNFC) {
+            if (isWipe && !features.isPinProtection()) {
+                EventBus.getDefault().post(new ExistEvent());
+                return;
+            }
             EventBus.getDefault().removeStickyEvent(event);
             startActivity(new Intent(this, NfcNotifyHelper.class));
         }

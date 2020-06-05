@@ -143,7 +143,7 @@ public class ChangePinProcessingActivity extends BaseActivity {
         } else {
             intent.putExtra("tag", TAG);
         }
-        EventBus.getDefault().post(new FinishEvent());
+        EventBus.getDefault().postSticky(new FinishEvent());
         startActivity(intent);
         finish();
     }

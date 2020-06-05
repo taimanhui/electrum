@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -39,6 +42,7 @@ import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+import org.haobtc.wallet.utils.NfcUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,8 +70,10 @@ import okhttp3.Response;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.way;
@@ -102,22 +108,22 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
 
-    private HardwareFeatures getFeatures(String path) throws Exception {
-        String feature;
-        try {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", path));
-            executorService.submit(futureTask);
-            feature = futureTask.get(5, TimeUnit.SECONDS).toString();
-            return new Gson().fromJson(feature, HardwareFeatures.class);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-         //   Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
-            ble.put("IS_CANCEL", true);
-            nfc.put("IS_CANCEL", true);
-            protocol.callAttr("notify");
-            e.printStackTrace();
-            throw e;
-        }
-    }
+//    private HardwareFeatures getFeatures(String path) throws Exception {
+//        String feature;
+//        try {
+//            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", path));
+//            executorService.submit(futureTask);
+//            feature = futureTask.get(5, TimeUnit.SECONDS).toString();
+//            return new Gson().fromJson(feature, HardwareFeatures.class);
+//        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+//         //   Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
+//            ble.put("IS_CANCEL", true);
+//            nfc.put("IS_CANCEL", true);
+//            protocol.callAttr("notify");
+//            e.printStackTrace();
+//            throw e;
+//        }
+//    }
 
     @SuppressLint("StaticFieldLeak")
     public class MyTask extends AsyncTask<String, Object, Void> {
@@ -129,7 +135,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected Void doInBackground(String... params) {
             try {
-                HardwareFeatures features = getFeatures(params[0]);
+//                HardwareFeatures features = getFeatures(params[0]);
                 if (!isDIY) {
                     String nrfVersion = Optional.ofNullable(features.getBleVer()).orElse("0");
                     String loaderVersion = String.format("%s.%s.%s", features.getMajorVersion(), features.getMinorVersion(), features.getPatchVersion());
@@ -322,6 +328,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        NfcUtils.nfc(this, false);
         tag = getIntent().getIntExtra("tag", 1);
         newNrfVersion = Objects.requireNonNull(getIntent().getExtras()).getString("nrf_version");
         newLoaderVersion = getIntent().getExtras().getString("stm32_version");
@@ -379,13 +386,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         showPromptMessage(R.string.update_failed);
         finish();
     }
-//    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-//    public void onButtonRequest(ButtonRequestEvent event) {
-//        EventBus.getDefault().removeStickyEvent(event);
-//        if (isNFC) {
-//           startActivity(new Intent(this, NfcNotifyHelper.class));
-//        }
-//    }
     @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
@@ -394,6 +394,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             if (mTask != null) {
                 nfcTransport.put("ENABLED", false);
                 bleTransport.put("ENABLED", false);
+                protocol.callAttr("notify");
                 mTask.cancel(true);
             }
            cancelDfu();
@@ -467,7 +468,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 finish();
                 return;
             }
-            starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath);
+            starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()) : VersionUpgradeActivity.filePath);
             DfuServiceInitiator.createDfuNotificationChannel(this);
             starter.start(this, DfuService.class);
     }
@@ -480,11 +481,29 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String action = intent.getAction(); // get the action of the coming intent
+        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
+                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
+                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            nfcHandler.put("device", tags);
+            protocol.callAttr("notify");
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (tag == 2) {
             LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(VersionUpgradeActivity.UPDATE_PROCESS));
             progressUpgrade.setIndeterminate(true);
+        }
+        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+            // enable nfc discovery for the app
+            Log.i("NFC", "为本App启用NFC感应");
+            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
         }
     }
 
@@ -495,6 +514,11 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         }
         mTask = null;
+        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+            // disable nfc discovery for the app
+            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
+            Log.i("NFC", "禁用本App的NFC感应");
+        }
     }
 
     @Override
@@ -503,9 +527,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    @Override
+/*    @Override
     protected void onRestart() {
         super.onRestart();
         finish();
-    }
+    }*/
 }

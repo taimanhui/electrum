@@ -38,7 +38,6 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
     private String tag;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        EventBus.getDefault().post(new FinishEvent());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bluetooth_nfc);
         ImageView imageViewCancel;
@@ -63,8 +62,9 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.img_cancel) {
+            nfc.put("IS_CANCEL", true);
             protocol.callAttr("notify");
-            new Handler().postDelayed(() -> nfc.put("IS_CANCEL", true), 2);
+//            new Handler().postDelayed(() -> nfc.put("IS_CANCEL", true), 2);
             finish();
         }
     }
@@ -116,8 +116,9 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
         NfcUtils.mNfcAdapter = null;
         EventBus.getDefault().unregister(this);
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onFinish(FinishEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
         finish();
     }
     @Override

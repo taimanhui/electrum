@@ -104,7 +104,7 @@ public class ResetDeviceProcessing extends BaseActivity {
         } else {
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
         }
-        EventBus.getDefault().post(new FinishEvent());
+        EventBus.getDefault().postSticky(new FinishEvent());
         startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
         finish();
     }
