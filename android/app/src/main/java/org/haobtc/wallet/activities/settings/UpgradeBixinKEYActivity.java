@@ -421,23 +421,24 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 String device = sharedPreferences.getString(BleDeviceRecyclerViewAdapter.mBleDevice.getBleName(), "");
                 String nrfVersion;
                 if (Strings.isNullOrEmpty(device)) {
-//                    EventBus.getDefault().post(new ExistEvent());
-//                    showPromptMessage(R.string.un_bonded);
-//                    finish();
-//                    return;
                    nrfVersion = "0";
                 } else {
                     HardwareFeatures features = new Gson().fromJson(device, HardwareFeatures.class);
                     nrfVersion = features.getBleVer();
                 }
 
-                if (newNrfVersion.compareTo(nrfVersion) <= 0) {
+                if (newNrfVersion.compareTo(nrfVersion) <= 0 && !features.isBootloaderMode()) {
                     EventBus.getDefault().post(new ExistEvent());
                     showPromptMessage(R.string.is_new);
                     finish();
                 } else {
-                    runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
-                    executorService.execute(() -> updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("nrf_url")));
+                    File file = new File(String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()));
+                    if (isNrfUpdate || !file.exists()) {
+                        runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
+                        executorService.execute(() -> updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("nrf_url")));
+                    } else {
+                        dfu();
+                    }
                 }
             } else {
                 runOnUiThread(() -> tetUpgradeTest.setText("正在升级至自定义版本"));
