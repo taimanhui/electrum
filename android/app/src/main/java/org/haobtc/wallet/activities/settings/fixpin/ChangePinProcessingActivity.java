@@ -40,6 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
 public class ChangePinProcessingActivity extends BaseActivity {
 
@@ -84,7 +85,8 @@ public class ChangePinProcessingActivity extends BaseActivity {
     @Override
     public void initData() {
         timer = new Timer();
-        if (!isNFC) {
+        // NOTE: don't edit 👇
+//        if (!isNFC) {
             if (Strings.isNullOrEmpty(pinOrigin)) {
                 EventBus.getDefault().post(new PinEvent(pinNew, ""));
             } else {
@@ -100,18 +102,12 @@ public class ChangePinProcessingActivity extends BaseActivity {
                     }
                 }
             }, 30 * 1000L);
-        }
+        // NOTE: don't edit 👇
+//        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void changePinResult(ResultEvent resultEvent) {
-        //            case "1":
-        //                Drawable drawableStart = getDrawable(R.drawable.chenggong);
-        //                Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-        //                secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-        //                startActivity(new Intent(this, ConfirmActivity.class));
-        //                finish();
-        //                break;
         if ("0".equals(resultEvent.getResult())) {
             Drawable drawable = getDrawable(R.drawable.shibai);
             Objects.requireNonNull(drawable).setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
@@ -170,22 +166,24 @@ public class ChangePinProcessingActivity extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
-            if (Strings.isNullOrEmpty(pinOrigin)) {
-                EventBus.getDefault().post(new PinEvent(pinNew, ""));
-            } else {
-                EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
-            }
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if (hasWindowFocus()) {
-                        Log.d(TAG, "something went wrong");
-                        finishAffinity();
-                        EventBus.getDefault().post(new ExistEvent());
-                    }
-                }
-            }, 30 * 1000L);
-        }
+            protocol.callAttr("notify");
+            // NOTE: don't edit 👇
+//            if (Strings.isNullOrEmpty(pinOrigin)) {
+//                EventBus.getDefault().post(new PinEvent(pinNew, ""));
+//            } else {
+//                EventBus.getDefault().post(new ChangePinEvent(pinNew, pinOrigin));
+//            }
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    if (hasWindowFocus()) {
+//                        Log.d(TAG, "something went wrong");
+//                        finishAffinity();
+//                        EventBus.getDefault().post(new ExistEvent());
+//                    }
+//                }
+//            }, 30 * 1000L);
+      }
     }
 
     @Override

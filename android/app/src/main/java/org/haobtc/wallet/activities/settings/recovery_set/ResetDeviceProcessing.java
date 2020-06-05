@@ -37,6 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
 
 public class ResetDeviceProcessing extends BaseActivity {
@@ -112,7 +113,8 @@ public class ResetDeviceProcessing extends BaseActivity {
     public void initData() {
         timer = new Timer();
         NfcUtils.nfc(this, false);
-        if (!isNFC) {
+        // NOTE: don't edit 👇
+//        if (!isNFC) {
             EventBus.getDefault().post(new PinEvent(pin, ""));
             timer.schedule(new TimerTask() {
                 @Override
@@ -123,7 +125,8 @@ public class ResetDeviceProcessing extends BaseActivity {
                         EventBus.getDefault().post(new ExistEvent());                    }
                 }
             }, 30 * 1000L);
-        }
+        // NOTE: don't edit 👇
+//        }
     }
 
 
@@ -151,17 +154,19 @@ public class ResetDeviceProcessing extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
-            EventBus.getDefault().post(new PinEvent(pin, ""));
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if (hasWindowFocus()) {
-                        Log.d(TAG, "something went wrong");
-                        finishAffinity();
-                        EventBus.getDefault().post(new ExistEvent());
-                    }
-                }
-            }, 30 * 1000L);
+            protocol.callAttr("notify");
+            // NOTE: don't edit 👇
+//            EventBus.getDefault().post(new PinEvent(pin, ""));
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    if (hasWindowFocus()) {
+//                        Log.d(TAG, "something went wrong");
+//                        finishAffinity();
+//                        EventBus.getDefault().post(new ExistEvent());
+//                    }
+//                }
+//            }, 30 * 1000L);
         }
     }
 

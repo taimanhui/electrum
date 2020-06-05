@@ -37,6 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
 public class ActivatedProcessing extends BaseActivity {
     public static final String TAG = ActivatedProcessing.class.getSimpleName();
@@ -81,16 +82,14 @@ public class ActivatedProcessing extends BaseActivity {
                     animator.start();
                 });
         useSe = getIntent().getBooleanExtra("use_se", true);
-/*
-        pin = getIntent().getStringExtra("pin");
-*/
     }
 
     @Override
     public void initData() {
         NfcUtils.nfc(this, false);
         timer = new Timer();
-        if (!isNFC) {
+        // NOTE: don't edit 👇
+//        if (!isNFC) {
             EventBus.getDefault().post(new InitEvent("Activate", useSe));
             timer.schedule(new TimerTask() {
                 @Override
@@ -102,7 +101,8 @@ public class ActivatedProcessing extends BaseActivity {
                     }
                 }
             }, 30 * 1000L);
-        }
+        // NOTE: don't edit 👇
+//        }
         /*if (!isNFC) {
             EventBus.getDefault().post(new PinEvent(pin, ""));
         }*/
@@ -141,21 +141,6 @@ public class ActivatedProcessing extends BaseActivity {
         }
     }
 
-    //    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onButtonRequest(ButtonRequestEvent event) {
-//        Drawable drawableStart = getDrawable(R.drawable.chenggong);
-//        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-//        if (isNFC) {
-//            secondPromote.setText(R.string.order_sending_successful);
-//            secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-//            startActivity(new Intent(this, ConfirmActivity.class));
-//        }
-//    }
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onSendingFailed(SendingFailedEvent event) {
-//        startActivity(new Intent(this, ActiveFailedActivity.class));
-//
-//    }
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -167,17 +152,19 @@ public class ActivatedProcessing extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
-            EventBus.getDefault().post(new InitEvent("Activate", useSe));
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if (hasWindowFocus()) {
-                        Log.d(TAG, "something went wrong");
-                        finish();
-                        EventBus.getDefault().post(new ExistEvent());
-                    }
-                }
-            }, 30 * 1000L);
+            protocol.callAttr("notify");
+            // NOTE: don't edit 👇
+//            EventBus.getDefault().post(new InitEvent("Activate", useSe));
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    if (hasWindowFocus()) {
+//                        Log.d(TAG, "something went wrong");
+//                        finish();
+//                        EventBus.getDefault().post(new ExistEvent());
+//                    }
+//                }
+//            }, 30 * 1000L);
         }
     }
 
