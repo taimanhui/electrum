@@ -748,7 +748,7 @@
     <string name="communication_way">连接方式</string>
     <string name="ble">蓝牙</string>
     <string name="check_key_name">BixinKey 名称：</string>
-    <string name="check_pub_key">BixinKey 公钥：</string>
+    <string name="check_pub_key">BixinKey 扩展公钥：</string>
     <string name="set_shutdown_time">设置BixinKey自动关机时间</string>
     <string name="second">秒</string>
     <string name="please_input_time">请输入关机时间</string>
@@ -762,6 +762,6 @@
     <string name="select_promote">请先选择自定义文件</string>
     <string name="need_backup">升级前请先备份</string>
     <string name="key_wrong">密码输入错误，或者key使用错误</string>
-    <string name="connect_failed">BixinKey链接失败，请重新尝试</string>
+    <string name="connect_failed">网络连接失败，请重新尝试</string>
 
 </resources>
