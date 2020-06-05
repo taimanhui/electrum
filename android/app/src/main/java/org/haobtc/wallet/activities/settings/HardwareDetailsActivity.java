@@ -81,7 +81,7 @@ public class HardwareDetailsActivity extends BaseActivity {
             tetKeyName.setText(String.format("%s", "BixinKEY"));
         }
 //        tetCode.setText(firmwareVersion);
-        String shutdownTime = preferences.getString("shutdownTime", "600");
+        String shutdownTime = preferences.getString(device_id, "600");
         testShutdownTime.setText(String.format("%s%s", shutdownTime, getString(R.string.second)));
     }
 
@@ -122,7 +122,9 @@ public class HardwareDetailsActivity extends BaseActivity {
                 mIntent(BixinKeyBluetoothSettingActivity.class);
                 break;
             case R.id.linear_shutdown_time:
-                mIntent(SetShutdownTimeActivity.class);
+                Intent intent2 = new Intent(HardwareDetailsActivity.this, SetShutdownTimeActivity.class);
+                intent2.putExtra("device_id",device_id);
+                startActivity(intent2);
                 break;
         }
     }

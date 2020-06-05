@@ -115,13 +115,13 @@ public class VerificationKEYActivity extends BaseActivity {
                     public void onError(Request request, Exception e) {
                         Log.i("strVerification", "onError: ---- " + request);
                         mToast(e.getMessage());
-                        Drawable drawableStartFail = getDrawable(R.drawable.fail);
+                        Drawable drawableStartFail = getDrawable(R.drawable.shibai);
                         Objects.requireNonNull(drawableStartFail).setBounds(0, 0, drawableStartFail.getMinimumWidth(), drawableStartFail.getMinimumHeight());
                         if (isNFC) {
-                            secondPromote.setText(R.string.active_failed);
+                            secondPromote.setText(R.string.connect_failed);
                             secondPromote.setCompoundDrawables(drawableStartFail, null, null, null);
                         } else {
-                            firstPromote.setText(R.string.active_failed);
+                            firstPromote.setText(R.string.connect_failed);
                             firstPromote.setCompoundDrawables(drawableStartFail, null, null, null);
                         }
                         thirdPromote.setCompoundDrawables(drawableStartFail, null, null, null);

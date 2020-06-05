@@ -30,6 +30,7 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
     @BindView(R.id.btn_confirm)
     Button btnConfirm;
     private SharedPreferences preferences;
+    private String device_id;
 
     @Override
     public int getLayoutId() {
@@ -42,6 +43,7 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         EventBus.getDefault().register(this);
         timeEdit.addTextChangedListener(this);
+        device_id = getIntent().getStringExtra("device_id");
     }
 
     @Override
@@ -81,7 +83,7 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
         String result = event.getResult();
         if ("1".equals(result)) {
             EventBus.getDefault().post(new SetShutdownTimeEvent(timeEdit.getText().toString()));
-            preferences.edit().putString("shutdownTime", timeEdit.getText().toString()).apply();
+            preferences.edit().putString(device_id, timeEdit.getText().toString()).apply();
             timeEdit.setText("");
             mToast(getString(R.string.set_success));
         } else {

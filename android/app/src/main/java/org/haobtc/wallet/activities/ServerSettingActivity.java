@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -25,6 +26,7 @@ import org.haobtc.wallet.activities.settings.ElectrumNodeChooseActivity;
 import org.haobtc.wallet.activities.settings.QuotationServerActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.bean.DefaultNodeBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -55,16 +57,10 @@ public class ServerSettingActivity extends BaseActivity {
     TextView testBlockcheck;
     @BindView(R.id.testElectrumNode)
     TextView testElectrumNode;
-    @BindView(R.id.test_agent_server)
-    TextView testAgentServer;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
     private String exchangeName;
     private String blockServerLine;
-    private String electrumTest;
-    private PyObject get_server_list;
-    private ArrayList<CNYBean> electrumList;
-    private String set_proxy;
 
     public int getLayoutId() {
         return R.layout.server_setting;
@@ -77,15 +73,14 @@ public class ServerSettingActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         exchangeName = preferences.getString("exchangeName", "");
         blockServerLine = preferences.getString("blockServerLine", "");
-        electrumTest = preferences.getString("electrumTest", "");
-        set_proxy = preferences.getString("set_proxy", "");
         edit = preferences.edit();
         inits();
 
     }
 
     private void inits() {
-        electrumList = new ArrayList<>();
+        //get electrum list
+        getElectrumData();
         //synchronize server
         boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
         if (set_syn_server) {
@@ -103,48 +98,18 @@ public class ServerSettingActivity extends BaseActivity {
         if (!TextUtils.isEmpty(blockServerLine)) {
             testBlockcheck.setText(blockServerLine);
         }
-        //get electrum node
-        if (!TextUtils.isEmpty(electrumTest)) {
-            testElectrumNode.setText(electrumTest);
-        } else {
-            //get electrum list
-            getElectrumData();
-        }
-        //get agent server
-        if (!TextUtils.isEmpty(set_proxy)){
-            String[] wordsList = set_proxy.split(" ");
-            testAgentServer.setText(wordsList[0]);
-        }
 
     }
 
     private void getElectrumData() {
         try {
-            get_server_list = Daemon.commands.callAttr("get_server_list");
+            PyObject defaultServer = Daemon.commands.callAttr("get_default_server");
+            Gson gson = new Gson();
+            DefaultNodeBean defaultNodeBean = gson.fromJson(defaultServer.toString(), DefaultNodeBean.class);
+            testElectrumNode.setText(String.format("%s:%s", defaultNodeBean.getHost(), defaultNodeBean.getPort()));
+
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        if (get_server_list != null) {
-            String get_server = get_server_list.toString();
-            Log.i("get_server_list", "get_server_list: " + get_server);
-            Map<String, Object> jsonToMap = JSONObject.parseObject(get_server);
-            Set<String> keySets = jsonToMap.keySet();
-            for (String k : keySets) {
-                //get key
-                String v = jsonToMap.get(k).toString();
-                Map<String, Object> vToMap = JSONObject.parseObject(v);
-                Set<String> vkeySets = vToMap.keySet();
-                for (String vk : vkeySets) {
-                    if ("s".equals(vk)) {
-                        String vvalue = vToMap.get(vk).toString();
-                        String strElectrum = k + ":" + vvalue;
-                        CNYBean cnyBean = new CNYBean(strElectrum, false);
-                        electrumList.add(cnyBean);
-                    }
-                }
-            }
-            testElectrumNode.setText(electrumList.get(0).getName());
-
         }
     }
 
@@ -227,15 +192,6 @@ public class ServerSettingActivity extends BaseActivity {
         } else if (msgVote.equals("block_check")) {
             blockServerLine = preferences.getString("blockServerLine", "");
             testBlockcheck.setText(blockServerLine);
-        } else if (msgVote.equals("changeElectrumNode")) {
-            electrumTest = preferences.getString("electrumTest", "");
-            testElectrumNode.setText(electrumTest);
-        } else if (msgVote.equals("set_proxy")) {
-            set_proxy = preferences.getString("set_proxy", "");
-            if (!TextUtils.isEmpty(set_proxy)) {
-                String[] wordsList = set_proxy.split(" ");
-                testAgentServer.setText(wordsList[0]);
-            }
         }
     }
 

@@ -1,15 +1,11 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,16 +14,17 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.adapter.CustomElectrumAdapter;
 import org.haobtc.wallet.adapter.ElectrumListAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.bean.DefaultNodeBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -48,15 +45,15 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
     RecyclerView reclNodeChose;
     @BindView(R.id.btn_Finish)
     Button btnFinish;
-    @BindView(R.id.recl_addNode)
-    RecyclerView reclAddNode;
+    @BindView(R.id.edit_ip)
+    EditText editIp;
+    @BindView(R.id.edit_port)
+    EditText editPort;
     private PyObject get_server_list;
     private ArrayList<CNYBean> electrumList;
     private int electrumNode;
     private SharedPreferences.Editor edit;
     private ArrayList<SendMoreAddressEvent> addressEvents;
-    private SharedPreferences pre_electrumNode;
-    private ArrayList<String> customElectrumList;
 
     @Override
     public int getLayoutId() {
@@ -71,17 +68,34 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
         edit = preferences.edit();
         electrumNode = preferences.getInt("electrumNode", 0);
         reclNodeChose.setNestedScrollingEnabled(false);
-        reclAddNode.setNestedScrollingEnabled(false);
+        TextWatcher1 textWatcher1 = new TextWatcher1();
+        editIp.addTextChangedListener(textWatcher1);
+        editPort.addTextChangedListener(textWatcher1);
     }
 
     @Override
     public void initData() {
         electrumList = new ArrayList<>();
         addressEvents = new ArrayList<>();
+        //get default node
+        getDefaultNode();
         //get electrum list
         getElectrumData();
-        //get custom electrum list
-        getCustomList();
+
+    }
+
+    private void getDefaultNode() {
+        try {
+            PyObject defaultServer = Daemon.commands.callAttr("get_default_server");
+            Log.i("defaultServerdddddd", "getDefaultNode: =====   " + defaultServer);
+            Gson gson = new Gson();
+            DefaultNodeBean defaultNodeBean = gson.fromJson(defaultServer.toString(), DefaultNodeBean.class);
+            editIp.setText(defaultNodeBean.getHost());
+            editPort.setText(defaultNodeBean.getPort());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -114,64 +128,16 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     }
                 }
             }
-            edit.putString("electrumTest", electrumList.get(0).getName());
-            edit.apply();
             ElectrumListAdapter electrumListAdapter = new ElectrumListAdapter(ElectrumNodeChooseActivity.this, electrumList, electrumNode);
             reclNodeChose.setAdapter(electrumListAdapter);
             electrumListAdapter.setOnLisennorClick(new ElectrumListAdapter.onLisennorClick() {
                 @Override
                 public void ItemClick(int pos) {
-                    try {
-                        Daemon.commands.callAttr("set_server", addressEvents.get(pos).getInputAddress(), addressEvents.get(pos).getInputAmount());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    edit.putInt("electrumNode", pos);
-                    edit.putString("electrumTest", electrumList.get(pos).getName());
-                    edit.apply();
-                    EventBus.getDefault().post(new FirstEvent("changeElectrumNode"));
+                    editIp.setText(addressEvents.get(pos).getInputAddress());
+                    editPort.setText(addressEvents.get(pos).getInputAmount());
                 }
             });
         }
-    }
-
-    //get custom electrum list
-    private void getCustomList() {
-        customElectrumList = new ArrayList<>();
-        pre_electrumNode = getSharedPreferences("ElectrumNode", MODE_PRIVATE);
-        Map<String, ?> electrum = pre_electrumNode.getAll();
-        //key
-        for (Map.Entry<String, ?> entry : electrum.entrySet()) {
-            String mapValue = (String) entry.getValue();
-            customElectrumList.add(mapValue);
-        }
-        for (int i = 0; i < customElectrumList.size(); i++) {
-            for (CNYBean b : electrumList) {
-                if (b.getName().equalsIgnoreCase(customElectrumList.get(i))) {
-                    pre_electrumNode.edit().remove(customElectrumList.get(i)).apply();
-                    customElectrumList.remove(i);
-                    if (i > 0) {
-                        i--;
-                    }
-                }
-            }
-        }
-
-        CustomElectrumAdapter customElectrumAdapter = new CustomElectrumAdapter(customElectrumList);
-        reclAddNode.setAdapter(customElectrumAdapter);
-        customElectrumAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-            @SingleClick
-            @Override
-            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                if (view.getId() == R.id.linear_delete) {
-                    String node = customElectrumList.get(position);
-                    pre_electrumNode.edit().remove(node).apply();
-                    customElectrumList.remove(position);
-                    customElectrumAdapter.notifyDataSetChanged();
-                    mToast(getString(R.string.delete_succse));
-                }
-            }
-        });
     }
 
     @SingleClick
@@ -182,57 +148,39 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_Finish:
-                View view1 = LayoutInflater.from(this).inflate(R.layout.add_node_layout, null, false);
-                AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
-                ImageView img_Cancle = view1.findViewById(R.id.cancel_select_wallet);
-                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-                    EditText edit_ip = view1.findViewById(R.id.edit_ip);
-                    EditText edit_port = view1.findViewById(R.id.edit_port);
-                    if (TextUtils.isEmpty(edit_ip.getText().toString())) {
-                        mToast(getString(R.string.please_inputIp));
-                        return;
+                try {
+                    Daemon.commands.callAttr("set_server", editIp.getText().toString(), editPort.getText().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (e.getMessage().contains("ValueError")) {
+                        mToast(getString(R.string.ipOrportWrong));
                     }
-                    if (TextUtils.isEmpty(edit_port.getText().toString())) {
-                        mToast(getString(R.string.please_inputPort));
-                        return;
-                    }
-                    String node = edit_ip.getText().toString() + ":" + edit_port.getText().toString();
-                    if (customElectrumList.toString().contains(node)) {
-                        mToast(getString(R.string.node_have));
-                        alertDialog.dismiss();
-                        return;
-                    }
-                    for (int i = 0; i < electrumList.size(); i++) {
-                        if (electrumList.get(i).getName().equals(node)) {
-                            mToast(getString(R.string.node_have));
-                            alertDialog.dismiss();
-                            return;
-                        }
-                    }
-
-                    try {
-                        Daemon.commands.callAttr("set_server", edit_ip.getText().toString(), edit_port.getText().toString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (e.getMessage().contains("ValueError")) {
-                            mToast(getString(R.string.ipOrportWrong));
-                        }
-                        return;
-                    }
-                    pre_electrumNode.edit().putString(node, node).apply();
-                    //get custom electrum list
-                    getCustomList();
-                    mToast(getString(R.string.add_finished));
-                    alertDialog.dismiss();
-
-                });
-                img_Cancle.setOnClickListener(v -> {
-                    alertDialog.dismiss();
-                });
-                alertDialog.show();
+                    return;
+                }
+                mToast(getString(R.string.add_finished));
                 break;
         }
     }
 
+    class TextWatcher1 implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if ((editIp.length() > 0 && editPort.length() > 0)) {
+                btnFinish.setEnabled(true);
+                btnFinish.setBackground(getDrawable(R.drawable.little_radio_blue));
+            } else {
+                btnFinish.setEnabled(false);
+                btnFinish.setBackground(getDrawable(R.drawable.little_radio_qian));
+            }
+        }
+    }
 }

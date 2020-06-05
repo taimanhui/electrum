@@ -368,7 +368,6 @@
                             tools:ignore="RtlSymmetry" />
 
                         <TextView
-                            android:id="@+id/test_agent_server"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_alignParentEnd="true"
@@ -379,8 +378,7 @@
                             android:paddingEnd="@dimen/dp_16"
                             android:textColor="@color/button_bk_disableok"
                             android:textSize="@dimen/sp_14"
-                            tools:ignore="RtlSymmetry"
-                            tools:text="BTC" />
+                            tools:ignore="RtlSymmetry" />
                     </RelativeLayout>
 
                     <View

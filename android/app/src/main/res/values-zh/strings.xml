@@ -410,7 +410,7 @@
     <string name="port_number">端口号</string>
     <string name="please_inputIp">请输入IP</string>
     <string name="please_inputPort">请输入端口号</string>
-    <string name="add_finished">添加成功</string>
+    <string name="add_finished">添加完成</string>
     <string name="upgradeed">已升级至最新版本</string>
     <string name="pin_change_success">PIN码修改成功</string>
     <string name="hours_24">允许次数</string>
@@ -747,9 +747,9 @@
     <string name="limit_input_wrong">额度输入错误</string>
     <string name="communication_way">连接方式</string>
     <string name="ble">蓝牙</string>
-    <string name="check_key_name">BiXinKEY 名称：</string>
-    <string name="check_pub_key">BiXinKEY 公钥：</string>
-    <string name="set_shutdown_time">设置bixinkey自动关机时间</string>
+    <string name="check_key_name">BixinKey 名称：</string>
+    <string name="check_pub_key">BixinKey 公钥：</string>
+    <string name="set_shutdown_time">设置BixinKey自动关机时间</string>
     <string name="second">秒</string>
     <string name="please_input_time">请输入关机时间</string>
     <string name="little_time">时间最短为10秒哦！</string>
@@ -762,5 +762,6 @@
     <string name="select_promote">请先选择自定义文件</string>
     <string name="need_backup">升级前请先备份</string>
     <string name="key_wrong">密码输入错误，或者key使用错误</string>
+    <string name="connect_failed">BixinKey链接失败，请重新尝试</string>
 
 </resources>

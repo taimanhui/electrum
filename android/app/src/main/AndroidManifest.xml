@@ -86,7 +86,8 @@
         <activity android:name=".activities.jointwallet.MultiSigWalletCreator" />
         <activity android:name=".entries.FsActivity" />
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>

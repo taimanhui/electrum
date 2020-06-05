@@ -18,8 +18,8 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="370dp"
-            android:paddingTop="@dimen/dp_60"
             android:background="@color/processing_bk"
+            android:paddingTop="@dimen/dp_60"
             android:src="@drawable/ble" />
 
         <TextView
@@ -29,7 +29,7 @@
             android:gravity="center_horizontal"
             android:text="@string/keep_connection"
             android:textColor="@color/text"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -39,55 +39,78 @@
             android:text="@string/tip_connnection"
             android:textColor="@color/text_0"
             android:textSize="12sp" />
-        <TextView
-            android:id="@+id/first_promote"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="135dp"
-            android:layout_marginTop="22dp"
-            android:drawableLeft="@drawable/connecting"
-            android:drawablePadding="@dimen/dp_9"
-            android:gravity="center"
-            android:text="@string/verifying_pin"
-            android:textColor="@color/text"
-            android:textSize="@dimen/smaller_text_size" />
 
-        <TextView
-            android:id="@+id/second_promote"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/first_promote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/connecting"
+                android:drawablePadding="@dimen/dp_9"
+                android:gravity="center"
+                android:text="@string/verifying_pin"
+                android:textColor="@color/text"
+                android:textSize="@dimen/smaller_text_size" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginStart="135dp"
-            android:text="@string/pin_seted"
-            android:drawableLeft="@drawable/connecting"
-            android:drawablePadding="@dimen/dp_9"
-            android:visibility="gone"
-            android:textColor="@color/text"
-            android:textSize="@dimen/smaller_text_size"/>
-        <TextView
-            android:id="@+id/third_promote"
-            android:layout_width="wrap_content"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/second_promote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/connecting"
+                android:drawablePadding="@dimen/dp_9"
+                android:text="@string/pin_seted"
+                android:textColor="@color/text"
+                android:textSize="@dimen/smaller_text_size"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginStart="135dp"
-            android:text="@string/pin_seted"
-            android:drawableStart="@drawable/connecting"
-            android:drawablePadding="@dimen/dp_9"
-            android:visibility="gone"
-            android:textColor="@color/text"
-            android:textSize="@dimen/smaller_text_size"/>
-        <TextView
-            android:id="@+id/fourth_promote"
-            android:layout_width="wrap_content"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/third_promote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/connecting"
+                android:drawablePadding="@dimen/dp_9"
+                android:text="@string/pin_seted"
+                android:textColor="@color/text"
+                android:textSize="@dimen/smaller_text_size"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginStart="135dp"
-            android:text="@string/pin_seted"
-            android:drawableStart="@drawable/connecting"
-            android:drawablePadding="@dimen/dp_9"
-            android:visibility="gone"
-            android:textColor="@color/text"
-            android:textSize="@dimen/smaller_text_size"/>
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/fourth_promote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/connecting"
+                android:drawablePadding="@dimen/dp_9"
+                android:text="@string/pin_seted"
+                android:textColor="@color/text"
+                android:textSize="@dimen/smaller_text_size"
+                android:visibility="gone" />
+        </LinearLayout>
 
 
     </LinearLayout>
@@ -98,9 +121,9 @@
         android:layout_height="@dimen/dp_40"
         android:layout_marginTop="@dimen/dp_5"
         android:layout_marginEnd="15.3dp"
-        android:padding="8dp"
+        android:contentDescription="@string/back"
 
-        android:src="@drawable/back"
-        android:contentDescription="@string/back" />
+        android:padding="8dp"
+        android:src="@drawable/back" />
 
 </RelativeLayout>

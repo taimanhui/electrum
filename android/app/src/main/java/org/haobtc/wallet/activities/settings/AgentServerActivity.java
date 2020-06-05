@@ -63,6 +63,8 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     private SharedPreferences.Editor edit;
     private String set_proxy;
     private boolean set_proxy_status;
+    private boolean proxy_switch;
+
 
     @Override
     public int getLayoutId() {
@@ -89,8 +91,9 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     }
 
     private void inits() {
-        if (set_proxy_status){
+        if (set_proxy_status) {
             switchAgent.setChecked(true);
+            proxy_switch = true;
             if (!TextUtils.isEmpty(set_proxy)) {
                 String[] wordsList = set_proxy.split(" ");
                 switch (wordsList.length) {
@@ -105,8 +108,9 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
 
                 }
             }
-        }else{
+        } else {
             switchAgent.setChecked(false);
+            proxy_switch = false;
         }
     }
 
@@ -129,8 +133,11 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                 showDialogs(AgentServerActivity.this, R.layout.selectwallet_item);
                 break;
             case R.id.btnConfirm:
-                setAgentServer();
-
+                if (proxy_switch) {
+                    setAgentServer();
+                } else {
+                    closeAgentServer();
+                }
                 break;
         }
     }
@@ -148,10 +155,10 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             return;
         }
         edit.putString("set_proxy", strNodetype + " " + strAgentIP + " " + strPort + " " + strUsername + " " + strPass);
+        edit.putBoolean("set_proxy_status", true);
         edit.apply();
-        EventBus.getDefault().post(new FirstEvent("set_proxy"));
-        mToast(getString(R.string.set_finish));
-
+        mToast(getString(R.string.set_success));
+        finish();
     }
 
     private void showDialogs(Context context, @LayoutRes int resource) {
@@ -193,6 +200,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
+            proxy_switch = true;
             editAgentIP.setEnabled(true);
             editPort.setEnabled(true);
             editUsername.setEnabled(true);
@@ -210,9 +218,8 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editPort.setText(wordsList[2]);
                 }
             }
-            edit.putBoolean("set_proxy_status",true).apply();
-
         } else {
+            proxy_switch = false;
             testNodeType.setText("");
             editAgentIP.setText("");
             editPort.setText("");
@@ -222,8 +229,6 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             editPort.setEnabled(false);
             editUsername.setEnabled(false);
             editPass.setEnabled(false);
-            closeAgentServer();
-            edit.putBoolean("set_proxy_status",false).apply();
         }
     }
 
@@ -232,8 +237,11 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             Daemon.commands.callAttr("set_proxy", "", "", "", "", "");
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
-
+        edit.putBoolean("set_proxy_status", false).apply();
+        mToast(getString(R.string.set_fail));
+        finish();
     }
 
     class TextChange implements TextWatcher {
@@ -263,8 +271,13 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         strPass = editPass.getText().toString();
 
         if (TextUtils.isEmpty(strAgentIP) || TextUtils.isEmpty(strPort) || TextUtils.isEmpty(strNodetype)) {
-            btnConfirm.setEnabled(false);
-            btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
+            if (proxy_switch) {
+                btnConfirm.setEnabled(false);
+                btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
+            } else {
+                btnConfirm.setEnabled(true);
+                btnConfirm.setBackground(getDrawable(R.drawable.little_radio_blue));
+            }
 
         } else {
             btnConfirm.setEnabled(true);

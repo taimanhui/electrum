@@ -484,7 +484,7 @@
     <string name="port_number">Port NO.</string>
     <string name="please_inputIp">Please enter IP</string>
     <string name="please_inputPort">Please enter port NO.</string>
-    <string name="add_finished">Added</string>
+    <string name="add_finished">Add complete</string>
     <string name="upgradeed">Upgraded to newest version</string>
     <string name="please_confirmKEY">Please confirm new PIN code on BixinKey</string>
     <string name="hours_24">Fastpay times</string>
@@ -792,5 +792,6 @@
     <string name="select_promote">Please select a customization file first</string>
     <string name="need_backup">Please back up before upgrading</string>
     <string name="key_wrong">Wrong password or wrong key</string>
+    <string name="connect_failed">BixinKey link failed, please try again</string>
 
 </resources>
