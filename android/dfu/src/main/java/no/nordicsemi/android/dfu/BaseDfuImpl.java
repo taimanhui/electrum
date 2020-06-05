@@ -562,10 +562,11 @@ import no.nordicsemi.android.dfu.internal.scanner.BootloaderScannerFactory;
 		} catch (final InterruptedException e) {
 			loge("Sleeping interrupted", e);
 		}
-		if (!mResetRequestSent && !mConnected)
-			throw new DeviceDisconnectedException("Unable to write Op Code " + value[0] + ": device disconnected");
-		if (!mResetRequestSent && mError != 0)
-			throw new DfuException("Unable to write Op Code " + value[0], mError);
+		// comment blow code to fix some error
+//		if (!mResetRequestSent && !mConnected)
+//			throw new DeviceDisconnectedException("Unable to write Op Code " + value[0] + ": device disconnected");
+//		if (!mResetRequestSent && mError != 0)
+//			throw new DfuException("Unable to write Op Code " + value[0], mError);
 	}
 
 	/**
