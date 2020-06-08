@@ -320,7 +320,7 @@
     <string name="set_public_num">请设置共管人数</string>
     <string name="set_sign_num">请设置签名人数</string>
     <string name="signnum_dongt_public">签名人数不可大于共管人数</string>
-    <string name="set_pass">请设置密码</string>
+    <string name="set_pass">请输入密码</string>
     <string name="set_pass_second">请再次输入密码</string>
     <string name="two_different_pass">两次密码不一致</string>
     <string name="backups_wallet">备份钱包</string>
@@ -748,7 +748,7 @@
     <string name="ble">蓝牙</string>
     <string name="check_key_name">BixinKey 名称：</string>
     <string name="check_pub_key">BixinKey 扩展公钥：</string>
-    <string name="set_shutdown_time">设置BixinKey自动关机时间</string>
+    <string name="set_shutdown_time">设置BixinKey自动关机或者锁屏时间</string>
     <string name="second">秒</string>
     <string name="please_input_time">请输入关机时间</string>
     <string name="little_time">时间最短为10秒哦！</string>
