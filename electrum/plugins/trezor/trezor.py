@@ -489,7 +489,7 @@ class TrezorPlugin(HW_PluginBase):
         has_change = False
         any_output_on_change_branch = is_any_tx_output_on_change_branch(tx)
 
-        for txout in tx.outputs():
+        for txout in tx.outputs()[::-1]:
             address = txout.address
             use_create_by_derivation = False
 
@@ -506,7 +506,7 @@ class TrezorPlugin(HW_PluginBase):
                 txoutputtype = create_output_by_derivation()
             else:
                 txoutputtype = create_output_by_address()
-            outputs.append(txoutputtype)
+            outputs.insert(0, txoutputtype)
 
         return outputs
 
