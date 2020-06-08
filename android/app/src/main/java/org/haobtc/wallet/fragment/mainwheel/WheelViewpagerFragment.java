@@ -192,7 +192,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             if (msgVote.contains("balance")) {
                 String balance = jsonObject.getString("balance");
                 // Log.i("getWalletMsgJXM", "event+substring:::" + balance);
-                walletBlance.setText(balance);
+                if (!TextUtils.isEmpty(balance)){
+                    walletBlance.setText(balance);
+                }
             }
             if (msgVote.contains("fiat")) {
                 String fiat = jsonObject.getString("fiat");

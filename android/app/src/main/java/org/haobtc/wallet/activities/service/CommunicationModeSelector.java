@@ -852,9 +852,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 
     @Override
     public void onException(Exception e) {
-        Log.i("jinxoaminsssss", "onException-----: " + e.getMessage());
-        Log.i("TAGgetMessageddd", "1234567687980----------" + e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device"));
-
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -863,9 +860,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //        if (hasWindowFocus()) {
         if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
             showErrorDialog(0, R.string.pin_wrong);
-        } else if (e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device") || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
+        } else if (e.getMessage().contains("May be BiXin cannot pair with your device") || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
+            Log.i("jinxoaminsssss", "onException-----:操作失败 ");
             Toast.makeText(this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
-
             showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
         } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage()) || e.getMessage().contains("(7, 'PIN invalid')")) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);

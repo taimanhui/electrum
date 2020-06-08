@@ -526,35 +526,8 @@ public class TransactionDetailsActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.sig_trans:
-                String strBtncontent = sigTrans.getText().toString();
-                if (strBtncontent.equals(getString(R.string.broadcast))) {
-                    //broadcast transaction
-                    braodcastTrsaction();
-
-                } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
-                    Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
-                    intent1.putExtra("checkTxid", txid);
-                    startActivity(intent1);
-                } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
-                    if ("standard".equals(strwalletType)) {
-                        //sign input pass
-                        signInputpassDialog();
-                    } else {
-                        CommunicationModeSelector.runnables.clear();
-                        CommunicationModeSelector.runnables.add(runnable);
-                        Intent intent1 = new Intent(this, CommunicationModeSelector.class);
-                        if (!TextUtils.isEmpty(hideWallet)) {
-                            intent1.putExtra("tag", TAG_HIDE_WALLET);
-                        } else {
-                            intent1.putExtra("tag", TAG);
-                        }
-                        intent1.putExtra("extras", rawtx);
-                        startActivity(intent1);
-                    }
-                } else {
-                    mToast(getString(R.string.unrelated_transaction));
-                }
-
+                //sign technological process
+                signProcess();
                 break;
             case R.id.lin_getMoreaddress:
                 //transaction detail or create success
@@ -581,6 +554,38 @@ public class TransactionDetailsActivity extends BaseActivity {
 
                 startActivity(intent2Pay);
                 break;
+        }
+    }
+
+    //btn onclick
+    private void signProcess() {
+        String strBtncontent = sigTrans.getText().toString();
+        if (strBtncontent.equals(getString(R.string.broadcast))) {
+            //broadcast transaction
+            braodcastTrsaction();
+
+        } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
+            Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
+            intent1.putExtra("checkTxid", txid);
+            startActivity(intent1);
+        } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
+            if ("standard".equals(strwalletType)) {
+                //sign input pass
+                signInputpassDialog();
+            } else {
+                CommunicationModeSelector.runnables.clear();
+                CommunicationModeSelector.runnables.add(runnable);
+                Intent intent1 = new Intent(this, CommunicationModeSelector.class);
+                if (!TextUtils.isEmpty(hideWallet)) {
+                    intent1.putExtra("tag", TAG_HIDE_WALLET);
+                } else {
+                    intent1.putExtra("tag", TAG);
+                }
+                intent1.putExtra("extras", rawtx);
+                startActivity(intent1);
+            }
+        } else {
+            mToast(getString(R.string.unrelated_transaction));
         }
     }
 
@@ -691,13 +696,14 @@ public class TransactionDetailsActivity extends BaseActivity {
             Gson gson = new Gson();
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
-            mToast(getString(R.string.addspeed_success));
             EventBus.getDefault().post(new FirstEvent("22"));
             braod_status = true;//braod_status = true   -->   speed don't broadcast
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
             alertDialog.dismiss();
+            signProcess();//add speed  then Re sign
+
         }
     }
 

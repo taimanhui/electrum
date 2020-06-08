@@ -554,7 +554,6 @@
     <string name="wrong_key_type">Wrong key type p2wpkh</string>
     <string name="sign_failed_device">Failed to sign, Bixin cannot pair with your device</string>
     <string name="file_name">File name</string>
-    <string name="addspeed_success">Accelerate success!</string>
     <string name="software_wallet">Software Wallet</string>
     <string name="please_change_xpub">This xpub already exists, please replace it</string>
     <string name="error_wallet_transaction">Transaction is unrelated to this wallet</string>

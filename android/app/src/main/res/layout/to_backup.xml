@@ -15,7 +15,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"
-            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_10"
             android:fontFamily="sans-serif-medium"
             android:gravity="center_vertical"
             android:text="@string/if_set_PIN"
