@@ -38,7 +38,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
-import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
+import org.haobtc.wallet.adapter.ChoosePayAddressAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.bean.GetAddressBean;
@@ -98,7 +98,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     LinearLayout linearSeek;
     private ArrayList<AddressEvent> dataListName;
     private Dialog dialogBtom;
-    private ChoosePayAddressAdapetr choosePayAddressAdapetr;
+    private ChoosePayAddressAdapter choosePayAddressAdapetr;
     private String wallet_name;
     private double pro;
     private String strmapBtc;
@@ -421,7 +421,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         });
         RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
         recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2ManyMainPageActivity.this));
-        choosePayAddressAdapetr = new ChoosePayAddressAdapetr(SendOne2ManyMainPageActivity.this, dataListName);
+        choosePayAddressAdapetr = new ChoosePayAddressAdapter(SendOne2ManyMainPageActivity.this, dataListName);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
         recyclerviewOnclick();
         dialogBtom.setContentView(view);
@@ -473,7 +473,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     }
 
     private void recyclerviewOnclick() {
-        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapetr.OnItemClickListener() {
+        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 wallet_name_pos = position;

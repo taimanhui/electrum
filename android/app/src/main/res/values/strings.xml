@@ -609,7 +609,7 @@
     <string name="get_xpub">View BixinKey extended public key</string>
     <string name="check_xpub">View extended public key</string>
     <string name="copy_xpub">Copy extended public key</string>
-    <string name="diy_hardware">Custom firmware file</string>
+    <string name="diy_hardware">Select custom firmware file</string>
     <string name="input_backup_pass">Enter backup password</string>
     <string name="input_key_pass">Please enter the password displayed by BixinKey</string>
     <string name="pin_change_failed">The original pin incorrect , please retry</string>
@@ -793,6 +793,6 @@
     <string name="key_wrong">Wrong password or wrong key</string>
     <string name="connect_failed">Network connection failed, please try again</string>
     <string name="fix_wallet_name">Change wallet name</string>
-    <string name="delete_key">Delete BixinKey</string>
+    <string name="set_key_language">设置硬件语言</string>
 
 </resources>

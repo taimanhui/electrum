@@ -36,9 +36,9 @@
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:layout_marginBottom="@dimen/dp_20"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="@dimen/dp_20"
         android:background="@color/bk_page">
 
 
@@ -60,7 +60,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="480dp"
+                    android:layout_height="540dp"
                     android:background="@drawable/white_tuo"
                     android:orientation="vertical">
 
@@ -288,6 +288,28 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:background="@color/separation_line" />
+
+                    <TextView
+                        android:id="@+id/test_set_key_language"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="@dimen/text_margin"
+                        android:paddingEnd="@dimen/text_margin"
+                        android:text="@string/set_key_language"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/text_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_hight"
                         android:layout_marginStart="@dimen/sp_16"
                         android:layout_marginEnd="@dimen/sp_16"
                         android:background="@color/separation_line" />
@@ -335,8 +357,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/CardView"
                 android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginEnd="@dimen/dp_10"
                 android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginEnd="@dimen/dp_10"
                 android:layout_marginBottom="@dimen/dp_10"
                 android:outlineSpotShadowColor="@color/shadow_color"
                 app:cardCornerRadius="@dimen/dp_8"
@@ -348,7 +370,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:background="@color/t_white"
-                    android:text="@string/delete_key"
+                    android:text="@string/delete"
                     android:textColor="@color/red_text"
                     android:textSize="15sp" />
 

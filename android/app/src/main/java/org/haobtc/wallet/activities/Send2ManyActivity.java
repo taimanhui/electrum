@@ -50,8 +50,6 @@ import butterknife.ButterKnife;
 public class Send2ManyActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     public static final String TOTAL_AMOUNT = "org.haobtc.wallet.activities.Send2ManyActivity.TOTAL";
     public static final String ADDRESS = "org.haobtc.activities.Send2ManyActivity.ADDRESS";
-    @BindView(R.id.byte_count)
-    TextView byteCount;
     @BindView(R.id.test_unit)
     TextView testUnit;
     @BindView(R.id.test_units)

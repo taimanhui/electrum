@@ -580,7 +580,7 @@
     <string name="get_xpub">查看BiXinKEY扩展公钥</string>
     <string name="check_xpub">查看扩展公钥</string>
     <string name="copy_xpub">复制扩展公钥</string>
-    <string name="diy_hardware">自定义固件文件</string>
+    <string name="diy_hardware">选择自定义固件文件</string>
     <string name="input_backup_pass">输入备份密码</string>
     <string name="input_key_pass">请输入备份是BixinKey展示的密码</string>
     <string name="pin_change_failed">原PIN码错误，请重试</string>
@@ -763,6 +763,6 @@
     <string name="key_wrong">密码输入错误，或者key使用错误</string>
     <string name="connect_failed">网络连接失败，请重新尝试</string>
     <string name="fix_wallet_name">修改钱包名称</string>
-    <string name="delete_key">删除BixinKey</string>
+    <string name="set_key_language">设置硬件语言</string>
 
 </resources>

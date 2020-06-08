@@ -26,7 +26,7 @@ import com.chaquo.python.PyObject;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
+import org.haobtc.wallet.adapter.ChoosePayAddressAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -75,7 +75,7 @@ public class MnemonicWordActivity extends BaseActivity {
     @BindView(R.id.text_paste)
     TextView textPaste;
     private ArrayList<AddressEvent> dataListName;
-    private ChoosePayAddressAdapetr choosePayAddressAdapetr;
+    private ChoosePayAddressAdapter choosePayAddressAdapetr;
     private String wallet_name;
     private String newWallet_type = "";
 
@@ -259,7 +259,7 @@ public class MnemonicWordActivity extends BaseActivity {
         RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
 
 //        recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2OneMainPageActivity.this));
-        choosePayAddressAdapetr = new ChoosePayAddressAdapetr(MnemonicWordActivity.this, dataListName);
+        choosePayAddressAdapetr = new ChoosePayAddressAdapter(MnemonicWordActivity.this, dataListName);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
         recyclerviewOnclick();
 
@@ -276,7 +276,7 @@ public class MnemonicWordActivity extends BaseActivity {
     }
 
     private void recyclerviewOnclick() {
-        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapetr.OnItemClickListener() {
+        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 wallet_name = dataListName.get(position).getName();

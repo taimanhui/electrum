@@ -261,20 +261,12 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:text="@string/diy_hard"
                             android:textColor="@color/text" />
-
-                        <TextView
-                            android:id="@+id/test_file_load"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_10"
-                            android:layout_weight="1"
-                            android:textColor="@color/light_text"
-                            tools:text="android.file" />
 
                         <CheckBox
                             android:id="@+id/checkBox_hardware"
@@ -291,6 +283,19 @@
                         android:layout_marginStart="@dimen/text_margin"
                         android:layout_marginEnd="@dimen/text_margin"
                         android:background="@color/separation_line" />
+
+                    <TextView
+                        android:id="@+id/test_file_load"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:visibility="gone"
+                        android:paddingTop="@dimen/dp_10"
+                        android:paddingBottom="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:textColor="@color/light_text"
+                        tools:text="android.file" />
 
                     <TextView
                         android:id="@+id/btn_import_file"

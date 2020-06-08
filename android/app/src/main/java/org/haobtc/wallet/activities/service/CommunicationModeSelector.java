@@ -70,6 +70,7 @@ import org.haobtc.wallet.activities.settings.UpgradeBixinKEYActivity;
 import org.haobtc.wallet.activities.settings.VersionUpgradeActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupMessageActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.FixHardwareLanguageActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryResult;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
@@ -101,6 +102,7 @@ import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendSignBroadcastEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
 import org.haobtc.wallet.event.SetBluetoothEvent;
+import org.haobtc.wallet.event.SetKeyLanguageEvent;
 import org.haobtc.wallet.event.ShutdownTimeEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.event.SignResultEvent;
@@ -600,6 +602,14 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }else if (FixHardwareLanguageActivity.TAG.equals(tag)) {
+                //fix bixinkey name
+                String key_language = getIntent().getStringExtra("set_key_language");
+                try {
+                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fix_hardware_language", key_language);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag))) {
@@ -859,10 +869,12 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         // EventBus.getDefault().post(new SendingFailedEvent(e));
 //        if (hasWindowFocus()) {
         if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
+            Log.e("jinxoaminsssss", "pin出入错误 ");
             showErrorDialog(0, R.string.pin_wrong);
         } else if (e.getMessage().contains("May be BiXin cannot pair with your device") || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
-            Log.i("jinxoaminsssss", "onException-----:操作失败 ");
+            Log.e("jinxoaminsssss", "onException-----:操作失败 ");
             Toast.makeText(this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
+            Log.e("jinxoaminsssss", "onException==========--:操作失败 ");
             showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
         } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage()) || e.getMessage().contains("(7, 'PIN invalid')")) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);
@@ -880,7 +892,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     public void showErrorDialog(int error, int title) {
         ErrorDialogFragment fragment = new ErrorDialogFragment(error, title);
         fragment.setRunnable(retry);
-        fragment.setActivity(this);
+        fragment.setActivity(CommunicationModeSelector.this);
         fragment.show(getSupportFragmentManager(), "");
     }
 
@@ -960,6 +972,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             EventBus.getDefault().post(new FixAllLabelnameEvent(deviceid, s));
         } else if (SetShutdownTimeActivity.TAG.equals(tag)) {
             EventBus.getDefault().post(new ShutdownTimeEvent(s));
+        }else if (FixHardwareLanguageActivity.TAG.equals(tag)) {
+            EventBus.getDefault().post(new SetKeyLanguageEvent(s));
         }
         finish();
     }

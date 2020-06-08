@@ -13,16 +13,17 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.LanguageSettingActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.FixHardwareLanguageActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ExistEvent;
-import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.SetShutdownTimeEvent;
 
@@ -60,6 +61,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     private String label;
     private boolean isWipe;
     private SharedPreferences devices;
+
     @Override
     public int getLayoutId() {
         return R.layout.activity_somemore;
@@ -96,7 +98,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.tetBluetoothSet, R.id.linear_shutdown_time, R.id.tetBuckup, R.id.tet_deleteWallet})
+    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.tetBluetoothSet, R.id.linear_shutdown_time, R.id.tetBuckup, R.id.tet_deleteWallet, R.id.test_set_key_language})
     public void onViewClicked(View view) {
         isWipe = false;
         switch (view.getId()) {
@@ -142,6 +144,10 @@ public class HardwareDetailsActivity extends BaseActivity {
                 EventBus.getDefault().post(new FixBixinkeyNameEvent(device_id));
                 mToast(getString(R.string.delete_succse));
                 finish();
+                break;
+            case R.id.test_set_key_language:
+                Intent intent3 = new Intent(HardwareDetailsActivity.this, FixHardwareLanguageActivity.class);
+                startActivity(intent3);
                 break;
         }
     }

@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
@@ -36,6 +38,7 @@ public class LanguageSettingActivity extends BaseActivity {
         return R.layout.language_setting;
     }
 
+    @SuppressLint("CommitPrefEdits")
     public void initView() {
 
         ButterKnife.bind(this);

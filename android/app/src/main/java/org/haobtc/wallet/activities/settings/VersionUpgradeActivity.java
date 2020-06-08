@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -103,8 +104,12 @@ public class VersionUpgradeActivity extends BaseActivity {
         }
         tetFirmware.setText(String.format("v%s", firmwareVersion));
         tetBluetooth.setText(String.format("v%s", bleVerson));
-        testFileLoad.setText(filePath);
-
+        if (!TextUtils.isEmpty(filePath)){
+            testFileLoad.setText(filePath);
+            testFileLoad.setVisibility(View.VISIBLE);
+        }else{
+            testFileLoad.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -327,7 +332,12 @@ public class VersionUpgradeActivity extends BaseActivity {
             String str = listExtra.toString();
             String substring = str.substring(1);
             filePath = substring.substring(0, substring.length() - 1);
-            testFileLoad.setText(filePath);
+            if (!TextUtils.isEmpty(filePath)){
+                testFileLoad.setText(filePath);
+                testFileLoad.setVisibility(View.VISIBLE);
+            }else{
+                testFileLoad.setVisibility(View.GONE);
+            }
         }
     }
 }

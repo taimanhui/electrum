@@ -40,7 +40,8 @@
         android:theme="@style/AppTheme"
         tools:replace="label"
         tools:targetApi="q">
-        <activity android:name=".activities.personalwallet.FixWalletNameActivity"></activity>
+        <activity android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity"></activity>
+        <activity android:name=".activities.personalwallet.FixWalletNameActivity" />
         <activity android:name=".activities.settings.SetShutdownTimeActivity" />
         <activity android:name=".activities.UserAgreementActivity" />
         <activity android:name=".activities.settings.recovery_set.InputBackupPassActivity" />

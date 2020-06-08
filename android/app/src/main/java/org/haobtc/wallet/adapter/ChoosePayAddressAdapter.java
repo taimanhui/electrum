@@ -17,13 +17,13 @@ import org.haobtc.wallet.bean.AddressEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChoosePayAddressAdapetr extends RecyclerView.Adapter<ChoosePayAddressAdapetr.myViewHolder> {
+public class ChoosePayAddressAdapter extends RecyclerView.Adapter<ChoosePayAddressAdapter.myViewHolder> {
 
     private Context context;
     private List<Boolean> isClicks;
     private List<AddressEvent> data;
 
-    public ChoosePayAddressAdapetr(Context context, List<AddressEvent> data) {
+    public ChoosePayAddressAdapter(Context context, List<AddressEvent> data) {
         this.context = context;
         this.data = data;
 

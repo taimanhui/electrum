@@ -21,13 +21,11 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.adapter.ChoosePayAddressAdapetr;
+import org.haobtc.wallet.adapter.ChoosePayAddressAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
-import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -172,9 +170,9 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         Dialog dialogBtom = new Dialog(context, R.style.dialog);
         RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
         Log.i("jianxoiain", "dataList: " + dataList.get(0));
-        ChoosePayAddressAdapetr choosePayAddressAdapetr = new ChoosePayAddressAdapetr(AgentServerActivity.this, dataList);
+        ChoosePayAddressAdapter choosePayAddressAdapetr = new ChoosePayAddressAdapter(AgentServerActivity.this, dataList);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
-        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapetr.OnItemClickListener() {
+        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 nodetype = dataList.get(position).getName();
