@@ -399,15 +399,15 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
                 HardwareFeatures old;
                 String backupMessage = "";
-                if (devices.contains(features.getBleName())) {
-                    old = HardwareFeatures.objectFromData(devices.getString(features.getBleName(), ""));
+                if (devices.contains(features.getDeviceId())) {
+                    old = HardwareFeatures.objectFromData(devices.getString(features.getDeviceId(), ""));
                     backupMessage = old.getBackupMessage();
                 }
                 if (!Strings.isNullOrEmpty(backupMessage)) {
                     features.setBackupMessage(backupMessage);
-                    devices.edit().putString(features.getBleName(), features.toString()).apply();
+                    devices.edit().putString(features.getDeviceId(), features.toString()).apply();
                 } else {
-                    devices.edit().putString(features.getBleName(), feature).apply();
+                    devices.edit().putString(features.getDeviceId(), feature).apply();
                 }
             }
             return features;
@@ -853,7 +853,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     @Override
     public void onException(Exception e) {
         Log.i("jinxoaminsssss", "onException-----: " + e.getMessage());
-        Log.i("TAGgetMessageddd", "1234567687980----------"+e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device"));
+        Log.i("TAGgetMessageddd", "1234567687980----------" + e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device"));
 
         if (dialogFragment != null) {
             dialogFragment.dismiss();
@@ -863,14 +863,14 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //        if (hasWindowFocus()) {
         if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
             showErrorDialog(0, R.string.pin_wrong);
+        } else if (e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device") || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
+            Toast.makeText(this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
+
+            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
         } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage()) || e.getMessage().contains("(7, 'PIN invalid')")) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);
         } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
-        } else if (e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device")) {
-            Toast.makeText(this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
-            Log.i("TAGgetMessageddd", "1234567687980----------"+e.getMessage().contains("Sign failed, May be BiXin cannot pair with your device"));
-//            errorDialogShow(CommunicationModeSelector.this,R.layout.pass_error);
         } else if (e.getMessage().contains(BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage())) {
             showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
         } else {
@@ -959,8 +959,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
             EventBus.getDefault().post(new FastPayEvent(s));
         } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
-            String oldBleName = features.getBleName();
-            EventBus.getDefault().post(new FixAllLabelnameEvent(oldBleName, s));
+            String deviceid = features.getDeviceId();
+            EventBus.getDefault().post(new FixAllLabelnameEvent(deviceid, s));
         } else if (SetShutdownTimeActivity.TAG.equals(tag)) {
             EventBus.getDefault().post(new ShutdownTimeEvent(s));
         }

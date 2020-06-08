@@ -4,9 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class MainSweepcodeBean {
 
+
     /**
      * type : 1
-     * data : {"amount":1000000000,"message":"test","address":"bcrt1q9a4kk79hacd2s838xhdvxmhxrs6tskfp744t7v9pj7f9flayjy0s4d3ttm","memo":"test"}
+     * data : {"amount":"0.005 BTC","message":"bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr","time":1591325822,"address":"bcrt1q82vs5lafxtr305utt62s8875s7df30vfnwnrjldtwsys8yjdtx2qslvf49","memo":"bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr"}
      */
 
     @SerializedName("type")
@@ -32,26 +33,29 @@ public class MainSweepcodeBean {
 
     public static class DataBean {
         /**
-         * amount : 1000000000
-         * message : test
-         * address : bcrt1q9a4kk79hacd2s838xhdvxmhxrs6tskfp744t7v9pj7f9flayjy0s4d3ttm
-         * memo : test
+         * amount : 0.005 BTC
+         * message : bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr
+         * time : 1591325822
+         * address : bcrt1q82vs5lafxtr305utt62s8875s7df30vfnwnrjldtwsys8yjdtx2qslvf49
+         * memo : bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr
          */
 
         @SerializedName("amount")
-        private int amount;
+        private String amount;
         @SerializedName("message")
         private String message;
+        @SerializedName("time")
+        private int time;
         @SerializedName("address")
         private String address;
         @SerializedName("memo")
         private String memo;
 
-        public int getAmount() {
+        public String getAmount() {
             return amount;
         }
 
-        public void setAmount(int amount) {
+        public void setAmount(String amount) {
             this.amount = amount;
         }
 
@@ -61,6 +65,14 @@ public class MainSweepcodeBean {
 
         public void setMessage(String message) {
             this.message = message;
+        }
+
+        public int getTime() {
+            return time;
+        }
+
+        public void setTime(int time) {
+            this.time = time;
         }
 
         public String getAddress() {

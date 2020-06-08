@@ -123,6 +123,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="59dp"
                             android:button="@null"
+                            android:background="@color/transparent"
                             android:text="@string/_BTC"
                             android:textColor="@drawable/textcolor"
                             android:textSize="15sp" />
@@ -131,6 +132,7 @@
                             android:id="@+id/btn_btcTwo"
                             android:layout_width="match_parent"
                             android:layout_height="59dp"
+                            android:background="@color/transparent"
                             android:button="@null"
                             android:text="@string/mbtc_0_001_btc"
                             android:textColor="@drawable/textcolor"
@@ -140,6 +142,7 @@
                             android:id="@+id/btn_btcThree"
                             android:layout_width="match_parent"
                             android:layout_height="59dp"
+                            android:background="@color/transparent"
                             android:button="@null"
                             android:text="@string/bits_btc"
                             android:textColor="@drawable/textcolor"
@@ -148,6 +151,7 @@
                         <RadioButton
                             android:id="@+id/btn_btcFour"
                             android:layout_width="match_parent"
+                            android:background="@color/transparent"
                             android:layout_height="59dp"
                             android:button="@null"
                             android:text="@string/sat_0_00000001_btc"

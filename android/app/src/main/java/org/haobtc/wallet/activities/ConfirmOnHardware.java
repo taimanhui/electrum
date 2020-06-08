@@ -76,6 +76,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        reclMsg.setNestedScrollingEnabled(false);
         findViewById(R.id.confirm_on_hardware).setOnClickListener(this);
         findViewById(R.id.img_back).setOnClickListener(this);
         EventBus.getDefault().register(this);
@@ -112,22 +113,6 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             testConfirmMsg.setText(getString(R.string.confirm_hardware_msg));
         }
     }
-
-/*
-    private void showPopupSignProcessing() {
-        view = LayoutInflater.from(this).inflate(R.layout.touch_process_popupwindow, null);
-        imageViewCancel = view.findViewById(R.id.cancel_touch);
-        signSuccess = view.findViewById(R.id.sign_success);
-        imageViewCancel.setOnClickListener(this);
-        dialog = new Dialog(this, R.style.dialog);
-        dialog.setContentView(view);
-        Window window = dialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.BOTTOM);
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialog.show();
-    }
-*/
 
     private void showPopupSignFailed() {
         view = LayoutInflater.from(this).inflate(R.layout.signature_fail_popupwindow, null);

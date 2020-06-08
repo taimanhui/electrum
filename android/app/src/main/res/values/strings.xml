@@ -792,6 +792,8 @@
     <string name="select_promote">Please select a customization file first</string>
     <string name="need_backup">Please back up before upgrading</string>
     <string name="key_wrong">Wrong password or wrong key</string>
-    <string name="connect_failed">BixinKey link failed, please try again</string>
+    <string name="connect_failed">Network connection failed, please try again</string>
+    <string name="fix_wallet_name">Change wallet name</string>
+    <string name="delete_key">Delete BixinKey</string>
 
 </resources>

@@ -95,7 +95,7 @@
                             android:paddingBottom="@dimen/dp_10"
                             android:text="@string/fix_name"
                             android:textColor="@color/graytext_color"
-                            android:visibility="invisible" />
+                            android:visibility="visible" />
 
                     </RelativeLayout>
 

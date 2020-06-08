@@ -140,6 +140,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String onlickName;
     private boolean flag = true;
     private int wallet_name_pos;
+    private String fee;
 
     @Override
     public int getLayoutId() {
@@ -281,10 +282,24 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
         onlickName = wallet_name;//if onlickName != wallet_name -->home page don't update transaction list
         tetWalletname.setText(wallet_name);
-        int sendamount = intent.getIntExtra("sendamount", 0);
+        String sendamount = intent.getStringExtra("sendamount");
         editAddress.setText(sendAdress);
-        if (sendamount != 0) {
-            tetamount.setText(String.format("%d", sendamount));
+        if (!TextUtils.isEmpty(sendamount)) {
+            String amount = sendamount.substring(0, sendamount.indexOf(" "));
+            tetamount.setText(String.format("%s", amount));
+            if (sendamount.contains("(")){
+                String allCNY = sendamount.substring(sendamount.indexOf("(")+1);
+                String strCNY = allCNY.substring(0, allCNY.indexOf(" "));
+                editChangeMoney.setText(strCNY);
+            }else{
+                try {
+                    PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", strAmount);
+                    editChangeMoney.setText(money.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
         }
         if (!TextUtils.isEmpty(sendmessage)) {
             editTextComments.setText(String.format("%s", sendmessage));
@@ -592,6 +607,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         gson = new Gson();
                         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(get_tx_info_from_raw.toString(), GetnewcreatTrsactionListBean.class);
                         outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
+                        fee = getnewcreatTrsactionListBean.getFee();
                     } catch (Exception e) {
                         e.printStackTrace();
                         return;
@@ -656,7 +672,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", outputAddr);
         bundle.putString("pay_address", payAddress);
-        bundle.putString("fee", tetamount.getText().toString());
+        bundle.putString("fee", fee);
         intentCon.putExtra("outputs", bundle);
         startActivity(intentCon);
     }
@@ -681,11 +697,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                                 MainSweepcodeBean mainSweepcodeBean = gson.fromJson(parse_pr.toString(), MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
-                                int sendAmount = listData.getAmount();
+                                String sendAmount = listData.getAmount();
                                 String message = listData.getMessage();
                                 editAddress.setText(address);
-                                if (!TextUtils.isEmpty(String.valueOf(sendAmount))) {
-                                    tetamount.setText(String.valueOf(sendAmount));
+                                if (!TextUtils.isEmpty(sendAmount)) {
+                                    String amount = sendAmount.substring(0, sendAmount.indexOf(" "));
+                                    tetamount.setText(amount);
                                 }
                                 editTextComments.setText(message);
 

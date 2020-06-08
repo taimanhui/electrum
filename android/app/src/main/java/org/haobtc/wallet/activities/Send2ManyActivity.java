@@ -50,8 +50,6 @@ import butterknife.ButterKnife;
 public class Send2ManyActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     public static final String TOTAL_AMOUNT = "org.haobtc.wallet.activities.Send2ManyActivity.TOTAL";
     public static final String ADDRESS = "org.haobtc.activities.Send2ManyActivity.ADDRESS";
-    @BindView(R.id.edit_Context)
-    EditText editContext;
     @BindView(R.id.byte_count)
     TextView byteCount;
     @BindView(R.id.test_unit)
@@ -114,30 +112,6 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         wallet_type = intent.getStringExtra("wallet_type");
         hideRefresh = intent.getStringExtra("hideRefresh");
         totalAmount = new BigDecimal("0");
-        setEditTextComments();
-    }
-
-    private void setEditTextComments() {
-        editContext.addTextChangedListener(new TextWatcher() {
-            CharSequence input;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                input = s;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                byteCount.setText(String.format(Locale.CHINA, "%d/20", input.length()));
-                if (input.length() > 19) {
-                    Toast.makeText(Send2ManyActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
     }
 
     @Override
@@ -257,7 +231,6 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         //edittext to null
         editTextAddress.setText("");
         editTextAmount.setText("");
-        editContext.setText("");
         buttonNext.setEnabled(true);
         buttonNext.setBackground(getDrawable(R.color.button_bk));
         SendmoreAddressAdapter sendmoreAddressAdapter = new SendmoreAddressAdapter(Send2ManyActivity.this, sendMoreAddressList);

@@ -57,6 +57,7 @@ import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.FixWalletNameEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
@@ -636,6 +637,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         // Scan QR code / barcode return
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
+                Log.i("PyObject", "parse_qr-----:  " + data);
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 //bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
                 if (!TextUtils.isEmpty(content)) {
@@ -660,7 +662,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                 MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
-                                int sendAmount = listData.getAmount();
+                                String sendAmount = listData.getAmount();
                                 String message = listData.getMessage();
                                 //address  -->  intent  send  activity
                                 Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
@@ -719,6 +721,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void fixName(FixWalletNameEvent event) {
+        //Rolling Wallet
+        mWheelplanting();
+    }
+
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {

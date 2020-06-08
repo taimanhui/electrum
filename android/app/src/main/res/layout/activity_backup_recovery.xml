@@ -52,6 +52,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_20"
                 android:outlineSpotShadowColor="@color/shadow_color"
                 app:cardCornerRadius="@dimen/dp_8"
                 app:cardElevation="@dimen/dp_8"
@@ -92,6 +93,13 @@
 
 
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_hight"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:background="@color/line_color" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/reclCheckKey"

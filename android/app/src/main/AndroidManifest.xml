@@ -40,6 +40,7 @@
         android:theme="@style/AppTheme"
         tools:replace="label"
         tools:targetApi="q">
+        <activity android:name=".activities.personalwallet.FixWalletNameActivity"></activity>
         <activity android:name=".activities.settings.SetShutdownTimeActivity" />
         <activity android:name=".activities.UserAgreementActivity" />
         <activity android:name=".activities.settings.recovery_set.InputBackupPassActivity" />
@@ -86,8 +87,7 @@
         <activity android:name=".activities.jointwallet.MultiSigWalletCreator" />
         <activity android:name=".entries.FsActivity" />
         <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
-        <activity android:name=".MainActivity"
-            >
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
@@ -154,8 +154,7 @@
             android:name=".activities.service.NfcNotifyHelper"
             android:noHistory="true"
             android:theme="@style/dialog" />
-        <activity android:name=".activities.settings.SelectorActivity" />
-        <!-- aotusize -->
+        <activity android:name=".activities.settings.SelectorActivity" /> <!-- aotusize -->
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />

@@ -139,7 +139,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
     private String unConfirmStatus;
     private String hideWallet = "";
-
+    private boolean braod_status = false;//braod_status = true   -->   speed don't broadcast
 
     @Override
     public int getLayoutId() {
@@ -169,9 +169,9 @@ public class TransactionDetailsActivity extends BaseActivity {
             strParse = intent.getStringExtra("strParse");
             String dataTime = intent.getStringExtra("dataTime");
             strwalletType = intent.getStringExtra("strwalletType");
-            isIsmine = intent.getBooleanExtra("isIsmine", false);//isIsmine -->recevid or send
             tetTrsactionTime.setText(dataTime);
         }
+        isIsmine = intent.getBooleanExtra("isIsmine", false);//isIsmine -->recevid or send
     }
 
     @Override
@@ -285,7 +285,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //intent ->histry or create
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String jsondef_get) {
-         Log.d("jsonDetailData", "transactionDetail==== " + jsondef_get);
+        Log.d("jsonDetailData", "transactionDetail==== " + jsondef_get);
         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
         try {
             Gson gson = new Gson();
@@ -343,7 +343,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 if (isIsmine) {
                     textView14.setText(String.format("-%s", amount));
                 } else {
-                    textView14.setText(String.format("%s", amount));
+                    textView14.setText(String.format("+%s", amount));
                 }
             }
         }
@@ -372,7 +372,10 @@ public class TransactionDetailsActivity extends BaseActivity {
         String tx_status = scanListdata.getTxStatus();
         inputAddrScan = scanListdata.getInputAddr();
         outputAddrScan = scanListdata.getOutputAddr();
-
+        if (inputAddrScan.size() != 0) {
+            String addrInput = inputAddrScan.get(0).getAddr();
+            tetPayAddress.setText(addrInput);
+        }
         List<Integer> signStatusMes = scanListdata.getSignStatus();
         String txid = scanListdata.getTxid();
         rawtx = scanListdata.getTx();
@@ -388,8 +391,10 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddrScan.size(), getString(R.string.ge)));
         }
         //output_address
-        String addr = outputAddrScan.get(0).getAddr();
-        tetGetMoneyaddress.setText(addr);
+        if (outputAddrScan.size() != 0) {
+            String addr = outputAddrScan.get(0).getAddr();
+            tetGetMoneyaddress.setText(addr);
+        }
 
         if (signStatusMes != null) {
             Integer integer = signStatusMes.get(0);
@@ -404,7 +409,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                     String replaceAmont = amount.replace("-", "");
                     textView14.setText(String.format("-%s", replaceAmont));
                 } else {
-                    textView14.setText(amount);
+                    textView14.setText(String.format("+%s", amount));
                 }
             } else {
                 textView14.setText(amount);
@@ -427,7 +432,11 @@ public class TransactionDetailsActivity extends BaseActivity {
     //judge state
     private void judgeState(String tx_status) {
         if ("broadcast_complete".equals(unConfirmStatus)) {
-            broadcastStatus();//sendOne2OnePageActivity  1-n wallet -->sign and broadcast ，Modify status manually
+            if (!braod_status) {
+                broadcastStatus();//sendOne2OnePageActivity  1-n wallet -->sign and broadcast ，Modify status manually
+                braod_status = false;
+            }
+
         } else {
             //transaction state
             if ("Unconfirmed".equals(tx_status)) {//Unconfirmed
@@ -684,6 +693,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
             mToast(getString(R.string.addspeed_success));
             EventBus.getDefault().post(new FirstEvent("22"));
+            braod_status = true;//braod_status = true   -->   speed don't broadcast
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();

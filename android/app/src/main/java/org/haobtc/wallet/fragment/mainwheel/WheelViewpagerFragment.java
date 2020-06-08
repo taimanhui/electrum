@@ -21,14 +21,19 @@ import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.personalwallet.WalletDetailsActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.FixWalletNameEvent;
+import org.haobtc.wallet.event.SendXpubToSigwallet;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -155,7 +160,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         }
 
         if (select_wallet != null) {
-//            EventBus.getDefault().post(new FirstEvent("22"));
             String toString = select_wallet.toString();
             Log.i("select_wallet", "select_wallet+++: " + toString);
             Gson gson = new Gson();
@@ -169,10 +173,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             if (!TextUtils.isEmpty(balanceC)) {
                 if (balanceC.contains("(")) {
                     substring = balanceC.substring(0, balanceC.indexOf("("));
-                    // Log.e("substring", "substring: " + substring);
-                    // Log.e("substring", "balanceC: " + balanceC);
-
-                    // Log.i("getWalletMsgJXM", "substring:::" + substring);
                     walletBlance.setText(substring);
 
                     strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
@@ -180,7 +180,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                         tetCny.setText(String.format("≈ %s", strCNY));
                     }
                 } else {
-                    //  Log.i("getWalletMsgJXM", "balanceC:::" + balanceC);
                     walletBlance.setText(balanceC);
                 }
             }

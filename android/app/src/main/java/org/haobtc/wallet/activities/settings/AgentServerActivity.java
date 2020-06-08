@@ -107,10 +107,15 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editPort.setText(wordsList[2]);
 
                 }
+            }else{
+                btnConfirm.setEnabled(false);
+                btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
             }
         } else {
             switchAgent.setChecked(false);
             proxy_switch = false;
+            btnConfirm.setEnabled(true);
+            btnConfirm.setBackground(getDrawable(R.drawable.little_radio_blue));
         }
     }
 
@@ -217,8 +222,12 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editAgentIP.setText(wordsList[1]);
                         editPort.setText(wordsList[2]);
                 }
+            }else{
+                btnConfirm.setEnabled(false);
+                btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
             }
         } else {
+            Log.i("ddddadwefwev", "onCheckedChanged: ");
             proxy_switch = false;
             testNodeType.setText("");
             editAgentIP.setText("");

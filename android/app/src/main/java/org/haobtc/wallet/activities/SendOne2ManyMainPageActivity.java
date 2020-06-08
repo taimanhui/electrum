@@ -118,6 +118,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private int wallet_name_pos;
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
+    private String fee;
 
     public int getLayoutId() {
         return R.layout.send_one2many_main;
@@ -317,6 +318,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                                 gson = new Gson();
                                 GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(get_tx_info_from_raw.toString(), GetnewcreatTrsactionListBean.class);
                                 outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
+                                fee = getnewcreatTrsactionListBean.getFee();
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 return;
@@ -370,7 +372,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", outputAddr);
         bundle.putString("pay_address", payAddress);
-        bundle.putString("fee", totalAmount);
+        bundle.putString("fee", fee);
         intentCon.putExtra("outputs", bundle);
         startActivityForResult(intentCon, 1);
     }

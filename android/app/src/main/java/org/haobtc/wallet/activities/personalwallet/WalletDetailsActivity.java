@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,18 +23,17 @@ import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.settings.BixinKEYManageActivity;
-import org.haobtc.wallet.activities.settings.FixBixinkeyNameActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
-import org.haobtc.wallet.adapter.PublicPersonAdapter;
 import org.haobtc.wallet.adapter.WalletAddressAdapter;
 import org.haobtc.wallet.adapter.WalletDetailKeyAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
-import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.FixWalletNameEvent;
 import org.haobtc.wallet.event.WalletAddressEvent;
 import org.haobtc.wallet.event.WalletDetailBixinKeyEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -86,6 +84,7 @@ public class WalletDetailsActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         myDialog = MyDialog.showDialog(WalletDetailsActivity.this);
         Intent intent = getIntent();
         wallet_name = intent.getStringExtra("wallet_name");
@@ -204,7 +203,9 @@ public class WalletDetailsActivity extends BaseActivity {
                 showDialogs(WalletDetailsActivity.this, R.layout.delete_wallet);
                 break;
             case R.id.text_fix_name:
-                mIntent(FixBixinkeyNameActivity.class);
+                Intent intent = new Intent(WalletDetailsActivity.this, FixWalletNameActivity.class);
+                intent.putExtra("wallet_name",wallet_name);
+                startActivity(intent);
                 break;
         }
     }
@@ -245,10 +246,14 @@ public class WalletDetailsActivity extends BaseActivity {
         dialogBtom.show();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void fixName(FixWalletNameEvent event) {
+        tetName.setText(event.getNewName());
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

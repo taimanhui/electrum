@@ -115,7 +115,7 @@ public class FixBixinkeyNameActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixAllLabelnameEvent event) {
-        String oldKeyName = event.getKeyname();
+        String oldKey_device_id = event.getKeyname();
         String code = event.getCode();
         if ("1".equals(code)) {
             SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
@@ -124,9 +124,9 @@ public class FixBixinkeyNameActivity extends BaseActivity {
             for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
                 String mapValue = (String) entry.getValue();
                 HardwareFeatures hardwareFeaturesfix = new Gson().fromJson(mapValue, HardwareFeatures.class);
-                if (oldKeyName.equals(hardwareFeaturesfix.getBleName())) {
+                if (oldKey_device_id.equals(hardwareFeaturesfix.getDeviceId())) {
                     hardwareFeaturesfix.setLabel(nameEdit.getText().toString());
-                    devices.edit().putString(oldKeyName, hardwareFeaturesfix.toString()).apply();
+                    devices.edit().putString(oldKey_device_id, hardwareFeaturesfix.toString()).apply();
                 }
             }
             EventBus.getDefault().post(new FixBixinkeyNameEvent(nameEdit.getText().toString()));

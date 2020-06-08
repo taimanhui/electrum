@@ -763,5 +763,7 @@
     <string name="need_backup">升级前请先备份</string>
     <string name="key_wrong">密码输入错误，或者key使用错误</string>
     <string name="connect_failed">网络连接失败，请重新尝试</string>
+    <string name="fix_wallet_name">修改钱包名称</string>
+    <string name="delete_key">删除BixinKey</string>
 
 </resources>
