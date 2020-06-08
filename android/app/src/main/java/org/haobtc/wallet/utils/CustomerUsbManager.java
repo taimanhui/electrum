@@ -63,7 +63,7 @@ public class CustomerUsbManager {
 //                   UsbDeviceConnection connection = usbManager.openDevice(device);
 //                   connection.releaseInterface(intf);
 //                   connection.close();
-                   Toast.makeText(MyApplication.getInstance(), "USB设备断开链接", Toast.LENGTH_SHORT).show();
+                   Toast.makeText(MyApplication.getInstance(), "USB设备断开连接", Toast.LENGTH_SHORT).show();
                }
            } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
                assert usbManager != null;
