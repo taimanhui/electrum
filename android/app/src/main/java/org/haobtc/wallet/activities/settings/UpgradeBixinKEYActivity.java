@@ -51,10 +51,6 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,7 +67,6 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.futureTask;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
@@ -104,6 +99,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     private SharedPreferences preferences;
     private UpdateInfo updateInfo;
     private boolean isNeedBackup;
+    private boolean uploadFileFailed;
 
 
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
@@ -152,12 +148,15 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                                 cancel(true);
                             } else {
                                 File file = new File(String.format("%s/bixin.bin", Objects.requireNonNull(getExternalCacheDir()).getPath()));
+                                boolean success = true;
                                 if (isStm32Update || !file.exists()) {
                                     runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
-                                    updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("stm32_url"));
+                                    success = updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("stm32_url"));
                                 }
-                                showPromote();
-                                doUpdate(params[0]);
+                                if (success) {
+                                    showPromote();
+                                    doUpdate(params[0]);
+                                }
                             }
                             break;
                         case 2:
@@ -167,12 +166,15 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                                 cancel(true);
                             } else {
                                 File file = new File(String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()));
+                                boolean success = true;
                                 if (isNrfUpdate || !file.exists()) {
                                     runOnUiThread(() -> tetUpgradeTest.setText("正在下载升级文件"));
-                                    updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("nrf_url"));
+                                    success = updateFiles(Objects.requireNonNull(getIntent().getExtras()).getString("nrf_url"));
                                 }
-                                showPromote();
-                                doUpdate(params[0]);
+                                if (success) {
+                                    showPromote();
+                                    doUpdate(params[0]);
+                                }
                             }
                     }
                 } else {
@@ -206,18 +208,22 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 protocol.put("PROCESS_REPORTER", this);
                 switch (tag) {
                     case 1:
-                        if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                        if (!isDIY) {
                             file = new File(String.format("%s/bixin.bin", Objects.requireNonNull(getExternalCacheDir()).getPath()));
                             if (!file.exists()) {
                                 showPromptMessage(R.string.update_file_not_exist);
                                 cancel(true);
                                 return;
                             }
+                        } else if (!VersionUpgradeActivity.filePath.endsWith(".bin")) {
+                            showPromptMessage(R.string.update_file_format_error);
+                            cancel(true);
+                            return;
                         }
-                        Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, path);
+                        Daemon.commands.callAttr("firmware_update", !isDIY ? String.format("%s/bixin.bin", getExternalCacheDir().getPath()) : VersionUpgradeActivity.filePath, path);
                         break;
                     case 2:
-                        if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+                        if (!isDIY) {
                             file = new File(String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()));
                             if (!file.exists()) {
                                 showPromptMessage(R.string.update_file_not_exist);
@@ -229,7 +235,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                             cancel(true);
                             return;
                         }
-                        Daemon.commands.callAttr("firmware_update", TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()) : VersionUpgradeActivity.filePath, path, "ble_ota");
+                        Daemon.commands.callAttr("firmware_update", !isDIY ? String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()) : VersionUpgradeActivity.filePath, path, "ble_ota");
                         break;
                     default:
                 }
@@ -263,6 +269,9 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             } else if (isNeedBackup) {
                 isNeedBackup = false;
                 showPromptMessage(R.string.need_backup);
+            } else if (uploadFileFailed) {
+                uploadFileFailed = false;
+                showPromptMessage(R.string.upload_file_failed);
             } else {
                 showPromptMessage(R.string.update_failed);
             }
@@ -274,7 +283,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
     }
 
-    private void updateFiles(String url) {
+    private boolean updateFiles(String url) {
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
@@ -294,12 +303,17 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             fos.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            if (mTask != null) {
+                uploadFileFailed = true;
+                mTask.cancel(true);
+            }
+            return false;
         }
         showPromote();
         if (tag == 2 && "ble".equals(way)) {
             dfu();
         }
+        return true;
     }
 
     private void showPromote() {
@@ -455,7 +469,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
            Call this method to put Nordic nrf52832 into bootloader mode
         */
             starter.setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(true);
-            if (TextUtils.isEmpty(VersionUpgradeActivity.filePath)) {
+            if (!isDIY) {
                 File file = new File(String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()));
                 if (!file.exists()) {
                     EventBus.getDefault().post(new ExistEvent());
@@ -469,7 +483,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 finish();
                 return;
             }
-            starter.setZip(null, TextUtils.isEmpty(VersionUpgradeActivity.filePath) ? String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()) : VersionUpgradeActivity.filePath);
+            starter.setZip(null, !isDIY ? String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()) : VersionUpgradeActivity.filePath);
             DfuServiceInitiator.createDfuNotificationChannel(this);
             starter.start(this, DfuService.class);
     }
@@ -497,24 +511,20 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (tag == 2) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(VersionUpgradeActivity.UPDATE_PROCESS));
-            progressUpgrade.setIndeterminate(true);
-        }
         if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
             // enable nfc discovery for the app
             Log.i("NFC", "为本App启用NFC感应");
             NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
+        }
+        if (tag == 2) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(VersionUpgradeActivity.UPDATE_PROCESS));
+            progressUpgrade.setIndeterminate(true);
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (tag == 2) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        }
-        mTask = null;
         if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
             // disable nfc discovery for the app
             NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
@@ -524,13 +534,12 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().unregister(this);
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
+        if (tag == 2) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        }
+        mTask = null;
     }
 
-/*    @Override
-    protected void onRestart() {
-        super.onRestart();
-        finish();
-    }*/
 }

@@ -178,6 +178,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         walletnameList.clear();
         fragmentList.clear();
         //wallet list
+        if (Daemon.commands == null) {
+            finishAndRemoveTask();
+            System.exit(0);
+        }
         executorService.execute(new Runnable() {
             @Override
             public void run() {

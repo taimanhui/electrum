@@ -766,6 +766,5 @@
     <!--  mmmmmmmmmmmmmmmm  -->
     <string name="need_band3">需绑定</string>
     <string name="band_key"> 个BixinKey，可使用任一BixinKey授权发币设置多备份可防止单个BixinKey丢失后，数字资产丢失</string>
-
-
+    <string name="upload_file_failed">升级文件下载失败</string>
     </resources>

@@ -20,6 +20,7 @@ import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.FixHardwareLanguageActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceSuccessActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;

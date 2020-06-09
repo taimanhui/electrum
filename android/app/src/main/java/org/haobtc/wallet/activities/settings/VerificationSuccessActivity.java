@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +15,6 @@ import org.haobtc.wallet.utils.DateUitls;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.com.heaton.blelibrary.ble.Ble;
 
 public class VerificationSuccessActivity extends BaseActivity {
     @BindView(R.id.img_back)

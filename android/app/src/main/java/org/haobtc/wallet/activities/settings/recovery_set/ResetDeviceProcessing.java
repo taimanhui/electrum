@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,8 +37,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcHandler;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usbTransport;
 
 
 public class ResetDeviceProcessing extends BaseActivity {
@@ -154,6 +159,11 @@ public class ResetDeviceProcessing extends BaseActivity {
             Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
             firstPromote.setCompoundDrawables(drawableStart, null, null, null);
             firstPromote.setText(R.string.connectting_successful);
+            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            nfcTransport.put("ENABLED", true);
+            bleHandler.put("ENABLED", false);
+            usbTransport.put("ENABLED", false);
+            nfcHandler.put("device", tags);
             protocol.callAttr("notify");
             // NOTE: don't edit 👇
 //            EventBus.getDefault().post(new PinEvent(pin, ""));

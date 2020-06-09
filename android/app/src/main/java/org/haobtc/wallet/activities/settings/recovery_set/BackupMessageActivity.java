@@ -158,4 +158,10 @@ public class BackupMessageActivity extends BaseActivity {
             return false;
         }
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
+    }
 }

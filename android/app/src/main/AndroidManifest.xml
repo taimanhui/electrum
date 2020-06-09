@@ -58,7 +58,7 @@
         <activity android:name=".activities.settings.UpgradeFinishedActivity" />
         <activity
             android:name=".activities.settings.UpgradeBixinKEYActivity"
-            android:noHistory="true" />
+            android:noHistory="false" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreatePersonalHelpPassActivity" />
         <activity android:name=".activities.personalwallet.mnemonic_word.CreateHelpWordWalletActivity" />

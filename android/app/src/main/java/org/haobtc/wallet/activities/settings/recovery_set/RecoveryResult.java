@@ -5,9 +5,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.FinishEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +54,7 @@ public class RecoveryResult extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.btn_finish:
+                EventBus.getDefault().post(new FinishEvent());
                 finish();
                 break;
         }

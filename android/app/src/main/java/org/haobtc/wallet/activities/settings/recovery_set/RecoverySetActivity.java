@@ -8,15 +8,23 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.ExistEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 
 public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
@@ -39,6 +47,7 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -65,7 +74,6 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
                 break;
         }
     }
-
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked){
@@ -77,6 +85,18 @@ public class RecoverySetActivity extends BaseActivity implements CompoundButton.
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        if (!features.isPinProtection()) {
+            startActivity(new Intent(this, ResetDeviceSuccessActivity.class));
+            finish();
+        }
+    }
     @Override
     protected void onRestart() {
         super.onRestart();
