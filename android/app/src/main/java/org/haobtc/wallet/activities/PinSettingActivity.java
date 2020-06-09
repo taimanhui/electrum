@@ -18,7 +18,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
-import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
@@ -135,7 +135,7 @@ public class PinSettingActivity extends BaseActivity {
                                 startActivity(intent1);
                             }
                             break;
-                        case RecoverySetActivity.TAG:
+                        case ResetDeviceActivity.TAG:
                             Intent intent2 = new Intent(this, ResetDeviceProcessing.class);
                             intent2.putExtra("pin", pin);
                             startActivity(intent2);

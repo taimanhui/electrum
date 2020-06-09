@@ -77,7 +77,7 @@
         <activity android:name=".activities.personalwallet.CreatAppWalletActivity" />
         <activity android:name=".activities.settings.recovery_set.BackupMessageActivity" />
         <activity android:name=".activities.settings.recovery_set.BackupRecoveryActivity" />
-        <activity android:name=".activities.settings.recovery_set.RecoverySetActivity" />
+        <activity android:name=".activities.settings.recovery_set.ResetDeviceActivity" />
         <activity android:name=".activities.settings.fixpin.ChangePinProcessingActivity" />
         <activity android:name=".activities.settings.BixinKeyMessageActivity" />
         <activity android:name=".activities.settings.HardwareDetailsActivity" />

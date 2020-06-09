@@ -164,17 +164,17 @@ public class ActivatedProcessing extends BaseActivity {
             nfcHandler.put("device", tags);
             protocol.callAttr("notify");
             // NOTE: don't edit 👇
-//            EventBus.getDefault().post(new InitEvent("Activate", useSe));
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    if (hasWindowFocus()) {
-//                        Log.d(TAG, "something went wrong");
-//                        finish();
-//                        EventBus.getDefault().post(new ExistEvent());
-//                    }
-//                }
-//            }, 30 * 1000L);
+            EventBus.getDefault().post(new InitEvent("Activate", useSe));
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (hasWindowFocus()) {
+                        Log.d(TAG, "something went wrong");
+                        finish();
+                        EventBus.getDefault().post(new ExistEvent());
+                    }
+                }
+            }, 30 * 1000L);
         }
     }
 

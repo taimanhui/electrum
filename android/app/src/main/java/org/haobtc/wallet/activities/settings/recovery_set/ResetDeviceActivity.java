@@ -14,20 +14,17 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
-import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ButtonRequestEvent;
-import org.haobtc.wallet.event.ExistEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 
-public class RecoverySetActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
+public class ResetDeviceActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
     @BindView(R.id.img_back)
     ImageView imgBack;

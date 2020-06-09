@@ -13,14 +13,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.LanguageSettingActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.FixHardwareLanguageActivity;
-import org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity;
-import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceSuccessActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;
@@ -127,7 +125,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
             case R.id.wipe_device:
                 isWipe = true;
-                mIntent(RecoverySetActivity.class);
+                mIntent(ResetDeviceActivity.class);
                 break;
             case R.id.tetBluetoothSet:
                 mIntent(BixinKeyBluetoothSettingActivity.class);
