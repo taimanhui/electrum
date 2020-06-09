@@ -1241,7 +1241,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         return response
-    
+
     def apply_setting(self, path='nfc', **kwargs):
         client = self.get_client(path=path)
         try:
@@ -1585,6 +1585,96 @@ class AndroidCommands(commands.Commands):
         # self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
         return json.dumps(out)
 
+    ###cpfp api###
+    def get_rbf_or_cpfp_status(self, tx_hash):
+        try:
+            status = {}
+            tx = self.wallet.db.get_transaction(tx_hash)
+            if not tx:
+                raise BaseException("tx is None")
+            tx_details = self.wallet.get_tx_info(tx)
+            is_unconfirmed = tx_details.tx_mined_status.height <= 0
+            if is_unconfirmed and tx:
+                # note: the current implementation of rbf *needs* the old tx fee
+                if tx_details.can_bump and tx_details.fee is not None:
+                    status['rbf'] = True
+                else:
+                    status['cpfp'] = True
+            return json.dumps(status)
+        except BaseException as e:
+            raise e
+
+    def get_cpfp_info(self, tx_hash):
+        try:
+            self._assert_wallet_isvalid()
+            parent_tx = self.wallet.db.get_transaction(tx_hash)
+            if not parent_tx:
+                raise BaseException("get transaction failed")
+            info = {}
+            child_tx = self.wallet.cpfp(parent_tx, 0)
+            if child_tx:
+                total_size = parent_tx.estimated_size() + child_tx.estimated_size()
+                parent_txid = parent_tx.txid()
+                assert parent_txid
+                parent_fee = self.wallet.get_tx_fee(parent_txid)
+                if parent_fee is None:
+                    raise BaseException("can't cpfp: unknown fee for parent transaction.")
+                info['total_size'] = '(%s) bytes' % total_size
+                max_fee = child_tx.output_value()
+                info['input_amount'] = self.format_amount(max_fee) + ' ' + self.base_unit
+
+                def get_child_fee_from_total_feerate(fee_per_kb):
+                    fee = fee_per_kb * total_size / 1000 - parent_fee
+                    fee = min(max_fee, fee)
+                    fee = max(total_size, fee)  # pay at least 1 sat/byte for combined size
+                    return fee
+
+                suggested_feerate = self.config.fee_per_kb()
+                if suggested_feerate is None:
+                    raise BaseException(f'''{_("can't cpfp'")}: {_('dynamic fee estimates not available')}''')
+
+                fee_for_child = get_child_fee_from_total_feerate(suggested_feerate)
+                info['fee_for_child'] = util.format_satoshis_plain(fee_for_child, self.decimal_point)
+                if fee_for_child is None:
+                    raise BaseException("fee_for_child is none")
+                out_amt = max_fee - fee_for_child
+                out_amt_str = (self.format_amount(out_amt) + ' ' + self.base_unit) if out_amt else ''
+                info['output_amount'] = out_amt_str
+                comb_fee = parent_fee + fee_for_child
+                comb_fee_str = (self.format_amount(comb_fee) + ' ' + self.base_unit) if comb_fee else ''
+                info['total_fee'] = comb_fee_str
+                comb_feerate = comb_fee / total_size * 1000
+                comb_feerate_str = self.format_fee_rate(comb_feerate) if comb_feerate else ''
+                info['total_feerate'] = comb_feerate_str
+
+                if fee_for_child is None:
+                    raise BaseException("fee for chaild is none")  # fee left empty, treat is as "cancel"
+                if fee_for_child > max_fee:
+                    raise BaseException('max fee exceeded')
+            return json.dumps(info)
+        except BaseException as e:
+            raise e
+
+
+    def create_cpfp_tx(self, tx_hash, fee_for_child):
+        try:
+            self._assert_wallet_isvalid()
+            parent_tx = self.wallet.db.get_transaction(tx_hash)
+            if not parent_tx:
+                raise BaseException("get transaction failed")
+            new_tx = self.wallet.cpfp(parent_tx, self.get_amount(fee_for_child))
+            new_tx.set_rbf(self.rbf)
+            out = {
+                'new_tx': new_tx.serialize_as_bytes().hex()
+            }
+
+            try:
+                self.do_save(new_tx)
+            except:
+                pass
+            return json.dumps(out)
+        except BaseException as e:
+            raise e
     #######
 
     # network server
