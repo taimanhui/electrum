@@ -221,7 +221,6 @@
     <string name="signed_num">签名人数</string>
     <string name="tet_tips">共管钱包需要5位共管人中的3位签名</string>
     <string name="title_name">图图的钥匙</string>
-    <string name="add_bixin_key">添加BixinKey</string>
     <string name="xiaomi_walet">小米的钱包3-5</string>
     <string name="choose_onekey">可使用3个BixinKey中任意一个授权转账</string>
     <string name="creat_personal">创建个人钱包</string>
@@ -747,7 +746,7 @@
     <string name="ble">蓝牙</string>
     <string name="check_key_name">BixinKey 名称：</string>
     <string name="check_pub_key">BixinKey 扩展公钥：</string>
-    <string name="set_shutdown_time">设置BixinKey自动关机或者锁屏时间</string>
+    <string name="set_shutdown_time">设置BixinKey自动关机或锁屏时间</string>
     <string name="second">秒</string>
     <string name="please_input_time">请输入关机时间</string>
     <string name="little_time">时间最短为10秒哦！</string>
@@ -767,4 +766,6 @@
     <string name="need_band3">需绑定</string>
     <string name="band_key"> 个BixinKey，可使用任一BixinKey授权发币设置多备份可防止单个BixinKey丢失后，数字资产丢失</string>
     <string name="upload_file_failed">升级文件下载失败</string>
+    <string name="add_bixin_key">添加共管人</string>
+
     </resources>

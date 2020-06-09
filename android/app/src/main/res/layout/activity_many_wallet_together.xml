@@ -215,7 +215,7 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dp_19"
+                            android:layout_height="@dimen/dp_22"
                             android:layout_marginTop="17dp">
 
                             <View
@@ -316,7 +316,7 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dp_19"
+                            android:layout_height="@dimen/dp_22"
                             android:layout_marginTop="17dp">
 
                             <View
@@ -348,6 +348,7 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="17dp"
+                            android:layout_marginTop="3dp"
                             android:layout_marginStart="22dp"
                             android:layout_marginEnd="@dimen/dp_5">
 

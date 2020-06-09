@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.personalwallet;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -56,7 +57,6 @@ public class SingleSigWalletCreator extends BaseActivity {
     public String pin = "";
     public static final String TAG = SingleSigWalletCreator.class.getSimpleName();
     private String walletName;
-    private MyDialog myDialog;
     private int pub;
     private long lastNotify;
 
@@ -65,11 +65,11 @@ public class SingleSigWalletCreator extends BaseActivity {
         return R.layout.activity_create_personal_wallet;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        myDialog = MyDialog.showDialog(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         defaultName = preferences.getInt("defaultName", 0);
@@ -214,11 +214,11 @@ public class SingleSigWalletCreator extends BaseActivity {
         String xpub = event.getXpub();
         String device_id = event.getDevice_id();
         String strXpub = "[[\"" + xpub + "\",\"" + device_id + "\"]]";
+        walletName = editWalletNameSetting.getText().toString();
         try {
             Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, 1, strXpub);
         } catch (Exception e) {
             e.printStackTrace();
-            myDialog.dismiss();
             String message = e.getMessage();
             EventBus.getDefault().post(new ExistEvent());
             if ("BaseException: file already exists at path".equals(message)) {
@@ -231,7 +231,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         }
         edit.putInt("defaultName", walletNameNum);
         edit.apply();
-        myDialog.dismiss();
         walletName = editWalletNameSetting.getText().toString();
         Intent intent = new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
         intent.putExtra("walletNames", walletName);

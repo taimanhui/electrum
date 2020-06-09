@@ -131,7 +131,7 @@ public class FixBixinkeyNameActivity extends BaseActivity {
             }
             EventBus.getDefault().post(new FixBixinkeyNameEvent(nameEdit.getText().toString()));
             Toast.makeText(this, getString(R.string.fix_success), Toast.LENGTH_SHORT).show();
-            nameEdit.setText("");
+            finish();
         }
 
     }

@@ -24,7 +24,7 @@ public class BixinkeyBackupAdapter extends BaseQuickAdapter<String, BaseViewHold
         if (!TextUtils.isEmpty(item.split(":", 3)[1])){
             helper.setText(R.id.tet_keyName, item.split(":", 3)[1]);
         } else {
-            helper.setText(R.id.tet_keyName,"BixinKEY");
+            helper.setText(R.id.tet_keyName,"BixinKey");
         }
 
         helper.addOnClickListener(R.id.relativeLayout_bixinkey);

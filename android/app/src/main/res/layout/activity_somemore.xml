@@ -332,7 +332,7 @@
                             android:id="@+id/test_shutdown_time"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_marginStart="@dimen/dp_10"
                             android:layout_weight="1"
                             android:gravity="center_vertical|end"
                             android:maxLines="1"

@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.settings.recovery_set;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -78,6 +79,7 @@ public class BackupRecoveryActivity extends BaseActivity {
             }
         }
         if (deviceValue != null) {
+            Log.i("sijndasmin", "onResume0------: "+deviceValue);
             BixinkeyBackupAdapter backupAdapter = new BixinkeyBackupAdapter(deviceValue);
             reclCheckKey.setAdapter(backupAdapter);
             backupAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {

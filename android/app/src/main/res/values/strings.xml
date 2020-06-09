@@ -222,7 +222,6 @@
     <string name="signed_num">Number of signers</string>
     <string name="tet_tips">For mutual wallet to work, 3 signatures out of 5 public managers will be required</string>
     <string name="title_name">Tutu\'s key</string>
-    <string name="add_bixin_key">Add BixinKey</string>
     <string name="xiaomi_walet" tools:ignore="TypographyDashes">Xiaomi\'s wallet 3-of-5</string>
     <string name="choose_onekey">Can use any of the 3 BixinKeys to authorize transactions</string>
     <string name="creat_personal">Create personal wallet</string>
@@ -797,5 +796,6 @@
     <string name="need_band3">Needs to link</string>
     <string name="band_key">BixinKeys. Use any one of them to authorize transactions. Setting multiple BixinKeys as backup will keep your assets from being lost due to losing the only BixinKey</string>
     <string name="upload_file_failed">Upgrade file download failed</string>
+    <string name="add_bixin_key">Add co administrator</string>
 
 </resources>

@@ -127,7 +127,7 @@ public class WalletDetailsActivity extends BaseActivity {
                             if (!TextUtils.isEmpty(entity.getLabel())) {
                                 addBixinKeyEvent.setLabel(entity.getLabel());
                             } else {
-                                addBixinKeyEvent.setLabel("BixinKey");
+                                addBixinKeyEvent.setLabel(entity.getBleName());
                             }
                             addBixinKeyEvent.setBleName(entity.getBleName());
                             addBixinKeyEvent.setDeviceId(entity.getDeviceId());
@@ -224,7 +224,6 @@ public class WalletDetailsActivity extends BaseActivity {
                 mToast(getString(R.string.delete_succse));
                 finish();
             } catch (Exception e) {
-                Log.i("delete_wallet", "===========: " + e.getMessage());
                 e.printStackTrace();
             }
             myDialog.dismiss();

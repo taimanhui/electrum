@@ -153,6 +153,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     private int strUp2;
     private SharedPreferences preferences;
     private int defaultKeyNameNum;
+    private int page = 0;
 
     @Override
     public int getLayoutId() {
@@ -281,7 +282,37 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                finish();
+                if (page == 0) {
+                    finish();
+                } else if (page == 1) {
+                    testInputWallet.setVisibility(View.VISIBLE);
+                    cardViewOne.setVisibility(View.VISIBLE);
+                    button.setVisibility(View.VISIBLE);
+                    imgProgree1.setVisibility(View.VISIBLE);
+                    imgProgree2.setVisibility(View.GONE);
+                    imgProgree3.setVisibility(View.GONE);
+                    reclBinxinKey.setVisibility(View.GONE);
+                    bnAddKey.setVisibility(View.GONE);
+                    relTwoNext1.setVisibility(View.GONE);
+                    tetTrtwo.setTextColor(getColor(R.color.light_text));
+                    page = 0;
+                } else if (page == 2) {
+                    cardViewOne.setVisibility(View.GONE);
+                    button.setVisibility(View.GONE);
+                    imgProgree1.setVisibility(View.GONE);
+                    imgProgree2.setVisibility(View.VISIBLE);
+                    imgProgree3.setVisibility(View.GONE);
+                    reclBinxinKey.setVisibility(View.VISIBLE);
+                    bnAddKey.setVisibility(View.VISIBLE);
+                    relTwoNext1.setVisibility(View.VISIBLE);
+                    relFinish.setVisibility(View.GONE);
+                    tetTrthree.setTextColor(getColor(R.color.light_text));
+                    cardViewThree.setVisibility(View.GONE);
+                    relFinish.setVisibility(View.GONE);
+                    cardThreePublic.setVisibility(View.GONE);
+                    page = 1;
+                }
+
                 break;
             case R.id.button:
                 mCreatWalletNext();
@@ -369,6 +400,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     }
 
     private void mCreatWalletNext() {
+        page = 1;
         strInditor1 = tvIndicator.getText().toString();
         strInditor2 = tvIndicatorTwo.getText().toString();
         String strWalletname = editWalletname.getText().toString();
@@ -609,9 +641,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         TextView edit_bixinName = view.findViewById(R.id.edit_keyName);
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
-        if (!TextUtils.isEmpty(label)){
+        if (!TextUtils.isEmpty(label)) {
             edit_bixinName.setText(label);
-        }else{
+        } else {
             edit_bixinName.setText(getString(R.string.BixinKey));
         }
         view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
@@ -791,6 +823,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     }
                     return;
                 }
+                page = 2;
+                EventBus.getDefault().post(new FirstEvent("11"));
                 edit.putInt("defaultName", walletNameNum);
                 edit.apply();
                 //Generate QR code
@@ -811,7 +845,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 cardThreePublic.setVisibility(View.VISIBLE);
                 tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
                 tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getString(R.string.the_only_bixinkey)));
-                EventBus.getDefault().post(new FirstEvent("11"));
             }
         }
     };
