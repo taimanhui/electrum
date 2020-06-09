@@ -394,7 +394,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             mToast(getString(R.string.signnum_dongt_public));
             return;
         }
-
+        testInputWallet.setVisibility(View.GONE);
         cardViewOne.setVisibility(View.GONE);
         button.setVisibility(View.GONE);
         imgProgree1.setVisibility(View.GONE);
@@ -406,7 +406,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         relTwoNext1.setVisibility(View.VISIBLE);
         tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
         bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getString(R.string.next), strInditor1));
-
         bnCompleteAddCosigner.setEnabled(false);
 
     }

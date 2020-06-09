@@ -179,7 +179,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_7"
                         android:fontFamily="sans-serif-medium"
-                        android:text="@string/create_new_walt"
+                        android:text="@string/creat_app_wallet"
                         android:textColor="#494949"
                         android:textSize="15sp" />
 

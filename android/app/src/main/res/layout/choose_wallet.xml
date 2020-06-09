@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_59"
             android:gravity="center"
-            android:text="@string/create_app_new_wallet"
+            android:text="@string/create_new_walt"
             android:textColor="#494949"
             android:textSize="15sp" />
 

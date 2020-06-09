@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities.personalwallet;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -47,6 +48,8 @@ public class SingleSigWalletCreator extends BaseActivity {
     Button bnMultiNext;
     @BindView(R.id.tv_indicator)
     TextView tvIndicator;
+    @BindView(R.id.test_key_tips)
+    TextView testKeyTips;
     private SharedPreferences.Editor edit;
     private int defaultName;
     private int walletNameNum;
@@ -122,6 +125,7 @@ public class SingleSigWalletCreator extends BaseActivity {
                 walletName = editWalletNameSetting.getText().toString();
                 String indicatorText = String.valueOf(progress + 1);
                 tvIndicator.setText(indicatorText);
+                testKeyTips.setText(String.format("%s%s%s", getString(R.string.need_band3), indicatorText, getString(R.string.band_key)));
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
                 if (!TextUtils.isEmpty(walletName)) {
@@ -183,7 +187,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         } else {
             CommunicationModeSelector.runnables.clear();
             CommunicationModeSelector.runnables.add(null);
-//            CommunicationModeSelector.runnables.add(runnable2);
             Intent intent = new Intent(this, CommunicationModeSelector.class);
             intent.putExtra("tag", TAG);
             startActivity(intent);
@@ -197,7 +200,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("CODED_CONTENT", "content=----: " + content);
             }
         }
     }
@@ -222,7 +224,7 @@ public class SingleSigWalletCreator extends BaseActivity {
             if ("BaseException: file already exists at path".equals(message)) {
                 mToast(getString(R.string.changewalletname));
             } else if (message.contains("The same xpubs have create wallet")) {
-                String haveWalletName = message.substring(message.indexOf("name=")+5);
+                String haveWalletName = message.substring(message.indexOf("name=") + 5);
                 mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
             }
             return;

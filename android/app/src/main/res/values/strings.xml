@@ -498,7 +498,6 @@
     <string name="choose_import_wallet">Choose wallet to import</string>
     <string name="key_check">Found wallets of BixinKey\'s public keys. Please select and import</string>
     <string name="confirm_import">Confirm importing</string>
-    <string name="need_band3">Needs to link * BixinKeys. Use any one of them to authorize transactions. Setting multiple BixinKeys as backup will keep your assets from being lost due to losing the only BixinKey</string>
     <string name="ipOrportWrong">IP or port format error</string>
     <string name="broadcast_success">Broadcast successful</string>
     <string name="please_import_wallet">Select wallet to import</string>
@@ -793,6 +792,9 @@
     <string name="key_wrong">Wrong password or wrong key</string>
     <string name="connect_failed">Network connection failed, please try again</string>
     <string name="fix_wallet_name">Change wallet name</string>
-    <string name="set_key_language">设置硬件语言</string>
+    <string name="set_key_language">Set hardware language</string>
+    <!--  mmmmmmmmmmmmm  -->
+    <string name="need_band3">Needs to link</string>
+    <string name="band_key">BixinKeys. Use any one of them to authorize transactions. Setting multiple BixinKeys as backup will keep your assets from being lost due to losing the only BixinKey</string>
 
 </resources>

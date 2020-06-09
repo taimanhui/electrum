@@ -51,13 +51,11 @@ public class BackupRecoveryActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         activeSetPIN = getIntent().getStringExtra("ActiveSetPIN");
-//        if ("ActiveSetPIN".equals(activeSetPIN)) {
-//            EventBus.getDefault().post(new ExistEvent());
-//            Intent intent1 = new Intent(this, CommunicationModeSelector.class);
-//            intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//            intent1.putExtra("tag", TAG_CHANGE_PIN);
-//            startActivity(intent1);
-//        }
+        if ("ActiveSetPIN".equals(activeSetPIN)) {
+            Intent intent = new Intent(this, CommunicationModeSelector.class);
+            intent.putExtra("tag", TAG);
+            startActivity(intent);
+        }
     }
 
     @Override

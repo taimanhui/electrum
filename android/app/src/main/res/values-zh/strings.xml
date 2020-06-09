@@ -423,7 +423,6 @@
     <string name="choose_import_wallet">选择要导入的钱包</string>
     <string name="key_check">已通过BixinKey搜索到包含BixinKey公钥的钱包，请选择并导入</string>
     <string name="confirm_import">确认导入</string>
-    <string name="need_band3">需绑定*个BixinKey，可使用任一BixinKey授权发币设置多备份可防止单个BixinKey丢失后，数字资产丢失</string>
     <string name="ipOrportWrong">IP或端口号格式输入不正确</string>
     <string name="broadcast_success">广播成功</string>
     <string name="please_import_wallet">请选择要导入的钱包</string>
@@ -764,5 +763,9 @@
     <string name="connect_failed">网络连接失败，请重新尝试</string>
     <string name="fix_wallet_name">修改钱包名称</string>
     <string name="set_key_language">设置硬件语言</string>
+    <!--  mmmmmmmmmmmmmmmm  -->
+    <string name="need_band3">需绑定</string>
+    <string name="band_key"> 个BixinKey，可使用任一BixinKey授权发币设置多备份可防止单个BixinKey丢失后，数字资产丢失</string>
 
-</resources>
+
+    </resources>
