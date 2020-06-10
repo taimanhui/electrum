@@ -61,6 +61,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
                     android:orientation="vertical">
 
                     <RelativeLayout
@@ -116,13 +117,45 @@
                         android:layout_marginTop="15dp"
                         android:background="@color/line_color" />
 
+                    <ImageView
+                        android:id="@+id/ima_receive_code"
+                        android:layout_width="248.3dp"
+                        android:layout_height="248.3dp"
+                        android:layout_marginTop="21.7dp"
+                        android:background="@color/bk_page" />
+
                     <TextView
+                        android:id="@+id/text_addr"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/sp_13"
+                        tools:text="lnbcdfd4fdsk4j5gb5...h6jd0sjsadrrfgg55678hhhddddejekejkejkejek3ddkddd" />
+
+                    <TextView
+                        android:id="@+id/text_copy"
                         android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:gravity="center_horizontal"
+                        android:text="@string/copy_self"
+                        android:textColor="@color/button_bk"
+                        android:textSize="@dimen/text_size" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_hight"
+                        android:layout_marginTop="15dp"
+                        android:background="@color/line_color" />
+
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="25dp"
-                        android:drawablePadding="@dimen/dp_10"
-                        android:focusable="true"
                         android:text="@string/wallet_addr"
                         android:textColor="@color/text"
                         android:textSize="@dimen/sp_16" />
@@ -132,8 +165,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dp_5"
-                        android:visibility="visible"
                         android:layout_marginBottom="@dimen/dp_16"
+                        android:visibility="visible"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="6"
                         tools:listitem="@layout/wallet_addr">
@@ -144,14 +177,14 @@
                         android:id="@+id/test_no_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
                         android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="@dimen/dp_18"
                         android:layout_marginBottom="@dimen/dp_16"
                         android:gravity="center"
                         android:text="@string/no_records"
                         android:textColor="@color/light_text"
-                        android:textSize="@dimen/text_size" />
+                        android:textSize="@dimen/text_size"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
@@ -204,14 +237,14 @@
                         android:id="@+id/test_no_key"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
                         android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="@dimen/dp_18"
                         android:layout_marginBottom="@dimen/dp_16"
                         android:gravity="center"
                         android:text="@string/no_records"
                         android:textColor="@color/light_text"
-                        android:textSize="@dimen/text_size" />
+                        android:textSize="@dimen/text_size"
+                        android:visibility="gone" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

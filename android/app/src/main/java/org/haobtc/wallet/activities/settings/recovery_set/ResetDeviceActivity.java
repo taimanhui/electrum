@@ -3,9 +3,9 @@ package org.haobtc.wallet.activities.settings.recovery_set;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,9 +23,7 @@ import butterknife.OnClick;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 
-
-public class ResetDeviceActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
-
+public class ResetDeviceActivity extends BaseActivity{
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.tet_backups)
@@ -33,8 +31,11 @@ public class ResetDeviceActivity extends BaseActivity implements CompoundButton.
     @BindView(R.id.reset_device)
     Button rest_device;
     @BindView(R.id.checkbox_Know)
-    CheckBox checkboxKnow;
+    LinearLayout checkboxKnow;
     public static final String TAG = "org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity";
+    @BindView(R.id.img_choose)
+    ImageView imgChoose;
+    private int img = 1;
 
     @Override
     public int getLayoutId() {
@@ -49,12 +50,11 @@ public class ResetDeviceActivity extends BaseActivity implements CompoundButton.
 
     @Override
     public void initData() {
-        checkboxKnow.setOnCheckedChangeListener(this);
 
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.tet_backups, R.id.reset_device})
+    @OnClick({R.id.img_back, R.id.tet_backups, R.id.reset_device, R.id.checkbox_Know})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -69,16 +69,19 @@ public class ResetDeviceActivity extends BaseActivity implements CompoundButton.
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
                 break;
-        }
-    }
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked){
-            rest_device.setBackground(getDrawable(R.drawable.button_bk));
-            rest_device.setEnabled(true);
-        }else{
-            rest_device.setBackground(getDrawable(R.drawable.button_bk_grey));
-            rest_device.setEnabled(false);
+            case R.id.checkbox_Know:
+                if (img == 1) {
+                    img = 2;
+                    imgChoose.setImageDrawable(getDrawable(R.drawable.chenggong));
+                    rest_device.setBackground(getDrawable(R.drawable.button_bk));
+                    rest_device.setEnabled(true);
+                } else {
+                    img = 1;
+                    imgChoose.setImageDrawable(getDrawable(R.drawable.circle_empty));
+                    rest_device.setBackground(getDrawable(R.drawable.button_bk_grey));
+                    rest_device.setEnabled(false);
+                }
+                break;
         }
     }
 
@@ -87,6 +90,7 @@ public class ResetDeviceActivity extends BaseActivity implements CompoundButton.
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (!features.isPinProtection()) {
@@ -94,6 +98,7 @@ public class ResetDeviceActivity extends BaseActivity implements CompoundButton.
             finish();
         }
     }
+
     @Override
     protected void onRestart() {
         super.onRestart();

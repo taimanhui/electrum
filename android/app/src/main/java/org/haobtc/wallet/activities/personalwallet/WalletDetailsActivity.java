@@ -1,9 +1,13 @@
 package org.haobtc.wallet.activities.personalwallet;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.cardview.widget.CardView;
@@ -21,16 +26,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.adapter.WalletAddressAdapter;
 import org.haobtc.wallet.adapter.WalletDetailKeyAdapter;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.FixWalletNameEvent;
@@ -44,6 +52,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,6 +78,10 @@ public class WalletDetailsActivity extends BaseActivity {
     CardView cardThreePublic;
     @BindView(R.id.test_no_address)
     TextView testNoAddress;
+    @BindView(R.id.ima_receive_code)
+    ImageView imaReceiveCode;
+    @BindView(R.id.text_addr)
+    TextView textAddr;
     private String wallet_name;
     private Dialog dialogBtom;
     private MyDialog myDialog;
@@ -102,8 +115,35 @@ public class WalletDetailsActivity extends BaseActivity {
     @Override
     public void initData() {
         walletAddressList = new ArrayList<>();
+        //get wallet address
         getAllFundedAddress();
+        //Generate QR code
+        mGeneratecode();
+
     }
+
+    private void mGeneratecode() {
+        PyObject walletAddressShowUi = null;
+        try {
+            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (walletAddressShowUi != null) {
+            String strCode = walletAddressShowUi.toString();
+            Log.i("strCode", "mGenerate--: " + strCode);
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            String qr_data = getCodeAddressBean.getQr_data();
+            String addr = getCodeAddressBean.getAddr();
+            textAddr.setText(addr);
+            Bitmap bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            imaReceiveCode.setImageBitmap(bitmap);
+        }
+
+    }
+
 
     private void getBixinKeyList() {
         deviceValue = new ArrayList<>();
@@ -118,7 +158,6 @@ public class WalletDetailsActivity extends BaseActivity {
         if (deviceValue != null) {
             try {
                 PyObject get_device_info = Daemon.commands.callAttr("get_device_info");
-                Log.i("TAGget_device_info", "getBixinKeyList:==== " + get_device_info);
                 String str_deviceId = get_device_info.toString();
                 if (!TextUtils.isEmpty(str_deviceId)) {
                     for (HardwareFeatures entity : deviceValue) {
@@ -192,7 +231,7 @@ public class WalletDetailsActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.tet_deleteWallet, R.id.text_fix_name})
+    @OnClick({R.id.img_back, R.id.tet_deleteWallet, R.id.text_fix_name, R.id.text_copy})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -204,8 +243,16 @@ public class WalletDetailsActivity extends BaseActivity {
                 break;
             case R.id.text_fix_name:
                 Intent intent = new Intent(WalletDetailsActivity.this, FixWalletNameActivity.class);
-                intent.putExtra("wallet_name",wallet_name);
+                intent.putExtra("wallet_name", wallet_name);
                 startActivity(intent);
+                break;
+            case R.id.text_copy:
+                //copy text
+                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                // The text is placed on the system clipboard.
+                Objects.requireNonNull(cm, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textAddr.getText()));
+                Toast.makeText(WalletDetailsActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+
                 break;
         }
     }

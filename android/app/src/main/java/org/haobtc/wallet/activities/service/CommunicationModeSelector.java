@@ -531,6 +531,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                             Toast.makeText(this, getString(R.string.dont_create), Toast.LENGTH_SHORT).show();
                             return;
                         }
+                    }else{
+
                     }
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
                 } else {
@@ -583,6 +585,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 String times = getIntent().getStringExtra("times");
                 String noPIN = getIntent().getStringExtra("noPIN");
                 String noHard = getIntent().getStringExtra("noHard");
+                Toast.makeText(this, getString(R.string.confirm_finish), Toast.LENGTH_LONG).show();
                 try {
                     new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fastPay", limit, times, noPIN, noHard);
                 } catch (Exception e) {
@@ -867,9 +870,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             Log.e("jinxoaminsssss", "pin出入错误 ");
             showErrorDialog(0, R.string.pin_wrong);
         } else if (e.getMessage().contains("May be BiXin cannot pair with your device") || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
-            Log.e("jinxoaminsssss", "onException-----:操作失败 ");
+            Log.e("jinxoaminsssss", "onException-----:111111111111 ");
             Toast.makeText(this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
-            Log.e("jinxoaminsssss", "onException==========--:操作失败 ");
+            Log.e("jinxoaminsssss", "onException-----:222222222222 ");
             showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
         } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage()) || e.getMessage().contains("(7, 'PIN invalid')")) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);

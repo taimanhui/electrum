@@ -23,15 +23,18 @@ public class QuetationChooseAdapter extends RecyclerView.Adapter<QuetationChoose
     private Context context;
     private ArrayList<CNYBean> exchangeList;
 
-    public QuetationChooseAdapter(Context context, ArrayList<CNYBean> exchangeList,int exchange) {
+    public QuetationChooseAdapter(Context context, ArrayList<CNYBean> exchangeList, int exchange) {
         this.context = context;
         this.exchangeList = exchangeList;
-        this.exchangeList.get(exchange).setStatus(true);
+        if (exchangeList.size() - 1 >= exchange) {
+            this.exchangeList.get(exchange).setStatus(true);
+        }
     }
 
 
     public class myViewHolder extends BaseViewHolder {
         TextView tet_WalletName;
+
         public myViewHolder(View view) {
             super(view);
             tet_WalletName = view.findViewById(R.id.tet_WalletName);
@@ -77,6 +80,7 @@ public class QuetationChooseAdapter extends RecyclerView.Adapter<QuetationChoose
             return 0;
         }
     }
+
     public interface onLisennorClick {
         void ItemClick(int pos);
     }

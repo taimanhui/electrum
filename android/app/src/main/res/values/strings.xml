@@ -797,5 +797,6 @@
     <string name="band_key">BixinKeys. Use any one of them to authorize transactions. Setting multiple BixinKeys as backup will keep your assets from being lost due to losing the only BixinKey</string>
     <string name="upload_file_failed">Upgrade file download failed</string>
     <string name="add_bixin_key">Add co administrator</string>
+    <string name="confirm_finish">Please confirm and complete the operation on BixinKey</string>
 
 </resources>

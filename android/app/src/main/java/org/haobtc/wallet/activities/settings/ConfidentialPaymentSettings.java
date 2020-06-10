@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
@@ -51,17 +52,21 @@ public class ConfidentialPaymentSettings extends BaseActivity {
     private String noHard = "false";
     private String base_unit;
     private BigDecimal limit;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_no_secret_payment;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
         boolean boPIN_set = preferences.getBoolean("boPIN_set", false);
         boolean noHard_set = preferences.getBoolean("noHard_set", false);
         base_unit = preferences.getString("base_unit", "mBTC");
@@ -197,14 +202,14 @@ public class ConfidentialPaymentSettings extends BaseActivity {
         if (!TextUtils.isEmpty(event.getCode())) {
             if (event.getCode().equals("1")) {
                 if (noPIN.equals("true")) {
-                    getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", true).apply();
+                    edit.putBoolean("boPIN_set", true).apply();
                 } else if (noPIN.equals("false")) {
-                    getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("boPIN_set", false).apply();
+                    edit.putBoolean("boPIN_set", false).apply();
                 }
                 if (noHard.equals("true")) {
-                    getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("noHard_set", true).apply();
+                    edit.putBoolean("noHard_set", true).apply();
                 } else if (noHard.equals("false")) {
-                    getSharedPreferences("Preferences", MODE_PRIVATE).edit().putBoolean("noHard_set", false).apply();
+                    edit.putBoolean("noHard_set", false).apply();
                 }
                 unclassifiedPay.setText("");
                 editTimes.setText("");

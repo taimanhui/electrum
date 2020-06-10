@@ -82,7 +82,6 @@ public class ReceivedPageActivity extends BaseActivity {
         }
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
-            Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qr_data = getCodeAddressBean.getQr_data();
