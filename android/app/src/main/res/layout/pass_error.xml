@@ -6,7 +6,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="419dp"
         android:layout_marginStart="@dimen/layout_margin"
         android:layout_marginEnd="@dimen/layout_margin"
         android:layout_marginBottom="@dimen/layout_margin"
@@ -68,7 +68,7 @@
             android:layout_height="50dp"
             android:layout_marginBottom="30dp"
             android:background="@drawable/button_bk"
-            android:text="@string/retry"
+            android:text="@string/again_input"
             android:textAllCaps="false"
             android:textColor="@color/button_bk_ddake"
             app:layout_constraintBottom_toBottomOf="parent"

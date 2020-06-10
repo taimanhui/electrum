@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.service;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -85,6 +86,7 @@ import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.FixAllLabelnameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
+import org.haobtc.wallet.event.HideWalletErrorEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.MutiSigWalletEvent;
 import org.haobtc.wallet.event.PersonalMutiSigEvent;
@@ -531,8 +533,6 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                             Toast.makeText(this, getString(R.string.dont_create), Toast.LENGTH_SHORT).show();
                             return;
                         }
-                    }else{
-
                     }
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
                 } else {
@@ -600,7 +600,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }else if (FixHardwareLanguageActivity.TAG.equals(tag)) {
+            } else if (FixHardwareLanguageActivity.TAG.equals(tag)) {
                 //fix bixinkey name
                 String key_language = getIntent().getStringExtra("set_key_language");
                 try {
@@ -851,10 +851,8 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             }
 
         } else if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
-            // 获取公钥之前需完成的工作
-            if (!SingleSigWalletCreator.TAG.equals(tag)) {
-                dialogFragment = showReadingDialog(R.string.reading_dot);
-            }
+            // loading 页面
+            dialogFragment = showReadingDialog(R.string.reading_dot);
         }
     }
 
@@ -864,16 +862,11 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             dialogFragment.dismiss();
         }
         EventBus.getDefault().post(new FinishEvent());
-        // EventBus.getDefault().post(new SendingFailedEvent(e));
 //        if (hasWindowFocus()) {
         if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
-            Log.e("jinxoaminsssss", "pin出入错误 ");
             showErrorDialog(0, R.string.pin_wrong);
         } else if (e.getMessage().contains("May be BiXin cannot pair with your device") || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
-            Log.e("jinxoaminsssss", "onException-----:111111111111 ");
-            Toast.makeText(this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
-            Log.e("jinxoaminsssss", "onException-----:222222222222 ");
-            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
+            mHandler.obtainMessage(0, R.string.try_another_key, R.string.sign_failed_device).sendToTarget();
         } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage()) || e.getMessage().contains("(7, 'PIN invalid')")) {
             showErrorDialog(R.string.try_another_key, R.string.unpair);
         } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
@@ -886,6 +879,20 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
 //        }
 
     }
+
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)||SignActivity.TAG3.equals(tag)||CheckHideWalletFragment.TAG.equals(tag)) {
+//                Toast.makeText(CommunicationModeSelector.this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
+                EventBus.getDefault().post(new HideWalletErrorEvent());
+            }else{
+                showErrorDialog(msg.arg1, msg.arg2);
+            }
+        }
+    };
 
     public void showErrorDialog(int error, int title) {
         ErrorDialogFragment fragment = new ErrorDialogFragment(error, title);
@@ -970,7 +977,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             EventBus.getDefault().post(new FixAllLabelnameEvent(deviceid, s));
         } else if (SetShutdownTimeActivity.TAG.equals(tag)) {
             EventBus.getDefault().post(new ShutdownTimeEvent(s));
-        }else if (FixHardwareLanguageActivity.TAG.equals(tag)) {
+        } else if (FixHardwareLanguageActivity.TAG.equals(tag)) {
             EventBus.getDefault().post(new SetKeyLanguageEvent(s));
         }
         finish();

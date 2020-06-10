@@ -798,5 +798,6 @@
     <string name="upload_file_failed">Upgrade file download failed</string>
     <string name="add_bixin_key">Add co administrator</string>
     <string name="confirm_finish">Please confirm and complete the operation on BixinKey</string>
+    <string name="again_input">重新输入</string>
 
 </resources>

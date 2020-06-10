@@ -194,16 +194,6 @@ public class SingleSigWalletCreator extends BaseActivity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == RESULT_OK) {
-            if (data != null) {
-                String content = data.getStringExtra(Constant.CODED_CONTENT);
-            }
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doInit(ReceiveXpub event) {
         if (System.currentTimeMillis() - lastNotify > 10 * 1000L) {

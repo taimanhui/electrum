@@ -758,7 +758,7 @@
     <string name="node_have">节点已存在</string>
     <string name="select_promote">请先选择自定义文件</string>
     <string name="need_backup">升级前请先备份</string>
-    <string name="key_wrong">密码输入错误，或者key使用错误</string>
+    <string name="key_wrong">密码输入错误，或者当前使用key不匹配</string>
     <string name="connect_failed">网络连接失败，请重新尝试</string>
     <string name="fix_wallet_name">修改钱包名称</string>
     <string name="set_key_language">设置硬件语言</string>
@@ -768,5 +768,6 @@
     <string name="upload_file_failed">升级文件下载失败</string>
     <string name="add_bixin_key">添加共管人</string>
     <string name="confirm_finish">请在BixinKey上确认并完成操作</string>
+    <string name="again_input">重新输入</string>
 
 </resources>

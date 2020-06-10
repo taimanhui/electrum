@@ -239,6 +239,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/dp_30"
                                 android:max="13"
+                                android:splitTrack="false"
                                 android:thumb="@drawable/white_clrcle" />
 
                         </RelativeLayout>
@@ -271,7 +272,7 @@
                             <TextView
                                 android:id="@+id/tv_indicator"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:gravity="center_horizontal"
                                 android:text="@string/cosinger_number_min"
                                 android:textColor="#6182f5"
@@ -337,6 +338,7 @@
 
                             <org.haobtc.wallet.utils.IndicatorSeekBar
                                 android:id="@+id/seek_bar_num"
+                                android:splitTrack="false"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/dp_30"
                                 android:max="14"

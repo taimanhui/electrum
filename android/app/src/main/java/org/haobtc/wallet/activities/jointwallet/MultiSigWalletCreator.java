@@ -191,29 +191,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
                 String indicatorText = String.valueOf(progress + 2);
+                seekBarNum.setMax(progress + 1);
+                testseekNum.setText(indicatorText);
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
-                String strWalletname = editWalletname.getText().toString();
-                String invator1 = tvIndicator.getText().toString();
-                String invator2 = tvIndicatorTwo.getText().toString();
-                if (Integer.parseInt(invator1) != 0) {
-                    if (!TextUtils.isEmpty(strWalletname)) {
-                        if (Integer.parseInt(invator2) == 0) {
-                            button.setEnabled(false);
-                            button.setBackground(getDrawable(R.drawable.button_bk_grey));
-                        } else {
-                            button.setEnabled(true);
-                            button.setBackground(getDrawable(R.drawable.button_bk));
-                        }
-                    } else {
-                        button.setEnabled(false);
-                        button.setBackground(getDrawable(R.drawable.button_bk_grey));
-                    }
-                } else {
-                    button.setEnabled(false);
-                    button.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }
 
             }
 
@@ -232,7 +214,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     }
 
     private void seekbarLatoutdown() {
-        RelativeLayout.LayoutParams paramsTwo = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
+        RelativeLayout.LayoutParams paramsTwo = (RelativeLayout.LayoutParams) tvIndicatorTwo.getLayoutParams();
         seekBarNum.setProgress(1);
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
@@ -241,27 +223,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 tvIndicatorTwo.setText(indicatorText);
                 paramsTwo.leftMargin = (int) indicatorOffset;
                 tvIndicatorTwo.setLayoutParams(paramsTwo);
-                String strWalletname = editWalletname.getText().toString();
-                String invator1 = tvIndicator.getText().toString();
-                String invator2 = tvIndicatorTwo.getText().toString();
-                if (Integer.parseInt(invator1) != 0) {
-                    if (!TextUtils.isEmpty(strWalletname)) {
-                        if (Integer.parseInt(invator2) == 0) {
-                            button.setEnabled(false);
-                            button.setBackground(getDrawable(R.drawable.button_bk_grey));
-                        } else {
-                            button.setEnabled(true);
-                            button.setBackground(getDrawable(R.drawable.button_bk));
-                        }
-
-                    } else {
-                        button.setEnabled(false);
-                        button.setBackground(getDrawable(R.drawable.button_bk_grey));
-                    }
-                } else {
-                    button.setEnabled(false);
-                    button.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }
             }
 
             @Override
@@ -762,26 +723,15 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        String indication = tvIndicator.getText().toString();
-        String indication2 = tvIndicatorTwo.getText().toString();
         if (!TextUtils.isEmpty(s.toString())) {
             if (s.length() > 13) {
                 editWalletname.setTextSize(13);
             } else {
                 editWalletname.setTextSize(15);
             }
-            if (Integer.parseInt(indication) != 0) {
-                if (Integer.parseInt(indication2) != 0) {
-                    button.setEnabled(true);
-                    button.setBackground(getDrawable(R.drawable.button_bk));
-                } else {
-                    button.setEnabled(false);
-                    button.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }
-            } else {
-                button.setEnabled(false);
-                button.setBackground(getDrawable(R.drawable.button_bk_grey));
-            }
+            button.setEnabled(true);
+            button.setBackground(getDrawable(R.drawable.button_bk));
+
         } else {
             button.setEnabled(false);
             button.setBackground(getDrawable(R.drawable.button_bk_grey));

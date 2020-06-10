@@ -24,14 +24,8 @@ import butterknife.OnClick;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 
 public class ResetDeviceActivity extends BaseActivity{
-    @BindView(R.id.img_back)
-    ImageView imgBack;
-    @BindView(R.id.tet_backups)
-    TextView tetBackups;
     @BindView(R.id.reset_device)
     Button rest_device;
-    @BindView(R.id.checkbox_Know)
-    LinearLayout checkboxKnow;
     public static final String TAG = "org.haobtc.wallet.activities.settings.recovery_set.RecoverySetActivity";
     @BindView(R.id.img_choose)
     ImageView imgChoose;
