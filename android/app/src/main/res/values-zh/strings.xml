@@ -734,7 +734,7 @@
     <string name="unclassified_quota">单次限额</string>
     <string name="open_bt">打开</string>
     <string name="fix_name">修改名称</string>
-    <string name="wallet_addr">钱包地址</string>
+    <string name="wallet_addr">余额地址</string>
     <string name="wallet_msg">钱包信息</string>
     <string name="fix_success">修改成功</string>
     <string name="fast_send_tips">开启快捷支付后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 多次重复使用达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时, 如果设置了pin保护,第一次支付仍然会检查pin)</string>
@@ -742,7 +742,7 @@
     <string name="updating_dialog">正在检查更新信息</string>
     <string name="send_shortcut_access">快捷支付设置</string>
     <string name="limit_input_wrong">额度输入错误</string>
-    <string name="communication_way">连接方式</string>
+    <string name="communication_way">连接硬件方式</string>
     <string name="ble">蓝牙</string>
     <string name="check_key_name">BixinKey 名称：</string>
     <string name="check_pub_key">BixinKey 扩展公钥：</string>
