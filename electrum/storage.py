@@ -62,6 +62,7 @@ class WalletStorage(Logger):
         self.logger.info(f"wallet path {self.path}")
         self.pubkey = None
         self.decrypted = ''
+        self.lock = threading.RLock()
         self._test_read_write_permissions(self.path)
         if self.file_exists():
             with open(self.path, "r", encoding='utf-8') as f:
@@ -98,21 +99,22 @@ class WalletStorage(Logger):
 
     @profiler
     def write(self, data):
-        s = self.encrypt_before_writing(data)
-        temp_path = "%s.tmp.%s" % (self.path, os.getpid())
-        with open(temp_path, "w", encoding='utf-8') as f:
-            f.write(s)
-            f.flush()
-            os.fsync(f.fileno())
+        with self.lock:
+            s = self.encrypt_before_writing(data)
+            temp_path = "%s.tmp.%s" % (self.path, os.getpid())
+            with open(temp_path, "w", encoding='utf-8') as f:
+                f.write(s)
+                f.flush()
+                os.fsync(f.fileno())
 
-        mode = os.stat(self.path).st_mode if self.file_exists() else stat.S_IREAD | stat.S_IWRITE
-        # assert that wallet file does not exist, to prevent wallet corruption (see issue #5082)
-        if not self.file_exists():
-            assert not os.path.exists(self.path)
-        os.replace(temp_path, self.path)
-        os.chmod(self.path, mode)
-        self._file_exists = True
-        self.logger.info(f"saved {self.path}")
+            mode = os.stat(self.path).st_mode if self.file_exists() else stat.S_IREAD | stat.S_IWRITE
+            # assert that wallet file does not exist, to prevent wallet corruption (see issue #5082)
+            if not self.file_exists():
+                assert not os.path.exists(self.path)
+            os.replace(temp_path, self.path)
+            os.chmod(self.path, mode)
+            self._file_exists = True
+            self.logger.info(f"saved {self.path}")
 
     def file_exists(self) -> bool:
         return self._file_exists

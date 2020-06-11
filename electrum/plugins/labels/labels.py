@@ -32,7 +32,7 @@ class LabelsPlugin(BasePlugin):
         BasePlugin.__init__(self, parent, config, name)
         #self.target_host = 'labels.electrum.org'
         self.target_host = '39.105.86.163:8080'
-        #self.target_host = '192.168.1.43:8080'
+        #self.target_host = '10.10.0.37:8080'
         self.wallets = {}
         self.create_wallets = {}
         self.get_wallet_loop = asyncio.get_event_loop()
@@ -54,6 +54,7 @@ class LabelsPlugin(BasePlugin):
         iv = hashlib.sha256(password).digest()[:16]
         encrypted = aes_encrypt_with_iv(password, iv, msg.encode('utf8'))
         return base64.b64encode(encrypted).decode()
+        
 
     def decode_xpub(self, xpub, message):
         decoded = base64.b64decode(message)
@@ -194,10 +195,11 @@ class LabelsPlugin(BasePlugin):
         if not wallet_data:
             raise Exception('Wallet {} not loaded'.format(wallet))
         wallet_id = wallet_data[2]
+        
         for xpub in wallet_data[3]:
            # xpubId = self.encode(wallet, xpub)
             bundle = {"xpubs": "",
-                      "xpubId": xpub,#self.encode_xpub(xpub, xpub),
+                      "xpubId": self.encode_xpub(xpub, xpub),
                       "walletId": wallet_id,
                       "walletType": self.encode_xpub(xpub, wallet_type),
                       "walletName": self.encode_xpub(xpub, wallet_name)}
@@ -205,28 +207,29 @@ class LabelsPlugin(BasePlugin):
             for value in wallet_data[3]:
                 bundle_list.append(value)
             bundle["xpubs"] = self.encode_xpub(xpub, json.dumps(bundle_list))
-
             await self.do_post("/wallet", bundle)
 
     async def pull_xpub_thread(self, xpub):
         try:
-            #en_xpub = self.encode_xpub(xpub, xpub)
-            #print(f"en....xpub={en_xpub}")
-            response = await self.do_get("/wallets/%s" % xpub)
+            search_xpub = self.encode_xpub(xpub, xpub)
+            bundle = {}
+            bundle['xpubId'] = search_xpub
+            response = await self.do_post("/wallets", bundle)
             print("--111112222 response=%s" %response)
         except Exception as e:
             raise ErrorConnectingServer(e) from e
+        out = []
         if response.__contains__('Error'):
-            raise BaseException(response)
+            return json.dumps(out)
+            #raise BaseException(response)
 
         if response["Walltes"] is None:
             self.logger.info('no wallets info')
             return
-        out = []
         for wallet in response["Walltes"]:
             result = {}
             try:
-                result['xpubId'] = wallet['xpubId']#self.decode_xpub(xpub, wallet['xpubId'])
+                result['xpubId'] = self.decode_xpub(xpub, wallet['xpubId'])
                 result['walletId'] = wallet['WalletId']
                 result['xpubs'] = self.decode_xpub(xpub, wallet['Xpubs'])
                 result['walletType'] = self.decode_xpub(xpub, wallet['WalletType'])
