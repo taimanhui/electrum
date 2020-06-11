@@ -3,7 +3,6 @@ package org.haobtc.wallet.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -13,21 +12,17 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 
 import com.chaquo.python.PyObject;
@@ -72,10 +67,8 @@ public class ShareOtherActivity extends BaseActivity {
     @BindView(R.id.tet_bigMessage)
     TextView tetBigMessage;
     private RxPermissions rxPermissions;
-    private String rowTrsaction;
     private Bitmap bitmap;
     private boolean toGallery;
-    private Dialog dialogBtom;
     private String rowTx;
     private String strCode;
     PyObject get_qr_data_from_raw_tx = null;
@@ -87,23 +80,16 @@ public class ShareOtherActivity extends BaseActivity {
 
     @Override
     public void initView() {
-//        getPermission(ShareOtherActivity.this);
-
         ButterKnife.bind(this);
         Intent intent = getIntent();
-        rowTrsaction = intent.getStringExtra("rowTrsaction");
         rowTx = intent.getStringExtra("rowTx");
-        Log.i("rowTrsaction", "init----: " + rowTx);
         rxPermissions = new RxPermissions(this);
-
-
     }
 
     @Override
     public void initData() {
         //or code
-        if (!TextUtils.isEmpty(rowTrsaction)) {
-
+        if (!TextUtils.isEmpty(rowTx)) {
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -117,11 +103,8 @@ public class ShareOtherActivity extends BaseActivity {
                     mainhandler.sendEmptyMessage(1);
                 }
             });
-
         }
-
         tetTrsactionText.setText(rowTx);
-
     }
 
 
@@ -279,17 +262,9 @@ public class ShareOtherActivity extends BaseActivity {
                 case 1:
                     if (get_qr_data_from_raw_tx != null) {
                         strCode = get_qr_data_from_raw_tx.toString();
-                        Log.i("strCode", "onView: " + strCode);
                         if (!TextUtils.isEmpty(strCode)) {
-//                            if (strCode.length() >= 150) {
-//                                tetBigMessage.setVisibility(View.VISIBLE);
-//                                imgOrcode.setVisibility(View.GONE);
-//                            } else {
                             bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
-                            Log.i("ddddjxm", "handleMessage:---- " + bitmap);
-                            Log.i("ddddjxm", "handleMessage:+++++ " + strCode.length());
                             imgOrcode.setImageBitmap(bitmap);
-//                            }
                         }
                     }
                     break;

@@ -25,7 +25,6 @@
                 android:layout_marginBottom="@dimen/dp_5"
                 android:orientation="horizontal">
 
-
                 <RadioButton
                     android:id="@+id/radio_ble"
                     android:layout_width="@dimen/dp_70"
@@ -60,7 +59,6 @@
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="47.5dp"
                 android:layout_alignParentEnd="true"
-
                 android:contentDescription="@string/use_hardware"
                 android:padding="@dimen/dp_14"
                 android:src="@drawable/close_big_black"
@@ -80,7 +78,7 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/ln"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/tiehe"
+                android:background="@drawable/invalid_name"
                 android:contentDescription="@string/picture"
                 android:visibility="visible" />
 
@@ -132,7 +130,6 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="@dimen/dp_20"
-
                     android:gravity="center_horizontal"
                     android:text="@string/input_public_key"
                     android:textColor="@color/onclick"

@@ -196,7 +196,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 tvIndicator.setText(indicatorText);
                 params.leftMargin = (int) indicatorOffset;
                 tvIndicator.setLayoutParams(params);
-
+                if (testseekNum.getText().toString().equals(tvIndicatorTwo.getText().toString())) {
+                    testseekNum.setVisibility(View.GONE);
+                } else {
+                    testseekNum.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -223,6 +227,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 tvIndicatorTwo.setText(indicatorText);
                 paramsTwo.leftMargin = (int) indicatorOffset;
                 tvIndicatorTwo.setLayoutParams(paramsTwo);
+                if (testseekNum.getText().toString().equals(tvIndicatorTwo.getText().toString())) {
+                    testseekNum.setVisibility(View.GONE);
+                } else {
+                    testseekNum.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
