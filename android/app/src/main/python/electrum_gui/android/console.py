@@ -1710,7 +1710,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
         return json.dumps(servers)
-
+        
     def rename_wallet(self, old_name, new_name):
         try:
             self._assert_daemon_running()
@@ -1719,6 +1719,17 @@ class AndroidCommands(commands.Commands):
             else:
                 self.daemon.delete_wallet(old_name)
                 os.rename(self._wallet_path(old_name), self._wallet_path(new_name))
+                temp_local_wallet_info = {}
+                for key, value in self.local_wallet_info.items():
+                    if key == old_name:
+                        temp_local_wallet_info[new_name] = value
+                    else:
+                        temp_local_wallet_info[key] = value
+                self.local_wallet_info = temp_local_wallet_info
+                self.config.set_key('all_wallet_type_info', self.local_wallet_info)
+                self.load_wallet(new_name)
+                self.select_wallet(new_name)
+                return new_name
         except BaseException as e:
             raise e
 

@@ -363,6 +363,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //scan get
     @SuppressLint("DefaultLocale")
     private void scanDataDetailMessage() {
+        Log.i("jinxiaominscan", "scanDataDetailMessage---------: "+strParse);
         Gson gson = new Gson();
         ScanCheckDetailBean scanCheckDetailBean = gson.fromJson(strParse, ScanCheckDetailBean.class);
         ScanCheckDetailBean.DataBean scanListdata = scanCheckDetailBean.getData();
@@ -372,6 +373,8 @@ public class TransactionDetailsActivity extends BaseActivity {
         String tx_status = scanListdata.getTxStatus();
         inputAddrScan = scanListdata.getInputAddr();
         outputAddrScan = scanListdata.getOutputAddr();
+        ScanCheckDetailBean.DataBean data = scanCheckDetailBean.getData();
+
         if (inputAddrScan.size() != 0) {
             String addrInput = inputAddrScan.get(0).getAddr();
             tetPayAddress.setText(addrInput);
@@ -408,11 +411,16 @@ public class TransactionDetailsActivity extends BaseActivity {
                 if (amount.contains("-")) {
                     String replaceAmont = amount.replace("-", "");
                     textView14.setText(String.format("-%s", replaceAmont));
+                    tvInTb2.setText(R.string.sendetail);
                 } else {
                     textView14.setText(String.format("+%s", amount));
+                    tvInTb2.setText(R.string.recevid);
                 }
             } else {
                 textView14.setText(amount);
+                tvInTb2.setText(R.string.trans_details);
+                sigTrans.setVisibility(View.GONE);
+                tetGrive.setVisibility(View.GONE);
             }
 
         }
