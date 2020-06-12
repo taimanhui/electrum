@@ -1,7 +1,5 @@
 package org.haobtc.wallet.activities.base;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +11,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.utils.NfcUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -55,12 +57,35 @@ public abstract class BaseActivity extends AppCompatActivity {
     public abstract void initData();
 
     //activity intent
-    public void mIntent(Class mActivity) {
+    public void mIntent(Class<?> mActivity) {
         Intent intent = new Intent(this, mActivity);
         startActivity(intent);
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+            // enable nfc discovery for the app
+            Log.i("NFC", "为本App启用NFC感应");
+            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
+        }
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+            // disable nfc discovery for the app
+            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
+            Log.i("NFC", "禁用本App的NFC感应");
+        }
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NfcUtils.mNfcAdapter = null;
+    }
     //toast short
     public void mToast(String str) {
         Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
@@ -205,7 +230,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Set transparent immersion bar : white backgrand black text
      */
     public void mBinitState() {
-//        ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0f).navigationBarColor(R.color.button_bk_ddake).init();
         //other one write
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().setStatusBarColor(Color.WHITE);

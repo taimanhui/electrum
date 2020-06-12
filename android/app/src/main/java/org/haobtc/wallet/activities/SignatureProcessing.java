@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
@@ -19,9 +18,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
-import org.haobtc.wallet.activities.settings.fixpin.ConfirmActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SendingFailedEvent;
@@ -137,30 +134,29 @@ public class SignatureProcessing extends BaseActivity {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // enable nfc discovery for the app
-            Log.d("NFC", "为本App启用NFC感应");
-            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        }
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+//            // enable nfc discovery for the app
+//            Log.d("NFC", "为本App启用NFC感应");
+//            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
+//        }
+//    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // disable nfc discovery for the app
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-            Log.d("NFC", "禁用本App的NFC感应");
-        }
-    }
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+//            // disable nfc discovery for the app
+//            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
+//            Log.d("NFC", "禁用本App的NFC感应");
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        NfcUtils.mNfcAdapter = null;
         EventBus.getDefault().unregister(this);
     }
 
