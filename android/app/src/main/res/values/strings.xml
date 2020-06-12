@@ -798,6 +798,8 @@
     <string name="upload_file_failed">Upgrade file download failed</string>
     <string name="add_bixin_key">Add co administrator</string>
     <string name="confirm_finish">Please confirm and complete the operation on BixinKey</string>
-    <string name="again_input">重新输入</string>
+    <string name="again_input">Please retry again</string>
+    <string name="open_location_service">Open location service</string>
+    <string name="promote_ble">In order to scanning ble device Android 6+, Location service is needed</string>
 
 </resources>

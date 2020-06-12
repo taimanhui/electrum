@@ -196,25 +196,25 @@ public class ChangePinProcessingActivity extends BaseActivity {
       }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // enable nfc discovery for the app
-            Log.d("NFC", "为本App启用NFC感应");
-            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        }
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+//            // enable nfc discovery for the app
+//            Log.d("NFC", "为本App启用NFC感应");
+//            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
+//        }
+//    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // disable nfc discovery for the app
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-            Log.d("NFC", "禁用本App的NFC感应");
-        }
-    }
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+//            // disable nfc discovery for the app
+//            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
+//            Log.d("NFC", "禁用本App的NFC感应");
+//        }
+//    }
 
     @Override
     protected void onDestroy() {

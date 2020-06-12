@@ -3,18 +3,22 @@ package org.haobtc.wallet.activities.service;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -31,10 +35,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
 import com.chaquo.python.PyObject;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -50,6 +55,7 @@ import org.haobtc.wallet.activities.SettingActivity;
 import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.VerificationKEYActivity;
 import org.haobtc.wallet.activities.WalletUnActivatedActivity;
+import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.jointwallet.MultiSigWalletCreator;
 import org.haobtc.wallet.activities.personalwallet.ChooseHistryWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.ImportHistoryWalletActivity;
@@ -133,7 +139,7 @@ import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import static org.haobtc.wallet.activities.sign.SignActivity.strinputAddress;
 
 
-public class CommunicationModeSelector extends AppCompatActivity implements View.OnClickListener, BusinessAsyncTask.Helper {
+public class CommunicationModeSelector extends BaseActivity implements View.OnClickListener, BusinessAsyncTask.Helper {
 
     public static final String TAG = "BLE";
     public static final int BUTTON_REQUEST = 9;
@@ -168,12 +174,15 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
     private UsbDevice device;
     public static HardwareFeatures features;
     private boolean isChangePin;
-
+    private boolean isGpsStatueChange;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.bluetooth_nfc);
+    public int getLayoutId() {
+        return R.layout.bluetooth_nfc;
+    }
+
+    @Override
+    public void initView() {
         ImageView imageViewCancel;
         EventBus.getDefault().post(new ExistEvent());
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
@@ -236,7 +245,7 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
                     granted -> {
                         if (granted) {
                             turnOnBlueTooth();
-                            refreshDeviceList(true);
+                            onRefresh(new RefreshEvent());
                         } else {
                             Toast.makeText(this, getString(R.string.blurtooth_need_permission), Toast.LENGTH_LONG).show();
                         }
@@ -307,6 +316,10 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
     }
 
+    @Override
+    public void initData() {
+
+    }
 
     private final BleScanCallback<BleDevice> scanCallback = new BleScanCallback<BleDevice>() {
         @Override
@@ -327,17 +340,66 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         }
     }
 
+    private final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            if (LocationManager.GPS_PROVIDER.equals(provider)) {
+                isGpsStatueChange = true;
+            }
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+    private  LocationManager locationManager;
+    @SuppressLint("MissingPermission")
     private void refreshDeviceList(boolean start) {
-        if (mBle.isScanning()) {
-            mBle.stopScan();
+        locationManager = (LocationManager) Objects.requireNonNull(getSystemService(LOCATION_SERVICE));
+        boolean ok = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (!ok) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            AlertDialog alertDialog =  new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.open_location_service)
+                    .setMessage(R.string.promote_ble)
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                        Toast.makeText(this, "您拒绝了开启位置服务，无法为您扫描到蓝牙设备", Toast.LENGTH_SHORT).show();
+                        locationManager.removeUpdates(locationListener);
+                        dialog.dismiss();
+                        finish();
+                    })
+                    .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                        Intent intent= new Intent();
+                        intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    })
+                    .create();
+            alertDialog.show();
+        } else {
+            locationManager = null;
+            if (mBle.isScanning()) {
+                mBle.stopScan();
+            }
+            BleDeviceRecyclerViewAdapter.mValues.clear();
+            // 由于设备被连接时，会停止广播导致该设备无法被搜索到,所以要添加本APP以连接的设备到列表中
+            BleDeviceRecyclerViewAdapter.mValues.addAll(Ble.getInstance().getConnetedDevices());
+            adapter.notifyDataSetChanged();
+            if (start) {
+                mBle.startScan(scanCallback);
+            }
         }
-        BleDeviceRecyclerViewAdapter.mValues.clear();
-        // 由于设备被连接时，会停止广播导致该设备无法被搜索到,所以要添加本APP以连接的设备到列表中
-        BleDeviceRecyclerViewAdapter.mValues.addAll(Ble.getInstance().getConnetedDevices());
-        adapter.notifyDataSetChanged();
-        if (start) {
-            mBle.startScan(scanCallback);
-        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -803,27 +865,20 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
             refreshDeviceList(true);
         }
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // enable nfc discovery for the app
-            Log.i("NFC", "为本App启用NFC感应");
-            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        }
-    }
-
     @Override
     public void onPause() {
         super.onPause();
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // disable nfc discovery for the app
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-            Log.i("NFC", "禁用本App的NFC感应");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isGpsStatueChange) {
+            isGpsStatueChange = false;
+            refreshDeviceList(true);
         }
     }
 
@@ -832,6 +887,9 @@ public class CommunicationModeSelector extends AppCompatActivity implements View
         super.onDestroy();
         MyHandler.myHandler = null;
         NfcUtils.mNfcAdapter = null;
+        if (locationManager != null) {
+            locationManager.removeUpdates(locationListener);
+        }
         EventBus.getDefault().unregister(this);
         if ("usb".equals(way)) {
             CustomerUsbManager.getInstance(this).unRegister(this);

@@ -79,7 +79,6 @@ public class BackupRecoveryActivity extends BaseActivity {
             }
         }
         if (deviceValue != null) {
-            Log.i("sijndasmin", "onResume0------: "+deviceValue);
             BixinkeyBackupAdapter backupAdapter = new BixinkeyBackupAdapter(deviceValue);
             reclCheckKey.setAdapter(backupAdapter);
             backupAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {

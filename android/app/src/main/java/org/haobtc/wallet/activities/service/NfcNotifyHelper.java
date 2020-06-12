@@ -20,6 +20,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.PinEvent;
@@ -34,12 +35,17 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.pro
 //
 // Created by liyan on 2020/5/24.
 //
-public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickListener {
+public class NfcNotifyHelper extends BaseActivity implements View.OnClickListener {
     private String tag;
+
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.bluetooth_nfc);
+    public int getLayoutId() {
+        return R.layout.bluetooth_nfc;
+    }
+
+    @Override
+    public void initView() {
         ImageView imageViewCancel;
         RadioButton radioBle = findViewById(R.id.radio_ble);
         imageViewCancel = findViewById(R.id.img_cancel);
@@ -57,6 +63,11 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
             wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
             window.setAttributes(wlp);
         }
+    }
+
+    @Override
+    public void initData() {
+
     }
     @SingleClick
     @Override
@@ -89,26 +100,26 @@ public class NfcNotifyHelper extends AppCompatActivity implements View.OnClickLi
             EventBus.getDefault().post(new FinishEvent());
         }
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // enable nfc discovery for the app
-            Log.i("NFC", "为本App启用NFC感应");
-            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-            // disable nfc discovery for the app
-            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-            Log.i("NFC", "禁用本App的NFC感应");
-        }
-    }
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+//            // enable nfc discovery for the app
+//            Log.i("NFC", "为本App启用NFC感应");
+//            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
+//        }
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
+//            // disable nfc discovery for the app
+//            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
+//            Log.i("NFC", "禁用本App的NFC感应");
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
