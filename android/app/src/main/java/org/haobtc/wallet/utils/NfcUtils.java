@@ -30,7 +30,7 @@ public class NfcUtils {
     /**
      * check if NFC enabled
      */
-    private static NfcAdapter nfcCheck(FragmentActivity activity, boolean promote) {
+    public static NfcAdapter nfcCheck(FragmentActivity activity, boolean promote) {
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         if (mNfcAdapter == null) {
             Toast.makeText(activity, "设备不支持NFC功能!", Toast.LENGTH_SHORT).show();

@@ -801,5 +801,6 @@
     <string name="again_input">Please retry again</string>
     <string name="open_location_service">Open location service</string>
     <string name="promote_ble">In order to scanning ble device Android 6+, Location service is needed</string>
+    <string name="nfc_useless">Your phone is not support NFC, please use other way</string>
 
 </resources>

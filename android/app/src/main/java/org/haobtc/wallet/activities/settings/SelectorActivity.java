@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 
@@ -74,9 +75,13 @@ public class SelectorActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.nfc:
             case R.id.nfc_item:
-                nfc.setChecked(true);
-                ble.setChecked(false);
-                usb.setChecked(false);
+                if (preferences.getBoolean("nfc_support", true)) {
+                    nfc.setChecked(true);
+                    ble.setChecked(false);
+                    usb.setChecked(false);
+                } else {
+                    Toast.makeText(this, R.string.nfc_useless, Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.ble:
             case R.id.ble_item:

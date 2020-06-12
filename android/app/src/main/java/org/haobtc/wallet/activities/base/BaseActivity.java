@@ -43,7 +43,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (getLayoutId() != R.layout.activity_lunch) {
             setContentView(getLayoutId());
         }
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//Disable horizontal screen
+        // In order to runtime error `fix Only fullscreen activities can request orientation` in some phone type like samsung Galaxy s7
+        if (getLayoutId() != R.layout.bluetooth_nfc) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//Disable horizontal screen
+        }
         mBinitState();
         initView();
         initData();

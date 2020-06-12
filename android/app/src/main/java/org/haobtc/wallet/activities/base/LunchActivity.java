@@ -11,8 +11,14 @@ import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.GuideActivity;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
+import org.haobtc.wallet.utils.NfcUtils;
+
+import java.util.Optional;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_BLE;
 
 
 public class LunchActivity extends BaseActivity {
@@ -28,6 +34,10 @@ public class LunchActivity extends BaseActivity {
     public void initView() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         SharedPreferences.Editor edit = preferences.edit();
+        if (!Optional.ofNullable(NfcUtils.nfcCheck(this, false)).isPresent()) {
+            edit.putString("way", "ble");
+            edit.putBoolean("nfc_support", false);
+        }
         edit.putBoolean("haveCreateNopass", false);//No password is required to create app wallet for the first time
         edit.apply();
    }
