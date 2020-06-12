@@ -8,8 +8,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.azhon.appupdate.utils.ApkUtil;
+import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -153,6 +155,10 @@ public class SettingActivity extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String locate = preferences.getString("language", "");
         String info = preferences.getString("upgrade_info", "");
+        if (Strings.isNullOrEmpty(info)) {
+            Toast.makeText(this, R.string.network_useless, Toast.LENGTH_SHORT).show();
+            return;
+        }
         UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
         String urlNrf = updateInfo.getNrf().getUrl();
         String urlStm32 = updateInfo.getStm32().getUrl();

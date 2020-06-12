@@ -772,5 +772,6 @@
     <string name="open_location_service">开启定位服务</string>
     <string name="promote_ble">Android 6+ 需要获得位置许可与定位服务来扫描蓝牙低功耗设备, 并不会使用您的位置信息</string>
     <string name="nfc_useless">该设备不支持NFC,请选择其他方式</string>
+    <string name="network_useless">网络不可用</string>
 
 </resources>

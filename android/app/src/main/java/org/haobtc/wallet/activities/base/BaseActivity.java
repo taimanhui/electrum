@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -29,6 +31,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,6 +70,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if ("nfc".equals(getSharedPreferences("Preferences", Context.MODE_PRIVATE).getString("way", "nfc")) &&
+                getSharedPreferences("Preferences", Context.MODE_PRIVATE).getBoolean("nfc_support", true)) {
+            NfcUtils.nfc(this, false);
+        }
         if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
             // enable nfc discovery for the app
             Log.i("NFC", "为本App启用NFC感应");
@@ -89,6 +96,19 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onDestroy();
         NfcUtils.mNfcAdapter = null;
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String action = intent.getAction(); // get the action of the coming intent
+        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
+                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
+                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+//            isNFC = true;
+            CommunicationModeSelector.nfcTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        }
+    }
+
     //toast short
     public void mToast(String str) {
         Toast.makeText(this, str, Toast.LENGTH_SHORT).show();

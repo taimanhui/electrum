@@ -7,13 +7,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -122,6 +122,7 @@ import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -175,6 +176,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public static HardwareFeatures features;
     private boolean isChangePin;
     private boolean isGpsStatueChange;
+    public static  Tag nfcTag;
 
     @Override
     public int getLayoutId() {
@@ -229,6 +231,18 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             usbTransport.put("ENABLED", false);
             bleTransport.put("ENABLED", false);
             nfcTransport.put("ENABLED", true);
+            Optional.ofNullable(nfcTag).ifPresent((tags) -> {
+                nfcHandler.put("device", tags);
+                IsoDep isoDep = IsoDep.get(tags);
+                try {
+                    isoDep.connect();
+                    isoDep.close();
+                    new Handler().postDelayed(() -> handlerEverything(true), 200);
+                } catch (IOException e) {
+                    Log.d("NFC", "try connect failed");
+                    nfcTag = null;
+                }
+            });
         } else if ("ble".equals(way)) {
             usbTransport.put("ENABLED", false);
             bleTransport.put("ENABLED", true);

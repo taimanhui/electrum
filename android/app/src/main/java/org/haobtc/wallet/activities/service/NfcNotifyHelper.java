@@ -3,18 +3,12 @@ package org.haobtc.wallet.activities.service;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -55,6 +49,20 @@ public class NfcNotifyHelper extends BaseActivity implements View.OnClickListene
         NfcUtils.nfc(this, true);
         tag = getIntent().getStringExtra("tag");
         EventBus.getDefault().register(this);
+//        Optional.ofNullable(nfcTag).ifPresent((tags) -> {
+//            IsoDep isoDep = IsoDep.get(tags);
+//            try {
+//                isoDep.connect();
+//                isoDep.close();
+//                nfcHandler.put("device", tags);
+//                notifyNfc();
+//            } catch (IOException e) {
+//                Log.d("NFC", "try connect failed");
+//                nfcTag = null;
+//            } catch (IllegalStateException e) {
+//                notifyNfc();
+//            }
+//        });
         Window window = getWindow();
         if (window != null) {
             WindowManager.LayoutParams wlp = window.getAttributes();
@@ -89,16 +97,19 @@ public class NfcNotifyHelper extends BaseActivity implements View.OnClickListene
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             nfcHandler.put("device", tags);
-            if ("PIN".equals(tag)) {
-                String pin = getIntent().getStringExtra("pin");
-                EventBus.getDefault().post(new PinEvent(pin, ""));
-            } else if ("Passphrase".equals(tag)) {
-                String passphrase = getIntent().getStringExtra("passphrase");
-                EventBus.getDefault().post(new PinEvent("", passphrase));
-            }
-            protocol.callAttr("notify");
-            EventBus.getDefault().post(new FinishEvent());
+           notifyNfc();
         }
+    }
+    private void notifyNfc() {
+        if ("PIN".equals(tag)) {
+            String pin = getIntent().getStringExtra("pin");
+            EventBus.getDefault().post(new PinEvent(pin, ""));
+        } else if ("Passphrase".equals(tag)) {
+            String passphrase = getIntent().getStringExtra("passphrase");
+            EventBus.getDefault().post(new PinEvent("", passphrase));
+        }
+        protocol.callAttr("notify");
+        EventBus.getDefault().post(new FinishEvent());
     }
 //
 //    @Override

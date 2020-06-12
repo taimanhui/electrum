@@ -54,7 +54,7 @@ public class NfcUtils {
 
         // PendingIntent，the intent processing the coming tag
         mPendingIntent = PendingIntent.getActivity(activity, 0,
-                new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_UPDATE_CURRENT);
         try {
             // filters to filter the nice tag
             mIntentFilter = new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED, "*/*")};
