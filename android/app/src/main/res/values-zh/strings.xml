@@ -506,7 +506,6 @@
     <string name="blurtooth_need_permission">蓝牙需要使用定位权限</string>
     <string name="task_cancle">当前任务以取消</string>
     <string name="bluetooth_fail">蓝牙连接失败</string>
-    <!--  Last translation  -->
     <string name="copy_mnemonic">复制助记词</string>
     <string name="pass_morethan_6">密码不足6位</string>
     <string name="single_sign_only">签名消息只支持单签</string>
@@ -760,9 +759,9 @@
     <string name="need_backup">升级前请先备份</string>
     <string name="key_wrong">密码输入错误，或者当前使用key不匹配</string>
     <string name="connect_failed">网络连接失败，请重新尝试</string>
+    <!--  Last translation  -->
     <string name="fix_wallet_name">修改钱包名称</string>
     <string name="set_key_language">设置硬件语言</string>
-    <!--  mmmmmmmmmmmmmmmm  -->
     <string name="need_band3">需绑定</string>
     <string name="band_key"> 个BixinKey，可使用任一BixinKey授权发币设置多备份可防止单个BixinKey丢失后，数字资产丢失</string>
     <string name="upload_file_failed">升级文件下载失败</string>
@@ -773,5 +772,17 @@
     <string name="promote_ble">Android 6+ 需要获得位置许可与定位服务来扫描蓝牙低功耗设备, 并不会使用您的位置信息</string>
     <string name="nfc_useless">该设备不支持NFC,请选择其他方式</string>
     <string name="network_useless">网络不可用</string>
+    <string name="backup_finish_tips">BIxinKey私钥seed已使用PIN码加密保存到手机，请牢记当前PIN码。</string>
+    <string name="backup_content">通过其他方式保存PIN码：
+        \n 1.通过【设置-BixinKey备份】查看并将备份文件保存到其他设备；
+        \n 2.备份到新BixinKey，使多个BixinKey拥有相同的私钥。</string>
+    <string name="bixinkey_lite">备份到新BixinKey/Lite</string>
+    <string name="backup_finish">备份完成</string>
+    <string name="set_backup_pass">设置备份密码</string>
+    <string name="backup_input_type">仅可输入数字和字母</string>
+    <string name="set__pass">设置密码</string>
+    <string name="go_to_backup">去备份</string>
+    <string name="wallet_un_backup">钱包未备份</string>
+    <string name="un_back_tips">检测到钱包未备份，为了你的资金安全，请备份后使用</string>
 
 </resources>

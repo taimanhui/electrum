@@ -108,8 +108,7 @@
                             android:visibility="visible"
                             android:layout_height="248.3dp"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/dp_20"
-                            android:background="@color/separation_line" />
+                            android:layout_marginTop="@dimen/dp_20"/>
                         <TextView
                             android:id="@+id/tet_bigMessage"
                             android:textSize="@dimen/sp_12"

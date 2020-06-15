@@ -447,7 +447,6 @@
     <string name="timeout_error">I\'m sorry! Timeout reading public key, try again！！！</string>
     <string name="clean_setting">Settings cleared</string>
     <string name="clean_private_key">Clearing private key</string>
-    <string name="reset_device_successful">请在BixinKey上确认并完成剩余流程</string>
     <string name="bootloader_mode">The hardware is in bootloader mode, which is not supported</string>
     <string name="not_bootloader_mode">Please confirm the hardware currently is in bootloader mode</string>
     <string name="check_hide_wallet">Click to view hidden Wallet</string>
@@ -530,269 +529,270 @@
     <string name="set_hidewallet_pass">Set password of hidden wallet</string>
     <string name="bluetooth_abnormal">Bluetooth connection abnormal</string>
     <string name="check_sign">Verify signature</string>
-    <!--  Last translation  -->
     <string name="bluetooth_fail">Bluetooth connection failed</string>
     <string name="default_key">Key</string>
-    <string name="copy_mnemonic">Copy mnemonic</string>
-    <string name="pass_morethan_6">The PIN\'s length less than 6</string>
-    <string name="single_sign_only">Signature message only supports single signature</string>
-    <string name="unrelated_transaction">This transaction is not related to the current Wallet</string>
-    <string name="please_open_unconfirmed">Please turn on the \"spend unconfirmed revenue\" button in the settings to create a transaction</string>
-    <string name="xpub_have_wallet">Wallet created by this xpub already exists,wallet named</string>
-    <string name="dont_support_hide">Hidden wallet is not supported in current hardware status</string>
-    <string name="same_seed_have">Wallet created by this seed already exists,wallet named</string>
-    <string name="fail">Fail</string>
-    <string name="update_failed">Update failed, we would exit this page 2 second later</string>
-    <string name="file_not_exist">Update file not exist</string>
     <string name="promote_message">1. Please remember the backup pin code \n 2. Please remember the password displayed by BixinKey</string>
-    <string name="checksign_succsse">Successful signature verification</string>
-    <string name="checksign_fail">Signature verification failed</string>
-    <string name="no_delete_xpub">The xpub to be delete not in keystore</string>
-    <string name="xpub_wrong">Invalid type of xpub</string>
+    <string name="update_file_format_error">Upgrade file should end with. zip or .bin</string>
+    <string name="_0_16">0/16</string>
+    <string name="copy_mnemonic">Copy mnemonic words</string>
+    <string name="pass_morethan_6">Must be over 6 characters</string>
+    <string name="single_sign_only">Only single signature is supported for signed messages</string>
+    <string name="unrelated_transaction">This transaction is not related to the current wallet</string>
+    <string name="please_open_unconfirmed">Please turn on the "Spend unconfirmed income" button in the settings to create the transaction</string>
+    <string name="xpub_have_wallet">The wallet created from this xpub already exists. Name is</string>
+    <string name="dont_support_hide">The current hardware state does not support hiding wallets</string>
+    <string name="same_seed_have">The wallet created from this seed already exists. Name is</string>
+    <string name="fail">Failure</string>
+    <string name="update_failed">Upgrade failed. Exit in 2 seconds</string>
+    <string name="file_not_exist">Upgrade file does not exist</string>
+    <string name="checksign_succsse">Signature verification success</string>
+    <string name="checksign_fail">Signature verification fail</string>
+    <string name="no_delete_xpub">xpub deleting does not exist</string>
+    <string name="xpub_wrong">Adding xpub type error</string>
     <string name="wrong_key_type">Wrong key type p2wpkh</string>
-    <string name="sign_failed_device">Failed to sign, Bixin cannot pair with your device</string>
+    <string name="sign_failed_device">Signing failed. Current wallet and device do not match</string>
     <string name="file_name">File name</string>
-    <string name="software_wallet">Software Wallet</string>
+    <string name="addspeed_success">Acceleration completed!</string>
+    <string name="software_wallet">Software wallet</string>
     <string name="please_change_xpub">This xpub already exists, please replace it</string>
-    <string name="error_wallet_transaction">Transaction is unrelated to this wallet</string>
-    <string name="key_wrong_prompte">Please keep the phone and BixinKey fit during reading</string>
-    <string name="security_risks">BixinKey has security risks</string>
-    <string name="official_firmware_suggest">It is detected that the official firmware is not used. Please replace the official firmware</string>
-    <string name="pin_confirm_hardware">Please confirm the pin code on the hardware</string>
-    <string name="communicating">In communication with BixinKey</string>
-    <string name="tip_closer">Data transmission takes time, please keep BixinKey close to the mobile phone</string>
-    <string name="waitting_touch">waitting BixinKey touch</string>
-    <string name="connectting_successful">connectting BixinKey successful</string>
-    <string name="order_sending">order sending</string>
-    <string name="order_sending_failed">active order sending failed</string>
-    <string name="active_failed">BixinKey active failed, please retry again</string>
-    <string name="order_sending_successful">active order sending successful</string>
-    <string name="confirm_pin_on_hardware">please confirm pin on the device</string>
-    <string name="name_setting">Setting the name</string>
-    <string name="label">Set the unique name of BixinKey</string>
-    <string name="use_se">Using security chip to store private key and sign</string>
+    <string name="error_wallet_transaction">This transaction is not related to the current wallet</string>
+    <string name="key_wrong_prompte">Please keep your phone close to the BixinKey during the reading process</string>
+    <string name="security_risks">Security risks exist in BinKEY</string>
+    <string name="official_firmware_suggest">No official firmware is detected. Please use the official firmware</string>
+    <string name="pin_confirm_hardware">Please confirm the PIN code on the hardware</string>
+    <string name="communicating">Communicating with BixinKey</string>
+    <string name="tip_closer">Data transmissing. Please keep BixinKey close to the phone</string>
+    <string name="waitting_touch">Pending for BixinKey</string>
+    <string name="connectting_successful">BixinKey connected successfully</string>
+    <string name="order_sending">Command sending</string>
+    <string name="order_sending_failed">Failed to send activation command</string>
+    <string name="active_failed">BixinKey activation failed, please try again</string>
+    <string name="order_sending_successful">Activation command sent successfully</string>
+    <string name="confirm_pin_on_hardware">Please confirm the PIN on BixinKey and complete the activation</string>
+    <string name="name_setting">Name setting</string>
+    <string name="label">Set BixinKey\'s proprietary name</string>
+    <string name="use_se">Use security chips to store private keys and sign</string>
     <string name="recovery">Restore from backup</string>
-    <string name="random">Generate wallet private key randomly by BixinKey</string>
-    <string name="recovery_promote">Restore existing wallet from BixinKey backup</string>
-    <string name="pin_original">Please enter the original pin code</string>
-    <string name="new_pin">Please enter a new pin</string>
-    <string name="pin_change_confirm">Please confirm the new pin code on BixinKey and complete the pin code modification</string>
-    <string name="transaction_loading">transaction loading</string>
-    <string name="unpair">Currently, BixinKey does not have permission to sign the transaction</string>
-    <string name="try_another_key">Please replace the correct BixinKey for signature</string>
-    <string name="use_bixinkey">The device is not BixinKey, please use BixinKey to sign</string>
-    <string name="verifying_pin">Verifying pin</string>
-    <string name="reading_signature">reading signature</string>
+    <string name="random">The wallet private key is randomly generated by BixinKey</string>
+    <string name="recovery_promote">Restore an existing wallet from BixinKey backup</string>
+    <string name="pin_original">Please enter the original PIN</string>
+    <string name="new_pin">Please enter a new PIN</string>
+    <string name="pin_change_confirm">Please complete the modification and confirm the new PIN code on BixinKey</string>
+    <string name="transaction_loading">Transaction processing</string>
+    <string name="unpair">Current BixinKey does not have permission to sign this transaction</string>
+    <string name="try_another_key">Please change to the correct BixinKey for signing</string>
+    <string name="use_bixinkey">Device is not a BixinKey. Please use BixinKey for signatures</string>
+    <string name="verifying_pin">Verifying PIN code</string>
+    <string name="reading_signature">Signature reading</string>
     <string name="transaction_parse_error">Transaction resolution failed</string>
     <string name="testnet">Bixin cold wallet T</string>
     <string name="regnet">Bixin cold wallet R</string>
     <string name="update_file_not_exist">Upgrade file does not exist</string>
-    <string name="update_file_format_error">Upgrade file should end with. zip or .bin</string>
     <string name="keep_connection">Please keep your phone connected to BixinKey</string>
-    <string name="tip_connnection">Data transfer takes some time, please keep connected</string>
-    <string name="bluetooth_setting">Bluetooth Settings</string>
-    <string name="_0_16">0/16</string>
-    <string name="confirm_fix">Confirm modification</string>
-    <string name="original_pin_wrong">Original PIN code error</string>
+    <string name="tip_connnection">Data transmission will take some time, please stay connected</string>
+    <string name="bluetooth_setting">Bluetooth settings</string>
+    <string name="confirm_fix">Confirm the modification</string>
+    <string name="original_pin_wrong">Original PIN error</string>
     <string name="reset_device_failed">BixinKey failed to restore factory settings</string>
-    <string name="agent_tips">Using a proxy server,hide network traces</string>
-    <string name="last_check_time">Last verified on </string>
+    <string name="agent_tips">Use a proxy server to hide network traces</string>
+    <string name="last_check_time">Last validation time is </string>
     <string name="broad_fail">Broadcast failed</string>
-    <string name="is_new">Is currently the latest version</string>
-    <string name="un_bonded">Device not bound</string>
-    <string name="if_set_PIN">The current key is not backed up</string>
+    <string name="is_new">It is the latest version</string>
+    <string name="un_bonded">Device Unbunded</string>
+    <string name="if_set_PIN">Back up your wallet now? You can also back up your wallet in Settings later.</string>
     <string name="not_yet">Not yet</string>
-    <string name="goto_set">To backup</string>
-    <string name="some_wallet_existence">Some wallets already exist, import completed</string>
-    <string name="get_xpub">View BixinKey extended public key</string>
-    <string name="check_xpub">View extended public key</string>
-    <string name="copy_xpub">Copy extended public key</string>
-    <string name="diy_hardware">Select custom firmware file</string>
+    <string name="goto_set">Go to backup</string>
+    <string name="some_wallet_existence">Some wallets already exist, import complete</string>
+    <string name="get_xpub">View the BiXinKEY extended public key</string>
+    <string name="check_xpub">View XPub</string>
+    <string name="copy_xpub">Copy XPub</string>
+    <string name="diy_hardware">Custom firmware files</string>
     <string name="input_backup_pass">Enter backup password</string>
-    <string name="input_key_pass">Please enter the password displayed by BixinKey</string>
-    <string name="pin_change_failed">The original pin incorrect , please retry</string>
+    <string name="input_key_pass">Please enter the password of the BixinKey backup</string>
+    <string name="pin_change_failed">The original PIN is incorrect. Please try again</string>
     <string name="set_pin_confirm">Please confirm the new PIN on BixinKey</string>
-    <string name="message_loading">Message transmission in progress</string>
-    <string name="sign_error">Sign exception</string>
+    <string name="message_loading">Message transfering</string>
+    <string name="sign_error">Signature exception</string>
     <string name="reansaction_error">Transaction signing failed</string>
-    <string name="sign_timeout">Sign timeout</string>
-    <string name="service_text">With synchronous server, the wallet can be backed up and recovered, and the transaction can be synchronized and signed among multiple joint signers;</string>
+    <string name="sign_timeout">Signing timeout</string>
+    <string name="service_text">Synchronization servers can back up and restore the mutual wallets, synchronize and sign transactions across multiple managers.</string>
 
-    <string name="user_agreement_content">\t\t\t\  agreement is a contract between you (hereinafter referred to as "the user") and Bixin Global CO,. Ltd. (hereinafter referred to as "the platform") as the owner of the official platform (including web end, mobile end and application program, hereinafter referred to as "the platform") for the cold wallet service and other related matters, which is legally binding on the user and the credit. In particular, we hereby remind you to carefully read and fully understand the terms of this agreement, especially the terms in this agreement related to the exemption or limitation of platform liability, as well as the terms of exclusion or restriction of user rights. The user shall carefully read and choose to accept or not to accept this agreement. Unless the user accepts all terms of this agreement, the user has no right to use the services provided by the platform based on this agreement. If the user disagrees with the content of this agreement or refuses to recognize the right of the platform to unilaterally modify this agreement at any time, the user shall immediately stop using and no longer access the platform. The user\'s use of the platform services (including but not limited to use, browsing, etc.) shall be deemed as full understanding and acceptance of all terms of this Agreement (including any modification made to this agreement from time to time by hixin), and this Agreement shall be established and take effect immediately.In addition to this agreement, users shall also abide by other agreements and rules publicized by the platform, including but not limited to use license agreement, privacy policy, after-sales service policy and legal statement, as well as other agreements, rules, announcements, statements, instructions or guidelines that have been published or may be published in the future on the platform (including as amended from time to time, as follows Collectively, the "rules").
-        \n<font color="#000000"><b>Article 1 interpretation </b></font>
-        \n 1.1  "Agreement" means this user service agreement, as amended from time to time.
-        \n 1.2  "Cold wallet" refers to the hardware product that realizes the secure storage of digital assets based on the technical scheme of hierarchical deterministic (hd).Cold wallet uses two technical schemes to generate private keys of different currencies: one is to randomly generate seed passwords and set payment passwords, which jointly generate private keys of different currencies; the other is to randomly generate mnemonics, which generate private keys of different currencies.Finally, the private key generates the public key, and the public key generates the asset address to realize the secure storage of digital assets."
-        \n 1.3  "Hot wallet" refers to the digital asset wallet developed based on the blockchain, including other auxiliary tools developed for the convenience of users to use the blockchain system.
-        \n 1.4  The "public key" is generated by one-way derivation of the private key with the help of cryptography principle, and is used to generate the blockchain digital wallet address, which is the public collection address.
-        \n 1.5  "Private key", composed of 256 random characters, is the key for users to own and use digital assets.
-        \n 1.6  "Mnemonic words" refer to 12 (or 15 / 18 / 21 / 24) ordered words generated by random algorithm in line with the industry standard of blockchain bip39, which are easy to record forms of private keys and convenient for users to back up and keep.
-        \n 1.7  "Payment password", during the process of creating wallet, the user should set password, which will be used to jointly generate currency private key with seed password. This password cannot be modified. Once the user loses or forgets this password, the asset will not be recovered.
-        \n 1.8  "Security password", during the process of creating wallet, the user should set the password, which will be used to protect the private key. The security password is not stored in the user\'s mobile device or coin letter platform server. Once the user forgets the password, it cannot be retrieved. The user can import the new security password into the wallet again with the help of the private key or mnemonic words.
-        \n<font color="#000000"><b>Article 2 platform services </b></font>
-        \n 2.1 Users can choose to use different language versions of the platform. If the content of different language versions of the platform is inconsistent, conflicting or missing, the Chinese version of the platform shall prevail.
-        \n 2.2 The platform is a digital asset security management service platform, which is provided to users by currency information. The specific service content mainly includes: digital asset security management service, user service and other auxiliary services. The specific details are subject to the actual service content provided by the platform.
-        \n 2.3 When users access or use the coin letter platform service, they must be equipped with the Internet access equipment required for Internet access, and bear all costs of the service, including but not limited to the network access fee, mobile traffic fee, etc. When it comes to the use of any third-party service, users shall also comply with the third-party service guidelines and relevant fees.
-        \n 2.4 During the performance of this agreement, the letter of currency may modify this Agreement as the case may be. In case of any change in the content of this agreement, the latest service agreement will be published by Kingdee and no individual notice will be given to users. If the user does not agree with the modification of this agreement made by the currency letter, the user has the right to stop using the platform service. If the user continues to use the platform service, it shall be deemed that the user accepts the modification of this agreement made by the currency letter and shall follow the modified agreement.
-        \n 2.5 For the user\'s notice and any other agreement, rule, notice or other notice about the user\'s use of the service, the user agrees that the notice can be made by platform announcement, in station letter, e-mail, mobile phone short message and other electronic means or physical means, such notice shall be deemed to have been delivered to the recipient on the date of sending (if the notice is sent to the user by mail, the notice shall be sent to the user in Such notice shall be deemed to have been delivered on the third natural day after the mailing according to the contact address retained by the user on the platform). If the user fails to receive such notice on the date when the aforesaid notice is deemed to have been delivered due to the reasons not attributable to the currency letter (including inaccurate or invalid email address, mobile phone number, contact address, information transmission failure, etc.), the currency letter shall not bear any responsibility.
-        \n 2.6 In order to avoid any misoperation of asset wallet or any security risk of digital assets, users should avoid using platform services without basic knowledge of blockchain. For users who do not have the basic knowledge of blockchain, CTX has the right to refuse to provide part or all of the service functions.
-        \n 2.7 Users understand that in case of any of the following circumstances, CTX will modify, suspend or completely close the platform service, and the effective date shall be subject to the platform announcement. Users agree that CTX shall not be liable for any breach of contract, compensation or compensation to users:
-        \n\t\t（1）The operation of the platform is interrupted due to technical reasons such as equipment, block chain system maintenance, upgrade, failure and communication interruption;
-        \n\t\t（2）The platform is unable to provide services due to force majeure and other factors, or it reasonably believes that there will be greater risk in continuing to provide services;
-        \n\t\t（3）In case of major adverse changes in applicable laws or policies, or in accordance with the requirements of laws, regulations, orders and other norms of the user\'s sovereign country or region;
-        \n\t\t（4）In order to protect the legitimate interests of the platform or users;
-        \n\t\t（5）Other circumstances beyond the control of the platform or reasonably foreseen.
-        \n<font color="#000000"><b>Article 3 service content</b></font>
-        \n 3.1 Wallet creation
-        \n\t\t（1）When the user creates the wallet for the first time, this agreement will pop up. Once the user agrees to create the wallet, it means that the user agrees to all the contents of this agreement, and the user is bound by this agreement. If the user does not have the subject qualification required by this agreement, the user shall bear all the consequences arising therefrom, and Chinatrust reserves the right to hold the user accountable.
-        \n\t\t（2）The user hereby undertakes to create wallet and use platform services for legal purposes, and does not intend to violate laws and regulations by using platform or platform services as media; the user guarantees that the source of digital assets stored in wallet is legal; in addition to this agreement, the user shall abide by all rules issued and updated by the platform from time to time, including announcement, use process description, risk prompt, etc.
-        \n 3.2 User services provided by the platform
-        \n\t\t（1）The platform provides the following services to users according to the registration rules:
-        \n\t\t a Digital asset security management service;
-        \n\t\t b Real time market and transaction information of digital assets;
-        \n\t\t c Provide user services;
-        \n\t\t d Technical and management services to ensure the normal operation of the platform;
-        \n\t\t e Other services publicized by the platform.
-        \n\t\t（2）Adhering to the decentralized characteristics of blockchain, and in order to protect the security of users\' digital assets, the platform provides decentralized services, which is different from banking financial institutions. The user understands and accepts that the platform does not assume the following responsibilities: storing the user\'s security password (that is, the password set when the user creates / imports the wallet), private key, mnemonic words; retrieving the user\'s security password, private key, mnemonic words; freezing the wallet; reporting the lost wallet; recovering the wallet, etc.
-        \n\t\t（3）The user shall be responsible for keeping the mobile device containing the asset wallet, backing up the wallet information, backing up the security password, mnemonics and private key. If the user loses the mobile device, deletes and does not back up the wallet information, deletes and does not back up the wallet, the wallet is stolen or the security password, private key and mnemonic words are forgotten, the platform cannot restore the wallet or retrieve the security password, private key and mnemonic words; if the user misoperates during the transaction (such as inputting the wrong transfer address, inputting the wrong transfer amount), the platform cannot cancel the transaction, and the platform does not Any responsibility for this shall be borne.
-        \n 3.3 Cold wallet products
-        \n\t\t（1）The product information released by the platform is likely to change at any time. Therefore, the currency letter may modify and adjust the text expression and picture effect on the platform page in real time. We will make reasonable commercial efforts to make the product information displayed in the platform, such as product specification parameters, function description, parts information, inventory, limited purchase quantity, as accurate and detailed as possible, and match with the actual product information. However, due to the huge quantity of product information on the platform, and the real-time change of network technology development level, product batch and production supply factors, etc Due to the limitation of element, the platform does not exclude the possibility of delay or error in some information.
-        \n\t\t（2）The platform shall clearly mark the price of the products, but the user shall understand and agree that the price information of the products of the currency letter may change at any time, because the transaction price of the products shall be subject to the price when the user confirmed by the currency letter submits the order for settlement. At the same time, although we will try our best to ensure the accuracy of the platform commodity price, there may still be some cases of wrong price of some commodities. For commodities with obvious wrong price, we reserve the right not to confirm or cancel the corresponding order.
-        \n\t\t（3）When placing an order, the user shall carefully confirm the name, price, quantity, model, specification, size, contact address, telephone number, consignee and other information of the purchased product. If the consignee is inconsistent with the user, the act and expression of will of the consignee shall be deemed as the act and expression of will of the user, and the user shall be liable for the legal consequences of the act and expression of will of the consignee.
-        \n\t\t（4）The successful order submission is only the data automatically generated by the computer information system according to the content you fill in. It is only the transaction request sent by the user to the currency letter, not the commitment of the currency letter to the order placed by the user. After receiving the order information of the user, the currency letter only confirms the order sent by the user with actual action or clear intention (such as sending the SMS confirming the order to the user, confirming the order E-mail of the order) or when the product ordered by the user in the order is actually sent directly to the user from the warehouse (marked by product delivery), it is deemed that the transaction relationship between the user and the currency letter is established for the product actually confirmed directly or sent directly to the user. Users can log in to the platform to query the order status at any time.
-        \n\t\t（5）The authorized seller will deliver the product to the receiving address designated by the user. The delivery time listed on the platform is the reference time. The calculation of the reference time is estimated based on the inventory status, normal processing process, delivery time and delivery place. The authorized seller or the authorized seller does not match the actual delivery time with the delivery time displayed on the platform Any responsibility to the user or consignee for the time difference.
-        \n<font color="#000000"><b>Article 4 limitation of platform liability </b></font>
-        \n 4.1 We do not guarantee the following services in any form:
-        \n\t\t（1）Platform services will meet the needs of users;
-        \n\t\t（2）Platform services will not be disturbed, provided in a timely manner or error free;
-        \n\t\t（3）Any product, service, information or other information purchased or obtained by the user through the platform service will meet the user\'s expectation;
-        \n\t\t（4）All information, programs, text, data, etc. contained in the platform are completely safe and free from any viruses, Trojans and other malicious programs;
-        \n\t\t（5）All transaction result calculations have been verified by the platform, and the corresponding calculation methods will be publicized on the platform, but the platform can not guarantee that its calculations are free of errors or interference.
-        \n 4.2 The user understands and agrees that under no circumstances shall the company be liable for any of the following:
-        \n\t\t（1）Loss of revenue for users;
-        \n\t\t（2）Loss of transaction profit or expected contract profit of users;
-        \n\t\t（3）Loss caused by service interruption, suspension or termination;
-        \n\t\t（4）Losses expected to save transaction costs;
-        \n\t\t（5）The loss caused by the problem of information transmission;
-        \n\t\t（6）Loss caused by loss or damage of data;
-        \n\t\t（7）Any indirect, special or incidental loss caused by breach of contract, whether or not such loss is reasonably foreseeable by the platform, and whether or not the platform is informed of the possibility of such loss in advance;
-        \n\t\t（8）The user\'s digital assets are lost due to the loss of mobile devices, deletion and failure to back up wallet information, forgetting and failure to back up security passwords, private keys, mnemonics, etc;
-        \n\t\t（9）The loss of the user\'s digital assets caused by the user\'s disclosure of the security password, private key, mnemonic words, etc., or borrowing, transferring or authorizing others to use their own mobile devices or wallets, or not downloading the platform application through the official channel of coin letter or using the platform application in other unsafe ways;
-        \n\t\t（10）The loss of digital assets caused by the user\'s wrong operation (including but not limited to the user\'s input of wrong transfer address and the user\'s own selection of transfer node server);
-        \n\t\t（11）The user\'s digital assets are lost due to misoperation because the user does not understand the knowledge of blockchain technology;
-        \n\t\t（12）Due to system lag, blockchain instability and other reasons, the transaction records of platform copying users on the blockchain deviate.
-        \n 4.3 Users know and agree that in case of any of the following circumstances, CTX has the right to refuse to compensate users for all or part of the losses:
-        \n\t\t（1）There are reasonable reasons to believe that the user\'s behavior on the platform is suspected of illegal or unethical behavior;
-        \n\t\t（2）The user mistakenly believes that the loss is caused by the platform;
-        \n\t\t（3）Any other loss not caused by the platform.
-        \n 4.4 The third-party service on the platform is provided by the third-party service provider, and the quality and content of the service provided by the third-party service provider are the responsibility of such third-party service provider. The content of the platform may involve other platforms owned, controlled or operated by a third party (hereinafter referred to as "the third party platform"). The platform cannot guarantee and has no obligation to guarantee the authenticity and validity of any information on the third-party platform. The user confirms to use the third party platform in accordance with the service agreement of the third party platform, rather than in accordance with this agreement. The content, products, advertisements and any other information of the third-party platform shall be judged by the users themselves and bear the risk, which has nothing to do with the platform. Any data downloaded or obtained by the user through the use of the platform service shall be considered by the user at his own risk, and any loss caused by the downloading of the data shall be borne by the user.
-        \n 4.5 Due to the standardized services provided by the user, the user may not be reasonably expected to suffer losses caused by its breach of contract, and the user will not be charged extra fees for the benefit of the user\'s use of the service. Therefore, the user agrees that, if permitted by law, the user shall not be liable for any loss caused by the user\'s breach of contract due to the use of the platform, or due to the use of the platform contained in the agreement Any indirect, punitive, special and derivative losses (including business losses, loss of profits, loss of use data or other economic benefits) caused by all information, content, materials, products (including software) and services provided to users through the platform in other ways, or purchase and use of products, no matter how they are incurred, shall not be liable What is the liability, even if it has been informed of the possibility of such loss in advance.
-        \n 4.6 The warranties and commitments made by token in this Agreement are the only warranties and representations (hereinafter referred to as "agreement warranties") made by token in respect of the platform services provided by token in accordance with this agreement. All agreement warranties are only made for the platform and are binding on the platform itself, and their effect cannot be binding on any third party.
-        \n 4.7 If the platform system collapses or cannot be used normally due to force majeure or other uncontrollable reasons, resulting in the transaction being unable to be completed or relevant information and records lost, etc., CTX will make reasonable efforts to assist in dealing with the aftermath. The user agrees to bear the risks and losses caused by the above circumstances, and agrees that CTX shall not be liable for compensation or other liabilities to the user.
-        \n<font color="#000000"><b>Article 5 statement and commitment of users </b></font>
-        \n 5.1 Users declare that they have full capacity for civil rights and full capacity for civil conduct and can independently bear legal liabilities. If the user violates this condition, the user can refuse to provide the service to the user at any time and at its sole discretion. If the loss is caused to the user or the third party, the user shall also bear all the liability for compensation. If the user is a person with limited capacity for civil conduct, the platform can only be used under the supervision and participation of his / her parents or guardian, otherwise, he / she has the right to suspend or close the user\'s account within the scope permitted by law.
-        \n 5.2 The user undertakes not to use the platform services for any illegal purpose or in any illegal way, and to abide by the relevant laws and regulations of the country where it is located and all international practices for using the Internet, and to abide by all network protocols, rules and procedures related to the platform services.
-        \n 5.3 The user understands and agrees that the third party services selected by the user on the platform shall be evaluated and selected by the user. The user shall not be responsible for the third-party service behavior selected and used by the user on the platform. The user shall not be responsible for the loss caused by the user\'s use of the third-party service.
-        \n 5.4 The user agrees to be responsible for all activities (including information disclosure, information release, click to agree with all kinds of agreements, upload and submit all kinds of documents, click to agree to renew all kinds of agreements or click to agree with the service agreement provided by the third party, etc.) under the registered account of the platform, and in the process of the above activities, if the user fails to comply with the terms of this agreement or the transaction rules published by the platform The platform shall not bear any responsibility for the operation instructions of.
-        \n 5.5 Users agree that, in the process of providing platform services, CTX has the right to launch various commercial advertisements or other commercial information of any type (including advertising on any page of the platform), and users agree to accept the platform\'s sending of commercial promotions or other relevant commercial information to users by email or other means.
-        \n 5.6 The user agrees that in case of any dispute between the user and the service provider or other third parties due to the use of the third-party service, the user shall not require the platform to provide relevant information through any means other than judicial or administrative means.
-        \n 5.7 Users must abide by national laws and regulations when using platform services, and they promise to strictly perform the following obligations:
-        \n\t\t（1）They shall not transmit or publish any speech inciting resistance to or sabotage of the implementation of the constitution, laws and administrative regulations, inciting subversion of the state power, overthrowing the socialist system, inciting division of the country, sabotaging national unity, inciting national hatred, discrimination or unity;
-        \n\t\t（2）Information transmission from mainland China to the outside world must comply with China\'s relevant laws and regulations.
-        \n\t\t（3）Do not use the platform or platform services to engage in money laundering, stealing business secrets, stealing personal information and other illegal and criminal activities;
-        \n\t\t（4）Do not interfere with the normal operation of the platform, and do not intrude into the platform and the national computer information system;
-        \n\t\t（5）It is not allowed to transmit or publish any illegal, harassing, slandering, abusive, intimidating, injurious, vulgar, obscene, uncivilized and other information;
-        \n\t\t（6）Do not transmit or publish any information or speech that is harmful to the national social and public interests and involves national security;
-        \n\t\t（7）Not to instigate others to engage in the acts prohibited by this article;
-        \n\t\t（8）Do not use the account registered on the platform for profit-making business activities;
-        \n\t\t（9）It shall not publish any content infringing other\'s copyright, trademark rights and other intellectual property rights or legitimate rights;
-        \n\t\t（10）It is not allowed to maliciously slander the goodwill of the platform in the way of making up or exaggerating events;
-        \n\t\t（11）Other acts in violation of laws and regulations, public order and good customs, Internet interests, and other acts deemed inappropriate by monetary letter with justifiable reasons. If the user fails to comply with the above provisions, CTX has the right to make independent judgment and take measures such as suspending or closing the user account without any responsibility.
-        \n 5.8 Users shall pay attention to and abide by the rules and regulations published or modified by the platform from time to time. We reserve the right to delete all kinds of information on the platform that are not in line with laws and policies or are untrue or inappropriate in our sole judgment without notice to users and without any responsibility.
-        \n 5.9 The user agrees that, due to the user\'s violation of this agreement, the platform rules, or the documents incorporated into this agreement by reference and become part of this agreement, or the user\'s use of the platform services violates any law or damages the rights of third parties, any compensation or claim (including attorney\'s fees) made or initiated by any third party shall be paid by the user to the user The joint parties, partners, directors and employees who suffer losses shall be fully compensated or compensated without any damage.
-        \n 5.10 If the user violates the contents of this agreement or platform rules, or violates laws and regulations, or damages the legitimate rights and interests of the third party, Tongxin has the right to take measures such as warning, suspension of service, cancellation of order, prohibition of transaction, closure of account number, permanent prohibition of registration, etc. depending on the seriousness of the case, and causes losses to Tongxin or the third party, Tongxin has the right to take all legal litigation and non litigation measures Bank claims; if the user\'s behavior constitutes a crime, currency credit has the right to report to the relevant departments and assist in investigation and punishment.
-        \n<font color="#000000"><b>Article 6 service fee </b></font>
-        \n 6.1 When users use the platform services, if the platform charges users for relevant platform services, please refer to the charging instructions and standards listed on the platform when users use the platform services for the service fees of each platform. The platform reserves the right to unilaterally formulate and adjust the charging standards for platform service fees.
-        \n 6.2 When using the platform for transfer, "miner fee" or network fee shall be paid, and the amount shall be determined by the user and charged by the relevant blockchain network. The user knows that in certain circumstances (including but not limited to the "miner\'s fee" or insufficient network fee paid by the user for the transfer during the transfer period, or the instability of the relevant blockchain network), the user\'s transfer operation may fail; in such cases, even if the user\'s transfer operation is not completed, the user will be charged miner\'s fee by the relevant blockchain network.
-        \n 6.3 The user shall be responsible for all the tax liabilities and other expenses incurred by using the platform services.
-        \n<font color="#000000"><b>Article 7 authorization and protection of user information </b></font>
-        \n 7.1 User information,refer to
-        \n\t\t（1）When users use the platform service, they can choose the public data synchronized to the coin letter server, including but not limited to wallet address and transaction data;
-        \n\t\t（2）When users use platform services or visit the platform, the platform automatically receives and records the server value on the user\'s browser, including but not limited to data such as IP address and web page records required by users;
-        \n\t\t（3）Relevant data collected by the platform about the transactions of users on the platform, including but not limited to transaction records;
-        \n\t\t（4）Information related to users obtained by the platform through the blockchain network.
-        \n 7.2 The user agrees that coin letter can use a data collection device such as "cookies" on some web pages of the platform to automatically track certain information about the user according to the user\'s behavior on the platform. Under the premise of not disclosing the privacy information of users, the platform has the right to analyze the entire user database and make commercial use of the user database.
-        \n 7.3 The user authorizes the currency letter to use the information provided by the user to the platform, the information generated by enjoying the platform service (including the information provided and generated before the signing of this Agreement) and the information collected by the platform according to the agreement of this article for the platform and its necessary entrusted partners to provide services, recommend products, carry out market research and information data analysis for the user.
-        \n 7.4 We will protect user information according to relevant laws and regulations. Users will not sell or share the information to any third party maliciously due to the performance of this agreement, except for the content and purpose of this agreement. It will also urge its partners to keep the above information confidential and take various measures to ensure the information security.
-        \n<font color="#000000"><b>Article 8 ownership and intellectual property </b></font>
-        \n 8.1 All contents on the platform, including pictures, files, information, data, platform architecture, arrangement of platform images, platform design, words and charts, software compilation, relevant source code and software, trademarks, etc., shall be legally owned by MONEX or other obligees. Trademark right, patent right, copyright, trade secret, etc. shall be protected by national laws, no matter before or after this agreement.
-        \n 8.2 Except as otherwise required by law, without the written permission of Tongxin or other obligees, no unit or individual shall illegally use, copy, reprint, quote, link, capture or publish the platform procedures or contents in whole or in part in any way, otherwise, Tongxin has the right to pursue its legal liability.
-        \n 8.3 Users are not allowed to download (except for page caching) or modify the platform or any part of it without the express written consent of coin letter. Users shall not resell or make commercial use of the platform or its content or platform services; shall not collect and make use of product catalog, description and price; shall not make any derivative use of the platform or its content or platform services; shall not download or copy account information or use any data collection, robots or similar data collection and extraction tools for other commercial interests. Without the written permission of the platform, it is strictly prohibited to acquire the contents of the platform systematically to directly or indirectly create or edit the collection, assembly, database or personal address book (whether through robots, spiders, automatic instruments or manual operation or not). In addition, it is strictly prohibited to use the contents and materials on the platform for any purpose not expressly permitted by this agreement.
-        \n 8.4 Any service provided by the user using the platform shall not be deemed as the transfer of any intellectual property right from the user. Respect for intellectual property rights is the obligation of users. In case of any violation, users shall be liable for damages and other legal liabilities. In addition, users have the right to take warning, suspension of service, cancellation of orders, prohibition of transactions, closure of accounts, permanent prohibition of registration and other measures.
-        <!--        \n<font color="#000000"><b>Article 9 risk tips </b></font>-->
-        <!--        \n 9.1 There is no express or implied warranty for users to use the platform services, including but not limited to the applicability, no error or omission, sustainability, accuracy, reliability and applicability to a specific purpose of the platform services. At the same time, we do not make any commitment and guarantee for the validity, accuracy, correctness, reliability, quality, stability, integrity and timeliness of the technology and information involved in the services provided by the platform.-->
-        <!--        \n 9.2 Whether to use the platform service or not is the user\'s personal decision, at his own risk and possible loss. The market, value and price of digital assets are not guaranteed by Monet. Users know and understand the instability of digital assets market. The price and value of digital assets will fluctuate or collapse at any time. Trading digital assets is the free choice and decision of users, and they bear the risk and possible loss.-->
-        <!--        \n 9.3 No warranty or condition, express, implied or statutory, is given by the letter to any user and / or any transaction. We cannot and will not attempt to control the information published by users or service providers. For such information, the platform does not undertake any form of certification and authentication services. The platform does not fully guarantee the authenticity, sufficiency, reliability, accuracy, integrity and effectiveness of the platform content, and does not need to bear any legal liability arising therefrom. The user shall rely on the user\'s independent judgment to conduct the transaction, and the user shall take full responsibility for the judgment made by him.-->
-        <!--        \n 9.4 The market view function provided by the platform is only to capture the search results of exchange rate information of digital assets of some exchanges, and does not represent the latest market or the best quotation.-->
-        <!--        \n 9.5 In the process of transfer, in case of "transaction failure", "packing timeout" and other similar abnormal information prompt, the user shall reconfirm through the relevant blockchain official channel or other blockchain query tools to avoid repeated transfer; otherwise, all losses and expenses caused by this shall be borne by the user.-->
-        <!--        \n 9.6 When creating or importing a wallet, users should make a safe backup of the security password, private key, mnemonic and other information of the wallet. Users should avoid the following electronic backup methods: screenshots, emails, Notepad applications in mobile phones, SMS, wechat, QQ and other electronic backup methods. Users should copy mnemonics, keystore and other information on paper notebooks. If the user does not save or back up the security password, private key, mnemonic and other information, and if the user\'s mobile device is lost, the user\'s digital assets may be lost, and the coin letter cannot be retrieved for the user. Any and all losses caused by the above circumstances shall be borne by the user.-->
-        <!--        \n 9.7 The above does not reveal all the risks of users\' trading through the platform and the whole situation of the market. Before making a transaction decision, users should fully understand the relevant digital assets, make prudent decisions according to their own transaction objectives, risk tolerance and asset status, and bear all risks on their own.-->
-        <!--        \n<font color="#000000"><b>Article 10 termination of agreement </b></font>-->
-        <!--        \n 10.1 The user has the right to apply to the platform for cancellation of the registration account at any time, and the agreement shall terminate from the date when the platform approves the user to cancel the registration account.-->
-        <!--        \n 10.2 f the user dies or is declared dead, its rights and obligations under this Agreement shall be inherited by its successor. If the user loses all or part of his / her capacity for civil rights or civil conduct, he / she or the person authorized by him / her has the right to dispose of the funds related to the user\'s account according to the effective legal documents (including the effective court judgment, etc.) or the instructions of his / her legal guardian. If the successor or legal guardian decides to continue to perform this agreement, this agreement will remain valid; otherwise, the successor or legal guardian needs to apply to the platform for account cancellation according to this agreement, and the agreement will terminate from the date when the platform approves the user to cancel the account.-->
-        <!--        \n 10.3 CTX has the right to terminate all services of the platform in accordance with this agreement. This Agreement shall terminate on the date of termination of all services of the platform. The liquidation process shall be operated in accordance with the specific provisions of the platform announcement.-->
-        <!--        \n 10.4 After the termination of this agreement, the user has no right to ask for the continued provision of any services or performance of any other obligations, including but not limited to requiring the user to keep or disclose any information in his original account to the user, forwarding any information he has not read or sent to the user or a third party, etc.-->
-        <!--        \n 10.5 The termination of this Agreement shall not affect the non breaching party\'s liability for breach of contract before the termination of this agreement, nor affect the performance of contractual obligations after the provisions of this agreement.-->
-        <!--        \n<font color="#000000"><b>Article 11 application of law </b></font>-->
-        <!--        \n 11.1 The content, conclusion, execution, interpretation and dispute settlement of this Agreement shall be governed by the laws of the people\'s Republic of China (excluding the laws of Hong Kong, Macao and Taiwan).-->
-        <!--        \n 11.2 In case of any dispute over the content of this agreement or its implementation, both parties shall try their best to settle it through friendly negotiation; if the negotiation fails, the user agrees to submit the dispute or dispute to Beijing Federation of China International Economic and Trade Arbitration Commission for arbitration.-->
-        <!--        \n<font color="#000000"><b>Article 11 others </b></font>-->
-        <!--        \n 12.1 We respect the legitimate rights of users. This Agreement and the rules published on this platform are for better and more convenient service. Please read and understand the terms marked in bold and bold in the agreement.-->
-        <!--        \n 12.2 If any provision of this agreement is found to be unenforceable, invalid or illegal by any authority having jurisdiction, the validity of the remaining provisions of this Agreement shall not be affected.-->
-        <!--        \n 12.3 If any provision of this agreement is invalid or unenforceable in whole or in part for any reason, it shall be deemed that such provision can be separated from this Agreement and replaced by a new effective provision as close as possible to the intention of the parties and able to retain the economic purpose required by this agreement, and in such case, the other provisions of this Agreement shall remain valid and binding.-->
-        <!--        \n 12.4 Unless otherwise agreed in other terms of this agreement, nothing in this Agreement shall be deemed to create, imply or otherwise treat the user\'s agent, trustee or other representative.-->
-        <!--        \n 12.5 The waiver of breach of contract, or any provision of this agreement, shall only take effect after the non breaching party or the non seeking party signs and agrees to the waiver in writing. No waiver of breach of this Agreement shall be deemed or construed as a waiver by the non breaching party of any subsequent breach or other breach; no failure to exercise any right or remedy shall in any way be construed as a waiver of such right or remedy.-->
-        <!--        \n 12.6 If you have any questions about this agreement, you can contact with us through 【】 and we will explain and explain the relevant terms in detail for you and reply to your questions.-->
+    <string name="user_agreement_content">"\t\t\t\t本协议是您（以下简称“用户”）与币信官方平台（包括Web端、移动端及应用程序，以下统称“平台”）的所有者Bixin Global Co,.ltd.（以下简称“币信”）之间就币信冷钱包服务等相关事宜所订立的契约，对用户与币信具有法律约束力。币信在此特别提醒用户认真阅读并充分理解本协议项下的各条款，特别是本协议中涉及免除或限制平台责任的条款，以及排除或限制用户权利的条款。用户应当审慎阅读，并选择接受或不接受本协议。除非用户接受本协议项下的所有条款，否则用户无权使用平台基于本协议所提供的服务。若用户不同意本协议的内容，或拒绝承认平台随时对本协议进行单方修改的权利，则用户应当立即停止使用并不再访问本平台。用户使用平台服务（包括但不限于使用、浏览等）即视为对本协议全部条款（包括币信对本协议随时做出的任何修改）充分理解并完全接受，本协议即刻成立并生效。用户使用冷钱包服务除须遵守本协议以外，还须遵守平台公示的其他协议及规则，包括但不限于使用许可协议、隐私政策、售后服务政策和法律声明以及其他在平台上已经发布或将来可能发布的各类协议、规则、公告、声明、说明或指引等（包括其不时修订，以下统称“规则”）。
+        \n<font color="#000000"><b>第一条 释义 </b></font>
+        \n 1.1 “本协议”，指本用户服务协议及其不时修订。
+        \n 1.2 “冷钱包”，指基于分层确定性 (Hierarchical Deterministic，简称 HD)技术方案来实现数字资产安全存储的硬件产品。冷钱包采用两种技术方案生成不同币种的私钥，一种为随机生成种子密码，并设置支付密码，由种子密码联合支付密码共同生成不同币种的私钥；另一种为随机生成助记词，由助记词生成不同币种的私钥。最终都由私钥生成公钥，最后由公钥生成资产地址来实现数字资产的安全存储。 "
+        \n 1.3 “热钱包”，指基于区块链开发的数字资产钱包，包括其他为方便用户使用区块链系统而开发的辅助工具。
+        \n 1.4 “公钥”，由私钥借助密码学原理单向推导生成，并用以生成区块链数字钱包地址，数字钱包地址即为公开收款地址。
+        \n 1.5 “私钥”，由256位随机字符构成，是用户拥有并使用数字资产的关键。
+        \n 1.6 “助记词”，指符合区块链BIP39行业标准，由随机算法生成的12（或15/18/21/24）个有序单词组成，是私钥的易记录表现形式，方便用户备份保管。
+        \n 1.7 “支付密码”，用户在创建钱包过程中，用户应当设置密码，该密码将被用于联合种子密码共同生成币种私钥，此密码不可修改，一旦用户丢失或忘记此密码，资产将无法找回。
+        \n 1.8 “安全密码”，用户在创建钱包过程中，用户应当设置密码，该密码将被用于保护私钥。安全密码不储存在用户的移动设备或币信平台服务器，一旦用户忘记密码将无法找回，用户可借助私钥或助记词重新导入钱包后设置新的安全密码。
+        \n<font color="#000000"><b>第二条 平台服务 </b></font>
+        \n 2.1 用户可以选择使用平台的不同语言版本，若存在平台的不同语言版本之内容不一致或者相冲突，或遗漏内容之情形，平台的中文文本应当优先适用。
+        \n 2.2 平台系数字资产安全管理服务平台，由币信向用户提供，具体服务内容主要包括：数字资产安全管理服务、用户服务等辅助服务，具体详情以平台实际提供的服务内容为准。
+        \n 2.3 用户访问或使用币信平台服务，用户必须自行配备接入互联网所需上网设备，自行负担此服务各项费用，包括并不限于网络接入费、手机流量费等。当涉及使用任何第三方服务时，用户还应遵守第三方的服务准则和相关费用的规定。
+        \n 2.4 在本协议履行过程中，币信可根据情况对本协议进行修改。一旦本协议的内容发生变动，币信将公布最新的服务协议，不再向用户作个别通知。如果用户不同意币信对本协议所做的修改，用户有权停止使用平台服务。如果用户继续使用平台服务，则视为用户接受币信对本协议所做的修改，并应遵照修改后的协议执行。
+        \n 2.5 币信对于用户的通知及任何其他的协议、规则、告示或其他关于用户使用服务的通知，用户同意币信可通过平台公告、站内信、电子邮件、手机短信等电子方式或邮寄等物理方式进行，该等通知于发送之日视为已送达收件人（如以邮寄方式向用户发出通知的，则在该等通知按照用户在平台留存的联系地址交邮后的第三个自然日即视为送达）。因不可归责于币信的原因（包括电子邮件地址、手机号码、联系地址等不准确或无效、信息传输故障等）导致用户未在前述通知视为送达之日收到该等通知的，币信不承担任何责任。
+        \n 2.6 为了尽可能避免任何对资产钱包的误操作或数字资产的任何安全风险，用户应避免在不具备区块链基础知识的前提下使用平台服务。对不具备区块链基础知识的用户，币信有权拒绝提供部分或全部的服务功能。
+        \n 2.7 用户理解存在如下情形时，币信将修改、暂停或彻底关闭平台服务，生效日期以平台公告为准，用户同意币信无须因此向用户承担任何违约或赔偿、补偿责任：
+        \n\t\t（1）因设备、区块链系统维修、升级、故障和通信中断等技术原因而中断平台的运营；
+        \n\t\t（2）因不可抗力等因素造成平台不能提供服务或币信合理认为继续提供服务会有较大风险的；
+        \n\t\t（3）适用法律或政策发生重大不利变化的；或依据用户所属主权国家或地区的法律法规、规则、命令等规范的要求；
+        \n\t\t（4）出于保护平台或用户利益之合法利益；
+        \n\t\t（5）发生平台无法控制或合理预见的其他情形。
+        \n<font color="#000000"><b>第三条 服务内容 </b></font>
+        \n 3.1 钱包创建
+        \n\t\t（1）用户第一次创建钱包时，会弹出本协议，用户一旦同意创建钱包，即表示用户同意本协议的全部内容，且用户受到本协议之约束。若用户不具备本协议所要求之主体资格，则用户应承担因此而导致的一切后果，且币信保留向用户追究责任的权利。
+        \n\t\t（2）用户在此承诺，出于合法目的创建钱包及使用平台服务，且不具有以平台或平台服务为媒介违反法律法规之意图；用户保证存入钱包的数字资产来源合法；除本协议以外，用户应同时遵守平台不时发布及更新的全部规则，包括公告、使用流程说明、风险提示等。
+        \n 3.2 平台提供的用户服务
+        \n\t\t（1）平台根据注册规则对用户提供如下服务：
+        \n\t\t a 数字资产安全管理服务；
+        \n\t\t b 数字资产的实时行情及交易信息；
+        \n\t\t c 提供用户服务；
+        \n\t\t d 保障平台正常运营的技术和管理服务；
+        \n\t\t e 平台公示的其他服务。
+        \n\t\t（2）秉承着区块链的去中心化特点，并为了保护用户数字资产安全，平台提供的是去中心化服务，区别于银行业金融机构。用户了解并接受，平台不承担以下责任：存储用户的安全密码（即用户创建/导入钱包时设置的密码）、私钥、助记词；找回用户的安全密码、私钥、助记词；冻结钱包；挂失钱包；恢复钱包等。
+        \n\t\t（3）用户应当自行承担保管含有资产钱包的移动设备、备份钱包信息、备份安全密码、助记词、私钥的责任。如用户遗失移动设备、删除且未备份钱包信息、删除且未备份钱包、钱包被盗或遗忘安全密码、私钥、助记词，平台均无法还原钱包或找回安全密码、私钥、助记词；如用户进行交易时误操作（例如输错转账地址、输错转账数额），平台无法取消交易，且平台亦不应对此承担任何责任。
+        \n 3.3 冷钱包产品
+        \n\t\t（1）平台所发布的产品信息随时都有可能发生变动，因此，币信可能对平台页面中的文字表述、图片效果进行实时修改和调整。币信将尽合理的商业努力，使平台内展示的产品规格参数、功能说明、零部件信息、库存、限购数量等产品信息尽可能准确、详细并与实际产品信息相匹配，但由于平台上产品信息的数量极其庞大，且受网络技术发展水平、产品批次和生产供应因素的实时变化等因素的限制，平台不排除部分信息会存在滞后或差错的可能性。
+        \n\t\t（2）平台对产品进行明码标价，但用户应当了解并同意，币信的产品价格信息随时都有可能发生变动，因产品成交价格须以币信确认的用户提交订单结算时的价格为准。同时，尽管币信会尽最大努力确保平台商品价格的准确性，但仍然可能出现部分商品标价错误的情形，对于明显错误标价的商品，币信保留不予确认或取消相应订单的权利。
+        \n\t\t（3）用户下订单时，用户需仔细确认所购产品的名称、价格、数量、型号、规格、尺寸、联系地址、电话、收货人等信息。收货人与用户本人不一致的，收货人的行为和意思表示视为用户的行为和意思表示，用户应对收货人的行为及意思表示的法律后果承担责任。
+        \n\t\t（4）订单提交成功仅是计算机信息系统根据您填写的内容自动生成的数据，仅是用户向币信发出的交易请求，并非币信对用户所下订单的承诺；币信在收到用户的订单信息后，只有以实际行动或明确意思表示确认用户发出的订单（如向用户发送确认订单的短信、确认订单的电子邮件）或将用户在订单中订购的产品从仓库实际直接向用户发出时（以产品出库为标志），方视为用户与币信之间就实际直接确认或直接向用户发出的产品建立了交易关系。用户可以随时登录平台查询订单状态。
+        \n\t\t（5）币信或币信授权的销售方将会把产品送达用户指定的收货地址，所有在平台上列出的送货时间为参考时间，参考时间的计算是根据库存状况、正常的处理过程和送货时间、送货地点的基础上估计得出的，币信或其授权的销售方不对实际送货时间与平台上显示的送货时间的差异向用户或收货人承担任何责任。
+        \n<font color="#000000"><b>第四条 平台责任限制 </b></font>
+        \n 4.1 币信不对以下服务提供任何形式的保证：
+        \n\t\t（1）平台服务将符合用户的需求；
+        \n\t\t（2）平台服务将不受干扰、及时提供或免于出错；
+        \n\t\t（3）用户经由平台服务购买或取得之任何产品、服务、资讯或其他资料将符合用户的期望；
+        \n\t\t（4）平台包含的全部信息、程序、文本、数据等完全安全，不受任何病毒、木马等恶意程序的干扰和破坏；
+        \n\t\t（5）所有的交易结果计算都经过平台核实，相应的计算方法都会在平台上进行公示，但是平台不能保证其计算没有误差或不受干扰。
+        \n 4.2 用户知悉并同意，在任何情形下，币信不会就下列任一事项承担责任：
+        \n\t\t（1）用户的收入损失；
+        \n\t\t（2）用户的交易利润或合同预期利益损失；
+        \n\t\t（3）服务中断、中止或终止而引起的损失；
+        \n\t\t（4）预期可节省交易成本的损失；
+        \n\t\t（5）信息传递问题而造成的损失；
+        \n\t\t（6）数据的遗失或损坏而造成的损失；
+        \n\t\t（7）任何由于违约导致的间接的、特殊的或附带性的损失，不论此种损失是否为平台所能合理预见，亦不论平台是否事先被告知存在此种损失的可能性；
+        \n\t\t（8）因用户遗失移动设备、删除且未备份钱包信息、遗忘且未备份安全密码、私钥、助记词等而导致该用户的数字资产丢失；
+        \n\t\t（9）因用户自行泄露安全密码、私钥、助记词等，或借用、转让或授权他人使用自己的移动设备或钱包，或未通过币信官方渠道下载平台应用程序或以其他不安全的方式使用平台应用程序导致的用户的数字资产丢失；
+        \n\t\t（10）因用户错误操作（包括但不限于用户输错转账地址、用户自身选择转账节点服务器的问题）导致的数字资产丢失；
+        \n\t\t（11）因用户不理解区块链技术的知识而进行误操作导致的该用户的数字资产丢失；
+        \n\t\t（12）因系统滞后、区块链不稳定等原因导致平台拷贝用户在区块链上的交易记录发生偏差。
+        \n 4.3 用户知悉并同意，发生以下任一情形时，币信有权拒绝赔偿用户的全部或部分损失：
+        \n\t\t（1）币信有合理的理由认为用户在平台的行为系涉嫌违法或不道德行为；
+        \n\t\t（2）用户误以为系平台原因造成损失的情形；
+        \n\t\t（3）任何非因平台原因引起的其他损失。
+        \n 4.4 平台上的第三方服务由第三方服务商提供，第三方服务商所提供的服务品质及内容由该等第三方服务商自行负责。平台的内容可能涉及由第三方所有、控制或者运营的其他平台（以下简称“第三方平台”）。平台不能保证也没有义务保证第三方平台上任何信息的真实性和有效性。用户确认按照第三方平台的服务协议使用第三方平台，而不是按照本协议。第三方平台的内容、产品、广告和其他任何信息均由用户自行判断并承担风险，而与币信平台无关。用户经由平台服务的使用下载或取得任何资料，应由用户自行考量且自负风险，因资料的下载而导致的任何损失由用户自行承担。
+        \n 4.5 由于币信提供标准化服务，币信无法合理预知其违约行为可能给用户造成的损失，币信亦不因用户使用本服务获得利益而收取额外费用，为此，用户同意，在法律允许的情况下，币信对于与本协议有关或由本协议引起的，或者由于使用平台、或由于其所包含的或以其他方式通过平台提供给用户的全部信息、内容、材料、产品（包括软件）和服务、或购买和使用产品引起的任何间接的、惩罚性的、特殊的、派生的损失（包括业务损失、收益损失、利润损失、使用数据或其他经济利益的损失），不论是如何产生的，均不负有任何责任，即使其事先已被告知此等损失的可能性。
+        \n 4.6 币信在本协议中做出的保证和承诺是币信就其依据本协议提供平台服务的唯一保证和陈述（以下简称“协议保证”），所有协议保证仅针对平台做出，对平台自身具有约束力，其效力不能约束任何第三方。
+        \n 4.7 如因不可抗力或其它无法控制的原因使平台系统崩溃或无法正常使用导致交易无法完成或丢失有关的信息、记录等，币信会尽合理努力协助处理善后事宜，用户同意自行承担因上述情形造成的风险及损失，同意币信无须因此向用户承担赔偿责任或其他责任。
+        \n<font color="#000000"><b>第五条 用户的声明与承诺 </b></font>
+        \n 5.1 用户声明，具备完全民事权利能力和完全民事行为能力，能够独立承担法律责任。用户违反本项条件，币信可随时、全权决定拒绝向用户提供服务，若因此给币信或第三方造成损失，用户还须承担全部赔偿责任。如用户为限制民事行为能力人，只能在父母或监护人的监护参与下才能使用本平台，否则币信有权在法律允许范围内暂停或关闭用户的账户。
+        \n 5.2 用户承诺，绝不为任何非法目的或以任何非法方式使用平台服务，并承诺遵守其所在国的相关法律、法规及一切使用互联网之国际惯例，遵守所有与平台服务有关的网络协议、规则和程序。
+        \n 5.3 用户理解并同意，用户在平台上选择的第三方服务由用户自行评估和选择。币信对用户在平台上选择使用的第三方服务行为不承担任何责任，币信无法也没有义务保证用户使用结果，用户因使用第三方服务导致的损失亦由用户自行承担，币信不承担责任。
+        \n 5.4 用户同意，对其平台注册账号下发生的所有活动（包括信息披露、发布信息、点击同意各类协议、上传提交各类文件、点击同意续签各类协议或点击同意第三方提供的服务协议等）承担责任，且在上述活动进程中，若用户未遵从本协议条款或平台公布的交易规则中的操作指示的，平台不承担任何责任。
+        \n 5.5 用户同意，币信有权在提供平台服务过程中以各种方式投放各种商业性广告或其他任何类型的商业信息（包括在平台的任何页面上投放广告），并且，用户同意接受平台通过电子邮件或其他方式向用户发送商业促销或其他相关商业信息。
+        \n 5.6 用户同意，若用户因使用第三方服务与服务提供方或其他第三方产生纠纷的，不得通过司法或行政以外的途径要求平台提供相关资料。
+        \n 5.7 用户使用平台服务时必须遵守国家法律法规，用户承诺严格履行以下义务：
+        \n\t\t（1）不得传输或发表：煽动抗拒、破坏宪法和法律、行政法规实施的言论，煽动颠覆国家政权，推翻社会主义制度的言论，煽动分裂国家、破坏国家统一的言论，煽动民族仇恨、民族歧视、破坏民族团结的言论；
+        \n\t\t（2）从中国大陆向境外传输资料信息时必须符合中国有关法规；
+        \n\t\t（3）不得利用平台或平台服务从事洗钱、窃取商业秘密、窃取个人信息等违法犯罪活动；
+        \n\t\t（4）不得干扰平台的正常运转，不得侵入平台及国家计算机信息系统；
+        \n\t\t（5）不得传输或发表任何违法犯罪的、骚扰性的、中伤他人的、辱骂性的、恐吓性的、伤害性的、庸俗的，淫秽的、不文明的等信息资料；
+        \n\t\t（6）不得传输或发表损害国家社会公共利益和涉及国家安全的信息资料或言论；
+        \n\t\t（7）不得教唆他人从事本条所禁止的行为；
+        \n\t\t（8）不得利用在平台注册的账户进行牟利性经营活动；
+        \n\t\t（9）不得发布任何侵犯他人著作权、商标权等知识产权或合法权利的内容；
+        \n\t\t（10）不得以虚构、夸大事实等方式恶意诋毁平台商誉；
+        \n\t\t（11）其他违反法律法规、公序良俗、互联网利益的行为，以及其他币信有正当理由认为不适当之行为。若用户未遵守以上规定的，币信有权做出独立判断并采取暂停或关闭用户账户等措施，而无需承担任何责任。
+        \n 5.8 用户应不时关注并遵守平台不时公布或修改的各类规则规定。币信保有依其单独判断删除平台内各类不符合法律政策或不真实或不适当的信息内容而无须通知用户的权利，并无需承担任何责任。
+        \n 5.9 用户同意，由于用户违反本协议、平台规则，或违反通过援引并入本协议并成为本协议一部分的文件，或由于用户使用平台服务违反了任何法律或损害第三方的权利而造成任何第三方进行或发起的任何赔偿或补偿申请或要求（包括律师费用），用户需对币信及其关联方、合作伙伴、董事以及雇员等遭受损失方给予全额赔偿或补偿并使之不受损害。
+        \n 5.10 若用户违反本协议、平台规则内容或发生违反法律法规、损害第三方合法权益的行为，币信有权视情节的严重采取警告、暂停服务、取消订单、禁止交易、关闭账号、永久禁止注册等措施，给币信或第三方造成损失的，币信有权采取一切合法的诉讼与非诉讼手段进行索赔；用户行为构成犯罪的，币信有权向有关部门举报并协助进行查处。
+        \n<font color="#000000"><b>第六条 服务费用 </b></font>
+        \n 6.1 用户使用平台服务时，若平台向用户收取相关平台服务费用，各项平台服务费用详见用户使用平台服务时平台上所列之收费说明及收费标准。平台保留单方面制定及调整平台服务费用收费标准的权利。
+        \n 6.2 使用平台进行转账时应支付“矿工费”或网络费，金额由用户自行决定，并由相关区块链网络收取。用户知悉，在特定情况（包括但不限于用户在转账期间为转账支付的“矿工费”或网络费不足，或相关区块链网络不稳定）下，用户的转账操作可能失败；在该等情况下，即便用户的转账操作未完成，用户亦会被相关区块链网络收取矿工费。
+        \n 6.3 因使用平台服务而发生的所有应纳税负及其它方面的费用均由用户自行负责支付。
+        \n<font color="#000000"><b>第七条 用户信息授权及保护 </b></font>
+        \n 7.1 用户信息，指
+        \n\t\t（1）用户使用平台服务时，自主选择同步到币信服务器的公开数据，包括但不限于钱包地址、交易数据；
+        \n\t\t（2）用户使用平台服务时，或访问平台时，平台自动接收并记录的用户浏览器上的服务器数值，包括但不限于IP地址等数据及用户要求取用的网页记录；
+        \n\t\t（3）平台收集到的用户在平台进行交易的有关数据，包括但不限于交易记录；
+        \n\t\t（4）平台通过区块链网络获取到的和用户相关的信息。
+        \n 7.2 用户同意，币信可在平台的某些网页上使用诸如“Cookies”的资料收集装置，按照用户在平台上的行为自动追踪关于用户的某些资料。在不透露用户的隐私资料的前提下，平台有权对整个用户数据库进行分析并对用户数据库进行商业上的利用。
+        \n 7.3 用户授权币信将用户提供给平台的信息、享受平台服务产生的信息（包括本协议签署之前提供和产生的信息）以及平台根据本条约定收集的信息，用于平台及其因服务必要委托的合作伙伴为用户提供服务、推荐产品、开展市场调查与信息数据分析。
+        \n 7.4币信将根据相关法律法规以保护用户信息。用户因履行本协议提供给币信的信息，除本协议约定之内容和目的，币信不会恶意出售或共享给任何第三方。币信亦将督促其合作伙伴对上述信息保密，并采取各种措施保证信息安全。
+        \n<font color="#000000"><b>第八条 所有权及知识产权 </b></font>
+        \n 8.1 平台上所有内容，包括图片、档案、资讯、资料、平台架构、平台画面的安排、平台设计，文字和图表，软件编译，相关源代码和软件，商标等均由币信或其他权利人依法拥有其知识产权。商标权、专利权、著作权、商业秘密等受国家法律保护，无论该等内容形成于本协议前还是本协议后。
+        \n 8.2 除法律另有强制性规定外，未经币信或其他权利人书面许可，任何单位或个人不得以任何方式非法地全部或部分使用、复制、转载、引用、链接、抓取或公开发表平台程序或内容，否则，币信有权追究其法律责任。
+        \n 8.3 用户未经币信的明确书面同意不得下载（除了页面缓存）或修改平台或其任何部分。用户不得对平台或其内容或平台服务进行转售或商业利用；不得收集和利用产品目录、说明和价格；不得对平台或其内容或平台服务进行任何衍生利用；不得为其他商业利益而下载或拷贝账户信息或使用任何数据采集、Robots或类似的数据收集和摘录工具。未经平台的书面许可，严禁对平台的内容进行系统获取以直接或间接创建或编辑文集、汇编、数据库或人名地址录（无论是否通过Robots、Spiders、自动仪器或手工操作）。另外，严禁为任何未经本协议明确允许的目的而使用平台上的内容和材料。
+        \n 8.4 用户使用平台提供的任何服务均不视为币信向用户转让任何知识产权。尊重知识产权是用户应尽的义务，如有违反，用户应对币信承担损害赔偿等法律责任，币信并有权采取警告、暂停服务、取消订单、禁止交易、关闭账号、永久禁止注册等措施。
+        \n<font color="#000000"><b>第九条 风险提示 </b></font>
+        \n 9.1 币信对于用户使用平台服务不做任何明示或暗示的保证，包括但不限于平台提供服务的适用性、没有错误或疏漏、持续性、准确性、可靠性、适用于某一特定用途。同时，币信也不对平台提供的服务所涉及的技术及信息的有效性、准确性、正确性、可靠性、质量、稳定、完整和及时性做出任何承诺和保证。
+        \n 9.2 是否使用平台服务是用户个人的决定且自行承担风险及可能产生的损失。币信对于数字资产的市场、价值及价格等不做任何明示或暗示的保证，用户知悉并了解数字资产市场的不稳定性，数字资产的价格和价值随时会大幅波动或崩盘，交易数字资产是用户个人的自由选择及决定，且自行承担风险及可能产生的损失。
+        \n 9.3 币信不对任何用户及/或任何交易提供任何担保或条件，无论是明示、默示或法定的。币信不能也不试图对用户或服务方发布的信息进行控制，对该等信息，平台不承担任何形式的证明、鉴定服务。平台不能完全保证平台内容的真实性、充分性、可靠性、准确性、完整性和有效性，并且无需承担任何由此引起的法律责任。用户应依赖于用户的独立判断进行交易，用户应对其做出的判断承担全部责任。
+        \n 9.4 平台提供的行情查看功能仅系抓取部分交易所的数字资产汇率信息的搜索结果，并不表示为最新行情或最佳报价。
+        \n 9.5 转账过程中，如果出现“交易失败”、“打包超时”等类似的异常信息提示时，用户应通过相关区块链官方途径或其他的区块链查询工具进行再次确认，以避免重复转账；否则，由此所引起的一切损失和费用应由用户自行承担。
+        \n 9.6 用户应当在创建或导入钱包时对用户钱包的安全密码、私钥、助记词等信息做好安全备份。用户应避免采用以下电子备份方式：截图、邮件、手机中的记事本应用、短信、微信、QQ等电子备份方式。用户应当在纸质记事本上抄写助记词和Keystore等信息。若用户未保存或备份安全密码、私钥、助记词等信息且在用户移动设备丢失的情况下，用户的数字资产将可能因此丢失，币信无法为用户找回。因前述情形产生的任何及所有损失应由用户自行承担。
+        \n 9.7 以上并不能揭示用户通过平台进行交易的全部风险及市场的全部情形。用户在做出交易决策前，应全面了解相关数字资产，根据自身的交易目标、风险承受能力和资产状况等谨慎决策，并自行承担全部风险。
+        \n<font color="#000000"><b>第十条 协议的终止 </b></font>
+        \n 10.1 用户有权在任何时候向平台申请注销注册账户，自平台批准用户注销注册账户之日起协议终止。
+        \n 10.2 用户死亡或被宣告死亡的，其在本协议项下的各项权利义务由其继承人承继。若用户丧失全部或部分民事权利能力或民事行为能力，币信或其授权的主体有权根据有效法律文书（包括生效的法院判决等）或其法定监护人的指示处置与用户账户相关的款项。若继承人或法定监护人决定继续履行本协议的，则本协议依然有效；反之，则继承人或法定监护人需要依据本协议向平台申请注销账号，自平台批准用户注销账号之日起协议终止。
+        \n 10.3 币信有权依据本协议约定终止平台全部服务，本协议于平台全部服务终止之日终止，清退流程根据平台公告的具体规定进行操作。
+        \n 10.4 本协议终止后，用户无权要求币信继续向其提供任何服务或履行任何其他义务，包括但不限于要求币信为用户保留或向用户披露其原本账号中的任何信息，向用户或第三方转发任何其未曾阅读或发送过的信息等。
+        \n 10.5 本协议的终止不影响守约方向违约方主张协议终止前违约方之违约责任，也不影响本协议规定之后合同义务之履行。
+        \n<font color="#000000"><b>第十一条 法律适用 </b></font>
+        \n 11.1 本协议的内容、订立、执行和解释及争议的解决均应适用中华人民共和国法律（不包括港澳台地区法律）。
+        \n 11.2 如就本协议内容或其执行发生任何争议，双方应尽力友好协商解决；协商不成时，用户同意将纠纷或争议提交至中国国际经济贸易仲裁委员会北京总会仲裁解决。
+        \n<font color="#000000"><b>第十一条 其他 </b></font>
+        \n 12.1 币信尊重用户的合法权利，本协议及本平台上发布的各类规则，均是为了更好的、更加便利的为用户提供服务。请用户着重阅读了解协议中以黑体、加粗等方式显著标识的条款。
+        \n 12.2 如本协议中的任何条款被任何有管辖权的机构认定为不可执行的，无效的或非法的，并不影响本协议的其余条款的效力。
+        \n 12.3 如本协议中的任何条款无论因何种原因完全或部分无效或不具有执行力，则应认为该条款可与本协议相分割，并可被尽可能接近各方意图的、能够保留本协议要求的经济目的的、有效的新条款所取代，而且，在此情况下本协议的其他条款仍然完全有效并具有约束力。
+        \n 12.4 除非本协议中的其他条款另有约定，本协议中的任何规定均不应当被认为创造了、暗示了或以其他方式将币信视为用户的代理人、受托人或其他代表人。
+        \n 12.5 对违约行为的豁免，或本协议任一条款的放弃，仅在守约方或非寻求放弃方书面签字同意豁免后方能生效。任何本协议项下的违约豁免，不能认定或解释为守约方对其后再次违约或其他违约行为的豁免；未行使任何权利或救济不得以任何方式被解释为对该等权利或救济的放弃。
+        \n 12.6 如用户对本协议有任何疑问，可通过【】与币信联系，币信将为用户详细解释及说明相关条款及回复用户的疑问。
         </string>
-    <string name="delete_fail">Delete failed</string>
+    <string name="BixinKey">BixinKey</string>
+    <string name="delete_fail">Deleting failed</string>
     <string name="recovery_failed">Wallet recovery failed</string>
-    <string name="set_fail">Setting failed</string>
-    <string name="recovery_unsupport">Wallet is inited, please wipe device first</string>
-    <string name="dont_create">This hardware does not support creating hidden wallets</string>
-    <string name="user_server_agreement">User service agreement</string>
-    <string name="agree">agree</string>
-    <string name="unclassified_quota">Max amount</string>
-    <string name="open_bt">Open</string>
-    <string name="fix_name">Modification name</string>
+    <string name="set_fail">Setup failed</string>
+    <string name="recovery_unsupport">To restore the backup, please restore the factory settings first</string>
+    <string name="dont_create">The hardware does not support the creation of hidden wallets</string>
+    <string name="user_server_agreement">User Service Agreement</string>
+    <string name="agree">I agree</string>
+    <string name="unclassified_quota">Single quota</string>
+    <string name="open_bt">open</string>
+    <string name="fix_name">Modify the name</string>
     <string name="wallet_addr">Wallet address</string>
     <string name="wallet_msg">Wallet information</string>
-    <string name="fix_success">Modification succeeded</string>
-    <string name="fast_send_tips">After the channel is opened, the accumulated micro amount of issuing currency exceeds the limit within 24 hours without verification of pin code and BixinKey</string>
-    <string name="deletewallet_tips">Software wallet can be recovered through backup</string>
+    <string name="fix_success">Modified successfully</string>
+    <string name="fast_send_tips">After enabling quick payment, if a single transaction is less than the set limit, there is no need to verify the PIN or to confirm. After repeatedly using the Quick pay for a set number of times, the system will automatically close it. (Note: When using non-secure chip, the system will check the PIN on the first payment if PIN protection is set.)</string>
+    <string name="deletewallet_tips">Software wallets can be recovered from backup after deletion</string>
     <string name="updating_dialog">Checking for updates</string>
-    <string name="send_shortcut_access">Quick payment settings</string>
-    <string name="limit_input_wrong">Limit input error</string>
-    <string name="communication_way">Connection mode</string>
+    <string name="send_shortcut_access">Quick payment Settings</string>
+    <string name="limit_input_wrong">Quota input error</string>
+    <string name="communication_way">Connection method</string>
     <string name="ble">Bluetooth</string>
-    <string name="check_key_name">BixinKey Name：</string>
-    <string name="check_pub_key">BixinKey Public key：</string>
-    <string name="set_shutdown_time">Set BixinKey auto shutdown time</string>
-    <string name="second">second</string>
+    <string name="check_key_name">BixinKey name:</string>
+    <string name="check_pub_key">BixinKey ePub:</string>
+    <string name="set_shutdown_time">Set the BixinKey automatic shutdown time</string>
+    <string name="second">seconds</string>
     <string name="please_input_time">Please enter the shutdown time</string>
-    <string name="little_time">The shortest time is 10 seconds!</string>
-    <string name="input_history_wallet">Historical wallet created through BixinKey, which can be imported immediately</string>
+    <string name="little_time">The minimum time is 10 seconds</string>
+    <string name="input_history_wallet">History wallets that have been created with BixinKey and can be <font color="#6182F5"> import Now</font></string>
     <string name="diy_hard">Select Custom firmware</string>
-    <string name="open_server_input">You need to turn on the synchronization server to import the history Wallet</string>
-    <string name="create_app_new_wallet">Create new wallet for app</string>
-    <string name="BixinKey">BixinKey</string>
-    <string name="dont_use">（Not available）</string>
+    <string name="open_server_input">You need to enable the sync server to import the history wallet</string>
+    <string name="create_app_new_wallet">Create an App new wallet</string>
+    <string name="dont_use">(not available)</string>
     <string name="node_have">Node already exists</string>
-    <string name="select_promote">Please select a customization file first</string>
+    <string name="select_promote">Please select a custom file first</string>
     <string name="need_backup">Please back up before upgrading</string>
-    <string name="key_wrong">Wrong password or wrong key</string>
+    <string name="key_wrong">Incorrect password entry or incorrect key</string>
     <string name="connect_failed">Network connection failed, please try again</string>
+
+    <!--  Last translation  -->
     <string name="fix_wallet_name">Change wallet name</string>
     <string name="set_key_language">Set hardware language</string>
-    <!--  mmmmmmmmmmmmm  -->
     <string name="need_band3">Needs to link</string>
     <string name="band_key">BixinKeys. Use any one of them to authorize transactions. Setting multiple BixinKeys as backup will keep your assets from being lost due to losing the only BixinKey</string>
     <string name="upload_file_failed">Upgrade file download failed</string>
@@ -803,5 +803,18 @@
     <string name="promote_ble">In order to scanning ble device Android 6+, Location service is needed</string>
     <string name="nfc_useless">Your phone is not support NFC, please use other way</string>
     <string name="network_useless">Please check your network and ensure it\'s usable</string>
+    <string name="backup_finish">Backup complete</string>
+    <string name="reset_device_successful">Please confirm and complete the remaining process on BixinKey</string>
+    <string name="backup_finish_tips">BixinKey private key seed has been saved to the phone with pin code encryption. Please remember the current pin code.</string>
+    <string name="backup_content">To save the pin by other means:
+        \n 1. View and save the backup file to other devices through [set BixinKey backup];
+        \n 2.Back up to the new BixinKey so that multiple BixinKeys have the same private key.</string>
+    <string name="bixinkey_lite">Backup to new BixinKey/Lite</string>
+    <string name="set_backup_pass">设置备份密码</string>
+    <string name="backup_input_type">仅可输入数字和字母</string>
+    <string name="set__pass">设置密码</string>
+    <string name="go_to_backup">去备份</string>
+    <string name="wallet_un_backup">钱包未备份</string>
+    <string name="un_back_tips">检测到钱包未备份，为了你的资金安全，请备份后使用</string>
 
 </resources>

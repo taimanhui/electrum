@@ -363,7 +363,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //scan get
     @SuppressLint("DefaultLocale")
     private void scanDataDetailMessage() {
-        Log.i("jinxiaominscan", "scanDataDetailMessage---------: "+strParse);
+        Log.i("jinxiaominscan", "scanDataDetailMessage---------: " + strParse);
         Gson gson = new Gson();
         ScanCheckDetailBean scanCheckDetailBean = gson.fromJson(strParse, ScanCheckDetailBean.class);
         ScanCheckDetailBean.DataBean scanListdata = scanCheckDetailBean.getData();
@@ -605,6 +605,14 @@ public class TransactionDetailsActivity extends BaseActivity {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
         } catch (Exception e) {
             e.printStackTrace();
+            String message = e.getMessage();
+            if (message.contains(".")) {
+                if (message.endsWith(".")) {
+                    message = message.substring(0, message.length() - 1);
+                    mToast(message);
+                }
+                mToast(message.substring(message.lastIndexOf(".") + 1));
+            }
             return;
         }
         EventBus.getDefault().post(new FirstEvent("22"));

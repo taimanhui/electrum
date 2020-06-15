@@ -65,7 +65,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     TextView tetFeeNum;
     @BindView(R.id.recl_Msg)
     RecyclerView reclMsg;
-//    private TextView signSuccess;
+    //    private TextView signSuccess;
     private String txHash;
     private boolean needTouch;
 
@@ -157,7 +157,14 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 //  Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
                 Daemon.commands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {
-                mToast(getString(R.string.broad_fail));
+                String message = e.getMessage();
+                if (message.contains(".")) {
+                    if (message.endsWith(".")) {
+                        message = message.substring(0, message.length() - 1);
+                        mToast(message);
+                    }
+                    mToast(message.substring(message.lastIndexOf(".") + 1));
+                }
                 e.printStackTrace();
             }
             EventBus.getDefault().post(new SecondEvent("finish"));

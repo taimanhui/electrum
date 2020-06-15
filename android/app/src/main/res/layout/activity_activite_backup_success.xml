@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
-    tools:context=".activities.settings.VerificationSuccessActivity">
+    tools:context="org.haobtc.wallet.activities.settings.ActiviteBackupSuccessActivity">
 
     <RelativeLayout
         android:id="@+id/snkdfnksjndkjsd"
@@ -39,10 +39,44 @@
         android:layout_below="@+id/imgStatus"
         android:layout_marginTop="@dimen/dp_30"
         android:gravity="center_horizontal"
-        android:textStyle="bold"
-        android:text="@string/reset_device_successful"
+        android:text="@string/backup_finish"
         android:textColor="@color/text_color"
-        android:textSize="@dimen/sp_18" />
+        android:textSize="@dimen/sp_18"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text_tips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/testStatus"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:gravity="center_horizontal"
+        android:text="@string/backup_finish_tips"
+        android:textColor="@color/text_0"
+        android:textSize="@dimen/sp_13" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_hight"
+        android:layout_below="@+id/text_tips"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_40"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:background="@color/line_color" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:text="@string/backup_content"
+        android:textColor="@color/set_txt"
+        android:textSize="@dimen/sp_13" />
 
 
     <Button
@@ -57,5 +91,15 @@
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="@dimen/sp_14" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:gravity="center_horizontal"
+        android:text="@string/bixinkey_lite"
+        android:textColor="@color/button_bk"
+        android:textSize="@dimen/sp_16" />
 
 </RelativeLayout>

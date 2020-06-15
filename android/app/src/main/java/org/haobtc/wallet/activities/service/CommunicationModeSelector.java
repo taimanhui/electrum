@@ -828,8 +828,16 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 //  Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
                 Daemon.commands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {
-                Toast.makeText(this, getString(R.string.broad_fail), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
+                String message = e.getMessage();
+                if (message.contains(".")){
+                    if (message.endsWith(".")) {
+                        message = message.substring(0, message.length() - 1);
+                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                    }
+                    Toast.makeText(this, message.substring(message.lastIndexOf(".") + 1), Toast.LENGTH_SHORT).show();
+                }
+
                 return;
             }
             EventBus.getDefault().post(new SecondEvent("finish"));
@@ -957,10 +965,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)||SignActivity.TAG3.equals(tag)||CheckHideWalletFragment.TAG.equals(tag)) {
+            if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag) || SignActivity.TAG3.equals(tag) || CheckHideWalletFragment.TAG.equals(tag)) {
 //                Toast.makeText(CommunicationModeSelector.this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
                 EventBus.getDefault().post(new HideWalletErrorEvent());
-            }else{
+            } else {
                 showErrorDialog(msg.arg1, msg.arg2);
             }
         }

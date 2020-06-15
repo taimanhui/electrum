@@ -26,6 +26,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.chaquo.python.PyObject;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
@@ -263,7 +267,7 @@ public class ShareOtherActivity extends BaseActivity {
                     if (get_qr_data_from_raw_tx != null) {
                         strCode = get_qr_data_from_raw_tx.toString();
                         if (!TextUtils.isEmpty(strCode)) {
-                            bitmap = CodeCreator.createQRCode(strCode, 248, 248, null);
+                            bitmap = mCreate2DCode(strCode);
                             imgOrcode.setImageBitmap(bitmap);
                         }
                     }
@@ -271,5 +275,31 @@ public class ShareOtherActivity extends BaseActivity {
             }
         }
     };
+
+    public static Bitmap mCreate2DCode(String str) {
+        //生成二维矩阵,编码时要指定大小,
+        //不要生成了图片以后再进行缩放,以防模糊导致识别失败
+        try {
+            BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 240, 240);
+            int width = matrix.getWidth();
+            int height = matrix.getHeight();
+            //  二维矩阵转为一维像素数组（一直横着排）
+            int[] pixels = new int[width * height];
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (matrix.get(x, y)) {
+                        pixels[y * width + x] = 0xff000000;
+                    }
+                }
+            }
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            // 通过像素数组生成bitmap, 具体参考api
+            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+            return bitmap;
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
 

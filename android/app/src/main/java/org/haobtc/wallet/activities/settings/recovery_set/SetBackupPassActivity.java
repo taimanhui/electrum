@@ -14,16 +14,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class InputBackupPassActivity extends BaseActivity {
+public class SetBackupPassActivity extends BaseActivity {
 
     @BindView(R.id.name_edit)
     EditText nameEdit;
-    @BindView(R.id.next)
+    @BindView(R.id.btn_next)
     Button btnNext;
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_input_backup_pass;
+        return R.layout.activity_set_backup_pass;
     }
 
     @Override
@@ -34,7 +34,6 @@ public class InputBackupPassActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
         passEditStyle();
     }
 
@@ -61,19 +60,15 @@ public class InputBackupPassActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.img_back, R.id.next})
+    @OnClick({R.id.img_back, R.id.btn_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.next:
+            case R.id.btn_next:
 
                 break;
         }
     }
 }
-
-
-
-

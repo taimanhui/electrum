@@ -125,6 +125,11 @@ public class VerificationKEYActivity extends BaseActivity {
                             firstPromote.setCompoundDrawables(drawableStartFail, null, null, null);
                         }
                         thirdPromote.setCompoundDrawables(drawableStartFail, null, null, null);
+                        Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
+                        intent.putExtra("verification_fail", "verification_fail");
+                        startActivity(intent);
+                        finish();
+
                     }
 
                     @Override
@@ -149,12 +154,17 @@ public class VerificationKEYActivity extends BaseActivity {
                                 startActivity(intent);
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
+                                intent.putExtra("verification_fail", "verification_fail");
+                                startActivity(intent);
+                                finish();
                             }
 
                         } else {
                             Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
                             intent.putExtra("verification_fail", "verification_fail");
                             startActivity(intent);
+                            finish();
                         }
                     }
                 });

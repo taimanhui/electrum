@@ -154,6 +154,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     private SharedPreferences preferences;
     private int defaultKeyNameNum;
     private int page = 0;
+    private int cosignerNum;
 
     @Override
     public int getLayoutId() {
@@ -407,9 +408,15 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         bnAddKey.setVisibility(View.VISIBLE);
         relTwoNext1.setVisibility(View.VISIBLE);
         tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
-        bnCompleteAddCosigner.setText(String.format("%s (0-%s)", getString(R.string.next), strInditor1));
-        bnCompleteAddCosigner.setEnabled(false);
-
+        bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", strInditor1));
+        if (addEventsDatas.size() == strUp1) {
+            bnCompleteAddCosigner.setEnabled(true);
+            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+            bnAddKey.setVisibility(View.GONE);
+        } else {
+            bnCompleteAddCosigner.setEnabled(false);
+            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+        }
     }
 
 
@@ -551,8 +558,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
-            int cosignerNum = Integer.parseInt(strInditor1);
-            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+            cosignerNum = Integer.parseInt(tvIndicator.getText().toString());
+            bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", cosignerNum));
 
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
@@ -564,6 +571,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    cosignerNum = Integer.parseInt(tvIndicator.getText().toString());
                     switch (view.getId()) {
                         case R.id.img_deleteKey:
                             try {
@@ -577,10 +585,15 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                             addEventsDatas.remove(position);
                             addBixinKeyAdapter.notifyDataSetChanged();
                             bnAddKey.setVisibility(View.VISIBLE);
-                            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
-                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
-                            bnCompleteAddCosigner.setEnabled(false);
-
+                            bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", cosignerNum));
+                            if (addEventsDatas.size() == cosignerNum) {
+                                bnCompleteAddCosigner.setEnabled(true);
+                                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+                                bnAddKey.setVisibility(View.GONE);
+                            } else {
+                                bnCompleteAddCosigner.setEnabled(false);
+                                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+                            }
                             break;
                     }
                 }
@@ -659,8 +672,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
-            int cosignerNum = Integer.parseInt(strInditor1);
-            bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
+            cosignerNum = Integer.parseInt(tvIndicator.getText().toString());
+            bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", cosignerNum));
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
@@ -670,6 +683,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    cosignerNum = Integer.parseInt(tvIndicator.getText().toString());
                     if (view.getId() == R.id.img_deleteKey) {
                         try {
                             Daemon.commands.callAttr("delete_xpub", strSweep);
@@ -679,11 +693,16 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                         }
                         addEventsDatas.remove(position);
                         addBixinKeyAdapter.notifyDataSetChanged();
+                        bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", cosignerNum));
                         bnAddKey.setVisibility(View.VISIBLE);
-                        bnCompleteAddCosigner.setText(String.format(Locale.CHINA, getString(R.string.next) + "（%d-%d)", addEventsDatas.size(), cosignerNum));
-
-                        bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
-                        bnCompleteAddCosigner.setEnabled(false);
+                        if (addEventsDatas.size() == cosignerNum) {
+                            bnCompleteAddCosigner.setEnabled(true);
+                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+                            bnAddKey.setVisibility(View.GONE);
+                        } else {
+                            bnCompleteAddCosigner.setEnabled(false);
+                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+                        }
                     }
                 }
             });
