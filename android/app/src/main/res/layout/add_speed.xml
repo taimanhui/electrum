@@ -18,6 +18,7 @@
             android:layout_height="48dp">
 
             <TextView
+                android:id="@+id/test_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -53,6 +54,7 @@
             android:textSize="@dimen/sp_16" />
 
         <TextView
+            android:id="@+id/test_tips"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="26dp"

@@ -810,13 +810,16 @@
         \n 1. View and save the backup file to other devices through [set BixinKey backup];
         \n 2.Back up to the new BixinKey so that multiple BixinKeys have the same private key.</string>
     <string name="bixinkey_lite">Backup to new BixinKey/Lite</string>
-    <string name="set_backup_pass">设置备份密码</string>
-    <string name="backup_input_type">仅可输入数字和字母</string>
-    <string name="set__pass">设置密码</string>
-    <string name="go_to_backup">去备份</string>
-    <string name="wallet_un_backup">钱包未备份</string>
-    <string name="un_back_tips">检测到钱包未备份，为了你的资金安全，请备份后使用</string>
-    <string name="now_wallet">当前钱包 </string>
-    <string name="no_backup">未备份，请备份后使用</string>
+    <string name="set_backup_pass">Set backup password</string>
+    <string name="backup_input_type">Only numbers and letters can be entered</string>
+    <string name="set__pass">Set password</string>
+    <string name="go_to_backup">To backup</string>
+    <string name="wallet_un_backup">Wallet not backed up</string>
+    <string name="un_back_tips">It is detected that the wallet is not backed up. For the sake of your fund security, please use it after backup</string>
+    <string name="now_wallet">Current Wallet </string>
+    <string name="no_backup">no backup, please use after backup</string>
+    <string name="speed_fee_is">After acceleration, the miner\'s fee is</string>
+    <string name="receive_speed">Cash collection acceleration</string>
+    <string name="receive_speed_tips">After acceleration, new transactions will be created for unconfirmed transactions; new transactions need to be signed and broadcast again! The actual completion of the transaction is subject to the chain!</string>
 
 </resources>

@@ -786,5 +786,8 @@
     <string name="un_back_tips">检测到钱包未备份，为了你的资金安全，请备份后使用</string>
     <string name="now_wallet">当前钱包 </string>
     <string name="no_backup">未备份，请备份后使用</string>
+    <string name="speed_fee_is">加速后矿工费为</string>
+    <string name="receive_speed">收币加速</string>
+    <string name="receive_speed_tips">加速后，将未确认交易创建新的交易；新交易需重新进行签名和广播！实际完成交易以链上为准！</string>
 
 </resources>

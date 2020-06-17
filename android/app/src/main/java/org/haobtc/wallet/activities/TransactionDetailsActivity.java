@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -112,6 +111,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     LinearLayout linearSignStatus;
     @BindView(R.id.tet_payAddressNum)
     TextView tetPayAddressNum;
+    @BindView(R.id.tet_receiveAddSpeed)
+    TextView tetReceiveAddSpeed;
     private String keyValue;
     private String tx_hash;
     private String listType;
@@ -187,6 +188,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             tvInTb2.setText(R.string.sendetail);
             linFee.setVisibility(View.VISIBLE);
         } else {
+            setReciveSpeedBtn();//show receive add speed
             linFee.setVisibility(View.GONE);
             linearSignStatus.setVisibility(View.GONE);
             tvInTb2.setText(R.string.recevid);
@@ -225,6 +227,19 @@ public class TransactionDetailsActivity extends BaseActivity {
                     jsonDetailData(signTransction);
                     break;
             }
+        }
+    }
+
+    private void setReciveSpeedBtn() {
+        try {
+            PyObject getRbfOrCpfpStatus = Daemon.commands.callAttr("get_rbf_or_cpfp_status", tx_hash);
+            if (getRbfOrCpfpStatus.toString().contains("{}")) {
+                tetReceiveAddSpeed.setVisibility(View.GONE);
+            } else {
+                tetReceiveAddSpeed.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -521,7 +536,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans, R.id.lin_payAddress})
+    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans, R.id.lin_payAddress, R.id.tet_receiveAddSpeed})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -562,6 +577,73 @@ public class TransactionDetailsActivity extends BaseActivity {
 
                 startActivity(intent2Pay);
                 break;
+            case R.id.tet_receiveAddSpeed:
+                receiveAddSpeed();
+                break;
+        }
+    }
+
+    private void receiveAddSpeed() {
+        PyObject get_rbf_fee_info = null;
+        try {
+            get_rbf_fee_info = Daemon.commands.callAttr("get_cpfp_info", tx_hash);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("max fee exceeded")) {
+                mToast(e.getMessage());
+            }
+            return;
+        }
+        if (get_rbf_fee_info != null) {
+            String strNewfeeReceive = get_rbf_fee_info.toString();
+            View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
+            alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
+            TextView testTitle = viewSpeed.findViewById(R.id.test_title);
+            testTitle.setText(getString(R.string.receive_speed));
+            TextView testTip = viewSpeed.findViewById(R.id.test_tips);
+            testTip.setText(getString(R.string.receive_speed_tips));
+            try {
+                JSONObject jsonObject = new JSONObject(strNewfeeReceive);
+                String total_fee = jsonObject.getString("total_fee");
+                String fee_for_child = jsonObject.getString("fee_for_child");
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), total_fee));
+                img_Cancle.setOnClickListener(v -> {
+                    alertDialog.dismiss();
+                });
+                viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
+                    confirmedReceiveSpeed(fee_for_child);
+                });
+                alertDialog.show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void confirmedReceiveSpeed(String fee_for_child) {
+        PyObject createCpfpTx = null;
+        try {
+            createCpfpTx = Daemon.commands.callAttr("create_cpfp_tx", tx_hash, fee_for_child);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (createCpfpTx != null) {
+            String strNewTX = createCpfpTx.toString();
+            Log.i("xioainnewys", "strNewTX-------: " + strNewTX);
+            Gson gson = new Gson();
+            AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
+            publicTrsation = addspeedNewtrsactionBean.getNewTx();
+            EventBus.getDefault().post(new FirstEvent("22"));
+            braod_status = true;//braod_status = true   -->   speed don't broadcast
+            edit.putString("signedRowtrsation", publicTrsation);
+            edit.apply();
+            mCreataSuccsesCheck();
+            alertDialog.dismiss();
+            signProcess();//add speed  then Re sign
+
         }
     }
 
