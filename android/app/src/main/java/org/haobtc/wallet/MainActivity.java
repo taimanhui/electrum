@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -50,9 +52,12 @@ import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.activities.base.ApplicationObserver;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
+import org.haobtc.wallet.adapter.UnbackupKeyAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 import org.haobtc.wallet.bean.UpdateInfo;
@@ -60,6 +65,7 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.FixWalletNameEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
+import org.haobtc.wallet.event.WalletDetailBixinKeyEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
@@ -78,6 +84,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -89,6 +97,8 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.exe
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener, OnButtonClickListener, OnDownloadListener {
 
+    @BindView(R.id.recl_un_backup)
+    RecyclerView reclUnBackup;
     private ViewPager viewPager;
     SharedPreferences sharedPreferences;
     public static Python py;
@@ -112,6 +122,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     PyObject get_wallets_list_info = null;
     private DownloadManager manager;
     private SharedPreferences.Editor edit;
+    private List<HardwareFeatures> deviceValue;
 
     @Override
     public int getLayoutId() {
@@ -120,6 +131,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void initView() {
+        ButterKnife.bind(this);
         //Eventbus register
         EventBus.getDefault().register(this);
         sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);
@@ -172,6 +184,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             ApplicationObserver.tryUpdate = false;
             getUpdateInfo();
         }
+
     }
 
     private void mWheelplanting() {
@@ -218,7 +231,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         walletnameList.add(addressEvent);
                     }
                 }
-                Log.i("mWheelplanting", "mWheelplanting: " + walletnameList);
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();
@@ -236,6 +248,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     viewPager.setOffscreenPageLimit(4);
                     viewPager.setPageMargin(40);
                     viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+
                 } else {
                     addwalletFragment();
                 }
@@ -249,6 +262,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     //no wallet show fragment
     private void addwalletFragment() {
+        reclUnBackup.setVisibility(View.GONE);
         fragmentList.add(new AddViewFragment());
         fragmentList.add(new CheckHideWalletFragment());
         viewPager.setOffscreenPageLimit(4);
@@ -272,6 +286,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 scrollPos = position;
                 if (position == (fragmentList.size() - 1) || position == (fragmentList.size() - 2)) {
                     refreshLayout.setEnableRefresh(false);
+                    reclUnBackup.setVisibility(View.GONE);
                     if (position == (fragmentList.size() - 1)) {
                         tetNone.setText(getString(R.string.hide_wallet_tips));
                         tetNone.setVisibility(View.VISIBLE);
@@ -444,9 +459,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     e.printStackTrace();
                                 }
                                 maintrsactionlistEvents.remove(position);
-//                                trsactionlistAdapter.notifyItemChanged(position);
-//                                //trsaction list data
-//                                downMainListdata();
                             } else {
                                 mToast(getString(R.string.delete_unBroad));
                             }
@@ -455,9 +467,67 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
             });
         } catch (JSONException e) {
-            Log.e("sndkjnskjn", "type++++: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void getunBackupKey() {
+        ArrayList<String> unBackupKeyList = new ArrayList<>();
+        unBackupKeyList.clear();
+        deviceValue = new ArrayList<>();
+        SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+        Map<String, ?> devicesAll = devices.getAll();
+        //key
+        for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
+            String mapValue = (String) entry.getValue();
+            HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
+            deviceValue.add(hardwareFeatures);
+        }
+        if (deviceValue != null) {
+            try {
+                PyObject get_device_info = Daemon.commands.callAttr("get_device_info");
+                String str_deviceId = get_device_info.toString();
+                if (!TextUtils.isEmpty(str_deviceId)) {
+                    for (HardwareFeatures entity : deviceValue) {
+                        if (str_deviceId.contains(entity.getDeviceId())) {
+                            if (entity.isNeedsBackup()) {
+                                if (!TextUtils.isEmpty(entity.getLabel())) {
+                                    unBackupKeyList.add(entity.getLabel());
+                                } else {
+                                    unBackupKeyList.add(entity.getBleName());
+                                }
+                            }
+                        }
+                    }
+                }
+                reclUnBackup.setLayoutManager(new LinearLayoutManager(this));
+                if (unBackupKeyList.size() > 0) {
+                    reclUnBackup.setVisibility(View.VISIBLE);
+                    sharedPreferences.edit().putString(strNames,unBackupKeyList.toString()).apply();
+                    UnbackupKeyAdapter unbackupKeyAdapter = new UnbackupKeyAdapter(unBackupKeyList);
+                    reclUnBackup.setAdapter(unbackupKeyAdapter);
+                    unbackupKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                        @Override
+                        public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                            if (view.getId() == R.id.test_go_to_backup) {
+                                Intent intent = new Intent(MainActivity.this, BackupRecoveryActivity.class);
+                                intent.putExtra("home_un_backup", "home_un_backup");
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                } else {
+                    sharedPreferences.edit().putString(strNames,"").apply();
+                    reclUnBackup.setVisibility(View.GONE);
+                }
+            } catch (Exception e) {
+                reclUnBackup.setVisibility(View.GONE);
+                e.printStackTrace();
+            }
+        } else {
+            reclUnBackup.setVisibility(View.GONE);
+        }
+
     }
 
     /**
@@ -510,6 +580,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 mWheelplanting();
                 break;
             case "22":
+                //get unBackupKey
+                getunBackupKey();
                 if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
                     maintrsactionlistEvents.clear();
                     //trsaction list data
@@ -542,7 +614,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (status.equals("22")) {
             int walletPos = updataHint.getPos();
             viewPager.setCurrentItem(walletPos);
-            Log.i("viewPagernihao", "event:------ " + walletPos);
         }
     }
 
@@ -596,7 +667,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         });
     }
 
-    private void attemptUpdate(String uri, String versionName, int versionCode, String size, String description) {
+    private void attemptUpdate(String uri, String versionName, int versionCode, String
+            size, String description) {
         String url = "https://key.bixin.com/" + uri;
         UpdateConfiguration configuration = new UpdateConfiguration()
                 .setEnableLog(true)

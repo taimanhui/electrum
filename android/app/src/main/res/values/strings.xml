@@ -816,5 +816,7 @@
     <string name="go_to_backup">去备份</string>
     <string name="wallet_un_backup">钱包未备份</string>
     <string name="un_back_tips">检测到钱包未备份，为了你的资金安全，请备份后使用</string>
+    <string name="now_wallet">当前钱包 </string>
+    <string name="no_backup">未备份，请备份后使用</string>
 
 </resources>

@@ -15,7 +15,7 @@
 
 
         <ImageView
-            android:id="@+id/cancel_select_wallet"
+            android:id="@+id/img_cancel"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_alignParentEnd="true"

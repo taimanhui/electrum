@@ -176,7 +176,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public static HardwareFeatures features;
     private boolean isChangePin;
     private boolean isGpsStatueChange;
-    public static  Tag nfcTag;
+    public static Tag nfcTag;
 
     @Override
     public int getLayoutId() {
@@ -377,14 +377,15 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
         }
     };
-    private  LocationManager locationManager;
+    private LocationManager locationManager;
+
     @SuppressLint("MissingPermission")
     private void refreshDeviceList(boolean start) {
         locationManager = (LocationManager) Objects.requireNonNull(getSystemService(LOCATION_SERVICE));
         boolean ok = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (!ok) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            AlertDialog alertDialog =  new MaterialAlertDialogBuilder(this)
+            AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.open_location_service)
                     .setMessage(R.string.promote_ble)
                     .setNegativeButton(R.string.cancel, (dialog, which) -> {
@@ -394,7 +395,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                         finish();
                     })
                     .setPositiveButton(R.string.confirm, (dialog, which) -> {
-                        Intent intent= new Intent();
+                        Intent intent = new Intent();
                         intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivity(intent);
                     })
@@ -830,7 +831,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             } catch (Exception e) {
                 e.printStackTrace();
                 String message = e.getMessage();
-                if (message.contains(".")){
+                if (message.contains(".")) {
                     if (message.endsWith(".")) {
                         message = message.substring(0, message.length() - 1);
                         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -887,6 +888,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             refreshDeviceList(true);
         }
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -1000,7 +1002,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 intent1.putExtra("histry_xpub", xpub);
                 startActivity(intent1);
             } else if (SingleSigWalletCreator.TAG.equals(tag)) {
-                EventBus.getDefault().post(new ReceiveXpub(xpub, features.getDeviceId()));
+                EventBus.getDefault().post(new ReceiveXpub(xpub, features.getDeviceId(),features.isNeedsBackup()));
             } else if ("check_xpub".equals(tag)) {
                 Intent intent = new Intent(this, CheckXpubResultActivity.class);
                 intent.putExtra("label", Optional.ofNullable(features.getLabel()).orElse("BixinKEY"));
@@ -1035,7 +1037,15 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
                 SharedPreferences backup = getSharedPreferences("backup", Context.MODE_PRIVATE);
+                SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
+                try {
+                    features = getFeatures(isNFC);
+                } catch (Exception e) {
+                    finish();
+                    return;
+                }
                 backup.edit().putString(features.getDeviceId(), Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() + ":" + s : features.getLabel() + ":" + s).apply();
+                devices.edit().putString(features.getDeviceId(), features.toString()).apply();
                 Intent intent = new Intent(this, BackupMessageActivity.class);
                 intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() : features.getLabel());
                 intent.putExtra("tag", "backup");

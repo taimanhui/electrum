@@ -1,8 +1,11 @@
 package org.haobtc.wallet.fragment.mainwheel;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,10 +26,12 @@ import com.google.gson.Gson;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.personalwallet.WalletDetailsActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
@@ -65,6 +70,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private LinearLayout linearSend;
     private LinearLayout linearReceive;
     private LinearLayout linearSign;
+    private String unBackupKey;
 
     public WheelViewpagerFragment() {
 
@@ -192,7 +198,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             if (msgVote.contains("balance")) {
                 String balance = jsonObject.getString("balance");
                 // Log.i("getWalletMsgJXM", "event+substring:::" + balance);
-                if (!TextUtils.isEmpty(balance)){
+                if (!TextUtils.isEmpty(balance)) {
                     walletBlance.setText(balance);
                 }
             }
@@ -224,26 +230,63 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.linear_send:
-                edit.putString("wallet_type_to_sign", personce);
-                edit.apply();
-                Intent intent1 = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
-                intent1.putExtra("wallet_name", name);
-                intent1.putExtra("wallet_type", personce);
-                intent1.putExtra("strNowBtc", substring);
-                intent1.putExtra("hideRefresh","");
-                intent1.putExtra("strNowCny", strCNY);
-                startActivity(intent1);
+                unBackupKey = preferences.getString(name, "");
+                if (unBackupKey.length() > 0) {
+                    //unBackup key dialog
+                    unBackupKeyDialog();
+                } else {
+                    edit.putString("wallet_type_to_sign", personce);
+                    edit.apply();
+                    Intent intent1 = new Intent(getActivity(), SendOne2OneMainPageActivity.class);
+                    intent1.putExtra("wallet_name", name);
+                    intent1.putExtra("wallet_type", personce);
+                    intent1.putExtra("strNowBtc", substring);
+                    intent1.putExtra("hideRefresh", "");
+                    intent1.putExtra("strNowCny", strCNY);
+                    startActivity(intent1);
+                }
+
                 break;
             case R.id.linear_receive:
-                Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
-                startActivity(intent2);
+                unBackupKey = preferences.getString(name, "");
+                if (unBackupKey.length() > 0) {
+                    //unBackup key dialog
+                    unBackupKeyDialog();
+                } else {
+                    Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
+                    startActivity(intent2);
+                }
                 break;
             case R.id.linear_sign:
-                Intent intent3 = new Intent(getActivity(), SignActivity.class);
-                intent3.putExtra("personceType", personce);
-                startActivity(intent3);
+                unBackupKey = preferences.getString(name, "");
+                if (unBackupKey.length() > 0) {
+                    //unBackup key dialog
+                    unBackupKeyDialog();
+                } else {
+                    Intent intent3 = new Intent(getActivity(), SignActivity.class);
+                    intent3.putExtra("personceType", personce);
+                    startActivity(intent3);
+                }
                 break;
 
         }
     }
+
+    //unBackup key dialog
+    private void unBackupKeyDialog() {
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.un_backup_dialog, null, false);
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(view).create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+        view.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), BackupRecoveryActivity.class);
+            intent.putExtra("home_un_backup", "home_un_backup");
+            startActivity(intent);
+            alertDialog.dismiss();
+        });
+        alertDialog.show();
+    }
+
 }

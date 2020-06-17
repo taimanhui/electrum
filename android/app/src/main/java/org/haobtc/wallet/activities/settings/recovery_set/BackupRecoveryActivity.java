@@ -38,10 +38,10 @@ public class BackupRecoveryActivity extends BaseActivity {
     TextView tetKeyName;
     @BindView(R.id.reclCheckKey)
     RecyclerView reclCheckKey;
-    public final static  String TAG = BackupRecoveryActivity.class.getSimpleName();
+    public final static String TAG = BackupRecoveryActivity.class.getSimpleName();
     private List<String> deviceValue;
     private SharedPreferences.Editor edit;
-    private String activeSetPIN;
+    private String homeUnbackup;
 
     @Override
     public int getLayoutId() {
@@ -51,8 +51,8 @@ public class BackupRecoveryActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        activeSetPIN = getIntent().getStringExtra("ActiveSetPIN");
-        if ("ActiveSetPIN".equals(activeSetPIN)) {
+        homeUnbackup = getIntent().getStringExtra("home_un_backup");
+        if ("home_un_backup".equals(homeUnbackup) || "create_to_backup".equals(homeUnbackup)) {
             Intent intent = new Intent(this, CommunicationModeSelector.class);
             intent.putExtra("tag", TAG);
             startActivity(intent);
@@ -74,7 +74,7 @@ public class BackupRecoveryActivity extends BaseActivity {
         //key
         for (Map.Entry<String, ?> entry : backAll.entrySet()) {
             String mapValue = (String) entry.getValue();
-            if (!TextUtils.isEmpty(mapValue)){
+            if (!TextUtils.isEmpty(mapValue)) {
                 deviceValue.add(entry.getKey() + ":" + mapValue);
             }
         }
@@ -87,10 +87,11 @@ public class BackupRecoveryActivity extends BaseActivity {
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     switch (view.getId()) {
                         case R.id.relativeLayout_bixinkey:
+
                             Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
                             intent.putExtra("label", deviceValue.get(position).split(":", 3)[1]);
-                            intent.putExtra("message",deviceValue.get(position).split(":", 3)[2]);
-                            intent.putExtra("tag","recovery");
+                            intent.putExtra("message", deviceValue.get(position).split(":", 3)[2]);
+                            intent.putExtra("tag", "recovery");
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:
@@ -112,7 +113,7 @@ public class BackupRecoveryActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                if ("ActiveSetPIN".equals(activeSetPIN)) {
+                if ("create_to_backup".equals(homeUnbackup)) {
                     mIntent(MainActivity.class);
                 } else {
                     finish();

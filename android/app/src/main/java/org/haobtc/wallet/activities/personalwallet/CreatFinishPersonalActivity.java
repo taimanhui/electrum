@@ -75,8 +75,11 @@ public class CreatFinishPersonalActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        //show set PIN dialog
-        showSetPINDialog();
+        boolean needBackup = intent.getBooleanExtra("needBackup", false);
+        if (needBackup){
+            //show set PIN dialog
+            showBackupDialog();
+        }
 
         keyList = new ArrayList<>();
         //get wallet QR code
@@ -87,7 +90,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     }
 
     //show Whether to set pin after activation dialog
-    private void showSetPINDialog() {
+    private void showBackupDialog() {
         View view1 = LayoutInflater.from(this).inflate(R.layout.to_backup, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -96,7 +99,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
         });
         view1.findViewById(R.id.test_to_backup).setOnClickListener(v -> {
             Intent intent = new Intent(CreatFinishPersonalActivity.this, BackupRecoveryActivity.class);
-            intent.putExtra("ActiveSetPIN", "ActiveSetPIN");
+            intent.putExtra("home_un_backup", "create_to_backup");
             startActivity(intent);
             finish();
         });

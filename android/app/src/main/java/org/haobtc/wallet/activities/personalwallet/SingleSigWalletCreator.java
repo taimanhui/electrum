@@ -226,6 +226,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         intent.putExtra("walletNames", walletName);
         intent.putExtra("flagTag", "personal");
         intent.putExtra("strBixinname", xpub);
+        intent.putExtra("needBackup",event.getNeedBackup());
         startActivity(intent);
     }
 

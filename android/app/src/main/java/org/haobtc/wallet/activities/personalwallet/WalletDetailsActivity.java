@@ -165,6 +165,7 @@ public class WalletDetailsActivity extends BaseActivity {
                             WalletDetailBixinKeyEvent addBixinKeyEvent = new WalletDetailBixinKeyEvent();
                             if (!TextUtils.isEmpty(entity.getLabel())) {
                                 addBixinKeyEvent.setLabel(entity.getLabel());
+
                             } else {
                                 addBixinKeyEvent.setLabel(entity.getBleName());
                             }
