@@ -41,6 +41,7 @@
         tools:replace="label"
         tools:targetApi="q">
 
+        <activity android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity"/>
         <activity android:name=".activities.settings.recovery_set.SetBackupPassActivity" />
         <activity android:name=".activities.settings.ActiviteBackupSuccessActivity" />
         <activity android:name=".activities.personalwallet.FixWalletNameActivity" />

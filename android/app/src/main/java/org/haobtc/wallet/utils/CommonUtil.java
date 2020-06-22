@@ -25,6 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.haobtc.wallet.R;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,7 +54,7 @@ public class CommonUtil {
                 Environment.MEDIA_MOUNTED)) {
             savePath = SD_PATH;
         } else {
-            Toast.makeText(context, "保存失败！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.preservationfail), Toast.LENGTH_SHORT).show();
             return ;
         }
         File filePic = new File(savePath + fileName);

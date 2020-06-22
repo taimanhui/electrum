@@ -175,7 +175,7 @@ public class PinSettingActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void timeout(OperationTimeoutEvent event) {
         if (hasWindowFocus()) {
-            Toast.makeText(this, "pin 输入超时", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.pin_timeout), Toast.LENGTH_SHORT).show();
         }
         EventBus.getDefault().post(new ExistEvent());
         finish();

@@ -97,7 +97,7 @@
     <string name="prompt_sig">输入交易报文可获取已有交易信息</string>
     <string name="raw">请输入交易报文</string>
     <string name="import_file">文件导入</string>
-    <string name="signature_trans">签名该交易</string>
+    <string name="signature_trans">签名交易</string>
     <string name="confirm_on_hardware">已在硬件上确认</string>
     <string name="bitcoin">Bitcoin</string>
     <string name="sign_again">重新签名</string>
@@ -757,6 +757,9 @@
     <string name="node_have">节点已存在</string>
     <string name="select_promote">请先选择自定义文件</string>
     <string name="need_backup">升级前请先备份</string>
+    <string name="fee_exceeded">加速费不足</string>
+    <string name="pay_addr">付款地址</string>
+    <string name="receive_addr">收币地址</string>
     <string name="key_wrong">密码输入错误，或者当前使用key不匹配</string>
     <string name="connect_failed">网络连接失败，请重新尝试</string>
     <!--  Last translation  -->
@@ -789,5 +792,9 @@
     <string name="speed_fee_is">加速后矿工费为</string>
     <string name="receive_speed">收币加速</string>
     <string name="receive_speed_tips">加速后，将未确认交易创建新的交易；新交易需重新进行签名和广播！实际完成交易以链上为准！</string>
+    <string name="pin_timeout">pin 输入超时</string>
+    <string name="dont_use_nfc">设备不支持NFC功能！</string>
+    <string name="device_activat_fail">设备激活失败</string>
+    <string name="usb_break_link">USB设备断开连接</string>
 
 </resources>

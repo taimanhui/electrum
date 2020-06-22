@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
+import org.haobtc.wallet.R;
+
 public class NfcUtils {
     //nfc
     public static NfcAdapter mNfcAdapter;
@@ -33,7 +35,7 @@ public class NfcUtils {
     public static NfcAdapter nfcCheck(FragmentActivity activity, boolean promote) {
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         if (mNfcAdapter == null) {
-            Toast.makeText(activity, "设备不支持NFC功能!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.dont_use_nfc), Toast.LENGTH_SHORT).show();
             return null;
         } else {
             if (!mNfcAdapter.isEnabled() && promote) {

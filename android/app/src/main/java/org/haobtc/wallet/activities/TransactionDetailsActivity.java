@@ -113,6 +113,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     TextView tetPayAddressNum;
     @BindView(R.id.tet_receiveAddSpeed)
     TextView tetReceiveAddSpeed;
+    @BindView(R.id.btn_share)
+    Button btnShare;
     private String keyValue;
     private String tx_hash;
     private String listType;
@@ -536,13 +538,13 @@ public class TransactionDetailsActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.img_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans, R.id.lin_payAddress, R.id.tet_receiveAddSpeed})
+    @OnClick({R.id.img_back, R.id.btn_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans, R.id.lin_payAddress, R.id.tet_receiveAddSpeed})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.img_share:
+            case R.id.btn_share:
                 Intent intent = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
                 intent.putExtra("rowTrsaction", tx_hash);
                 intent.putExtra("rowTx", rawtx);
@@ -590,7 +592,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("max fee exceeded")) {
-                mToast(e.getMessage());
+                mToast(getString(R.string.fee_exceeded));
             }
             return;
         }

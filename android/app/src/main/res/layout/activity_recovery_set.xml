@@ -131,7 +131,7 @@
 
         <LinearLayout
             android:id="@+id/checkbox_Know"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/dp_5"
             android:paddingBottom="@dimen/dp_5"

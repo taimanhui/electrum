@@ -74,7 +74,7 @@
     <string name="enter_wallet">Open wallet</string>
     <string name="transaction_records">Transaction record</string>
     <string name="send">Send</string>
-    <string name="create_trans">Create transaction</string>
+    <string name="create_trans">Create</string>
     <string name="send2many">Send to multiple</string>
     <string name="signature">Sign</string>
     <string name="confirm_trans_d">Confirm transaction info</string>
@@ -87,7 +87,7 @@
     <string name="limit">0/20</string>
     <string name="btc">mBTC</string>
     <string name="count">0/20</string>
-    <string name="fee">Miner fees</string>
+    <string name="fee">Fees</string>
     <string name="total">Total number of transactions</string>
     <string name="to">Receiving address</string>
     <string name="from">Sending address</string>
@@ -98,7 +98,7 @@
     <string name="prompt_sig">Obtain existing TX info by entering TX message</string>
     <string name="raw">Enter TX message</string>
     <string name="import_file">File importing</string>
-    <string name="signature_trans">Sign the transaction</string>
+    <string name="signature_trans">Sign transaction</string>
     <string name="confirm_on_hardware">Confirmed on hardware</string>
     <string name="bitcoin">Bitcoin</string>
     <string name="sign_again">Sign again</string>
@@ -126,8 +126,8 @@
     <string name="tips">TIPS: Co-signers are all managers</string>
     <string name="prompt_create">Wallet created, refer to image for your receiving address</string>
     <string name="watting_broadcast">To propagate</string>
-    <string name="signature_status">Signature status</string>
-    <string name="transaction_status">Transaction status</string>
+    <string name="signature_status">Signature</string>
+    <string name="transaction_status">Status</string>
     <string name="transaction_waitting">To sign</string>
     <string name="pin_input_again">Incorrect info, please enter again</string>
     <string name="slip_select_fee">Slide to choose miner fees</string>
@@ -142,12 +142,12 @@
     <string name="reservatpion_photo">Permission denied, cannot execute</string>
     <string name="copysuccess">Copied!</string>
     <string name="changeaddress">Please change address</string>
-    <string name="waitchoose">To confirm</string>
+    <string name="waitchoose">Unconfirmed</string>
     <string name="alreadychoose">Confirmed</string>
     <string name="co_signer">Cosigner</string>
     <string name="unsigned">Unsigned</string>
     <string name="wait_broadcast">To propagate</string>
-    <string name="broadcast">Propagate transaction</string>
+    <string name="broadcast">Broadcast</string>
     <string name="trans_details">Transaction details</string>
     <string name="check_trsaction">View on-chain transactions</string>
     <string name="completed">Completed</string>
@@ -169,9 +169,9 @@
     <string name="spin_open">Expand</string>
     <string name="retract">Collapse</string>
     <string name="signature_sign">Signed by co-signers</string>
-    <string name="chain_confirmation">Confirmation on-chain</string>
+    <string name="chain_confirmation">Confirm</string>
     <string name="time">Time</string>
-    <string name="trsactionhash">Transaction hash</string>
+    <string name="trsactionhash">TxID</string>
     <string name="choose_payaddress">Choose payment wallet</string>
     <string name="feenum">Amount</string>
     <string name="waitmoredres">Wait for 15</string>
@@ -205,7 +205,7 @@
     <string name="add_wallet">No wallet for now, tap to add</string>
     <string name="data_not">Data can\'t be resolved</string>
     <string name="address_wrong">Address resolution error</string>
-    <string name="wait">Wait</string>
+    <string name="wait">Total</string>
     <string name="ge">个</string>
     <string name="delete">Remove</string>
     <string name="delete_unBroad">Only allows remove unpropagated transactions</string>
@@ -788,7 +788,11 @@
     <string name="select_promote">Please select a custom file first</string>
     <string name="need_backup">Please back up before upgrading</string>
     <string name="key_wrong">Incorrect password entry or incorrect key</string>
+    <string name="receive_addr">To</string>
     <string name="connect_failed">Network connection failed, please try again</string>
+    <string name="fee_exceeded">Max fee exceeded</string>
+    <string name="pay_addr">From</string>
+    <string name="star">****</string>
 
     <!--  Last translation  -->
     <string name="fix_wallet_name">Change wallet name</string>
@@ -821,5 +825,11 @@
     <string name="speed_fee_is">After acceleration, the miner\'s fee is</string>
     <string name="receive_speed">Cash collection acceleration</string>
     <string name="receive_speed_tips">After acceleration, new transactions will be created for unconfirmed transactions; new transactions need to be signed and broadcast again! The actual completion of the transaction is subject to the chain!</string>
+    <string name="pin_timeout">pin input timeout</string>
+    <string name="dont_use_nfc">Device does not support NFC function!</string>
+    <string name="device_activat_fail">Device activation failed</string>
+    <string name="usb_break_link">USB device disconnected</string>
+    <string name="cny_star">≈****</string>
+
 
 </resources>

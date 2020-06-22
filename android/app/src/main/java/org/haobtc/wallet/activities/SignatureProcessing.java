@@ -96,7 +96,7 @@ public class SignatureProcessing extends BaseActivity {
                 startActivity(new Intent(this, ActivateSuccessActivity.class));
                 break;
             case "0":
-                Toast.makeText(this, "设备激活失败", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.device_activat_fail), Toast.LENGTH_LONG).show();
                 finishAffinity();
         }
     }

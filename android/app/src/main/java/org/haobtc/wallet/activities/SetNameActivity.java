@@ -53,26 +53,10 @@ public class SetNameActivity extends BaseActivity {
                 finishAffinity();
                 break;
             case R.id.next:
-//                if (nameEdit.getText().length() == 0) {
-//                    Toast.makeText(this, "名字不能为空", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
                 Intent intent = new Intent(this, ActivatedProcessing.class);
                 intent.putExtra("name", nameEdit.getText().toString());
                 startActivity(intent);
                 finish();
-                /*if (CommunicationModeSelector.isNFC) {
-                    Intent intent = new Intent(this, CommunicationModeSelector.class);
-                    intent.putExtra("tag", TAG);
-                    intent.putExtra("name", nameEdit.getText().toString());
-                   startActivity(intent);
-                   return;
-                }
-                EventBus.getDefault().post(new InitEvent(nameEdit.getText().toString()));
-                Intent intent = new Intent(this, PinSettingActivity.class);
-                intent.putExtra("tag", TAG);
-                intent.putExtra("pin_type", 2);
-                startActivity(intent);*/
                 break;
         }
     }

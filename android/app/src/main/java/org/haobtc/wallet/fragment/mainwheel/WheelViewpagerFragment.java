@@ -13,7 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,7 +49,7 @@ import org.json.JSONObject;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class WheelViewpagerFragment extends Fragment implements View.OnClickListener {
+public class WheelViewpagerFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private TextView wallet_card_name;
     private TextView walletpersonce;
@@ -62,7 +65,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
     private TextView tetFiat;
-    private ConstraintLayout conlayBback;
+    private LinearLayout conlayBback;
     private Button btnRight;
     private String strCNY;
     private String substring;
@@ -71,6 +74,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private LinearLayout linearReceive;
     private LinearLayout linearSign;
     private String unBackupKey;
+    private TextView testStar;
+    private LinearLayout linCheck;
+    private TextView testStarCny;
 
     public WheelViewpagerFragment() {
 
@@ -107,6 +113,12 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         linearSend = view.findViewById(R.id.linear_send);
         linearReceive = view.findViewById(R.id.linear_receive);
         linearSign = view.findViewById(R.id.linear_sign);
+        testStar = view.findViewById(R.id.test_star);
+        linCheck = view.findViewById(R.id.lin_check_money);
+        testStarCny = view.findViewById(R.id.test_star_cny);
+        CheckBox radio_check = view.findViewById(R.id.img_check_money);
+        radio_check.setOnCheckedChangeListener(this);
+
         init();
         initdata();
 
@@ -144,7 +156,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         if (isFirst) refreshList();
         //get wallet unit
         String base_unit = preferences.getString("base_unit", "");
-        walletCard.setText(String.format("%s（%s）", getString(R.string.balance), base_unit));
+        walletCard.setText(String.format("%s(%s)", getString(R.string.balance), base_unit));
 
     }
 
@@ -289,4 +301,19 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         alertDialog.show();
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked){
+            testStar.setVisibility(View.GONE);
+            linCheck.setVisibility(View.VISIBLE);
+            testStarCny.setVisibility(View.GONE);
+            tetCny.setVisibility(View.VISIBLE);
+
+        }else{
+            testStar.setVisibility(View.VISIBLE);
+            linCheck.setVisibility(View.GONE);
+            testStarCny.setVisibility(View.VISIBLE);
+            tetCny.setVisibility(View.GONE);
+        }
+    }
 }
