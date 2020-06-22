@@ -7,6 +7,8 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.MyEventBusIndex;
 import org.haobtc.wallet.utils.Global;
 
 import java.util.UUID;
@@ -23,7 +25,10 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // add application lifecycle observer
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new ApplicationObserver());
+        // EventBus  optimize
+        EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
         mInstance = this;
         initBle();
         initChaquo();

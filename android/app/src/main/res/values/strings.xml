@@ -531,9 +531,8 @@
     <string name="check_sign">Verify signature</string>
     <string name="bluetooth_fail">Bluetooth connection failed</string>
     <string name="default_key">Key</string>
-    <string name="promote_message">1. Please remember the backup pin code \n 2. Please remember the password displayed by BixinKey</string>
+    <string name="promote_message">Please confirm the  pin code on the hardware \n 2. Please remember the password displayed by BixinKey</string>
     <string name="update_file_format_error">Upgrade file should end with. zip or .bin</string>
-    <string name="_0_16">0/16</string>
     <string name="copy_mnemonic">Copy mnemonic words</string>
     <string name="pass_morethan_6">Must be over 6 characters</string>
     <string name="single_sign_only">Only single signature is supported for signed messages</string>
@@ -591,6 +590,7 @@
     <string name="keep_connection">Please keep your phone connected to BixinKey</string>
     <string name="tip_connnection">Data transmission will take some time, please stay connected</string>
     <string name="bluetooth_setting">Bluetooth settings</string>
+    <string name="_0_16">0/8</string>
     <string name="confirm_fix">Confirm the modification</string>
     <string name="original_pin_wrong">Original PIN error</string>
     <string name="reset_device_failed">BixinKey failed to restore factory settings</string>
@@ -830,6 +830,7 @@
     <string name="device_activat_fail">Device activation failed</string>
     <string name="usb_break_link">USB device disconnected</string>
     <string name="cny_star">≈****</string>
-
-
+    <string name="retouch">Please retouch the phone with BixinKEY</string>
+    <string name="prompt_backup_pin">BixinKEY激活 &amp; 创建钱包成功\n设置PIN码并备份后使用</string>
+    <string name="confirm_backup_prompt">请在BixinKEY上确认PIN码\n确认后请备份BixinKEY</string>
 </resources>

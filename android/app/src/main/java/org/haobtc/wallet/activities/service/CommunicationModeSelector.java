@@ -14,7 +14,6 @@ import android.location.LocationManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -81,12 +80,14 @@ import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.BackupEvent;
+import org.haobtc.wallet.event.BackupFinishEvent;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
 import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FastPayEvent;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FirstEvent;
@@ -167,7 +168,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private ReadingOrSendingDialogFragment dialogFragment;
     private BluetoothFragment bleFragment;
     public static volatile boolean isDfu;
-    private RxPermissions permissions;
     public static final String COMMUNICATION_MODE_BLE = "bluetooth";
     public static final String COMMUNICATION_MODE_NFC = "nfc";
     public static volatile String way;
@@ -176,8 +176,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public static HardwareFeatures features;
     private boolean isChangePin;
     private boolean isGpsStatueChange;
-    public static Tag nfcTag;
-
+    public static  Tag nfcTag;
+    private String action;
+    // 是否显示钱包创建成功页面
+    private boolean showUI = true;
     @Override
     public int getLayoutId() {
         return R.layout.bluetooth_nfc;
@@ -186,7 +188,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Override
     public void initView() {
         ImageView imageViewCancel;
-        EventBus.getDefault().post(new ExistEvent());
+        EventBus.getDefault().post(new ExitEvent());
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
 //        boolean bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);
         way = preferences.getString("way", COMMUNICATION_MODE_NFC);
@@ -203,6 +205,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         textViewInputByHand.setOnClickListener(this);
         imageViewCancel.setOnClickListener(this);
         tag = getIntent().getStringExtra("tag");
+        action = getIntent().getAction();
 //        if (!bluetoothStatus || SetNameActivity.TAG.equals(tag)) {
 //            radioBle.setVisibility(View.GONE);
 //        }
@@ -253,7 +256,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             imageView.setVisibility(View.GONE);
             textView.setVisibility(View.GONE);
             getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
-            permissions = new RxPermissions(this);
+            RxPermissions permissions = new RxPermissions(this);
             radioGroup.check(R.id.radio_ble);
             permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
                     granted -> {
@@ -446,7 +449,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-//            isNFC = true;
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             nfcTransport.put("ENABLED", true);
             bleHandler.put("ENABLED", false);
@@ -471,8 +473,8 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 futureTask.cancel(true);
             }
             HardwareFeatures features = HardwareFeatures.objectFromData(feature);
+            SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
             if (features.isInitialized()) {
-                SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
                 HardwareFeatures old;
                 String backupMessage = "";
                 if (devices.contains(features.getDeviceId())) {
@@ -481,11 +483,15 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 }
                 if (!Strings.isNullOrEmpty(backupMessage)) {
                     features.setBackupMessage(backupMessage);
-                    devices.edit().putString(features.getDeviceId(), features.toString()).apply();
-                } else {
-                    devices.edit().putString(features.getDeviceId(), feature).apply();
+                    feature = features.toString();
+//                    devices.edit().putString(features.getDeviceId(), features.toString()).apply();
                 }
+            } else {
+                // modify this value manual to support unfinished combined init
+               features.setNeedsBackup(true);
+               feature = features.toString();
             }
+            devices.edit().putString(features.getDeviceId(), feature).apply();
             return features;
         } catch (Exception e) {
             Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
@@ -502,6 +508,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private void handlerEverything(boolean isNFC) {
         isSign = false;
         isActive = false;
+        // used for combined init logic only.
+        if (isNFC) {
+            if (combinedInit()) return;
+        }
         try {
             features = getFeatures(isNFC);
         } catch (Exception e) {
@@ -511,41 +521,63 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         if (VersionUpgradeActivity.TAG.equals(tag)) {
             // stm32 firmware update by nfc or ble
             if ("hardware".equals(extras)) {
-                Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
-                intent.putExtra("way", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-                intent.putExtras(Objects.requireNonNull(getIntent().getExtras()));
-                intent.putExtra("tag", 1);
-                startActivity(intent);
-                if (isNFC) {
-                    new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 1000);
-                }
+                stm32Upgrade(isNFC);
                 // ble firmware update by nfc only
             } else if ("ble".equals(extras)) {
-                if (isNFC || "usb".equals(way)) {
-                    Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
-                    intent.putExtra("way", COMMUNICATION_MODE_NFC);
-                    intent.putExtras(Objects.requireNonNull(getIntent().getExtras()));
-                    intent.putExtra("tag", 2);
-                    startActivity(intent);
-                    new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
-                }
+                nrfUpgradeWithoutDFU(isNFC);
             }
         } else if (HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag)) {
             dealWithChangePin(isNFC);
         } else if (ResetDeviceActivity.TAG.equals(tag)) {
             dealWithWipeDevice(isNFC);
         } else if (SettingActivity.TAG.equals(tag)) {
-            String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-            startActivity(new Intent(this, VerificationKEYActivity.class));
-//        } else if (ActivatedProcessing.TAG.equals(tag)) {
-//            Intent intent = new Intent(this, PinSettingActivity.class);
-//            intent.putExtra("tag", tag);
-//            intent.putExtra("pin_type", 2);
-//            startActivity(intent);
-//            finish();
+            hardwareVerify(isNFC);
         } else {
             dealWithBusiness(isNFC);
+        }
+    }
+    // only use in nfc, ble .etc by event bus
+    private boolean combinedInit() {
+        if ("init".equals(action)) {
+            doInit(new InitEvent("Activate", getIntent().getBooleanExtra("use_se", false)));
+            return true;
+        }
+        if ("change_pin".equals(action)) {
+            changePin(new ChangePinEvent("", ""));
+            return true;
+        }
+        if ("backup".equals(action)) {
+            doBackup(new BackupEvent());
+            return true;
+        }
+        return false;
+    }
+
+    private void hardwareVerify(boolean isNFC) {
+        String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+        startActivity(new Intent(this, VerificationKEYActivity.class));
+    }
+
+    private void stm32Upgrade(boolean isNFC) {
+        Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
+        intent.putExtra("way", isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+        intent.putExtras(Objects.requireNonNull(getIntent().getExtras()));
+        intent.putExtra("tag", 1);
+        startActivity(intent);
+        if (isNFC) {
+            new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 1000);
+        }
+    }
+
+    private void nrfUpgradeWithoutDFU(boolean isNFC) {
+        if (isNFC || "usb".equals(way)) {
+            Intent intent = new Intent(CommunicationModeSelector.this, UpgradeBixinKEYActivity.class);
+            intent.putExtra("way", COMMUNICATION_MODE_NFC);
+            intent.putExtras(Objects.requireNonNull(getIntent().getExtras()));
+            intent.putExtra("tag", 2);
+            startActivity(intent);
+            new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
         }
     }
 
@@ -577,10 +609,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         }
         if (features.isInitialized()) {
             new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-//            Intent intent = new Intent(this, PinSettingActivity.class);
-//            intent.putExtra("tag", tag);
-//            intent.putExtra("pin_type", 1);
-//            startActivity(intent);
         } else {
             Toast.makeText(this, R.string.wallet_un_activated, Toast.LENGTH_LONG).show();
             finish();
@@ -619,18 +647,18 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 isSign = true;
                 if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
                     if (SignActivity.TAG3.equals(tag)) {
-                        //hide wallet sign message -->set_pass_state
+                        // means operation about a hide wallet
                         customerUI.callAttr("set_pass_state", 1);
                     }
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 } else {
                     if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)) {
-                        //hide wallet sign transaction -->set_pass_state
+                        // means operation about a hide wallet
                         customerUI.callAttr("set_pass_state", 1);
                     }
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 }
-            } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag)) {
+            } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || "recovery".equals(action)) {
                 if (TextUtils.isEmpty(extras)) {
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 } else {
@@ -644,54 +672,26 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
                 //bluetooth set to hardware
                 if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag)) {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "setBluetooth", "one");
+                    new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "setBluetooth", "one");
                 } else {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "setBluetooth", "zero");
+                    new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "setBluetooth", "zero");
                 }
             } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
-                //fix bixinkey name
-                String fixNamed = getIntent().getStringExtra("fixName");
-                try {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "label", fixNamed);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                //modify hardware label
+                modifyHardwareLabel(isNFC);
             } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
-                //Fast pay
-                String limit = getIntent().getStringExtra("limit");
-                String times = getIntent().getStringExtra("times");
-                String noPIN = getIntent().getStringExtra("noPIN");
-                String noHard = getIntent().getStringExtra("noHard");
-                Toast.makeText(this, getString(R.string.confirm_finish), Toast.LENGTH_LONG).show();
-                try {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fastPay", limit, times, noPIN, noHard);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                //Fast pay details setting
+                fastPay(isNFC);
             } else if (SetShutdownTimeActivity.TAG.equals(tag)) {
-                //fix bixinkey name
-                String shutdownTime = getIntent().getStringExtra("shutdown_time");
-                try {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "shutdown_time", shutdownTime);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                //modify hardware's automatic shutdown time
+                shutdownSetting(isNFC);
             } else if (FixHardwareLanguageActivity.TAG.equals(tag)) {
-                //fix bixinkey name
-                String key_language = getIntent().getStringExtra("set_key_language");
-                try {
-                    new BusinessAsyncTask().setHelper(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fix_hardware_language", key_language);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                //modify hardware language
+                hardwareLanguage(isNFC);
             }
         } else {
-            if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag))) {
-                SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-                String locate = preferences.getString("language", "");
-                String language = "English".equals(locate) ? "english" : "chinese";
-                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras, language);
+            if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) || "recovery".equals(action)) {
+                recovery(isNFC);
                 return;
             }
             isActive = true;
@@ -699,9 +699,56 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             if (SingleSigWalletCreator.TAG.equals(tag)) {
                 intent.putExtra("tag_Xpub", tag);
             }
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(intent);
         }
+    }
+
+    private void modifyHardwareLabel(boolean isNFC) {
+        String fixNamed = getIntent().getStringExtra("fixName");
+        try {
+            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "label", fixNamed);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void hardwareLanguage(boolean isNFC) {
+        String key_language = getIntent().getStringExtra("set_key_language");
+        try {
+            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fix_hardware_language", key_language);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void shutdownSetting(boolean isNFC) {
+        String shutdownTime = getIntent().getStringExtra("shutdown_time");
+        try {
+            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "shutdown_time", shutdownTime);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void fastPay(boolean isNFC) {
+        String limit = getIntent().getStringExtra("limit");
+        String times = getIntent().getStringExtra("times");
+        String noPIN = getIntent().getStringExtra("noPIN");
+        String noHard = getIntent().getStringExtra("noHard");
+        Toast.makeText(this, getString(R.string.confirm_finish), Toast.LENGTH_LONG).show();
+        try {
+            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fastPay", limit, times, noPIN, noHard);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void recovery(boolean isNFC) {
+        SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        String locate = preferences.getString("language", "");
+        String language = "English".equals(locate) ? "english" : "chinese";
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, extras, language);
     }
 
     private void showConnecting() {
@@ -726,6 +773,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     //Activate interface
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doInit(InitEvent event) {
+        isActive = true;
         if ("Activate".equals(event.getName())) {
             SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
             String locate = preferences.getString("language", "");
@@ -736,10 +784,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     }
 
     //Activate success ,then,get xpub and to back
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe
     public void backXpub(SendXpubToSigwallet event) {
         isActive = false;
-        //TODO: 获取xpub
+        showUI = false;
         if ("get_xpub_and_send".equals(event.getXpub())) {
             new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "p2wpkh");
         }
@@ -747,6 +795,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doWipe(WipeEvent event) {
+        isActive = false;
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
     }
 
@@ -766,11 +815,17 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             customerUI.put("pin", event.getPinCode());
         }
     }
-
+    @Subscribe
+    public void doBackup(BackupEvent backupEvent) {
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+    }
     @Subscribe
     public void changePin(ChangePinEvent event) {
+        isActive = false;
         if (!Strings.isNullOrEmpty(event.toString())) {
             customerUI.put("pin", event.toString());
+        } else {
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.CHANGE_PIN, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
         }
     }
 
@@ -800,7 +855,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void exist(ExistEvent event) {
+    public void exit(ExitEvent event) {
         finish();
     }
 
@@ -910,7 +965,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public void onDestroy() {
         super.onDestroy();
         MyHandler.myHandler = null;
-        NfcUtils.mNfcAdapter = null;
         if (locationManager != null) {
             locationManager.removeUpdates(locationListener);
         }
@@ -934,7 +988,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
         } else if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
             // loading 页面
-            dialogFragment = showReadingDialog(R.string.reading_dot);
+            if (hasWindowFocus()) {
+                dialogFragment = showReadingDialog(R.string.reading_dot);
+            }
         }
     }
 
@@ -1002,7 +1058,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 intent1.putExtra("histry_xpub", xpub);
                 startActivity(intent1);
             } else if (SingleSigWalletCreator.TAG.equals(tag)) {
-                EventBus.getDefault().post(new ReceiveXpub(xpub, features.getDeviceId(),features.isNeedsBackup()));
+                EventBus.getDefault().post(new ReceiveXpub(xpub, features.getDeviceId(),features.isNeedsBackup(), showUI));
             } else if ("check_xpub".equals(tag)) {
                 Intent intent = new Intent(this, CheckXpubResultActivity.class);
                 intent.putExtra("label", Optional.ofNullable(features.getLabel()).orElse("BixinKEY"));
@@ -1034,23 +1090,22 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
             // runOnUiThread(runnables.get(0));
-        } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) {
+        } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || "backup".equals(action) || "recovery".equals(action)) {
             if (TextUtils.isEmpty(extras)) {
                 SharedPreferences backup = getSharedPreferences("backup", Context.MODE_PRIVATE);
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
-                try {
-                    features = getFeatures(isNFC);
-                } catch (Exception e) {
-                    finish();
-                    return;
-                }
                 backup.edit().putString(features.getDeviceId(), Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() + ":" + s : features.getLabel() + ":" + s).apply();
+                features.setNeedsBackup(false);
                 devices.edit().putString(features.getDeviceId(), features.toString()).apply();
-                Intent intent = new Intent(this, BackupMessageActivity.class);
-                intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() : features.getLabel());
-                intent.putExtra("tag", "backup");
-                intent.putExtra("message", s);
-                startActivity(intent);
+                if ("backup".equals(action)) {
+                    EventBus.getDefault().post(new BackupFinishEvent(s));
+                } else {
+                    Intent intent = new Intent(this, BackupMessageActivity.class);
+                    intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() : features.getLabel());
+                    intent.putExtra("tag", "backup");
+                    intent.putExtra("message", s);
+                    startActivity(intent);
+                }
             } else {
                 Intent intent = new Intent(this, RecoveryResult.class);
                 intent.putExtra("tag", s);
@@ -1117,7 +1172,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 case PIN_NEW_FIRST:
                     Intent intent1 = new Intent(fragmentActivity, PinSettingActivity.class);
                     intent1.putExtra("pin_type", PIN_NEW_FIRST);
-                    intent1.putExtra("tag", SettingActivity.TAG_CHANGE_PIN);
+                    intent1.putExtra("tag", tag);
                     fragmentActivity.startActivity(intent1);
                     break;
                 case BUTTON_REQUEST:

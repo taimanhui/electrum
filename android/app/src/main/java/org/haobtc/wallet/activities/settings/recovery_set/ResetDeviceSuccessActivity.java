@@ -8,7 +8,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FinishEvent;
 
 import butterknife.BindView;
@@ -49,7 +49,7 @@ public class ResetDeviceSuccessActivity extends BaseActivity {
                 ble.put("IS_CANCEL", true);
                 nfc.put("IS_CANCEL", true);
                 protocol.callAttr("notify");
-                EventBus.getDefault().post(new ExistEvent());
+                EventBus.getDefault().post(new ExitEvent());
                 EventBus.getDefault().post(new FinishEvent());
                 finish();
                 break;

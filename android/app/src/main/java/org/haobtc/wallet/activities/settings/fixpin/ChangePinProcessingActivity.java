@@ -22,7 +22,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ChangePinEvent;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.ResultEvent;
@@ -103,7 +103,7 @@ public class ChangePinProcessingActivity extends BaseActivity {
                     if (hasWindowFocus()) {
                         Log.d(TAG, "something went wrong");
                         finishAffinity();
-                        EventBus.getDefault().post(new ExistEvent());
+                        EventBus.getDefault().post(new ExitEvent());
                     }
                 }
             }, 30 * 1000L);

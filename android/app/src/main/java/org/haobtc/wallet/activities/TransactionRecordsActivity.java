@@ -236,10 +236,8 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     @SingleClick
     @OnClick({R.id.img_backTrsa})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_backTrsa:
-                finish();
-                break;
+        if (view.getId() == R.id.img_backTrsa) {
+            finish();
         }
     }
 

@@ -22,8 +22,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.ExistEvent;
-import org.haobtc.wallet.event.FinishEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -53,6 +52,7 @@ public class PinSettingActivity extends BaseActivity {
     public static final String TAG = PinSettingActivity.class.getSimpleName();
     private RelativeLayout relativeLayout_key;
     private int pinType;
+    private boolean shouldFinish = true;
 
     @Override
     public int getLayoutId() {
@@ -122,6 +122,7 @@ public class PinSettingActivity extends BaseActivity {
 //                            Intent intent = new Intent(this, ActivatedProcessing.class);
 //                            intent.putExtra("pin", pin);
 //                            startActivity(intent);
+//                            finish();
 //                            break;
                         case SettingActivity.TAG_CHANGE_PIN:
                         case HardwareDetailsActivity.TAG: // change pin
@@ -130,6 +131,7 @@ public class PinSettingActivity extends BaseActivity {
                                 intent.putExtra("pin_new", pin);
                                 startActivity(intent);
                             } else {
+                                shouldFinish = false;
                                 Intent intent1 = new Intent(this, PinNewActivity.class);
                                 intent1.putExtra("pin_origin", pin);
                                 startActivity(intent1);
@@ -139,11 +141,13 @@ public class PinSettingActivity extends BaseActivity {
                             Intent intent2 = new Intent(this, ResetDeviceProcessing.class);
                             intent2.putExtra("pin", pin);
                             startActivity(intent2);
+                            finish();
                             break;
                         case ConfirmOnHardware.TAG:
                             Intent intent3 = new Intent(this, SignatureProcessing.class);
                             intent3.putExtra("pin", pin);
                             startActivity(intent3);
+                            finish();
                             break;
                         default:
                             if (isNFC) {
@@ -177,13 +181,22 @@ public class PinSettingActivity extends BaseActivity {
         if (hasWindowFocus()) {
             Toast.makeText(this, getString(R.string.pin_timeout), Toast.LENGTH_SHORT).show();
         }
-        EventBus.getDefault().post(new ExistEvent());
+        EventBus.getDefault().post(new ExitEvent());
         finish();
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFinish(FinishEvent event) {
-        finish();
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onFinish(FinishEvent event) {
+//        finish();
+//    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (shouldFinish) {
+            finish();
+        }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

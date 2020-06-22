@@ -1,4 +1,4 @@
 package org.haobtc.wallet.event;
 
-public class ExistEvent {
+public class ExitEvent {
 }

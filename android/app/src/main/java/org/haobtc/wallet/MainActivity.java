@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -65,7 +64,6 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.FixWalletNameEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
-import org.haobtc.wallet.event.WalletDetailBixinKeyEvent;
 import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
@@ -210,7 +208,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
     }
-
     private void showWalletList() {
         if (get_wallets_list_info != null && get_wallets_list_info.size() != 0) {
             String toStrings = get_wallets_list_info.toString();
@@ -603,7 +600,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
             //Rolling Wallet
             if (fragmentList != null && fragmentList.size() > scrollPos) {
-                Optional.ofNullable(fragmentList.get(scrollPos)).ifPresent(fragment -> ((WheelViewpagerFragment) fragment).setValue(msgVote));
+                if (hasWindowFocus()) {
+                    Optional.ofNullable(fragmentList.get(scrollPos)).ifPresent(fragment -> ((WheelViewpagerFragment) fragment).setValue(msgVote));
+                }
             }
         }
     }

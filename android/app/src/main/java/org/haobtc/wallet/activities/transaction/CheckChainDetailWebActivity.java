@@ -82,6 +82,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     public void initData() {
+        webHeckChain.getSettings().setAllowFileAccess(false);
         webHeckChain.getSettings().setJavaScriptEnabled(true);
         webHeckChain.getSettings().setAppCacheEnabled(true);
         webHeckChain.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
@@ -117,10 +118,8 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
+        if (view.getId() == R.id.img_back) {
+            finish();
         }
     }
 

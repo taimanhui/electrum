@@ -11,7 +11,8 @@ public enum BixinExceptions {
    PIN_OPERATION_TIMEOUT("BaseException: waiting pin timeout", 10),
    PASSPHRASE_OPERATION_TIMEOUT("BaseException: waiting passphrase timeout", 11),
    BLE_RESPONSE_READ_TIMEOUT("read ble response timeout", 12),
-   FILE_FORMAT_ERROR("BaseException: File is not a zip file", 13);
+   FILE_FORMAT_ERROR("BaseException: File is not a zip file", 13),
+   USER_CANCEL("BaseException: user cancel", 14);
 
 
    private final String message;

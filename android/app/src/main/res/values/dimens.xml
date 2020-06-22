@@ -63,4 +63,7 @@
     <dimen name="dp_335">335dp</dimen>
     <dimen name="dp_53">53dp</dimen>
     <dimen name="dp_120">120dp</dimen>
+    <dimen name="dp_101">101dp</dimen>
+    <dimen name="dp_115">115dp</dimen>
+    <dimen name="dp_25">25dp</dimen>
 </resources>

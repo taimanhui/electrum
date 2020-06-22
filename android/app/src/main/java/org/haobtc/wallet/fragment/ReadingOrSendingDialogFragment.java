@@ -9,7 +9,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -17,7 +16,7 @@ import androidx.fragment.app.DialogFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 
 import java.util.Objects;
 
@@ -38,7 +37,7 @@ public class ReadingOrSendingDialogFragment extends DialogFragment {
             dismiss();
             ble.put("IS_CANCEL", true);
             nfc.put("IS_CANCEL", true);
-            EventBus.getDefault().post(new ExistEvent());
+            EventBus.getDefault().post(new ExitEvent());
         });
         TextView textPromote = view.findViewById(R.id.text_promote);
         textPromote.setText(resId);

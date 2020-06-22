@@ -22,7 +22,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.SetShutdownTimeEvent;
 
@@ -180,7 +180,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isNFC) {
             if (isWipe && !features.isPinProtection()) {
-                EventBus.getDefault().post(new ExistEvent());
+                EventBus.getDefault().post(new ExitEvent());
                 return;
             }
             EventBus.getDefault().removeStickyEvent(event);

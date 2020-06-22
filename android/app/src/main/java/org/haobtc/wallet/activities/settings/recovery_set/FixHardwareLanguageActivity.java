@@ -1,13 +1,9 @@
 package org.haobtc.wallet.activities.settings.recovery_set;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -15,12 +11,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
-import org.haobtc.wallet.bean.HardwareFeatures;
-import org.haobtc.wallet.event.FixAllLabelnameEvent;
-import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.SetKeyLanguageEvent;
-
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

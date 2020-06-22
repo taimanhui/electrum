@@ -19,7 +19,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -43,7 +43,7 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usbTransport;
-
+@Deprecated
 public class ActivatedProcessing extends BaseActivity {
     public static final String TAG = ActivatedProcessing.class.getSimpleName();
     @BindView(R.id.img_back)
@@ -102,7 +102,7 @@ public class ActivatedProcessing extends BaseActivity {
                     if (hasWindowFocus()) {
                         Log.d(TAG, "something went wrong");
                         finish();
-                        EventBus.getDefault().post(new ExistEvent());
+                        EventBus.getDefault().post(new ExitEvent());
                     }
                 }
             }, 30 * 1000L);
@@ -171,32 +171,12 @@ public class ActivatedProcessing extends BaseActivity {
                     if (hasWindowFocus()) {
                         Log.d(TAG, "something went wrong");
                         finish();
-                        EventBus.getDefault().post(new ExistEvent());
+                        EventBus.getDefault().post(new ExitEvent());
                     }
                 }
             }, 30 * 1000L);
         }
     }
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-//            // enable nfc discovery for the app
-//            Log.d("NFC", "为本App启用NFC感应");
-//            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-//        }
-//    }
-
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-//            // disable nfc discovery for the app
-//            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-//            Log.d("NFC", "禁用本App的NFC感应");
-//        }
-//    }
 
     @Override
     protected void onDestroy() {

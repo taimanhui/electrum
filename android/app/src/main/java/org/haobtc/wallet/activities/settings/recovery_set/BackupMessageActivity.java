@@ -17,10 +17,12 @@ import android.widget.Toast;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.FinishEvent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -97,6 +99,7 @@ public class BackupMessageActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
+                EventBus.getDefault().post(new FinishEvent());
                 finish();
                 break;
             case R.id.tet_preversation:
@@ -132,6 +135,7 @@ public class BackupMessageActivity extends BaseActivity {
                     intent.putExtra("extras", message);
                     startActivity(intent);
                 } else {
+                    EventBus.getDefault().post(new FinishEvent());
                     finish();
                 }
                 break;

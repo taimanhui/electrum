@@ -47,8 +47,8 @@ public class BlockChooseActivity extends BaseActivity {
     public void initData() {
         String[] stringArray = getResources().getStringArray(R.array.blockline);
         ArrayList<CNYBean> blockList = new ArrayList<>();
-        for (int i = 0; i < stringArray.length; i++) {
-            CNYBean cnyBean = new CNYBean(stringArray[i], false);
+        for (String s : stringArray) {
+            CNYBean cnyBean = new CNYBean(s, false);
             blockList.add(cnyBean);
         }
         QuetationChooseAdapter quetationChooseAdapter = new QuetationChooseAdapter(BlockChooseActivity.this,blockList,setBlock);
@@ -67,10 +67,8 @@ public class BlockChooseActivity extends BaseActivity {
     @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
+        if (view.getId() == R.id.img_back) {
+            finish();
         }
     }
 }

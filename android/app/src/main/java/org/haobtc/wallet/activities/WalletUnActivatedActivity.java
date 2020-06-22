@@ -1,20 +1,31 @@
 package org.haobtc.wallet.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.FinishEvent;
+import org.haobtc.wallet.event.InitEvent;
+import org.haobtc.wallet.event.ResultEvent;
+import org.haobtc.wallet.event.SendXpubToSigwallet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class WalletUnActivatedActivity extends BaseActivity {
     public static final String TAG = "org.wallet.activities.WalletUnActivatedActivity";
@@ -44,11 +55,11 @@ public class WalletUnActivatedActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        EventBus.getDefault().register(this);
     }
 
 
-    @SingleClick
+    @SingleClick(value = 2000)
     @OnClick({R.id.img_back, R.id.button_recover, R.id.linear_use_se, R.id.button_activate})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -69,12 +80,45 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 }
                 break;
             case R.id.button_activate:
-                Intent intent = new Intent(this, ActivatedProcessing.class);
-                intent.putExtra("tag_xpub", tag_xpub);
-                intent.putExtra("use_se", use_se);
-                startActivity(intent);
+//                Intent intent = new Intent(this, ActivatedProcessing.class);
+//                intent.putExtra("tag_xpub", tag_xpub);
+//                intent.putExtra("use_se", use_se);
+//                startActivity(intent);
+//                finish();
+                if (isNFC) {
+                   Intent intent = new Intent(this, CommunicationModeSelector.class);
+                    if (SingleSigWalletCreator.TAG.equals(tag_xpub)) {
+                        intent.putExtra("tag", SingleSigWalletCreator.TAG);
+                    }
+                   intent.putExtra("use_se", use_se).setAction("init");
+                   startActivity(intent);
+                } else {
+                    EventBus.getDefault().post(new InitEvent("Activate", use_se));
+                }
+                break;
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    public void showProcessing(ResultEvent resultEvent) {
+        EventBus.getDefault().removeStickyEvent(ResultEvent.class);
+        switch (resultEvent.getResult()) {
+            case "1":
+//                startActivity(new Intent(this, ActivateSuccessActivity.class));
+                if (SingleSigWalletCreator.TAG.equals(tag_xpub)) {
+                    EventBus.getDefault().post(new SendXpubToSigwallet("get_xpub_and_send"));
+                }
+                startActivity(new Intent(this, ActivatePromptPIN.class));
                 finish();
                 break;
+            case "0":
+                Log.d(TAG, "设备激活失败");
+                startActivity(new Intent(this, ActiveFailedActivity.class));
+                finish();
         }
     }
 }

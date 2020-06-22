@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
-    tools:context="org.haobtc.wallet.activities.settings.ActiviteBackupSuccessActivity">
+    tools:context="org.haobtc.wallet.activities.settings.ActivateBackupSuccessActivity">
 
     <RelativeLayout
         android:id="@+id/snkdfnksjndkjsd"
@@ -93,6 +93,7 @@
         android:textSize="@dimen/sp_14" />
 
     <TextView
+        android:id="@+id/backup_to_new"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

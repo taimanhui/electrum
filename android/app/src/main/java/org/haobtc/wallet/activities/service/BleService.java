@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.DfuEvent;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.CommonUtils;
@@ -33,13 +33,11 @@ import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
-import no.nordicsemi.android.dfu.DfuBaseService;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isDfu;
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usbTransport;
 
@@ -115,7 +113,7 @@ public class BleService extends Service {
                     if (ble != null) {
                         ble.put("IS_CANCEL", true);
                     }
-                    EventBus.getDefault().post(new ExistEvent());
+                    EventBus.getDefault().post(new ExitEvent());
                     Ble.getInstance().refreshDeviceCache(bluetoothDevice.getAddress());
             }
         }
@@ -131,7 +129,7 @@ public class BleService extends Service {
         public void onConnectTimeOut(BleDevice device) {
             super.onConnectTimeOut(device);
             Log.e(TAG, String.format("连接设备==%s超时", device.getBleName()));
-            EventBus.getDefault().post(new ExistEvent());
+            EventBus.getDefault().post(new ExitEvent());
         }
     };
     private void handle() {
@@ -172,7 +170,7 @@ public class BleService extends Service {
         });
     }
 
-        @Override
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
             if (mBle.isScanning()) {
                 mBle.stopScan();
@@ -201,7 +199,7 @@ public class BleService extends Service {
                     case BluetoothDevice.BOND_NONE:
                         boolean bond =  bluetoothDevice.createBond();
                         if (!bond) {
-                            EventBus.getDefault().post(new ExistEvent());
+                            EventBus.getDefault().post(new ExitEvent());
                             Log.e("BLE", "无法绑定设备");
                             Toast.makeText(this, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
                         }
@@ -238,7 +236,7 @@ public class BleService extends Service {
                         return;
                     }
                     if (state == BluetoothDevice.BOND_NONE && previousState == BluetoothDevice.BOND_BONDING) {
-                        EventBus.getDefault().post(new ExistEvent());
+                        EventBus.getDefault().post(new ExitEvent());
                         Log.d(TAG, String.format("您已拒绝与设备==%s==配对", bluetoothDevice.getName()));
                         return;
                     }

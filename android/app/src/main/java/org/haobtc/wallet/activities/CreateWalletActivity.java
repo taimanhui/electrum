@@ -100,4 +100,9 @@ public class CreateWalletActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
+    }
 }

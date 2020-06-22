@@ -4,7 +4,7 @@ import android.view.View;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
@@ -30,7 +30,7 @@ public class ClickUtil {
     public static boolean isFastDoubleClick(View v, long intervalMillis) {
         int viewId = v.getId();
         if (viewId == R.id.img_back || viewId == R.id.img_cancel) {
-            EventBus.getDefault().post(new ExistEvent());
+            EventBus.getDefault().post(new ExitEvent());
             if (ble != null) {
                 ble.put("IS_CANCEL", true);
                 nfc.put("IS_CANCEL", true);

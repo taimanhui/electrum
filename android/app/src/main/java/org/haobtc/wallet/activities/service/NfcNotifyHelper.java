@@ -9,6 +9,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,6 +24,10 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Objects;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
@@ -29,7 +35,15 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.pro
 //
 // Created by liyan on 2020/5/24.
 //
-public class NfcNotifyHelper extends BaseActivity implements View.OnClickListener {
+public class NfcNotifyHelper extends BaseActivity {
+    @BindView(R.id.text_prompt)
+    TextView textPrompt;
+    @BindView(R.id.radio_ble)
+    RadioButton radioBle;
+    @BindView(R.id.img_cancel)
+    ImageView imgCancel;
+    @BindView(R.id.input_layout)
+    RelativeLayout inputLayout;
     private String tag;
 
 
@@ -40,15 +54,12 @@ public class NfcNotifyHelper extends BaseActivity implements View.OnClickListene
 
     @Override
     public void initView() {
-        ImageView imageViewCancel;
-        RadioButton radioBle = findViewById(R.id.radio_ble);
-        imageViewCancel = findViewById(R.id.img_cancel);
-        findViewById(R.id.input_layout).setVisibility(View.GONE);
-        imageViewCancel.setOnClickListener(this);
+        ButterKnife.bind(this);
+        textPrompt.setText(R.string.retouch);
+        inputLayout.setVisibility(View.GONE);
         radioBle.setVisibility(View.GONE);
-        NfcUtils.nfc(this, true);
         tag = getIntent().getStringExtra("tag");
-        EventBus.getDefault().register(this);
+       EventBus.getDefault().register(this);
 //        Optional.ofNullable(nfcTag).ifPresent((tags) -> {
 //            IsoDep isoDep = IsoDep.get(tags);
 //            try {
@@ -77,9 +88,10 @@ public class NfcNotifyHelper extends BaseActivity implements View.OnClickListene
     public void initData() {
 
     }
+
     @SingleClick
-    @Override
-    public void onClick(View v) {
+    @OnClick(R.id.img_cancel)
+    public void onViewClicked(View v) {
         if (v.getId() == R.id.img_cancel) {
             nfc.put("IS_CANCEL", true);
             protocol.callAttr("notify");
@@ -87,7 +99,6 @@ public class NfcNotifyHelper extends BaseActivity implements View.OnClickListene
             finish();
         }
     }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -97,9 +108,10 @@ public class NfcNotifyHelper extends BaseActivity implements View.OnClickListene
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             nfcHandler.put("device", tags);
-           notifyNfc();
+            notifyNfc();
         }
     }
+
     private void notifyNfc() {
         if ("PIN".equals(tag)) {
             String pin = getIntent().getStringExtra("pin");
@@ -111,26 +123,6 @@ public class NfcNotifyHelper extends BaseActivity implements View.OnClickListene
         protocol.callAttr("notify");
         EventBus.getDefault().post(new FinishEvent());
     }
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-//            // enable nfc discovery for the app
-//            Log.i("NFC", "为本App启用NFC感应");
-//            NfcUtils.mNfcAdapter.enableForegroundDispatch(this, NfcUtils.mPendingIntent, NfcUtils.mIntentFilter, NfcUtils.mTechList);
-//        }
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
-//            // disable nfc discovery for the app
-//            NfcUtils.mNfcAdapter.disableForegroundDispatch(this);
-//            Log.i("NFC", "禁用本App的NFC感应");
-//        }
-//    }
 
     @Override
     protected void onDestroy() {

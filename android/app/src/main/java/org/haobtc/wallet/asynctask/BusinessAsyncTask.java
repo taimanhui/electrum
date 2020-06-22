@@ -1,6 +1,7 @@
 package org.haobtc.wallet.asynctask;
 
 import android.annotation.SuppressLint;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
@@ -115,6 +116,8 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
         Log.e(TAG, e.getMessage() == null ? "unknown exception" : e.getMessage());
         if (BixinExceptions.PASSPHRASE_OPERATION_TIMEOUT.getMessage().equals(e.getMessage()) || BixinExceptions.PIN_OPERATION_TIMEOUT.getMessage().equals(e.getMessage())) {
             EventBus.getDefault().post(new OperationTimeoutEvent());
+        } else if (BixinExceptions.USER_CANCEL.getMessage().equals(e.getMessage())) {
+            Log.d(TAG, "cancel by user");
         } else {
             helper.onException(e);
         }

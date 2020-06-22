@@ -9,8 +9,6 @@ import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,7 +35,7 @@ import org.haobtc.wallet.dfu.service.DfuService;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.Daemon;
@@ -262,7 +260,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected void onCancelled() {
             tetUpgradeTest.setText(getString(R.string.Cancelled));
-            EventBus.getDefault().post(new ExistEvent());
+            EventBus.getDefault().post(new ExitEvent());
             if (isNew) {
                 isNew = false;
                 showPromptMessage(R.string.is_new);
@@ -442,7 +440,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                 }
 
                 if (newNrfVersion.compareTo(nrfVersion) <= 0 && !features.isBootloaderMode()) {
-                    EventBus.getDefault().post(new ExistEvent());
+                    EventBus.getDefault().post(new ExitEvent());
                     showPromptMessage(R.string.is_new);
                     finish();
                 } else {
@@ -472,13 +470,13 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
             if (!isDIY) {
                 File file = new File(String.format("%s/bixin.zip", Objects.requireNonNull(getExternalCacheDir()).getPath()));
                 if (!file.exists()) {
-                    EventBus.getDefault().post(new ExistEvent());
+                    EventBus.getDefault().post(new ExitEvent());
                     Toast.makeText(this, R.string.update_file_not_exist, Toast.LENGTH_LONG).show();
                     finish();
                     return;
                 }
             } else if (!VersionUpgradeActivity.filePath.endsWith(".zip")) {
-                EventBus.getDefault().post(new ExistEvent());
+                EventBus.getDefault().post(new ExitEvent());
                 Toast.makeText(this, R.string.update_file_format_error, Toast.LENGTH_LONG).show();
                 finish();
                 return;

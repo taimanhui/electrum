@@ -30,20 +30,19 @@
 
     <application
         android:name=".activities.base.MyApplication"
-        android:allowBackup="true"
-        android:fullBackupContent="true"
+        android:allowBackup="${allow_backup}"
         android:icon="@drawable/app_icon"
         android:label="${app_name}"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="label"
+        tools:replace="label, android:allowBackup"
         tools:targetApi="q">
 
         <activity android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity"/>
         <activity android:name=".activities.settings.recovery_set.SetBackupPassActivity" />
-        <activity android:name=".activities.settings.ActiviteBackupSuccessActivity" />
+        <activity android:name=".activities.settings.ActivateBackupSuccessActivity" />
         <activity android:name=".activities.personalwallet.FixWalletNameActivity" />
         <activity android:name=".activities.settings.SetShutdownTimeActivity" />
         <activity android:name=".activities.UserAgreementActivity" />
@@ -152,8 +151,9 @@
         <activity android:name=".activities.SignatureProcessing" />
         <activity android:name=".activities.settings.recovery_set.ResetDeviceFailedActivity" />
         <activity android:name=".activities.settings.CheckXpubResultActivity" />
-        <activity android:name=".activities.settings.fixpin.ChangePinFailedActivity" />
         <activity android:name=".activities.settings.recovery_set.RecoveryResult" />
+        <activity android:name=".activities.ConfirmPINPrompt"/>
+        <activity android:name=".activities.ActivatePromptPIN"/>
         <activity
             android:name=".activities.service.NfcNotifyHelper"
             android:noHistory="true"

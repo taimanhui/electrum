@@ -57,11 +57,19 @@ android {
             abiFilters "armeabi-v7a", "x86"
         }
         resConfigs "zh"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ eventBusIndex : 'org.haobtc.wallet.MyEventBusIndex' ]
+            }
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+           minifyEnabled false
         }
     }
     compileOptions {
@@ -88,17 +96,17 @@ android {
         MainNet {
             buildConfigField "String", "net_type", "\"MainNet\""
             applicationId "com.bixin.wallet.mainnet"
-            manifestPlaceholders = [app_name: "@string/app_name"]
+            manifestPlaceholders = [app_name: "@string/app_name", allow_backup: false]
         }
         TestNet {
             buildConfigField "String", "net_type", "\"TestNet\""
             applicationId "com.bixin.wallet.testnet"
-            manifestPlaceholders = [app_name: "@string/testnet"]
+            manifestPlaceholders = [app_name: "@string/testnet", allow_backup: true]
         }
         RegTest {
             buildConfigField "String", "net_type", "\"RegTest\""
             applicationId "com.bixin.wallet.regnet"
-            manifestPlaceholders = [app_name: "@string/regnet"]
+            manifestPlaceholders = [app_name: "@string/regnet", allow_backup: true]
         }
     }
     lintOptions {
@@ -198,7 +206,8 @@ dependencies {
     //gson
     implementation 'com.google.code.gson:gson:2.8.6'
     //Eventbus
-    implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.1.1'
     //wheel_viewpager
     implementation 'com.github.ThirdGoddess:GoddessTNT:v1.5'
     implementation project(path: ':dRlibfileselector')

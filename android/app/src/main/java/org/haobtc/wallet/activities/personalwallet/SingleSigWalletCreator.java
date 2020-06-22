@@ -3,11 +3,9 @@ package org.haobtc.wallet.activities.personalwallet;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,10 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
-import com.yzq.zxinglibrary.common.Constant;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -27,11 +21,12 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
+import org.haobtc.wallet.event.FinishEvent;
+import org.haobtc.wallet.event.FixWalletNameEvent;
 import org.haobtc.wallet.event.ReceiveXpub;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
-import org.haobtc.wallet.utils.MyDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -194,7 +189,7 @@ public class SingleSigWalletCreator extends BaseActivity {
 
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void doInit(ReceiveXpub event) {
         if (System.currentTimeMillis() - lastNotify > 10 * 1000L) {
             lastNotify = System.currentTimeMillis();
@@ -210,7 +205,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
-            EventBus.getDefault().post(new ExistEvent());
+            EventBus.getDefault().post(new ExitEvent());
             if ("BaseException: file already exists at path".equals(message)) {
                 mToast(getString(R.string.changewalletname));
             } else if (message.contains("The same xpubs have create wallet")) {
@@ -222,12 +217,17 @@ public class SingleSigWalletCreator extends BaseActivity {
         edit.putInt("defaultName", walletNameNum);
         edit.apply();
         walletName = editWalletNameSetting.getText().toString();
-        Intent intent = new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
-        intent.putExtra("walletNames", walletName);
-        intent.putExtra("flagTag", "personal");
-        intent.putExtra("strBixinname", xpub);
-        intent.putExtra("needBackup",event.getNeedBackup());
-        startActivity(intent);
+        if (event.isShowUI()) {
+            Intent intent = new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
+            intent.putExtra("walletNames", walletName);
+            intent.putExtra("flagTag", "personal");
+            intent.putExtra("strBixinname", xpub);
+            intent.putExtra("needBackup",event.getNeedBackup());
+            startActivity(intent);
+        } else {
+            EventBus.getDefault().post(new FixWalletNameEvent(walletName));
+        }
+        finish();
     }
 
     @Override

@@ -775,7 +775,8 @@
     <string name="promote_ble">Android 6+ 需要获得位置许可与定位服务来扫描蓝牙低功耗设备, 并不会使用您的位置信息</string>
     <string name="nfc_useless">该设备不支持NFC,请选择其他方式</string>
     <string name="network_useless">网络不可用</string>
-    <string name="backup_finish_tips">BIxinKey私钥seed已使用PIN码加密保存到手机，请牢记当前PIN码。</string>
+    <string name="backup_finish_tips">BixinKey 私钥seed已使用PIN码加密保存到本机，请在【设置-BixinKey备份】中查看；
+请牢记当前PIN码。</string>
     <string name="backup_content">通过其他方式保存PIN码：
         \n 1.通过【设置-BixinKey备份】查看并将备份文件保存到其他设备；
         \n 2.备份到新BixinKey，使多个BixinKey拥有相同的私钥。</string>
@@ -796,5 +797,5 @@
     <string name="dont_use_nfc">设备不支持NFC功能！</string>
     <string name="device_activat_fail">设备激活失败</string>
     <string name="usb_break_link">USB设备断开连接</string>
-
+    <string name="retouch">请把硬件与手机重新贴合</string>
 </resources>

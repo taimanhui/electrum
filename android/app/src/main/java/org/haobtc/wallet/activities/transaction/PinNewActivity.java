@@ -16,7 +16,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.ExistEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.utils.NumKeyboardUtil;
 import org.haobtc.wallet.utils.PasswordInputView;
@@ -66,7 +66,7 @@ public class PinNewActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void timeout(OperationTimeoutEvent event) {
         Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();
-        EventBus.getDefault().post(new ExistEvent());
+        EventBus.getDefault().post(new ExitEvent());
         finish();
     }
     @Override
