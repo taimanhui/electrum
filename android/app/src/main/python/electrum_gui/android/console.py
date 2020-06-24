@@ -480,6 +480,13 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return ret
 
+    def set_sync_server_host(self, ip, port):
+        try:
+            if self.label_flag:
+                self.label_plugin.set_host(ip, port)
+        except BaseException as e:
+            raise e
+
     def get_cosigner_num(self):
         try:
             self._assert_daemon_running()

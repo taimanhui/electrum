@@ -37,6 +37,9 @@ class LabelsPlugin(BasePlugin):
         self.create_wallets = {}
         self.get_wallet_loop = asyncio.get_event_loop()
 
+    def set_host(self, ip, port):
+        self.target_host = '%s:%s' %(ip, port)
+
     def encode(self, wallet, msg):
         password, iv, wallet_id = self.wallets[wallet]
         encrypted = aes_encrypt_with_iv(password, iv, msg.encode('utf8'))
