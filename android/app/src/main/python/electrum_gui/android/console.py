@@ -1260,7 +1260,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def init(self, path='android_usb', label="Bixin KEY", language='english', use_se=True):
+    def init(self, path='android_usb', label="BIXIN KEY", language='english', use_se=True):
         client = self.get_client(path=path)
         try:
             if use_se:
