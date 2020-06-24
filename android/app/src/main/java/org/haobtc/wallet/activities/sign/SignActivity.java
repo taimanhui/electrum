@@ -48,9 +48,12 @@ import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -60,6 +63,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 import dr.android.fileselector.FileSelectConstant;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
@@ -259,6 +263,17 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                             fee = listBean.getFee();
 
                         }
+                        if ("1-1".equals(personceType) && Ble.getInstance().getConnetedDevices().size() != 0) {
+                            String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                            SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+                            String feature = devices.getString(device_id, "");
+                            if (!Strings.isNullOrEmpty(feature)) {
+                                HardwareFeatures features = HardwareFeatures.objectFromData(feature);
+                                if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
+                                    EventBus.getDefault().postSticky(new HandlerEvent());
+                                }
+                            }
+                        }
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent = new Intent(this, CommunicationModeSelector.class);
@@ -266,6 +281,17 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         intent.putExtra("extras", strTest);
                         startActivity(intent);
                     } else {//sign message
+                        if ("1-1".equals(personceType) && Ble.getInstance().getConnetedDevices().size() != 0) {
+                            String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                            SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+                            String feature = devices.getString(device_id, "");
+                            if (!Strings.isNullOrEmpty(feature)) {
+                                HardwareFeatures features = HardwareFeatures.objectFromData(feature);
+                                if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
+                                    EventBus.getDefault().postSticky(new HandlerEvent());
+                                }
+                            }
+                        }
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent = new Intent(this, CommunicationModeSelector.class);

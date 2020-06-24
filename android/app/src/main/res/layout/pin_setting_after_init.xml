@@ -52,14 +52,14 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/change_pin"
+            android:id="@+id/backup"
             android:layout_width="300dp"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/dp_60"
             android:background="@drawable/button_bk"
-            android:text="@string/pin_setting"
+            android:text="@string/go_to_backup"
             android:textAllCaps="false"
             android:textColor="@android:color/white" />
     </RelativeLayout>

@@ -31,6 +31,7 @@ import com.azhon.appupdate.manager.DownloadManager;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -470,51 +471,39 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void getunBackupKey() {
         ArrayList<String> unBackupKeyList = new ArrayList<>();
-        unBackupKeyList.clear();
         deviceValue = new ArrayList<>();
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
         Map<String, ?> devicesAll = devices.getAll();
         //key
-        for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
-            String mapValue = (String) entry.getValue();
-            HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
-            deviceValue.add(hardwareFeatures);
+        for (Object info : devicesAll.values()) {
+            HardwareFeatures hardwareFeatures = HardwareFeatures.objectFromData((String) info);
+            if (hardwareFeatures.isNeedsBackup()) {
+                deviceValue.add(hardwareFeatures);
+            }
         }
-        if (deviceValue != null) {
+        if (!deviceValue.isEmpty()) {
             try {
-                PyObject get_device_info = Daemon.commands.callAttr("get_device_info");
-                String str_deviceId = get_device_info.toString();
-                if (!TextUtils.isEmpty(str_deviceId)) {
+                String str_deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                if (!Strings.isNullOrEmpty(str_deviceId)) {
                     for (HardwareFeatures entity : deviceValue) {
-                        if (str_deviceId.contains(entity.getDeviceId())) {
-                            if (entity.isNeedsBackup()) {
-                                if (!TextUtils.isEmpty(entity.getLabel())) {
-                                    unBackupKeyList.add(entity.getLabel());
-                                } else {
-                                    unBackupKeyList.add(entity.getBleName());
-                                }
-                            }
+                        if (str_deviceId.equals(entity.getDeviceId())) {
+                            unBackupKeyList.add(Optional.ofNullable(entity.getLabel()).orElse(entity.getBleName()));
                         }
                     }
                 }
                 reclUnBackup.setLayoutManager(new LinearLayoutManager(this));
-                if (unBackupKeyList.size() > 0) {
+                if (!unBackupKeyList.isEmpty()) {
                     reclUnBackup.setVisibility(View.VISIBLE);
-                    sharedPreferences.edit().putString(strNames,unBackupKeyList.toString()).apply();
                     UnbackupKeyAdapter unbackupKeyAdapter = new UnbackupKeyAdapter(unBackupKeyList);
                     reclUnBackup.setAdapter(unbackupKeyAdapter);
-                    unbackupKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                        @Override
-                        public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                            if (view.getId() == R.id.test_go_to_backup) {
-                                Intent intent = new Intent(MainActivity.this, BackupRecoveryActivity.class);
-                                intent.putExtra("home_un_backup", "home_un_backup");
-                                startActivity(intent);
-                            }
+                    unbackupKeyAdapter.setOnItemChildClickListener((adapter, view, position) -> {
+                        if (view.getId() == R.id.test_go_to_backup) {
+                            Intent intent = new Intent(MainActivity.this, BackupRecoveryActivity.class);
+                            intent.putExtra("home_un_backup", "home_un_backup");
+                            startActivity(intent);
                         }
                     });
                 } else {
-                    sharedPreferences.edit().putString(strNames,"").apply();
                     reclUnBackup.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -634,12 +623,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Log.d("Main", "正在检查更新信息");
         call.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, IOException e) {
                 Log.e("Main", "获取更新信息失败");
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 assert response.body() != null;
                 SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
                 String locate = preferences.getString("language", "");
@@ -692,7 +681,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 .setApkVersionName(versionName)
                 .setApkSize(size)
                 .setApkDescription(description)
-//                .setApkMD5("DC501F04BBAA458C9DC33008EFED5E7F")
                 .download();
     }
 

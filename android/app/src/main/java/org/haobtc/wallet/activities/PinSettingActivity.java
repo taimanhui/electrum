@@ -23,6 +23,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ExitEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -184,10 +185,10 @@ public class PinSettingActivity extends BaseActivity {
         EventBus.getDefault().post(new ExitEvent());
         finish();
     }
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onFinish(FinishEvent event) {
-//        finish();
-//    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(FinishEvent event) {
+        finish();
+    }
 
     @Override
     protected void onRestart() {

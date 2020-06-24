@@ -1,18 +1,21 @@
 package org.haobtc.wallet.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.activities.settings.ActivateBackupSuccessActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.asynctask.BusinessAsyncTask;
 import org.haobtc.wallet.event.BackupFinishEvent;
 import org.haobtc.wallet.event.FinishEvent;
 
@@ -20,15 +23,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_BLE;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
 //
 // Created by liyan on 2020/6/17.
 //
-public class ConfirmPINPrompt extends BaseActivity implements BusinessAsyncTask.Helper {
+public class ConfirmPINPrompt extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.backup)
@@ -58,20 +59,11 @@ public class ConfirmPINPrompt extends BaseActivity implements BusinessAsyncTask.
                 break;
             case R.id.backup:
                 if (isNFC) {
-                    protocol.callAttr("notify");
-                    nfc.put("IS_CANCEL", true);
-                    Intent intent = new Intent(this, CommunicationModeSelector.class);
-                    intent.setAction("backup");
+                    Intent intent = new Intent(this, NfcNotifyHelper.class);
                     startActivity(intent);
-                } else {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, COMMUNICATION_MODE_BLE);
                 }
                 break;
         }
-    }
-    @Subscribe
-    public void onFinishEvent(FinishEvent event) {
-        finish();
     }
 
     @Override
@@ -86,29 +78,19 @@ public class ConfirmPINPrompt extends BaseActivity implements BusinessAsyncTask.
         finish();
     }
 
-    @Override
-    public void onPreExecute() {
-
-    }
-
-    @Override
-    public void onException(Exception e) {
-
-    }
     @Subscribe
     public void onBackupFinish(BackupFinishEvent event) {
+        SharedPreferences backup = getSharedPreferences("backup", Context.MODE_PRIVATE);
+        SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
+        backup.edit().putString(features.getDeviceId(), Strings.isNullOrEmpty(features.getLabel()) ?
+                features.getBleName() + ":" + event.getMessage()
+                : features.getLabel() + ":" + event.getMessage()).apply();
+        features.setNeedsBackup(false);
+        devices.edit().putString(features.getDeviceId(), features.toString()).apply();
         Intent intent = new Intent(this, ActivateBackupSuccessActivity.class);
         intent.putExtra("message", event.getMessage());
         startActivity(intent);
+        EventBus.getDefault().post(new FinishEvent());
         finish();
-    }
-    @Override
-    public void onResult(String s) {
-        onBackupFinish(new BackupFinishEvent(s));
-    }
-
-    @Override
-    public void onCancelled() {
-
     }
 }

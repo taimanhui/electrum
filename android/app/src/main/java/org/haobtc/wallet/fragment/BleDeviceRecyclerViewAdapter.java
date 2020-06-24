@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 

@@ -29,6 +29,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,7 +46,10 @@ import org.haobtc.wallet.bean.GetAddressBean;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.GetsendFeenumBean;
+import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -61,6 +65,7 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 
 public class SendOne2ManyMainPageActivity extends BaseActivity {
@@ -134,7 +139,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         String base_unit = preferences.getString("base_unit", "mBTC");
         Intent intent = getIntent();
         hideRefresh = getIntent().getStringExtra("hideRefresh");
-        addressList = (List) getIntent().getSerializableExtra("listdetail");
+        addressList = (ArrayList) getIntent().getSerializableExtra("listdetail");
         wallet_name = intent.getStringExtra("wallet_name");
         waletType = intent.getStringExtra("wallet_type");
         int addressNum = intent.getIntExtra("addressNum", 0);
@@ -329,6 +334,18 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                                 EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                             }
                             //1-n wallet  --> Direct signature and broadcast
+                            if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
+                                String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                                SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+                                String feature = devices.getString(device_id, "");
+                                if (!Strings.isNullOrEmpty(feature)) {
+                                    HardwareFeatures features = HardwareFeatures.objectFromData(feature);
+                                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
+                                        EventBus.getDefault().postSticky(new HandlerEvent());
+                                    }
+                                }
+
+                            }
                             CommunicationModeSelector.runnables.clear();
                             CommunicationModeSelector.runnables.add(runnable);
                             Intent intent2 = new Intent(this, CommunicationModeSelector.class);

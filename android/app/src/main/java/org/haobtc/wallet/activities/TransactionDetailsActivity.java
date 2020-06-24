@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -33,8 +34,11 @@ import org.haobtc.wallet.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
+import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONException;
@@ -48,6 +52,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class TransactionDetailsActivity extends BaseActivity {
 
@@ -142,6 +147,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
     private String unConfirmStatus;
     private String hideWallet = "";
+    private String wallet_type_to_sign;
     private boolean braod_status = false;//braod_status = true   -->   speed don't broadcast
 
     @Override
@@ -419,6 +425,9 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (signStatusMes != null) {
             Integer integer = signStatusMes.get(0);
             Integer integer1 = signStatusMes.get(1);
+            if (integer1 == 1) {
+                wallet_type_to_sign = "1-1";
+            }
             String strNum = integer + "/" + integer1;
             textView20.setText(strNum);
         }
@@ -634,7 +643,6 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         if (createCpfpTx != null) {
             String strNewTX = createCpfpTx.toString();
-            Log.i("xioainnewys", "strNewTX-------: " + strNewTX);
             Gson gson = new Gson();
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
@@ -665,6 +673,17 @@ public class TransactionDetailsActivity extends BaseActivity {
                 //sign input pass
                 signInputpassDialog();
             } else {
+                if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
+                    String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                    SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+                    String feature = devices.getString(device_id, "");
+                    if (!Strings.isNullOrEmpty(feature)) {
+                        HardwareFeatures features = HardwareFeatures.objectFromData(feature);
+                        if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
+                            EventBus.getDefault().postSticky(new HandlerEvent());
+                        }
+                    }
+                }
                 CommunicationModeSelector.runnables.clear();
                 CommunicationModeSelector.runnables.add(runnable);
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);

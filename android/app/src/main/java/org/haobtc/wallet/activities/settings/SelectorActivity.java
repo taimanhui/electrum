@@ -14,6 +14,8 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
+import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 //
 // Created by liyan on 2020/5/28.
@@ -75,6 +77,7 @@ public class SelectorActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.nfc:
             case R.id.nfc_item:
+                disconnectBle();
                 if (preferences.getBoolean("nfc_support", true)) {
                     nfc.setChecked(true);
                     ble.setChecked(false);
@@ -91,6 +94,7 @@ public class SelectorActivity extends BaseActivity {
                 break;
             case R.id.usb:
             case R.id.usb_item:
+                disconnectBle();
                 nfc.setChecked(false);
                 ble.setChecked(false);
                 usb.setChecked(true);
@@ -100,7 +104,12 @@ public class SelectorActivity extends BaseActivity {
                 finish();
         }
     }
-
+    private void disconnectBle() {
+        Ble<BleDevice> mBle = Ble.getInstance();
+        if (mBle.getConnetedDevices().size() != 0) {
+            mBle.disconnectAll();
+        }
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

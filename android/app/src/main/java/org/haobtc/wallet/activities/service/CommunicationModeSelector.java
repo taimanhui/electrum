@@ -221,7 +221,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
         handler = MyHandler.getInstance(this);
         customerUI.put("handler", handler);
-        EventBus.getDefault().register(this);
         extras = getIntent().getStringExtra("extras");
         if (!MultiSigWalletCreator.TAG.equals(tag)) {
             relativeLayout.setVisibility(View.GONE);
@@ -335,7 +334,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
     @Override
     public void initData() {
-
+        EventBus.getDefault().register(this);
     }
 
     private final BleScanCallback<BleDevice> scanCallback = new BleScanCallback<BleDevice>() {
@@ -644,20 +643,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
                 }
             } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag) || SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)) {
-                isSign = true;
-                if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
-                    if (SignActivity.TAG3.equals(tag)) {
-                        // means operation about a hide wallet
-                        customerUI.callAttr("set_pass_state", 1);
-                    }
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-                } else {
-                    if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)) {
-                        // means operation about a hide wallet
-                        customerUI.callAttr("set_pass_state", 1);
-                    }
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-                }
+                dealwithSign(isNFC);
             } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || "recovery".equals(action)) {
                 if (TextUtils.isEmpty(extras)) {
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
@@ -701,6 +687,23 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             }
 //            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(intent);
+        }
+    }
+
+    private void dealwithSign(boolean isNFC) {
+        isSign = true;
+        if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
+            if (SignActivity.TAG3.equals(tag)) {
+                // means operation about a hide wallet
+                customerUI.callAttr("set_pass_state", 1);
+            }
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE, strinputAddress, extras, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+        } else {
+            if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)) {
+                // means operation about a hide wallet
+                customerUI.callAttr("set_pass_state", 1);
+            }
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, extras, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
         }
     }
 
@@ -799,8 +802,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED, sticky = true)
     public void doBusiness(HandlerEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
         handlerEverything(false);
     }
 

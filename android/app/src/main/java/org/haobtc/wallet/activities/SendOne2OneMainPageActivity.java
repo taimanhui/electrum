@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
@@ -56,8 +57,11 @@ import org.haobtc.wallet.bean.GetAddressBean;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.GetsendFeenumBean;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
+import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -75,6 +79,7 @@ import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
@@ -618,6 +623,19 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                     }
                     //1-n wallet  --> Direct signature and broadcast
+                    if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
+                        String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+
+                        SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
+                        String feature = devices.getString(device_id, "");
+                        if (!Strings.isNullOrEmpty(feature)) {
+                            HardwareFeatures features = HardwareFeatures.objectFromData(feature);
+                            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
+                                EventBus.getDefault().postSticky(new HandlerEvent());
+                            }
+                        }
+
+                    }
                     CommunicationModeSelector.runnables.clear();
                     CommunicationModeSelector.runnables.add(runnable);
                     Intent intent1 = new Intent(this, CommunicationModeSelector.class);
@@ -749,7 +767,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 tetamount.setSelection(s.length());
             }
         }
-        if (s.toString().trim().substring(0).equals(".")) {
+        if (s.toString().trim().equals(".")) {
             s = "0" + s;
             tetamount.setText(s);
             tetamount.setSelection(2);
@@ -759,7 +777,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             if (!s.toString().substring(1, 2).equals(".")) {
                 tetamount.setText(s.subSequence(0, 1));
                 tetamount.setSelection(1);
-                return;
             }
         }
 
@@ -969,7 +986,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             if (!s.toString().substring(1, 2).equals(".")) {
                 edittext.setText(s.subSequence(0, 1));
                 edittext.setSelection(1);
-                return;
             }
         }
     }

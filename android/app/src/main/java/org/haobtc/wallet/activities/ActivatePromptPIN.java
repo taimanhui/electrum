@@ -14,6 +14,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.asynctask.BusinessAsyncTask;
+import org.haobtc.wallet.event.BackupFinishEvent;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.PinEvent;
 
@@ -31,9 +32,8 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isN
 public class ActivatePromptPIN extends BaseActivity implements BusinessAsyncTask.Helper {
     @BindView(R.id.img_back)
     ImageView imgBack;
-    @BindView(R.id.change_pin)
-    Button changePin;
-//    private boolean isChangePIN;
+    @BindView(R.id.backup)
+    Button backup;
 
     @Override
     public int getLayoutId() {
@@ -52,18 +52,18 @@ public class ActivatePromptPIN extends BaseActivity implements BusinessAsyncTask
     }
 
     @SingleClick(value = 5000)
-    @OnClick({R.id.img_back, R.id.change_pin})
+    @OnClick({R.id.img_back, R.id.backup})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.change_pin:
+            case R.id.backup:
                 if (isNFC) {
-                    Intent intent = new Intent(this, CommunicationModeSelector.class).setAction("change_pin");
+                    Intent intent = new Intent(this, CommunicationModeSelector.class).setAction("backup");
                     startActivity(intent);
                 } else {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.CHANGE_PIN, COMMUNICATION_MODE_BLE);
+                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, COMMUNICATION_MODE_BLE);
                 }
                 break;
         }
@@ -77,13 +77,6 @@ public class ActivatePromptPIN extends BaseActivity implements BusinessAsyncTask
 
     @Subscribe
     public void onButtonRequest(ButtonRequestEvent event) {
-//       EventBus.getDefault().post(new ExitEvent());
-//        if (!isChangePIN) {
-//            isChangePIN = true;
-//            if (isNFC) {
-//                startActivity(new Intent(this, NfcNotifyHelper.class));
-//            }
-//        } else {
             Intent intent = new Intent(this, ConfirmPINPrompt.class);
             startActivity(intent);
             finish();
@@ -107,12 +100,7 @@ public class ActivatePromptPIN extends BaseActivity implements BusinessAsyncTask
 
     @Override
     public void onResult(String s) {
-        switch (s) {
-            case "1":
-
-                break;
-            case "0":
-        }
+        EventBus.getDefault().post(new BackupFinishEvent(s));
     }
 
     @Override
