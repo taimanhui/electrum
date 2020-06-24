@@ -36,6 +36,7 @@ import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExitEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.utils.Daemon;
@@ -102,22 +103,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
     public static final String TAG = UpgradeBixinKEYActivity.class.getSimpleName();
 
-//    private HardwareFeatures getFeatures(String path) throws Exception {
-//        String feature;
-//        try {
-//            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", path));
-//            executorService.submit(futureTask);
-//            feature = futureTask.get(5, TimeUnit.SECONDS).toString();
-//            return new Gson().fromJson(feature, HardwareFeatures.class);
-//        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-//         //   Toast.makeText(this, getString(R.string.no_message), Toast.LENGTH_SHORT).show();
-//            ble.put("IS_CANCEL", true);
-//            nfc.put("IS_CANCEL", true);
-//            protocol.callAttr("notify");
-//            e.printStackTrace();
-//            throw e;
-//        }
-//    }
 
     @SuppressLint("StaticFieldLeak")
     public class MyTask extends AsyncTask<String, Object, Void> {
@@ -129,7 +114,6 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         @Override
         protected Void doInBackground(String... params) {
             try {
-//                HardwareFeatures features = getFeatures(params[0]);
                 if (!isDIY) {
                     String nrfVersion = Optional.ofNullable(features.getBleVer()).orElse("0");
                     String loaderVersion = String.format("%s.%s.%s", features.getMajorVersion(), features.getMinorVersion(), features.getPatchVersion());
@@ -540,4 +524,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         mTask = null;
     }
 
+    @Subscribe()
+    public void onFinish(FinishEvent event) {
+        finish();
+    }
 }

@@ -805,6 +805,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED, sticky = true)
     public void doBusiness(HandlerEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
+        if (mBle.isScanning()) {
+            mBle.stopScan();
+        }
         handlerEverything(false);
     }
 

@@ -625,7 +625,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     //1-n wallet  --> Direct signature and broadcast
                     if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
                         String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
-
                         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
                         String feature = devices.getString(device_id, "");
                         if (!Strings.isNullOrEmpty(feature)) {

@@ -13,10 +13,12 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 
@@ -27,6 +29,7 @@ public class ResetDeviceActivity extends BaseActivity{
     @BindView(R.id.img_choose)
     ImageView imgChoose;
     private int img = 1;
+    private String bleName;
 
     @Override
     public int getLayoutId() {
@@ -41,7 +44,7 @@ public class ResetDeviceActivity extends BaseActivity{
 
     @Override
     public void initData() {
-
+        bleName = getIntent().getStringExtra("ble_name");
     }
 
     @SingleClick
@@ -55,6 +58,11 @@ public class ResetDeviceActivity extends BaseActivity{
                 mIntent(BackupRecoveryActivity.class);
                 break;
             case R.id.reset_device:
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        EventBus.getDefault().postSticky(new HandlerEvent());
+                    }
+                }
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("tag", TAG);

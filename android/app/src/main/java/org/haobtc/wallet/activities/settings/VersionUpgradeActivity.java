@@ -33,6 +33,8 @@ import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExceptionEvent;
+import org.haobtc.wallet.event.FinishEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 import dr.android.fileselector.FileSelectConstant;
 import no.nordicsemi.android.dfu.DfuBaseService;
 import no.nordicsemi.android.dfu.DfuProgressListener;
@@ -80,6 +83,7 @@ public class VersionUpgradeActivity extends BaseActivity {
     public static String filePath;
     private Bundle bundle;
     public static boolean isDIY;
+    private String bleName;
 
     @Override
     public int getLayoutId() {
@@ -101,6 +105,7 @@ public class VersionUpgradeActivity extends BaseActivity {
             nrfVersionTip.setText(String.format("V%s " + getString(R.string.verson_updates), bleVerson));
             stm32VersionDetail.setText(bundle.getString("stm32_description"));
             nrfVersionDetail.setText(bundle.getString("nrf_description"));
+            bleName = bundle.getString("ble_name", "");
         }
         tetFirmware.setText(String.format("v%s", firmwareVersion));
         tetBluetooth.setText(String.format("v%s", bleVerson));
@@ -209,6 +214,11 @@ public class VersionUpgradeActivity extends BaseActivity {
      * @param b use ble ota or not
      * **/
     private void upgrade(String hardware, boolean b) {
+        if (Ble.getInstance().getConnetedDevices().size() != 0) {
+            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                EventBus.getDefault().postSticky(new HandlerEvent());
+            }
+        }
         Intent intent = new Intent(VersionUpgradeActivity.this, CommunicationModeSelector.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("tag", TAG);

@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class ConfidentialPaymentSettings extends BaseActivity {
 
@@ -54,6 +55,7 @@ public class ConfidentialPaymentSettings extends BaseActivity {
     private BigDecimal limit;
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
+    private String bleName;
 
     @Override
     public int getLayoutId() {
@@ -70,6 +72,7 @@ public class ConfidentialPaymentSettings extends BaseActivity {
         boolean boPIN_set = preferences.getBoolean("boPIN_set", false);
         boolean noHard_set = preferences.getBoolean("noHard_set", false);
         base_unit = preferences.getString("base_unit", "mBTC");
+        bleName = getIntent().getStringExtra("ble_name");
         payUnit.setText(base_unit);
         if (boPIN_set) {
             switchNoPin.setChecked(true);
@@ -142,6 +145,11 @@ public class ConfidentialPaymentSettings extends BaseActivity {
                     mToast(getString(R.string.limit_input_wrong));
                     return;
                 }
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        EventBus.getDefault().postSticky(new HandlerEvent());
+                    }
+                }
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
                 intent.putExtra("limit", String.valueOf(limit));
@@ -179,7 +187,6 @@ public class ConfidentialPaymentSettings extends BaseActivity {
                 if (!s.toString().substring(1, 2).equals(".")) {
                     unclassifiedPay.setText(s.subSequence(0, 1));
                     unclassifiedPay.setSelection(1);
-                    return;
                 }
             }
         }

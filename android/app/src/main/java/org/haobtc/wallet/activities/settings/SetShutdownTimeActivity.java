@@ -15,12 +15,14 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SetShutdownTimeEvent;
 import org.haobtc.wallet.event.ShutdownTimeEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher {
 
@@ -31,6 +33,7 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
     Button btnConfirm;
     private SharedPreferences preferences;
     private String device_id;
+    private String bleName;
 
     @Override
     public int getLayoutId() {
@@ -48,7 +51,7 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
 
     @Override
     public void initData() {
-
+        bleName = getIntent().getStringExtra("ble_name");
     }
 
     @OnClick({R.id.img_back, R.id.btn_confirm})
@@ -68,8 +71,12 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
                     mToast(getString(R.string.little_time));
                     return;
                 }
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        EventBus.getDefault().postSticky(new HandlerEvent());
+                    }
+                }
                 CommunicationModeSelector.runnables.clear();
-                CommunicationModeSelector.runnables.add(null);
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
                 intent.putExtra("shutdown_time", time);

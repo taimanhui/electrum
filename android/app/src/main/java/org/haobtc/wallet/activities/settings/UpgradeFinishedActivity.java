@@ -8,14 +8,15 @@ import android.widget.TextView;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.FinishEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.com.heaton.blelibrary.ble.Ble;
 import no.nordicsemi.android.dfu.DfuBaseService;
 
 public class UpgradeFinishedActivity extends BaseActivity {
@@ -49,6 +50,7 @@ public class UpgradeFinishedActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.btn_finish:
+                EventBus.getDefault().post(new FinishEvent());
                 finish();
                 break;
         }

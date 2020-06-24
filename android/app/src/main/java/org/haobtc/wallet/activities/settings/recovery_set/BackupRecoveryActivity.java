@@ -20,6 +20,7 @@ import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.adapter.BixinkeyBackupAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FinishEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class BackupRecoveryActivity extends BaseActivity {
 
@@ -41,6 +43,7 @@ public class BackupRecoveryActivity extends BaseActivity {
     private List<String> deviceValue;
     private SharedPreferences.Editor edit;
     private String homeUnbackup;
+    private String bleName;
 
     @Override
     public int getLayoutId() {
@@ -53,6 +56,11 @@ public class BackupRecoveryActivity extends BaseActivity {
         homeUnbackup = getIntent().getStringExtra("home_un_backup");
         EventBus.getDefault().register(this);
         if ("home_un_backup".equals(homeUnbackup) || "create_to_backup".equals(homeUnbackup)) {
+            if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                    EventBus.getDefault().postSticky(new HandlerEvent());
+                }
+            }
             Intent intent = new Intent(this, CommunicationModeSelector.class);
             intent.putExtra("tag", TAG);
             startActivity(intent);
@@ -61,7 +69,7 @@ public class BackupRecoveryActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        bleName = getIntent().getStringExtra("ble_name");
     }
 
     @Override
@@ -91,6 +99,7 @@ public class BackupRecoveryActivity extends BaseActivity {
                             Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
                             intent.putExtra("label", deviceValue.get(position).split(":", 3)[1]);
                             intent.putExtra("message", deviceValue.get(position).split(":", 3)[2]);
+                            intent.putExtra("ble_name", bleName);
                             intent.putExtra("tag", "recovery");
                             startActivity(intent);
                             break;
@@ -120,6 +129,11 @@ public class BackupRecoveryActivity extends BaseActivity {
                 }
                 break;
             case R.id.tet_keyName:
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        EventBus.getDefault().postSticky(new HandlerEvent());
+                    }
+                }
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
                 startActivity(intent);

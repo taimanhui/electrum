@@ -11,11 +11,13 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SetKeyLanguageEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class FixHardwareLanguageActivity extends BaseActivity {
 
@@ -26,6 +28,7 @@ public class FixHardwareLanguageActivity extends BaseActivity {
     TextView testEnglish;
     private String keyLanguage = "Chinese";
     private SharedPreferences preferences;
+    private String bleName;
 
     @Override
     public int getLayoutId() {
@@ -42,6 +45,7 @@ public class FixHardwareLanguageActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        bleName = getIntent().getStringExtra("ble_name");
         if (preferences.getString("key_language", "").equals("English")) {
             testEnglish.setTextColor(getColor(R.color.button_bk_disableok));
             chineseEasy.setTextColor(getColor(R.color.text_color1));
@@ -58,8 +62,12 @@ public class FixHardwareLanguageActivity extends BaseActivity {
                 keyLanguage = "Chinese";
                 testEnglish.setTextColor(getColor(R.color.text_color1));
                 chineseEasy.setTextColor(getColor(R.color.button_bk_disableok));
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        EventBus.getDefault().postSticky(new HandlerEvent());
+                    }
+                }
                 CommunicationModeSelector.runnables.clear();
-                CommunicationModeSelector.runnables.add(null);
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
                 intent.putExtra("set_key_language", "chinese");
@@ -69,8 +77,12 @@ public class FixHardwareLanguageActivity extends BaseActivity {
                 keyLanguage = "English";
                 testEnglish.setTextColor(getColor(R.color.button_bk_disableok));
                 chineseEasy.setTextColor(getColor(R.color.text_color1));
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        EventBus.getDefault().postSticky(new HandlerEvent());
+                    }
+                }
                 CommunicationModeSelector.runnables.clear();
-                CommunicationModeSelector.runnables.add(null);
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);
                 intent1.putExtra("tag", TAG);
                 intent1.putExtra("set_key_language", "english");

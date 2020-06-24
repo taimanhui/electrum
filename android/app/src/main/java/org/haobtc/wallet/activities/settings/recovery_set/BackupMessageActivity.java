@@ -23,6 +23,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FinishEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class BackupMessageActivity extends BaseActivity {
 
@@ -54,6 +56,7 @@ public class BackupMessageActivity extends BaseActivity {
     private String tag;
     private String message;
     private Bitmap bitmap;
+    private String bleName;
     public final static  String TAG = BackupMessageActivity.class.getSimpleName();
 
     @Override
@@ -74,6 +77,7 @@ public class BackupMessageActivity extends BaseActivity {
         String strKeyname = intent.getStringExtra("label");
         tag = intent.getStringExtra("tag");
         message = intent.getStringExtra("message");
+        bleName = intent.getStringExtra("ble_name");
         tetKeyname.setText(strKeyname);
         backupMessage.setText(message);
         if (!TextUtils.isEmpty(tag)) {
@@ -130,6 +134,11 @@ public class BackupMessageActivity extends BaseActivity {
             case R.id.btn_continue:
                 if ("recovery".equals(tag)) {
                     // new version code
+                    if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                        if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                            EventBus.getDefault().postSticky(new HandlerEvent());
+                        }
+                    }
                     Intent intent = new Intent(this, CommunicationModeSelector.class);
                     intent.putExtra("tag", TAG);
                     intent.putExtra("extras", message);

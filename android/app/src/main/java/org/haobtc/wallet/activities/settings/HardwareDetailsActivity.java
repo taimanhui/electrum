@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.common.base.Strings;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -20,16 +22,21 @@ import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity
 import org.haobtc.wallet.activities.settings.recovery_set.FixHardwareLanguageActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SetShutdownTimeEvent;
+import org.haobtc.wallet.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
@@ -115,28 +122,42 @@ public class HardwareDetailsActivity extends BaseActivity {
                 getUpdateInfo();
                 break;
             case R.id.change_pin:
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                        if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                            EventBus.getDefault().postSticky(new HandlerEvent());
+                    }
+                }
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);
                 intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 intent1.putExtra("tag", TAG);
                 startActivity(intent1);
                 break;
             case R.id.lin_OnckFour:
-                mIntent(ConfidentialPaymentSettings.class);
+                Intent intent4 = new Intent(this, ConfidentialPaymentSettings.class);
+                intent4.putExtra("ble_name", bleName);
+                startActivity(intent4);
                 break;
             case R.id.wipe_device:
                 isWipe = true;
-                mIntent(ResetDeviceActivity.class);
+                Intent intent5 = new Intent(this, ResetDeviceActivity.class);
+                intent5.putExtra("ble_name", bleName);
+                startActivity(intent5);
                 break;
             case R.id.tetBluetoothSet:
-                mIntent(BixinKeyBluetoothSettingActivity.class);
+                Intent intent6 = new Intent(this, BixinKeyBluetoothSettingActivity.class);
+                intent6.putExtra("ble_name", bleName);
+                startActivity(intent6);
                 break;
             case R.id.linear_shutdown_time:
-                Intent intent2 = new Intent(HardwareDetailsActivity.this, SetShutdownTimeActivity.class);
+                Intent intent2 = new Intent(this, SetShutdownTimeActivity.class);
                 intent2.putExtra("device_id", device_id);
+                intent2.putExtra("ble_name", bleName);
                 startActivity(intent2);
                 break;
             case R.id.tetBuckup:
-                mIntent(BackupRecoveryActivity.class);
+                Intent intent7 = new Intent(this, BackupRecoveryActivity.class);
+                intent7.putExtra("ble_name", bleName);
+                startActivity(intent7);
                 break;
             case R.id.tet_deleteWallet:
                 devices.edit().remove(device_id).apply();
@@ -146,6 +167,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
             case R.id.test_set_key_language:
                 Intent intent3 = new Intent(HardwareDetailsActivity.this, FixHardwareLanguageActivity.class);
+                intent3.putExtra("ble_name", bleName);
                 startActivity(intent3);
                 break;
         }
@@ -171,6 +193,7 @@ public class HardwareDetailsActivity extends BaseActivity {
         bundle.putString("stm32_version", versionStm32);
         bundle.putString("nrf_description", descriptionNrf);
         bundle.putString("stm32_description", descriptionStm32);
+        bundle.putString("ble_name", bleName);
         Intent intentVersion = new Intent(this, VersionUpgradeActivity.class);
         intentVersion.putExtras(bundle);
         startActivity(intentVersion);

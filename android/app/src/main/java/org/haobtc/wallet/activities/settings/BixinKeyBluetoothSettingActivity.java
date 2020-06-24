@@ -12,16 +12,19 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SetBluetoothEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 
 public class BixinKeyBluetoothSettingActivity extends BaseActivity {
 
     public static final String TAG_TRUE = BixinKeyBluetoothSettingActivity.class.getSimpleName();
     public static final String TAG_FALSE = "TAG_FALSE_BLUETOOTH_CLOSE";
+    private String bleName;
     @BindView(R.id.switchHideBluetooth)
     Switch switchHideBluetooth;
 
@@ -40,7 +43,7 @@ public class BixinKeyBluetoothSettingActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        bleName = getIntent().getStringExtra("ble_name");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -76,6 +79,11 @@ public class BixinKeyBluetoothSettingActivity extends BaseActivity {
     }
 
     private void nModeSelector(boolean status) {
+        if (Ble.getInstance().getConnetedDevices().size() != 0) {
+            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                EventBus.getDefault().postSticky(new HandlerEvent());
+            }
+        }
         if (status) {
             Intent intent = new Intent(BixinKeyBluetoothSettingActivity.this, CommunicationModeSelector.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
