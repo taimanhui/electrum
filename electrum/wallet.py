@@ -1490,9 +1490,13 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                     k.sign_transaction(tmp_tx, password)
             except InvalidPassword as e:
                 raise BaseException(e)
-            except Exception as e:
+            except BaseException as e:
                 msg = str(e)
                 print(f"wallet:L1510======={e}======")
+                if isinstance(e, UserCancelled):
+                    raise BaseException("user cancel")
+                if -1 != msg.find("user cancel"):
+                    raise BaseException(e)
                 if -1 != msg.find("PIN invalid"):
                     raise BaseException(e)
                 if -1 != msg.find("sign success"):
@@ -1501,7 +1505,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 continue
         
         if sig_num == len(self.get_keystores()):
-            raise BaseException("Sign failed, May be BiXin cannot pair with your device")
+            raise BaseException("Can't Pair With You Device")
 
         # remove sensitive info; then copy back details from temporary tx
         tmp_tx.remove_xpubs_and_bip32_paths()

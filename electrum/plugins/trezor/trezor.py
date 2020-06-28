@@ -77,7 +77,7 @@ class TrezorKeyStore(Hardware_KeyStore):
         xpub = self.xpub
         derivation = self.get_derivation_prefix()
         if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
-            raise Exception("Can't Pair With You Device When Sign Message")
+            raise Exception("Can't Pair With You Device")
         address_path = self.get_derivation_prefix() + "/%d/%d" % sequence
         msg_sig = self.plugin.client.sign_message(address_path, message)
         return msg_sig.signature
