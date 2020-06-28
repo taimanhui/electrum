@@ -320,7 +320,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
             PyObject sign_message = null;
             try {
-                sign_message = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, new Kwarg("password", strPassword));
+                sign_message = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, "", new Kwarg("password", strPassword));
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
@@ -360,7 +360,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             }
             PyObject sign_message = null;
             try {
-                sign_message = Daemon.commands.callAttr("sign_tx", strTest, new Kwarg("password", strPassword));
+                sign_message = Daemon.commands.callAttr("sign_tx", strTest, "", new Kwarg("password", strPassword));
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
@@ -452,12 +452,14 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         intentMsg.putExtra("signedFinish", signedMsg);
         startActivity(intentMsg);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isNFC) {
             startActivity(new Intent(this, NfcNotifyHelper.class));
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

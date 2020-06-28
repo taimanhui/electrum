@@ -2,16 +2,15 @@ package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
@@ -21,19 +20,16 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.AgentServerActivity;
+import org.haobtc.wallet.activities.settings.AnyskServerSetActivity;
 import org.haobtc.wallet.activities.settings.BlockChooseActivity;
 import org.haobtc.wallet.activities.settings.ElectrumNodeChooseActivity;
 import org.haobtc.wallet.activities.settings.QuotationServerActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.bean.CNYBean;
 import org.haobtc.wallet.bean.DefaultNodeBean;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,8 +39,6 @@ public class ServerSettingActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
-    @BindView(R.id.switch_cynchronez)
-    Switch switchCynchronez;
     @BindView(R.id.rel_quotationChoose)
     RelativeLayout relQuotationChoose;
     @BindView(R.id.rel_blockChoose)
@@ -57,7 +51,8 @@ public class ServerSettingActivity extends BaseActivity {
     TextView testBlockcheck;
     @BindView(R.id.testElectrumNode)
     TextView testElectrumNode;
-    private SharedPreferences.Editor edit;
+    @BindView(R.id.testNodeType)
+    TextView testNodeType;
     private SharedPreferences preferences;
     private String exchangeName;
     private String blockServerLine;
@@ -73,7 +68,6 @@ public class ServerSettingActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         exchangeName = preferences.getString("exchangeName", "");
         blockServerLine = preferences.getString("blockServerLine", "");
-        edit = preferences.edit();
         inits();
 
     }
@@ -81,13 +75,6 @@ public class ServerSettingActivity extends BaseActivity {
     private void inits() {
         //get electrum list
         getElectrumData();
-        //synchronize server
-        boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
-        if (set_syn_server) {
-            switchCynchronez.setChecked(true);
-        } else {
-            switchCynchronez.setChecked(false);
-        }
         //get default Server
         if (!TextUtils.isEmpty(exchangeName)) {
             tetDefaultServer.setText(exchangeName);
@@ -115,34 +102,7 @@ public class ServerSettingActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        switchCyn();
 
-    }
-
-    private void switchCyn() {
-        switchCynchronez.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    try {
-                        Daemon.commands.callAttr("set_syn_server", true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    edit.putBoolean("set_syn_server", true);
-                    edit.apply();
-                    mToast(getString(R.string.set_success));
-                } else {
-                    try {
-                        Daemon.commands.callAttr("set_syn_server", false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    edit.putBoolean("set_syn_server", false);
-                    edit.apply();
-                }
-            }
-        });
     }
 
     //get default Server
@@ -162,7 +122,7 @@ public class ServerSettingActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.rel_quotationChoose, R.id.rel_blockChoose, R.id.rel_Electrum_Choose, R.id.relAgent_Choose})
+    @OnClick({R.id.img_back, R.id.rel_quotationChoose, R.id.rel_blockChoose, R.id.rel_Electrum_Choose, R.id.relAgent_Choose, R.id.testNodeType})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -179,6 +139,9 @@ public class ServerSettingActivity extends BaseActivity {
                 break;
             case R.id.relAgent_Choose:
                 mIntent(AgentServerActivity.class);
+                break;
+            case R.id.testNodeType:
+                mIntent(AnyskServerSetActivity.class);
                 break;
         }
     }

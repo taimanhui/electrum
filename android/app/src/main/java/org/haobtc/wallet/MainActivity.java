@@ -232,6 +232,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();
+                    if (!"standard".equals(strType)){
+                        //get unBackupKey
+                        getunBackupKey();
+                    }
+
                     for (int i = 0; i < walletnameList.size(); i++) {
                         String name = walletnameList.get(i).getName();
                         String walletType = walletnameList.get(i).getType();
@@ -299,6 +304,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     refreshLayout.setEnableRefresh(true);
                     strNames = walletnameList.get(position).getName();
                     strType = walletnameList.get(position).getType();
+                    if (!"standard".equals(strType)){
+                        //get unBackupKey
+                        getunBackupKey();
+                    }
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -566,8 +575,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 mWheelplanting();
                 break;
             case "22":
-                //get unBackupKey
-                getunBackupKey();
                 if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
                     maintrsactionlistEvents.clear();
                     //trsaction list data

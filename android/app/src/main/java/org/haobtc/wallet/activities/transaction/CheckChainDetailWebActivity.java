@@ -88,6 +88,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         webHeckChain.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         webHeckChain.getSettings().setDomStorageEnabled(true);
         webHeckChain.setWebChromeClient(new WebChromeClient());
+        webHeckChain.getSettings().setAllowFileAccess(false);
         webHeckChain.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {

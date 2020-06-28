@@ -741,6 +741,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void signInputpassDialog() {
         View view1 = LayoutInflater.from(TransactionDetailsActivity.this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(TransactionDetailsActivity.this).setView(view1).create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText str_pass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
             String strPassword = str_pass.getText().toString();
@@ -749,7 +750,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 return;
             }
             try {
-                PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rawtx, new Kwarg("password", strPassword));
+                PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rawtx, "", new Kwarg("password", strPassword));
                 if (sign_tx != null) {
                     jsonDetailData(sign_tx.toString());
                     alertDialog.dismiss();

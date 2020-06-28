@@ -17,16 +17,15 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-
             android:src="@drawable/back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/server_setting"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
@@ -57,6 +56,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
+                    android:clickable="true"
                     android:layout_height="59.5dp"
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/text_margin"
@@ -72,12 +72,20 @@
                         android:text="@string/synchroniz_service"
                         android:textColor="@color/text" />
 
-                    <Switch
-                        android:id="@+id/switch_cynchronez"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector" />
+                    <TextView
+                        android:id="@+id/testNodeType"
+                        android:layout_width="150dp"
+                        android:layout_height="match_parent"
+                        android:drawableEnd="@drawable/jiantou"
+                        android:drawablePadding="@dimen/dp_10"
+                        android:focusable="true"
+                        android:gravity="center_vertical|end"
+                        tools:text="@string/btc"
+                        android:paddingEnd="@dimen/dp_10"
+                        android:textColor="@color/button_bk"
+                        android:textSize="@dimen/sp_14"
+                        tools:ignore="RtlSymmetry" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -280,8 +288,7 @@
                     <RelativeLayout
                         android:id="@+id/rel_Electrum_Choose"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        >
+                        android:layout_height="60dp">
 
                         <TextView
                             android:id="@+id/textView3"
@@ -354,8 +361,7 @@
                     <RelativeLayout
                         android:id="@+id/relAgent_Choose"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        >
+                        android:layout_height="60dp">
 
                         <TextView
                             android:layout_width="match_parent"

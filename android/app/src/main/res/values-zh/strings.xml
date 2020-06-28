@@ -798,4 +798,9 @@
     <string name="device_activat_fail">设备激活失败</string>
     <string name="usb_break_link">USB设备断开连接</string>
     <string name="retouch">请把硬件与手机重新贴合</string>
+    <string name="anysk_server_set">同步服务器设置</string>
+    <string name="add_anysk_server">添加同步服务器</string>
+    <string name="edit_anysk_server">编辑同步服务器</string>
+    <string name="ip_address">IP地址</string>
+
 </resources>

@@ -39,8 +39,9 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
-
-        <activity android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity"/>
+        <activity android:name=".activities.settings.EditAnyskServerActivity"></activity>
+        <activity android:name=".activities.settings.AnyskServerSetActivity" />
+        <activity android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity" />
         <activity android:name=".activities.settings.recovery_set.SetBackupPassActivity" />
         <activity android:name=".activities.settings.ActivateBackupSuccessActivity" />
         <activity android:name=".activities.personalwallet.FixWalletNameActivity" />
