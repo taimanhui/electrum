@@ -1,9 +1,7 @@
 package org.haobtc.wallet.asynctask;
 
 import android.annotation.SuppressLint;
-import android.nfc.Tag;
 import android.os.AsyncTask;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.chaquo.python.Kwarg;

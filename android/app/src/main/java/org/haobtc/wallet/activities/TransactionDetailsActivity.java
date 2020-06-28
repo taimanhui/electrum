@@ -128,7 +128,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String rawtx;
     private String strParse;
     private String language;
-    private boolean isIsmine;
+    private boolean is_mine;
     private PyObject get_rbf_status;
     private String strwalletType;
     private SharedPreferences preferences;
@@ -180,7 +180,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             strwalletType = intent.getStringExtra("strwalletType");
             tetTrsactionTime.setText(dataTime);
         }
-        isIsmine = intent.getBooleanExtra("isIsmine", false);//isIsmine -->recevid or send
+        is_mine = intent.getBooleanExtra("is_mine", false);//is_mine -->recevid or send
     }
 
     @Override
@@ -190,8 +190,8 @@ public class TransactionDetailsActivity extends BaseActivity {
             signedRawTx = "";
             return;
         }
-        //isIsmine -->recevid or send
-        if (isIsmine) {
+        //is_mine -->recevid or send
+        if (is_mine) {
             setRbfStatus();//Show RBF button or not
             tvInTb2.setText(R.string.sendetail);
             linFee.setVisibility(View.VISIBLE);
@@ -209,8 +209,8 @@ public class TransactionDetailsActivity extends BaseActivity {
                     break;
                 case "B":
                     if ("history".equals(listType)) {
-                        //isIsmine -->recevid or send
-                        if (isIsmine) {
+                        //is_mine -->recevid or send
+                        if (is_mine) {
                             tvInTb2.setText(R.string.sendetail);
                         } else {
                             linearSignStatus.setVisibility(View.GONE);
@@ -363,7 +363,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 String replaceAmont = amount.replace("-", "");
                 textView14.setText(String.format("-%s", replaceAmont));
             } else {
-                if (isIsmine) {
+                if (is_mine) {
                     textView14.setText(String.format("-%s", amount));
                 } else {
                     textView14.setText(String.format("+%s", amount));
@@ -538,6 +538,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void gotoConfirmOnHardware() {
         String strPayAddress = tetPayAddress.getText().toString();
         Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
+        intentCon.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", output_addr);
         bundle.putString("pay_address", strPayAddress);

@@ -93,7 +93,6 @@ import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.FixAllLabelnameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
-import org.haobtc.wallet.event.HideWalletErrorEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.MutiSigWalletEvent;
 import org.haobtc.wallet.event.PersonalMutiSigEvent;
@@ -180,6 +179,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private String action;
     // 是否显示钱包创建成功页面
     private boolean showUI = true;
+    private boolean isPairFailed;
+    private boolean isFastPay = true;
+    private boolean isGetXpub;
+
     @Override
     public int getLayoutId() {
         return R.layout.bluetooth_nfc;
@@ -275,7 +278,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             radioGroup.setVisibility(View.GONE);
             setVisible(false);
             usbManager = CustomerUsbManager.getInstance(this);
+            // used to deal with later attach
             usbManager.register(this);
+            // used to deal with prior attach
             device = usbManager.findBixinKEYDevice();
             if (device != null) {
                 try {
@@ -596,7 +601,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     }
 
     /**
-     * dealwith the wipe device logic
+     * deal with the wipe device logic
      *
      * @param isNFC which communication way we use
      */
@@ -615,7 +620,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     }
 
     /**
-     * dealwith the create wallet 、sign、init logic
+     * deal with the create wallet 、sign、init logic
      *
      * @param isNFC which communication way we use
      */
@@ -629,6 +634,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         boolean isInit = features.isInitialized();//isInit -->  Judge whether it is activated
         if (isInit) {
             if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag) || "check_xpub".equals(tag)) {
+                isGetXpub = true;
                 if (SingleSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag)) {
                     if (CheckHideWalletFragment.TAG.equals(tag)) {
                         if (features.isPassphraseProtection()) {
@@ -805,7 +811,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED, sticky = true)
     public void doBusiness(HandlerEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
-        if (mBle.isScanning()) {
+        if (mBle != null && mBle.isScanning()) {
             mBle.stopScan();
         }
         handlerEverything(false);
@@ -851,11 +857,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isSign) {
+            isFastPay = false;
             synchronized (CommunicationModeSelector.class) {
                 if (runnables.size() != 0) {
                     runOnUiThread(runnables.get(0));
-                    // in order to prevent repeat invoke
-                    runnables.clear();
                 }
             }
         }
@@ -872,7 +877,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             EventBus.getDefault().post(new SecondEvent("finish"));
             Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
             intent1.putExtra("signed_raw_tx", signedRaw);
-            intent1.putExtra("isIsmine", true);
+            intent1.putExtra("is_mine", true);
             startActivity(intent1);
             finish();
         }
@@ -888,7 +893,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(signedTx, GetnewcreatTrsactionListBean.class);
                 String tx = getnewcreatTrsactionListBean.getTx();
                 txHash = getnewcreatTrsactionListBean.getTxid();
-                //  Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
                 Daemon.commands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -910,7 +914,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             intent1.putExtra("listType", "history");
             intent1.putExtra("keyValue", "B");
             intent1.putExtra("tx_hash", txHash);
-            intent1.putExtra("isIsmine", true);
+            intent1.putExtra("is_mine", true);
             intent1.putExtra("unConfirmStatus", "broadcast_complete");
             startActivity(intent1);
             finish();
@@ -966,6 +970,23 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             isGpsStatueChange = false;
             refreshDeviceList(true);
         }
+        if (isSign) {
+            if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
+                dialogFragment = showReadingDialog(R.string.message_loading);
+            } else {
+                dialogFragment = showReadingDialog(R.string.transaction_loading);
+            }
+        }
+        if (isPairFailed) {
+            if (dialogFragment != null) {
+                dialogFragment.dismiss();
+            }
+            isPairFailed = false;
+            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
+        }
+        if (isGetXpub) {
+            dialogFragment = showReadingDialog(R.string.reading_dot);
+        }
     }
 
     @Override
@@ -1008,15 +1029,13 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         }
         EventBus.getDefault().post(new FinishEvent());
 //        if (hasWindowFocus()) {
-        if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage()) || e.getMessage().contains("May be BiXin cannot pair with your device or invaild password")) {
+        if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage())) {
             showErrorDialog(0, R.string.pin_wrong);
-        } else if (e.getMessage().contains("May be BiXin cannot pair with your device") || e.getMessage().contains("Can't Pair With You Device When Sign Message")) {
-            mHandler.obtainMessage(0, R.string.try_another_key, R.string.sign_failed_device).sendToTarget();
-        } else if (BixinExceptions.UN_PAIRABLE.equals(e.getMessage()) || e.getMessage().contains("(7, 'PIN invalid')")) {
-            showErrorDialog(R.string.try_another_key, R.string.unpair);
+        }  else if (BixinExceptions.UN_PAIRABLE.getMessage().equals(e.getMessage())) {
+            isPairFailed = true;
         } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
-        } else if (e.getMessage().contains(BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage())) {
+        } else if (BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
         } else {
             showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
@@ -1025,19 +1044,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
     }
 
-    @SuppressLint("HandlerLeak")
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            if (SignActivity.TAG2.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag) || SignActivity.TAG3.equals(tag) || CheckHideWalletFragment.TAG.equals(tag)) {
-//                Toast.makeText(CommunicationModeSelector.this, getString(R.string.key_wrong), Toast.LENGTH_LONG).show();
-                EventBus.getDefault().post(new HideWalletErrorEvent());
-            } else {
-                showErrorDialog(msg.arg1, msg.arg2);
-            }
-        }
-    };
 
     public void showErrorDialog(int error, int title) {
         ErrorDialogFragment fragment = new ErrorDialogFragment(error, title);
@@ -1062,7 +1068,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             EventBus.getDefault().post(new FinishEvent());
             if (ImportHistoryWalletActivity.TAG.equals(tag)) {
                 Intent intent1 = new Intent(this, ChooseHistryWalletActivity.class);
-                intent1.putExtra("histry_xpub", xpub);
+                intent1.putExtra("history_xpub", xpub);
                 startActivity(intent1);
             } else if (SingleSigWalletCreator.TAG.equals(tag)) {
                 EventBus.getDefault().post(new ReceiveXpub(xpub, features.getDeviceId(),features.isNeedsBackup(), showUI));
@@ -1084,19 +1090,18 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
                 EventBus.getDefault().post(new SignMessageEvent(s));
             } else if (SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag)) {
-                if (runnables.size() != 0) {
+                if (isFastPay) {
                     onSignSuccessful(new SendSignBroadcastEvent(s));
                     return;
                 }
                 EventBus.getDefault().postSticky(new SendSignBroadcastEvent(s));
             } else {
-                if (runnables.size() != 0) {
+                if (isFastPay) {
                     onSignSuccessful(new SignResultEvent(s));
                     return;
                 }
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
-            // runOnUiThread(runnables.get(0));
         } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || "backup".equals(action) || "recovery".equals(action)) {
             if (TextUtils.isEmpty(extras)) {
                 SharedPreferences backup = getSharedPreferences("backup", Context.MODE_PRIVATE);

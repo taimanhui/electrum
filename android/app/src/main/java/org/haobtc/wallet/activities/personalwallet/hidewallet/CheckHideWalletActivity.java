@@ -250,7 +250,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                                 intent.putExtra("hideWallet", "hideWallet");
                                 intent.putExtra("keyValue", "B");
                                 intent.putExtra("dataTime", date);
-                                intent.putExtra("isIsmine", is_mine);
+                                intent.putExtra("is_mine", is_mine);
                                 intent.putExtra("tx_hash", tx_hash1);
                                 intent.putExtra("strwalletType", "1-1");
                                 intent.putExtra("listType", typeDele);

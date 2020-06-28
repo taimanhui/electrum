@@ -6,7 +6,7 @@ package org.haobtc.wallet.exception;
 public enum BixinExceptions {
 
    PIN_INVALID("BaseException: (7, 'PIN invalid')", 7),
-   UN_PAIRABLE("BaseException: BiXin cannot pair with your Trezor.", 8),
+   UN_PAIRABLE("BaseException: Can't Pair With You Device", 8),
    TRANSACTION_FORMAT_ERROR("BaseException: failed to recognize transaction encoding for txt: craft fury pig target diagram ...", 9),
    PIN_OPERATION_TIMEOUT("BaseException: waiting pin timeout", 10),
    PASSPHRASE_OPERATION_TIMEOUT("BaseException: waiting passphrase timeout", 11),

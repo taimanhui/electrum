@@ -359,7 +359,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
-        Log.i("strHistory", "showTrsactionlist---: " + strHistory);
+//        Log.i("strHistory", "showTrsactionlist---: " + strHistory);
         maintrsactionlistEvents.clear();
         try {
             jsonArray = new JSONArray(strHistory);
@@ -418,7 +418,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     String tx_Onclick = jsonObject.getString("tx");
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("tx_hash", tx_hash1);
-                                    intent.putExtra("isIsmine", is_mine);
+                                    intent.putExtra("is_mine", is_mine);
                                     intent.putExtra("strwalletType", strType);
                                     intent.putExtra("listType", typeDele);
                                     intent.putExtra("dataTime", date);
@@ -427,7 +427,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                                 } else {
                                     intent.putExtra("tx_hash", tx_hash1);
-                                    intent.putExtra("isIsmine", is_mine);
+                                    intent.putExtra("is_mine", is_mine);
                                     intent.putExtra("dataTime", date);
                                     intent.putExtra("strwalletType", strType);
                                     intent.putExtra("keyValue", "B");

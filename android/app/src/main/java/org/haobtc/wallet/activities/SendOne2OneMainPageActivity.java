@@ -651,7 +651,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
                     intent.putExtra("tx_hash", rowtx);
                     intent.putExtra("keyValue", "A");
-                    intent.putExtra("isIsmine", true);
+                    intent.putExtra("is_mine", true);
                     intent.putExtra("strwalletType", waletType);
                     if (!TextUtils.isEmpty(hideRefresh)) {
                         intent.putExtra("hideWallet", "hideWallet");
@@ -686,6 +686,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     private void gotoConfirmOnHardware() {
         Intent intentCon = new Intent(SendOne2OneMainPageActivity.this, ConfirmOnHardware.class);
+        intentCon.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", outputAddr);
         bundle.putString("pay_address", payAddress);

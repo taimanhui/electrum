@@ -366,7 +366,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                             Intent intent = new Intent(SendOne2ManyMainPageActivity.this, TransactionDetailsActivity.class);
                             intent.putExtra("tx_hash", rowtx);
                             intent.putExtra("keyValue", "A");
-                            intent.putExtra("isIsmine", true);
+                            intent.putExtra("is_mine", true);
                             intent.putExtra("strwalletType", waletType);
                             intent.putExtra("txCreatTrsaction", rowtx);
                             startActivity(intent);
@@ -386,6 +386,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private void gotoConfirmOnHardware() {
         EventBus.getDefault().post(new SecondEvent("finish"));
         Intent intentCon = new Intent(SendOne2ManyMainPageActivity.this, ConfirmOnHardware.class);
+        intentCon.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         Bundle bundle = new Bundle();
         bundle.putSerializable("output", outputAddr);
         bundle.putString("pay_address", payAddress);

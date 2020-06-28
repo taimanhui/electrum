@@ -20,8 +20,6 @@ import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 
 import java.util.Objects;
 
-import butterknife.BindView;
-
 public class ErrorDialogFragment extends DialogFragment {
     private Runnable runnable;
     private Activity activity;
@@ -45,7 +43,10 @@ public class ErrorDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_exception, container, false);
-        view.findViewById(R.id.cancel_sign_fail).setOnClickListener((v) -> dismiss());
+        view.findViewById(R.id.cancel_sign_fail).setOnClickListener((v) -> {
+            dismiss();
+            activity.finish();
+        });
         view.findViewById(R.id.retry).setOnClickListener((v) -> {
             if (!CommunicationModeSelector.isNFC) {
                 activity.runOnUiThread(runnable);

@@ -63,7 +63,7 @@ public class ImportHistoryWalletActivity extends BaseActivity {
 
     private void showConfirmPubDialog(String xpub) {
         Intent intent1 = new Intent(ImportHistoryWalletActivity.this, ChooseHistryWalletActivity.class);
-        intent1.putExtra("histry_xpub", xpub);
+        intent1.putExtra("history_xpub", xpub);
         startActivity(intent1);
         finish();
     }

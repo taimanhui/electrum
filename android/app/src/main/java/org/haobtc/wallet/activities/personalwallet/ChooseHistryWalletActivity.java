@@ -41,7 +41,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     Button btnFinish;
     @BindView(R.id.test_no_wallet)
     TextView testNoWallet;
-    private String histry_xpub;
+    private String history_xpub;
     private String walletType;
     private ArrayList<InputHistoryWalletEvent> walletList;
     private InputHistoryWalletEvent inputHistoryWalletEvent;
@@ -58,8 +58,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         Intent intent = getIntent();
-        histry_xpub = intent.getStringExtra("histry_xpub");
-        Log.i("histry_xpub", "initView: " + histry_xpub);
+        history_xpub = intent.getStringExtra("history_xpub");
+        Log.i("history_xpub", "initView: " + history_xpub);
 
     }
 
@@ -78,7 +78,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     private void getHistryWallet() {
         PyObject infoFromServer = null;
         try {
-            infoFromServer = Daemon.commands.callAttr("get_wallet_info_from_server", histry_xpub);
+            infoFromServer = Daemon.commands.callAttr("get_wallet_info_from_server", history_xpub);
         } catch (Exception e) {
             e.printStackTrace();
         }

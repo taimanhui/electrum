@@ -374,7 +374,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 Intent intent = new Intent(SignActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("signTransction", signedMessage);
                 intent.putExtra("keyValue", "Sign");
-                intent.putExtra("isIsmine", true);
+                intent.putExtra("is_mine", true);
                 startActivity(intent);
                 alertDialog.dismiss();
             }
@@ -391,6 +391,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private void gotoConfirmOnHardware() {
         if (signWhich) {
             Intent intentCon = new Intent(SignActivity.this, ConfirmOnHardware.class);
+            intentCon.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             Bundle bundle = new Bundle();
             bundle.putSerializable("output", outputAddr);
             bundle.putString("pay_address", inputAddr.get(0).getAddr());

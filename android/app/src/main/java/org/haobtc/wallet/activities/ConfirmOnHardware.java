@@ -27,6 +27,7 @@ import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.adapter.HardwareAdapter;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.event.SendMoreAddressEvent;
@@ -138,7 +139,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             EventBus.getDefault().post(new SecondEvent("finish"));
             Intent intent1 = new Intent(this, TransactionDetailsActivity.class);
             intent1.putExtra("signed_raw_tx", signedRaw);
-            intent1.putExtra("isIsmine", true);
+            intent1.putExtra("is_mine", true);
             startActivity(intent1);
             finish();
         }
@@ -174,7 +175,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             intent1.putExtra("listType", "history");
             intent1.putExtra("keyValue", "B");
             intent1.putExtra("tx_hash", txHash);
-            intent1.putExtra("isIsmine", true);
+            intent1.putExtra("is_mine", true);
             intent1.putExtra("unConfirmStatus", "broadcast_complete");
             startActivity(intent1);
             finish();
@@ -196,7 +197,12 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             needTouch = true;
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(FinishEvent event) {
+        if (hasWindowFocus()) {
+            finish();
+        }
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -220,6 +226,12 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 break;
             default:
         }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
     }
 
     @Override

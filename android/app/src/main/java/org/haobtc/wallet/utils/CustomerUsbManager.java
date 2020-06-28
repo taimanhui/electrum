@@ -49,13 +49,13 @@ public class CustomerUsbManager {
         this.usbManager = (UsbManager) context.getApplicationContext().getSystemService(Context.USB_SERVICE);
         observerFilter = new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         observerFilter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+        permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
     }
 
     private final BroadcastReceiver connectionStateChangeReceiver =  new BroadcastReceiver() {
        @Override
        public void onReceive(Context context, Intent intent) {
            String action = intent.getAction();
-
            if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                if (device != null) {
@@ -70,7 +70,6 @@ public class CustomerUsbManager {
                assert usbManager != null;
                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                Log.d(TAG, "find usb device ===" +  device);
-               permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
                UsbDevice bixinKEY = findBixinKEYDevice();
                if (bixinKEY != null) {
                   doBusiness(device);
@@ -99,7 +98,7 @@ public class CustomerUsbManager {
                 usbTransport.put("ENABLED", true);
                 bleTransport.put("ENABLED", false);
                 nfcTransport.put("ENABLED", false);
-                EventBus.getDefault().post(new HandlerEvent());
+                EventBus.getDefault().postSticky(new HandlerEvent());
             }
         }
     }

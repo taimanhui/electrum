@@ -25,6 +25,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.CheckHideWalletEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.HideInputPassFinishEvent;
 import org.haobtc.wallet.event.HideWalletErrorEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
@@ -122,34 +123,11 @@ public class HideWalletSetPassActivity extends BaseActivity {
         startActivity(intent);
         finish();
     }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(HideWalletErrorEvent updataHint) {
-        showErrorDialog(HideWalletSetPassActivity.this, R.layout.pass_error);
+    public void onFinish(FinishEvent event) {
+        finish();
     }
 
-    public void showErrorDialog(Context context, @LayoutRes int resource) {
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.cancel_sign_fail).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-
-        view.findViewById(R.id.btn_retry).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(HideInputPassFinishEvent event) {
