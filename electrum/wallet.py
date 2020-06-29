@@ -1507,9 +1507,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 msg = str(e)
                 print(f"wallet:L1510======={e}======")
                 if isinstance(e, UserCancelled):
-                    raise BaseException("user cancel")
-                if -1 != msg.find("user cancel"):
-                    raise BaseException(e)
+                    raise BaseException("cancel by user")
                 if -1 != msg.find("PIN invalid"):
                     raise BaseException(e)
                 if -1 != msg.find("sign success"):

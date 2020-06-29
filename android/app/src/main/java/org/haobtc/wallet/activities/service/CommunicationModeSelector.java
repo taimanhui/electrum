@@ -182,6 +182,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private boolean isPairFailed;
     private boolean isFastPay = true;
     private boolean isGetXpub;
+    private boolean isErrorOccurred;
 
     @Override
     public int getLayoutId() {
@@ -276,7 +277,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             bleTransport.put("ENABLED", false);
             nfcTransport.put("ENABLED", false);
             radioGroup.setVisibility(View.GONE);
-            setVisible(false);
             usbManager = CustomerUsbManager.getInstance(this);
             // used to deal with later attach
             usbManager.register(this);
@@ -958,6 +958,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Override
     public void onPause() {
         super.onPause();
+        // if the below code was commented may make the callback(onException) doesn't work
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -970,22 +971,21 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             isGpsStatueChange = false;
             refreshDeviceList(true);
         }
-        if (isSign) {
-            if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
-                dialogFragment = showReadingDialog(R.string.message_loading);
-            } else {
-                dialogFragment = showReadingDialog(R.string.transaction_loading);
+        if (!isErrorOccurred) {
+            if (isSign) {
+                if (SignActivity.TAG1.equals(tag) || SignActivity.TAG3.equals(tag)) {
+                    dialogFragment = showReadingDialog(R.string.message_loading);
+                } else {
+                    dialogFragment = showReadingDialog(R.string.transaction_loading);
+                }
+            } else if (isGetXpub) {
+                dialogFragment = showReadingDialog(R.string.reading_dot);
             }
-        }
-        if (isPairFailed) {
-            if (dialogFragment != null) {
-                dialogFragment.dismiss();
+        } else {
+            if (isPairFailed) {
+                isPairFailed = false;
+                showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
             }
-            isPairFailed = false;
-            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
-        }
-        if (isGetXpub) {
-            dialogFragment = showReadingDialog(R.string.reading_dot);
         }
     }
 
@@ -1004,6 +1004,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
     @Override
     public void onPreExecute() {
+        isErrorOccurred = false;
         if (isActive) {
             return;
         }
@@ -1027,12 +1028,16 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
+        isErrorOccurred = true;
         EventBus.getDefault().post(new FinishEvent());
 //        if (hasWindowFocus()) {
         if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage())) {
             showErrorDialog(0, R.string.pin_wrong);
         }  else if (BixinExceptions.UN_PAIRABLE.getMessage().equals(e.getMessage())) {
+            // state variable that can be useful with pin request
             isPairFailed = true;
+            // can be useful without pin request
+            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
         } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
             showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
         } else if (BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
@@ -1142,7 +1147,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
     @Override
     public void onCancelled() {
-//        runOnUiThread(() -> Toast.makeText(this, getString(R.string.task_cancle), Toast.LENGTH_SHORT).show());
     }
 
     public static class MyHandler extends Handler {
