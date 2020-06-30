@@ -837,5 +837,6 @@
     <string name="add_anysk_server">Add synchronization server</string>
     <string name="edit_anysk_server">Edit synchronization server</string>
     <string name="ip_address">IP address</string>
+    <string name="add_success">Added successfully</string>
 
 </resources>

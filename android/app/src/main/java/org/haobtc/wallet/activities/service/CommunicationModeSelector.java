@@ -258,7 +258,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             frameLayout.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.GONE);
             textView.setVisibility(View.GONE);
-            getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commitAllowingStateLoss();
             RxPermissions permissions = new RxPermissions(this);
             radioGroup.check(R.id.radio_ble);
             permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
@@ -773,7 +773,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     }
 
     public ReadingOrSendingDialogFragment showReadingDialog(int res) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commitAllowingStateLoss();
         ReadingOrSendingDialogFragment fragment = new ReadingOrSendingDialogFragment(res);
         fragment.show(getSupportFragmentManager(), "");
         return fragment;

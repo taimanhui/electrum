@@ -69,6 +69,7 @@ import org.haobtc.wallet.fragment.mainwheel.AddViewFragment;
 import org.haobtc.wallet.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.MyDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -122,6 +123,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private DownloadManager manager;
     private SharedPreferences.Editor edit;
     private List<HardwareFeatures> deviceValue;
+    private MyDialog myDialog;
+    private static final int MIN_CLICK_DELAY_TIME = 1000;
+    private static long lastClickTime;
 
     @Override
     public int getLayoutId() {
@@ -131,6 +135,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        myDialog = MyDialog.showDialog(MainActivity.this);
         //Eventbus register
         EventBus.getDefault().register(this);
         sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);
@@ -209,6 +214,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
     }
+
     private void showWalletList() {
         if (get_wallets_list_info != null && get_wallets_list_info.size() != 0) {
             String toStrings = get_wallets_list_info.toString();
@@ -232,7 +238,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();
-                    if (!"standard".equals(strType)){
+                    if (!"standard".equals(strType)) {
                         //get unBackupKey
                         getunBackupKey();
                     }
@@ -304,7 +310,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     refreshLayout.setEnableRefresh(true);
                     strNames = walletnameList.get(position).getName();
                     strType = walletnameList.get(position).getType();
-                    if (!"standard".equals(strType)){
+                    if (!"standard".equals(strType)) {
                         //get unBackupKey
                         getunBackupKey();
                     }
@@ -449,26 +455,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
                             break;
                         case R.id.txt_delete:
-                            try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                tx_hash1 = jsonObject.getString("tx_hash");
-                                Log.i("onItemChildClick", "onItemCh==== " + tx_hash1);
-                                PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
-                                status = get_remove_flag.toBoolean();
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            if (status) {
+                            long curClickTime = System.currentTimeMillis();
+                            if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
+                                lastClickTime = curClickTime;
                                 try {
-                                    Daemon.commands.callAttr("remove_local_tx", tx_hash1);
+                                    JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                    tx_hash1 = jsonObject.getString("tx_hash");
+                                    Log.i("onItemChildClick", "onItemCh==== " + tx_hash1);
+                                    PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
+                                    status = get_remove_flag.toBoolean();
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                maintrsactionlistEvents.remove(position);
-                            } else {
-                                mToast(getString(R.string.delete_unBroad));
+                                if (status) {
+                                    try {
+                                        Daemon.commands.callAttr("remove_local_tx", tx_hash1);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        mToast(getString(R.string.delete_fail));
+                                        return;
+                                    }
+                                    maintrsactionlistEvents.remove(position);
+                                }
                             }
+
                             break;
                     }
                 }

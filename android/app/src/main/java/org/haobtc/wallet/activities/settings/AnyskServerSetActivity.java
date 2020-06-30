@@ -41,6 +41,8 @@ public class AnyskServerSetActivity extends BaseActivity {
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private boolean open = false;
+    private String strAgentIP;
+    private String strPort;
 
     @Override
     public int getLayoutId() {
@@ -122,7 +124,17 @@ public class AnyskServerSetActivity extends BaseActivity {
     }
 
     private void addAnyskServer() {
-//        Daemon.commands.callAttr("set_sync_server_host")
+        strAgentIP = editAgentIP.getText().toString();
+        strPort = editPort.getText().toString();
+        try {
+            Daemon.commands.callAttr("set_sync_server_host", strAgentIP, strPort);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        editAgentIP.setText("");
+        editPort.setText("");
+        mToast(getString(R.string.add_success));
     }
 
     class TextChange implements TextWatcher {
@@ -145,8 +157,8 @@ public class AnyskServerSetActivity extends BaseActivity {
 
     //judge button status
     private void buttonColorStatus() {
-        String strAgentIP = editAgentIP.getText().toString();
-        String strPort = editPort.getText().toString();
+        strAgentIP = editAgentIP.getText().toString();
+        strPort = editPort.getText().toString();
 
         if (TextUtils.isEmpty(strAgentIP) || TextUtils.isEmpty(strPort)) {
             btnAddServer.setEnabled(false);

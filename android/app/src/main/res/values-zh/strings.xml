@@ -802,5 +802,6 @@
     <string name="add_anysk_server">添加同步服务器</string>
     <string name="edit_anysk_server">编辑同步服务器</string>
     <string name="ip_address">IP地址</string>
+    <string name="add_success">添加成功</string>
 
 </resources>

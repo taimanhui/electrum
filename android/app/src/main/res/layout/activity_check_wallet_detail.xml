@@ -121,8 +121,7 @@
                         android:id="@+id/ima_receive_code"
                         android:layout_width="248.3dp"
                         android:layout_height="248.3dp"
-                        android:layout_marginTop="21.7dp"
-                        android:background="@color/bk_page" />
+                        android:layout_marginTop="21.7dp" />
 
                     <TextView
                         android:id="@+id/text_addr"
