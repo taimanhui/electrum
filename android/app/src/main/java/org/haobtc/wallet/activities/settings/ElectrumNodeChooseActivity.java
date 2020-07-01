@@ -52,7 +52,6 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
     private PyObject get_server_list;
     private ArrayList<CNYBean> electrumList;
     private int electrumNode;
-    private SharedPreferences.Editor edit;
     private ArrayList<SendMoreAddressEvent> addressEvents;
 
     @Override
@@ -65,7 +64,6 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
         electrumNode = preferences.getInt("electrumNode", 0);
         reclNodeChose.setNestedScrollingEnabled(false);
         TextWatcher1 textWatcher1 = new TextWatcher1();

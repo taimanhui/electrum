@@ -71,11 +71,10 @@
 
                 <ImageView
                     android:id="@+id/img_Orcode"
-                    android:layout_width="248.3dp"
-                    android:layout_height="248.3dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="268dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:background="@color/separation_line"
+                    android:layout_marginTop="@dimen/dp_10"
                     android:visibility="visible" />
 
                 <TextView

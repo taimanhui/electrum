@@ -7,18 +7,30 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSONObject;
+import com.chaquo.python.PyObject;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.adapter.ElectrumListAdapter;
+import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,8 +42,8 @@ public class AnyskServerSetActivity extends BaseActivity {
     ImageView imgBack;
     @BindView(R.id.switch_cynchronez)
     Switch switchCynchronez;
-    @BindView(R.id.recl_nodeChose)
-    RecyclerView reclNodeChose;
+    @BindView(R.id.tet_electrumName)
+    TextView reclNodeChose;
     @BindView(R.id.btn_add_server)
     Button btnAddServer;
     @BindView(R.id.editAgentIP)
@@ -59,10 +71,21 @@ public class AnyskServerSetActivity extends BaseActivity {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private void inits() {
         TextChange textChange = new TextChange();
         editAgentIP.addTextChangedListener(textChange);
         editPort.addTextChangedListener(textChange);
+        String strAgentIP = preferences.getString("strAgentIP", "");
+        String strPort = preferences.getString("strPort", "");
+        if (!TextUtils.isEmpty(strAgentIP)){
+            editAgentIP.setText(strAgentIP);
+            editPort.setText(strPort);
+        }else{
+            editAgentIP.setText("39.105.86.163");
+            editPort.setText("8080");
+        }
+
         //synchronize server
         boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
         if (set_syn_server) {
@@ -107,7 +130,8 @@ public class AnyskServerSetActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.img_back, R.id.btn_add_server})
+    @SuppressLint("SetTextI18n")
+    @OnClick({R.id.img_back, R.id.btn_add_server, R.id.tet_electrumName})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -119,6 +143,10 @@ public class AnyskServerSetActivity extends BaseActivity {
 //                startActivity(intent);
                 addAnyskServer();
 
+                break;
+            case R.id.tet_electrumName:
+                editAgentIP.setText("39.105.86.163");
+                editPort.setText("8080");
                 break;
         }
     }
@@ -132,8 +160,9 @@ public class AnyskServerSetActivity extends BaseActivity {
             e.printStackTrace();
             return;
         }
-        editAgentIP.setText("");
-        editPort.setText("");
+        edit.putString("strAgentIP",strAgentIP);
+        edit.putString("strPort",strPort);
+        edit.apply();
         mToast(getString(R.string.add_success));
     }
 

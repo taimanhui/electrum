@@ -68,6 +68,13 @@ public class ServerSettingActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         exchangeName = preferences.getString("exchangeName", "");
         blockServerLine = preferences.getString("blockServerLine", "");
+        String strAgentIP = preferences.getString("strAgentIP", "");
+        String strPort = preferences.getString("strPort", "");
+        if (!TextUtils.isEmpty(strAgentIP)){
+            testNodeType.setText(String.format("%s:%s", strAgentIP, strPort));
+        }else{
+            testNodeType.setText(getString(R.string.ip_port));
+        }
         inits();
 
     }

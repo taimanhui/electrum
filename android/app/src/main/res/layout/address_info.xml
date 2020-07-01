@@ -91,16 +91,14 @@
 
                     <ImageView
                         android:id="@+id/imageView2"
-                        android:layout_width="248.3dp"
-                        android:layout_height="248.3dp"
-                        android:layout_marginTop="21.7dp"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="268dp"/>
 
                     <TextView
                         android:id="@+id/textView5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_20"
-                        android:layout_marginTop="@dimen/dp_20"
                         android:layout_marginEnd="@dimen/dp_20"
                         android:textColor="@color/text"
                         android:textSize="@dimen/sp_13"

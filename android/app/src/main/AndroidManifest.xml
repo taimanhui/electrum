@@ -132,7 +132,6 @@
         <activity android:name=".activities.GuideActivity" />
         <activity android:name=".activities.PinSettingActivity" />
         <activity android:name="dr.android.fileselector.FileSelectActivity" />
-        <activity android:name=".activities.CreateWalletSuccessfulActivity" />
         <activity android:name=".activities.settings.VerificationSuccessActivity" />
         <activity android:name=".activities.sign.SignActivity" />
         <activity android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity" />

@@ -104,7 +104,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qr_data = getCodeAddressBean.getQr_data();
-            bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            bitmap = CodeCreator.createQRCode(qr_data, 268, 268, null);
             imgOrcode.setImageBitmap(bitmap);
         }
     }

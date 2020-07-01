@@ -598,6 +598,7 @@
     <string name="last_check_time">Last validation time is </string>
     <string name="broad_fail">Broadcast failed</string>
     <string name="is_new">It is the latest version</string>
+    <string name="ip_port">39.105.86.163:8080</string>
     <string name="un_bonded">Device Unbunded</string>
     <string name="if_set_PIN">Back up your wallet now? You can also back up your wallet in Settings later.</string>
     <string name="not_yet">Not yet</string>
@@ -838,5 +839,6 @@
     <string name="edit_anysk_server">Edit synchronization server</string>
     <string name="ip_address">IP address</string>
     <string name="add_success">Added successfully</string>
+
 
 </resources>

@@ -98,7 +98,7 @@ public class ReceivedPageActivity extends BaseActivity {
 
     public static Bitmap mCreate2DCode(String str) {
         try {
-            BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 240, 240);
+            BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 500, 500);
             int width = matrix.getWidth();
             int height = matrix.getHeight();
             int[] pixels = new int[width * height];

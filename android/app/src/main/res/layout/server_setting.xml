@@ -63,9 +63,8 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center_vertical"
@@ -74,13 +73,15 @@
 
                     <TextView
                         android:id="@+id/testNodeType"
-                        android:layout_width="150dp"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:drawableEnd="@drawable/jiantou"
+                        android:layout_weight="1"
                         android:drawablePadding="@dimen/dp_10"
                         android:focusable="true"
                         android:gravity="center_vertical|end"
                         tools:text="@string/btc"
+                        android:maxLines="1"
                         android:paddingEnd="@dimen/dp_10"
                         android:textColor="@color/button_bk"
                         android:textSize="@dimen/sp_14"

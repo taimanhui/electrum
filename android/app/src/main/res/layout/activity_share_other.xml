@@ -104,11 +104,11 @@
 
                         <ImageView
                             android:id="@+id/img_Orcode"
-                            android:layout_width="248.3dp"
                             android:visibility="visible"
-                            android:layout_height="248.3dp"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/dp_20"/>
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:layout_width="match_parent"
+                            android:layout_marginBottom="@dimen/dp_10"
+                            android:layout_height="268dp"/>
                         <TextView
                             android:id="@+id/tet_bigMessage"
                             android:textSize="@dimen/sp_12"
@@ -117,7 +117,6 @@
                             android:layout_marginStart="@dimen/dp_20"
                             android:layout_marginEnd="@dimen/dp_20"
                             android:gravity="center"
-                            android:layout_marginTop="@dimen/dp_20"
                             android:layout_width="match_parent"
                             android:layout_height="248.3dp"/>
 
@@ -126,7 +125,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/dp_20"
                             android:layout_marginBottom="@dimen/dp_30"
                             android:text="@string/preservation"
                             android:textColor="@color/button_bk_disableok"

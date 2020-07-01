@@ -88,7 +88,7 @@ public class BackupMessageActivity extends BaseActivity {
             }
         }
         if (!TextUtils.isEmpty(message)){
-            bitmap = CodeCreator.createQRCode(message, 248, 248, null);
+            bitmap = CodeCreator.createQRCode(message, 268, 268, null);
             backupImage.setImageBitmap(bitmap);
         }
     }
