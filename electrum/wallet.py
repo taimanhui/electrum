@@ -1501,19 +1501,17 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             try:
                 if k.can_sign(tmp_tx):
                     k.sign_transaction(tmp_tx, password)
-            except InvalidPassword as e:
-                raise BaseException(e)
             except BaseException as e:
                 msg = str(e)
                 print(f"wallet:L1510======={e}======")
                 if isinstance(e, UserCancelled):
                     raise BaseException("cancel by user")
-                if -1 != msg.find("PIN invalid"):
-                    raise BaseException(e)
                 if -1 != msg.find("sign success"):
                     break
-                sig_num += 1
-                continue
+                if -1 != msg.find("Can't Pair With You Device When Sign tx"):
+                    sig_num += 1
+                    continue
+                raise BaseException(e)
         
         if sig_num == len(self.get_keystores()):
             raise BaseException("Can't Pair With You Device")
