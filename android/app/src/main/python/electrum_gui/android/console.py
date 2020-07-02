@@ -484,6 +484,13 @@ class AndroidCommands(commands.Commands):
         try:
             if self.label_flag:
                 self.label_plugin.set_host(ip, port)
+                self.config.set_key('sync_server_host', '%s:%s' %(ip, port))
+        except BaseException as e:
+            raise e
+        
+    def get_sync_server_host(self):
+        try:
+            return self.config.get('sync_server_host', "39.105.86.163:8080")
         except BaseException as e:
             raise e
 
