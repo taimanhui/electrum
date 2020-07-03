@@ -340,6 +340,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
+            mToast(getString(R.string.switch_server));
             refreshLayout.finishRefresh();
             tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);

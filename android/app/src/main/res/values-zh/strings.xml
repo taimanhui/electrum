@@ -311,7 +311,6 @@
     <string name="input_dcrypt_pin">输入解密PIN码</string>
     <string name="duizhao_pin">请对照BixinKey备份的加密PIN码</string>
     <string name="choose_help">请选择生成助记词的钱包</string>
-    <string name="bitcoin_core_xxx">由于不同钱包助记词规则不同，目前支持 Bitcoin Core，比特派，库深等平台使用XXX规则生成的助记词</string>
     <string name="wallet">钱包</string>
     <string name="_12_help_word">请按顺序输入12位助记词</string>
     <string name="set_wallet">请设置钱包名称</string>
@@ -803,5 +802,7 @@
     <string name="edit_anysk_server">编辑同步服务器</string>
     <string name="ip_address">IP地址</string>
     <string name="add_success">添加成功</string>
+    <string name="bitcoin_core_xxx">由于不同钱包助记词规则不同，目前支持 Bitcoin Core，比特派，库神等平台使用XXX规则生成的助记词</string>
+    <string name="switch_server">链接异常，建议切换为bixin服务器</string>
 
 </resources>

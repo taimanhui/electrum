@@ -39,7 +39,8 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
-        <activity android:name=".activities.settings.EditAnyskServerActivity"></activity>
+        <activity android:name=".activities.personalwallet.mnemonic_word.ImportMnemonicWalletActivity"></activity>
+        <activity android:name=".activities.settings.EditAnyskServerActivity" />
         <activity android:name=".activities.settings.AnyskServerSetActivity" />
         <activity android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity" />
         <activity android:name=".activities.settings.recovery_set.SetBackupPassActivity" />
@@ -152,8 +153,8 @@
         <activity android:name=".activities.settings.recovery_set.ResetDeviceFailedActivity" />
         <activity android:name=".activities.settings.CheckXpubResultActivity" />
         <activity android:name=".activities.settings.recovery_set.RecoveryResult" />
-        <activity android:name=".activities.ConfirmPINPrompt"/>
-        <activity android:name=".activities.ActivatePromptPIN"/>
+        <activity android:name=".activities.ConfirmPINPrompt" />
+        <activity android:name=".activities.ActivatePromptPIN" />
         <activity
             android:name=".activities.service.NfcNotifyHelper"
             android:noHistory="true"

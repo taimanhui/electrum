@@ -42,10 +42,6 @@ public class MnemonicWordActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
-    @BindView(R.id.tet_keyName)
-    TextView tetKeyName;
-    @BindView(R.id.lin_Bitype)
-    LinearLayout linBitype;
     @BindView(R.id.edit_one)
     EditText editOne;
     @BindView(R.id.edit_two)
@@ -74,10 +70,6 @@ public class MnemonicWordActivity extends BaseActivity {
     Button btnSetPin;
     @BindView(R.id.text_paste)
     TextView textPaste;
-    private ArrayList<AddressEvent> dataListName;
-    private ChoosePayAddressAdapter choosePayAddressAdapetr;
-    private String wallet_name;
-    private String newWallet_type = "";
 
     @Override
     public int getLayoutId() {
@@ -109,32 +101,15 @@ public class MnemonicWordActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        dataListName = new ArrayList<>();
-        payAddressMore();
 
-    }
-
-    private void payAddressMore() {
-        dataListName.add(new AddressEvent("bitpie"));
-        dataListName.add(new AddressEvent("cobo"));
-        dataListName.add(new AddressEvent("trezor"));
-        dataListName.add(new AddressEvent("ledger"));
-        dataListName.add(new AddressEvent("electrum"));
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.lin_Bitype, R.id.btn_setPin, R.id.text_paste})
+    @OnClick({R.id.img_back, R.id.btn_setPin, R.id.text_paste})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
-                break;
-            case R.id.lin_Bitype:
-                if (dataListName == null || dataListName.size() == 0) {
-                    mToast(getString(R.string.none_wallet));
-                    return;
-                }
-                showDialogs(MnemonicWordActivity.this, R.layout.selectwallet_item);
                 break;
             case R.id.btn_setPin:
                 String strone = editOne.getText().toString();
@@ -149,15 +124,6 @@ public class MnemonicWordActivity extends BaseActivity {
                 String strten = editTen.getText().toString();
                 String streleven = editEleven.getText().toString();
                 String strtwelve = editTwelve.getText().toString();
-                Log.i("newWallet_name", "newWallet_name: " + newWallet_type);
-                if (dataListName == null || dataListName.size() == 0) {
-                    mToast(getString(R.string.none_wallet));
-                    return;
-                }
-                if (TextUtils.isEmpty(newWallet_type)) {
-                    mToast(getString(R.string.please_selectwallet));
-                    return;
-                }
                 if ((TextUtils.isEmpty(strone) || TextUtils.isEmpty(strtwo) || TextUtils.isEmpty(strthree) || TextUtils.isEmpty(strfour))
                         || TextUtils.isEmpty(strfive) || TextUtils.isEmpty(strsix) || TextUtils.isEmpty(strseven) || TextUtils.isEmpty(streight)
                         || TextUtils.isEmpty(strnine) || TextUtils.isEmpty(strten) || TextUtils.isEmpty(streleven) || TextUtils.isEmpty(strtwelve)) {
@@ -231,8 +197,7 @@ public class MnemonicWordActivity extends BaseActivity {
                     return;
                 }
 
-                Intent intent = new Intent(MnemonicWordActivity.this, CreateHelpWordWalletActivity.class);
-                intent.putExtra("newWallet_type", newWallet_type);
+                Intent intent = new Intent(MnemonicWordActivity.this, ImportMnemonicWalletActivity.class);
                 intent.putExtra("strNewseed", newSeed);
                 startActivity(intent);
                 finish();
@@ -240,48 +205,6 @@ public class MnemonicWordActivity extends BaseActivity {
                 mToast(getString(R.string.helpword_wrong));
             }
         }
-    }
-
-    private void showDialogs(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtom = new Dialog(context, R.style.dialog);
-        //cancel dialog
-        view.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-        view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-            newWallet_type = wallet_name;
-            tetKeyName.setText(newWallet_type);
-            dialogBtom.cancel();
-
-        });
-        RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
-
-//        recyPayaddress.setLayoutManager(new LinearLayoutManager(SendOne2OneMainPageActivity.this));
-        choosePayAddressAdapetr = new ChoosePayAddressAdapter(MnemonicWordActivity.this, dataListName);
-        recyPayaddress.setAdapter(choosePayAddressAdapetr);
-        recyclerviewOnclick();
-
-
-        dialogBtom.setContentView(view);
-        Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
-    }
-
-    private void recyclerviewOnclick() {
-        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                wallet_name = dataListName.get(position).getName();
-            }
-        });
     }
 
     class TextWatcher1 implements TextWatcher {

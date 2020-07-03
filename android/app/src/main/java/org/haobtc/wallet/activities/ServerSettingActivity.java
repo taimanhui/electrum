@@ -70,9 +70,9 @@ public class ServerSettingActivity extends BaseActivity {
         blockServerLine = preferences.getString("blockServerLine", "");
         String strAgentIP = preferences.getString("strAgentIP", "");
         String strPort = preferences.getString("strPort", "");
-        if (!TextUtils.isEmpty(strAgentIP)){
+        if (!TextUtils.isEmpty(strAgentIP)) {
             testNodeType.setText(String.format("%s:%s", strAgentIP, strPort));
-        }else{
+        } else {
             testNodeType.setText(getString(R.string.ip_port));
         }
         inits();
@@ -162,6 +162,10 @@ public class ServerSettingActivity extends BaseActivity {
         } else if (msgVote.equals("block_check")) {
             blockServerLine = preferences.getString("blockServerLine", "");
             testBlockcheck.setText(blockServerLine);
+        } else if (msgVote.equals("add_anysk_server")) {
+            String strAgentIP = preferences.getString("strAgentIP", "");
+            String strPort = preferences.getString("strPort", "");
+            testNodeType.setText(String.format("%s:%s", strAgentIP, strPort));
         }
     }
 

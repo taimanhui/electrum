@@ -207,7 +207,7 @@
             android:layout_marginEnd="@dimen/dp_16"
             android:background="@drawable/little_radio_blue"
             android:enabled="true"
-            android:text="@string/add_anysk_server"
+            android:text="@string/comfirm"
             android:textAllCaps="false"
             android:textColor="@android:color/white">
 
