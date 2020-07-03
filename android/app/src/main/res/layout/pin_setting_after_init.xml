@@ -7,7 +7,7 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".activities.WalletUnActivatedActivity">
+    tools:context=".activities.ActivatePromptPIN">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -44,6 +44,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/picture"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_30"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="25dp"
             android:text="@string/prompt_backup_pin"

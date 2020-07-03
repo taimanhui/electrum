@@ -1,13 +1,10 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -16,23 +13,13 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.adapter.ElectrumListAdapter;
-import org.haobtc.wallet.bean.CNYBean;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.SendMoreAddressEvent;
 import org.haobtc.wallet.utils.Daemon;
-
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -93,6 +80,19 @@ public class AnyskServerSetActivity extends BaseActivity {
     @Override
     public void initData() {
         switchCyn();
+        //get now server address
+        getServerAddress();
+    }
+
+    private void getServerAddress() {
+        try {
+            PyObject get_sync_server_host = Daemon.commands.callAttr("get_sync_server_host");
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void switchCyn() {

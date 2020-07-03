@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
@@ -31,6 +32,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.MainNewWalletBean;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -173,6 +175,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
             String walletType = mainWheelBean.getWalletType();
             String balanceC = mainWheelBean.getBalance();
+            EventBus.getDefault().post(new FirstEvent("load_wallet_finish"));
             if (!TextUtils.isEmpty(walletType)) {
                 String streplaceC = walletType.replaceAll("of", "/");
                 walletpersonce.setText(streplaceC);

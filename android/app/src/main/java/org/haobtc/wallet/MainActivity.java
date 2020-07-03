@@ -238,11 +238,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();
-                    if (!"standard".equals(strType)) {
-                        //get unBackupKey
-                        getunBackupKey();
-                    }
-
                     for (int i = 0; i < walletnameList.size(); i++) {
                         String name = walletnameList.get(i).getName();
                         String walletType = walletnameList.get(i).getType();
@@ -310,10 +305,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     refreshLayout.setEnableRefresh(true);
                     strNames = walletnameList.get(position).getName();
                     strType = walletnameList.get(position).getType();
-                    if (!"standard".equals(strType)) {
-                        //get unBackupKey
-                        getunBackupKey();
-                    }
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -322,6 +313,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
                         }
                     }, 500);
+                    if (!"standard".equals(strType)) {
+                        //get unBackupKey
+                        getunBackupKey();
+                    }
                 }
             }
 
@@ -598,6 +593,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 tetNone.setText(getString(R.string.no_records));
                 tetNone.setVisibility(View.VISIBLE);
                 recy_data.setVisibility(View.GONE);
+                break;
+            case "load_wallet_finish":
+                if (!"standard".equals(strType)) {
+                    //get unBackupKey
+                    getunBackupKey();
+                }
                 break;
         }
     }
