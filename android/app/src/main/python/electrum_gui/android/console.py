@@ -12,7 +12,7 @@ import pkgutil
 import unittest
 import threading
 from electrum.bitcoin import base_decode, is_address
-from electrum.keystore import bip84_derivation, bip49_derivation
+from electrum.keystore import bip84_derivation, bip49_derivation, bip44_derivation
 from electrum.plugin import Plugins
 from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
@@ -147,7 +147,7 @@ class AndroidCommands(commands.Commands):
                          'status', 'new_transaction', 'verified', 'set_server_status']
             self.network.register_callback(self.on_network_event, interests)
             self.network.register_callback(self.on_fee, ['fee'])
-            self.network.register_callback(self.on_fee_histogram, ['fee_histogram'])
+            #self.network.register_callback(self.on_fee_histogram, ['fee_histogram'])
             self.network.register_callback(self.on_quotes, ['on_quotes'])
             self.network.register_callback(self.on_history, ['on_history'])
         self.fiat_unit = self.daemon.fx.ccy if self.daemon.fx.is_enabled() else ''
@@ -206,17 +206,17 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def on_fee_histogram(self, *args):
-        self.update_history()
+    # def on_fee_histogram(self, *args):
+    #     self.update_history()
 
     def on_quotes(self, d):
         self.update_status()
-        self.update_history()
+        #self.update_history()
 
     def on_history(self, d):
         if self.wallet:
             self.wallet.clear_coin_price_cache()
-        self.update_history()
+        #self.update_history()
 
     def update_status(self):
         out = {}
@@ -319,8 +319,8 @@ class AndroidCommands(commands.Commands):
         self.update_status()
         # self.callbackIntent.onCallback("update_wallet")
 
-    def update_history(self):
-        print("")
+    #def update_history(self):
+        #print("")
         # self.callbackIntent.onCallback("update_history")
 
     def on_network_event(self, event, *args):
@@ -1470,6 +1470,33 @@ class AndroidCommands(commands.Commands):
                   'electrum' : "",
                  }
         return switch.get(name)
+
+    def get_addrs_from_seed(self, seed, passphrase = ""):
+        list_type_info = ["p2wpkh", "p2pkh", "p2wpkh-p2sh", "electrum"]
+        out = {}
+        for type in list_type_info:
+            bip39_derivation = ""
+            if type == "p2pkh":
+                bip39_derivation = bip44_derivation(0)
+            elif type == "p2wpkh":
+                bip39_derivation = bip84_derivation(0)
+            elif type == "p2wpkh-p2sh":
+                bip39_derivation = bip49_derivation(0)
+            
+            ks = ""
+            if type == "electrum":
+                ks = keystore.from_seed(seed, passphrase, False)
+                pubkeys = ks.derive_pubkey(0, 0).hex()
+                addr = bitcoin.pubkey_to_address('p2wpkh', pubkeys)
+            else:
+                ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
+                pubkeys = ks.derive_pubkey(0, 0).hex()
+                addr = bitcoin.pubkey_to_address(type, pubkeys)
+
+            out[type] = addr
+            print(f"out==addr = {addr}")
+        return json.dumps(out)
+
 
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
