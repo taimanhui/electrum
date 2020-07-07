@@ -57,10 +57,12 @@
 
                 <TextView
                     android:id="@+id/app_wallet"
-                    android:layout_width="@dimen/dp_45"
+                    android:layout_width="wrap_content"
                     android:layout_height="17dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
+                    android:paddingStart="@dimen/dp_6"
+                    android:paddingEnd="@dimen/dp_6"
                     android:layout_marginEnd="26dp"
                     android:background="@drawable/appwallet_text_back"
                     android:gravity="center"

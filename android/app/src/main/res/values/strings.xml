@@ -27,7 +27,7 @@
     <string name="use_change">Use change address</string>
     <string name="boot_message">I\'ve read and agreed (to terms of usage)</string>
     <string name="create">Create wallet</string>
-    <string name="import_w">Multi-person mutual wallet</string>
+    <string name="import_w">Multi-institution vaults</string>
     <string name="introduce">Introduction to Bixin cold wallet</string>
     <string name="introduce_detials">1. Bixin cold wallet is a hardware wallet for Bitcoin, where private keys will never have internet exposure \n 2. Bixin cold wallet is open-source \n 3. Bixin cold wallet has a display so that payment can be confirmed both ways, making your assets safer \n 4. Bixin cold wallet\'s card like design is more user friendly, making it easier to use or to keep \n 5. Bixin cold wallet uses military level chips \n 6. Bixin cold wallet does not support private key export. If you do not need multiple signers, you can set 1-of-2 multi-sig; so when a cold wallet is lost, you can use the backup cold wallet for transactions or asset transfers \n 7. We advise you to buy more than 2 cold wallets, purchase address</string>
     <string name="active">Activate cold wallet</string>
@@ -89,13 +89,13 @@
     <string name="count">0/20</string>
     <string name="fee">Fees</string>
     <string name="total">Total number of transactions</string>
-    <string name="to">Receiving address</string>
+    <string name="to">To address</string>
     <string name="from">Sending address</string>
     <string name="multi_sig">Multi-sig wallet</string>
     <string name="to_num">addresses</string>
     <string name="amount">Amount to transfer</string>
     <string name="need_more">Single address not enough?</string>
-    <string name="prompt_sig">Obtain existing TX info by entering TX message</string>
+    <string name="prompt_sig">The existing transaction information can be obtained by inputting transaction message</string>
     <string name="raw">Enter TX message</string>
     <string name="import_file">File importing</string>
     <string name="signature_trans">Sign transaction</string>
@@ -118,7 +118,7 @@
     <string name="prompt_message">Please confirm info below on cold wallet before tapping "OK" button</string>
     <string name="picture">this is a picture</string>
     <string name="wallet_create_successful">Wallet created</string>
-    <string name="balance">Account balance</string>
+    <string name="balance">Wallet balance</string>
     <string name="close">Close</string>
     <string name="wallet_list">Wallet list</string>
     <string name="add_">Add</string>
@@ -128,7 +128,7 @@
     <string name="watting_broadcast">To propagate</string>
     <string name="signature_status">Signature</string>
     <string name="transaction_status">Status</string>
-    <string name="transaction_waitting">To sign</string>
+    <string name="transaction_waitting">Unsigned</string>
     <string name="pin_input_again">Incorrect info, please enter again</string>
     <string name="slip_select_fee">Slide to choose miner fees</string>
     <string name="multi_type" translatable="false">2-3</string>
@@ -212,7 +212,7 @@
     <string name="my_walet_many">Personal wallet supports multi-hardware backup</string>
     <string name="fee_toohigh">Fee rate too high</string>
     <string name="pictrue_fail">Image resolution failed</string>
-    <string name="creat_ggwallet">Create mutual wallet</string>
+    <string name="creat_ggwallet">Create multi-institution vaults</string>
     <string name="Basics_message">Basic info</string>
     <string name="band_manager">Bind mutual managers</string>
     <string name="creat_finish">Creation complete</string>
@@ -248,7 +248,7 @@
     <string name="broad_text">Transaction needs enough confirmations on the main net to become valid</string>
     <string name="input_btc_address">Please enter the address</string>
     <string name="unconfirm">(unconfirmed)</string>
-    <string name="get_bi_address">Receiving address</string>
+    <string name="get_bi_address">To address</string>
     <string name="get_bi_num">Number to receive</string>
     <string name="introduce_choose">Remark (optional)</string>
     <string name="slowly">Slow</string>
@@ -470,7 +470,7 @@
     <string name="pin_wrong">Wrong PIN code, please re-enter</string>
     <string name="recover_backup">Restore back up wallet</string>
     <string name="improt_wrong">Request failed</string>
-    <string name="band_bixinkey">Linked BixinKey</string>
+    <string name="band_bixinkey">Binded BixinKey</string>
     <string name="legal_currency">Currency unit</string>
     <string name="backup_message">BixinKey-QWE backup info</string>
     <string name="goto_upgrade">Get upgrade</string>
@@ -603,7 +603,7 @@
     <string name="not_yet">Not yet</string>
     <string name="goto_set">Go to backup</string>
     <string name="some_wallet_existence">Some wallets already exist, import complete</string>
-    <string name="get_xpub">View the BiXinKEY extended public key</string>
+    <string name="get_xpub">View the BixinKey extended public key</string>
     <string name="check_xpub">View XPub</string>
     <string name="copy_xpub">Copy XPub</string>
     <string name="diy_hardware">Custom firmware files</string>

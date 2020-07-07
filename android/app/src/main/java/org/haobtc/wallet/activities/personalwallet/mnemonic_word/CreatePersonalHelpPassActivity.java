@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,6 +42,7 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
     private String name;
     private int walletNameNum;
     private SharedPreferences.Editor edit;
+    private String mnemonicWalletType;
 
     @Override
     public int getLayoutId() {
@@ -55,8 +57,9 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         edit = preferences.edit();
         Intent intent = getIntent();
         seed = intent.getStringExtra("strNewseed");
-        name = intent.getStringExtra("strnewWalletname");
+        name = intent.getStringExtra("newWalletName");
         walletNameNum = intent.getIntExtra("walletNameNum", 0);
+        mnemonicWalletType = intent.getStringExtra("mnemonicWalletType");
         inits();
 
     }
@@ -149,14 +152,19 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
             @Override
             public void run() {
                 try {
-                    Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed));
+                    if (!TextUtils.isEmpty(mnemonicWalletType)) {
+                        Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed), new Kwarg("bip39_derivation", mnemonicWalletType));
+                    } else {
+                        Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed));
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (e.getMessage().contains("path is exist")) {
                         mToast(getString(R.string.changewalletname));
-                    }else if (e.getMessage().contains("The same seed have create wallet")){
-                        String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=")+5);
-                        mToast(getString(R.string.same_seed_have)+haveWalletName);
+                    } else if (e.getMessage().contains("The same seed have create wallet")) {
+                        String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
+                        mToast(getString(R.string.same_seed_have) + haveWalletName);
                     }
                     return;
                 }

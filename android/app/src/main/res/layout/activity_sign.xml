@@ -34,7 +34,9 @@
 
         <TextView
             android:id="@+id/textCheckSign"
-            android:layout_width="@dimen/dp_40"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_10"
             android:layout_height="@dimen/dp_40"
             android:layout_alignParentEnd="true"
             android:layout_centerHorizontal="true"

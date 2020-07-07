@@ -309,7 +309,7 @@
 
                         <Button
                             android:id="@+id/btnRecommendFee"
-                            android:layout_width="70dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:background="@drawable/blue_strok"
                             android:text="@string/recomend_fee"

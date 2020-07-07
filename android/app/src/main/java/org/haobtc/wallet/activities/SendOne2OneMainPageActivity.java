@@ -99,7 +99,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     @BindView(R.id.tet_strunit)
     TextView tetStrunit;
     @BindView(R.id.btnRecommendFee)
-    Button btnRecommendFee;
+    TextView btnRecommendFee;
     @BindView(R.id.testNowCanUse)
     TextView testNowCanUse;
     @BindView(R.id.text_blocks)
@@ -139,7 +139,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String wallet_type_to_sign;
     private CommunicationModeSelector modeSelector;
     private String payAddress;
-    private String rowtx;
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     private boolean showSeek = true;
     private String onlickName;
@@ -176,7 +175,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         buttonSweep = findViewById(R.id.bn_sweep_one2noe);
         buttonPaste = findViewById(R.id.bn_paste_one2one);
         ImageView imgBack = findViewById(R.id.img_back);
-        Button btnRecommend = findViewById(R.id.btnRecommendFee);
+        TextView btnRecommend = findViewById(R.id.btnRecommendFee);
         btnRecommend.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         init();
@@ -293,11 +292,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (!TextUtils.isEmpty(sendamount)) {
             String amount = sendamount.substring(0, sendamount.indexOf(" "));
             tetamount.setText(String.format("%s", amount));
-            if (sendamount.contains("(")){
-                String allCNY = sendamount.substring(sendamount.indexOf("(")+1);
+            if (sendamount.contains("(")) {
+                String allCNY = sendamount.substring(sendamount.indexOf("(") + 1);
                 String strCNY = allCNY.substring(0, allCNY.indexOf(" "));
                 editChangeMoney.setText(strCNY);
-            }else{
+            } else {
                 try {
                     PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", strAmount);
                     editChangeMoney.setText(money.toString());
@@ -606,7 +605,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             String jsonObj = mktx.toString();
             Gson gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
-            rowtx = getAddressBean.getTx();
+            String rowtx = getAddressBean.getTx();
             if (!TextUtils.isEmpty(rowtx)) {
                 if (wallet_type_to_sign.contains("1-") && TextUtils.isEmpty(hideRefresh)) {
                     try {

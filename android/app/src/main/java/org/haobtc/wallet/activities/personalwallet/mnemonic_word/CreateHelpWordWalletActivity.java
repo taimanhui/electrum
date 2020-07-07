@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,9 +34,10 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
     @BindView(R.id.bn_multi_next)
     Button bnMultiNext;
     private String newWalletType;
-    private String strNewseed;
+    private String newSeed;
     private int defaultName;
     private int walletNameNum;
+    private String mnemonicWalletType;
 
     @Override
     public int getLayoutId() {
@@ -49,7 +51,8 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
         defaultName = preferences.getInt("defaultName", 0);//default wallet name
         Intent intent = getIntent();
         newWalletType = intent.getStringExtra("newWallet_type");
-        strNewseed = intent.getStringExtra("strNewseed");
+        newSeed = intent.getStringExtra("newSeed");
+        mnemonicWalletType = intent.getStringExtra("mnemonic_wallet_derivation");
 
     }
 
@@ -75,10 +78,10 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
                 if (input.length() > 19) {
                     Toast.makeText(CreateHelpWordWalletActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
                 }
-                if (TextUtils.isEmpty(s)){
+                if (TextUtils.isEmpty(s)) {
                     bnMultiNext.setEnabled(false);
                     bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }else{
+                } else {
                     bnMultiNext.setEnabled(true);
                     bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
                 }
@@ -99,15 +102,16 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
                 break;
             case R.id.bn_multi_next:
                 String strWalletname = editWalletNameSetting.getText().toString();
-                if (TextUtils.isEmpty(strWalletname)){
+                if (TextUtils.isEmpty(strWalletname)) {
                     mToast(getString(R.string.please_input_walletname));
                     return;
                 }
                 Intent intent = new Intent(CreateHelpWordWalletActivity.this, CreatePersonalHelpPassActivity.class);
                 intent.putExtra("newWallet_type", newWalletType);
-                intent.putExtra("strNewseed",strNewseed);
-                intent.putExtra("walletNameNum",walletNameNum);
-                intent.putExtra("strnewWalletname",strWalletname);
+                intent.putExtra("strNewseed", newSeed);
+                intent.putExtra("walletNameNum", walletNameNum);
+                intent.putExtra("newWalletName", strWalletname);
+                intent.putExtra("mnemonicWalletType", mnemonicWalletType);
                 startActivity(intent);
                 finish();
                 break;

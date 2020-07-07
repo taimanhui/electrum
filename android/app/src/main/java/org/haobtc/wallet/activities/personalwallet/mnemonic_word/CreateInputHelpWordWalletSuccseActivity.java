@@ -131,7 +131,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(FirstEvent updataHint) {
         String createSinglePass = updataHint.getMsg();
-        if (createSinglePass.equals("createSinglePass")) {
+        if ("createSinglePass".equals(createSinglePass)) {
             //get Or code
             mGeneratecode();
         }

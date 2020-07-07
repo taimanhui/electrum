@@ -460,7 +460,7 @@
 
                         </RelativeLayout>
 
-                        <LinearLayout
+                        <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="24dp"
                             android:layout_marginStart="@dimen/dp_16"
@@ -471,24 +471,27 @@
 
                             <TextView
                                 android:id="@+id/text_blocks"
-                                android:layout_width="0dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:textColor="@color/graytext_color"
                                 android:textSize="@dimen/sp_12"
                                 tools:text="180 sat/byte" />
 
-                            <Button
+                            <TextView
                                 android:id="@+id/btnRecommendFee"
-                                android:layout_width="70dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
+                                android:layout_alignParentEnd="true"
+                                android:paddingStart="@dimen/dp_10"
+                                android:paddingEnd="@dimen/dp_10"
+                                android:gravity="center"
                                 android:background="@drawable/blue_strok"
                                 android:text="@string/recomend_fee"
-                                android:textAllCaps="false"
                                 android:textColor="@color/button_bk_disableok"
-                                android:textSize="@dimen/sp_13" />
+                                android:textSize="@dimen/sp_13"
+                                tools:ignore="RelativeOverlap" />
 
-                        </LinearLayout>
+                        </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
 

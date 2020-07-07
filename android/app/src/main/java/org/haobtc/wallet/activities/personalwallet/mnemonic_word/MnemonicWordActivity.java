@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -24,11 +25,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.ChoosePayAddressAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.AddressEvent;
+import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.FromSeedEvent;
+import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
@@ -70,6 +75,7 @@ public class MnemonicWordActivity extends BaseActivity {
     Button btnSetPin;
     @BindView(R.id.text_paste)
     TextView textPaste;
+    private PyObject getFromSeed;
 
     @Override
     public int getLayoutId() {
@@ -179,34 +185,53 @@ public class MnemonicWordActivity extends BaseActivity {
     }
 
     private void judgeSeedorrectC(String newSeed) {
-        PyObject is_seed = null;
+        PyObject isSeeds = null;
         try {
-            is_seed = Daemon.commands.callAttr("is_seed", newSeed);
+            isSeeds = Daemon.commands.callAttr("is_seed", newSeed);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (is_seed != null) {
-            boolean isSeed = is_seed.toBoolean();
+        if (isSeeds != null) {
+            boolean isSeed = isSeeds.toBoolean();
             if (isSeed) {
                 try {
                     Daemon.commands.callAttr("is_exist_seed", newSeed);
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (e.getMessage().contains("The same seed have create wallet")) {
-                        String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=")+5);
-                        mToast(getString(R.string.same_seed_have)+haveWalletName);
+                        String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
+                        mToast(getString(R.string.same_seed_have) + haveWalletName);
                     }
                     return;
                 }
-
                 Intent intent = new Intent(MnemonicWordActivity.this, ImportMnemonicWalletActivity.class);
                 intent.putExtra("strNewseed", newSeed);
                 startActivity(intent);
                 finish();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //get import mnemonic address
+                        getAddrsFromSeed(newSeed);
+                    }
+                }, 350);
+
             } else {
                 mToast(getString(R.string.helpword_wrong));
             }
         }
+    }
+
+    //get import mnemonic address
+    private void getAddrsFromSeed(String newSeed) {
+        try {
+            getFromSeed = Daemon.commands.callAttr("get_addrs_from_seed", newSeed);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        EventBus.getDefault().postSticky(new FromSeedEvent(getFromSeed.toString()));
     }
 
     class TextWatcher1 implements TextWatcher {

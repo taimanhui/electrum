@@ -66,6 +66,7 @@
             android:id="@+id/recl_mnemonic"
             tools:itemCount="2"
             tools:listitem="@layout/mnemonic_item"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:layout_width="match_parent"
             android:layout_marginStart="@dimen/dp_10"
             android:layout_marginEnd="@dimen/dp_10"
