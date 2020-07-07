@@ -71,6 +71,7 @@ public class VerificationSuccessActivity extends BaseActivity {
                 testStatus.setText(getString(R.string.verifying_overtime));
                 testContent.setText(getString(R.string.verifying_retry));
                 break;
+            default:
         }
     }
 
@@ -88,6 +89,7 @@ public class VerificationSuccessActivity extends BaseActivity {
                 //Ble.getInstance().disconnectAll();
                 finishAffinity();
                 break;
+            default:
         }
     }
 }

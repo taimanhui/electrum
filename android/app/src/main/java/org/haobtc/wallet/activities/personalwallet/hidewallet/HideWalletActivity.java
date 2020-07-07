@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -22,7 +21,6 @@ import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.Kwarg;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
@@ -51,7 +49,7 @@ public class HideWalletActivity extends BaseActivity {
     // new version code
     public String pin = "";
     private Dialog dialogBtoms;
-    private EditText edit_bixinName;
+    private EditText editBixinName;
     private TextView textView;
     private SharedPreferences.Editor edit;
     private int defaultKeyNum;
@@ -90,6 +88,7 @@ public class HideWalletActivity extends BaseActivity {
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
                 break;
+            default:
         }
     }
 
@@ -99,13 +98,13 @@ public class HideWalletActivity extends BaseActivity {
         //set see view
         View view = View.inflate(context, resource, null);
         dialogBtoms = new Dialog(context, R.style.dialog);
-        edit_bixinName = view.findViewById(R.id.edit_keyName);
-        TextView tet_Num = view.findViewById(R.id.txt_textNum);
+        editBixinName = view.findViewById(R.id.edit_keyName);
+        TextView tetNum = view.findViewById(R.id.txt_textNum);
         textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
         defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
-        edit_bixinName.addTextChangedListener(new TextWatcher() {
+        editBixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
+        editBixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
             @Override
@@ -115,7 +114,7 @@ public class HideWalletActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tet_Num.setText(String.format(Locale.CHINA, "%d/20", input.length()));
+                tetNum.setText(String.format(Locale.CHINA, "%d/20", input.length()));
                 if (input.length() > 19) {
                     mToast(getString(R.string.moreinput_text));
                 }
@@ -127,7 +126,7 @@ public class HideWalletActivity extends BaseActivity {
             }
         });
         view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
-            String strBixinname = edit_bixinName.getText().toString();
+            String strBixinname = editBixinName.getText().toString();
             String strSweep = textView.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
                 mToast(getString(R.string.input_name));
@@ -141,10 +140,13 @@ public class HideWalletActivity extends BaseActivity {
                 String message = e.getMessage();
                 if ("BaseException: file already exists at path".equals(message)) {
                     mToast(getString(R.string.changewalletname));
-                }else if (message.contains("The same xpubs have create wallet")){
-                    String haveWalletName = message.substring(message.indexOf("name=")+5);
-                    mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
+                }else {
+                    assert message != null;
+                    if (message.contains("The same xpubs have create wallet")){
+                        String haveWalletName = message.substring(message.indexOf("name=")+5);
+                        mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
 
+                    }
                 }
                 return;
             }
@@ -167,6 +169,7 @@ public class HideWalletActivity extends BaseActivity {
         dialogBtoms.setContentView(view);
         Window window = dialogBtoms.getWindow();
         //set pop_up size
+        assert window != null;
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         //set locate
         window.setGravity(Gravity.BOTTOM);

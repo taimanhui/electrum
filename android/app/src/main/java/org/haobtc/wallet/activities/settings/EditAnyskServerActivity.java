@@ -69,6 +69,7 @@ public class EditAnyskServerActivity extends BaseActivity {
                 break;
             case R.id.btnConfirm:
                 break;
+            default:
         }
     }
 

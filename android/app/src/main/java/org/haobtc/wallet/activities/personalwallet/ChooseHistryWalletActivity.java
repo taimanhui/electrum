@@ -41,10 +41,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     Button btnFinish;
     @BindView(R.id.test_no_wallet)
     TextView testNoWallet;
-    private String history_xpub;
-    private String walletType;
+    private String historyXpub;
     private ArrayList<InputHistoryWalletEvent> walletList;
-    private InputHistoryWalletEvent inputHistoryWalletEvent;
     private ImportHistryWalletAdapter histryWalletAdapter;
     private ArrayList<InputHistoryWalletEvent> list;
     private ArrayList<ArrayList<Object>> listDates;
@@ -58,8 +56,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         Intent intent = getIntent();
-        history_xpub = intent.getStringExtra("history_xpub");
-        Log.i("history_xpub", "initView: " + history_xpub);
+        historyXpub = intent.getStringExtra("history_xpub");
+        Log.i("history_xpub", "initView: " + historyXpub);
 
     }
 
@@ -78,7 +76,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     private void getHistryWallet() {
         PyObject infoFromServer = null;
         try {
-            infoFromServer = Daemon.commands.callAttr("get_wallet_info_from_server", history_xpub);
+            infoFromServer = Daemon.commands.callAttr("get_wallet_info_from_server", historyXpub);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -90,10 +88,10 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                     JSONArray jsonArray = new JSONArray(strfromServer);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        walletType = jsonObject.getString("walletType");
+                        String walletType = jsonObject.getString("walletType");
                         String xpubs = jsonObject.getString("xpubs");
                         String name = jsonObject.getString("walletName");
-                        inputHistoryWalletEvent = new InputHistoryWalletEvent();
+                        InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
                         inputHistoryWalletEvent.setType(walletType);
                         inputHistoryWalletEvent.setXpubs(xpubs);
                         inputHistoryWalletEvent.setName(name);
@@ -172,13 +170,14 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                     mToast(getString(R.string.please_import_wallet));
                 }
                 break;
+            default:
         }
     }
 
     private void importWallet(String listDates) {
         try {
-            PyObject bulk_create_wallet = Daemon.commands.callAttr("bulk_create_wallet", listDates);
-            String errorStr = bulk_create_wallet.toString();
+            PyObject bulkCreateWallet = Daemon.commands.callAttr("bulk_create_wallet", listDates);
+            String errorStr = bulkCreateWallet.toString();
             if (!TextUtils.isEmpty(errorStr)) {
                 mToast(getString(R.string.some_wallet_existence));
             }

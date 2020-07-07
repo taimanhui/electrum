@@ -43,6 +43,9 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usbTransport;
+/**
+ * @author jinxiaomin
+ */
 @Deprecated
 public class ActivatedProcessing extends BaseActivity {
     public static final String TAG = ActivatedProcessing.class.getSimpleName();
@@ -60,6 +63,7 @@ public class ActivatedProcessing extends BaseActivity {
     int MAX_LEVEL = 10000;
     private String tag_sendxpub;
 
+    @Override
     public int getLayoutId() {
         return isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
     }
@@ -143,6 +147,7 @@ public class ActivatedProcessing extends BaseActivity {
                 }
                 startActivity(new Intent(this, ActiveFailedActivity.class));
                 finish();
+            default:
         }
     }
 

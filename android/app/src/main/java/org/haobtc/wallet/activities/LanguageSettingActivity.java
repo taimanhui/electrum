@@ -86,6 +86,7 @@ public class LanguageSettingActivity extends BaseActivity {
                 break;
             case R.id.radio_Japanese:
                 break;
+            default:
         }
     }
 

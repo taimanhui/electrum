@@ -88,6 +88,7 @@ public class FixHardwareLanguageActivity extends BaseActivity {
                 intent1.putExtra("set_key_language", "english");
                 startActivity(intent1);
                 break;
+            default:
         }
     }
 

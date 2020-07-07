@@ -43,6 +43,7 @@ public class ResetDeviceFailedActivity extends BaseActivity {
                // Ble.getInstance().disconnectAll();
                 finishAffinity();
                 break;
+            default:
         }
     }
 }

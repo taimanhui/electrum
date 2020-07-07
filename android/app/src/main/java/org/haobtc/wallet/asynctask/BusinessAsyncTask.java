@@ -106,6 +106,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                     onException(e);
                 }
                 break;
+            default:
         }
         return result;
     }

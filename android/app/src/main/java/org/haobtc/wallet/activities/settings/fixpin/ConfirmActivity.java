@@ -62,6 +62,7 @@ public class ConfirmActivity extends BaseActivity {
                 }
                 finishAffinity();
                 break;
+            default:
         }
     }
 }

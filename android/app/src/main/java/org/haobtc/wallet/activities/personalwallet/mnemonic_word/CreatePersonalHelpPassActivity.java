@@ -125,6 +125,7 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 finish();
                 improtWallet();
                 break;
+            default:
         }
     }
 

@@ -124,7 +124,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         wallet_card_name.setText(name);
         if (getActivity() != null) {
             if (!TextUtils.isEmpty(personce)) {
-                if (personce.equals("standard")) {
+                if ("standard".equals(personce)) {
                     btn_appWallet.setVisibility(View.VISIBLE);
                     walletpersonce.setVisibility(View.GONE);
                     conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_gray_bg));
@@ -144,7 +144,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
     private void initdata() {
         // first wallet
-        if (isFirst) refreshList();
+        if (isFirst) {
+            refreshList();
+        }
         //get wallet unit
         String base_unit = preferences.getString("base_unit", "");
         walletCard.setText(String.format("%s(%s)", getString(R.string.balance), base_unit));
@@ -272,7 +274,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                     startActivity(intent3);
                 }
                 break;
-
+            default:
         }
     }
 

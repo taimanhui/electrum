@@ -124,6 +124,7 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     }
                 });
                 break;
+            default:
         }
     }
 

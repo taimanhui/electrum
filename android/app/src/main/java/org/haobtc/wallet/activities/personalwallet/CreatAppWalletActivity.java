@@ -27,7 +27,6 @@ public class CreatAppWalletActivity extends BaseActivity implements TextWatcher 
     EditText tetSetWalletName;
     @BindView(R.id.btn_setPin)
     Button btnSetPin;
-    private SharedPreferences preferences;
     private int defaultName;
 
     @Override
@@ -38,7 +37,7 @@ public class CreatAppWalletActivity extends BaseActivity implements TextWatcher 
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         defaultName = preferences.getInt("defaultName", 0);
 
     }
@@ -68,8 +67,8 @@ public class CreatAppWalletActivity extends BaseActivity implements TextWatcher 
                 intent.putExtra("strName",strWalletName);
                 startActivity(intent);
                 finish();
-
                 break;
+            default:
         }
     }
 

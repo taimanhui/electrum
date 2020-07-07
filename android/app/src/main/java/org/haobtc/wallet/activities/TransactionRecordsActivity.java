@@ -223,6 +223,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                     mToast(getString(R.string.delete_unBroad));
                                 }
                                 break;
+                            default:
                         }
                     }
                 });
@@ -262,6 +263,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                     trsactionlistAdapter.notifyDataSetChanged();
                 }
                 break;
+            default:
         }
     }
 

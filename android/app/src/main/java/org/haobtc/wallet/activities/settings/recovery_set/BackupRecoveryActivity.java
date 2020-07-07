@@ -111,6 +111,7 @@ public class BackupRecoveryActivity extends BaseActivity {
                             backupAdapter.notifyDataSetChanged();
                             mToast(getString(R.string.delete_succse));
                             break;
+                        default:
                     }
                 }
             });
@@ -138,6 +139,7 @@ public class BackupRecoveryActivity extends BaseActivity {
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
                 break;
+            default:
         }
     }
     @Subscribe

@@ -43,6 +43,7 @@ public class PinNewActivity extends BaseActivity {
         return R.layout.pin_input_new;
     }
 
+    @Override
     public void initView() {
         ButterKnife.bind(this);
         keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
@@ -103,6 +104,7 @@ public class PinNewActivity extends BaseActivity {
                     Toast.makeText(getBaseContext(), getString(R.string.pass_morethan_6), Toast.LENGTH_SHORT).show();
                 }
                 break;
+            default:
         }
     }
 

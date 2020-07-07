@@ -70,6 +70,7 @@ public class InputBackupPassActivity extends BaseActivity {
             case R.id.next:
 
                 break;
+            default:
         }
     }
 }

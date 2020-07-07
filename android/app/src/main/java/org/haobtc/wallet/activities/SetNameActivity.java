@@ -82,6 +82,7 @@ public class SetNameActivity extends BaseActivity {
 //                intent.putExtra("pin_type", 2);
 //                startActivity(intent);
                 break;
+            default:
         }
     }
 

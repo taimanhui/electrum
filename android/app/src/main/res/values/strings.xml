@@ -813,7 +813,7 @@
     <string name="backup_content">To save the pin by other means:
         \n 1. View and save the backup file to other devices through [set BixinKey backup];
         \n 2.Back up to the new BixinKey so that multiple BixinKeys have the same private key.</string>
-    <string name="bixinkey_lite">Backup to new BixinKey/Lite</string>
+    <string name="bixinkey_lite">Backup to BixinKey Lite</string>
     <string name="set_backup_pass">Set backup password</string>
     <string name="backup_input_type">Only numbers and letters can be entered</string>
     <string name="set__pass">Set password</string>
@@ -840,6 +840,12 @@
     <string name="add_success">Added successfully</string>
     <string name="bitcoin_core_xxx">Due to the different rules of mnemonics in different wallets, at present, bitcoin core, bitpie, Kushen and other platforms use XXX rule to generate mnemonics</string>
     <string name="switch_server">Abnormal link,it is recommended to switch to Bixin server</string>
+    <string name="recovery_new_key">Restore to new BixinKey</string>
+    <string name="key_lite">Fit the phone with BixinKey Lite</string>
+    <string name="has_been_recovery">Restore from an existing backup</string>
+    <string name="from_key_lite">Restore from BixinKey Lite</string>
+    <string name="connect_method">Support the following communication methods, you can choose one of them (default is NFC)：</string>
+    <string name="nfc">NFC</string>
 
 
 </resources>

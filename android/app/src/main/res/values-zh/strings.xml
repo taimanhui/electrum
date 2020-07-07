@@ -779,7 +779,7 @@
     <string name="backup_content">通过其他方式保存PIN码：
         \n 1.通过【设置-BixinKey备份】查看并将备份文件保存到其他设备；
         \n 2.备份到新BixinKey，使多个BixinKey拥有相同的私钥。</string>
-    <string name="bixinkey_lite">备份到新BixinKey/Lite</string>
+    <string name="bixinkey_lite">备份到BixinKey Lite</string>
     <string name="backup_finish">备份完成</string>
     <string name="set_backup_pass">设置备份密码</string>
     <string name="backup_input_type">仅可输入数字和字母</string>
@@ -804,5 +804,10 @@
     <string name="add_success">添加成功</string>
     <string name="bitcoin_core_xxx">由于不同钱包助记词规则不同，目前支持 Bitcoin Core，比特派，库神等平台使用XXX规则生成的助记词</string>
     <string name="switch_server">链接异常，建议切换为bixin服务器</string>
+    <string name="recovery_new_key">恢复到新BixinKey</string>
+    <string name="key_lite">将手机与BixinKey Lite贴合</string>
+    <string name="has_been_recovery">从已有备份恢复</string>
+    <string name="from_key_lite">从BixinKey Lite恢复</string>
+    <string name="connect_method">支持如下几种通讯方式，您可以任选其中一种（默认为NFC）：</string>
 
 </resources>

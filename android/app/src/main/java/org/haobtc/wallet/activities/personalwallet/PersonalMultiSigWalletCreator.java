@@ -84,8 +84,8 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 ArrayList<String> pubList = new ArrayList<>();
                 for (int i = 0; i < addEventsDatas.size(); i++) {
                     String keyaddress = addEventsDatas.get(i).getKeyaddress();
-                    String device_id = addEventsDatas.get(i).getDevice_id();
-                    pubList.add("[\"" + keyaddress + "\",\"" + device_id + "\"]");
+                    String deviceId = addEventsDatas.get(i).getDevice_id();
+                    pubList.add("[\"" + keyaddress + "\",\"" + deviceId + "\"]");
                 }
                 try {
                     Daemon.commands.callAttr("import_create_hw_wallet", walletNames, 1, sigNum, pubList.toString());
@@ -166,6 +166,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             case R.id.bn_complete_add_cosigner:
                 handler.sendEmptyMessage(1);
                 break;
+            default:
         }
     }
 
@@ -182,25 +183,25 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(PersonalMutiSigEvent event) {
         String xpub = event.getXpub();
-        String device_id = event.getDevice_id();
+        String deviceId = event.getDevice_id();
         String label = event.getLabel();
-        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, device_id, label);
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, deviceId, label);
     }
 
-    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id, String label) {
+    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String deviceId, String label) {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        TextView edit_bixinName = view.findViewById(R.id.edit_keyName);
-        TextView tet_Num = view.findViewById(R.id.txt_textNum);
+        TextView editBixinName = view.findViewById(R.id.edit_keyName);
+        TextView tetNum = view.findViewById(R.id.txt_textNum);
         TextView textView = view.findViewById(R.id.text_public_key_cosigner_popup);
         textView.setText(xpub);
         if (!TextUtils.isEmpty(label)){
-            edit_bixinName.setText(label);
+            editBixinName.setText(label);
         }else{
-            edit_bixinName.setText(getString(R.string.BixinKey));
+            editBixinName.setText(getString(R.string.BixinKey));
         }
-        edit_bixinName.addTextChangedListener(new TextWatcher() {
+        editBixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
             @Override
@@ -210,7 +211,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tet_Num.setText(String.format(Locale.CHINA, "%d/20", input.length()));
+                tetNum.setText(String.format(Locale.CHINA, "%d/20", input.length()));
                 if (input.length() > 19) {
                     Toast.makeText(PersonalMultiSigWalletCreator.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
                 }
@@ -222,7 +223,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             }
         });
         view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
-            String strBixinname = edit_bixinName.getText().toString();
+            String strBixinname = editBixinName.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
                 mToast(getString(R.string.input_name));
                 return;
@@ -234,7 +235,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             addBixinKeyEvent.setKeyname(strBixinname);
             addBixinKeyEvent.setKeyaddress(xpub);
-            addBixinKeyEvent.setDevice_id(device_id);
+            addBixinKeyEvent.setDevice_id(deviceId);
             addEventsDatas.add(addBixinKeyEvent);
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
@@ -275,6 +276,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
         dialogBtoms.setContentView(view);
         Window window = dialogBtoms.getWindow();
         //set pop_up size
+        assert window != null;
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         //set locate
         window.setGravity(Gravity.BOTTOM);

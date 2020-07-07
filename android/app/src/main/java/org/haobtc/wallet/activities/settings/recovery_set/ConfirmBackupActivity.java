@@ -50,6 +50,7 @@ public class ConfirmBackupActivity extends BaseActivity {
                 break;
             case R.id.btn_setPin:
                 break;
+            default:
         }
     }
 }

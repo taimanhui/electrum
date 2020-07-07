@@ -47,6 +47,7 @@ public class SignatureProcessing extends BaseActivity {
     private String pin, passphrash;
     int MAX_LEVEL = 10000;
 
+    @Override
     public int getLayoutId() {
         return CommunicationModeSelector.isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
     }
@@ -98,6 +99,8 @@ public class SignatureProcessing extends BaseActivity {
             case "0":
                 Toast.makeText(this, getString(R.string.device_activat_fail), Toast.LENGTH_LONG).show();
                 finishAffinity();
+                break;
+            default:
         }
     }
 

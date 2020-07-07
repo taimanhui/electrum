@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.settings.fixpin;
 
+import android.annotation.SuppressLint;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,6 +13,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * @author jinxiaomin
+ */
+@SuppressLint("Registered")
 public class ChangePinFailedActivity extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -42,6 +47,7 @@ public class ChangePinFailedActivity extends BaseActivity {
                 // Ble.getInstance().disconnectAll();
                 finishAffinity();
                 break;
+            default:
         }
     }
 }

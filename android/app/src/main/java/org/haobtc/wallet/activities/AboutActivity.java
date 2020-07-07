@@ -76,6 +76,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
             case R.id.tet_s5:
                 mIntent(UserAgreementActivity.class);
                 break;
+            default:
         }
     }
 

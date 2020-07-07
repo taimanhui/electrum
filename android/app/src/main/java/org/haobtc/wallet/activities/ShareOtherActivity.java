@@ -176,8 +176,8 @@ public class ShareOtherActivity extends BaseActivity {
                     tetTrsactionText.setLayoutParams(linearParams1);
                     tetOpen.setText(getString(R.string.spin_open));
                 }
-
                 break;
+            default:
         }
     }
 
@@ -272,6 +272,7 @@ public class ShareOtherActivity extends BaseActivity {
                         }
                     }
                     break;
+                default:
             }
         }
     };

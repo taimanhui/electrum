@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.service.BackupRecoveryLiteActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 
@@ -16,13 +17,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ActivateBackupSuccessActivity extends BaseActivity {
-
-    @BindView(R.id.img_back)
-    ImageView imgBack;
-    @BindView(R.id.btn_finish)
-    Button btnFinish;
-    @BindView(R.id.backup_to_new)
-    TextView backupToNew;
 
     @Override
     public int getLayoutId() {
@@ -49,10 +43,11 @@ public class ActivateBackupSuccessActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.backup_to_new:
-                Intent intent = new Intent(this, CommunicationModeSelector.class);
+                Intent intent = new Intent(this, BackupRecoveryLiteActivity.class);
                 intent.putExtra("extras", getIntent().getStringExtra("message"));
                 intent.setAction("recovery");
                 startActivity(intent);
+            default:
         }
     }
 

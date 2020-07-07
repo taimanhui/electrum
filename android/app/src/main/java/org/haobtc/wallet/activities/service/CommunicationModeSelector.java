@@ -514,7 +514,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         isActive = false;
         // used for combined init logic only.
         if (isNFC) {
-            if (combinedInit()) return;
+            if (combinedInit()) {
+                return;
+            }
         }
         try {
             features = getFeatures(isNFC);
@@ -723,9 +725,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     }
 
     private void hardwareLanguage(boolean isNFC) {
-        String key_language = getIntent().getStringExtra("set_key_language");
+        String keyLanguage = getIntent().getStringExtra("set_key_language");
         try {
-            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fix_hardware_language", key_language);
+            new BusinessAsyncTask().setHelper(this).execute( BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fix_hardware_language", keyLanguage);
         } catch (Exception e) {
             e.printStackTrace();
         }

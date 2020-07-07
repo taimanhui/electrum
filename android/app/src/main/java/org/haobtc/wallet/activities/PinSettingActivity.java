@@ -166,6 +166,7 @@ public class PinSettingActivity extends BaseActivity {
                     Toast.makeText(getBaseContext(), getString(R.string.pass_morethan_6), Toast.LENGTH_SHORT).show();
                 }
                 break;
+            default:
         }
     }
 

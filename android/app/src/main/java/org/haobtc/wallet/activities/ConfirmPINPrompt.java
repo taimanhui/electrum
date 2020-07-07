@@ -63,6 +63,7 @@ public class ConfirmPINPrompt extends BaseActivity {
                     startActivity(intent);
                 }
                 break;
+            default:
         }
     }
 

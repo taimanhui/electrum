@@ -205,6 +205,7 @@ public class BleService extends Service {
                         }
                         isBonded = true;
                         break;
+                    default:
                 }
             }
 

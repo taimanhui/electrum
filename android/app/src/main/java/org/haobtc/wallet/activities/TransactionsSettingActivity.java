@@ -42,12 +42,13 @@ public class TransactionsSettingActivity extends BaseActivity {
     private SharedPreferences preferences;
     private MyDialog myDialog;
 
+    @Override
     public int getLayoutId() {
         return R.layout.transaction_setting;
     }
 
+    @Override
     public void initView() {
-
         ButterKnife.bind(this);
         myDialog = MyDialog.showDialog(TransactionsSettingActivity.this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
@@ -56,20 +57,20 @@ public class TransactionsSettingActivity extends BaseActivity {
     }
 
     private void init() {
-        boolean set_rbf = preferences.getBoolean("set_rbf", false);
-        boolean set_unconf = preferences.getBoolean("set_unconf", false);
-        boolean set_use_change = preferences.getBoolean("set_use_change", false);
-        if (set_rbf) {
+        boolean setRbf = preferences.getBoolean("set_rbf", false);
+        boolean setUnconf = preferences.getBoolean("set_unconf", false);
+        boolean setUseChange = preferences.getBoolean("set_use_change", false);
+        if (setRbf) {
             switchRbf.setChecked(true);
         } else {
             switchRbf.setChecked(false);
         }
-        if (set_unconf) {
+        if (setUnconf) {
             switchNoConfirm.setChecked(true);
         } else {
             switchNoConfirm.setChecked(false);
         }
-        if (set_use_change) {
+        if (setUseChange) {
             switchFind.setChecked(true);
         } else {
             switchFind.setChecked(false);
@@ -169,6 +170,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 //Restore default settings
                 restoreSetDialog();
                 break;
+            default:
         }
     }
 
@@ -203,6 +205,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 case 1:
                     restoreSet();
                     break;
+                default:
             }
         }
     };

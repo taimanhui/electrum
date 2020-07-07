@@ -69,6 +69,7 @@ public class SetBackupPassActivity extends BaseActivity {
             case R.id.btn_next:
 
                 break;
+            default:
         }
     }
 }

@@ -148,6 +148,7 @@ public class BackupMessageActivity extends BaseActivity {
                     finish();
                 }
                 break;
+            default:
         }
     }
 

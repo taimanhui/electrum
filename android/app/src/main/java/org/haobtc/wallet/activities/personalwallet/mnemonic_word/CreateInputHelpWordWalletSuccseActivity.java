@@ -85,6 +85,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
                 mIntent(MainActivity.class);
                 finishAffinity();
                 break;
+            default:
         }
     }
 

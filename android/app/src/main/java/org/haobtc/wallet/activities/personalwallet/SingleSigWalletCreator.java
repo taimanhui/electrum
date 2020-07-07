@@ -52,7 +52,6 @@ public class SingleSigWalletCreator extends BaseActivity {
     public String pin = "";
     public static final String TAG = SingleSigWalletCreator.class.getSimpleName();
     private String walletName;
-    private int pub;
     private long lastNotify;
 
     @Override
@@ -155,6 +154,7 @@ public class SingleSigWalletCreator extends BaseActivity {
             case R.id.bn_multi_next:
                 mCreatOnlyWallet();
                 break;
+            default:
         }
     }
 
@@ -162,7 +162,7 @@ public class SingleSigWalletCreator extends BaseActivity {
     private void mCreatOnlyWallet() {
         String strWalletName = editWalletNameSetting.getText().toString();
         String indication = tvIndicator.getText().toString();
-        pub = Integer.parseInt(indication);
+        int pub = Integer.parseInt(indication);
         if (TextUtils.isEmpty(strWalletName)) {
             mToast(getString(R.string.set_wallet));
             return;
@@ -197,8 +197,8 @@ public class SingleSigWalletCreator extends BaseActivity {
             return;
         }
         String xpub = event.getXpub();
-        String device_id = event.getDevice_id();
-        String strXpub = "[[\"" + xpub + "\",\"" + device_id + "\"]]";
+        String deviceId = event.getDevice_id();
+        String strXpub = "[[\"" + xpub + "\",\"" + deviceId + "\"]]";
         walletName = editWalletNameSetting.getText().toString();
         try {
             Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, 1, strXpub);
@@ -208,9 +208,12 @@ public class SingleSigWalletCreator extends BaseActivity {
             EventBus.getDefault().post(new ExitEvent());
             if ("BaseException: file already exists at path".equals(message)) {
                 mToast(getString(R.string.changewalletname));
-            } else if (message.contains("The same xpubs have create wallet")) {
-                String haveWalletName = message.substring(message.indexOf("name=") + 5);
-                mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
+            } else {
+                assert message != null;
+                if (message.contains("The same xpubs have create wallet")) {
+                    String haveWalletName = message.substring(message.indexOf("name=") + 5);
+                    mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
+                }
             }
             return;
         }

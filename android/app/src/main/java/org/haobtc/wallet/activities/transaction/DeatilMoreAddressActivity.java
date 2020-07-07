@@ -85,13 +85,8 @@ public class DeatilMoreAddressActivity extends BaseActivity {
             case R.id.img_backReceict:
                 finish();
                 break;
+            default:
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }

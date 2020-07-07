@@ -56,6 +56,7 @@ public class ImportHistoryWalletActivity extends BaseActivity {
                 intent.putExtra("tag", TAG);
                 startActivity(intent);
                 break;
+            default:
         }
     }
 

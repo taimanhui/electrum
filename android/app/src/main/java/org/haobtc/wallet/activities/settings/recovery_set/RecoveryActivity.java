@@ -52,6 +52,7 @@ public class RecoveryActivity extends BaseActivity {
     RecyclerView backupList;
     private List<String> deviceValue;
     private boolean isScan;
+
     @Override
     public int getLayoutId() {
         return R.layout.recovery;
@@ -76,7 +77,7 @@ public class RecoveryActivity extends BaseActivity {
         //key
         for (Map.Entry<String, ?> entry : backAll.entrySet()) {
             String mapValue = (String) entry.getValue();
-            if (!TextUtils.isEmpty(mapValue)){
+            if (!TextUtils.isEmpty(mapValue)) {
                 deviceValue.add(entry.getKey() + ":" + mapValue);
             }
         }
@@ -94,8 +95,8 @@ public class RecoveryActivity extends BaseActivity {
 //                            intent.putExtra("message",deviceValue.get(position).getBackupMessage());
 //                            intent.putExtra("tag","recovery");
 //                            startActivity(intent);
-                              editText1.getText().clear();
-                              editText1.setText(deviceValue.get(position).split(":", 3)[2]);
+                            editText1.getText().clear();
+                            editText1.setText(deviceValue.get(position).split(":", 3)[2]);
                             break;
                         case R.id.linear_delete:
 //                            String blename = deviceValue.get(position).getBleName();
@@ -107,6 +108,7 @@ public class RecoveryActivity extends BaseActivity {
 //                            mToast(getString(R.string.delete_succse));
                             mlToast("delete is forbidden");
                             break;
+                        default:
                     }
                 }
             });
@@ -153,6 +155,7 @@ public class RecoveryActivity extends BaseActivity {
                 startActivity(intent);
                 isScan = false;
                 break;
+            default:
         }
     }
 

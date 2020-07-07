@@ -59,6 +59,7 @@ import org.haobtc.wallet.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -188,6 +189,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 testSignTips.setText(getString(R.string.input_message));
                 editTrsactionTest.setHint(getString(R.string.input_sign_msg));
                 break;
+            default:
         }
     }
 
@@ -304,16 +306,17 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             case R.id.textCheckSign:
                 mIntent(CheckSignActivity.class);
                 break;
+            default:
         }
     }
 
     private void signDialog() {
         View view1 = LayoutInflater.from(SignActivity.this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(SignActivity.this).setView(view1).create();
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        EditText str_pass = view1.findViewById(R.id.edit_password);
+        Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        EditText strPass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-            String strPassword = str_pass.getText().toString();
+            String strPassword = strPass.getText().toString();
             if (TextUtils.isEmpty(strPassword)) {
                 mToast(getString(R.string.please_input_pass));
                 return;
@@ -322,7 +325,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             try {
                 sign_message = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, "", new Kwarg("password", strPassword));
             } catch (Exception e) {
-                if (e.getMessage().contains("Incorrect password")) {
+                if (Objects.requireNonNull(e.getMessage()).contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
                 }
                 alertDialog.dismiss();

@@ -61,6 +61,7 @@ public class CheckXpubResultActivity extends BaseActivity {
                 clipboardManager.setPrimaryClip(ClipData.newPlainText(null, xpub.getText()));
                 Toast.makeText(this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
+            default:
         }
     }
 }

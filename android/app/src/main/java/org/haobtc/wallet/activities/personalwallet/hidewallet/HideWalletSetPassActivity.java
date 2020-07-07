@@ -1,19 +1,12 @@
 package org.haobtc.wallet.activities.personalwallet.hidewallet;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.Kwarg;
 
@@ -27,7 +20,6 @@ import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.HideInputPassFinishEvent;
-import org.haobtc.wallet.event.HideWalletErrorEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
 import org.haobtc.wallet.utils.Daemon;
@@ -95,6 +87,7 @@ public class HideWalletSetPassActivity extends BaseActivity {
                     startActivity(intent);
                 }
                 break;
+            default:
         }
     }
 

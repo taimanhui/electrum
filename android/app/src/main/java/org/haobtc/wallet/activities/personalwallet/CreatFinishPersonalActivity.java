@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities.personalwallet;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -22,7 +21,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
@@ -58,7 +56,6 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     private String walletNames;
     private String flagTag;
     private ArrayList<AddBixinKeyEvent> keyList;
-    private String strBixinname;
     private Intent intent;
 
     @Override
@@ -111,8 +108,8 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     }
 
     private void checkAllBixinkey() {
-        if (flagTag.equals("personal")) {
-            strBixinname = intent.getStringExtra("strBixinname");
+        if ("personal".equals(flagTag)) {
+            String strBixinname = intent.getStringExtra("strBixinname");
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             addBixinKeyEvent.setKeyname(strBixinname);
             keyList.add(addBixinKeyEvent);
@@ -151,6 +148,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
                 mIntent(MainActivity.class);
                 finishAffinity();
                 break;
+            default:
         }
     }
 
@@ -169,12 +167,12 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qr_data = getCodeAddressBean.getQr_data();
-            bitmap = mCreate2DCode(qr_data);
+            bitmap = mCreateCode(qr_data);
             imgOrcode.setImageBitmap(bitmap);
         }
     }
 
-    public static Bitmap mCreate2DCode(String str) {
+    public static Bitmap mCreateCode(String str) {
         try {
             BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 500, 500);
             int width = matrix.getWidth();

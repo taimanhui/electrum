@@ -36,7 +36,6 @@ import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
-import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -48,6 +47,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -121,10 +121,10 @@ public class TransactionDetailsActivity extends BaseActivity {
     @BindView(R.id.btn_share)
     Button btnShare;
     private String keyValue;
-    private String tx_hash;
+    private String txHash;
     private String listType;
     private String publicTrsation;
-    private String jsondef_get;
+    private String jsondefGet;
     private String rawtx;
     private String strParse;
     private String language;
@@ -171,7 +171,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             hideWallet = intent.getStringExtra("hideWallet");//hide wallet transaction
             publicTrsation = intent.getStringExtra("txCreatTrsaction");
             keyValue = intent.getStringExtra("keyValue");//Judge which interface to jump in from
-            tx_hash = intent.getStringExtra("tx_hash");
+            txHash = intent.getStringExtra("tx_hash");
             listType = intent.getStringExtra("listType");
             unConfirmStatus = intent.getStringExtra("unConfirmStatus");//Manually change to the status to be confirmed
             signTransction = intent.getStringExtra("signTransction");//from SignActivity
@@ -234,13 +234,14 @@ public class TransactionDetailsActivity extends BaseActivity {
                 case "Sign":
                     jsonDetailData(signTransction);
                     break;
+                default:
             }
         }
     }
 
     private void setReciveSpeedBtn() {
         try {
-            PyObject getRbfOrCpfpStatus = Daemon.commands.callAttr("get_rbf_or_cpfp_status", tx_hash);
+            PyObject getRbfOrCpfpStatus = Daemon.commands.callAttr("get_rbf_or_cpfp_status", txHash);
             if (getRbfOrCpfpStatus.toString().contains("{}")) {
                 tetReceiveAddSpeed.setVisibility(View.GONE);
             } else {
@@ -254,7 +255,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //Show RBF button or not
     private void setRbfStatus() {
         try {
-            get_rbf_status = Daemon.commands.callAttr("get_rbf_status", tx_hash);
+            get_rbf_status = Daemon.commands.callAttr("get_rbf_status", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -272,17 +273,17 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     //trsaction detail
     private void trsactionDetail() {
-        if (!TextUtils.isEmpty(tx_hash)) {
+        if (!TextUtils.isEmpty(txHash)) {
             PyObject get_tx_info;
             try {
-                get_tx_info = Daemon.commands.callAttr("get_tx_info", tx_hash);
+                get_tx_info = Daemon.commands.callAttr("get_tx_info", txHash);
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
             if (get_tx_info != null) {
-                jsondef_get = get_tx_info.toString();
-                jsonDetailData(jsondef_get);
+                jsondefGet = get_tx_info.toString();
+                jsonDetailData(jsondefGet);
             }
 
         }
@@ -299,8 +300,8 @@ public class TransactionDetailsActivity extends BaseActivity {
                 e.printStackTrace();
             }
             if (def_get_tx_info_from_raw != null) {
-                jsondef_get = def_get_tx_info_from_raw.toString();
-                jsonDetailData(jsondef_get);
+                jsondefGet = def_get_tx_info_from_raw.toString();
+                jsonDetailData(jsondefGet);
             }
         }
     }
@@ -325,7 +326,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
         inputAddr = getnewcreatTrsactionListBean.getInputAddr();
         txid = getnewcreatTrsactionListBean.getTxid();
-        tx_hash = txid;
+        txHash = txid;
         rawtx = getnewcreatTrsactionListBean.getTx();
         canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
         edit.putString("signedRowtrsation", rawtx);
@@ -556,7 +557,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 break;
             case R.id.btn_share:
                 Intent intent = new Intent(TransactionDetailsActivity.this, ShareOtherActivity.class);
-                intent.putExtra("rowTrsaction", tx_hash);
+                intent.putExtra("rowTrsaction", txHash);
                 intent.putExtra("rowTx", rawtx);
                 startActivity(intent);
                 break;
@@ -592,13 +593,14 @@ public class TransactionDetailsActivity extends BaseActivity {
             case R.id.tet_receiveAddSpeed:
                 receiveAddSpeed();
                 break;
+            default:
         }
     }
 
     private void receiveAddSpeed() {
-        PyObject get_rbf_fee_info = null;
+        PyObject getRbfFeeInfo = null;
         try {
-            get_rbf_fee_info = Daemon.commands.callAttr("get_cpfp_info", tx_hash);
+            getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("max fee exceeded")) {
@@ -606,11 +608,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             }
             return;
         }
-        if (get_rbf_fee_info != null) {
-            String strNewfeeReceive = get_rbf_fee_info.toString();
+        if (getRbfFeeInfo != null) {
+            String strNewfeeReceive = getRbfFeeInfo.toString();
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
             TextView testTitle = viewSpeed.findViewById(R.id.test_title);
@@ -619,14 +621,14 @@ public class TransactionDetailsActivity extends BaseActivity {
             testTip.setText(getString(R.string.receive_speed_tips));
             try {
                 JSONObject jsonObject = new JSONObject(strNewfeeReceive);
-                String total_fee = jsonObject.getString("total_fee");
-                String fee_for_child = jsonObject.getString("fee_for_child");
-                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), total_fee));
+                String totalFee = jsonObject.getString("total_fee");
+                String feeForChild = jsonObject.getString("fee_for_child");
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), totalFee));
                 img_Cancle.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
                 viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
-                    confirmedReceiveSpeed(fee_for_child);
+                    confirmedReceiveSpeed(feeForChild);
                 });
                 alertDialog.show();
             } catch (JSONException e) {
@@ -635,10 +637,10 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
-    private void confirmedReceiveSpeed(String fee_for_child) {
+    private void confirmedReceiveSpeed(String feeForChild) {
         PyObject createCpfpTx = null;
         try {
-            createCpfpTx = Daemon.commands.callAttr("create_cpfp_tx", tx_hash, fee_for_child);
+            createCpfpTx = Daemon.commands.callAttr("create_cpfp_tx", txHash, feeForChild);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -710,6 +712,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
+            assert message != null;
             if (message.contains(".")) {
                 if (message.endsWith(".")) {
                     message = message.substring(0, message.length() - 1);
@@ -776,7 +779,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void ifHaveRbf() {
         PyObject get_rbf_fee_info = null;
         try {
-            get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", tx_hash);
+            get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -808,7 +811,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void confirmedSpeed() {
         PyObject create_bump_fee = null;
         try {
-            create_bump_fee = Daemon.commands.callAttr("create_bump_fee", tx_hash, newFeerate);
+            create_bump_fee = Daemon.commands.callAttr("create_bump_fee", txHash, newFeerate);
         } catch (Exception e) {
             e.printStackTrace();
         }

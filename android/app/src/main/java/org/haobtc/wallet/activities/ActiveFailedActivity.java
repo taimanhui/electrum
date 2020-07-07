@@ -44,6 +44,7 @@ public class ActiveFailedActivity extends BaseActivity {
                 finishAffinity();
                 // Ble.getInstance().disconnectAll();
                 break;
+            default:
         }
     }
 }

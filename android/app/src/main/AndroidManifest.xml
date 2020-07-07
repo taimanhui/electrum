@@ -39,7 +39,8 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
-        <activity android:name=".activities.personalwallet.mnemonic_word.ImportMnemonicWalletActivity"></activity>
+        <activity android:name=".activities.service.BackupRecoveryLiteActivity"></activity>
+        <activity android:name=".activities.personalwallet.mnemonic_word.ImportMnemonicWalletActivity" />
         <activity android:name=".activities.settings.EditAnyskServerActivity" />
         <activity android:name=".activities.settings.AnyskServerSetActivity" />
         <activity android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity" />

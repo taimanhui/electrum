@@ -69,7 +69,7 @@ public class CreateWalletActivity extends BaseActivity {
             case R.id.bn_create_wallet:
                 createWalletChooseDialog(CreateWalletActivity.this, R.layout.choose_wallet);
                 break;
-
+            default:
         }
     }
 

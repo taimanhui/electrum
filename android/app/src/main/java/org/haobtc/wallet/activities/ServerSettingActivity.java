@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -57,10 +58,12 @@ public class ServerSettingActivity extends BaseActivity {
     private String exchangeName;
     private String blockServerLine;
 
+    @Override
     public int getLayoutId() {
         return R.layout.server_setting;
     }
 
+    @Override
     @SuppressLint("CommitPrefEdits")
     public void initView() {
         ButterKnife.bind(this);
@@ -68,20 +71,12 @@ public class ServerSettingActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         exchangeName = preferences.getString("exchangeName", "");
         blockServerLine = preferences.getString("blockServerLine", "");
-        String strAgentIP = preferences.getString("strAgentIP", "");
-        String strPort = preferences.getString("strPort", "");
-        if (!TextUtils.isEmpty(strAgentIP)) {
-            testNodeType.setText(String.format("%s:%s", strAgentIP, strPort));
-        } else {
-            testNodeType.setText(getString(R.string.ip_port));
-        }
         inits();
 
     }
 
     private void inits() {
-        //get electrum list
-        getElectrumData();
+
         //get default Server
         if (!TextUtils.isEmpty(exchangeName)) {
             tetDefaultServer.setText(exchangeName);
@@ -93,6 +88,14 @@ public class ServerSettingActivity extends BaseActivity {
             testBlockcheck.setText(blockServerLine);
         }
 
+    }
+
+    @Override
+    public void initData() {
+        //get electrum list
+        getElectrumData();
+        //get now server address
+        getServerAddress();
     }
 
     private void getElectrumData() {
@@ -107,8 +110,15 @@ public class ServerSettingActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public void initData() {
+    //get now server address
+    private void getServerAddress() {
+        try {
+            PyObject get_sync_server_host = Daemon.commands.callAttr("get_sync_server_host");
+            testNodeType.setText(get_sync_server_host.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -148,8 +158,11 @@ public class ServerSettingActivity extends BaseActivity {
                 mIntent(AgentServerActivity.class);
                 break;
             case R.id.testNodeType:
-                mIntent(AnyskServerSetActivity.class);
+                Intent intent = new Intent(ServerSettingActivity.this, AnyskServerSetActivity.class);
+                intent.putExtra("ip_port", testNodeType.getText().toString());
+                startActivity(intent);
                 break;
+            default:
         }
     }
 
@@ -163,9 +176,8 @@ public class ServerSettingActivity extends BaseActivity {
             blockServerLine = preferences.getString("blockServerLine", "");
             testBlockcheck.setText(blockServerLine);
         } else if (msgVote.equals("add_anysk_server")) {
-            String strAgentIP = preferences.getString("strAgentIP", "");
-            String strPort = preferences.getString("strPort", "");
-            testNodeType.setText(String.format("%s:%s", strAgentIP, strPort));
+            //get now server address
+            getServerAddress();
         }
     }
 

@@ -41,6 +41,8 @@ public class ActivateSuccessActivity extends BaseActivity {
             case R.id.bn_back:
                 finishAffinity();
               //  Ble.getInstance().disconnectAll();
+                break;
+            default:
         }
     }
 }

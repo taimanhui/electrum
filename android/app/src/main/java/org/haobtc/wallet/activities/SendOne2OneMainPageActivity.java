@@ -152,6 +152,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         return R.layout.send_one2one_main_page;
     }
 
+    @Override
     @SuppressLint("ClickableViewAccessibility")
     public void initView() {
         ButterKnife.bind(this);
@@ -573,6 +574,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             case R.id.btnRecommendFee:
                 mToast(strFeemontAs);
                 break;
+            default:
         }
     }
 

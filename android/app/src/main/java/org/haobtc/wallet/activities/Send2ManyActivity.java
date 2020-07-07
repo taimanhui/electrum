@@ -70,10 +70,12 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     private String base_unit;
     private String hideRefresh;
 
+    @Override
     public int getLayoutId() {
         return R.layout.send_to_many;
     }
 
+    @Override
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
@@ -172,6 +174,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
             case R.id.img_back:
                 finish();
                 break;
+            default:
         }
     }
 

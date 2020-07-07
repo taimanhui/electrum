@@ -158,7 +158,7 @@ public class ConfidentialPaymentSettings extends BaseActivity {
                 intent.putExtra("noHard", noHard);
                 startActivity(intent);
                 break;
-
+            default:
         }
     }
 

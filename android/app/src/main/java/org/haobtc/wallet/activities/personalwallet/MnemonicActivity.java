@@ -102,8 +102,8 @@ public class MnemonicActivity extends BaseActivity {
                     cm.setPrimaryClip(ClipData.newPlainText(null, textAllWord.getText()));
                 }
                 Toast.makeText(MnemonicActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
-
                 break;
+            default:
         }
     }
 

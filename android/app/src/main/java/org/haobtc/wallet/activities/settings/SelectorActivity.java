@@ -68,6 +68,7 @@ public class SelectorActivity extends BaseActivity {
                 ble.setChecked(false);
                 usb.setChecked(true);
                 break;
+            default:
         }
     }
 
@@ -102,6 +103,7 @@ public class SelectorActivity extends BaseActivity {
             case R.id.img_back:
                 saveSetting();
                 finish();
+            default:
         }
     }
     private void disconnectBle() {

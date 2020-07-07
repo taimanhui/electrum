@@ -167,12 +167,14 @@ public class MnemonicWordActivity extends BaseActivity {
                                     editTwo.setText(wordList.get(1));
                                 case 1:
                                     editOne.setText(wordList.get(0));
+                                default:
 
                             }
                         }
                     }
                 }
                 break;
+            default:
         }
     }
 

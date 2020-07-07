@@ -44,6 +44,7 @@ public class ImportMnemonicWalletActivity extends BaseActivity {
             case R.id.img_back:
                 finish();
                 break;
+            default:
         }
     }
 }

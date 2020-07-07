@@ -122,6 +122,7 @@ public class AppWalletCreateFinishActivity extends BaseActivity {
                 mIntent(MainActivity.class);
                 finishAffinity();
                 break;
+            default:
         }
     }
 

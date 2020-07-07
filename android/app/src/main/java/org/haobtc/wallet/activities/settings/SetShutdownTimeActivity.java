@@ -82,6 +82,7 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
                 intent.putExtra("shutdown_time", time);
                 startActivity(intent);
                 break;
+            default:
         }
     }
 

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -177,7 +178,7 @@ public class ImportMnemonicActivity extends BaseActivity {
             startActivity(intent);
         } catch (Exception e) {
             myDialog.dismiss();
-            if (e.getMessage().contains("pair seed failed")) {
+            if (Objects.requireNonNull(e.getMessage()).contains("pair seed failed")) {
                 mToast(getString(R.string.helpword_wrong));
             } else {
                 mToast(getString(R.string.improt_wrong));

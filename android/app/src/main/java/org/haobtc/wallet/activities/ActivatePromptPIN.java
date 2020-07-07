@@ -66,6 +66,7 @@ public class ActivatePromptPIN extends BaseActivity implements BusinessAsyncTask
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, COMMUNICATION_MODE_BLE);
                 }
                 break;
+            default:
         }
     }
 

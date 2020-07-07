@@ -1,18 +1,27 @@
 package org.haobtc.wallet.activities;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import androidx.annotation.LayoutRes;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.personalwallet.CreatAppWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
+import org.haobtc.wallet.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity;
 import org.haobtc.wallet.aop.SingleClick;
@@ -47,6 +56,7 @@ public class WalletUnActivatedActivity extends BaseActivity {
         return R.layout.activate;
     }
 
+    @Override
     public void initView() {
         ButterKnife.bind(this);
         Intent intent = getIntent();
@@ -85,19 +95,48 @@ public class WalletUnActivatedActivity extends BaseActivity {
 //                intent.putExtra("use_se", use_se);
 //                startActivity(intent);
 //                finish();
-                if (isNFC) {
-                   Intent intent = new Intent(this, CommunicationModeSelector.class);
-                    if (SingleSigWalletCreator.TAG.equals(tag_xpub)) {
-                        intent.putExtra("tag", SingleSigWalletCreator.TAG);
-                    }
-                   intent.putExtra("use_se", use_se).setAction("init");
-                   startActivity(intent);
-                } else {
-                    EventBus.getDefault().post(new InitEvent("Activate", use_se));
-                }
+                //Select backup method
+                chooseBackupDialog(WalletUnActivatedActivity.this, R.layout.select_backup_method);
                 break;
+            default:
         }
     }
+
+    private void chooseBackupDialog(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.has_been_backup).setOnClickListener(v -> {
+            if (isNFC) {
+                Intent intent = new Intent(this, CommunicationModeSelector.class);
+                if (SingleSigWalletCreator.TAG.equals(tag_xpub)) {
+                    intent.putExtra("tag", SingleSigWalletCreator.TAG);
+                }
+                intent.putExtra("use_se", use_se).setAction("init");
+                startActivity(intent);
+            } else {
+                EventBus.getDefault().post(new InitEvent("Activate", use_se));
+            }
+            dialogBtoms.dismiss();
+        });
+
+        view.findViewById(R.id.key_lite_recovery).setOnClickListener(v -> {
+            //TODO: BixinKey Lite recovery
+            dialogBtoms.dismiss();
+        });
+
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -119,6 +158,8 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 Log.d(TAG, "设备激活失败");
                 startActivity(new Intent(this, ActiveFailedActivity.class));
                 finish();
+                break;
+            default:
         }
     }
 }

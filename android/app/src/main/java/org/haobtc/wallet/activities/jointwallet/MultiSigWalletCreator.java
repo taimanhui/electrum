@@ -139,7 +139,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     TextView testInputWallet;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-    private EditText edit_sweep;
+    private EditText editSweep;
     private TextView textView;
     private ArrayList<AddBixinKeyEvent> addEventsDatas;
     private String strInditor2;
@@ -330,6 +330,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     mToast(getString(R.string.open_server_input));
                 }
                 break;
+            default:
         }
     }
 
@@ -427,7 +428,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
         EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
         TextView tet_Num = view.findViewById(R.id.txt_textNum);
-        edit_sweep = view.findViewById(R.id.edit_public_key_cosigner_popup);
+        editSweep = view.findViewById(R.id.edit_public_key_cosigner_popup);
         int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
         defaultKeyNameNum = defaultKeyNum + 1;
         edit_bixinName.setText(String.format("BixinKey%s", String.valueOf(defaultKeyNameNum)));
@@ -453,7 +454,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
             }
         });
-        edit_sweep.addTextChangedListener(new TextWatcher() {
+        editSweep.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -466,7 +467,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String strLine = edit_sweep.getText().toString();
+                String strLine = editSweep.getText().toString();
                 if (!TextUtils.isEmpty(strLine)) {
                     view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.GONE);
                     view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.VISIBLE);
@@ -498,17 +499,17 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             if (clipboard != null) {
                 ClipData data = clipboard.getPrimaryClip();
                 if (data != null && data.getItemCount() > 0) {
-                    edit_sweep.setText(data.getItemAt(0).getText());
+                    editSweep.setText(data.getItemAt(0).getText());
                 }
             }
         });
 
         view.findViewById(R.id.btn_Clear).setOnClickListener(v -> {
-            edit_sweep.setText("");
+            editSweep.setText("");
         });
         view.findViewById(R.id.btn_ConfirmAll).setOnClickListener(v -> {
             String strBixinname = edit_bixinName.getText().toString();
-            String strSweep = edit_sweep.getText().toString();
+            String strSweep = editSweep.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
                 mToast(getString(R.string.input_name));
                 return;
@@ -519,7 +520,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         });
         view.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
             String strBixinname = edit_bixinName.getText().toString();
-            String strSweep = edit_sweep.getText().toString();
+            String strSweep = editSweep.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
                 mToast(getString(R.string.input_name));
                 return;
@@ -735,11 +736,12 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                edit_sweep.setText(content);
+                editSweep.setText(content);
             }
         }
     }
 
+    @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
     }

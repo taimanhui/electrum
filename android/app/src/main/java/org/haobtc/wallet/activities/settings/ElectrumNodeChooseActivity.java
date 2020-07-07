@@ -157,6 +157,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                 }
                 mToast(getString(R.string.add_finished));
                 break;
+            default:
         }
     }
 

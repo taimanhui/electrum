@@ -32,7 +32,7 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
     TextView tetTextNum;
     @BindView(R.id.bn_multi_next)
     Button bnMultiNext;
-    private String newWallet_type;
+    private String newWalletType;
     private String strNewseed;
     private int defaultName;
     private int walletNameNum;
@@ -48,7 +48,7 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         defaultName = preferences.getInt("defaultName", 0);//default wallet name
         Intent intent = getIntent();
-        newWallet_type = intent.getStringExtra("newWallet_type");
+        newWalletType = intent.getStringExtra("newWallet_type");
         strNewseed = intent.getStringExtra("strNewseed");
 
     }
@@ -104,13 +104,14 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
                     return;
                 }
                 Intent intent = new Intent(CreateHelpWordWalletActivity.this, CreatePersonalHelpPassActivity.class);
-                intent.putExtra("newWallet_type", newWallet_type);
+                intent.putExtra("newWallet_type", newWalletType);
                 intent.putExtra("strNewseed",strNewseed);
                 intent.putExtra("walletNameNum",walletNameNum);
                 intent.putExtra("strnewWalletname",strWalletname);
                 startActivity(intent);
                 finish();
                 break;
+            default:
         }
     }
 }

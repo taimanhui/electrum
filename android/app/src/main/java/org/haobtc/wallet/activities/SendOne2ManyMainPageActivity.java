@@ -125,10 +125,12 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private SharedPreferences.Editor edit;
     private String fee;
 
+    @Override
     public int getLayoutId() {
         return R.layout.send_one2many_main;
     }
 
+    @Override
     @SuppressLint("CommitPrefEdits")
     public void initView() {
         ButterKnife.bind(this);
@@ -377,6 +379,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             case R.id.btnRecommendFee:
                 mToast(strFeemontAs);
                 break;
+            default:
         }
     }
 

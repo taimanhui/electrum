@@ -94,6 +94,7 @@ public class BixinKEYManageActivity extends BaseActivity {
                             mToast(getString(R.string.delete_succse));
 
                             break;
+                        default:
                     }
                 }
             });

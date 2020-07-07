@@ -69,13 +69,14 @@ public class SettingActivity extends BaseActivity {
     @BindView(R.id.check_xpub)
     TextView checkXpub;
     public String pin = "";
-    private boolean isChangePIN;
+    private boolean isChangePin;
 
     @Override
     public int getLayoutId() {
         return R.layout.setting;
     }
 
+    @Override
     @SuppressLint("CommitPrefEdits")
     public void initView() {
         ButterKnife.bind(this);
@@ -92,7 +93,7 @@ public class SettingActivity extends BaseActivity {
     @SingleClick(value = 1000)
     @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update, R.id.check_xpub})
     public void onViewClicked(View view) {
-        isChangePIN = false;
+        isChangePin = false;
         switch (view.getId()) {
             case R.id.tet_bixinKey:
                 mIntent(BixinKEYManageActivity.class);
@@ -133,7 +134,7 @@ public class SettingActivity extends BaseActivity {
                 getUpdateInfo();
                 break;
             case R.id.change_pin:
-                isChangePIN = true;
+                isChangePin = true;
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);
                 intent1.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent1.putExtra("tag", TAG_CHANGE_PIN);
@@ -145,7 +146,7 @@ public class SettingActivity extends BaseActivity {
                 intent2.putExtra("tag", "check_xpub");
                 startActivity(intent2);
                 break;
-
+            default:
 
         }
     }
@@ -190,7 +191,7 @@ public class SettingActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
-        if (isNFC && isChangePIN) {
+        if (isNFC && isChangePin) {
             EventBus.getDefault().removeStickyEvent(event);
             startActivity(new Intent(this, NfcNotifyHelper.class));
         }

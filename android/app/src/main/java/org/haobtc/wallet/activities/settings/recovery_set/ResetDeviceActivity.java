@@ -81,6 +81,7 @@ public class ResetDeviceActivity extends BaseActivity{
                     rest_device.setEnabled(false);
                 }
                 break;
+            default:
         }
     }
 

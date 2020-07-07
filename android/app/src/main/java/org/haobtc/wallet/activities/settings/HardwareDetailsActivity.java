@@ -170,6 +170,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 intent3.putExtra("ble_name", bleName);
                 startActivity(intent3);
                 break;
+            default:
         }
     }
 

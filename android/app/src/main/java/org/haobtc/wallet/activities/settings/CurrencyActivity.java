@@ -98,6 +98,7 @@ public class CurrencyActivity extends BaseActivity {
             case "sat":
                 radioOnearray[3].setChecked(true);
                 break;
+            default:
         }
 
         radioOne.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -152,6 +153,7 @@ public class CurrencyActivity extends BaseActivity {
                         edit.putString("base_unit", "sat");
                         edit.apply();
                         break;
+                    default:
                 }
             }
         });
@@ -246,6 +248,7 @@ public class CurrencyActivity extends BaseActivity {
                     tetCheckAll.setText(getString(R.string.check_all));
                 }
                 break;
+            default:
         }
     }
 

@@ -112,6 +112,7 @@ public class CheckSignActivity extends BaseActivity {
             case R.id.btnConfirm:
                 checkSigned();
                 break;
+            default:
         }
     }
 

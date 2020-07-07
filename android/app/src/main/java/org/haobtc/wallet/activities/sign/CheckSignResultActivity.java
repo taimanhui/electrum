@@ -61,6 +61,7 @@ public class CheckSignResultActivity extends BaseActivity {
             case R.id.btn_finish:
                 finish();
                 break;
+            default:
         }
     }
 }

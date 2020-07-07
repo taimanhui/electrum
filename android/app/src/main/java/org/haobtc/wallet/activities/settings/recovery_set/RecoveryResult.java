@@ -57,6 +57,7 @@ public class RecoveryResult extends BaseActivity {
                 EventBus.getDefault().post(new FinishEvent());
                 finish();
                 break;
+            default:
         }
     }
 }

@@ -110,6 +110,7 @@ public class FixBixinkeyNameActivity extends BaseActivity {
                 intent.putExtra("fixName", nameEdit.getText().toString());
                 startActivity(intent);
                 break;
+            default:
         }
     }
 

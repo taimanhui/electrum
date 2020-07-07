@@ -1,10 +1,12 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -62,6 +64,17 @@ public class AnyskServerSetActivity extends BaseActivity {
 
     @SuppressLint("SetTextI18n")
     private void inits() {
+        Intent intent = getIntent();
+        //get ip and port
+        String ip_port = intent.getStringExtra("ip_port");
+        assert ip_port != null;
+        String str_ip = ip_port.substring(0, ip_port.indexOf(":"));
+        int length = ip_port.length();
+        String str_port = ip_port.substring(str_ip.length() + 1, length);
+        editAgentIP.setText(str_ip);
+        editPort.setText(str_port);
+
+        //editText Listener
         TextChange textChange = new TextChange();
         editAgentIP.addTextChangedListener(textChange);
         editPort.addTextChangedListener(textChange);
@@ -75,23 +88,12 @@ public class AnyskServerSetActivity extends BaseActivity {
             open = false;
             switchCynchronez.setChecked(false);
         }
+
     }
 
     @Override
     public void initData() {
         switchCyn();
-        //get now server address
-        getServerAddress();
-    }
-
-    private void getServerAddress() {
-        try {
-            PyObject get_sync_server_host = Daemon.commands.callAttr("get_sync_server_host");
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -136,28 +138,25 @@ public class AnyskServerSetActivity extends BaseActivity {
 //                startActivity(intent);
                 strAgentIP = editAgentIP.getText().toString();
                 strPort = editPort.getText().toString();
-                addAnyskServer(strAgentIP,strPort);
+                addAnyskServer(strAgentIP, strPort);
 
                 break;
             case R.id.tet_electrumName:
                 editAgentIP.setText("39.105.86.163");
                 editPort.setText("8080");
-                addAnyskServer("39.105.86.163","8080");
+                addAnyskServer("39.105.86.163", "8080");
                 break;
+            default:
         }
     }
 
-    private void addAnyskServer(String ip,String port) {
-
+    private void addAnyskServer(String ip, String port) {
         try {
             Daemon.commands.callAttr("set_sync_server_host", ip, port);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        edit.putString("strAgentIP",strAgentIP);
-        edit.putString("strPort",strPort);
-        edit.apply();
         EventBus.getDefault().post(new FirstEvent("add_anysk_server"));
         mToast(getString(R.string.add_success));
     }

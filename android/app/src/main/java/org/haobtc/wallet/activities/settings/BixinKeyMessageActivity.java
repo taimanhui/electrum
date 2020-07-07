@@ -73,7 +73,7 @@ public class BixinKeyMessageActivity extends BaseActivity {
             case R.id.linear_fix_key:
                 mIntent(FixBixinkeyNameActivity.class);
                 break;
-
+            default:
         }
     }
 

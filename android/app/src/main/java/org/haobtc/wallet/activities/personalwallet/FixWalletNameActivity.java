@@ -88,13 +88,14 @@ public class FixWalletNameActivity extends BaseActivity {
             case R.id.btn_next:
                 reNameWallet();
                 break;
+            default:
         }
     }
 
     private void reNameWallet() {
-        String wallet_name = getIntent().getStringExtra("wallet_name");
+        String walletName = getIntent().getStringExtra("wallet_name");
         try {
-            Daemon.commands.callAttr("rename_wallet",wallet_name,nameEdit.getText().toString());
+            Daemon.commands.callAttr("rename_wallet",walletName,nameEdit.getText().toString());
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage());

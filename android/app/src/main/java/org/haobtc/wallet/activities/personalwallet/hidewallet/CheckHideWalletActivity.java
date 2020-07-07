@@ -3,7 +3,6 @@ package org.haobtc.wallet.activities.personalwallet.hidewallet;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -56,22 +55,20 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     @BindView(R.id.tet_Cny)
     TextView tetCny;
     @BindView(R.id.recy_data)
-    RecyclerView recy_data;
+    RecyclerView recyData;
     @BindView(R.id.smart_RefreshLayout)
     SmartRefreshLayout refreshLayout;
     @BindView(R.id.tet_None)
     TextView tetNone;
     @BindView(R.id.wallet_card_tv3)
     TextView walletCard;
-    private PyObject select_wallet;
+    private PyObject selectWallet;
     private MaindowndatalistAdapetr trsactionlistAdapter;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private MyDialog myDialog;
     private JSONArray jsonArray;
-    private boolean is_mine;
+    private boolean isMine;
     private String date;
-    private String substring;
-    private String strCNY;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
 
@@ -107,7 +104,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
         maintrsactionlistEvents = new ArrayList<>();
         //Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
-        recy_data.setAdapter(trsactionlistAdapter);
+        recyData.setAdapter(trsactionlistAdapter);
         getWalletMsg();
         //trsaction list data
         downMainListdata();
@@ -116,27 +113,27 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     //get wallet message
     public void getWalletMsg() {
         try {
-            select_wallet = Daemon.commands.callAttr("select_wallet", "隐藏钱包");
+            selectWallet = Daemon.commands.callAttr("select_wallet", "隐藏钱包");
         } catch (Exception e) {
             Log.i("select_wallet", "--------- " + e.getMessage());
             e.printStackTrace();
         }
 
-        if (select_wallet != null) {
-            String toString = select_wallet.toString();
+        if (selectWallet != null) {
+            String toString = selectWallet.toString();
             Log.i("CheckHideWalletActivity", "select_wallet+++: " + toString);
             Gson gson = new Gson();
             MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
             String balanceC = mainWheelBean.getBalance();
             if (!TextUtils.isEmpty(balanceC)) {
                 if (balanceC.contains("(")) {
-                    substring = balanceC.substring(0, balanceC.indexOf("("));
+                    String substring = balanceC.substring(0, balanceC.indexOf("("));
                     Log.e("substring", "substring: " + substring);
                     Log.e("substring", "balanceC: " + balanceC);
                     walletCardTv4.setText(substring);
-                    strCNY = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
-                    if (!TextUtils.isEmpty(strCNY)) {
-                        tetCny.setText(String.format("≈ %s", strCNY));
+                    String strCny = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
+                    if (!TextUtils.isEmpty(strCny)) {
+                        tetCny.setText(String.format("≈ %s", strCny));
                     }
                 } else {
                     walletCardTv4.setText(balanceC);
@@ -158,14 +155,14 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             refreshLayout.finishRefresh();
             tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
-            recy_data.setVisibility(View.GONE);
+            recyData.setVisibility(View.GONE);
             Log.i("downMainListdata", "downMaina===: " + e.getMessage());
             return;
         }
         //get transaction list
         if (get_history_tx != null) {
             tetNone.setVisibility(View.GONE);
-            recy_data.setVisibility(View.VISIBLE);
+            recyData.setVisibility(View.VISIBLE);
             String strHistory = get_history_tx.toString();
             //Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
@@ -173,7 +170,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 myDialog.dismiss();
                 tetNone.setText(getString(R.string.no_records));
                 tetNone.setVisibility(View.VISIBLE);
-                recy_data.setVisibility(View.GONE);
+                recyData.setVisibility(View.GONE);
             } else {
                 //show trsaction list
                 showTrsactionlist(strHistory);
@@ -184,7 +181,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             refreshLayout.finishRefresh();
             tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
-            recy_data.setVisibility(View.GONE);
+            recyData.setVisibility(View.GONE);
         }
 
     }
@@ -201,7 +198,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 String tx_hash = jsonObject.getString("tx_hash");
                 String amount = jsonObject.getString("amount");
                 //false ->get   true ->push
-                is_mine = jsonObject.getBoolean("is_mine");
+                isMine = jsonObject.getBoolean("is_mine");
                 date = jsonObject.getString("date");
                 String tx_status = jsonObject.getString("tx_status");
                 if (type.equals("history")) {
@@ -210,7 +207,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                     maintrsactionlistEvent.setTx_hash(tx_hash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
-                    maintrsactionlistEvent.setIs_mine(is_mine);
+                    maintrsactionlistEvent.setIs_mine(isMine);
                     maintrsactionlistEvent.setConfirmations(confirmations);
                     maintrsactionlistEvent.setType(type);
                     maintrsactionlistEvent.setTx_status(tx_status);
@@ -223,7 +220,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                     maintrsactionlistEvent.setTx_hash(tx_hash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
-                    maintrsactionlistEvent.setIs_mine(is_mine);
+                    maintrsactionlistEvent.setIs_mine(isMine);
                     maintrsactionlistEvent.setType(type);
                     maintrsactionlistEvent.setTx_status(tx_status);
                     maintrsactionlistEvent.setInvoice_id(invoice_id);
@@ -244,13 +241,13 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                             try {
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
                                 tx_hash1 = jsonObject.getString("tx_hash");
-                                is_mine = jsonObject.getBoolean("is_mine");
+                                isMine = jsonObject.getBoolean("is_mine");
                                 date = jsonObject.getString("date");
                                 Intent intent = new Intent(CheckHideWalletActivity.this, TransactionDetailsActivity.class);
                                 intent.putExtra("hideWallet", "hideWallet");
                                 intent.putExtra("keyValue", "B");
                                 intent.putExtra("dataTime", date);
-                                intent.putExtra("is_mine", is_mine);
+                                intent.putExtra("is_mine", isMine);
                                 intent.putExtra("tx_hash", tx_hash1);
                                 intent.putExtra("strwalletType", "1-1");
                                 intent.putExtra("listType", typeDele);
@@ -294,6 +291,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                             }
 
                             break;
+                        default:
                     }
                 }
             });
@@ -342,6 +340,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 Intent intent4 = new Intent(this, TransactionRecordsActivity.class);
                 startActivity(intent4);
                 break;
+            default:
         }
     }
 

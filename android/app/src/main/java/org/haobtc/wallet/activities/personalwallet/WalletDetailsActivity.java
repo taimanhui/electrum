@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,13 +29,11 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.adapter.WalletAddressAdapter;
@@ -86,12 +83,11 @@ public class WalletDetailsActivity extends BaseActivity {
     ImageView imaReceiveCode;
     @BindView(R.id.text_addr)
     TextView textAddr;
-    private String wallet_name;
+    private String walletName;
     private Dialog dialogBtom;
     private MyDialog myDialog;
     private ArrayList<WalletDetailBixinKeyEvent> addEventsDatas;
     private ArrayList<WalletAddressEvent> walletAddressList;
-    private List<HardwareFeatures> deviceValue;
 
     @Override
     public int getLayoutId() {
@@ -104,7 +100,7 @@ public class WalletDetailsActivity extends BaseActivity {
         EventBus.getDefault().register(this);
         myDialog = MyDialog.showDialog(WalletDetailsActivity.this);
         Intent intent = getIntent();
-        wallet_name = intent.getStringExtra("wallet_name");
+        walletName = intent.getStringExtra("wallet_name");
         String wallet_type = intent.getStringExtra("wallet_type");
         if ("standard".equals(wallet_type)) {
             cardThreePublic.setVisibility(View.GONE);
@@ -112,7 +108,7 @@ public class WalletDetailsActivity extends BaseActivity {
             addEventsDatas = new ArrayList<>();
             getBixinKeyList();
         }
-        tetName.setText(wallet_name);
+        tetName.setText(walletName);
 
     }
 
@@ -171,7 +167,7 @@ public class WalletDetailsActivity extends BaseActivity {
     }
 
     private void getBixinKeyList() {
-        deviceValue = new ArrayList<>();
+        List<HardwareFeatures> deviceValue = new ArrayList<>();
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
         Map<String, ?> devicesAll = devices.getAll();
         //key
@@ -182,11 +178,11 @@ public class WalletDetailsActivity extends BaseActivity {
         }
         if (deviceValue != null) {
             try {
-                PyObject get_device_info = Daemon.commands.callAttr("get_device_info");
-                String str_deviceId = get_device_info.toString();
-                if (!TextUtils.isEmpty(str_deviceId)) {
+                PyObject getDeviceInfo = Daemon.commands.callAttr("get_device_info");
+                String strDeviceId = getDeviceInfo.toString();
+                if (!TextUtils.isEmpty(strDeviceId)) {
                     for (HardwareFeatures entity : deviceValue) {
-                        if (str_deviceId.contains(entity.getDeviceId())) {
+                        if (strDeviceId.contains(entity.getDeviceId())) {
                             WalletDetailBixinKeyEvent addBixinKeyEvent = new WalletDetailBixinKeyEvent();
                             if (!TextUtils.isEmpty(entity.getLabel())) {
                                 addBixinKeyEvent.setLabel(entity.getLabel());
@@ -230,10 +226,10 @@ public class WalletDetailsActivity extends BaseActivity {
     }
 
     private void getAllFundedAddress() {
-        PyObject get_all_funded_address = null;
+        PyObject getAllFundedAddress = null;
         try {
-            get_all_funded_address = Daemon.commands.callAttr("get_all_funded_address");
-            JSONArray jsonArray = new JSONArray(get_all_funded_address.toString());
+            getAllFundedAddress = Daemon.commands.callAttr("get_all_funded_address");
+            JSONArray jsonArray = new JSONArray(getAllFundedAddress.toString());
             if (jsonArray.length() != 0) {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -269,7 +265,7 @@ public class WalletDetailsActivity extends BaseActivity {
                 break;
             case R.id.text_fix_name:
                 Intent intent = new Intent(WalletDetailsActivity.this, FixWalletNameActivity.class);
-                intent.putExtra("wallet_name", wallet_name);
+                intent.putExtra("wallet_name", walletName);
                 startActivity(intent);
                 break;
             case R.id.text_copy:
@@ -278,8 +274,8 @@ public class WalletDetailsActivity extends BaseActivity {
                 // The text is placed on the system clipboard.
                 Objects.requireNonNull(cm, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textAddr.getText()));
                 Toast.makeText(WalletDetailsActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
-
                 break;
+            default:
         }
     }
 
@@ -290,9 +286,9 @@ public class WalletDetailsActivity extends BaseActivity {
         //cancel dialog
         view.findViewById(R.id.tet_ConfirmDelete).setOnClickListener(v -> {
             myDialog.show();
-            Log.i("wallet_name", "showDialogs: " + wallet_name);
+            Log.i("wallet_name", "showDialogs: " + walletName);
             try {
-                Daemon.commands.callAttr("delete_wallet", wallet_name);
+                Daemon.commands.callAttr("delete_wallet", walletName);
                 EventBus.getDefault().post(new FirstEvent("11"));
                 mToast(getString(R.string.delete_succse));
                 finish();

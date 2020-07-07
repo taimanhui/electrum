@@ -158,6 +158,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
                                     doUpdate(params[0]);
                                 }
                             }
+                            break;
+                        default:
                     }
                 } else {
                     if (features.isInitialized() && features.isNeedsBackup() && tag ==1) {

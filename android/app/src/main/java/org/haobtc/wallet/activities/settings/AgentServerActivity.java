@@ -41,7 +41,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     @BindView(R.id.btnConfirm)
     Button btnConfirm;
     @BindView(R.id.editAgentIP)
-    EditText editAgentIP;
+    EditText editAgentIp;
     @BindView(R.id.editPort)
     EditText editPort;
     @BindView(R.id.editUsername)
@@ -52,7 +52,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     TextView testNodeType;
     private ArrayList<AddressEvent> dataList;
     private String nodetype;
-    private String strAgentIP;
+    private String strAgentIp;
     private String strPort;
     private String strUsername;
     private String strPass;
@@ -78,7 +78,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         set_proxy = preferences.getString("set_proxy", "");
         set_proxy_status = preferences.getBoolean("set_proxy_status", false);
         TextChange textChange = new TextChange();
-        editAgentIP.addTextChangedListener(textChange);
+        editAgentIp.addTextChangedListener(textChange);
         editPort.addTextChangedListener(textChange);
         editUsername.addTextChangedListener(textChange);
         editPass.addTextChangedListener(textChange);
@@ -101,7 +101,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editUsername.setText(wordsList[3]);
                     case 3:
                         testNodeType.setText(wordsList[0]);
-                        editAgentIP.setText(wordsList[1]);
+                        editAgentIp.setText(wordsList[1]);
                         editPort.setText(wordsList[2]);
 
                 }
@@ -147,17 +147,17 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
 
     private void setAgentServer() {
         strNodetype = testNodeType.getText().toString();
-        strAgentIP = editAgentIP.getText().toString();
+        strAgentIp = editAgentIp.getText().toString();
         strPort = editPort.getText().toString();
         strUsername = editUsername.getText().toString();
         strPass = editPass.getText().toString();
         try {
-            Daemon.commands.callAttr("set_proxy", strNodetype, strAgentIP, strPort, strUsername, strPass);
+            Daemon.commands.callAttr("set_proxy", strNodetype, strAgentIp, strPort, strUsername, strPass);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        edit.putString("set_proxy", strNodetype + " " + strAgentIP + " " + strPort + " " + strUsername + " " + strPass);
+        edit.putString("set_proxy", strNodetype + " " + strAgentIp + " " + strPort + " " + strUsername + " " + strPass);
         edit.putBoolean("set_proxy_status", true);
         edit.apply();
         mToast(getString(R.string.set_success));
@@ -204,7 +204,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             proxy_switch = true;
-            editAgentIP.setEnabled(true);
+            editAgentIp.setEnabled(true);
             editPort.setEnabled(true);
             editUsername.setEnabled(true);
             editPass.setEnabled(true);
@@ -217,7 +217,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editUsername.setText(wordsList[3]);
                     case 3:
                         testNodeType.setText(wordsList[0]);
-                        editAgentIP.setText(wordsList[1]);
+                        editAgentIp.setText(wordsList[1]);
                         editPort.setText(wordsList[2]);
                 }
             }else{
@@ -228,11 +228,11 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             Log.i("ddddadwefwev", "onCheckedChanged: ");
             proxy_switch = false;
             testNodeType.setText("");
-            editAgentIP.setText("");
+            editAgentIp.setText("");
             editPort.setText("");
             editUsername.setText("");
             editPass.setText("");
-            editAgentIP.setEnabled(false);
+            editAgentIp.setEnabled(false);
             editPort.setEnabled(false);
             editUsername.setEnabled(false);
             editPass.setEnabled(false);
@@ -272,12 +272,12 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     //judge button status
     private void buttonColorStatus() {
         strNodetype = testNodeType.getText().toString();
-        strAgentIP = editAgentIP.getText().toString();
+        strAgentIp = editAgentIp.getText().toString();
         strPort = editPort.getText().toString();
         strUsername = editUsername.getText().toString();
         strPass = editPass.getText().toString();
 
-        if (TextUtils.isEmpty(strAgentIP) || TextUtils.isEmpty(strPort) || TextUtils.isEmpty(strNodetype)) {
+        if (TextUtils.isEmpty(strAgentIp) || TextUtils.isEmpty(strPort) || TextUtils.isEmpty(strNodetype)) {
             if (proxy_switch) {
                 btnConfirm.setEnabled(false);
                 btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
