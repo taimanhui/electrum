@@ -1471,8 +1471,8 @@ class AndroidCommands(commands.Commands):
                  }
         return switch.get(name)
 
-    def get_addrs_from_seed(self, seed, passphrase = ""):
-        list_type_info = ["p2wpkh", "p2pkh", "p2wpkh-p2sh", "electrum"]
+    def get_addrs_from_seed(self, seed, passphrase=""):
+        list_type_info = ["p2wpkh", "p2wpkh-p2sh", "p2pkh", "electrum"]
         out = {}
         for type in list_type_info:
             bip39_derivation = ""
@@ -1482,21 +1482,32 @@ class AndroidCommands(commands.Commands):
                 bip39_derivation = bip84_derivation(0)
             elif type == "p2wpkh-p2sh":
                 bip39_derivation = bip49_derivation(0)
-            
-            ks = ""
+
             if type == "electrum":
-                ks = keystore.from_seed(seed, passphrase, False)
-                pubkeys = ks.derive_pubkey(0, 0).hex()
-                addr = bitcoin.pubkey_to_address('p2wpkh', pubkeys)
+                from electrum.mnemonic import Mnemonic
+                bip32_seed = Mnemonic.mnemonic_to_seed(seed, passphrase)
+                rootnode = BIP32Node.from_rootseed(bip32_seed, xtype="standard")
+                node = rootnode.subkey_at_private_derivation("m/0'/")
             else:
-                ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
-                pubkeys = ks.derive_pubkey(0, 0).hex()
-                addr = bitcoin.pubkey_to_address(type, pubkeys)
+                bip32_seed = keystore.bip39_to_seed(seed, passphrase)
+                rootnode = BIP32Node.from_rootseed(bip32_seed, xtype=("standard" if type == "p2pkh" else type))
+                node = rootnode.subkey_at_private_derivation(bip39_derivation)
 
-            out[type] = addr
-            print(f"out==addr = {addr}")
+            from electrum import bip32
+            xpub_master = bip32.xpub_from_xprv(node.to_xprv())
+            node_master = BIP32Node.from_xkey(xpub_master)
+            xpub = node_master.subkey_at_public_derivation((0,)).to_xpub()
+            node = BIP32Node.from_xkey(xpub).subkey_at_public_derivation((0,))
+            pubkey = node.eckey.get_public_key_bytes(compressed=True).hex()
+            addr = bitcoin.pubkey_to_address('p2wpkh' if type=='electrum' else type, pubkey)
+
+            temp = {}
+            temp['addr'] = addr
+            temp['derivation'] = bip39_derivation
+            out[type] = temp
+        print(f"out==addr = {out}")
         return json.dumps(out)
-
+    
 
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
