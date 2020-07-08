@@ -160,6 +160,7 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('log_to_file', True, save=True)
         self.rbf = self.config.get("use_rbf", True)
         self.ccy = self.daemon.fx.get_currency()
+        self.pre_balance_info = ""
         self.m = 0
         self.n = 0
         #self.sync_timer = None
@@ -253,8 +254,10 @@ class AndroidCommands(commands.Commands):
                 # append fiat balance and price
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-            # print("update_statue out = %s" % (out))
-        self.callbackIntent.onCallback("update_status", json.dumps(out))
+            #print("update_statue out = %s" % (out))
+        if out != self.pre_balance_info:
+            self.pre_balance_info = out
+            self.callbackIntent.onCallback("update_status", json.dumps(out))
 
     def get_remove_flag(self, tx_hash):
         height = self.wallet.get_tx_height(tx_hash).height
