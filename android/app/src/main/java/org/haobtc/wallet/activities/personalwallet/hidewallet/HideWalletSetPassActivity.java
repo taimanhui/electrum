@@ -88,14 +88,15 @@ public class HideWalletSetPassActivity extends BaseActivity {
                 }
                 break;
             default:
+                    throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(CheckHideWalletEvent updataHint) {
         String xpub = updataHint.getXpub();
-        String device_id = updataHint.getDevice_id();
-        String strXpub = "[[\"" + xpub + "\",\"" + device_id + "\"]]";
+        String deviceId = updataHint.getDeviceId();
+        String strXpub = "[[\"" + xpub + "\",\"" + deviceId + "\"]]";
         try {
             Daemon.commands.callAttr("import_create_hw_wallet", "隐藏钱包", 1, 1, strXpub, new Kwarg("hide_type", true));
         } catch (Exception e) {

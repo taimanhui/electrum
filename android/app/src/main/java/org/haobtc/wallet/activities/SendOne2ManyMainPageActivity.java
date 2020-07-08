@@ -47,7 +47,6 @@ import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.GetsendFeenumBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
-import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
@@ -104,23 +103,20 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private ArrayList<AddressEvent> dataListName;
     private Dialog dialogBtom;
     private ChoosePayAddressAdapter choosePayAddressAdapetr;
-    private String wallet_name;
+    private String mwalletName;
     private double pro;
     private String strmapBtc;
     private List addressList;
     private int intmaxFee;
-    private String waletType;
-    private String wallet_type_to_sign;
+    private String walletType;
+    private String walletTypeToSign;
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     private CommunicationModeSelector modeSelector;
     private String payAddress;
-    private String totalAmount;
-    private String rowtx;
     private String strFeemontAs;
     private boolean showSeek = true;
-    private String hideRefresh;
-    private String onlickName;
-    private int wallet_name_pos;
+    private String onclickName;
+    private int walletNamePos;
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private String fee;
@@ -137,24 +133,24 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         //1-n wallet  --> Direct signature and broadcast
-        wallet_type_to_sign = preferences.getString("wallet_type_to_sign", "");
-        String base_unit = preferences.getString("base_unit", "mBTC");
+        walletTypeToSign = preferences.getString("wallet_type_to_sign", "");
+        String baseUnit = preferences.getString("base_unit", "mBTC");
         Intent intent = getIntent();
-        hideRefresh = getIntent().getStringExtra("hideRefresh");
+        String hideRefresh = getIntent().getStringExtra("hideRefresh");
         addressList = (ArrayList) getIntent().getSerializableExtra("listdetail");
-        wallet_name = intent.getStringExtra("wallet_name");
-        waletType = intent.getStringExtra("wallet_type");
+        mwalletName = intent.getStringExtra("wallet_name");
+        walletType = intent.getStringExtra("wallet_type");
         int addressNum = intent.getIntExtra("addressNum", 0);
-        totalAmount = intent.getStringExtra("totalAmount");
+        String totalAmount = intent.getStringExtra("totalAmount");
 
         //To many people Coin making
         strmapBtc = intent.getStringExtra("strmapBtc");
         Log.i("nihaoajinxiaomin", "initView:++ " + strmapBtc);
-        walletName.setText(wallet_name);
-        onlickName = wallet_name;
+        walletName.setText(mwalletName);
+        onclickName = mwalletName;
         addressCount.setText(String.format("%s %s", String.valueOf(addressNum), getString(R.string.to_num)));
-        tvAmount.setText(String.format("%s %s", totalAmount, base_unit));
-        testWalletUnit.setText(base_unit);
+        tvAmount.setText(String.format("%s %s", totalAmount, baseUnit));
+        testWalletUnit.setText(baseUnit);
 
     }
 
@@ -188,16 +184,16 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     }
 
     private void getFeeamont() {
-        PyObject get_default_fee_status = null;
+        PyObject getDefaultFeeStatuses = null;
         try {
-            get_default_fee_status = Daemon.commands.callAttr("get_default_fee_status");
+            getDefaultFeeStatuses = Daemon.commands.callAttr("get_default_fee_status");
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage());
             return;
         }
-        if (get_default_fee_status != null) {
-            String strFee = get_default_fee_status.toString();
+        if (getDefaultFeeStatuses != null) {
+            String strFee = getDefaultFeeStatuses.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
             if (strFee.contains("sat/byte")) {
                 strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
@@ -240,15 +236,15 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
     //getMorepayAddress
     private void payAddressMore() {
-        PyObject get_wallets_list_info = null;
+        PyObject getWalletsListInfo = null;
         try {
-            get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
+            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        if (get_wallets_list_info != null) {
-            String toString = get_wallets_list_info.toString();
+        if (getWalletsListInfo != null) {
+            String toString = getWalletsListInfo.toString();
             JSONArray jsons = JSONObject.parseArray(toString);
             for (int i = 0; i < jsons.size(); i++) {
                 Map jsonToMap = (Map) jsons.get(i);
@@ -275,7 +271,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         PyObject mktx;
         switch (view.getId()) {
             case R.id.lin_chooseAddress:
-                Log.i("wallet_type_to_sign", "onItemClick: " + wallet_type_to_sign);
+                Log.i("wallet_type_to_sign", "onItemClick: " + walletTypeToSign);
                 //check wallet
                 showDialogs(SendOne2ManyMainPageActivity.this, R.layout.select_send_wallet_popwindow);
                 break;
@@ -317,29 +313,29 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                     String jsonObj = mktx.toString();
                     Gson gson = new Gson();
                     GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
-                    rowtx = getAddressBean.getTx();
+                    String rowtx = getAddressBean.getTx();
                     if (!TextUtils.isEmpty(rowtx)) {
-                        if (wallet_type_to_sign.contains("1-")) {
+                        if (walletTypeToSign.contains("1-")) {
                             try {
-                                PyObject get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
+                                PyObject txInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
                                 gson = new Gson();
-                                GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(get_tx_info_from_raw.toString(), GetnewcreatTrsactionListBean.class);
+                                GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(txInfoFromRaw.toString(), GetnewcreatTrsactionListBean.class);
                                 outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
                                 fee = getnewcreatTrsactionListBean.getFee();
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 return;
                             }
-                            if (onlickName.equals(wallet_name)) {
+                            if (onclickName.equals(mwalletName)) {
                                 EventBus.getDefault().post(new FirstEvent("22"));
                             } else {
-                                EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
+                                EventBus.getDefault().post(new MainpageWalletEvent("22", walletNamePos));
                             }
                             //1-n wallet  --> Direct signature and broadcast
-                            if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
-                                String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                            if ("1-1".equals(walletTypeToSign) && Ble.getInstance().getConnetedDevices().size() != 0) {
+                                String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
                                 SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
-                                String feature = devices.getString(device_id, "");
+                                String feature = devices.getString(deviceId, "");
                                 if (!Strings.isNullOrEmpty(feature)) {
                                     HardwareFeatures features = HardwareFeatures.objectFromData(feature);
                                     if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
@@ -359,17 +355,17 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 //                            if (!TextUtils.isEmpty(hideRefresh)) {
 //                                EventBus.getDefault().post(new SecondEvent("update_hide_transaction"));
 //                            } else {
-                            if (onlickName.equals(wallet_name)) {
+                            if (onclickName.equals(mwalletName)) {
                                 EventBus.getDefault().post(new FirstEvent("22"));
                             } else {
-                                EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
+                                EventBus.getDefault().post(new MainpageWalletEvent("22", walletNamePos));
                             }
 //                            }
                             Intent intent = new Intent(SendOne2ManyMainPageActivity.this, TransactionDetailsActivity.class);
                             intent.putExtra("tx_hash", rowtx);
                             intent.putExtra("keyValue", "A");
                             intent.putExtra("is_mine", true);
-                            intent.putExtra("strwalletType", waletType);
+                            intent.putExtra("strwalletType", walletType);
                             intent.putExtra("txCreatTrsaction", rowtx);
                             startActivity(intent);
                         }
@@ -408,29 +404,29 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             dialogBtom.cancel();
         });
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-            String strScrollPass = preferences.getString(wallet_name, "");
+            String strScrollPass = preferences.getString(mwalletName, "");
             boolean haveCreateNopass = preferences.getBoolean("haveCreateNopass", false);
             if (!TextUtils.isEmpty(strScrollPass)) {
                 try {
-                    Daemon.commands.callAttr("load_wallet", wallet_name);
-                    Daemon.commands.callAttr("select_wallet", wallet_name);
+                    Daemon.commands.callAttr("load_wallet", mwalletName);
+                    Daemon.commands.callAttr("select_wallet", mwalletName);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return;
                 }
-                walletName.setText(wallet_name);
+                walletName.setText(mwalletName);
                 dialogBtom.cancel();
                 mGeneratecode();
             } else {
                 if (haveCreateNopass) {
                     try {
-                        Daemon.commands.callAttr("load_wallet", wallet_name);
-                        Daemon.commands.callAttr("select_wallet", wallet_name);
+                        Daemon.commands.callAttr("load_wallet", mwalletName);
+                        Daemon.commands.callAttr("select_wallet", mwalletName);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return;
                     }
-                    walletName.setText(wallet_name);
+                    walletName.setText(mwalletName);
                     dialogBtom.cancel();
                     mGeneratecode();
                 } else {
@@ -460,21 +456,21 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         //input password
         View view1 = LayoutInflater.from(this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
-        EditText str_pass = view1.findViewById(R.id.edit_password);
+        EditText strPass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-            String strPassword = str_pass.getText().toString();
+            String strPassword = strPass.getText().toString();
             if (TextUtils.isEmpty(strPassword)) {
                 mToast(getString(R.string.please_input_pass));
                 return;
             }
             try {
-                Daemon.commands.callAttr("load_wallet", wallet_name, new Kwarg("password", strPassword));
-                Daemon.commands.callAttr("select_wallet", wallet_name);
-                walletName.setText(wallet_name);
+                Daemon.commands.callAttr("load_wallet", mwalletName, new Kwarg("password", strPassword));
+                Daemon.commands.callAttr("select_wallet", mwalletName);
+                walletName.setText(mwalletName);
                 dialogBtom.cancel();
                 //get pay address
                 mGeneratecode();
-                edit.putString(wallet_name, strPassword);
+                edit.putString(mwalletName, strPassword);
                 edit.apply();
                 alertDialog.dismiss();
 
@@ -497,25 +493,25 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                wallet_name_pos = position;
-                wallet_name = dataListName.get(position).getName();
-                waletType = dataListName.get(position).getType();
-                wallet_type_to_sign = waletType;
+                walletNamePos = position;
+                mwalletName = dataListName.get(position).getName();
+                walletType = dataListName.get(position).getType();
+                walletTypeToSign = walletType;
             }
         });
     }
 
     //get fee num
     private void getFeerate() {
-        PyObject get_fee_by_feerate = null;
+        PyObject getFeeByFeeRate = null;
         try {
-            get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strmapBtc, "", intmaxFee);
+            getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strmapBtc, "", intmaxFee);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (get_fee_by_feerate != null) {
-            Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);
-            String strnewFee = get_fee_by_feerate.toString();
+        if (getFeeByFeeRate != null) {
+            Log.i("get_fee_by_feerate", "getFeerate: " + getFeeByFeeRate);
+            String strnewFee = getFeeByFeeRate.toString();
             Gson gson = new Gson();
             GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
             int fee = getsendFeenumBean.getFee();
@@ -526,7 +522,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if (msgVote.equals("finish")) {
+        if ("finish".equals(msgVote)) {
             finish();
         }
     }

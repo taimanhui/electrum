@@ -124,15 +124,15 @@ public class ServerSettingActivity extends BaseActivity {
 
     //get default Server
     private void getdefaultServer() {
-        PyObject get_exchanges = null;
+        PyObject getExchanges = null;
         try {
-            get_exchanges = Daemon.commands.callAttr("get_exchanges");
+            getExchanges = Daemon.commands.callAttr("get_exchanges");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (get_exchanges != null) {
-            Log.i("get_exchanges", "getExchangelist: " + get_exchanges);
-            List<PyObject> pyObjects = get_exchanges.asList();
+        if (getExchanges != null) {
+            Log.i("get_exchanges", "getExchangelist: " + getExchanges);
+            List<PyObject> pyObjects = getExchanges.asList();
             String defalutServer = pyObjects.get(0).toString();
             tetDefaultServer.setText(defalutServer);
         }
@@ -169,10 +169,10 @@ public class ServerSettingActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(FirstEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if (msgVote.equals("defaultServer")) {
+        if ("defaultServer".equals(msgVote)) {
             exchangeName = preferences.getString("exchangeName", "");
             tetDefaultServer.setText(exchangeName);
-        } else if (msgVote.equals("block_check")) {
+        } else if ("block_check".equals(msgVote)) {
             blockServerLine = preferences.getString("blockServerLine", "");
             testBlockcheck.setText(blockServerLine);
         } else if (msgVote.equals("add_anysk_server")) {

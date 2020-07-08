@@ -129,6 +129,7 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 improtWallet();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

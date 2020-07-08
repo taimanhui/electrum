@@ -115,13 +115,13 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
         try {
             selectWallet = Daemon.commands.callAttr("select_wallet", "隐藏钱包");
         } catch (Exception e) {
-            Log.i("select_wallet", "--------- " + e.getMessage());
+//            Log.i("select_wallet", "--------- " + e.getMessage());
             e.printStackTrace();
         }
 
         if (selectWallet != null) {
             String toString = selectWallet.toString();
-            Log.i("CheckHideWalletActivity", "select_wallet+++: " + toString);
+//            Log.i("CheckHideWalletActivity", "select_wallet+++: " + toString);
             Gson gson = new Gson();
             MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
             String balanceC = mainWheelBean.getBalance();
@@ -145,10 +145,10 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     private void downMainListdata() {
         maintrsactionlistEvents.clear();
         trsactionlistAdapter.notifyDataSetChanged();
-        PyObject get_history_tx = null;
+        PyObject getHistoryTx = null;
         try {
             //get transaction json
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
+            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
             myDialog.dismiss();
@@ -160,10 +160,10 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             return;
         }
         //get transaction list
-        if (get_history_tx != null) {
+        if (getHistoryTx != null) {
             tetNone.setVisibility(View.GONE);
             recyData.setVisibility(View.VISIBLE);
-            String strHistory = get_history_tx.toString();
+            String strHistory = getHistoryTx.toString();
             //Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
@@ -195,42 +195,42 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
                 String type = jsonObject.getString("type");
-                String tx_hash = jsonObject.getString("tx_hash");
+                String txHash = jsonObject.getString("tx_hash");
                 String amount = jsonObject.getString("amount");
                 //false ->get   true ->push
                 isMine = jsonObject.getBoolean("is_mine");
                 date = jsonObject.getString("date");
-                String tx_status = jsonObject.getString("tx_status");
-                if (type.equals("history")) {
+                String txStatus = jsonObject.getString("tx_status");
+                if ("history".equals(type)) {
                     String confirmations = jsonObject.getString("confirmations");
                     //add attribute
-                    maintrsactionlistEvent.setTx_hash(tx_hash);
+                    maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
-                    maintrsactionlistEvent.setIs_mine(isMine);
+                    maintrsactionlistEvent.setMine(isMine);
                     maintrsactionlistEvent.setConfirmations(confirmations);
                     maintrsactionlistEvent.setType(type);
-                    maintrsactionlistEvent.setTx_status(tx_status);
+                    maintrsactionlistEvent.setTxStatus(txStatus);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
 
                     String txCreatTrsaction = jsonObject.getString("tx");
-                    String invoice_id = jsonObject.getString("invoice_id");//delete use
+                    String invoiceId = jsonObject.getString("invoice_id");//delete use
                     //add attribute
-                    maintrsactionlistEvent.setTx_hash(tx_hash);
+                    maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
-                    maintrsactionlistEvent.setIs_mine(isMine);
+                    maintrsactionlistEvent.setMine(isMine);
                     maintrsactionlistEvent.setType(type);
-                    maintrsactionlistEvent.setTx_status(tx_status);
-                    maintrsactionlistEvent.setInvoice_id(invoice_id);
+                    maintrsactionlistEvent.setTxStatus(txStatus);
+                    maintrsactionlistEvent.setInvoiceId(invoiceId);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
             }
             myDialog.dismiss();
             trsactionlistAdapter.notifyDataSetChanged();
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                private String tx_hash1;
+                private String txHash1;
                 private boolean status;
 
                 @Override
@@ -240,7 +240,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                         case R.id.lin_Item:
                             try {
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                tx_hash1 = jsonObject.getString("tx_hash");
+                                txHash1 = jsonObject.getString("tx_hash");
                                 isMine = jsonObject.getBoolean("is_mine");
                                 date = jsonObject.getString("date");
                                 Intent intent = new Intent(CheckHideWalletActivity.this, TransactionDetailsActivity.class);
@@ -248,12 +248,12 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                                 intent.putExtra("keyValue", "B");
                                 intent.putExtra("dataTime", date);
                                 intent.putExtra("is_mine", isMine);
-                                intent.putExtra("tx_hash", tx_hash1);
+                                intent.putExtra("tx_hash", txHash1);
                                 intent.putExtra("strwalletType", "1-1");
                                 intent.putExtra("listType", typeDele);
                                 if ("tx".equals(typeDele)) {
-                                    String tx_Onclick = jsonObject.getString("tx");
-                                    intent.putExtra("txCreatTrsaction", tx_Onclick);
+                                    String txOnclick = jsonObject.getString("tx");
+                                    intent.putExtra("txCreatTrsaction", txOnclick);
                                     startActivity(intent);
                                 } else {
                                     startActivity(intent);
@@ -266,9 +266,9 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                         case R.id.txt_delete:
                             try {
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                tx_hash1 = jsonObject.getString("tx_hash");
-                                PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
-                                status = get_remove_flag.toBoolean();
+                                txHash1 = jsonObject.getString("tx_hash");
+                                PyObject getRemoveFlag = Daemon.commands.callAttr("get_remove_flag", txHash1);
+                                status = getRemoveFlag.toBoolean();
                                 Log.i("onItemChildClick", "onItemCh==== " + status);
 
                             } catch (Exception e) {
@@ -277,7 +277,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                             if (status) {
 //                                String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
                                 try {
-                                    Daemon.commands.callAttr("remove_local_tx", tx_hash1);
+                                    Daemon.commands.callAttr("remove_local_tx", txHash1);
                                     maintrsactionlistEvents.remove(position);
                                     trsactionlistAdapter.notifyItemChanged(position);
                                     trsactionlistAdapter.notifyDataSetChanged();
@@ -292,6 +292,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
 
                             break;
                         default:
+                   throw new IllegalStateException("Unexpected value: " + view.getId());
                     }
                 }
             });
@@ -341,6 +342,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 startActivity(intent4);
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

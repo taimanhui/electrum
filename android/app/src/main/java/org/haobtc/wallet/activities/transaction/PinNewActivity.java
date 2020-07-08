@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public class PinNewActivity extends BaseActivity {
     Button bnCreateWallet;
     @BindView(R.id.pin_description)
     TextView textViewPinDescription;
+    @BindView(R.id.relativeLayout_key)
+    RelativeLayout relativeLayoutKey;
     private NumKeyboardUtil keyboardUtil;
     public static final String TAG = PinNewActivity.class.getSimpleName();
     private String originPin;
@@ -46,7 +49,7 @@ public class PinNewActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
+        keyboardUtil = new NumKeyboardUtil(this, this, edtPwd, R.xml.number);
         textViewPinDescription.setText(R.string.new_pin);
         originPin = getIntent().getStringExtra("pin_origin");
         init();
@@ -74,6 +77,7 @@ public class PinNewActivity extends BaseActivity {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (getCurrentFocus() != null && getCurrentFocus().getWindowToken() != null) {
+                relativeLayoutKey.setVisibility(View.GONE);
                 keyboardUtil.hideKeyboard();
             }
         }
@@ -105,6 +109,7 @@ public class PinNewActivity extends BaseActivity {
                 }
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

@@ -9,7 +9,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.bean.InputOutputAddressEvent;
 
 import java.util.List;
-
+@Deprecated
 public class SinatrayPersonAdapetr extends BaseQuickAdapter<InputOutputAddressEvent, BaseViewHolder> {
     public SinatrayPersonAdapetr(@Nullable List<InputOutputAddressEvent> data) {
         super(R.layout.sinatroy_item, data);

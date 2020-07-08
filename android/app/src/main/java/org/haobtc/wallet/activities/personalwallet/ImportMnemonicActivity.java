@@ -93,7 +93,6 @@ public class ImportMnemonicActivity extends BaseActivity {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 //                mIntent(AppWalletCreateFinishActivity.class);
-
                 String strWord = randomList.get(position);
                 helpWord(strWord);
             }

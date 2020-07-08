@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,9 +18,6 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.RefreshEvent;
-import org.haobtc.wallet.fragment.mainwheel.WheelViewpagerFragment;
-
-import butterknife.BindView;
 
 
 public class BluetoothFragment extends Fragment implements OnRefreshListener {

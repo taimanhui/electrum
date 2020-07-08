@@ -7,7 +7,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -41,7 +40,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -61,13 +59,12 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     private static final int REQUEST_CODE = 0;
     private RxPermissions rxPermissions;
     private List<SendMoreAddressEvent> sendMoreAddressList;
-    private String wallet_name;
+    private String walletName;
     private BigDecimal totalAmount;
-    private Map<String, String> pramasBtc;
     private ArrayList<Map<String, String>> mapsBtc;
     private String strmapBtc;
-    private String wallet_type;
-    private String base_unit;
+    private String walletType;
+    private String baseUnit;
     private String hideRefresh;
 
     @Override
@@ -80,7 +77,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        base_unit = preferences.getString("base_unit", "mBTC");
+        baseUnit = preferences.getString("base_unit", "mBTC");
         rxPermissions = new RxPermissions(this);
         LinearLayout buttonAdd = findViewById(R.id.lin_add_to);
         ImageView buttonSweep = findViewById(R.id.bn_sweep_2many);
@@ -105,11 +102,11 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void init() {
-        testUnit.setText(base_unit);
-        testUnits.setText(base_unit);
+        testUnit.setText(baseUnit);
+        testUnits.setText(baseUnit);
         Intent intent = getIntent();
-        wallet_name = intent.getStringExtra("wallet_name");
-        wallet_type = intent.getStringExtra("wallet_type");
+        walletName = intent.getStringExtra("wallet_name");
+        walletType = intent.getStringExtra("wallet_type");
         hideRefresh = intent.getStringExtra("hideRefresh");
         totalAmount = new BigDecimal("0");
     }
@@ -161,8 +158,8 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra(TOTAL_AMOUNT, textViewTotal.getText().toString());
                     intent.putExtra(ADDRESS, "");
-                    intent.putExtra("wallet_name", wallet_name);
-                    intent.putExtra("wallet_type", wallet_type);
+                    intent.putExtra("wallet_name", walletName);
+                    intent.putExtra("wallet_type", walletType);
                     intent.putExtra("addressNum", size);
                     intent.putExtra("totalAmount", bigAmont);
                     intent.putExtra("strmapBtc", strmapBtc);
@@ -185,7 +182,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("content", "on------: " + content);
+//                Log.i("content", "on------: " + content);
                 if (!TextUtils.isEmpty(content)) {
                     if (content.contains("bitcoin:")) {
                         String replace = content.replaceAll("bitcoin:", "");
@@ -221,7 +218,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
             //Total transfer quantity
             totalAmount = totalAmount.add(bignum1);
             //hashmap
-            pramasBtc = new HashMap<>();
+            Map<String, String> pramasBtc = new HashMap<>();
             pramasBtc.put(sendMoreAddressList.get(i).getInputAddress(), sendMoreAddressList.get(i).getInputAmount());
             mapsBtc.add(pramasBtc);
         }
@@ -291,7 +288,6 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
                 editTextAmount.setText(s.subSequence(0, 1));
                 editTextAmount.setSelection(1);
             }
-            return;
         }
 
     }
@@ -303,7 +299,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
             BigDecimal bignum1 = new BigDecimal(strAmount);
             BigDecimal bigDecimal = new BigDecimal(21000000);
             int mathMax = bignum1.compareTo(bigDecimal);
-            if (mathMax == 1) {
+            if (mathMax > 0) {
                 mToast(getString(R.string.sendMore));
             }
         }
@@ -313,7 +309,7 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if (msgVote.equals("finish")) {
+        if ("finish".equals(msgVote)) {
             finish();
         }
     }

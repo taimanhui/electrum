@@ -166,8 +166,8 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qr_data = getCodeAddressBean.getQr_data();
-            bitmap = mCreateCode(qr_data);
+            String qrData = getCodeAddressBean.getQrData();
+            bitmap = mCreateCode(qrData);
             imgOrcode.setImageBitmap(bitmap);
         }
     }

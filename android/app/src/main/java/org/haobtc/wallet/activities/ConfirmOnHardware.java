@@ -70,6 +70,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     private String txHash;
     private boolean needTouch;
 
+    @Override
     public int getLayoutId() {
         return R.layout.confirm_on_hardware;
     }

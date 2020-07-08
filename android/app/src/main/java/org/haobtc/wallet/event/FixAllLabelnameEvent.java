@@ -1,17 +1,17 @@
 package org.haobtc.wallet.event;
 
 public class FixAllLabelnameEvent {
-    String keyname;
+    String keyName;
     String code;
 
     public FixAllLabelnameEvent(String keyname, String code) {
-        this.keyname = keyname;
+        this.keyName = keyname;
         this.code = code;
 
     }
 
-    public String getKeyname() {
-        return keyname;
+    public String getKeyName() {
+        return keyName;
     }
 
     public String getCode() {

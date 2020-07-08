@@ -2,12 +2,12 @@ package org.haobtc.wallet.event;
 
 public class PersonalMutiSigEvent {
     private String xpub;
-    private String device_id;
+    private String deviceId;
     private String label;
 
-    public PersonalMutiSigEvent(String xpub, String device_id, String label) {
+    public PersonalMutiSigEvent(String xpub, String deviceId, String label) {
         this.xpub = xpub;
-        this.device_id = device_id;
+        this.deviceId = deviceId;
         this.label = label;
     }
 
@@ -15,8 +15,8 @@ public class PersonalMutiSigEvent {
         return xpub;
     }
 
-    public String getDevice_id() {
-        return device_id;
+    public String getDeviceId() {
+        return deviceId;
     }
 
     public String getLabel() {

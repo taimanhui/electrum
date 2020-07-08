@@ -128,8 +128,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String rawtx;
     private String strParse;
     private String language;
-    private boolean is_mine;
-    private PyObject get_rbf_status;
+    private boolean isMine;
+    private PyObject getRbfStatus;
     private String strwalletType;
     private SharedPreferences preferences;
     private String txid;
@@ -137,18 +137,18 @@ public class TransactionDetailsActivity extends BaseActivity {
     private SharedPreferences.Editor edit;
     private String newFeerate;
     private AlertDialog alertDialog;
-    private String amount, fee;
-    ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> output_addr;
+    private String fee;
+    ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     public static String signedRawTx;
     private String signTransction;
-    private boolean set_rbf;
+    private boolean setRbf;
     private List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr;
     private List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddrScan;
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
     private String unConfirmStatus;
     private String hideWallet = "";
-    private String wallet_type_to_sign;
-    private boolean braod_status = false;//braod_status = true   -->   speed don't broadcast
+    private String walletTypeToSign;
+    private boolean braodStatus = false;
 
     @Override
     public int getLayoutId() {
@@ -163,7 +163,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         language = preferences.getString("language", "");
-        set_rbf = preferences.getBoolean("set_rbf", false);//rbf transaction
+        setRbf = preferences.getBoolean("set_rbf", false);//rbf transaction
         Intent intent = getIntent();
         if (!TextUtils.isEmpty(intent.getStringExtra("signed_raw_tx"))) {
             signedRawTx = intent.getStringExtra("signed_raw_tx");
@@ -180,7 +180,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             strwalletType = intent.getStringExtra("strwalletType");
             tetTrsactionTime.setText(dataTime);
         }
-        is_mine = intent.getBooleanExtra("is_mine", false);//is_mine -->recevid or send
+        isMine = intent.getBooleanExtra("is_mine", false);//is_mine -->recevid or send
     }
 
     @Override
@@ -191,7 +191,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             return;
         }
         //is_mine -->recevid or send
-        if (is_mine) {
+        if (isMine) {
             setRbfStatus();//Show RBF button or not
             tvInTb2.setText(R.string.sendetail);
             linFee.setVisibility(View.VISIBLE);
@@ -204,37 +204,35 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (!TextUtils.isEmpty(keyValue)) {
             switch (keyValue) {
                 case "A":
-                    //creat succses
+                    //create success
                     mCreataSuccsesCheck();
                     break;
                 case "B":
                     if ("history".equals(listType)) {
                         //is_mine -->recevid or send
-                        if (is_mine) {
+                        if (isMine) {
                             tvInTb2.setText(R.string.sendetail);
                         } else {
                             linearSignStatus.setVisibility(View.GONE);
                             tvInTb2.setText(R.string.recevid);
                         }
-                        //histry trsaction detail
+                        //history transaction detail
                         trsactionDetail();
-
                     } else if ("scan".equals(listType)) {
                         linearSignStatus.setVisibility(View.GONE);
                         tvInTb2.setText(R.string.recevid);
                         scanDataDetailMessage();
-
                     } else {
                         tvInTb2.setText(R.string.sendetail);
-                        //creat succses
+                        //create success
                         mCreataSuccsesCheck();
-
                     }
                     break;
                 case "Sign":
                     jsonDetailData(signTransction);
                     break;
                 default:
+                    throw new IllegalStateException("Unexpected value: " + keyValue);
             }
         }
     }
@@ -255,13 +253,13 @@ public class TransactionDetailsActivity extends BaseActivity {
     //Show RBF button or not
     private void setRbfStatus() {
         try {
-            get_rbf_status = Daemon.commands.callAttr("get_rbf_status", txHash);
+            getRbfStatus = Daemon.commands.callAttr("get_rbf_status", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (get_rbf_status != null) {
-            boolean rbfEnable = get_rbf_status.toBoolean();
-            if (set_rbf) {
+        if (getRbfStatus != null) {
+            boolean rbfEnable = getRbfStatus.toBoolean();
+            if (setRbf) {
                 if (rbfEnable) {
                     tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
                 } else {
@@ -274,15 +272,15 @@ public class TransactionDetailsActivity extends BaseActivity {
     //trsaction detail
     private void trsactionDetail() {
         if (!TextUtils.isEmpty(txHash)) {
-            PyObject get_tx_info;
+            PyObject getTxInfo;
             try {
-                get_tx_info = Daemon.commands.callAttr("get_tx_info", txHash);
+                getTxInfo = Daemon.commands.callAttr("get_tx_info", txHash);
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
-            if (get_tx_info != null) {
-                jsondefGet = get_tx_info.toString();
+            if (getTxInfo != null) {
+                jsondefGet = getTxInfo.toString();
                 jsonDetailData(jsondefGet);
             }
 
@@ -293,14 +291,15 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void mCreataSuccsesCheck() {
         //get trsaction list content
         if (!TextUtils.isEmpty(publicTrsation)) {
-            PyObject def_get_tx_info_from_raw = null;
+            PyObject txInfoFromRaw = null;
             try {
-                def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", publicTrsation);
+                txInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", publicTrsation);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (def_get_tx_info_from_raw != null) {
-                jsondefGet = def_get_tx_info_from_raw.toString();
+
+            if (txInfoFromRaw != null) {
+                jsondefGet = txInfoFromRaw.toString();
                 jsonDetailData(jsondefGet);
             }
         }
@@ -308,21 +307,21 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     //intent ->histry or create
     @SuppressLint("DefaultLocale")
-    private void jsonDetailData(String jsondef_get) {
-        Log.d("jsonDetailData", "transactionDetail==== " + jsondef_get);
+    private void jsonDetailData(String detail) {
+//        Log.d("jsonDetailData", "transactionDetail==== " + detail);
         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
         try {
             Gson gson = new Gson();
-            getnewcreatTrsactionListBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
+            getnewcreatTrsactionListBean = gson.fromJson(detail, GetnewcreatTrsactionListBean.class);
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
             return;
         }
-        amount = getnewcreatTrsactionListBean.getAmount();
+        String amount = getnewcreatTrsactionListBean.getAmount();
         fee = getnewcreatTrsactionListBean.getFee();
         String description = getnewcreatTrsactionListBean.getDescription();
-        String tx_status = getnewcreatTrsactionListBean.getTxStatus();
-        output_addr = getnewcreatTrsactionListBean.getOutputAddr();
+        String txStatus = getnewcreatTrsactionListBean.getTxStatus();
+        outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
         inputAddr = getnewcreatTrsactionListBean.getInputAddr();
         txid = getnewcreatTrsactionListBean.getTxid();
@@ -338,8 +337,8 @@ public class TransactionDetailsActivity extends BaseActivity {
         //trsaction hash
         tetTrsactionHash.setText(txid);
         //input address num
-        int size = output_addr.size();
-        if (language.equals("English")) {
+        int size = outputAddr.size();
+        if ("English".equals(language)) {
             tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
             tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddr.size()));
         } else {
@@ -348,7 +347,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         if (size != 0) {
             //output_address
-            String addr = output_addr.get(0).getAddr();
+            String addr = outputAddr.get(0).getAddr();
             tetGetMoneyaddress.setText(addr);
         }
 
@@ -364,7 +363,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 String replaceAmont = amount.replace("-", "");
                 textView14.setText(String.format("-%s", replaceAmont));
             } else {
-                if (is_mine) {
+                if (isMine) {
                     textView14.setText(String.format("-%s", amount));
                 } else {
                     textView14.setText(String.format("+%s", amount));
@@ -377,9 +376,9 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         //Remarks
         tetContent.setText(description);
-        if (!TextUtils.isEmpty(tx_status)) {
+        if (!TextUtils.isEmpty(txStatus)) {
             //judge state
-            judgeState(tx_status);
+            judgeState(txStatus);
         }
 
     }
@@ -387,14 +386,14 @@ public class TransactionDetailsActivity extends BaseActivity {
     //scan get
     @SuppressLint("DefaultLocale")
     private void scanDataDetailMessage() {
-        Log.i("jinxiaominscan", "scanDataDetailMessage---------: " + strParse);
+//        Log.i("jinxiaominscan", "scanDataDetailMessage---------: " + strParse);
         Gson gson = new Gson();
         ScanCheckDetailBean scanCheckDetailBean = gson.fromJson(strParse, ScanCheckDetailBean.class);
         ScanCheckDetailBean.DataBean scanListdata = scanCheckDetailBean.getData();
         String amount = scanListdata.getAmount();
         String fee = scanListdata.getFee();
         String description = scanListdata.getDescription();
-        String tx_status = scanListdata.getTxStatus();
+        String txStatus = scanListdata.getTxStatus();
         inputAddrScan = scanListdata.getInputAddr();
         outputAddrScan = scanListdata.getOutputAddr();
         ScanCheckDetailBean.DataBean data = scanCheckDetailBean.getData();
@@ -410,7 +409,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         tetTrsactionHash.setText(txid);
         //input address num
         int size = outputAddrScan.size();
-        if (language.equals("English")) {
+        if ("English".equals(language)) {
             tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
             tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddrScan.size()));
         } else {
@@ -427,7 +426,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             Integer integer = signStatusMes.get(0);
             Integer integer1 = signStatusMes.get(1);
             if (integer1 == 1) {
-                wallet_type_to_sign = "1-1";
+                walletTypeToSign = "1-1";
             }
             String strNum = integer + "/" + integer1;
             textView20.setText(strNum);
@@ -457,24 +456,24 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         //Remarks
         tetContent.setText(description);
-        if (!TextUtils.isEmpty(tx_status)) {
+        if (!TextUtils.isEmpty(txStatus)) {
             //judge state
-            judgeState(tx_status);
+            judgeState(txStatus);
         }
 
     }
 
     //judge state
-    private void judgeState(String tx_status) {
+    private void judgeState(String txStatus) {
         if ("broadcast_complete".equals(unConfirmStatus)) {
-            if (!braod_status) {
+            if (!braodStatus) {
                 broadcastStatus();//sendOne2OnePageActivity  1-n wallet -->sign and broadcast ，Modify status manually
-                braod_status = false;
+                braodStatus = false;
             }
 
         } else {
             //transaction state
-            if ("Unconfirmed".equals(tx_status)) {//Unconfirmed
+            if ("Unconfirmed".equals(txStatus)) {//Unconfirmed
                 tetState.setText(R.string.waitchoose);
                 sigTrans.setText(R.string.check_trsaction);
                 imgProgressone.setVisibility(View.GONE);
@@ -486,14 +485,14 @@ public class TransactionDetailsActivity extends BaseActivity {
                 //transaction hash and time
                 linTractionHash.setVisibility(View.VISIBLE);
                 linTractionTime.setVisibility(View.GONE);
-            } else if (tx_status.contains("confirmations")) {//Confirmed
+            } else if (txStatus.contains("confirmations")) {//Confirmed
                 tetState.setText(R.string.completed);
                 sigTrans.setText(R.string.check_trsaction);
                 imgProgressone.setVisibility(View.GONE);
                 imgProgressthree.setVisibility(View.GONE);
                 imgProgressfour.setVisibility(View.VISIBLE);
                 //Number of judgment confirmation
-                String strConfirl = tx_status.replaceAll(" confirmations", "");
+                String strConfirl = txStatus.replaceAll(" confirmations", "");
                 BigDecimal bignum1 = new BigDecimal(strConfirl);
                 BigDecimal bigDecimal = new BigDecimal(100);
                 int mathMax = bignum1.compareTo(bigDecimal);
@@ -508,11 +507,11 @@ public class TransactionDetailsActivity extends BaseActivity {
                 //transaction hash and time
                 linTractionHash.setVisibility(View.VISIBLE);
                 linTractionTime.setVisibility(View.VISIBLE);
-            } else if (tx_status.contains("Unsigned")) {//unsigned
+            } else if (txStatus.contains("Unsigned")) {//unsigned
                 linPayAddress.setVisibility(View.VISIBLE);
                 tetState.setText(R.string.unsigned);
                 sigTrans.setText(R.string.signature_trans);
-            } else if (tx_status.contains("Signed") || tx_status.contains("Local") || canBroadcast) {//signed
+            } else if (txStatus.contains("Signed") || txStatus.contains("Local") || canBroadcast) {//signed
                 tetState.setText(R.string.wait_broadcast);
                 sigTrans.setText(R.string.broadcast);
                 tetGrive.setVisibility(View.VISIBLE);
@@ -523,7 +522,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 imgProgressfour.setVisibility(View.GONE);
                 tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
 
-            } else if (tx_status.contains("Partially signed")) {//
+            } else if (txStatus.contains("Partially signed")) {//
                 tetState.setText(R.string.transaction_waitting);
                 sigTrans.setText(R.string.signature_trans);
                 //progress
@@ -541,7 +540,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         Intent intentCon = new Intent(TransactionDetailsActivity.this, ConfirmOnHardware.class);
         intentCon.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("output", output_addr);
+        bundle.putSerializable("output", outputAddr);
         bundle.putString("pay_address", strPayAddress);
         bundle.putString("fee", fee);
         intentCon.putExtra("outputs", bundle);
@@ -568,8 +567,8 @@ public class TransactionDetailsActivity extends BaseActivity {
             case R.id.lin_getMoreaddress:
                 //transaction detail or create success
                 Intent intent1 = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
-                if (output_addr != null) {
-                    intent1.putExtra("jsondef_get", (Serializable) output_addr);
+                if (outputAddr != null) {
+                    intent1.putExtra("jsondef_get", (Serializable) outputAddr);
                 } else {
                     intent1.putExtra("jsondef_getScan", (Serializable) outputAddrScan);
                 }
@@ -594,6 +593,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 receiveAddSpeed();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
@@ -612,8 +612,8 @@ public class TransactionDetailsActivity extends BaseActivity {
             String strNewfeeReceive = getRbfFeeInfo.toString();
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
-            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
             TextView testTitle = viewSpeed.findViewById(R.id.test_title);
             testTitle.setText(getString(R.string.receive_speed));
@@ -624,7 +624,8 @@ public class TransactionDetailsActivity extends BaseActivity {
                 String totalFee = jsonObject.getString("total_fee");
                 String feeForChild = jsonObject.getString("fee_for_child");
                 tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), totalFee));
-                img_Cancle.setOnClickListener(v -> {
+
+                imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
                 viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
@@ -645,12 +646,12 @@ public class TransactionDetailsActivity extends BaseActivity {
             e.printStackTrace();
         }
         if (createCpfpTx != null) {
-            String strNewTX = createCpfpTx.toString();
+            String strNewTx = createCpfpTx.toString();
             Gson gson = new Gson();
-            AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
+            AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTx, AddspeedNewtrsactionBean.class);
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
             EventBus.getDefault().post(new FirstEvent("22"));
-            braod_status = true;//braod_status = true   -->   speed don't broadcast
+            braodStatus = true;//braod_status = true   -->   speed don't broadcast
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
@@ -676,10 +677,10 @@ public class TransactionDetailsActivity extends BaseActivity {
                 //sign input pass
                 signInputpassDialog();
             } else {
-                if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
-                    String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                if ("1-1".equals(walletTypeToSign) && Ble.getInstance().getConnetedDevices().size() != 0) {
+                    String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
                     SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
-                    String feature = devices.getString(device_id, "");
+                    String feature = devices.getString(deviceId, "");
                     if (!Strings.isNullOrEmpty(feature)) {
                         HardwareFeatures features = HardwareFeatures.objectFromData(feature);
                         if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
@@ -745,17 +746,17 @@ public class TransactionDetailsActivity extends BaseActivity {
         View view1 = LayoutInflater.from(TransactionDetailsActivity.this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(TransactionDetailsActivity.this).setView(view1).create();
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        EditText str_pass = view1.findViewById(R.id.edit_password);
+        EditText strPass = view1.findViewById(R.id.edit_password);
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-            String strPassword = str_pass.getText().toString();
+            String strPassword = strPass.getText().toString();
             if (TextUtils.isEmpty(strPassword)) {
                 mToast(getString(R.string.please_input_pass));
                 return;
             }
             try {
-                PyObject sign_tx = Daemon.commands.callAttr("sign_tx", rawtx, "", new Kwarg("password", strPassword));
-                if (sign_tx != null) {
-                    jsonDetailData(sign_tx.toString());
+                PyObject signTx = Daemon.commands.callAttr("sign_tx", rawtx, "", new Kwarg("password", strPassword));
+                if (signTx != null) {
+                    jsonDetailData(signTx.toString());
                     alertDialog.dismiss();
                     EventBus.getDefault().post(new FirstEvent("22"));
 
@@ -777,24 +778,24 @@ public class TransactionDetailsActivity extends BaseActivity {
     }
 
     private void ifHaveRbf() {
-        PyObject get_rbf_fee_info = null;
+        PyObject getRbfFeeInfo = null;
         try {
-            get_rbf_fee_info = Daemon.commands.callAttr("get_rbf_fee_info", txHash);
+            getRbfFeeInfo = Daemon.commands.callAttr("get_rbf_fee_info", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (get_rbf_fee_info != null) {
-            String strNewfee = get_rbf_fee_info.toString();
+        if (getRbfFeeInfo != null) {
+            String strNewfee = getRbfFeeInfo.toString();
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            ImageView img_Cancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
             try {
                 JSONObject jsonObject = new JSONObject(strNewfee);
                 newFeerate = jsonObject.getString("new_feerate");
                 tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), newFeerate));
-                img_Cancle.setOnClickListener(v -> {
+                imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
                 viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
@@ -809,19 +810,19 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     //confirm speed
     private void confirmedSpeed() {
-        PyObject create_bump_fee = null;
+        PyObject createBumpFee = null;
         try {
-            create_bump_fee = Daemon.commands.callAttr("create_bump_fee", txHash, newFeerate);
+            createBumpFee = Daemon.commands.callAttr("create_bump_fee", txHash, newFeerate);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (create_bump_fee != null) {
-            String strNewTX = create_bump_fee.toString();
+        if (createBumpFee != null) {
+            String strNewTX = createBumpFee.toString();
             Gson gson = new Gson();
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
             EventBus.getDefault().post(new FirstEvent("22"));
-            braod_status = true;//braod_status = true   -->   speed don't broadcast
+            braodStatus = true;//braod_status = true   -->   speed don't broadcast
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
@@ -834,7 +835,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if (msgVote.equals("finish")) {
+        if ("finish".equals(msgVote)) {
             finish();
         }
     }

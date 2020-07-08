@@ -2,15 +2,15 @@ package org.haobtc.wallet.event;
 
 public class CheckHideWalletEvent {
     private String xpub;
-    private String device_id;
+    private String deviceId;
 
-    public CheckHideWalletEvent(String xpub, String device_id) {
+    public CheckHideWalletEvent(String xpub, String deviceId) {
         this.xpub = xpub;
-        this.device_id = device_id;
+        this.deviceId = deviceId;
     }
 
-    public String getDevice_id() {
-        return device_id;
+    public String getDeviceId() {
+        return deviceId;
     }
 
     public String getXpub() {

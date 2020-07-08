@@ -83,11 +83,11 @@ public class AppWalletCreateFinishActivity extends BaseActivity {
         }
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
-            Log.i("strCode", "mGenerate--: " + strCode);
+//            Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qr_data = getCodeAddressBean.getQr_data();
-            bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            String qrData = getCodeAddressBean.getQrData();
+            bitmap = CodeCreator.createQRCode(qrData, 248, 248, null);
             imgOrcode.setImageBitmap(bitmap);
         }
 
@@ -123,6 +123,7 @@ public class AppWalletCreateFinishActivity extends BaseActivity {
                 finishAffinity();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

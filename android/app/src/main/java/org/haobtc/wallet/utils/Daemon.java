@@ -12,7 +12,7 @@ import org.haobtc.wallet.event.SecondEvent;
 public class Daemon {
     public static PyObject commands = null;
     public static PyObject network = null;
-    private static Daemon daemon;
+    private static volatile Daemon daemon;
 
     private Daemon() {
     }

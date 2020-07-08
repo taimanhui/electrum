@@ -62,6 +62,7 @@ public class CheckSignResultActivity extends BaseActivity {
                 finish();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 }

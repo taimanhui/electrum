@@ -55,7 +55,7 @@ public class BlockChooseActivity extends BaseActivity {
         reclQuetation.setAdapter(quetationChooseAdapter);
         quetationChooseAdapter.setOnLisennorClick(new QuetationChooseAdapter.onLisennorClick() {
             @Override
-            public void ItemClick(int pos) {
+            public void itemClick(int pos) {
                 edit.putInt("setBlock",pos);
                 edit.putString("blockServerLine",blockList.get(pos).getName());
                 edit.apply();

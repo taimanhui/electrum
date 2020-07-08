@@ -3,11 +3,12 @@ package org.haobtc.wallet.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.List;
 
-
+@Deprecated
 public class MyPagerAdapter extends PagerAdapter {
 
 	private List<View> viewList;
@@ -25,6 +26,7 @@ public class MyPagerAdapter extends PagerAdapter {
 		return viewList.size();
 	}
 
+	@NonNull
 	@Override
 	public Object instantiateItem(ViewGroup container, int position) {
 		container.addView(viewList.get(position));

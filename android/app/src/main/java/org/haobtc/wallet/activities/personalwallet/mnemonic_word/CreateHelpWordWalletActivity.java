@@ -116,6 +116,7 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
                 finish();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 }

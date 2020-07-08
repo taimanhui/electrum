@@ -23,6 +23,8 @@ public class BluetoothConnectingFragment extends Fragment {
         view.findViewById(R.id.connecting).startAnimation(animation);
         return view;
     }
+
+    @Override
     public View getView() {
         return this.view;
     }

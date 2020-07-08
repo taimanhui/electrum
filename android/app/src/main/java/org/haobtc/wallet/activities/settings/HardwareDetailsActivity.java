@@ -9,8 +9,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.common.base.Strings;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -22,21 +20,18 @@ import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity
 import org.haobtc.wallet.activities.settings.recovery_set.FixHardwareLanguageActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.UpdateInfo;
 import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SetShutdownTimeEvent;
-import org.haobtc.wallet.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
@@ -214,7 +209,7 @@ public class HardwareDetailsActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixBixinkeyNameEvent event) {
-        tetKeyName.setText(event.getKeyname());
+        tetKeyName.setText(event.getKeyName());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

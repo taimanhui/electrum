@@ -70,6 +70,7 @@ public class CreateWalletActivity extends BaseActivity {
                 createWalletChooseDialog(CreateWalletActivity.this, R.layout.choose_wallet);
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

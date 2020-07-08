@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -58,7 +57,6 @@ import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.MutiSigWalletEvent;
-import org.haobtc.wallet.event.PersonalMutiSigEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.haobtc.wallet.utils.MyDialog;
@@ -72,8 +70,6 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
 
 public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
@@ -139,7 +135,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     TextView testInputWallet;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-    private EditText editSweep;
+    private EditText editScan;
     private TextView textView;
     private ArrayList<AddBixinKeyEvent> addEventsDatas;
     private String strInditor2;
@@ -331,6 +327,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 }
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
@@ -364,8 +361,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qr_data = getCodeAddressBean.getQr_data();
-            bitmap = CodeCreator.createQRCode(qr_data, 248, 248, null);
+            String qrData = getCodeAddressBean.getQrData();
+            bitmap = CodeCreator.createQRCode(qrData, 248, 248, null);
             imgOrcode.setImageBitmap(bitmap);
 
         }
@@ -425,14 +422,13 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-
-        EditText edit_bixinName = view.findViewById(R.id.edit_keyName);
-        TextView tet_Num = view.findViewById(R.id.txt_textNum);
-        editSweep = view.findViewById(R.id.edit_public_key_cosigner_popup);
+        EditText editBixinName = view.findViewById(R.id.edit_keyName);
+        TextView tetNum = view.findViewById(R.id.txt_textNum);
+        editScan = view.findViewById(R.id.edit_public_key_cosigner_popup);
         int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
         defaultKeyNameNum = defaultKeyNum + 1;
-        edit_bixinName.setText(String.format("BixinKey%s", String.valueOf(defaultKeyNameNum)));
-        edit_bixinName.addTextChangedListener(new TextWatcher() {
+        editBixinName.setText(String.format("BixinKey%s", String.valueOf(defaultKeyNameNum)));
+        editBixinName.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 
             @Override
@@ -442,7 +438,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tet_Num.setText(String.format(Locale.CHINA, "%d/20", input.length()));
+                tetNum.setText(String.format(Locale.CHINA, "%d/20", input.length()));
                 if (input.length() > 19) {
                     Toast.makeText(MultiSigWalletCreator.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
                 }
@@ -454,7 +450,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
             }
         });
-        editSweep.addTextChangedListener(new TextWatcher() {
+
+        editScan.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -467,7 +464,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String strLine = editSweep.getText().toString();
+                String strLine = editScan.getText().toString();
                 if (!TextUtils.isEmpty(strLine)) {
                     view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.GONE);
                     view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.VISIBLE);
@@ -499,17 +496,17 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             if (clipboard != null) {
                 ClipData data = clipboard.getPrimaryClip();
                 if (data != null && data.getItemCount() > 0) {
-                    editSweep.setText(data.getItemAt(0).getText());
+                    editScan.setText(data.getItemAt(0).getText());
                 }
             }
         });
 
         view.findViewById(R.id.btn_Clear).setOnClickListener(v -> {
-            editSweep.setText("");
+            editScan.setText("");
         });
         view.findViewById(R.id.btn_ConfirmAll).setOnClickListener(v -> {
-            String strBixinname = edit_bixinName.getText().toString();
-            String strSweep = editSweep.getText().toString();
+            String strBixinname = editBixinName.getText().toString();
+            String strSweep = editScan.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
                 mToast(getString(R.string.input_name));
                 return;
@@ -519,8 +516,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             }
         });
         view.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
-            String strBixinname = edit_bixinName.getText().toString();
-            String strSweep = editSweep.getText().toString();
+            String strBixinname = editBixinName.getText().toString();
+            String strSweep = editScan.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
                 mToast(getString(R.string.input_name));
                 return;
@@ -543,7 +540,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     addBixinKeyEvent = new AddBixinKeyEvent();
                     addBixinKeyEvent.setKeyname(strBixinname);
                     addBixinKeyEvent.setKeyaddress(strSweep);
-                    addBixinKeyEvent.setDevice_id("");
+                    addBixinKeyEvent.setDeviceId("");
                     addEventsDatas.add(addBixinKeyEvent);
                     dialogBtoms.cancel();
                 }
@@ -596,6 +593,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
                             }
                             break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + view.getId());
                     }
                 }
             });
@@ -655,14 +654,14 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     addBixinKeyEvent = new AddBixinKeyEvent();
                     addBixinKeyEvent.setKeyname(strBixinname);
                     addBixinKeyEvent.setKeyaddress(strSweep);
-                    addBixinKeyEvent.setDevice_id(device_id);
+                    addBixinKeyEvent.setDeviceId(device_id);
                     addEventsDatas.add(addBixinKeyEvent);
                     dialogBtoms.cancel();
                 }
             } else {
                 addBixinKeyEvent.setKeyname(strBixinname);
                 addBixinKeyEvent.setKeyaddress(strSweep);
-                addBixinKeyEvent.setDevice_id(device_id);
+                addBixinKeyEvent.setDeviceId(device_id);
                 addEventsDatas.add(addBixinKeyEvent);
                 dialogBtoms.cancel();
             }
@@ -736,7 +735,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                editSweep.setText(content);
+                editScan.setText(content);
             }
         }
     }
@@ -781,8 +780,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 strInditor2 = tvIndicatorTwo.getText().toString();
                 for (int i = 0; i < addEventsDatas.size(); i++) {
                     String keyaddress = addEventsDatas.get(i).getKeyaddress();
-                    String device_id = addEventsDatas.get(i).getDevice_id();
-                    pubList.add("[\"" + keyaddress + "\",\"" + device_id + "\"]");
+                    String deviceId = addEventsDatas.get(i).getDeviceId();
+                    pubList.add("[\"" + keyaddress + "\",\"" + deviceId + "\"]");
                 }
 
                 try {
@@ -832,9 +831,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(MutiSigWalletEvent event) {
         String xpub = event.getXpub();
-        String device_id = event.getDevice_id();
+        String deviceId = event.getDeviceId();
         String label = event.getLable();
-        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, device_id, label);
+        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, deviceId, label);
     }
 
     @Override

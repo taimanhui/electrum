@@ -47,8 +47,8 @@ public class LunchActivity extends BaseActivity {
         judgeLanguage(language);
 
         boolean jumpOr = preferences.getBoolean("JumpOr", false);
-        String FIRST_RUN = "is_first_run";
-        if (preferences.getBoolean(FIRST_RUN, false)) {
+        String firstRun = "is_first_run";
+        if (preferences.getBoolean(firstRun, false)) {
             Intent intent = new Intent(LunchActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
@@ -68,7 +68,7 @@ public class LunchActivity extends BaseActivity {
     //switch language
     private void judgeLanguage(String language) {
         if (!TextUtils.isEmpty(language)) {
-            if (language.equals("English")) {
+            if ("English".equals(language)) {
                 mTextEnglish();
             } else {
                 mTextChinese();

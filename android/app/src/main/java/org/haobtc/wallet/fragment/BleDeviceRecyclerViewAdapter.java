@@ -28,6 +28,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
     public static List<BleDevice> mValues = new ArrayList<>();
     public static BleDevice mBleDevice;
     private Context context;
+    private static final String BLE_NAME_PREFIX = "BixinKey";
 
     public BleDeviceRecyclerViewAdapter(Context context) {
         this.context = context;
@@ -37,7 +38,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
     public void add(BleDevice device) {
         mValues.add(device);
         mValues = mValues.stream().distinct().
-                filter(bleDevice -> bleDevice.getBleName() != null && bleDevice.getBleName().startsWith("BixinKEY")).collect(Collectors.toList());
+                filter(bleDevice -> bleDevice.getBleName() != null && (bleDevice.getBleName().toLowerCase().startsWith(BLE_NAME_PREFIX.toLowerCase()))).collect(Collectors.toList());
         notifyDataSetChanged();
     }
 
@@ -71,7 +72,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mIdView;
         public BleDevice device;

@@ -1,29 +1,29 @@
 package org.haobtc.wallet.bean;
 
 public class MaintrsactionlistEvent {
-    private String tx_hash;
+    private String txHash;
     private String date;
     private String amount;
-    private boolean is_mine;
+    private boolean isMine;
     private String confirmations;
     private String type;
-    private String tx_status;
-    private String invoice_id;
+    private String txStatus;
+    private String invoiceId;
 
-    public String getInvoice_id() {
-        return invoice_id;
+    public String getInvoiceId() {
+        return invoiceId;
     }
 
-    public void setInvoice_id(String invoice_id) {
-        this.invoice_id = invoice_id;
+    public void setInvoiceId(String invoiceId) {
+        this.invoiceId = invoiceId;
     }
 
-    public String getTx_status() {
-        return tx_status;
+    public String getTxStatus() {
+        return txStatus;
     }
 
-    public void setTx_status(String tx_status) {
-        this.tx_status = tx_status;
+    public void setTxStatus(String txStatus) {
+        this.txStatus = txStatus;
     }
 
     public String getType() {
@@ -42,12 +42,12 @@ public class MaintrsactionlistEvent {
         this.confirmations = confirmations;
     }
 
-    public String getTx_hash() {
-        return tx_hash;
+    public String getTxHash() {
+        return txHash;
     }
 
-    public void setTx_hash(String tx_hash) {
-        this.tx_hash = tx_hash;
+    public void setTxHash(String txHash) {
+        this.txHash = txHash;
     }
 
     public String getDate() {
@@ -66,11 +66,11 @@ public class MaintrsactionlistEvent {
         this.amount = amount;
     }
 
-    public boolean isIs_mine() {
-        return is_mine;
+    public boolean isMine() {
+        return isMine;
     }
 
-    public void setIs_mine(boolean is_mine) {
-        this.is_mine = is_mine;
+    public void setMine(boolean mine) {
+        this.isMine = mine;
     }
 }

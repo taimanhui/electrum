@@ -23,7 +23,7 @@ public class OutputaddrScanAdapter extends BaseQuickAdapter<ScanCheckDetailBean.
         helper.setText(R.id.tet_moreaddress, item.getAddr());
 
         String amount = item.getAmount();
-        Log.i("amountamount", "convert: " + amount);
+//        Log.i("amountamount", "convert: " + amount);
         if (!TextUtils.isEmpty(amount)) {
             helper.setText(R.id.tet_payNum, amount);
 

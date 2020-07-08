@@ -6,10 +6,12 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import java.util.Optional;
+
 import cn.com.heaton.blelibrary.ble.Ble;
 
 public class ApplicationObserver implements LifecycleObserver {
-    private String TAG = this.getClass().getName();
+    private final String TAG = this.getClass().getName();
     public static boolean tryUpdate;
 
     public ApplicationObserver() {
@@ -42,7 +44,7 @@ public class ApplicationObserver implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
-        Ble.getInstance().disconnectAll();
+        Optional.ofNullable(Ble.getInstance().getConnetedDevices()).ifPresent((bleDevices) -> Ble.getInstance().disconnectAll());
         Log.d(TAG, "Lifecycle.Event.ON_STOP");
     }
 

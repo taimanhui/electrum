@@ -19,13 +19,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.personalwallet.CreatAppWalletActivity;
 import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
-import org.haobtc.wallet.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
@@ -48,8 +45,8 @@ public class WalletUnActivatedActivity extends BaseActivity {
     ImageView useSe;
     @BindView(R.id.linear_use_se)
     LinearLayout linearUseSe;
-    private String tag_xpub = "";
-    private boolean use_se = false;
+    private String tagXpub = "";
+    private boolean buseSe = false;
 
     @Override
     public int getLayoutId() {
@@ -60,7 +57,7 @@ public class WalletUnActivatedActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         Intent intent = getIntent();
-        tag_xpub = intent.getStringExtra("tag_Xpub");
+        tagXpub = intent.getStringExtra("tag_Xpub");
     }
 
     @Override
@@ -81,60 +78,30 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.linear_use_se:
-                if (use_se) {
-                    use_se = false;
+                if (buseSe) {
+                    buseSe = false;
                     useSe.setImageDrawable(getDrawable(R.drawable.circle_empty));
                 } else {
-                    use_se = true;
+                    buseSe = true;
                     useSe.setImageDrawable(getDrawable(R.drawable.chenggong));
                 }
                 break;
             case R.id.button_activate:
-//                Intent intent = new Intent(this, ActivatedProcessing.class);
-//                intent.putExtra("tag_xpub", tag_xpub);
-//                intent.putExtra("use_se", use_se);
-//                startActivity(intent);
-//                finish();
                 //Select backup method
-                chooseBackupDialog(WalletUnActivatedActivity.this, R.layout.select_backup_method);
+                if (isNFC) {
+                    Intent intent = new Intent(this, CommunicationModeSelector.class);
+                    if (SingleSigWalletCreator.TAG.equals(tagXpub)) {
+                        intent.putExtra("tag", SingleSigWalletCreator.TAG);
+                    }
+                    intent.putExtra("use_se", buseSe).setAction("init");
+                    startActivity(intent);
+                } else {
+                    EventBus.getDefault().post(new InitEvent("Activate", buseSe));
+                }
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
-    }
-
-    private void chooseBackupDialog(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.has_been_backup).setOnClickListener(v -> {
-            if (isNFC) {
-                Intent intent = new Intent(this, CommunicationModeSelector.class);
-                if (SingleSigWalletCreator.TAG.equals(tag_xpub)) {
-                    intent.putExtra("tag", SingleSigWalletCreator.TAG);
-                }
-                intent.putExtra("use_se", use_se).setAction("init");
-                startActivity(intent);
-            } else {
-                EventBus.getDefault().post(new InitEvent("Activate", use_se));
-            }
-            dialogBtoms.dismiss();
-        });
-
-        view.findViewById(R.id.key_lite_recovery).setOnClickListener(v -> {
-            //TODO: BixinKey Lite recovery
-            dialogBtoms.dismiss();
-        });
-
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
     }
 
     @Override
@@ -147,8 +114,7 @@ public class WalletUnActivatedActivity extends BaseActivity {
         EventBus.getDefault().removeStickyEvent(ResultEvent.class);
         switch (resultEvent.getResult()) {
             case "1":
-//                startActivity(new Intent(this, ActivateSuccessActivity.class));
-                if (SingleSigWalletCreator.TAG.equals(tag_xpub)) {
+                if (SingleSigWalletCreator.TAG.equals(tagXpub)) {
                     EventBus.getDefault().post(new SendXpubToSigwallet("get_xpub_and_send"));
                 }
                 startActivity(new Intent(this, ActivatePromptPIN.class));
@@ -160,6 +126,8 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 finish();
                 break;
             default:
+
+                throw new IllegalStateException("Unexpected value: " + resultEvent.getResult());
         }
     }
 }

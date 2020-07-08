@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.service.BackupRecoveryLiteActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 
@@ -18,6 +17,12 @@ import butterknife.OnClick;
 
 public class ActivateBackupSuccessActivity extends BaseActivity {
 
+    @BindView(R.id.img_back)
+    ImageView imgBack;
+    @BindView(R.id.btn_finish)
+    TextView btnFinish;
+    @BindView(R.id.recovery2Key)
+    Button btnBackup2Key;
     @Override
     public int getLayoutId() {
         return R.layout.activity_activite_backup_success;
@@ -32,22 +37,23 @@ public class ActivateBackupSuccessActivity extends BaseActivity {
     public void initData() {
 
     }
+
     @SingleClick
-    @OnClick({R.id.img_back, R.id.btn_finish, R.id.backup_to_new})
+    @OnClick({R.id.img_back, R.id.btn_finish, R.id.recovery2Key})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
-                finish();
-                break;
             case R.id.btn_finish:
                 finish();
                 break;
-            case R.id.backup_to_new:
-                Intent intent = new Intent(this, BackupRecoveryLiteActivity.class);
+            case R.id.recovery2Key:
+                Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("extras", getIntent().getStringExtra("message"));
                 intent.setAction("recovery");
                 startActivity(intent);
+                break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

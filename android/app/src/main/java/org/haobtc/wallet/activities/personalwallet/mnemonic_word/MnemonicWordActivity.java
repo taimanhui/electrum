@@ -173,14 +173,16 @@ public class MnemonicWordActivity extends BaseActivity {
                                     editTwo.setText(wordList.get(1));
                                 case 1:
                                     editOne.setText(wordList.get(0));
+                                    break;
                                 default:
-
+                                    throw new IllegalStateException("Unexpected value: " + wordList.size());
                             }
                         }
                     }
                 }
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

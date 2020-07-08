@@ -1,13 +1,13 @@
 package org.haobtc.wallet.event;
 
 public class FixBixinkeyNameEvent {
-    String keyname;
+    String keyName;
 
     public FixBixinkeyNameEvent(String keyname) {
-        this.keyname = keyname;
+        this.keyName = keyname;
     }
 
-    public String getKeyname() {
-        return keyname;
+    public String getKeyName() {
+        return keyName;
     }
 }

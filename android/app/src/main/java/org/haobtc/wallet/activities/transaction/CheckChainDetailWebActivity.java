@@ -109,7 +109,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             }
         });
 
-        Log.i("hhhhhhhhhhhh", "initData: "+blockServerLine+checkTxid);
+//        Log.i("hhhhhhhhhhhh", "initData: "+blockServerLine+checkTxid);
         if (nets == 2) {
             webHeckChain.loadUrl(blockServerLine+checkTxid);
         }

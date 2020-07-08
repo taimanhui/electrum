@@ -40,10 +40,12 @@ public class PublicKeyInputEditActivity extends BaseActivity {
     private static final int REQUEST_CODE = 0;
 
 
+    @Override
     public int getLayoutId() {
         return R.layout.input_address_edit;
     }
 
+    @Override
     public void initView() {
 
         ButterKnife.bind(this);
@@ -83,7 +85,7 @@ public class PublicKeyInputEditActivity extends BaseActivity {
                 }
                 break;
             case R.id.bn_confirm_create:
-                if (editTextPublicKey.getText().toString().equals("1234")) {
+                if ("1234".equals(editTextPublicKey.getText().toString())) {
                     Intent intent = new Intent(this, SelectMultiSigWalletActivity.class);
                     startActivity(intent);
                 } else {
@@ -105,7 +107,7 @@ public class PublicKeyInputEditActivity extends BaseActivity {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("content", "on------: " + content);
+//                Log.i("content", "on------: " + content);
                 if (!TextUtils.isEmpty(content)) {
                     if (content.contains("bitcoin:")) {
                         String replace = content.replaceAll("bitcoin:", "");

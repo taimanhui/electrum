@@ -35,8 +35,10 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.regex.Pattern.compile;
+
 public abstract class BaseActivity extends AppCompatActivity {
-    private String strUTF8;
+    private String utf8;
     private String filed1utf;
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -56,6 +58,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * @return the view's layout file id
+     */
     public abstract int getLayoutId();
 
     public abstract void initView();
@@ -140,11 +145,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     //UTF-8 to text
     public String mUTFTtoText(String str) {
         try {
-            strUTF8 = URLDecoder.decode(str, "UTF-8");
+            utf8 = URLDecoder.decode(str, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return strUTF8;
+        return utf8;
     }
 
     //text  to  utf-8
@@ -169,8 +174,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     //judge mobile is wrong or right
     public boolean isMobileNO(String mobiles) {
-        Pattern p = Pattern
-                .compile("^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(16[0-9])|(18[0,5-9]))\\d{8}$");
+        Pattern p = compile("^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(16[0-9])|(18[0,5-9]))\\d{8}$");
         Matcher m = p.matcher(mobiles);
 
         return m.matches();
@@ -178,8 +182,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     //judge pass type  must have Punctuation、Case letters、num、At least 8.
     public boolean isPassType(String mobiles) {
-        Pattern p = Pattern
-                .compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
+        Pattern p = compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
         Matcher m = p.matcher(mobiles);
 
         return m.matches();

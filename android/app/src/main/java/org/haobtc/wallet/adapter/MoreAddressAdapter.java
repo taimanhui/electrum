@@ -1,7 +1,6 @@
 package org.haobtc.wallet.adapter;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -24,7 +23,7 @@ public class MoreAddressAdapter extends BaseQuickAdapter<GetnewcreatTrsactionLis
         helper.setText(R.id.tet_moreaddress, item.getAddr());
 
         String amount = item.getAmount();
-        Log.i("amountamount", "convert: " + amount);
+//        Log.i("amountamount", "convert: " + amount);
         if (!TextUtils.isEmpty(amount)) {
             helper.setText(R.id.tet_payNum, amount);
 

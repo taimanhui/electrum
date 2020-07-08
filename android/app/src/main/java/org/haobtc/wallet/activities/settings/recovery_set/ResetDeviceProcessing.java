@@ -46,7 +46,7 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usb
 
 
 public class ResetDeviceProcessing extends BaseActivity {
-    int MAX_LEVEL = 10000;
+    private final int MAX_LEVEL = 10000;
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.first_promote)
@@ -59,6 +59,7 @@ public class ResetDeviceProcessing extends BaseActivity {
     private Timer timer;
     private final static String TAG = ResetDeviceProcessing.class.getSimpleName();
 
+    @Override
     public int getLayoutId() {
         return isNFC ? R.layout.processing_nfc : R.layout.processing_ble;
     }

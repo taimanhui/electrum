@@ -121,7 +121,6 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         } catch (Exception e) {
             Log.i("TAGjixoain", "currency:------------- "+e.getMessage());
             e.printStackTrace();
-            return;
         }
     }
 

@@ -846,6 +846,8 @@
     <string name="from_key_lite">Restore from BixinKey Lite</string>
     <string name="connect_method">Support the following communication methods, you can choose one of them (default is NFC)：</string>
     <string name="nfc">NFC</string>
-
+    <string name="card_pin">输入BixinKey Lite的PIN码</string>
+    <string name="backup2lite">备份到BixinKey Lite</string>
+    <string name="backup2lite_finish">备份到BixinKey Lite完成</string>
 
 </resources>

@@ -19,6 +19,7 @@ public class ActivateSuccessActivity extends BaseActivity {
     @BindView(R.id.bn_back)
     Button bnBack;
 
+    @Override
     public int getLayoutId() {
         return R.layout.activated_successful;
     }
@@ -43,6 +44,7 @@ public class ActivateSuccessActivity extends BaseActivity {
               //  Ble.getInstance().disconnectAll();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 }

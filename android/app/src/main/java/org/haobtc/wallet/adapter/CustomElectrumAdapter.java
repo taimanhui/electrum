@@ -8,7 +8,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import org.haobtc.wallet.R;
 
 import java.util.List;
-
+@Deprecated
 public class CustomElectrumAdapter extends BaseQuickAdapter<String, BaseViewHolder> {
     public CustomElectrumAdapter(@Nullable List<String> data) {
         super(R.layout.only_node, data);

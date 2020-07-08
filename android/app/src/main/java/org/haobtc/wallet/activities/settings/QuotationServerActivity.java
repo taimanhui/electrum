@@ -76,7 +76,7 @@ public class QuotationServerActivity extends BaseActivity {
         reclQuetation.setAdapter(quetationChooseAdapter);
         quetationChooseAdapter.setOnLisennorClick(new QuetationChooseAdapter.onLisennorClick() {
             @Override
-            public void ItemClick(int pos) {
+            public void itemClick(int pos) {
                 String exchangeName = exchangeList.get(pos).getName();
                 try {
                     Daemon.commands.callAttr("set_exchange",exchangeName);

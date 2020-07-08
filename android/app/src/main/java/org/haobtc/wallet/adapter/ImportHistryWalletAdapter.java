@@ -1,27 +1,21 @@
 package org.haobtc.wallet.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.InputHistoryWalletEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ImportHistryWalletAdapter extends RecyclerView.Adapter<ImportHistryWalletAdapter.myViewHolder> {
@@ -49,13 +43,13 @@ public class ImportHistryWalletAdapter extends RecyclerView.Adapter<ImportHistry
     }
 
     public class myViewHolder extends RecyclerView.ViewHolder {
-        TextView tet_walletname, tet_AddBixinkey;
+        TextView tetWalletname, tetAddBixinkey;
         CheckBox checkbox;
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
-            tet_walletname = itemView.findViewById(R.id.tet_walletname);
-            tet_AddBixinkey = itemView.findViewById(R.id.tet_AddBixinkey);
+            tetWalletname = itemView.findViewById(R.id.tet_walletname);
+            tetAddBixinkey = itemView.findViewById(R.id.tet_AddBixinkey);
             checkbox = itemView.findViewById(R.id.img_wallet);
         }
     }
@@ -69,8 +63,8 @@ public class ImportHistryWalletAdapter extends RecyclerView.Adapter<ImportHistry
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tet_walletname.setText(xpubList.get(position).getName());
-        holder.tet_AddBixinkey.setText(xpubList.get(position).getXpubs());
+        holder.tetWalletname.setText(xpubList.get(position).getName());
+        holder.tetAddBixinkey.setText(xpubList.get(position).getXpubs());
         holder.checkbox.setOnCheckedChangeListener(null);
         holder.checkbox.setChecked(checkStatus.get(position));
         holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -91,11 +85,5 @@ public class ImportHistryWalletAdapter extends RecyclerView.Adapter<ImportHistry
 
     public interface OnItemClickListener {
         void onItemClick(int position);
-    }
-
-    private OnItemClickListener onItemClickListener;
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
     }
 }

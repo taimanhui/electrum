@@ -32,10 +32,10 @@ public class SendmoreAddressAdapter extends RecyclerView.Adapter<SendmoreAddress
     @Override
     public void onBindViewHolder(@NonNull myViewHoleder holder, int position) {
         SharedPreferences preferences = context.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        String base_unit = preferences.getString("base_unit", "mBTC");
+        String baseUnit = preferences.getString("base_unit", "mBTC");
         holder.tetAddress.setText(sendMoreAddressList.get(position).getInputAddress());
 
-        holder.tetAmount.setText(String.format("%s %s", sendMoreAddressList.get(position).getInputAmount(),base_unit));
+        holder.tetAmount.setText(String.format("%s %s", sendMoreAddressList.get(position).getInputAmount(),baseUnit));
         holder.imgDelete.setOnClickListener(v -> {
             if (onItemDeleteListener!=null){
                 onItemDeleteListener.onItemClick(position);

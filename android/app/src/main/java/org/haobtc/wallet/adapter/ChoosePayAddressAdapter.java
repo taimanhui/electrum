@@ -34,15 +34,15 @@ public class ChoosePayAddressAdapter extends RecyclerView.Adapter<ChoosePayAddre
     }
 
     public class myViewHolder extends RecyclerView.ViewHolder {
-        TextView tet_WalletName;
-        TextView tet_WalletType;
-        RelativeLayout rel_background;
+        TextView tetWalletName;
+        TextView tetWalletType;
+        RelativeLayout relBackground;
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
-            tet_WalletName = itemView.findViewById(R.id.tet_WalletName);
-            tet_WalletType = itemView.findViewById(R.id.tet_WalletType);
-            rel_background = itemView.findViewById(R.id.rel_background);
+            tetWalletName = itemView.findViewById(R.id.tet_WalletName);
+            tetWalletType = itemView.findViewById(R.id.tet_WalletType);
+            relBackground = itemView.findViewById(R.id.rel_background);
         }
     }
 
@@ -55,11 +55,11 @@ public class ChoosePayAddressAdapter extends RecyclerView.Adapter<ChoosePayAddre
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tet_WalletName.setText(data.get(position).getName());
+        holder.tetWalletName.setText(data.get(position).getName());
         if ("standard".equals(data.get(position).getType())) {
-            holder.tet_WalletType.setText(R.string.software_wallet);
+            holder.tetWalletType.setText(R.string.software_wallet);
         } else {
-            holder.tet_WalletType.setText(data.get(position).getType());
+            holder.tetWalletType.setText(data.get(position).getType());
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,13 +76,13 @@ public class ChoosePayAddressAdapter extends RecyclerView.Adapter<ChoosePayAddre
             }
         });
 
-        holder.itemView.setTag(holder.tet_WalletName);
-        holder.itemView.setTag(holder.tet_WalletType);
+        holder.itemView.setTag(holder.tetWalletName);
+        holder.itemView.setTag(holder.tetWalletType);
 
         if (isClicks.get(position)) {
-            holder.rel_background.setBackgroundColor(Color.parseColor("#F6F7F8"));
+            holder.relBackground.setBackgroundColor(Color.parseColor("#F6F7F8"));
         } else {
-            holder.rel_background.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.relBackground.setBackgroundColor(Color.parseColor("#ffffff"));
         }
 
     }

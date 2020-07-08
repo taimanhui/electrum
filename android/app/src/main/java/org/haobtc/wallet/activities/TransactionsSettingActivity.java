@@ -85,76 +85,67 @@ public class TransactionsSettingActivity extends BaseActivity {
     }
 
     private void switchChoose() {
-        switchRbf.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    try {
-                        Daemon.commands.callAttr("set_rbf", true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    edit.putBoolean("set_rbf", true);
-                    edit.apply();
-                    mToast(getString(R.string.set_success));
-                } else {
-                    try {
-                        Daemon.commands.callAttr("set_rbf", false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    edit.putBoolean("set_rbf", false);
-                    edit.apply();
+        switchRbf.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                try {
+                    Daemon.commands.callAttr("set_rbf", true);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                edit.putBoolean("set_rbf", true);
+                edit.apply();
+                mToast(getString(R.string.set_success));
+            } else {
+                try {
+                    Daemon.commands.callAttr("set_rbf", false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                edit.putBoolean("set_rbf", false);
+                edit.apply();
             }
         });
         //pay unConfirmed income
-        switchNoConfirm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    try {
-                        Daemon.commands.callAttr("set_unconf", false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    edit.putBoolean("set_unconf", true);
-                    edit.apply();
-                    mToast(getString(R.string.set_success));
-                } else {
-                    try {
-                        Daemon.commands.callAttr("set_unconf", true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    edit.putBoolean("set_unconf", false);
-                    edit.apply();
+        switchNoConfirm.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                try {
+                    Daemon.commands.callAttr("set_unconf", false);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                edit.putBoolean("set_unconf", true);
+                edit.apply();
+                mToast(getString(R.string.set_success));
+            } else {
+                try {
+                    Daemon.commands.callAttr("set_unconf", true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                edit.putBoolean("set_unconf", false);
+                edit.apply();
             }
         });
         //use Give change adrress
-        switchFind.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    try {
-                        Daemon.commands.callAttr("set_use_change", true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    edit.putBoolean("set_use_change", true);
-                    edit.apply();
-                    mToast(getString(R.string.set_success));
-                } else {
-                    try {
-                        Daemon.commands.callAttr("set_use_change", false);
-                    } catch (Exception e) {
-                        Log.e("Exception", "Exception++: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                    edit.putBoolean("set_use_change", false);
-                    edit.apply();
+        switchFind.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                try {
+                    Daemon.commands.callAttr("set_use_change", true);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                edit.putBoolean("set_use_change", true);
+                edit.apply();
+                mToast(getString(R.string.set_success));
+            } else {
+                try {
+                    Daemon.commands.callAttr("set_use_change", false);
+                } catch (Exception e) {
+                    Log.e("Exception", "Exception++: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                edit.putBoolean("set_use_change", false);
+                edit.apply();
             }
         });
     }
@@ -201,11 +192,8 @@ public class TransactionsSettingActivity extends BaseActivity {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    restoreSet();
-                    break;
-                default:
+            if (msg.what == 1) {
+                restoreSet();
             }
         }
     };

@@ -28,7 +28,7 @@
                 android:textSize="@dimen/sp_16" />
 
             <ImageView
-                android:id="@+id/img_Cancle"
+                android:id="@+id/img_Cancel"
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_40"
                 android:layout_alignParentEnd="true"

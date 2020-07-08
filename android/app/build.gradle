@@ -229,6 +229,7 @@ dependencies {
     implementation 'org.aspectj:aspectjrt:1.9.5'
     // guava
     implementation 'com.google.guava:guava:29.0-android'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.65.01'
     implementation 'org.jetbrains:annotations:15.0'
 
 }

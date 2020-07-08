@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,8 +17,6 @@ import org.haobtc.wallet.bean.MaintrsactionlistEvent;
 
 import java.util.List;
 
-import static org.haobtc.wallet.R.id.txt_delete;
-
 public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistEvent, BaseViewHolder> {
     public MaindowndatalistAdapetr(@Nullable List<MaintrsactionlistEvent> data) {
         super(R.layout.fragment_item_trans, data);
@@ -27,13 +24,13 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
 
     @Override
     protected void convert(BaseViewHolder helper, MaintrsactionlistEvent item) {
-        boolean is_mine = item.isIs_mine();
-        if (is_mine) {
+        boolean isMine = item.isMine();
+        if (isMine) {
             helper.setText(R.id.tet_name, R.string.send);
         } else {
             helper.setText(R.id.tet_name, R.string.receive);
         }
-        helper.setText(R.id.tet_address, item.getTx_hash());
+        helper.setText(R.id.tet_address, item.getTxHash());
 
         String amount = item.getAmount();
         if (!TextUtils.isEmpty(amount)) {
@@ -59,7 +56,7 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
         if ("history".equals(type)) {
             //history
             String confirmations = item.getConfirmations();
-            String tx_status = item.getTx_status();
+            String txStatus = item.getTxStatus();
             int anInt = Integer.parseInt(confirmations);
             if (anInt > 0) {//Confirmed
                 helper.setText(R.id.tet_zt, R.string.alreadychoose);
@@ -68,34 +65,34 @@ public class MaindowndatalistAdapetr extends BaseQuickAdapter<MaintrsactionlistE
                 tetview.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
                 linearDelete.setVisibility(View.GONE);//hide delete button
-            } else if (tx_status.contains("Unconfirmed")) {//Unconfirmed
+            } else if (txStatus.contains("Unconfirmed")) {//Unconfirmed
                 helper.setText(R.id.tet_zt, R.string.waitchoose);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF838383"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
                 linearDelete.setVisibility(View.GONE);//hide delete button
-            } else if ("Unsigned".equals(tx_status)) {//Unsigned
+            } else if ("Unsigned".equals(txStatus)) {//Unsigned
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.transaction_waitting);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FFF26A3A"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
                 linearDelete.setVisibility(View.VISIBLE);//hide delete button
-            } else if (tx_status.contains("Partially signed")) {
+            } else if (txStatus.contains("Partially signed")) {
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.transaction_waitting);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FFF26A3A"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.orange_circle));
                 linearDelete.setVisibility(View.VISIBLE);//hide delete button
-            } else if ("Signed".equals(tx_status) || "Local".equals(tx_status)) {
+            } else if ("Signed".equals(txStatus) || "Local".equals(txStatus)) {
                 //new creat trsaction
                 helper.setText(R.id.tet_zt, R.string.wait_broadcast);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF838383"));
                 tetview.setBackground(mContext.getDrawable(R.drawable.gray_tuocircle));
                 linearDelete.setVisibility(View.VISIBLE);//hide delete button
-            }else if ("Not verified".equals(tx_status)){//Confirmed
+            }else if ("Not verified".equals(txStatus)){//Confirmed
                 helper.setText(R.id.tet_zt, R.string.alreadychoose);
                 TextView tetview = helper.getView(R.id.tet_zt);
                 tetview.setTextColor(Color.parseColor("#FF6182F5"));

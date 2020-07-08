@@ -104,6 +104,7 @@ public class MnemonicActivity extends BaseActivity {
                 Toast.makeText(MnemonicActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

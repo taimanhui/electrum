@@ -139,7 +139,11 @@ import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 import static org.haobtc.wallet.activities.sign.SignActivity.strinputAddress;
 
-
+/**
+ * the dialog style activity which is the main logic processor
+ * @author liyan
+ *
+ * */
 public class CommunicationModeSelector extends BaseActivity implements View.OnClickListener, BusinessAsyncTask.Helper {
 
     public static final String TAG = "BLE";
@@ -194,7 +198,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         ImageView imageViewCancel;
         EventBus.getDefault().post(new ExitEvent());
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-//        boolean bluetoothStatus = preferences.getBoolean("bluetoothStatus", false);
         way = preferences.getString("way", COMMUNICATION_MODE_NFC);
         isNFC = COMMUNICATION_MODE_NFC.equals(way);
         ImageView imageView = findViewById(R.id.touch_nfc);
@@ -509,6 +512,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         }
     }
 
+    /**
+     * @param isNFC
+     */
     private void handlerEverything(boolean isNFC) {
         isSign = false;
         isActive = false;
@@ -1150,9 +1156,18 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Override
     public void onCancelled() {
     }
-
+    /**
+     * DCL singleton used for hardware callback
+     * works in UI thread
+     * */
     public static class MyHandler extends Handler {
+        /**
+         * handler used in python
+         * */
         private static volatile MyHandler myHandler;
+        /**
+         * the handler to start new activity
+         * */
         private FragmentActivity fragmentActivity;
 
         private MyHandler(FragmentActivity activity) {
@@ -1202,6 +1217,8 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     Intent intent3 = new Intent(fragmentActivity, HideWalletSetPassActivity.class);
                     fragmentActivity.startActivity(intent3);
                     break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + msg.what);
             }
         }
     }

@@ -69,6 +69,7 @@ public class CreatAppWalletActivity extends BaseActivity implements TextWatcher 
                 finish();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

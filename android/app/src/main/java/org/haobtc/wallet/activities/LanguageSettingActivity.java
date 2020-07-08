@@ -10,7 +10,6 @@ import android.widget.TextView;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
-import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 
 import butterknife.BindView;
@@ -34,10 +33,12 @@ public class LanguageSettingActivity extends BaseActivity {
     private SharedPreferences.Editor edit;
     private String language;
 
+    @Override
     public int getLayoutId() {
         return R.layout.language_setting;
     }
 
+    @Override
     @SuppressLint("CommitPrefEdits")
     public void initView() {
 
@@ -50,7 +51,7 @@ public class LanguageSettingActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        if (language.equals("English")) {
+        if ("English".equals(language)) {
             radioEnglish.setTextColor(getColor(R.color.button_bk_disableok));
             radioChineseasy.setTextColor(getColor(R.color.text_color1));
         }

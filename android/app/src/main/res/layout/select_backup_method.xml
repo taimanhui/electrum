@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/has_been_backup"
+            android:id="@+id/recovery_from_local_backup"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_59"
             android:gravity="center"
@@ -27,7 +27,7 @@
             android:background="@color/line_color" />
 
         <TextView
-            android:id="@+id/key_lite_recovery"
+            android:id="@+id/recovery_from_key_lite"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_60"
             android:gravity="center"

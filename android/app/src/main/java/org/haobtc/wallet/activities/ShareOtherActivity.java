@@ -31,7 +31,6 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.tbruyelle.rxpermissions2.RxPermissions;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -74,8 +73,7 @@ public class ShareOtherActivity extends BaseActivity {
     private Bitmap bitmap;
     private boolean toGallery;
     private String rowTx;
-    private String strCode;
-    PyObject get_qr_data_from_raw_tx = null;
+    PyObject getQrDataFromRawTx = null;
 
     @Override
     public int getLayoutId() {
@@ -99,12 +97,12 @@ public class ShareOtherActivity extends BaseActivity {
                 public void run() {
                     //Sub thread
                     try {
-                        get_qr_data_from_raw_tx = Daemon.commands.callAttr("get_qr_data_from_raw_tx", rowTx);
+                        getQrDataFromRawTx = Daemon.commands.callAttr("get_qr_data_from_raw_tx", rowTx);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return;
                     }
-                    mainhandler.sendEmptyMessage(1);
+                    mainHandler.sendEmptyMessage(1);
                 }
             });
         }
@@ -133,8 +131,6 @@ public class ShareOtherActivity extends BaseActivity {
                                 Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
                             }
                         }).dispose();
-
-
                 break;
             case R.id.tet_Copy:
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -157,7 +153,6 @@ public class ShareOtherActivity extends BaseActivity {
                                 Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
                             }
                         }).dispose();
-
                 break;
             case R.id.img_back:
                 finish();
@@ -216,7 +211,7 @@ public class ShareOtherActivity extends BaseActivity {
         Log.i("printException", "show---_________________________________" + stPath);
         View view1 = LayoutInflater.from(this).inflate(R.layout.dialog_view, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
-        ImageView img_Cancle = view1.findViewById(R.id.img_Cancle);
+        ImageView imfCancel = view1.findViewById(R.id.img_Cancel);
         String newPath = stPath.replace("内部存储", "/storage/emulated/0");
         view1.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
             EditText editFilename = view1.findViewById(R.id.edit_Filename);
@@ -235,7 +230,7 @@ public class ShareOtherActivity extends BaseActivity {
             alertDialog.dismiss();
 
         });
-        img_Cancle.setOnClickListener(v -> {
+        imfCancel.setOnClickListener(v -> {
             alertDialog.dismiss();
         });
         alertDialog.show();
@@ -258,26 +253,26 @@ public class ShareOtherActivity extends BaseActivity {
     }
 
     @SuppressLint("HandlerLeak")
-    Handler mainhandler = new Handler() {
+    Handler mainHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    if (get_qr_data_from_raw_tx != null) {
-                        strCode = get_qr_data_from_raw_tx.toString();
-                        if (!TextUtils.isEmpty(strCode)) {
-                            bitmap = mCreate2DCode(strCode);
-                            imgOrcode.setImageBitmap(bitmap);
-                        }
+            if (msg.what == 1) {
+                if (getQrDataFromRawTx != null) {
+                    String strCode = getQrDataFromRawTx.toString();
+                    if (!TextUtils.isEmpty(strCode)) {
+                        bitmap = mCreateQrCode(strCode);
+                        imgOrcode.setImageBitmap(bitmap);
                     }
-                    break;
-                default:
+                }
             }
         }
     };
 
-    public static Bitmap mCreate2DCode(String str) {
+
+    public static Bitmap mCreateQrCode(String str) {
+        //生成二维矩阵,编码时要指定大小,
+        //不要生成了图片以后再进行缩放,以防模糊导致识别失败
         try {
             BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 500, 500);
             int width = matrix.getWidth();

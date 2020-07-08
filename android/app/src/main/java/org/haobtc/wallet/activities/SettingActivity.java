@@ -43,11 +43,11 @@ public class SettingActivity extends BaseActivity {
     @BindView(R.id.tetBuckup)
     TextView tetBuckup;
     @BindView(R.id.tet_language)
-    TextView tet_language;
+    TextView tetLanguage;
     @BindView(R.id.tetSeverSet)
     TextView tetSeverSet;
     @BindView(R.id.tetTrsactionSet)
-    TextView tetTrsactionSet;
+    TextView tetTransactionSet;
     @BindView(R.id.tetVerification)
     TextView tetVerification;
     @BindView(R.id.tetAbout)
@@ -147,7 +147,7 @@ public class SettingActivity extends BaseActivity {
                 startActivity(intent2);
                 break;
             default:
-
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

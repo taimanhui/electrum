@@ -22,7 +22,6 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.ExitEvent;
-import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FixWalletNameEvent;
 import org.haobtc.wallet.event.ReceiveXpub;
 import org.haobtc.wallet.utils.Daemon;
@@ -155,6 +154,7 @@ public class SingleSigWalletCreator extends BaseActivity {
                 mCreatOnlyWallet();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
@@ -197,7 +197,7 @@ public class SingleSigWalletCreator extends BaseActivity {
             return;
         }
         String xpub = event.getXpub();
-        String deviceId = event.getDevice_id();
+        String deviceId = event.getDeviceId();
         String strXpub = "[[\"" + xpub + "\",\"" + deviceId + "\"]]";
         walletName = editWalletNameSetting.getText().toString();
         try {

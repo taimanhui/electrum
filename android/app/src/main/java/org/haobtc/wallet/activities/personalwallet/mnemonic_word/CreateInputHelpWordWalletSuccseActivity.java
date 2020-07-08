@@ -86,6 +86,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
                 finishAffinity();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
@@ -104,8 +105,8 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
             myDialog.dismiss();
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qr_data = getCodeAddressBean.getQr_data();
-            bitmap = CodeCreator.createQRCode(qr_data, 268, 268, null);
+            String qrData = getCodeAddressBean.getQrData();
+            bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
             imgOrcode.setImageBitmap(bitmap);
         }
     }

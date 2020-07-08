@@ -2,13 +2,13 @@ package org.haobtc.wallet.event;
 
 public class ReceiveXpub {
     String xpub;
-    String device_id;
+    String deviceId;
     Boolean needBackup;
     boolean showUI;
 
-    public ReceiveXpub(String xpub, String device_id, Boolean needBackup, boolean show) {
+    public ReceiveXpub(String xpub, String id, Boolean needBackup, boolean show) {
         this.xpub = xpub;
-        this.device_id = device_id;
+        this.deviceId = id;
         this.needBackup = needBackup;
         this.showUI = show;
     }
@@ -17,8 +17,8 @@ public class ReceiveXpub {
         return xpub;
     }
 
-    public String getDevice_id() {
-        return device_id;
+    public String getDeviceId() {
+        return deviceId;
     }
 
     public Boolean getNeedBackup() {

@@ -148,7 +148,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_Finish:
-                ArrayList<Object> onlyData = new ArrayList<>();
+                ArrayList<Object> onlyData;
                 listDates.clear();
                 Map<Integer, Boolean> map = histryWalletAdapter.getMap();
                 for (int i = 0; i < list.size(); i++) {
@@ -171,6 +171,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                 }
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

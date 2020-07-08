@@ -45,7 +45,7 @@ public class SignatureProcessing extends BaseActivity {
     TextView thirdPromote;
 
     private String pin, passphrash;
-    int MAX_LEVEL = 10000;
+    private final int MAX_LEVEL = 10000;
 
     @Override
     public int getLayoutId() {
@@ -101,6 +101,7 @@ public class SignatureProcessing extends BaseActivity {
                 finishAffinity();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + resultEvent.getResult());
         }
     }
 

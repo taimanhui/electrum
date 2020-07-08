@@ -77,6 +77,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
                 mIntent(UserAgreementActivity.class);
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

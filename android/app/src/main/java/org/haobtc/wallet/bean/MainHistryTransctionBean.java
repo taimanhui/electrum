@@ -11,19 +11,19 @@ public class MainHistryTransctionBean {
      * amount : 10. mBTC
      */
 
-    private String tx_hash;
+    private String txHash;
     private String date;
     private String message;
     private int confirmations;
-    private boolean is_mine;
+    private boolean isMine;
     private String amount;
 
-    public String getTx_hash() {
-        return tx_hash;
+    public String getTxHash() {
+        return txHash;
     }
 
-    public void setTx_hash(String tx_hash) {
-        this.tx_hash = tx_hash;
+    public void setTxHash(String txHash) {
+        this.txHash = txHash;
     }
 
     public String getDate() {
@@ -50,12 +50,12 @@ public class MainHistryTransctionBean {
         this.confirmations = confirmations;
     }
 
-    public boolean isIs_mine() {
-        return is_mine;
+    public boolean isMine() {
+        return isMine;
     }
 
-    public void setIs_mine(boolean is_mine) {
-        this.is_mine = is_mine;
+    public void setMine(boolean mine) {
+        this.isMine = mine;
     }
 
     public String getAmount() {

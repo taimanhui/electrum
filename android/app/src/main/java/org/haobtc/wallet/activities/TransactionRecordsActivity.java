@@ -54,15 +54,17 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private String strChoose = "send";
     private String date;
-    private boolean is_mine;
+    private boolean isMine;
     private MaindowndatalistAdapetr trsactionlistAdapter;
     private String strwalletType;
 
 
+    @Override
     public int getLayoutId() {
         return R.layout.transaction_records;
     }
 
+    @Override
     public void initView() {
         ButterKnife.bind(this);
         Intent intent = getIntent();
@@ -73,6 +75,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
         refreshLayout.setOnRefreshListener(this);
     }
 
+    @Override
     public void initData() {
         maintrsactionlistEvents = new ArrayList<>();
         //Binder Adapter
@@ -84,23 +87,23 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
 
     private void mTransactionrecordSend(String sends) {
         //get transaction json
-        PyObject get_history_tx = null;
+        PyObject getHistoryTx = null;
         try {
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list", sends);
+            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list", sends);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        if (get_history_tx != null) {
-            getHistroyIntry(get_history_tx);
+        if (getHistoryTx != null) {
+            getHistroyIntry(getHistoryTx);
         }
 
     }
 
-    private void getHistroyIntry(PyObject get_history_tx) {
+    private void getHistroyIntry(PyObject getHistoryTx) {
         //get transaction list
-        if (!get_history_tx.isEmpty()) {
-            String strHistory = get_history_tx.toString();
+        if (!getHistoryTx.isEmpty()) {
+            String strHistory = getHistoryTx.toString();
            // Log.i("strHistory", "onPage----: " + strHistory);
             if (TextUtils.isEmpty(strHistory) || strHistory.length() == 2) {
                 tetNone.setVisibility(View.VISIBLE);
@@ -131,39 +134,39 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                 MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
                 String type = jsonObject.getString("type");
                 //    private String strChoosestate;
-                String tx_hash = jsonObject.getString("tx_hash");
+                String txHash = jsonObject.getString("tx_hash");
                 String amount = jsonObject.getString("amount");
-                is_mine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
+                isMine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
                 date = jsonObject.getString("date");
-                String tx_status = jsonObject.getString("tx_status");
-                if (type.equals("history")) {
+                String txStatus = jsonObject.getString("tx_status");
+                if ("history".equals(type)) {
                     String confirmations = jsonObject.getString("confirmations");
                     //add attribute
-                    maintrsactionlistEvent.setTx_hash(tx_hash);
+                    maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
-                    maintrsactionlistEvent.setIs_mine(is_mine);
+                    maintrsactionlistEvent.setMine(isMine);
                     maintrsactionlistEvent.setConfirmations(confirmations);
-                    maintrsactionlistEvent.setTx_status(tx_status);
+                    maintrsactionlistEvent.setTxStatus(txStatus);
                     maintrsactionlistEvent.setType(type);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
 
-                    String invoice_id = jsonObject.getString("invoice_id");//delete use
+                    String invoiceId = jsonObject.getString("invoice_id");//delete use
                     //add attribute
-                    maintrsactionlistEvent.setTx_hash(tx_hash);
+                    maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
-                    maintrsactionlistEvent.setIs_mine(is_mine);
+                    maintrsactionlistEvent.setMine(isMine);
                     maintrsactionlistEvent.setType(type);
-                    maintrsactionlistEvent.setTx_status(tx_status);
-                    maintrsactionlistEvent.setInvoice_id(invoice_id);
+                    maintrsactionlistEvent.setTxStatus(txStatus);
+                    maintrsactionlistEvent.setInvoiceId(invoiceId);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
                 trsactionlistAdapter.notifyDataSetChanged();
                 trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                     private boolean status;
-                    private String tx_hash1;
+                    private String txHash1;
                     @Override
                     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                         String typeDele = maintrsactionlistEvents.get(position).getType();
@@ -179,14 +182,14 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         intent.putExtra("listType", typeDele);
                                         intent.putExtra("tx_hash", tx_hash1);
                                         intent.putExtra("strwalletType", strwalletType);
-                                        intent.putExtra("is_mine", is_mine);
+                                        intent.putExtra("is_mine", isMine);
                                         intent.putExtra("dataTime", date);
                                         intent.putExtra("txCreatTrsaction", tx_Onclick);
                                         startActivity(intent);
 
                                     } else {
                                         intent.putExtra("tx_hash", tx_hash1);
-                                        intent.putExtra("is_mine", is_mine);
+                                        intent.putExtra("is_mine", isMine);
                                         intent.putExtra("strwalletType", strwalletType);
                                         intent.putExtra("dataTime", date);
                                         intent.putExtra("keyValue", "B");
@@ -200,8 +203,8 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                             case R.id.txt_delete:
                                 try {
                                     JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                    tx_hash1 = jsonObject.getString("tx_hash");
-                                    PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
+                                    txHash1 = jsonObject.getString("tx_hash");
+                                    PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", txHash1);
                                     status = get_remove_flag.toBoolean();
                                     Log.i("onItemChildClick", "onItemCh==== " + status);
 
@@ -210,7 +213,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                 }
                                 if (status) {
                                     try {
-                                        Daemon.commands.callAttr("remove_local_tx", tx_hash1);
+                                        Daemon.commands.callAttr("remove_local_tx", txHash1);
                                         maintrsactionlistEvents.remove(position);
                                         trsactionlistAdapter.notifyItemChanged(position);
                                         mTransactionrecordSend(strChoose);
@@ -224,6 +227,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                 }
                                 break;
                             default:
+                                throw new IllegalStateException("Unexpected value: " + view.getId());
                         }
                     }
                 });

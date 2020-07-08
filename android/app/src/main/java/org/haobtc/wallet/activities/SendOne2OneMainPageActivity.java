@@ -185,26 +185,20 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     //edittext focus change
     private void focusChange() {
         registerKeyBoard();
-        editAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //getFeerate
-                    getFeerate();
-                    //button to gray or blue
-                    changeButton();
-                }
+        editAddress.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                //getFeerate
+                getFeerate();
+                //button to gray or blue
+                changeButton();
             }
         });
-        tetamount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //getFeerate
-                    getFeerate();
-                    //button to gray or blue
-                    changeButton();
-                }
+        tetamount.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                //getFeerate
+                getFeerate();
+                //button to gray or blue
+                changeButton();
             }
         });
         //btc to cny
@@ -221,25 +215,22 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         screenHeight = metric.heightPixels;
         mIsSoftKeyboardShowing = false;
-        mLayoutChangeListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                //Determine the size of window visible area
-                Rect r = new Rect();
-                getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
-                //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
-                int heightDifference = screenHeight - (r.bottom - r.top);
-                boolean isKeyboardShowing = heightDifference > screenHeight / 3;
+        mLayoutChangeListener = () -> {
+            //Determine the size of window visible area
+            Rect r = new Rect();
+            getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+            //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
+            int heightDifference = screenHeight - (r.bottom - r.top);
+            boolean isKeyboardShowing = heightDifference > screenHeight / 3;
 
-                //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
-                if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
-                    mIsSoftKeyboardShowing = isKeyboardShowing;
-                    if (!mIsSoftKeyboardShowing) {
-                        //getFeerate
-                        getFeerate();
-                        //button to gray or blue
-                        changeButton();
-                    }
+            //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
+            if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
+                mIsSoftKeyboardShowing = isKeyboardShowing;
+                if (!mIsSoftKeyboardShowing) {
+                    //getFeerate
+                    getFeerate();
+                    //button to gray or blue
+                    changeButton();
                 }
             }
         };
@@ -323,16 +314,16 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     }
 
     private void getFeeamont() {
-        PyObject get_default_fee_status = null;
+        PyObject getDefaultFeeStatus = null;
         try {
-            get_default_fee_status = Daemon.commands.callAttr("get_default_fee_status");
+            getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage());
             return;
         }
-        if (get_default_fee_status != null) {
-            String strFee = get_default_fee_status.toString();
+        if (getDefaultFeeStatus != null) {
+            String strFee = getDefaultFeeStatus.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
             if (strFee.contains("sat/byte")) {
                 strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
@@ -609,9 +600,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             if (!TextUtils.isEmpty(rowtx)) {
                 if (wallet_type_to_sign.contains("1-") && TextUtils.isEmpty(hideRefresh)) {
                     try {
-                        PyObject get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
+                        PyObject txInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
                         gson = new Gson();
-                        GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(get_tx_info_from_raw.toString(), GetnewcreatTrsactionListBean.class);
+                        GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(txInfoFromRaw.toString(), GetnewcreatTrsactionListBean.class);
                         outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
                         fee = getnewcreatTrsactionListBean.getFee();
                     } catch (Exception e) {
@@ -625,9 +616,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     }
                     //1-n wallet  --> Direct signature and broadcast
                     if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
-                        String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                        String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
                         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
-                        String feature = devices.getString(device_id, "");
+                        String feature = devices.getString(deviceId, "");
                         if (!Strings.isNullOrEmpty(feature)) {
                             HardwareFeatures features = HardwareFeatures.objectFromData(feature);
                             if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
@@ -703,17 +694,17 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             // Scan QR code / barcode return
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("sendScanData", "on------: " + content);
+//                Log.i("sendScanData", "on------: " + content);
                 if (!TextUtils.isEmpty(content)) {
-                    PyObject parse_pr = Daemon.commands.callAttr("parse_pr", content);
-                    Log.i("sendScanData", "on------: " + parse_pr);
-                    if (!TextUtils.isEmpty(parse_pr.toString())) {
+                    PyObject parsePr = Daemon.commands.callAttr("parse_pr", content);
+//                    Log.i("sendScanData", "on------: " + parsePr);
+                    if (!TextUtils.isEmpty(parsePr.toString())) {
                         try {
-                            org.json.JSONObject jsonObject = new org.json.JSONObject(parse_pr.toString());
+                            org.json.JSONObject jsonObject = new org.json.JSONObject(parsePr.toString());
                             int type = jsonObject.getInt("type");
                             Gson gson = new Gson();
                             if (type == 1) {
-                                MainSweepcodeBean mainSweepcodeBean = gson.fromJson(parse_pr.toString(), MainSweepcodeBean.class);
+                                MainSweepcodeBean mainSweepcodeBean = gson.fromJson(parsePr.toString(), MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
                                 String sendAmount = listData.getAmount();
@@ -768,14 +759,14 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 tetamount.setSelection(s.length());
             }
         }
-        if (s.toString().trim().equals(".")) {
+        if (".".equals(s.toString().trim())) {
             s = "0" + s;
             tetamount.setText(s);
             tetamount.setSelection(2);
         }
         if (s.toString().startsWith("0")
                 && s.toString().trim().length() > 1) {
-            if (!s.toString().substring(1, 2).equals(".")) {
+            if (!".".equals(s.toString().substring(1, 2))) {
                 tetamount.setText(s.subSequence(0, 1));
                 tetamount.setSelection(1);
             }
@@ -787,9 +778,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     public void afterTextChanged(Editable s) {
         strAmount = tetamount.getText().toString();
         if (!TextUtils.isEmpty(strAmount)) {
-            BigDecimal bigmBTC = new BigDecimal(strAmount);
+            BigDecimal amount = new BigDecimal(strAmount);
             try {
-                pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", bigmBTC);
+                pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", amount);
 
                 Log.i("pyObjectcommands", "---------: " + pyObject);
             } catch (Exception e) {
@@ -815,9 +806,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             pramas.put(straddress, strAmount);
             arrayList.add(pramas);
             String strPramas = new Gson().toJson(arrayList);
-            PyObject get_fee_by_feerate = null;
+            PyObject getFeeByFeeRate = null;
             try {
-                get_fee_by_feerate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
+                getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
                 errorMessage = "";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -833,9 +824,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 errorMessage = e.getMessage();
                 return;
             }
-            Log.i("get_fee_by_feerate", "getFeerate: " + get_fee_by_feerate);
-            if (get_fee_by_feerate != null) {
-                String strnewFee = get_fee_by_feerate.toString();
+//            Log.i("get_fee_by_feerate", "getFeerate: " + getFeeByFeeRate);
+            if (getFeeByFeeRate != null) {
+                String strnewFee = getFeeByFeeRate.toString();
                 Gson gson = new Gson();
                 GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
                 int fee = getsendFeenumBean.getFee();
@@ -855,7 +846,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 if (imm != null) {
                     assert v != null;
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    /** here */
                     mRootView.setClickable(true);
                     mRootView.setFocusable(true);
                     mRootView.setFocusableInTouchMode(true);
@@ -870,7 +860,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     //Turn off soft keyboard, lose focus
     public boolean isShouldHideInput(View v, MotionEvent event) {
-        if (v != null && (v instanceof EditText)) {
+        if ((v instanceof EditText)) {
             int[] leftTop = {0, 0};
             v.getLocationInWindow(leftTop);
             int left = leftTop[0];
@@ -886,7 +876,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if (msgVote.equals("finish")) {
+        if ("finish".equals(msgVote)) {
             finish();
         }
     }
@@ -977,14 +967,14 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 edittext.setSelection(s.length());
             }
         }
-        if (s.toString().trim().substring(0).equals(".")) {
+        if (".".equals(s.toString().trim().substring(0))) {
             s = "0" + s;
             edittext.setText(s);
             edittext.setSelection(2);
         }
         if (s.toString().startsWith("0")
                 && s.toString().trim().length() > 1) {
-            if (!s.toString().substring(1, 2).equals(".")) {
+            if (!".".equals(s.toString().substring(1, 2))) {
                 edittext.setText(s.subSequence(0, 1));
                 edittext.setSelection(1);
             }

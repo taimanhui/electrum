@@ -1,21 +1,24 @@
 package org.haobtc.wallet.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 public class GetCodeAddressBean {
 
     /**
      * qr_data : bitcoin:tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe
      * addr : tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe
      */
-
-    private String qr_data;
+    @SerializedName("qr_data")
+    private String qrData;
+    @SerializedName("addr")
     private String addr;
 
-    public String getQr_data() {
-        return qr_data;
+    public String getQrData() {
+        return qrData;
     }
 
-    public void setQr_data(String qr_data) {
-        this.qr_data = qr_data;
+    public void setQrData(String qrData) {
+        this.qrData = qrData;
     }
 
     public String getAddr() {

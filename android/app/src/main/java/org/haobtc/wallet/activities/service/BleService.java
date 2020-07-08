@@ -30,6 +30,7 @@ import java.util.List;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
+import cn.com.heaton.blelibrary.ble.callback.BleMtuCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
@@ -41,6 +42,10 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isD
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usbTransport;
 
+/**
+ * BleService deal with ble connect
+ * @author liyan
+ */
 public class BleService extends Service {
     private Ble<BleDevice> mBle;
     public static final String TAG = BleService.class.getSimpleName();
@@ -72,7 +77,9 @@ public class BleService extends Service {
     };
 
 
-
+    /**
+     * the ble callback
+     * */
     private final BleConnectCallback<BleDevice> connectCallback = new BleConnectCallback<BleDevice>() {
         @Override
         public void onConnectionChanged(BleDevice device) {
@@ -132,35 +139,51 @@ public class BleService extends Service {
             EventBus.getDefault().post(new ExitEvent());
         }
     };
+    /**
+     * handler send notify to subscribers when everything satisfied
+     * */
     private void handle() {
 //        isNFC = false;
         EventBus.getDefault().post(new HandlerEvent());
     }
+    /**
+     * setNotify set up notifications when connection is established
+     * @param device the object ble device to set enable notification
+     * */
     private void setNotify(BleDevice device) {
-        /*Set up notifications when the connection is successful*/
+       // buffered a proportion of response
         StringBuffer buffer = new StringBuffer();
         mBle.enableNotify(device, true, new BleNotiftCallback<BleDevice>() {
             @Override
             public void onChanged(BleDevice device, BluetoothGattCharacteristic characteristic) {
                 buffer.append(CommonUtils.bytes2hex(characteristic.getValue()));
                 Log.e(TAG, "receive from hardware: " + CommonUtils.bytes2hex(characteristic.getValue()));
+                // dispatcher it util all response returned
                 if ((Integer.parseInt(buffer.substring(10, 18), 16) + 9) == buffer.toString().length()/2) {
                     bleHandler.put("RESPONSE", buffer.toString());
+                    // clear the buffer for reuse in one connection
                     buffer.delete(0, buffer.length());
                 }
             }
             @Override
             public void onNotifySuccess(BleDevice device) {
                 super.onNotifySuccess(device);
-                Log.d(TAG, "onNotifySuccess: " + device.getBleName());
-                bleTransport.put("ENABLED", true);
-                nfcTransport.put("ENABLED", false);
-                usbTransport.put("ENABLED", false);
-                bleHandler.put("BLE", mBle);
-                bleHandler.put("BLE_DEVICE", device);
-                bleHandler.put("CALL_BACK", writeCallBack);
-                ble.put("WRITE_SUCCESS", true);
-                handle();
+                // request mtu to enable DLE(Data Length Extension)feature
+                mBle.setMTU(device.getBleAddress(), 512, new BleMtuCallback<BleDevice>() {
+                    @Override
+                    public void onMtuChanged(BleDevice device, int mtu, int status) {
+                        super.onMtuChanged(device, mtu, status);
+                        Log.d(TAG, "onNotifySuccess: " + device.getBleName());
+                        bleTransport.put("ENABLED", true);
+                        nfcTransport.put("ENABLED", false);
+                        usbTransport.put("ENABLED", false);
+                        bleHandler.put("BLE", mBle);
+                        bleHandler.put("BLE_DEVICE", device);
+                        bleHandler.put("CALL_BACK", writeCallBack);
+                        ble.put("WRITE_SUCCESS", true);
+                        handle();
+                    }
+                });
             }
 
             @Override
@@ -253,8 +276,9 @@ public class BleService extends Service {
         }
     };
     void removeBond(BluetoothDevice device) {
-        if (device.getBondState() == BluetoothDevice.BOND_NONE)
+        if (device.getBondState() == BluetoothDevice.BOND_NONE) {
             return;
+        }
         try {
             final Method removeBond = device.getClass().getMethod("removeBond");
             removeBond.invoke(device);

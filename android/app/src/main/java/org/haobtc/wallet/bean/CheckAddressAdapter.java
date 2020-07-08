@@ -22,8 +22,8 @@ public class CheckAddressAdapter extends BaseQuickAdapter<SendMoreAddressEvent, 
     @Override
     protected void convert(BaseViewHolder helper, SendMoreAddressEvent item) {
         SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        String base_unit = preferences.getString("base_unit", "mBTC");
-        helper.setText(R.id.tet_moreaddress, item.getInputAddress()).setText(R.id.tet_payNum, item.getInputAmount() + " " + base_unit);
+        String baseUnit = preferences.getString("base_unit", "mBTC");
+        helper.setText(R.id.tet_moreaddress, item.getInputAddress()).setText(R.id.tet_payNum, item.getInputAmount() + " " + baseUnit);
 
     }
 }

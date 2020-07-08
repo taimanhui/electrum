@@ -21,6 +21,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,16 +43,16 @@ import org.json.JSONObject;
  */
 public class WheelViewpagerFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
-    private TextView wallet_card_name;
+    private TextView walletCardName;
     private TextView walletpersonce;
     private TextView walletBlance;
     private String name;
     private String personce;
     private Button btnLeft;
     private Button btncenetr;
-    private PyObject select_wallet;
+    private PyObject selectWallet;
     private TextView tetCny;
-    private TextView btn_appWallet;
+    private TextView btnAppWallet;
     private boolean isFirst = false;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
@@ -64,7 +65,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private LinearLayout linearSend;
     private LinearLayout linearReceive;
     private LinearLayout linearSign;
-    private String unBackupKey;
     private TextView testStar;
     private LinearLayout linCheck;
     private TextView testStarCny;
@@ -90,14 +90,14 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         View view = inflater.inflate(R.layout.fragment_wheel_viewpager, container, false);
         preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
-        wallet_card_name = view.findViewById(R.id.wallet_card_name);
+        walletCardName = view.findViewById(R.id.wallet_card_name);
         walletpersonce = view.findViewById(R.id.wallet_card_tv2);
         walletBlance = view.findViewById(R.id.wallet_card_tv4);
         tetFiat = view.findViewById(R.id.tet_fiat);
         btnLeft = view.findViewById(R.id.wallet_card_bn1);
         btncenetr = view.findViewById(R.id.wallet_card_bn2);
         btnRight = view.findViewById(R.id.wallet_card_bn3);
-        btn_appWallet = view.findViewById(R.id.app_wallet);
+        btnAppWallet = view.findViewById(R.id.app_wallet);
         tetCny = view.findViewById(R.id.tet_Cny);
         conlayBback = view.findViewById(R.id.conlay_back);
         walletCard = view.findViewById(R.id.wallet_card_tv3);
@@ -107,8 +107,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         testStar = view.findViewById(R.id.test_star);
         linCheck = view.findViewById(R.id.lin_check_money);
         testStarCny = view.findViewById(R.id.test_star_cny);
-        CheckBox radio_check = view.findViewById(R.id.img_check_money);
-        radio_check.setOnCheckedChangeListener(this);
+        CheckBox radioCheck = view.findViewById(R.id.img_check_money);
+        radioCheck.setOnCheckedChangeListener(this);
 
         init();
         initdata();
@@ -121,11 +121,11 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         linearReceive.setOnClickListener(this);
         linearSign.setOnClickListener(this);
         conlayBback.setOnClickListener(this);
-        wallet_card_name.setText(name);
+        walletCardName.setText(name);
         if (getActivity() != null) {
             if (!TextUtils.isEmpty(personce)) {
                 if ("standard".equals(personce)) {
-                    btn_appWallet.setVisibility(View.VISIBLE);
+                    btnAppWallet.setVisibility(View.VISIBLE);
                     walletpersonce.setVisibility(View.GONE);
                     conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_gray_bg));
                     btnLeft.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
@@ -148,8 +148,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             refreshList();
         }
         //get wallet unit
-        String base_unit = preferences.getString("base_unit", "");
-        walletCard.setText(String.format("%s(%s)", getString(R.string.balance), base_unit));
+        String baseUnit = preferences.getString("base_unit", "");
+        walletCard.setText(String.format("%s(%s)", getString(R.string.balance), baseUnit));
 
     }
 
@@ -165,14 +165,14 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     //get wallet message
     public void getWalletMsg() {
         try {
-            select_wallet = Daemon.commands.callAttr("select_wallet", name);
+            selectWallet = Daemon.commands.callAttr("select_wallet", name);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if (select_wallet != null) {
-            String toString = select_wallet.toString();
-            Log.i("select_wallet", "select_wallet+++: " + toString);
+        if (selectWallet != null) {
+            String toString = selectWallet.toString();
+//            Log.i("select_wallet", "select_wallet+++: " + toString);
             Gson gson = new Gson();
             MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
             String walletType = mainWheelBean.getWalletType();
@@ -236,8 +236,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.linear_send:
-                unBackupKey = preferences.getString(name, "");
-                if (unBackupKey.length() > 0) {
+                String unBackupKey = preferences.getString(name, "");
+                if (!Strings.isNullOrEmpty(unBackupKey)) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {
@@ -255,7 +255,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.linear_receive:
                 unBackupKey = preferences.getString(name, "");
-                if (unBackupKey.length() > 0) {
+                if (!Strings.isNullOrEmpty(unBackupKey)) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {
@@ -265,7 +265,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.linear_sign:
                 unBackupKey = preferences.getString(name, "");
-                if (unBackupKey.length() > 0) {
+                if (!Strings.isNullOrEmpty(unBackupKey)) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {
@@ -275,6 +275,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 }
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + v.getId());
         }
     }
 

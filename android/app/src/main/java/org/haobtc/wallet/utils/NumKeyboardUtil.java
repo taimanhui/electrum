@@ -9,6 +9,9 @@ import android.text.Editable;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.XmlRes;
+
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.SecondEvent;
@@ -16,12 +19,14 @@ import org.haobtc.wallet.event.SecondEvent;
 public class NumKeyboardUtil {
     private KeyboardView keyboardView;
     private PasswordInputView ed;
+    private int xmlId;
 
     @SuppressLint("ResourceAsColor")
-    public NumKeyboardUtil(Activity act, Context ctx, PasswordInputView edit) {
+    public NumKeyboardUtil(Activity act, Context ctx, PasswordInputView edit, @XmlRes int id) {
         this.ed = edit;
+        this.xmlId = id;
         // num keyboard
-        Keyboard k = new Keyboard(ctx, R.xml.number);
+        Keyboard k = new Keyboard(ctx, id);
         keyboardView = act.findViewById(R.id.keyboard_view);
         keyboardView.setKeyboard(k);
         keyboardView.setEnabled(true);
@@ -69,7 +74,7 @@ public class NumKeyboardUtil {
                 } else if (primaryCode == Keyboard.KEYCODE_CANCEL) {// finish
                     EventBus.getDefault().post(new SecondEvent("Keyboard"));
                     hideKeyboard();
-                } else if (primaryCode == 48) {
+                } else if (primaryCode == 48 && xmlId == R.xml.number) {
                     editable.clear();
                 } else { //The number to be entered is now in the edit box
                     editable.insert(start, Character.toString((char) primaryCode));

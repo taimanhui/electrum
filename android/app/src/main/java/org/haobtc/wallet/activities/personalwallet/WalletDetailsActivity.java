@@ -101,8 +101,8 @@ public class WalletDetailsActivity extends BaseActivity {
         myDialog = MyDialog.showDialog(WalletDetailsActivity.this);
         Intent intent = getIntent();
         walletName = intent.getStringExtra("wallet_name");
-        String wallet_type = intent.getStringExtra("wallet_type");
-        if ("standard".equals(wallet_type)) {
+        String walletType = intent.getStringExtra("wallet_type");
+        if ("standard".equals(walletType)) {
             cardThreePublic.setVisibility(View.GONE);
         } else {
             addEventsDatas = new ArrayList<>();
@@ -135,10 +135,10 @@ public class WalletDetailsActivity extends BaseActivity {
             Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qr_data = getCodeAddressBean.getQr_data();
+            String qrData = getCodeAddressBean.getQrData();
             String addr = getCodeAddressBean.getAddr();
             textAddr.setText(addr);
-            Bitmap bitmap = mCreate2DCode(qr_data);
+            Bitmap bitmap = mCreate2DCode(qrData);
             imaReceiveCode.setImageBitmap(bitmap);
         }
 
@@ -178,8 +178,8 @@ public class WalletDetailsActivity extends BaseActivity {
         }
         if (deviceValue != null) {
             try {
-                PyObject getDeviceInfo = Daemon.commands.callAttr("get_device_info");
-                String strDeviceId = getDeviceInfo.toString();
+                PyObject deviceInfo = Daemon.commands.callAttr("get_device_info");
+                String strDeviceId = deviceInfo.toString();
                 if (!TextUtils.isEmpty(strDeviceId)) {
                     for (HardwareFeatures entity : deviceValue) {
                         if (strDeviceId.contains(entity.getDeviceId())) {

@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities.transaction;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,10 +28,10 @@ public class DeatilMoreAddressActivity extends BaseActivity {
     RecyclerView recyMoreAddress;
     @BindView(R.id.tv_in_tb2)
     TextView tvInTb2;
-    private List jsondef_get;
+    private List jsondefGet;
     private List addressList;
     private List payAddress;
-    private List jsondef_getScan;
+    private List jsondefGetScan;
     private List payAddressScan;
 
     @Override
@@ -44,8 +43,8 @@ public class DeatilMoreAddressActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         String addressType = getIntent().getStringExtra("addressType");
-        jsondef_get = (List) getIntent().getSerializableExtra("jsondef_get");
-        jsondef_getScan = (List) getIntent().getSerializableExtra("jsondef_getScan");
+        jsondefGet = (List) getIntent().getSerializableExtra("jsondef_get");
+        jsondefGetScan = (List) getIntent().getSerializableExtra("jsondef_getScan");
         addressList = (List) getIntent().getSerializableExtra("listdetail");
         payAddress = (List) getIntent().getSerializableExtra("payAddress");
         payAddressScan = (List) getIntent().getSerializableExtra("payAddressScan");
@@ -56,12 +55,12 @@ public class DeatilMoreAddressActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        if (jsondef_get != null) {
-            MoreAddressAdapter moreAddressAdapter = new MoreAddressAdapter(jsondef_get);
+        if (jsondefGet != null) {
+            MoreAddressAdapter moreAddressAdapter = new MoreAddressAdapter(jsondefGet);
             recyMoreAddress.setAdapter(moreAddressAdapter);
 
-        } else if (jsondef_getScan != null) {
-            OutputaddrScanAdapter outputaddrScanAdapter = new OutputaddrScanAdapter(jsondef_getScan);
+        } else if (jsondefGetScan != null) {
+            OutputaddrScanAdapter outputaddrScanAdapter = new OutputaddrScanAdapter(jsondefGetScan);
             recyMoreAddress.setAdapter(outputaddrScanAdapter);
 
         } else if (addressList != null) {
@@ -81,12 +80,8 @@ public class DeatilMoreAddressActivity extends BaseActivity {
     @SingleClick
     @OnClick({R.id.img_backReceict})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_backReceict:
-                finish();
-                break;
-            default:
+        if (view.getId() == R.id.img_backReceict) {
+            finish();
         }
     }
-
 }

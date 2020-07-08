@@ -88,11 +88,11 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case APPLY_SETTING:
                 try {
                     if ("setBluetooth".equals(strings[2])) {
-                        result = Daemon.commands.callAttr(strings[0], strings[1], strings[3].equals("one") ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false)).toString();
+                        result = Daemon.commands.callAttr(strings[0], strings[1], "one".equals(strings[3]) ? new Kwarg("use_ble", true) : new Kwarg("use_ble", false)).toString();
                     } else if ("fastPay".equals(strings[2])) {
                         int moneyLimit = Integer.parseInt(strings[3]);
-                        int money_times = Integer.parseInt(strings[4]);
-                        result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("fastpay_money_limit", moneyLimit), new Kwarg("fastpay_times", money_times), "true".equals(strings[5]) ? new Kwarg("fastpay_pin", true) : new Kwarg("fastpay_pin", false), "true".equals(strings[6]) ? new Kwarg("fastpay_confirm", true) : new Kwarg("fastpay_confirm", false)).toString();
+                        int moneyTimes = Integer.parseInt(strings[4]);
+                        result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("fastpay_money_limit", moneyLimit), new Kwarg("fastpay_times", moneyTimes), "true".equals(strings[5]) ? new Kwarg("fastpay_pin", true) : new Kwarg("fastpay_pin", false), "true".equals(strings[6]) ? new Kwarg("fastpay_confirm", true) : new Kwarg("fastpay_confirm", false)).toString();
                     } else if ("label".equals(strings[2])) {
                         result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("label", strings[3])).toString();
                     } else if ("shutdown_time".equals(strings[2])) {
@@ -107,6 +107,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 }
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + strings[0]);
         }
         return result;
     }

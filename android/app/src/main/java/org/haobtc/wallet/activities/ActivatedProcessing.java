@@ -60,8 +60,8 @@ public class ActivatedProcessing extends BaseActivity {
     /*
         private String pin;
     */
-    int MAX_LEVEL = 10000;
-    private String tag_sendxpub;
+    private final int MAX_LEVEL = 10000;
+    private String tagSendxpub;
 
     @Override
     public int getLayoutId() {
@@ -72,7 +72,7 @@ public class ActivatedProcessing extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        tag_sendxpub = getIntent().getStringExtra("tag_xpub");
+        tagSendxpub = getIntent().getStringExtra("tag_xpub");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         List<Drawable> drawables = new ArrayList<>();
         if (isNFC) {
@@ -126,7 +126,7 @@ public class ActivatedProcessing extends BaseActivity {
                 Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
                 firstPromote.setCompoundDrawables(drawableStart, null, null, null);
                 secondPromote.setCompoundDrawables(drawableStart, null, null, null);
-                if (SingleSigWalletCreator.TAG.equals(tag_sendxpub)) {
+                if (SingleSigWalletCreator.TAG.equals(tagSendxpub)) {
                     EventBus.getDefault().post(new SendXpubToSigwallet("get_xpub_and_send"));
                 } else {
                     startActivity(new Intent(this, ActivateSuccessActivity.class));
@@ -147,7 +147,9 @@ public class ActivatedProcessing extends BaseActivity {
                 }
                 startActivity(new Intent(this, ActiveFailedActivity.class));
                 finish();
+                break;
             default:
+                throw new IllegalStateException("Unexpected value: " + resultEvent.getResult());
         }
     }
 
@@ -202,7 +204,7 @@ public class ActivatedProcessing extends BaseActivity {
     public void event(SecondEvent updataHint) {
         EventBus.getDefault().removeStickyEvent(SecondEvent.class);
         String msgVote = updataHint.getMsg();
-        if (msgVote.equals("ActivateFinish")) {
+        if ("ActivateFinish".equals(msgVote)) {
             finish();
         }
     }

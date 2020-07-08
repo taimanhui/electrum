@@ -3,7 +3,6 @@ package org.haobtc.wallet.activities.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,14 +19,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
-import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.event.FixAllLabelnameEvent;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
-import org.haobtc.wallet.event.ReadingEvent;
 
 import java.util.Locale;
 import java.util.Map;
@@ -116,7 +113,7 @@ public class FixBixinkeyNameActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixAllLabelnameEvent event) {
-        String oldKey_device_id = event.getKeyname();
+        String oldKey_device_id = event.getKeyName();
         String code = event.getCode();
         if ("1".equals(code)) {
             SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);

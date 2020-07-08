@@ -16,8 +16,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -51,7 +49,6 @@ import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.ButtonRequestEvent;
-import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
@@ -101,7 +98,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private String personceType;
     private String strSoftMsg;
     public static String strinputAddress;
-    String hide_phrass;
+    String hidePhrass;
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     private List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr;
     private String fee;
@@ -117,7 +114,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         EventBus.getDefault().register(this);
         Intent intent = getIntent();
         personceType = intent.getStringExtra("personceType");
-        hide_phrass = intent.getStringExtra("hide_phrass");
+        hidePhrass = intent.getStringExtra("hide_phrass");
         rxPermissions = new RxPermissions(this);
         editTrsactionTest.addTextChangedListener(this);
         radioGroup.setOnCheckedChangeListener(this);
@@ -190,6 +187,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 editTrsactionTest.setHint(getString(R.string.input_sign_msg));
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + checkedId);
         }
     }
 
@@ -248,27 +246,27 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 } else { //Hardware wallet signature
                     String strTest = editTrsactionTest.getText().toString();
                     if (signWhich) { //sign trsaction
-                        PyObject def_get_tx_info_from_raw = null;
+                        PyObject defGetTxInfoFromRaw = null;
                         try {
-                            def_get_tx_info_from_raw = Daemon.commands.callAttr("get_tx_info_from_raw", strTest);
+                            defGetTxInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", strTest);
                         } catch (Exception e) {
                             e.printStackTrace();
                             mToast(e.getMessage());
                             return;
                         }
-                        if (def_get_tx_info_from_raw != null) {
-                            String jsondef_get = def_get_tx_info_from_raw.toString();
+                        if (defGetTxInfoFromRaw != null) {
+                            String jsondefGet = defGetTxInfoFromRaw.toString();
                             Gson gson = new Gson();
-                            GetnewcreatTrsactionListBean listBean = gson.fromJson(jsondef_get, GetnewcreatTrsactionListBean.class);
+                            GetnewcreatTrsactionListBean listBean = gson.fromJson(jsondefGet, GetnewcreatTrsactionListBean.class);
                             outputAddr = listBean.getOutputAddr();
                             inputAddr = listBean.getInputAddr();
                             fee = listBean.getFee();
 
                         }
                         if ("1-1".equals(personceType) && Ble.getInstance().getConnetedDevices().size() != 0) {
-                            String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                            String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
                             SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
-                            String feature = devices.getString(device_id, "");
+                            String feature = devices.getString(deviceId, "");
                             if (!Strings.isNullOrEmpty(feature)) {
                                 HardwareFeatures features = HardwareFeatures.objectFromData(feature);
                                 if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
@@ -279,14 +277,14 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent = new Intent(this, CommunicationModeSelector.class);
-                        intent.putExtra("tag", Strings.isNullOrEmpty(hide_phrass) ? TAG : TAG2);
+                        intent.putExtra("tag", Strings.isNullOrEmpty(hidePhrass) ? TAG : TAG2);
                         intent.putExtra("extras", strTest);
                         startActivity(intent);
                     } else {//sign message
                         if ("1-1".equals(personceType) && Ble.getInstance().getConnetedDevices().size() != 0) {
-                            String device_id = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                            String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
                             SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
-                            String feature = devices.getString(device_id, "");
+                            String feature = devices.getString(deviceId, "");
                             if (!Strings.isNullOrEmpty(feature)) {
                                 HardwareFeatures features = HardwareFeatures.objectFromData(feature);
                                 if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
@@ -297,7 +295,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         CommunicationModeSelector.runnables.clear();
                         CommunicationModeSelector.runnables.add(runnable);
                         Intent intent = new Intent(this, CommunicationModeSelector.class);
-                        intent.putExtra("tag", Strings.isNullOrEmpty(hide_phrass) ? TAG1 : TAG3);
+                        intent.putExtra("tag", Strings.isNullOrEmpty(hidePhrass) ? TAG1 : TAG3);
                         intent.putExtra("extras", strTest);
                         startActivity(intent);
                     }
@@ -307,6 +305,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 mIntent(CheckSignActivity.class);
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
@@ -321,9 +320,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 mToast(getString(R.string.please_input_pass));
                 return;
             }
-            PyObject sign_message = null;
+            PyObject signMessage = null;
             try {
-                sign_message = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, "", new Kwarg("password", strPassword));
+                signMessage = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, "", new Kwarg("password", strPassword));
             } catch (Exception e) {
                 if (Objects.requireNonNull(e.getMessage()).contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
@@ -332,8 +331,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 e.printStackTrace();
                 return;
             }
-            if (sign_message != null) {
-                String signedMessage = sign_message.toString();
+            if (signMessage != null) {
+                String signedMessage = signMessage.toString();
                 Intent intent = new Intent(SignActivity.this, CheckSignMessageActivity.class);
                 intent.putExtra("signMsg", strSoftMsg);
                 intent.putExtra("signAddress", strinputAddress);
@@ -353,17 +352,17 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     private void softwareSignTrsaction(String strTest) {
         View view1 = LayoutInflater.from(SignActivity.this).inflate(R.layout.input_wallet_pass, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(SignActivity.this).setView(view1).create();
-        EditText str_pass = view1.findViewById(R.id.edit_password);
+        EditText strPass = view1.findViewById(R.id.edit_password);
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-            String strPassword = str_pass.getText().toString();
+            String strPassword = strPass.getText().toString();
             if (TextUtils.isEmpty(strPassword)) {
                 mToast(getString(R.string.please_input_pass));
                 return;
             }
-            PyObject sign_message = null;
+            PyObject signMessage = null;
             try {
-                sign_message = Daemon.commands.callAttr("sign_tx", strTest, "", new Kwarg("password", strPassword));
+                signMessage = Daemon.commands.callAttr("sign_tx", strTest, "", new Kwarg("password", strPassword));
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
@@ -371,8 +370,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                 e.printStackTrace();
                 return;
             }
-            if (sign_message != null) {
-                String signedMessage = sign_message.toString();
+            if (signMessage != null) {
+                String signedMessage = signMessage.toString();
                 EventBus.getDefault().post(new FirstEvent("22"));
                 Intent intent = new Intent(SignActivity.this, TransactionDetailsActivity.class);
                 intent.putExtra("signTransction", signedMessage);
@@ -433,9 +432,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             String strPath = substring.substring(0, substring.length() - 1);
             try {
                 //read file
-                PyObject read_tx_from_file = Daemon.commands.callAttr("read_tx_from_file", strPath);
-                if (read_tx_from_file != null) {
-                    String readFile = read_tx_from_file.toString();
+                PyObject txFromFile = Daemon.commands.callAttr("read_tx_from_file", strPath);
+                if (txFromFile != null) {
+                    String readFile = txFromFile.toString();
                     editTrsactionTest.setText(readFile);
                 }
             } catch (Exception e) {

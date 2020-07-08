@@ -87,10 +87,10 @@ public class ReceivedPageActivity extends BaseActivity {
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qr_data = getCodeAddressBean.getQr_data();
+            String qrData = getCodeAddressBean.getQrData();
             String addr = getCodeAddressBean.getAddr();
             textView5.setText(addr);
-            bitmap = mCreate2DCode(qr_data);
+            bitmap = mCreate2DCode(qrData);
             imageView2.setImageBitmap(bitmap);
         }
 

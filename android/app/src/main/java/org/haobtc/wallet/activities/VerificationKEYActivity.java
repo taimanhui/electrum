@@ -47,7 +47,7 @@ public class VerificationKEYActivity extends BaseActivity {
     TextView firstPromote;
     @BindView(R.id.second_promote)
     TextView secondPromote;
-    int MAX_LEVEL = 10000;
+    private final int MAX_LEVEL = 10000;
     @BindView(R.id.third_promote)
     TextView thirdPromote;
 
@@ -134,7 +134,7 @@ public class VerificationKEYActivity extends BaseActivity {
 
                     @Override
                     public void onResponse(String response) {
-                        Log.i("strVerification", "onResponse:------- " + response);
+//                        Log.i("strVerification", "onResponse:------- " + response);
                         Drawable drawableStart = getDrawable(R.drawable.chenggong);
                         Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
                         firstPromote.setCompoundDrawables(drawableStart, null, null, null);
@@ -144,11 +144,11 @@ public class VerificationKEYActivity extends BaseActivity {
                             try {
                                 Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
                                 JSONObject jsonObject = new JSONObject(response);
-                                boolean is_verified = jsonObject.getBoolean("is_verified");
-                                if (is_verified) {
-                                    String last_check_time = jsonObject.getString("last_check_time");
-                                    if (!TextUtils.isEmpty(last_check_time)) {
-                                        intent.putExtra("last_check_time", last_check_time);
+                                boolean isVerified = jsonObject.getBoolean("is_verified");
+                                if (isVerified) {
+                                    String lastCheckTime = jsonObject.getString("last_check_time");
+                                    if (!TextUtils.isEmpty(lastCheckTime)) {
+                                        intent.putExtra("last_check_time", lastCheckTime);
                                     }
                                 }
                                 startActivity(intent);

@@ -51,7 +51,7 @@ public class PinSettingActivity extends BaseActivity {
     private NumKeyboardUtil keyboardUtil;
     private String tag;
     public static final String TAG = PinSettingActivity.class.getSimpleName();
-    private RelativeLayout relativeLayout_key;
+    private RelativeLayout relativeLayoutKey;
     private int pinType;
     private boolean shouldFinish = true;
 
@@ -60,11 +60,12 @@ public class PinSettingActivity extends BaseActivity {
         return R.layout.pin_input;
     }
 
+    @Override
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        relativeLayout_key = findViewById(R.id.relativeLayout_key);
-        keyboardUtil = new NumKeyboardUtil(this, this, edtPwd);
+        relativeLayoutKey = findViewById(R.id.relativeLayout_key);
+        keyboardUtil = new NumKeyboardUtil(this, this, edtPwd, R.xml.number);
         pinType = getIntent().getIntExtra("pin_type", 0);
         tag = Optional.ofNullable(getIntent().getStringExtra("tag")).orElse("");
         switch (pinType) {
@@ -89,7 +90,7 @@ public class PinSettingActivity extends BaseActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
         edtPwd.setOnTouchListener((v, event) -> {
-            relativeLayout_key.setVisibility(View.VISIBLE);
+            relativeLayoutKey.setVisibility(View.VISIBLE);
             keyboardUtil.showKeyboard();
             return false;
         });
@@ -99,7 +100,7 @@ public class PinSettingActivity extends BaseActivity {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (getCurrentFocus() != null && getCurrentFocus().getWindowToken() != null) {
-                relativeLayout_key.setVisibility(View.GONE);
+                relativeLayoutKey.setVisibility(View.GONE);
                 keyboardUtil.hideKeyboard();
             }
         }
@@ -174,7 +175,7 @@ public class PinSettingActivity extends BaseActivity {
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if ("Keyboard".equals(msgVote)) {
-            relativeLayout_key.setVisibility(View.GONE);
+            relativeLayoutKey.setVisibility(View.GONE);
         }
     }
 

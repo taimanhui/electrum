@@ -1,8 +1,6 @@
 package org.haobtc.wallet.activities.settings;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -14,7 +12,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FixBixinkeyNameEvent;
-import org.haobtc.wallet.event.SetShutdownTimeEvent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,7 +76,7 @@ public class BixinKeyMessageActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixBixinkeyNameEvent event) {
-        tetKeyName.setText(event.getKeyname());
+        tetKeyName.setText(event.getKeyName());
     }
 
     @Override

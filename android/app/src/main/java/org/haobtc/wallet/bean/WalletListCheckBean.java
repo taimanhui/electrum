@@ -8,16 +8,16 @@ public class WalletListCheckBean {
      * name : xiaomi
      */
 
-    private String wallet_type;
+    private String walletType;
     private String balance;
     private String name;
 
-    public String getWallet_type() {
-        return wallet_type;
+    public String getWalletType() {
+        return walletType;
     }
 
-    public void setWallet_type(String wallet_type) {
-        this.wallet_type = wallet_type;
+    public void setWalletType(String walletType) {
+        this.walletType = walletType;
     }
 
     public String getBalance() {

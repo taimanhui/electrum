@@ -50,7 +50,7 @@
         </RadioGroup>
 
         <ImageView
-            android:id="@+id/img_Cancle"
+            android:id="@+id/img_Cancel"
             android:layout_width="@dimen/dp_40"
             android:layout_height="47.5dp"
             android:layout_alignParentEnd="true"

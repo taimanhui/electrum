@@ -93,38 +93,36 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     mToast(getString(R.string.two_different_pass));
                     return;
                 }
-                executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent1 = new Intent(AppWalletSetPassActivity.this, MnemonicActivity.class);
-                        intent1.putExtra("strName", strName);
-                        intent1.putExtra("strPass1", strPass1);
-                        startActivity(intent1);
-                        finish();
-                        try {
-                            pyObject = Daemon.commands.callAttr("create", strName, strPass1);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            if (e.getMessage().contains("path is exist")) {
-                                mToast(getString(R.string.changewalletname));
-                            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=")+5);
-                                mToast(getString(R.string.same_seed_have)+haveWalletName);
-                            }
-                            return;
+                executorService.execute(() -> {
+                    Intent intent1 = new Intent(AppWalletSetPassActivity.this, MnemonicActivity.class);
+                    intent1.putExtra("strName", strName);
+                    intent1.putExtra("strPass1", strPass1);
+                    startActivity(intent1);
+                    finish();
+                    try {
+                        pyObject = Daemon.commands.callAttr("create", strName, strPass1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        if (e.getMessage().contains("path is exist")) {
+                            mToast(getString(R.string.changewalletname));
+                        } else if (e.getMessage().contains("The same seed have create wallet")) {
+                            String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=")+5);
+                            mToast(getString(R.string.same_seed_have)+haveWalletName);
                         }
-                        strpyObject = pyObject.toString();
-                        if (!TextUtils.isEmpty(strpyObject)) {
-                            int walletNameNum = defaultName + 1;
-                            edit.putInt("defaultName", walletNameNum);
-                            edit.putBoolean("haveCreateNopass", true);
-                            edit.apply();
-                            EventBus.getDefault().postSticky(new MnemonicEvent(strpyObject));
-                        }
+                        return;
+                    }
+                    strpyObject = pyObject.toString();
+                    if (!TextUtils.isEmpty(strpyObject)) {
+                        int walletNameNum = defaultName + 1;
+                        edit.putInt("defaultName", walletNameNum);
+                        edit.putBoolean("haveCreateNopass", true);
+                        edit.apply();
+                        EventBus.getDefault().postSticky(new MnemonicEvent(strpyObject));
                     }
                 });
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 

@@ -7,10 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.haobtc.wallet.R;
@@ -29,11 +27,11 @@ public class ElectrumListAdapter extends RecyclerView.Adapter<ElectrumListAdapte
     }
 
     public class myViewHolder extends BaseViewHolder {
-        TextView tet_electrumName;
+        TextView tetElectrumName;
 
         public myViewHolder(View view) {
             super(view);
-            tet_electrumName = view.findViewById(R.id.tet_electrumName);
+            tetElectrumName = view.findViewById(R.id.tet_electrumName);
         }
     }
 
@@ -46,8 +44,8 @@ public class ElectrumListAdapter extends RecyclerView.Adapter<ElectrumListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tet_electrumName.setText(electrumList.get(position).getName());
-        holder.tet_electrumName.setOnClickListener(new View.OnClickListener() {
+        holder.tetElectrumName.setText(electrumList.get(position).getName());
+        holder.tetElectrumName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 for (int i = 0; i < electrumList.size(); i++) {
@@ -60,10 +58,10 @@ public class ElectrumListAdapter extends RecyclerView.Adapter<ElectrumListAdapte
             }
         });
         if (electrumList.get(position).isStatus()) {
-            holder.tet_electrumName.setTextColor(context.getColor(R.color.button_bk_disableok));
+            holder.tetElectrumName.setTextColor(context.getColor(R.color.button_bk_disableok));
 //            holder.tet_types.setBackgroundColor(Color.parseColor("#ffffff"));
         } else {
-            holder.tet_electrumName.setTextColor(context.getColor(R.color.text));
+            holder.tetElectrumName.setTextColor(context.getColor(R.color.text));
         }
     }
 

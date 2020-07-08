@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private ArrayList<AddressEvent> walletnameList;
     private String strType;
     private int scrollPos = 0;//scrollPos --> recyclerview position != The last one || second to last
-    PyObject get_wallets_list_info = null;
+    PyObject getWalletsListInfo = null;
     private DownloadManager manager;
     private SharedPreferences.Editor edit;
     private List<HardwareFeatures> deviceValue;
@@ -142,15 +142,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         edit = sharedPreferences.edit();
 
         //FIRST_RUN,if frist run
-        String FIRST_RUN = "is_first_run";
-        edit.putBoolean(FIRST_RUN, true);
+        String firstRun = "is_first_run";
+        edit.putBoolean(firstRun, true);
         edit.apply();
         init();
     }
 
     private void init() {
-        boolean user_agreement = sharedPreferences.getBoolean("user_agreement", false);
-        if (!user_agreement) {
+        boolean userAgreement = sharedPreferences.getBoolean("user_agreement", false);
+        if (!userAgreement) {
             //User agreement dialog
             userAgreementDialog();
         }
@@ -204,7 +204,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             public void run() {
                 //wallet list
                 try {
-                    get_wallets_list_info = Daemon.commands.callAttr("list_wallets");
+                    getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
                 } catch (Exception e) {
                     e.printStackTrace();
                     addwalletFragment();
@@ -216,8 +216,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void showWalletList() {
-        if (get_wallets_list_info != null && get_wallets_list_info.size() != 0) {
-            String toStrings = get_wallets_list_info.toString();
+        if (getWalletsListInfo != null && getWalletsListInfo.size() != 0) {
+            String toStrings = getWalletsListInfo.toString();
             Log.i("mWheelplanting", "toStrings: " + toStrings);
             if (toStrings.length() != 2) {
                 com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
@@ -329,10 +329,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void downMainListdata() {
         maintrsactionlistEvents.clear();
-        PyObject get_history_tx = null;
+        PyObject getHistoryTx = null;
         try {
             //get transaction json
-            get_history_tx = Daemon.commands.callAttr("get_all_tx_list");
+            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
             mToast(getString(R.string.switch_server));
@@ -340,14 +340,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
-            Log.i("downMainListdata", "downMaina===: " + e.getMessage());
+//            Log.i("downMainListdata", "downMaina===: " + e.getMessage());
             return;
         }
         //get transaction list
-        if (get_history_tx != null) {
+        if (getHistoryTx != null) {
             tetNone.setVisibility(View.GONE);
             recy_data.setVisibility(View.VISIBLE);
-            String strHistory = get_history_tx.toString();
+            String strHistory = getHistoryTx.toString();
             // Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
@@ -370,47 +370,46 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     //show trsaction list
     private void showTrsactionlist(String strHistory) {
-//        Log.i("strHistory", "showTrsactionlist---: " + strHistory);
         maintrsactionlistEvents.clear();
         try {
             jsonArray = new JSONArray(strHistory);
-            // Log.i("showTrsactionlist", "showTrsactionlist========: " + strHistory);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
                 String type = jsonObject.getString("type");
-                String tx_hash = jsonObject.getString("tx_hash");
+                String txHash = jsonObject.getString("tx_hash");
                 String amount = jsonObject.getString("amount");
-                is_mine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
+                //false ->get   true ->push
+                is_mine = jsonObject.getBoolean("is_mine");
                 date = jsonObject.getString("date");
-                String tx_status = jsonObject.getString("tx_status");
-                if (type.equals("history")) {
+                String txStatus = jsonObject.getString("tx_status");
+                if ("history".equals(type)) {
                     String confirmations = jsonObject.getString("confirmations");
                     //add attribute
-                    maintrsactionlistEvent.setTx_hash(tx_hash);
+                    maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
-                    maintrsactionlistEvent.setIs_mine(is_mine);
+                    maintrsactionlistEvent.setMine(is_mine);
                     maintrsactionlistEvent.setConfirmations(confirmations);
                     maintrsactionlistEvent.setType(type);
-                    maintrsactionlistEvent.setTx_status(tx_status);
+                    maintrsactionlistEvent.setTxStatus(txStatus);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
-                    String invoice_id = jsonObject.getString("invoice_id");//delete use
+                    String invoiceId = jsonObject.getString("invoice_id");//delete use
                     //add attribute
-                    maintrsactionlistEvent.setTx_hash(tx_hash);
+                    maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
-                    maintrsactionlistEvent.setIs_mine(is_mine);
+                    maintrsactionlistEvent.setMine(is_mine);
                     maintrsactionlistEvent.setType(type);
-                    maintrsactionlistEvent.setTx_status(tx_status);
-                    maintrsactionlistEvent.setInvoice_id(invoice_id);
+                    maintrsactionlistEvent.setTxStatus(txStatus);
+                    maintrsactionlistEvent.setInvoiceId(invoiceId);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
             }
             trsactionlistAdapter.notifyDataSetChanged();
             trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                private String tx_hash1;
+                private String txHash1;
                 private boolean status = false;
 
                 @SingleClick
@@ -421,23 +420,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         case R.id.lin_Item:
                             try {
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                tx_hash1 = jsonObject.getString("tx_hash");
+                                txHash1 = jsonObject.getString("tx_hash");
                                 is_mine = jsonObject.getBoolean("is_mine");
                                 date = jsonObject.getString("date");
                                 Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
-                                if (typeDele.equals("tx")) {
-                                    String tx_Onclick = jsonObject.getString("tx");
+                                if ("tx".equals(typeDele)) {
+                                    String txOnclick = jsonObject.getString("tx");
                                     intent.putExtra("keyValue", "B");
-                                    intent.putExtra("tx_hash", tx_hash1);
+                                    intent.putExtra("tx_hash", txHash1);
                                     intent.putExtra("is_mine", is_mine);
                                     intent.putExtra("strwalletType", strType);
                                     intent.putExtra("listType", typeDele);
                                     intent.putExtra("dataTime", date);
-                                    intent.putExtra("txCreatTrsaction", tx_Onclick);
+                                    intent.putExtra("txCreatTrsaction", txOnclick);
                                     startActivity(intent);
 
                                 } else {
-                                    intent.putExtra("tx_hash", tx_hash1);
+                                    intent.putExtra("tx_hash", txHash1);
                                     intent.putExtra("is_mine", is_mine);
                                     intent.putExtra("dataTime", date);
                                     intent.putExtra("strwalletType", strType);
@@ -451,22 +450,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
                             break;
                         case R.id.txt_delete:
-                            long curClickTime = System.currentTimeMillis();
-                            if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
-                                lastClickTime = curClickTime;
-                                try {
-                                    JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                    tx_hash1 = jsonObject.getString("tx_hash");
-                                    Log.i("onItemChildClick", "onItemCh==== " + tx_hash1);
-                                    PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", tx_hash1);
-                                    status = get_remove_flag.toBoolean();
+                            try {
+                                JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                txHash1 = jsonObject.getString("tx_hash");
+                                Log.i("onItemChildClick", "onItemCh==== " + txHash1);
+                                status = Daemon.commands.callAttr("get_remove_flag", txHash1).toBoolean();
 
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (status) {
+                                try {
+                                    Daemon.commands.callAttr("remove_local_tx", txHash1);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                                 if (status) {
                                     try {
-                                        Daemon.commands.callAttr("remove_local_tx", tx_hash1);
+                                        Daemon.commands.callAttr("remove_local_tx", txHash1);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         mToast(getString(R.string.delete_fail));
@@ -477,6 +478,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             }
 
                             break;
+                        default:
                     }
                 }
             });
@@ -487,7 +489,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void getunBackupKey() {
         ArrayList<String> unBackupKeyList = new ArrayList<>();
-        deviceValue = new ArrayList<>();
+        List<HardwareFeatures> deviceValue = new ArrayList<>();
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
         Map<String, ?> devicesAll = devices.getAll();
         //key
@@ -499,10 +501,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         if (!deviceValue.isEmpty()) {
             try {
-                String str_deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
-                if (!Strings.isNullOrEmpty(str_deviceId)) {
+                String strDeviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                if (!Strings.isNullOrEmpty(strDeviceId)) {
                     for (HardwareFeatures entity : deviceValue) {
-                        if (str_deviceId.equals(entity.getDeviceId())) {
+                        if (strDeviceId.equals(entity.getDeviceId())) {
                             unBackupKeyList.add(Optional.ofNullable(entity.getLabel()).orElse(entity.getBleName()));
                         }
                     }
@@ -535,6 +537,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     /**
      * set white background and black text
      */
+    @Override
     public void mInitState() {
         ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0.2f).navigationBarColor(R.color.button_bk_ddake).init();
     }
@@ -569,11 +572,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 Intent intent6 = new Intent(MainActivity.this, CreateWalletActivity.class);
                 startActivity(intent6);
                 break;
-
+            default:
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(FirstEvent updataHint) {
         String msgVote = updataHint.getMsg();
         switch (msgVote) {
@@ -584,7 +587,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case "22":
                 if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
                     maintrsactionlistEvents.clear();
-                    //trsaction list data
+                    //transaction list data
                     downMainListdata();
                     trsactionlistAdapter.notifyDataSetChanged();
                 }
@@ -600,10 +603,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     getunBackupKey();
                 }
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + msgVote);
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
@@ -616,10 +621,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(MainpageWalletEvent updataHint) {
         String status = updataHint.getStatus();
-        if (status.equals("22")) {
+        if ("22".equals(status)) {
             int walletPos = updataHint.getPos();
             viewPager.setCurrentItem(walletPos);
         }
@@ -719,22 +724,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         // Scan QR code / barcode return
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
-                Log.i("PyObject", "parse_qr-----:  " + data);
+//                Log.i("PyObject", "parse_qr-----:  " + data);
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 //bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
                 if (!TextUtils.isEmpty(content)) {
-                    PyObject parse_qr;
+                    PyObject parseQr;
                     try {
-                        parse_qr = Daemon.commands.callAttr("parse_pr", content);
+                        parseQr = Daemon.commands.callAttr("parse_pr", content);
 
                     } catch (Exception e) {
                         e.printStackTrace();
                         mToast(getString(R.string.address_wrong));
-                        Log.i("PyObject", "parse_qr+++++++:  " + e.getMessage());
+//                        Log.i("PyObject", "parse_qr+++++++:  " + e.getMessage());
                         return;
                     }
-                    if (parse_qr != null) {
-                        String strParse = parse_qr.toString();
+                    if (parseQr != null) {
+                        String strParse = parseQr.toString();
                         Log.i("PyObject", "parse_qr:  " + strParse);
                         try {
                             JSONObject jsonObject = new JSONObject(strParse);

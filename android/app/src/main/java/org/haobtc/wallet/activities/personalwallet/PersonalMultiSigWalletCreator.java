@@ -10,13 +10,11 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,7 +38,6 @@ import org.haobtc.wallet.adapter.AddBixinKeyAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.AddBixinKeyEvent;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.HideInputPassFinishEvent;
 import org.haobtc.wallet.event.PersonalMutiSigEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
@@ -52,8 +49,6 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.xpub;
 
 
 public class PersonalMultiSigWalletCreator extends BaseActivity {
@@ -84,7 +79,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 ArrayList<String> pubList = new ArrayList<>();
                 for (int i = 0; i < addEventsDatas.size(); i++) {
                     String keyaddress = addEventsDatas.get(i).getKeyaddress();
-                    String deviceId = addEventsDatas.get(i).getDevice_id();
+                    String deviceId = addEventsDatas.get(i).getDeviceId();
                     pubList.add("[\"" + keyaddress + "\",\"" + deviceId + "\"]");
                 }
                 try {
@@ -183,7 +178,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(PersonalMutiSigEvent event) {
         String xpub = event.getXpub();
-        String deviceId = event.getDevice_id();
+        String deviceId = event.getDeviceId();
         String label = event.getLabel();
         showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, deviceId, label);
     }
@@ -235,7 +230,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             addBixinKeyEvent.setKeyname(strBixinname);
             addBixinKeyEvent.setKeyaddress(xpub);
-            addBixinKeyEvent.setDevice_id(deviceId);
+            addBixinKeyEvent.setDeviceId(deviceId);
             addEventsDatas.add(addBixinKeyEvent);
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);

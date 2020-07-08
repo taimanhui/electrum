@@ -19,7 +19,7 @@ public class MyApplication extends Application {
     private static volatile MyApplication mInstance;
     private static final String PRIMARY_SERVICE =      "00000001-0000-1000-8000-00805f9b34fb";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
-    private static final String READ_CHARACTERISTIC =  "00000003-0000-1000-8000-00805f9b34fb";//
+    private static final String READ_CHARACTERISTIC =  "00000003-0000-1000-8000-00805f9b34fb";
 
 
     @Override
@@ -27,7 +27,7 @@ public class MyApplication extends Application {
         super.onCreate();
         // add application lifecycle observer
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new ApplicationObserver());
-        // EventBus  optimize
+        // EventBus optimize
         EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
         mInstance = this;
         initBle();
@@ -45,14 +45,22 @@ public class MyApplication extends Application {
     }
     // init ble
     private void initBle() {
-        Ble.options().setLogBleEnable(false)//Set whether to print Bluetooth log
-                .setThrowBleException(true)//Set whether to throw Bluetooth exception
-                .setLogTAG("AndroidBLE")//Set global Bluetooth operation log TAG
-                .setAutoConnect(false)//Set whether to connect automatically
-                .setFilterScan(true)//Set whether to filter the founded devices
+        //Set whether to print Bluetooth log
+        Ble.options().setLogBleEnable(false)
+                /* Set whether to throw Bluetooth exception */
+                .setThrowBleException(true)
+                //Set global Bluetooth operation log TAG
+                .setLogTAG("AndroidBLE")
+                //Set whether to connect automatically
+                .setAutoConnect(false)
+                //Set whether to filter the founded devices
+                .setFilterScan(true)
+                //Set whether to filter the founded devices
                 .setConnectFailedRetryCount(3)
-                .setConnectTimeout(10 * 1000)// Set the connection timeout
-                .setScanPeriod(12 * 1000)// Set the Scanning period
+                // Set the connection timeout
+                .setConnectTimeout(10 * 1000)
+                // Set the Scanning period
+                .setScanPeriod(12 * 1000)
                 .setServiceBindFailedRetryCount(3)
                 .setUuidService(UUID.fromString(PRIMARY_SERVICE))
                 .setUuidWriteCha(UUID.fromString(WRITE_CHARACTERISTIC))

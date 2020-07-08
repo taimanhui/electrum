@@ -14,7 +14,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.bean.CNYBean;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
     private Context context;
@@ -27,11 +26,11 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
     }
 
     public class myViewHolder extends RecyclerView.ViewHolder {
-        TextView tet_Cny;
+        TextView tetCny;
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
-            tet_Cny = itemView.findViewById(R.id.tet_Cny);
+            tetCny = itemView.findViewById(R.id.tet_Cny);
         }
     }
 
@@ -44,9 +43,9 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tet_Cny.setText(listCNY.get(position).getName());
+        holder.tetCny.setText(listCNY.get(position).getName());
 
-        holder.tet_Cny.setOnClickListener(new View.OnClickListener() {
+        holder.tetCny.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 for (int i = 0; i < listCNY.size(); i++) {
@@ -54,16 +53,16 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
                 }
                 listCNY.get(position).setStatus(true);
                 Log.i("onClickJXM", "onClick: "+listCNY.get(position).isStatus());
-                onLisennorClick.ItemClick(position);
+                onLisennorClick.itemClick(position);
                 notifyDataSetChanged();
 
             }
         });
         if (listCNY.get(position).isStatus()) {
-            holder.tet_Cny.setTextColor(context.getColor(R.color.button_bk_disableok));
+            holder.tetCny.setTextColor(context.getColor(R.color.button_bk_disableok));
 //            holder.tet_types.setBackgroundColor(Color.parseColor("#ffffff"));
         } else {
-            holder.tet_Cny.setTextColor(context.getColor(R.color.text));
+            holder.tetCny.setTextColor(context.getColor(R.color.text));
         }
     }
 
@@ -78,7 +77,7 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
     }
 
     public interface onLisennorClick {
-        void ItemClick(int pos);
+        void itemClick(int pos);
     }
 
     private onLisennorClick onLisennorClick;

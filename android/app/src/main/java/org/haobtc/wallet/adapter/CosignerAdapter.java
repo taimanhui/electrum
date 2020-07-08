@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import org.haobtc.wallet.R;
 import java.util.ArrayList;
-
+@Deprecated
 public class CosignerAdapter extends RecyclerView.Adapter<CosignerAdapter.myViewHolder> {
     private Context context;
     private ArrayList<String> xlistData;
@@ -44,12 +44,7 @@ public class CosignerAdapter extends RecyclerView.Adapter<CosignerAdapter.myView
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
         holder.tetName.setText("联署人 "+nameNums.get(position));
         holder.tetContent.setText(xlistData.get(position));
-        holder.imgdelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onItemDeteleLisoner.onClick(position);
-            }
-        });
+        holder.imgdelete.setOnClickListener(v -> onItemDeteleLisoner.onClick(position));
 
     }
 

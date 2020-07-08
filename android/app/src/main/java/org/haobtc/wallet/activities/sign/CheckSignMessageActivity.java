@@ -71,21 +71,22 @@ public class CheckSignMessageActivity extends BaseActivity {
                 checkSigned();
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
     private void checkSigned() {
-        PyObject verify_message = null;
+        PyObject verifyMessage = null;
         try {
-            verify_message = Daemon.commands.callAttr("verify_message", signAddress, signMsg, signedFinish);
+            verifyMessage = Daemon.commands.callAttr("verify_message", signAddress, signMsg, signedFinish);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("Invalid Bitcoin address")) {
                 mToast(getString(R.string.changeaddress));
             }
         }
-        if (verify_message != null) {
-            boolean verify = verify_message.toBoolean();
+        if (verifyMessage != null) {
+            boolean verify = verifyMessage.toBoolean();
             if (verify) {
                 mlToast(getString(R.string.checksign_succsse));
             } else {

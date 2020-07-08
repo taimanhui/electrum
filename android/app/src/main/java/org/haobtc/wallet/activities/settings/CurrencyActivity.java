@@ -185,7 +185,7 @@ public class CurrencyActivity extends BaseActivity {
             reclCnyTable.setAdapter(cnyAdapter);
             cnyAdapter.setOnLisennorClick(new CNYAdapter.onLisennorClick() {
                 @Override
-                public void ItemClick(int pos) {
+                public void itemClick(int pos) {
                     if (pos == 0) {
                         try {
                             Daemon.commands.callAttr("set_currency", "CNY");

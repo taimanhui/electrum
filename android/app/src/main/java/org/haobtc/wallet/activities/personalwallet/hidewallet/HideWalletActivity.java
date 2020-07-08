@@ -89,6 +89,7 @@ public class HideWalletActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
