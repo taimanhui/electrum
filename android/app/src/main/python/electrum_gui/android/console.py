@@ -1605,9 +1605,12 @@ class AndroidCommands(commands.Commands):
         tx_size = tx.estimated_size()
         old_fee_rate = fee / tx_size  # sat/vbyte
         new_rate = Decimal(max(old_fee_rate * 1.5, old_fee_rate + 1)).quantize(Decimal('0.0'))
+        new_tx = json.loads(self.create_bump_fee(tx_hash, str(new_rate)))
         ret_data = {
             'current_feerate': self.format_fee_rate(1000 * old_fee_rate),
             'new_feerate': str(new_rate),
+            'fee': new_tx['fee'],
+            'tx': new_tx['new_tx']
         }
         return json.dumps(ret_data)
 
@@ -1635,7 +1638,7 @@ class AndroidCommands(commands.Commands):
         # self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
         return json.dumps(out)
 
-    def cofirm_rbf_tx(self, tx_hash):
+    def confirm_rbf_tx(self, tx_hash):
         try:
             self.do_save(self.rbf_tx)
         except:
@@ -1646,6 +1649,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             print(f"push_tx rbftx error {e}")
             pass
+        return self.rbf_tx.serialize_as_bytes().hex()
      
 
     ###cpfp api###
