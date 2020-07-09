@@ -161,6 +161,7 @@ class AndroidCommands(commands.Commands):
         self.rbf = self.config.get("use_rbf", True)
         self.ccy = self.daemon.fx.get_currency()
         self.pre_balance_info = ""
+        self.rbf_tx = ""
         self.m = 0
         self.n = 0
         #self.sync_timer = None
@@ -1620,25 +1621,32 @@ class AndroidCommands(commands.Commands):
                 return False
             coins = self.wallet.get_spendable_coins(None, nonlocal_only=False)
             new_tx = self.wallet.bump_fee(tx=tx, new_fee_rate=new_fee_rate, coins=coins)
+            size = new_tx.estimated_size()
+            fee = new_tx.get_fee()
         except BaseException as e:
             raise BaseException(e)
 
         new_tx.set_rbf(self.rbf)
         out = {
-            'new_tx': new_tx.serialize_as_bytes().hex()
+            'new_tx': new_tx.serialize_as_bytes().hex(),
+            'fee': fee
         }
+        self.rbf_tx = new_tx
+        # self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
+        return json.dumps(out)
+
+    def cofirm_rbf_tx(self, tx_hash):
         try:
-            self.do_save(new_tx)
+            self.do_save(self.rbf_tx)
         except:
             pass
         try:
             if self.label_flag and self.wallet.wallet_type != "standard":
-                self.label_plugin.push_tx(self.wallet, 'rbftx', new_tx.txid(), new_tx.serialize_as_bytes().hex(), tx_hash_old=tx_hash)
+                self.label_plugin.push_tx(self.wallet, 'rbftx', self.rbf_tx.txid(), self.rbf_tx.serialize_as_bytes().hex(), tx_hash_old=tx_hash)
         except Exception as e:
             print(f"push_tx rbftx error {e}")
             pass
-        # self.update_invoices(tx, new_tx.serialize_as_bytes().hex())
-        return json.dumps(out)
+     
 
     ###cpfp api###
     def get_rbf_or_cpfp_status(self, tx_hash):
