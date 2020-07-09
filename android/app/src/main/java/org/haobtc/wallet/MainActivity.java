@@ -52,6 +52,7 @@ import org.haobtc.wallet.activities.TransactionDetailsActivity;
 import org.haobtc.wallet.activities.TransactionRecordsActivity;
 import org.haobtc.wallet.activities.base.ApplicationObserver;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.adapter.UnbackupKeyAdapter;
@@ -126,6 +127,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private MyDialog myDialog;
     private static final int MIN_CLICK_DELAY_TIME = 1000;
     private static long lastClickTime;
+    public static boolean isBacked;
 
     @Override
     public int getLayoutId() {
@@ -490,6 +492,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void getunBackupKey() {
         ArrayList<String> unBackupKeyList = new ArrayList<>();
         List<HardwareFeatures> deviceValue = new ArrayList<>();
+        isBacked = true;
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
         Map<String, ?> devicesAll = devices.getAll();
         //key
@@ -511,11 +514,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
                 reclUnBackup.setLayoutManager(new LinearLayoutManager(this));
                 if (!unBackupKeyList.isEmpty()) {
+                    isBacked = false;
                     reclUnBackup.setVisibility(View.VISIBLE);
                     UnbackupKeyAdapter unbackupKeyAdapter = new UnbackupKeyAdapter(unBackupKeyList);
                     reclUnBackup.setAdapter(unbackupKeyAdapter);
                     unbackupKeyAdapter.setOnItemChildClickListener((adapter, view, position) -> {
                         if (view.getId() == R.id.test_go_to_backup) {
+                            CommunicationModeSelector.backupTip = true;
                             Intent intent = new Intent(MainActivity.this, BackupRecoveryActivity.class);
                             intent.putExtra("home_un_backup", "home_un_backup");
                             startActivity(intent);
@@ -832,6 +837,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
     };
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        getunBackupKey();
+    }
 
     @Override
     public void onButtonClick(int id) {

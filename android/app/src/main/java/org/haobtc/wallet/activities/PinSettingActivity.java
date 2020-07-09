@@ -126,8 +126,9 @@ public class PinSettingActivity extends BaseActivity {
 //                            startActivity(intent);
 //                            finish();
 //                            break;
+                        // change pin
                         case SettingActivity.TAG_CHANGE_PIN:
-                        case HardwareDetailsActivity.TAG: // change pin
+                        case HardwareDetailsActivity.TAG:
                             if (pinType == 2) {
                                 Intent intent =  new Intent(this, ChangePinProcessingActivity.class);
                                 intent.putExtra("pin_new", pin);

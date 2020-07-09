@@ -123,6 +123,7 @@ public class BackupRecoveryActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
+                CommunicationModeSelector.backupTip = false;
                 if ("create_to_backup".equals(homeUnbackup)) {
                     mIntent(MainActivity.class);
                 } else {

@@ -121,7 +121,9 @@ public class NfcNotifyHelper extends BaseActivity {
             EventBus.getDefault().post(new PinEvent("", passphrase));
         }
         protocol.callAttr("notify");
-        EventBus.getDefault().post(new FinishEvent());
+        if (!CommunicationModeSelector.backupTip) {
+            EventBus.getDefault().post(new FinishEvent());
+        }
     }
 
     @Override

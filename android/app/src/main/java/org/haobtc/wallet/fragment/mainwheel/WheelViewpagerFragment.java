@@ -26,10 +26,12 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2OneMainPageActivity;
 import org.haobtc.wallet.activities.personalwallet.WalletDetailsActivity;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.aop.SingleClick;
@@ -238,8 +240,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.linear_send:
-                String unBackupKey = preferences.getString(name, "");
-                if (unBackupKey.length() > 0) {
+                if (!MainActivity.isBacked) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {
@@ -256,8 +257,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
                 break;
             case R.id.linear_receive:
-                unBackupKey = preferences.getString(name, "");
-                if (!Strings.isNullOrEmpty(unBackupKey)) {
+                if (!MainActivity.isBacked) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {
@@ -266,8 +266,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 }
                 break;
             case R.id.linear_sign:
-                unBackupKey = preferences.getString(name, "");
-                if (!Strings.isNullOrEmpty(unBackupKey)) {
+                if (!MainActivity.isBacked) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {
@@ -290,6 +289,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             alertDialog.dismiss();
         });
         view.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
+            CommunicationModeSelector.backupTip = true;
             Intent intent = new Intent(getActivity(), BackupRecoveryActivity.class);
             intent.putExtra("home_un_backup", "home_un_backup");
             startActivity(intent);

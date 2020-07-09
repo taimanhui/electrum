@@ -187,6 +187,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private boolean isFastPay = true;
     private boolean isGetXpub;
     private boolean isErrorOccurred;
+    public static boolean backupTip;
 
     @Override
     public int getLayoutId() {
@@ -1122,6 +1123,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 backup.edit().putString(features.getDeviceId(), Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() + ":" + s : features.getLabel() + ":" + s).apply();
                 features.setNeedsBackup(false);
                 devices.edit().putString(features.getDeviceId(), features.toString()).apply();
+                if (backupTip) {
+                    backupTip = false;
+                    EventBus.getDefault().post(new FinishEvent());
+                }
                 if ("backup".equals(action)) {
                     EventBus.getDefault().post(new BackupFinishEvent(s));
                 } else {

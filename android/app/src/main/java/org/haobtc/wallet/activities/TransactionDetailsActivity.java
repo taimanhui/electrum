@@ -616,7 +616,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
             Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            ImageView imgCancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
             TextView testTitle = viewSpeed.findViewById(R.id.test_title);
             testTitle.setText(getString(R.string.receive_speed));
@@ -627,7 +627,8 @@ public class TransactionDetailsActivity extends BaseActivity {
                 String totalFee = jsonObject.getString("total_fee");
                 String feeForChild = jsonObject.getString("fee_for_child");
                 tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), totalFee));
-                imgCancle.setOnClickListener(v -> {
+
+                imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
                 viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
@@ -791,7 +792,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
             Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            ImageView imgCancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
             TextView testChangeFee = viewSpeed.findViewById(R.id.test_change_fee);
             IndicatorSeekBar seekBar = viewSpeed.findViewById(R.id.fee_seek_bar);
@@ -813,8 +814,8 @@ public class TransactionDetailsActivity extends BaseActivity {
                 seekBar.setProgress(ingSingle);
                 testChangeFee.setText(String.format("%s sat/byte", newFeerate));
                 createBumpFee(tetNewfee, newFeerate);//get tx and fee
-                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);//seekBar
-                imgCancle.setOnClickListener(v -> {
+                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);
+                imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
                 viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
