@@ -1,5 +1,6 @@
 package org.haobtc.wallet.fragment.mainwheel;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -84,6 +85,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         this.personce = personce;
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -237,7 +239,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.linear_send:
                 String unBackupKey = preferences.getString(name, "");
-                if (!Strings.isNullOrEmpty(unBackupKey)) {
+                if (unBackupKey.length() > 0) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {

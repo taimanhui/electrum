@@ -4,12 +4,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class AddspeedNewtrsactionBean {
 
+
     /**
-     * new_tx : 70736274ff01007102000000017035d4e58c3bf4de77564092beb87dd820fecceeb6a9c55b316fea696539e3040100000000fdffffff020a000000000000001600140ef8fb8667f68312e5b1f5f15fa7c5da3ee4776242b9f40500000000160014d781f4fc1600b3fdd55e4ba56360009f6ff7b401483400000001011f024ef50500000000160014e0793aac834d3405a9e8cef2bd4ee134a4190957220603caeceaf84cb9c498c52f187323b7c951b0a697d5cf3e2f4a342b2cb85c60f3c80c0b3a67cd0100000003000000002202034735ca370252a76729e7a0c0d9eaae48dfae6eab1b98668420acefad9c9bdb6f0c0b3a67cd00000000000000000000
+     * new_tx : 70736274ff010052020000000116b6a47ce4090da62f514d18f752e630a556859c63bbafa4c09f52ecfc35429b0000000000fdffffff01eeba970000000000160014fa587d54e2fa3e5008637c4dd074e1a5a0a4317c000000000001011f8096980000000000160014fa587d54e2fa3e5008637c4dd074e1a5a0a4317c220602e6a8ecec4f2bcc86d0527942bb316fa92ba4d376c3e5c2f26c3c9f4f3e59f35e0c81f2ab5a000000000000000000220202e6a8ecec4f2bcc86d0527942bb316fa92ba4d376c3e5c2f26c3c9f4f3e59f35e0c81f2ab5a000000000000000000
+     * fee : 56210
      */
 
     @SerializedName("new_tx")
     private String newTx;
+    @SerializedName("fee")
+    private int fee;
 
     public String getNewTx() {
         return newTx;
@@ -17,5 +21,13 @@ public class AddspeedNewtrsactionBean {
 
     public void setNewTx(String newTx) {
         this.newTx = newTx;
+    }
+
+    public int getFee() {
+        return fee;
+    }
+
+    public void setFee(int fee) {
+        this.fee = fee;
     }
 }

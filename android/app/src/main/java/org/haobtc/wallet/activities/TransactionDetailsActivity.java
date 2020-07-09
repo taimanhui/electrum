@@ -812,8 +812,8 @@ public class TransactionDetailsActivity extends BaseActivity {
                 seekBar.setMax(ingSingle * 2);
                 seekBar.setProgress(ingSingle);
                 testChangeFee.setText(String.format("%s sat/byte", newFeerate));
-                tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), newFeerate));//todo
-                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);
+                createBumpFee(tetNewfee, newFeerate);//get tx and fee
+                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);//seekBar
                 imgCancle.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
@@ -843,33 +843,49 @@ public class TransactionDetailsActivity extends BaseActivity {
                 if (!TextUtils.isEmpty(minIntFees)) {
                     if (seekBar.getProgress() < Integer.parseInt(minIntFees)) {
                         newFeerate = minIntFees;
-                        testChangeFee.setText(String.format("%s sat/byte", minIntFees));
-                        tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), minIntFees));//todo
+                        testChangeFee.setText(String.format("%s sat", minIntFees));
                     } else {
                         newFeerate = indicatorText;
-                        testChangeFee.setText(String.format("%s sat/byte", indicatorText));
-                        tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), minIntFees));//todo
+                        testChangeFee.setText(String.format("%s sat", indicatorText));
                     }
                 }
+                createBumpFee(tetNewfee, newFeerate);//get tx and fee
+
             }
         });
+    }
+
+    private void createBumpFee(TextView tetNewfee, String newFee) {
+        PyObject createBumpFee = null;
+        try {
+            createBumpFee = Daemon.commands.callAttr("create_bump_fee", txHash, newFee);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (createBumpFee != null) {
+            String strContent = createBumpFee.toString();
+            Gson gson = new Gson();
+            AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strContent, AddspeedNewtrsactionBean.class);
+            int fee = addspeedNewtrsactionBean.getFee();
+            tetNewfee.setText(String.format("%s  %s sat", getString(R.string.speed_fee_is), fee));
+        }
+
     }
 
     //confirm speed
     private void confirmedSpeed() {
         PyObject createBumpFee = null;
         try {
-            createBumpFee = Daemon.commands.callAttr("create_bump_fee", txHash, newFeerate);
+            createBumpFee = Daemon.commands.callAttr("confirm_rbf_tx", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
         if (createBumpFee != null) {
-            String strNewTX = createBumpFee.toString();
-            Gson gson = new Gson();
-            AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTX, AddspeedNewtrsactionBean.class);
-            publicTrsation = addspeedNewtrsactionBean.getNewTx();
+            publicTrsation = createBumpFee.toString();
+            //todo
             EventBus.getDefault().post(new FirstEvent("22"));
-            braodStatus = true;//braod_status = true   -->   speed don't broadcast
+            //braod_status = true   -->   speed don't broadcast
+            braodStatus = true;
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
