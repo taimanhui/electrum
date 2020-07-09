@@ -170,13 +170,13 @@ public class CurrencyActivity extends BaseActivity {
             Log.e("set_currency", "set_base_unit:==== " + e.getMessage());
             return;
         }
-        listCNY.add(new CNYBean("人民币（CNY）", false));
-        listCNY.add(new CNYBean("美元（USD）", false));
-        listCNY.add(new CNYBean("韩元（KMR）", false));
+        listCNY.add(new CNYBean(getString(R.string.money_cny), false));
+        listCNY.add(new CNYBean(getString(R.string.doller), false));
+        listCNY.add(new CNYBean(getString(R.string.korean_money), false));
         if (get_currencies != null) {
             pyObjects = get_currencies.asList();
             for (int i = 0; i < pyObjects.size(); i++) {
-                if (!pyObjects.get(i).toString().equals("CNY") && !pyObjects.get(i).toString().equals("USD") && !pyObjects.get(i).toString().equals("KMR")) {
+                if (!"CNY".equals(pyObjects.get(i).toString()) && !"USD".equals(pyObjects.get(i).toString()) && !"KMR".equals(pyObjects.get(i).toString())) {
                     listCNY.add(new CNYBean(String.valueOf(pyObjects.get(i)), false));
                 }
             }

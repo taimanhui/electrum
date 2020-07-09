@@ -22,6 +22,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.HelpWordAdapter;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.MnemonicEvent;
 import org.haobtc.wallet.utils.MyDialog;
 
@@ -122,6 +123,7 @@ public class MnemonicActivity extends BaseActivity {
             btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
             reclHelpWord.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
             reclHelpWord.setAdapter(new HelpWordAdapter(strings));
+            EventBus.getDefault().post(new FirstEvent("11"));
         }
     }
 

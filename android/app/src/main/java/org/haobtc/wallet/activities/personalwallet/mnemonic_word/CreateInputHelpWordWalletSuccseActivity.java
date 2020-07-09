@@ -108,6 +108,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
             String qrData = getCodeAddressBean.getQrData();
             bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
             imgOrcode.setImageBitmap(bitmap);
+            EventBus.getDefault().post(new FirstEvent("11"));
         }
     }
 

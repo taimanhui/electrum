@@ -72,7 +72,7 @@
     <string name="complete">Finished (0–5)</string>
     <string name="create_successful">Wallet created</string>
     <string name="enter_wallet">Open wallet</string>
-    <string name="transaction_records">Transaction record</string>
+    <string name="transaction_records">History</string>
     <string name="send">Send</string>
     <string name="create_trans">Create</string>
     <string name="send2many">Send to multiple</string>
@@ -846,8 +846,9 @@
     <string name="from_key_lite">Restore from BixinKey Lite</string>
     <string name="connect_method">Support the following communication methods, you can choose one of them (default is NFC)：</string>
     <string name="nfc">NFC</string>
-    <string name="card_pin">输入BixinKey Lite的PIN码</string>
-    <string name="backup2lite">备份到BixinKey Lite</string>
-    <string name="backup2lite_finish">备份到BixinKey Lite完成</string>
+    <string name="card_pin">Enter the PIN code of BixinKey Lite</string>
+    <string name="backup2lite">Backup to BixinKey Lite</string>
+    <string name="backup2lite_finish">Backup to BixinKey Lite</string>
+    <string name="money">RMB</string>
 
 </resources>

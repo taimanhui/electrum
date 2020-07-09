@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.chaquo.python.Kwarg;
@@ -40,6 +41,7 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SecondEvent;
 import org.haobtc.wallet.utils.Daemon;
+import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -149,6 +151,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String hideWallet = "";
     private String walletTypeToSign;
     private boolean braodStatus = false;
+    private String minIntFees;
 
     @Override
     public int getLayoutId() {
@@ -612,8 +615,8 @@ public class TransactionDetailsActivity extends BaseActivity {
             String strNewfeeReceive = getRbfFeeInfo.toString();
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            ImageView imgCancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
             TextView testTitle = viewSpeed.findViewById(R.id.test_title);
             testTitle.setText(getString(R.string.receive_speed));
@@ -624,8 +627,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 String totalFee = jsonObject.getString("total_fee");
                 String feeForChild = jsonObject.getString("fee_for_child");
                 tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), totalFee));
-
-                imgCancel.setOnClickListener(v -> {
+                imgCancle.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
                 viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
@@ -788,14 +790,31 @@ public class TransactionDetailsActivity extends BaseActivity {
             String strNewfee = getRbfFeeInfo.toString();
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            ImageView imgCancle = viewSpeed.findViewById(R.id.cancel_select_wallet);
             TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
+            TextView testChangeFee = viewSpeed.findViewById(R.id.test_change_fee);
+            IndicatorSeekBar seekBar = viewSpeed.findViewById(R.id.fee_seek_bar);
             try {
                 JSONObject jsonObject = new JSONObject(strNewfee);
+                String currentFeerate = jsonObject.getString("current_feerate");
                 newFeerate = jsonObject.getString("new_feerate");
-                tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), newFeerate));
-                imgCancel.setOnClickListener(v -> {
+                String minFees = currentFeerate.substring(0, currentFeerate.indexOf("sat/byte"));
+                String singleFee = newFeerate.substring(0, newFeerate.indexOf("."));
+                int ingSingle = Integer.parseInt(singleFee);
+                if (minFees.contains(".")) {
+                    minIntFees = minFees.substring(0, minFees.indexOf("."));
+                    seekBar.setMin(Integer.parseInt(minIntFees));
+                } else {
+                    minIntFees = minFees.replaceAll(" ", "");
+                    seekBar.setMin(Integer.parseInt(minIntFees));
+                }
+                seekBar.setMax(ingSingle * 2);
+                seekBar.setProgress(ingSingle);
+                testChangeFee.setText(String.format("%s sat/byte", newFeerate));
+                tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), newFeerate));//todo
+                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);
+                imgCancle.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
                 viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
@@ -806,6 +825,34 @@ public class TransactionDetailsActivity extends BaseActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void seekbarLatoutup(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee) {
+        seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                String indicatorText = String.valueOf(seekBar.getProgress());
+                if (!TextUtils.isEmpty(minIntFees)) {
+                    if (seekBar.getProgress() < Integer.parseInt(minIntFees)) {
+                        newFeerate = minIntFees;
+                        testChangeFee.setText(String.format("%s sat/byte", minIntFees));
+                        tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), minIntFees));//todo
+                    } else {
+                        newFeerate = indicatorText;
+                        testChangeFee.setText(String.format("%s sat/byte", indicatorText));
+                        tetNewfee.setText(String.format("%s  %s sat/byte", getString(R.string.speed_fee), minIntFees));//todo
+                    }
+                }
+            }
+        });
     }
 
     //confirm speed

@@ -814,4 +814,6 @@
     <string name="card_pin">输入BixinKey Lite的PIN码</string>
     <string name="backup2lite">备份到BixinKey Lite</string>
     <string name="backup2lite_finish">备份到BixinKey Lite完成</string>
+    <string name="money">人民币</string>
+
 </resources>

@@ -411,7 +411,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <org.haobtc.wallet.utils.IndicatorSeekBar
                             android:id="@+id/seek_bar"

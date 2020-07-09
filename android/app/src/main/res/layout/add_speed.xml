@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,7 +34,6 @@
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_40"
                 android:layout_alignParentEnd="true"
-
                 android:padding="@dimen/dp_14"
                 android:src="@drawable/close_big_black" />
         </RelativeLayout>
@@ -53,6 +53,22 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/sp_16" />
 
+        <org.haobtc.wallet.utils.IndicatorSeekBar
+            android:id="@+id/fee_seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_6" />
+
+        <TextView
+            android:id="@+id/test_change_fee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            tools:text="10sat/bit"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/sp_12" />
+
         <TextView
             android:id="@+id/test_tips"
             android:layout_width="match_parent"
@@ -67,10 +83,10 @@
         <Button
             android:id="@+id/btn_add_Speed"
             android:layout_width="match_parent"
-            android:layout_marginStart="@dimen/dp_40"
-            android:layout_marginEnd="@dimen/dp_40"
             android:layout_height="@dimen/dp_50"
+            android:layout_marginStart="@dimen/dp_40"
             android:layout_marginTop="@dimen/dp_22"
+            android:layout_marginEnd="@dimen/dp_40"
             android:layout_marginBottom="@dimen/dp_30"
             android:background="@drawable/button_bk"
             android:text="@string/Confirm_speed"
