@@ -1016,6 +1016,13 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showReading(CheckReceiveAddress event) {
+        if ("checking".equals(event.getType())) {
+            finish();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
