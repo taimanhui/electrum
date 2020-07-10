@@ -613,7 +613,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         if (getRbfFeeInfo != null) {
             String strNewfeeReceive = getRbfFeeInfo.toString();
-            View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
+            View viewSpeed = LayoutInflater.from(this).inflate(R.layout.receive_add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
             Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);

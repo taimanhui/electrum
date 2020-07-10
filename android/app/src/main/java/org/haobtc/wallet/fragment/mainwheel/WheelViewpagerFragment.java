@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +21,11 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.chaquo.python.PyObject;
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
@@ -36,10 +36,13 @@ import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity
 import org.haobtc.wallet.activities.sign.SignActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.MainNewWalletBean;
+import org.haobtc.wallet.event.CardUnitEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -92,7 +95,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wheel_viewpager, container, false);
-        preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        EventBus.getDefault().register(this);
+        preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         walletCardName = view.findViewById(R.id.wallet_card_name);
         walletpersonce = view.findViewById(R.id.wallet_card_tv2);
@@ -131,16 +135,16 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 if ("standard".equals(personce)) {
                     btnAppWallet.setVisibility(View.VISIBLE);
                     walletpersonce.setVisibility(View.GONE);
-                    conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_gray_bg));
-                    btnLeft.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
-                    btncenetr.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
-                    btnRight.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
-                } else {
-                    walletpersonce.setText(personce);
                     conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_bg));
                     btnLeft.setBackground(getActivity().getDrawable(R.drawable.button_bk_small));
                     btncenetr.setBackground(getActivity().getDrawable(R.drawable.button_bk_small));
                     btnRight.setBackground(getActivity().getDrawable(R.drawable.button_bk_small));
+                } else {
+                    walletpersonce.setText(personce);
+                    conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_gray_bg));
+                    btnLeft.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
+                    btncenetr.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
+                    btnRight.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
                 }
             }
         }
@@ -158,6 +162,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     }
 
     public void refreshList() {
+        String cnyStrunit = preferences.getString("cny_strunit", "CNY");
+        testStarCny.setText(String.format("%s%s", getString(R.string.cny_star), cnyStrunit));
         try {
             Daemon.commands.callAttr("load_wallet", name);
             getWalletMsg();
@@ -240,9 +246,10 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 startActivity(intent);
                 break;
             case R.id.linear_send:
-                if (!MainActivity.isBacked) {
+                if (!MainActivity.isBacked && !"standard".equals(personce)) {
                     //unBackup key dialog
                     unBackupKeyDialog();
+
                 } else {
                     edit.putString("wallet_type_to_sign", personce);
                     edit.apply();
@@ -257,16 +264,17 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
                 break;
             case R.id.linear_receive:
-                if (!MainActivity.isBacked) {
+                if (!MainActivity.isBacked && !"standard".equals(personce)) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {
                     Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
+                    intent2.putExtra("walletType", personce);
                     startActivity(intent2);
                 }
                 break;
             case R.id.linear_sign:
-                if (!MainActivity.isBacked) {
+                if (!MainActivity.isBacked && !"standard".equals(personce)) {
                     //unBackup key dialog
                     unBackupKeyDialog();
                 } else {
@@ -300,17 +308,31 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked){
+        if (isChecked) {
             testStar.setVisibility(View.GONE);
             linCheck.setVisibility(View.VISIBLE);
             testStarCny.setVisibility(View.GONE);
             tetCny.setVisibility(View.VISIBLE);
 
-        }else{
+        } else {
             testStar.setVisibility(View.VISIBLE);
             linCheck.setVisibility(View.GONE);
             testStarCny.setVisibility(View.VISIBLE);
             tetCny.setVisibility(View.GONE);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(CardUnitEvent cardUnitEvent) {
+        String cnyStrunit = preferences.getString("cny_strunit", "CNY");
+        testStarCny.setText(String.format("%s%s", getString(R.string.cny_star), cnyStrunit));
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

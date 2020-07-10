@@ -61,13 +61,13 @@
                     android:layout_height="17dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:paddingStart="@dimen/dp_6"
-                    android:paddingEnd="@dimen/dp_6"
+                    android:paddingStart="@dimen/dp_4"
+                    android:paddingEnd="@dimen/dp_4"
                     android:layout_marginEnd="26dp"
                     android:background="@drawable/appwallet_text_back"
                     android:gravity="center"
                     android:text="@string/app_walt"
-                    android:textColor="@color/app_name_text"
+                    android:textColor="@color/button_bk_disableok"
                     android:textSize="@dimen/sp_10"
                     android:visibility="gone" />
             </RelativeLayout>
@@ -153,9 +153,9 @@
                 android:layout_height="17dp"
                 android:layout_marginStart="@dimen/dp_16"
                 android:gravity="center_vertical"
-                android:text="@string/cny_star"
-                android:textColor="#c1d0e4"
-                android:textSize="14sp"
+                tools:text="≈****CNY"
+                android:textColor="@color/wallet_yue"
+                android:textSize="@dimen/sp_12"
                 android:visibility="visible" />
 
             <TextView
@@ -164,8 +164,8 @@
                 android:layout_height="17dp"
                 android:layout_marginStart="@dimen/dp_16"
                 android:gravity="center_vertical"
-                android:textColor="#c1d0e4"
-                android:textSize="12sp"
+                android:textColor="@color/wallet_yue"
+                android:textSize="@dimen/sp_12"
                 android:visibility="gone"
                 tools:text="≈74527364CNY" />
 

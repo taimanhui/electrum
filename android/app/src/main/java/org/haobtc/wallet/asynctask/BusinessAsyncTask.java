@@ -7,6 +7,7 @@ import android.util.Log;
 import com.chaquo.python.Kwarg;
 
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.event.CheckReceiveAddress;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.utils.Daemon;
@@ -29,6 +30,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public static final String INIT_DEVICE = "init";
     public static final String COUNTER_VERIFICATION = "hardware_verify";
     public static final String APPLY_SETTING = "apply_setting";
+    public static final String SHOW_ADDRESS = "show_address";
 
     public BusinessAsyncTask setHelper(Helper helper) {
         this.helper = helper;
@@ -98,13 +100,22 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                     } else if ("shutdown_time".equals(strings[2])) {
                         int shutdownTime = Integer.parseInt(strings[3]);
                         result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("auto_lock_delay_ms", shutdownTime * 1000)).toString();
-                    }else if ("fix_hardware_language".equals(strings[2])){
+                    } else if ("fix_hardware_language".equals(strings[2])) {
                         result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("language", strings[3])).toString();
                     }
                 } catch (Exception e) {
                     cancel(true);
                     onException(e);
                 }
+                break;
+            case SHOW_ADDRESS:
+                try {
+                    Daemon.commands.callAttr(strings[0], strings[1], strings[2]);
+                } catch (Exception e) {
+                    cancel(true);
+                    onException(e);
+                }
+                EventBus.getDefault().post(new CheckReceiveAddress("getResult"));
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + strings[0]);

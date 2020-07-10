@@ -21,6 +21,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.adapter.CNYAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.CNYBean;
+import org.haobtc.wallet.event.CardUnitEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -219,9 +220,11 @@ public class CurrencyActivity extends BaseActivity {
                         }
                         edit.putString("cny_strunit", listCNY.get(pos).getName());
                     }
-                    EventBus.getDefault().post(new FirstEvent("22"));
                     edit.putInt("cny_unit", pos);
                     edit.apply();
+                    EventBus.getDefault().post(new FirstEvent("11"));
+                    EventBus.getDefault().post(new FirstEvent("22"));
+                    EventBus.getDefault().post(new CardUnitEvent());
                 }
             });
         }

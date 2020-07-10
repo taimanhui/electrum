@@ -7,11 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,12 +26,16 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.tbruyelle.rxpermissions2.RxPermissions;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
+import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
+import org.haobtc.wallet.event.CheckReceiveAddress;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.io.File;
@@ -43,6 +49,7 @@ import butterknife.OnClick;
 
 public class ReceivedPageActivity extends BaseActivity {
 
+    public static final String TAG = ReceivedPageActivity.class.getSimpleName();
     @BindView(R.id.imageView2)
     ImageView imageView2;
     @BindView(R.id.textView5)
@@ -53,6 +60,12 @@ public class ReceivedPageActivity extends BaseActivity {
     Button button;
     @BindView(R.id.img_back)
     ImageView imgBack;
+    @BindView(R.id.text_receive_tip)
+    TextView textReceiveTip;
+    @BindView(R.id.copy_and_check)
+    RelativeLayout copyAndCheck;
+    @BindView(R.id.text_copy_address)
+    TextView textCopyAddress;
     private Bitmap bitmap;
     private RxPermissions rxPermissions;
 
@@ -63,9 +76,17 @@ public class ReceivedPageActivity extends BaseActivity {
 
     @Override
     public void initView() {
-
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         rxPermissions = new RxPermissions(this);
+        String walletType = getIntent().getStringExtra("walletType");
+        if ("standard".equals(walletType)) {
+            textCopyAddress.setVisibility(View.VISIBLE);
+            copyAndCheck.setVisibility(View.GONE);
+        } else {
+            textCopyAddress.setVisibility(View.GONE);
+            copyAndCheck.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -119,7 +140,7 @@ public class ReceivedPageActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.textView6, R.id.button, R.id.img_back})
+    @OnClick({R.id.textView6, R.id.button, R.id.img_back, R.id.text_check_address, R.id.text_copy_address})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.textView6:
@@ -157,6 +178,22 @@ public class ReceivedPageActivity extends BaseActivity {
                 break;
             case R.id.img_back:
                 finish();
+                break;
+            case R.id.text_check_address:
+                CommunicationModeSelector.runnables.clear();
+                CommunicationModeSelector.runnables.add(null);
+                Intent intent = new Intent(this, CommunicationModeSelector.class);
+                intent.putExtra("tag", TAG);
+                intent.putExtra("contrastAddress", textView5.getText().toString());
+                startActivity(intent);
+                break;
+            case R.id.text_copy_address:
+                //copy text
+                ClipboardManager cm1 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                // The text is placed on the system clipboard.
+                Objects.requireNonNull(cm1, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textView5.getText()));
+                Toast.makeText(ReceivedPageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+
                 break;
             default:
         }
@@ -201,5 +238,21 @@ public class ReceivedPageActivity extends BaseActivity {
         }
         return null;
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showReading(CheckReceiveAddress event) {
+        if ("getResult".equals(event.getType())) {
+            textReceiveTip.setVisibility(View.GONE);
+        } else if ("checking".equals(event.getType())) {
+            textReceiveTip.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
 }
 

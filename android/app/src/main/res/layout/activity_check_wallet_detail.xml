@@ -173,12 +173,12 @@
                     <TextView
                         android:id="@+id/test_no_address"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/dp_80"
                         android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="@dimen/dp_18"
                         android:layout_marginBottom="@dimen/dp_16"
                         android:gravity="center"
-                        android:text="@string/no_records"
+                        android:text="@string/no_balance"
                         android:textColor="@color/light_text"
                         android:textSize="@dimen/text_size"
                         android:visibility="gone" />

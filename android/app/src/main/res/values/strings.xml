@@ -763,7 +763,6 @@
     <string name="unclassified_quota">Single quota</string>
     <string name="open_bt">open</string>
     <string name="fix_name">Modify the name</string>
-    <string name="wallet_addr">Wallet address</string>
     <string name="wallet_msg">Wallet information</string>
     <string name="fix_success">Modified successfully</string>
     <string name="fast_send_tips">After enabling quick payment, if a single transaction is less than the set limit, there is no need to verify the PIN or to confirm. After repeatedly using the Quick pay for a set number of times, the system will automatically close it. (Note: When using non-secure chip, the system will check the PIN on the first payment if PIN protection is set.)</string>
@@ -850,4 +849,9 @@
     <string name="backup2lite">Backup to BixinKey Lite</string>
     <string name="backup2lite_finish">Backup to BixinKey Lite</string>
     <string name="money">RMB</string>
+    <string name="wallet_addr">Balance distribution</string>
+    <string name="no_balance">No balance</string>
+    <string name="check_address">Check address</string>
+    <string name="receive_tip">Please check the BixinKey display address with the app display address</string>
+
 </resources>

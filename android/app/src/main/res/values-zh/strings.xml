@@ -732,7 +732,6 @@
     <string name="unclassified_quota">单次限额</string>
     <string name="open_bt">打开</string>
     <string name="fix_name">修改名称</string>
-    <string name="wallet_addr">余额地址</string>
     <string name="wallet_msg">钱包信息</string>
     <string name="fix_success">修改成功</string>
     <string name="fast_send_tips">开启快捷支付后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 多次重复使用达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时, 如果设置了pin保护,第一次支付仍然会检查pin)</string>
@@ -815,4 +814,9 @@
     <string name="backup2lite">备份到BixinKey Lite</string>
     <string name="backup2lite_finish">备份到BixinKey Lite完成</string>
     <string name="money">人民币</string>
+    <string name="wallet_addr">余额分布</string>
+    <string name="no_balance">暂无余额</string>
+    <string name="check_address">校验地址</string>
+    <string name="receive_tip">请核对BixinKey展示地址与App展示地址</string>
+
 </resources>
