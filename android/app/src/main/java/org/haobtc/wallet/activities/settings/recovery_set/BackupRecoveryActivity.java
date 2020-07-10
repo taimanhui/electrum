@@ -136,6 +136,7 @@ public class BackupRecoveryActivity extends BaseActivity {
                         EventBus.getDefault().postSticky(new HandlerEvent());
                     }
                 }
+                CommunicationModeSelector.backupTip = true;
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
                 startActivity(intent);

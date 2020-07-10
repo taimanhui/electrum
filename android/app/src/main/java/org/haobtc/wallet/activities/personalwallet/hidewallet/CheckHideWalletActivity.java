@@ -92,8 +92,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
 
     private void inits() {
         //get wallet unit
-        String base_unit = preferences.getString("base_unit", "");
-        walletCard.setText(String.format("%s（%s）", getString(R.string.balance), base_unit));
+        String baseUnit = preferences.getString("base_unit", "");
+        walletCard.setText(String.format("%s（%s）", getString(R.string.balance), baseUnit));
         refreshLayout.setEnableLoadMore(false);
         refreshLayout.setEnableRefresh(true);
         refreshLayout.setOnRefreshListener(this);

@@ -193,7 +193,9 @@ public class SettingActivity extends BaseActivity {
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isNFC && isChangePin) {
             EventBus.getDefault().removeStickyEvent(event);
-            startActivity(new Intent(this, NfcNotifyHelper.class));
+            Intent intent = new Intent(this, NfcNotifyHelper.class);
+            intent.putExtra("is_button_request", true);
+            startActivity(intent);
         }
     }
 

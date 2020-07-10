@@ -19,10 +19,12 @@ public class ActivateBackupSuccessActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
-    @BindView(R.id.btn_finish)
-    TextView btnFinish;
+    @BindView(R.id.text_finish)
+    TextView textFinish;
     @BindView(R.id.recovery2Key)
     Button btnBackup2Key;
+    @BindView(R.id.btn_finish)
+    Button btnFinish;
     @Override
     public int getLayoutId() {
         return R.layout.activity_activite_backup_success;
@@ -39,11 +41,12 @@ public class ActivateBackupSuccessActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.btn_finish, R.id.recovery2Key})
+    @OnClick({R.id.img_back, R.id.btn_finish, R.id.recovery2Key, R.id.text_finish})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.btn_finish:
+            case R.id.text_finish:
                 finish();
                 break;
             case R.id.recovery2Key:

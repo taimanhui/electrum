@@ -297,7 +297,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             alertDialog.dismiss();
         });
         view.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
-            CommunicationModeSelector.backupTip = true;
             Intent intent = new Intent(getActivity(), BackupRecoveryActivity.class);
             intent.putExtra("home_un_backup", "home_un_backup");
             startActivity(intent);

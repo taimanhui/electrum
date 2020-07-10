@@ -458,7 +458,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (isNFC) {
-            startActivity(new Intent(this, NfcNotifyHelper.class));
+            Intent intent = new Intent(this, NfcNotifyHelper.class);
+            intent.putExtra("is_button_request", true);
+            startActivity(intent);
         }
     }
 
