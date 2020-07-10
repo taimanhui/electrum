@@ -380,7 +380,7 @@ class TrezorPlugin(HW_PluginBase):
         tx.update_signatures(signatures)
         raise Exception("sign success")
 
-    def show_address(self, wallet, address, keystore=None):
+    def show_address(self, path, ui, wallet, address, keystore=None):
         if keystore is None:
             keystore = wallet.get_keystore()
         if not self.show_address_helper(wallet, address, keystore):
@@ -389,7 +389,6 @@ class TrezorPlugin(HW_PluginBase):
         derivation = keystore.get_derivation_prefix()
         address_path = "%s/%d/%d" % (derivation, *deriv_suffix)
         script_type = self.get_trezor_input_script_type(wallet.txin_type)
-
         # prepare multisig, if available:
         xpubs = wallet.get_master_public_keys()
         if len(xpubs) > 1:
@@ -402,7 +401,7 @@ class TrezorPlugin(HW_PluginBase):
         else:
             multisig = None
 
-        client = self.get_client(keystore)
+        client = self.get_client(path=path, ui=ui)
         client.show_address(address_path, script_type, multisig)
 
     def tx_inputs(self, tx: Transaction, *, for_sig=False, keystore: 'TrezorKeyStore' = None):

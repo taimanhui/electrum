@@ -1300,6 +1300,14 @@ class AndroidCommands(commands.Commands):
         else:
             return 0
 
+    def show_address(self, address, path='android_usb'):
+        try:
+            plugin = self.plugin.get_plugin("trezor")
+            plugin.show_address(path=path, ui=CustomerUI(), wallet=self.wallet, address=address)
+        except Exception as e:
+            raise BaseException(e)
+        
+
     def wipe_device(self, path='android_usb') -> int:
         # self.client = None
         # self.path = ''
