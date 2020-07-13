@@ -123,10 +123,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     PyObject getWalletsListInfo = null;
     private DownloadManager manager;
     private SharedPreferences.Editor edit;
-    private List<HardwareFeatures> deviceValue;
-    private MyDialog myDialog;
-    private static final int MIN_CLICK_DELAY_TIME = 1000;
-    private static long lastClickTime;
     public static boolean isBacked;
 
     @Override
@@ -137,7 +133,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        myDialog = MyDialog.showDialog(MainActivity.this);
         //Eventbus register
         EventBus.getDefault().register(this);
         sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);

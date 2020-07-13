@@ -251,7 +251,12 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                             defGetTxInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", strTest);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            mToast(e.getMessage());
+                            Log.i("ffffffffff", "onViewClicked: " + e.getMessage());
+                            if (e.getMessage().contains("non-hexadecimal number found in fromhex() arg at position 0")){
+                                mToast(getString(R.string.transaction_wrong));
+                            }else{
+                                mToast(e.getMessage());
+                            }
                             return;
                         }
                         if (defGetTxInfoFromRaw != null) {
@@ -366,6 +371,8 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
+                }else if (e.getMessage().contains("failed to recognize transaction encoding for txt")){
+                    mToast(getString(R.string.transaction_wrong));
                 }
                 e.printStackTrace();
                 return;

@@ -112,7 +112,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 try {
                     Daemon.commands.callAttr(strings[0], strings[1], strings[2]);
                 } catch (Exception e) {
-                    cancel(true);
                     onException(e);
                 }
                 EventBus.getDefault().post(new CheckReceiveAddress("getResult"));

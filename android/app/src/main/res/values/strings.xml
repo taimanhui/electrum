@@ -853,5 +853,7 @@
     <string name="no_balance">No balance</string>
     <string name="check_address">Check address</string>
     <string name="receive_tip">Please check the BixinKey display address with the app display address</string>
+    <string name="mismatch_wallet">The current wallet does not match this hardware, please replace the hardware</string>
+    <string name="transaction_wrong">Transaction format error</string>
 
 </resources>

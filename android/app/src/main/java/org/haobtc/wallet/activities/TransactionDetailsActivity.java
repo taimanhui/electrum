@@ -152,6 +152,9 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String walletTypeToSign;
     private boolean braodStatus = false;
     private String minIntFees;
+    private String totalFee;
+    private int minPro;
+    private boolean buttonStatus = true;
 
     @Override
     public int getLayoutId() {
@@ -200,7 +203,6 @@ public class TransactionDetailsActivity extends BaseActivity {
             linFee.setVisibility(View.VISIBLE);
         } else {
             setReciveSpeedBtn();//show receive add speed
-            linFee.setVisibility(View.GONE);
             linearSignStatus.setVisibility(View.GONE);
             tvInTb2.setText(R.string.recevid);
         }
@@ -311,7 +313,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //intent ->histry or create
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String detail) {
-//        Log.d("jsonDetailData", "transactionDetail==== " + detail);
+        Log.d("jsonDetailData", "transactionDetail==== " + detail);
         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
         try {
             Gson gson = new Gson();
@@ -341,13 +343,25 @@ public class TransactionDetailsActivity extends BaseActivity {
         tetTrsactionHash.setText(txid);
         //input address num
         int size = outputAddr.size();
-        if ("English".equals(language)) {
-            tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
-            tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddr.size()));
+        if (size != 1) {
+            if ("English".equals(language)) {
+                tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
+            } else {
+                tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
+            }
         } else {
-            tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
-            tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddr.size(), getString(R.string.ge)));
+            tetAddressNum.setVisibility(View.GONE);
         }
+        if (inputAddr.size() != 1) {
+            if ("English".equals(language)) {
+                tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddr.size()));
+            } else {
+                tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddr.size(), getString(R.string.ge)));
+            }
+        } else {
+            tetPayAddressNum.setVisibility(View.GONE);
+        }
+
         if (size != 0) {
             //output_address
             String addr = outputAddr.get(0).getAddr();
@@ -412,12 +426,23 @@ public class TransactionDetailsActivity extends BaseActivity {
         tetTrsactionHash.setText(txid);
         //input address num
         int size = outputAddrScan.size();
-        if ("English".equals(language)) {
-            tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
-            tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddrScan.size()));
+        if (size != 1) {
+            if ("English".equals(language)) {
+                tetAddressNum.setText(String.format("%s%d", getString(R.string.wait), size));
+            } else {
+                tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
+            }
         } else {
-            tetAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), size, getString(R.string.ge)));
-            tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddrScan.size(), getString(R.string.ge)));
+            tetAddressNum.setVisibility(View.GONE);
+        }
+        if (inputAddr.size() != 1) {
+            if ("English".equals(language)) {
+                tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddr.size()));
+            } else {
+                tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddr.size(), getString(R.string.ge)));
+            }
+        } else {
+            tetPayAddressNum.setVisibility(View.GONE);
         }
         //output_address
         if (outputAddrScan.size() != 0) {
@@ -488,6 +513,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 //transaction hash and time
                 linTractionHash.setVisibility(View.VISIBLE);
                 linTractionTime.setVisibility(View.GONE);
+                linFee.setVisibility(View.VISIBLE);
             } else if (txStatus.contains("confirmations")) {//Confirmed
                 tetState.setText(R.string.completed);
                 sigTrans.setText(R.string.check_trsaction);
@@ -510,6 +536,11 @@ public class TransactionDetailsActivity extends BaseActivity {
                 //transaction hash and time
                 linTractionHash.setVisibility(View.VISIBLE);
                 linTractionTime.setVisibility(View.VISIBLE);
+                if (isMine) {
+                    linFee.setVisibility(View.VISIBLE);
+                } else {
+                    linFee.setVisibility(View.GONE);
+                }
             } else if (txStatus.contains("Unsigned")) {//unsigned
                 linPayAddress.setVisibility(View.VISIBLE);
                 tetState.setText(R.string.unsigned);
@@ -564,6 +595,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.sig_trans:
+                buttonStatus = true;//buttonStatus = true-->Click the button   ：  false-->Modify status only
                 //sign technological process
                 signProcess();
                 break;
@@ -641,6 +673,33 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
+    private void seekBarReceiveFee(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee) {
+        seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                String indicatorText = String.valueOf(seekBar.getProgress());
+                if (!TextUtils.isEmpty(totalFee)) {
+                    if (seekBar.getProgress() < Integer.parseInt(totalFee)) {
+                        newFeerate = minIntFees;
+                        testChangeFee.setText(String.format("%s sat", minIntFees));
+                    } else {
+                        newFeerate = indicatorText;
+                        testChangeFee.setText(String.format("%s sat", indicatorText));
+                    }
+                }
+
+            }
+        });
+    }
+
     private void confirmedReceiveSpeed(String feeForChild) {
         PyObject createCpfpTx = null;
         try {
@@ -659,6 +718,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             edit.apply();
             mCreataSuccsesCheck();
             alertDialog.dismiss();
+            buttonStatus = false;//buttonStatus = true-->Click the button   ：  false-->Modify status only
             signProcess();//add speed  then Re sign
 
         }
@@ -671,11 +731,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             //broadcast transaction
             braodcastTrsaction();
 
-        } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
+        } else if (strBtncontent.equals(getString(R.string.check_trsaction)) && buttonStatus) {
             Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
             intent1.putExtra("checkTxid", txid);
             startActivity(intent1);
-        } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
+        } else if (strBtncontent.equals(getString(R.string.signature_trans)) && buttonStatus) {
             if ("standard".equals(strwalletType)) {
                 //sign input pass
                 signInputpassDialog();
@@ -805,16 +865,18 @@ public class TransactionDetailsActivity extends BaseActivity {
                 int ingSingle = Integer.parseInt(singleFee);
                 if (minFees.contains(".")) {
                     minIntFees = minFees.substring(0, minFees.indexOf("."));
-                    seekBar.setMin(Integer.parseInt(minIntFees));
+                    minPro = Integer.parseInt(minIntFees);
                 } else {
                     minIntFees = minFees.replaceAll(" ", "");
-                    seekBar.setMin(Integer.parseInt(minIntFees));
+                    minPro = Integer.parseInt(minIntFees);
                 }
-                seekBar.setMax(ingSingle * 2);
-                seekBar.setProgress(ingSingle);
+                int allNum = (ingSingle * 2) - minPro;
+                int noePro = ingSingle - minPro;
+                seekBar.setMax(allNum);
+                seekBar.setProgress(noePro);
                 testChangeFee.setText(String.format("%s sat/byte", newFeerate));
                 createBumpFee(tetNewfee, newFeerate);//get tx and fee
-                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);
+                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);//seek bar Listener
                 imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
@@ -840,16 +902,12 @@ public class TransactionDetailsActivity extends BaseActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                String indicatorText = String.valueOf(seekBar.getProgress());
-                if (!TextUtils.isEmpty(minIntFees)) {
-                    if (seekBar.getProgress() < Integer.parseInt(minIntFees)) {
-                        newFeerate = minIntFees;
-                        testChangeFee.setText(String.format("%s sat", minIntFees));
-                    } else {
-                        newFeerate = indicatorText;
-                        testChangeFee.setText(String.format("%s sat", indicatorText));
-                    }
-                }
+                int d = seekBar.getProgress() + minPro;
+                Log.i("onStopTrackingTouch", "111111--: " + seekBar.getProgress());
+                Log.i("onStopTrackingTouch", "222222--: " + d);
+
+                String indicatorText = String.valueOf(seekBar.getProgress() + minPro);
+                testChangeFee.setText(String.format("%s sat", indicatorText));
                 createBumpFee(tetNewfee, newFeerate);//get tx and fee
 
             }
@@ -891,6 +949,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             edit.apply();
             mCreataSuccsesCheck();
             alertDialog.dismiss();
+            buttonStatus = false;//buttonStatus = true-->Click the button   ：  false-->Modify status only
             signProcess();//add speed  then Re sign
 
         }

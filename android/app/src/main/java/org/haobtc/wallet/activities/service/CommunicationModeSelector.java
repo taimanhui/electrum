@@ -693,7 +693,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 //modify hardware language
                 hardwareLanguage(isNFC);
             } else if (ReceivedPageActivity.TAG.equals(tag)) {
-                EventBus.getDefault().post(new CheckReceiveAddress("checking"));
                 //contrast phone and hardware address
                 contrastAddress();
 
@@ -714,11 +713,22 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
     private void contrastAddress() {
         String contrastAddress = getIntent().getStringExtra("contrastAddress");
-        try {
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SHOW_ADDRESS, contrastAddress, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-        } catch (Exception e) {
-            e.printStackTrace();
+        String deviceId = features.getDeviceId();
+        PyObject deviceInfo = Daemon.commands.callAttr("get_device_info");
+        String strDeviceId = deviceInfo.toString();
+        if (strDeviceId.contains(deviceId)) {
+            if (features.isPinCached()) {
+                EventBus.getDefault().post(new CheckReceiveAddress("checking"));
+            }
+            try {
+                new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SHOW_ADDRESS, contrastAddress, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            mToast(getString(R.string.mismatch_wallet));
         }
+
     }
 
     private void dealwithSign(boolean isNFC) {

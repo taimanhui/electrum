@@ -22,6 +22,7 @@ import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.wallet.activities.settings.recovery_set.ResetDeviceProcessing;
 import org.haobtc.wallet.activities.transaction.PinNewActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.CheckReceiveAddress;
 import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
@@ -130,7 +131,7 @@ public class PinSettingActivity extends BaseActivity {
                         case SettingActivity.TAG_CHANGE_PIN:
                         case HardwareDetailsActivity.TAG:
                             if (pinType == 2) {
-                                Intent intent =  new Intent(this, ChangePinProcessingActivity.class);
+                                Intent intent = new Intent(this, ChangePinProcessingActivity.class);
                                 intent.putExtra("pin_new", pin);
                                 startActivity(intent);
                             } else {
@@ -160,6 +161,7 @@ public class PinSettingActivity extends BaseActivity {
                                 startActivity(intent);
                             } else {
                                 EventBus.getDefault().post(new PinEvent(pin, ""));
+                                EventBus.getDefault().post(new CheckReceiveAddress("checking"));
                                 finish();
                             }
                     }
@@ -188,6 +190,7 @@ public class PinSettingActivity extends BaseActivity {
         EventBus.getDefault().post(new ExitEvent());
         finish();
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(FinishEvent event) {
         finish();

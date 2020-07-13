@@ -176,50 +176,45 @@ public class WalletDetailsActivity extends BaseActivity {
             HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
             deviceValue.add(hardwareFeatures);
         }
-        if (deviceValue != null) {
-            try {
-                PyObject deviceInfo = Daemon.commands.callAttr("get_device_info");
-                String strDeviceId = deviceInfo.toString();
-                if (!TextUtils.isEmpty(strDeviceId)) {
-                    for (HardwareFeatures entity : deviceValue) {
-                        if (strDeviceId.contains(entity.getDeviceId())) {
-                            WalletDetailBixinKeyEvent addBixinKeyEvent = new WalletDetailBixinKeyEvent();
-                            if (!TextUtils.isEmpty(entity.getLabel())) {
-                                addBixinKeyEvent.setLabel(entity.getLabel());
+        try {
+            PyObject deviceInfo = Daemon.commands.callAttr("get_device_info");
+            String strDeviceId = deviceInfo.toString();
+            if (!TextUtils.isEmpty(strDeviceId)) {
+                for (HardwareFeatures entity : deviceValue) {
+                    if (strDeviceId.contains(entity.getDeviceId())) {
+                        WalletDetailBixinKeyEvent addBixinKeyEvent = new WalletDetailBixinKeyEvent();
+                        if (!TextUtils.isEmpty(entity.getLabel())) {
+                            addBixinKeyEvent.setLabel(entity.getLabel());
 
-                            } else {
-                                addBixinKeyEvent.setLabel(entity.getBleName());
-                            }
-                            addBixinKeyEvent.setBleName(entity.getBleName());
-                            addBixinKeyEvent.setDeviceId(entity.getDeviceId());
-                            addBixinKeyEvent.setMajorVersion(entity.getMajorVersion());
-                            addBixinKeyEvent.setMinorVersion(entity.getMinorVersion());
-                            addBixinKeyEvent.setPatchVersion(entity.getPatchVersion());
-                            addEventsDatas.add(addBixinKeyEvent);
+                        } else {
+                            addBixinKeyEvent.setLabel(entity.getBleName());
                         }
+                        addBixinKeyEvent.setBleName(entity.getBleName());
+                        addBixinKeyEvent.setDeviceId(entity.getDeviceId());
+                        addBixinKeyEvent.setMajorVersion(entity.getMajorVersion());
+                        addBixinKeyEvent.setMinorVersion(entity.getMinorVersion());
+                        addBixinKeyEvent.setPatchVersion(entity.getPatchVersion());
+                        addEventsDatas.add(addBixinKeyEvent);
                     }
-                    WalletDetailKeyAdapter publicPersonAdapter = new WalletDetailKeyAdapter(addEventsDatas);
-                    reclPublicPerson.setAdapter(publicPersonAdapter);
-                    publicPersonAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                            String firmwareVersion = "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getMinorVersion() + "." + addEventsDatas.get(position).getPatchVersion();
-                            Intent intent = new Intent(WalletDetailsActivity.this, HardwareDetailsActivity.class);
-                            intent.putExtra("label", addEventsDatas.get(position).getLabel());
-                            intent.putExtra("bleName", addEventsDatas.get(position).getBleName());
-                            intent.putExtra("firmwareVersion", firmwareVersion);
-                            intent.putExtra("bleVerson", "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getPatchVersion());
-                            intent.putExtra("device_id", addEventsDatas.get(position).getDeviceId());
-                            startActivity(intent);
-                        }
-                    });
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                reclPublicPerson.setVisibility(View.GONE);
-                testNoKey.setVisibility(View.VISIBLE);
+                WalletDetailKeyAdapter publicPersonAdapter = new WalletDetailKeyAdapter(addEventsDatas);
+                reclPublicPerson.setAdapter(publicPersonAdapter);
+                publicPersonAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        String firmwareVersion = "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getMinorVersion() + "." + addEventsDatas.get(position).getPatchVersion();
+                        Intent intent = new Intent(WalletDetailsActivity.this, HardwareDetailsActivity.class);
+                        intent.putExtra("label", addEventsDatas.get(position).getLabel());
+                        intent.putExtra("bleName", addEventsDatas.get(position).getBleName());
+                        intent.putExtra("firmwareVersion", firmwareVersion);
+                        intent.putExtra("bleVerson", "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getPatchVersion());
+                        intent.putExtra("device_id", addEventsDatas.get(position).getDeviceId());
+                        startActivity(intent);
+                    }
+                });
             }
-        } else {
+        } catch (Exception e) {
+            e.printStackTrace();
             reclPublicPerson.setVisibility(View.GONE);
             testNoKey.setVisibility(View.VISIBLE);
         }
