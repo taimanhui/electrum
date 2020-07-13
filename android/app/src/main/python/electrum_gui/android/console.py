@@ -1679,7 +1679,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def get_cpfp_info(self, tx_hash):
+    def get_cpfp_info(self, tx_hash, suggested_feerate = None):
         try:
             self._assert_wallet_isvalid()
             parent_tx = self.wallet.db.get_transaction(tx_hash)
@@ -1704,10 +1704,17 @@ class AndroidCommands(commands.Commands):
                     fee = max(total_size, fee)  # pay at least 1 sat/byte for combined size
                     return fee
 
-                suggested_feerate = self.config.fee_per_kb()
+                if suggested_feerate is None:
+                    suggested_feerate = self.config.fee_per_kb()
+                else:
+                    suggested_feerate = suggested_feerate*1000
                 if suggested_feerate is None:
                     raise BaseException(f'''{_("can't cpfp'")}: {_('dynamic fee estimates not available')}''')
 
+
+                parent_feerate = parent_fee / parent_tx.estimated_size() * 1000
+                info['parent_feerate'] = self.format_fee_rate(parent_feerate) if parent_feerate else ''
+                info['fee_rate_for_child'] = self.format_fee_rate(suggested_feerate) if suggested_feerate else ''
                 fee_for_child = get_child_fee_from_total_feerate(suggested_feerate)
                 info['fee_for_child'] = util.format_satoshis_plain(fee_for_child, self.decimal_point)
                 if fee_for_child is None:
