@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">BiXinKey</string>
+    <string name="app_name">BixinKey</string>
     <string name="settings">Settings</string>
-    <string name="check">Check/Activate BiXinKey</string>
+    <string name="check">Check/Activate BixinKey</string>
     <string name="message_manager">Message manager</string>
     <string name="language">Language</string>
     <string name="server_setting">Network settings</string>
@@ -28,16 +28,16 @@
     <string name="boot_message">I\'ve read and agreed (to terms of usage)</string>
     <string name="create">Create wallet</string>
     <string name="import_w">Multi-institution vaults</string>
-    <string name="introduce">Introduction to BiXinKey</string>
-    <string name="introduce_detials">1. BiXinKey is a hardware wallet for Bitcoin, where private keys will never have internet exposure \n 2. BiXinKey is open-source \n 3. BiXinKey has a display so that payment can be confirmed both ways, making your assets safer \n 4. BiXinKey\'s card like design is more user friendly, making it easier to use or to keep \n 5. BiXinKey uses military level chips \n 6. BiXinKey does not support private key export. If you do not need multiple signers, you can set 1-of-2 multi-sig; so when a BiXinKey is lost, you can use the backup BiXinKey for transactions or asset transfers \n 7. We advise you to buy more than 2 BiXinKeys, purchase address</string>
-    <string name="active">Activate BiXinKey</string>
-    <string name="active_prompt">BiXinKey not activated</string>
+    <string name="introduce">Introduction to BixinKey</string>
+    <string name="introduce_detials">1. BixinKey is a hardware wallet for Bitcoin, where private keys will never have internet exposure \n 2. BixinKey is open-source \n 3. BixinKey has a display so that payment can be confirmed both ways, making your assets safer \n 4. BixinKey\'s card like design is more user friendly, making it easier to use or to keep \n 5. BixinKey uses military level chips \n 6. BixinKey does not support private key export. If you do not need multiple signers, you can set 1-of-2 multi-sig; so when a BixinKey is lost, you can use the backup BixinKey for transactions or asset transfers \n 7. We advise you to buy more than 2 BixinKeys, purchase address</string>
+    <string name="active">Activate BixinKey</string>
+    <string name="active_prompt">BixinKey not activated</string>
     <string name="prompt_touch">Make hardware wallet touch the phone</string>
     <string name="touch_fail">Connection failed, please doublecheck settings</string>
     <string name="retry">Retry</string>
-    <string name="touch_fail_text">1. Only hardware devices of Bixin\'s BiXinKey are supported \n  2. Please make sure the phone supports NFC, and NFC permission has been given to the software \n 3. Please make the card touch the phone</string>
+    <string name="touch_fail_text">1. Only hardware devices of Bixin\'s BixinKey are supported \n  2. Please make sure the phone supports NFC, and NFC permission has been given to the software \n 3. Please make the card touch the phone</string>
     <string name="pin_setting">Set Pin code</string>
-    <string name="pin_setting_first">Please set safety password for your BiXinKey</string>
+    <string name="pin_setting_first">Please set safety password for your BixinKey</string>
     <string name="confirm_pin">Please re-enter the safety password you set</string>
     <string name="touch_again">Make hareware wallet touch with phone</string>
     <string name="connect">Hardware connection success</string>
@@ -47,7 +47,7 @@
     <string name="success">Activation success</string>
     <string name="import_mutiSig">Import multi-sig wallet</string>
     <string name="method_one">Method 1: Using hardware device</string>
-    <string name="method_one_prompt">Make BiXinKey touch phone</string>
+    <string name="method_one_prompt">Make BixinKey touch phone</string>
     <string name="recommend">Recommend</string>
     <string name="import_by_address">Import wallet by using address</string>
     <string name="method_two">Method 2: Enter public address</string>
@@ -111,11 +111,11 @@
     <string name="format_iswrong">Name format error, number of signatures required cannot be bigger than the number of co-signers</string>
     <string name="dowbke_to_exit">Press again to exit program</string>
     <string name="dongt_isnull">Wallet name, co-signer numbers, necessary signatures must all be filled out</string>
-    <string name="bixinmoney">Introduction to BiXinKey</string>
+    <string name="bixinmoney">Introduction to BixinKey</string>
     <string name="copy_self">Copy</string>
     <string name="address_qr">Address QR code</string>
     <string name="attention">Notice: the address supports only bitcoin depositing, other cryptos deposited to the address will be lost</string>
-    <string name="prompt_message">Please confirm info below on BiXinKey before tapping "OK" button</string>
+    <string name="prompt_message">Please confirm info below on BixinKey before tapping "OK" button</string>
     <string name="picture">this is a picture</string>
     <string name="wallet_create_successful">Wallet created</string>
     <string name="balance">Wallet balance</string>
@@ -345,7 +345,7 @@
     <string name="verson_updates">Version update</string>
     <string name="user_agreement">Terms of usage</string>
     <string name="syncnneth">Syncing servers only keep openly available info such as public keys, names, etc. No private keys or personal info will be stored</string>
-    <string name="electrum_tips">BiXinKey uses open-source &#038; decentralized Electrum nodes for transaction propagation and on-chain info retrieval</string>
+    <string name="electrum_tips">BixinKey uses open-source &#038; decentralized Electrum nodes for transaction propagation and on-chain info retrieval</string>
     <string name="btc_com">https://btc.com/</string>
     <string name="get_btc_price">Select 3rd party service to get bitcoin price</string>
     <string name="blockchain_choose">Select block explorer</string>
@@ -583,8 +583,8 @@
     <string name="verifying_pin">Verifying PIN code</string>
     <string name="reading_signature">Signature reading</string>
     <string name="transaction_parse_error">Transaction resolution failed</string>
-    <string name="testnet">BiXinKey T</string>
-    <string name="regnet">BiXinKey R</string>
+    <string name="testnet">BixinKey T</string>
+    <string name="regnet">BixinKey R</string>
     <string name="update_file_not_exist">Upgrade file does not exist</string>
     <string name="keep_connection">Please keep your phone connected to BixinKey</string>
     <string name="tip_connnection">Data transmission will take some time, please stay connected</string>
