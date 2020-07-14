@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">币信Key钱包</string>
+    <string name="app_name">币信Key</string>
     <string name="settings">设置</string>
-    <string name="check">查看/激活冷钱包</string>
+    <string name="check">查看/激活币信Key</string>
     <string name="message_manager">消息管理</string>
     <string name="language">语言</string>
-    <string name="server_setting">服务器设置</string>
+    <string name="server_setting">网络设置</string>
     <string name="transaction_setting">交易设置</string>
     <string name="service_online">在线服务</string>
     <string name="about">关于（协议条款）</string>
@@ -28,16 +28,16 @@
     <string name="boot_message">我以阅读并同意（协议）</string>
     <string name="create">创建钱包</string>
     <string name="import_w">多人共管钱包</string>
-    <string name="introduce">币信冷钱包介绍</string>
-    <string name="introduce_detials">1.币信冷钱包为BTC硬件钱包，私钥永不触网 \n 2.币信冷钱包为开源钱包 \n 3.币信冷钱包自带屏幕，付款时进行双向确认，资产更为安全 \n4.币信冷钱包工卡片式设计符合人体工学，使用和保存更方便\n 5.币信冷钱包使用军工级芯片 \n6.币信冷钱包不提供私钥导出功能，若您不需要多人签名，您可设置1 of 2的多签钱包，当其中一个冷钱包丢失时，您可使用备份冷钱包进行交易或进行资产转移 \n7.建议您购买>2个冷钱包 购买地址</string>
+    <string name="introduce">币信Key介绍</string>
+    <string name="introduce_detials">1.币信Key为BTC硬件钱包，私钥永不触网 \n 2.币信Key为开源钱包 \n 3.币信Key自带屏幕，付款时进行双向确认，资产更为安全 \n4.币信Key工卡片式设计符合人体工学，使用和保存更方便\n 5.币信Key使用军工级芯片 \n6.币信Key不提供私钥导出功能，若您不需要多人签名，您可设置1 of 2的多签钱包，当其中一个币信Key丢失时，您可使用备份币信Key进行交易或进行资产转移 \n7.建议您购买>2个币信Key 购买地址</string>
     <string name="active">作为新设备激活</string>
     <string name="active_prompt">BixinKey未激活</string>
     <string name="prompt_touch">请将钱包硬件与手机贴合</string>
     <string name="touch_fail">连接失败，请检查设置是否正确</string>
     <string name="retry">重试</string>
-    <string name="touch_fail_text">1.目前仅支持币信冷钱包硬件设备 \n 2.请确保手机具有NFC功能，并且软件已开启NFC权限 \n 3.请将卡片和手机进行触碰</string>
+    <string name="touch_fail_text">1.目前仅支持币信Key硬件设备 \n 2.请确保手机具有NFC功能，并且软件已开启NFC权限 \n 3.请将卡片和手机进行触碰</string>
     <string name="pin_setting">设置PIN码</string>
-    <string name="pin_setting_first">请为你的冷钱包设置安全密码</string>
+    <string name="pin_setting_first">请为您的币信Key设置安全密码</string>
     <string name="confirm_pin">请再次次输入您设置的安全密码</string>
     <string name="touch_again">请保持与硬件贴合</string>
     <string name="connect">连接硬件成功</string>
@@ -47,7 +47,7 @@
     <string name="success">激活成功</string>
     <string name="import_mutiSig">导入多签钱包</string>
     <string name="method_one">方式一：使用硬件设备</string>
-    <string name="method_one_prompt">使用冷钱包硬件和手机贴合</string>
+    <string name="method_one_prompt">使用币信Key硬件和手机贴合</string>
     <string name="recommend">推荐</string>
     <string name="import_by_address">使用地址来导入钱包</string>
     <string name="method_two">方式二：输入公钥地址</string>
@@ -110,11 +110,11 @@
     <string name="format_iswrong">名字格式错误、所需签名数量不能大于联署人数量</string>
     <string name="dowbke_to_exit">再按一次退出程序</string>
     <string name="dongt_isnull">钱包名称、联署人数量、所需签名数量均不能为空</string>
-    <string name="bixinmoney">币信冷钱包介绍</string>
+    <string name="bixinmoney">币信Key介绍</string>
     <string name="copy_self">复制</string>
     <string name="address_qr">地址二维码</string>
     <string name="attention">注意：该地址仅支持BTC收款，转入其他币种将无法找回</string>
-    <string name="prompt_message">请在冷钱包硬件上确认以下信息后，点击”OK”按钮</string>
+    <string name="prompt_message">请在币信Key硬件上确认以下信息后，点击”OK”按钮</string>
     <string name="picture">this is a picture</string>
     <string name="wallet_create_successful">钱包创建成功</string>
     <string name="balance">账户余额</string>
@@ -150,7 +150,7 @@
     <string name="trans_details">交易详情</string>
     <string name="check_trsaction">查看链上交易</string>
     <string name="completed">已完成</string>
-    <string name="be_carefl">你已打开自动同步交易，其他联署人可通过币信HD获取交易或使用以下方式将交易转发给其他联署人进行签名</string>
+    <string name="be_carefl">您已打开自动同步交易，其他联署人可通过币信HD获取交易或使用以下方式将交易转发给其他联署人进行签名</string>
     <string name="forword_transfer">转发转账</string>
     <string name="screenshot">截图转发二维码。或复制内容发送给其他联署人完成签名</string>
     <string name="preservation">保存二维码</string>
@@ -344,7 +344,7 @@
     <string name="verson_updates">版本更新</string>
     <string name="user_agreement">用户协议</string>
     <string name="syncnneth">同步服务器仅存储钱包公钥、名称等公开信息，不存储任何私钥和个人信息。</string>
-    <string name="electrum_tips">币信冷钱包使用Electrum开源分布式节点进行交易广播，和链上信息获取</string>
+    <string name="electrum_tips">币信Key使用Electrum开源分布式节点进行交易广播，和链上信息获取</string>
     <string name="get_btc_price">选择第三方服务获取比特币价格</string>
     <string name="blockchain_choose">区块链浏览器选择</string>
     <string name="check_trsaction_msg">选择区块链浏览器查看链上交易信息</string>
@@ -490,7 +490,7 @@
     <string name="verification">验证</string>
     <string name="bluetooth">蓝牙</string>
     <string name="use_bluetooth_line">使用蓝牙连接BixinKey</string>
-    <string name="bluetooth_tips">开启状态，可使用蓝牙与BixinKey进行通信</string>
+    <string name="bluetooth_tips">开启状态，可使用蓝牙与BixinKey进行通信, 注意蓝牙一旦关闭，硬件钱包将不支持蓝牙访问，再次打开必须通过usb/nfc</string>
     <string name="open">开</string>
     <string name="bootloader_mode">当前硬件处于bootloader模式,不支持该操作</string>
     <string name="not_bootloader_mode">请确认硬件处于BootLoader模式</string>
@@ -555,8 +555,8 @@
     <string name="verifying_pin">正在验证PIN码</string>
     <string name="reading_signature">签名读取中</string>
     <string name="transaction_parse_error">交易解析失败</string>
-    <string name="testnet">币信冷钱包T</string>
-    <string name="regnet">币信冷钱包R</string>
+    <string name="testnet">币信Key T</string>
+    <string name="regnet">币信Key R</string>
     <string name="update_file_not_exist">升级文件不存在</string>
     <string name="keep_connection">请保持手机与BixinKey连接</string>
     <string name="tip_connnection">数据传输需要一些时间，请保持连接状态</string>
@@ -586,10 +586,10 @@
     <string name="reansaction_error">交易签名失败</string>
     <string name="sign_timeout">签名超时</string>
     <string name="service_text">使用同步服务器，可备份和恢复共管钱包，并可在多个联署人间同步并签名交易；</string>
-    <string name="user_agreement_content">"\t\t\t\t本协议是您（以下简称“用户”）与币信官方平台（包括Web端、移动端及应用程序，以下统称“平台”）的所有者Bixin Global Co,.ltd.（以下简称“币信”）之间就币信冷钱包服务等相关事宜所订立的契约，对用户与币信具有法律约束力。币信在此特别提醒用户认真阅读并充分理解本协议项下的各条款，特别是本协议中涉及免除或限制平台责任的条款，以及排除或限制用户权利的条款。用户应当审慎阅读，并选择接受或不接受本协议。除非用户接受本协议项下的所有条款，否则用户无权使用平台基于本协议所提供的服务。若用户不同意本协议的内容，或拒绝承认平台随时对本协议进行单方修改的权利，则用户应当立即停止使用并不再访问本平台。用户使用平台服务（包括但不限于使用、浏览等）即视为对本协议全部条款（包括币信对本协议随时做出的任何修改）充分理解并完全接受，本协议即刻成立并生效。用户使用冷钱包服务除须遵守本协议以外，还须遵守平台公示的其他协议及规则，包括但不限于使用许可协议、隐私政策、售后服务政策和法律声明以及其他在平台上已经发布或将来可能发布的各类协议、规则、公告、声明、说明或指引等（包括其不时修订，以下统称“规则”）。
+    <string name="user_agreement_content">"\t\t\t\t本协议是您（以下简称“用户”）与币信官方平台（包括Web端、移动端及应用程序，以下统称“平台”）的所有者Bixin Global Co,.ltd.（以下简称“币信”）之间就币信Key服务等相关事宜所订立的契约，对用户与币信具有法律约束力。币信在此特别提醒用户认真阅读并充分理解本协议项下的各条款，特别是本协议中涉及免除或限制平台责任的条款，以及排除或限制用户权利的条款。用户应当审慎阅读，并选择接受或不接受本协议。除非用户接受本协议项下的所有条款，否则用户无权使用平台基于本协议所提供的服务。若用户不同意本协议的内容，或拒绝承认平台随时对本协议进行单方修改的权利，则用户应当立即停止使用并不再访问本平台。用户使用平台服务（包括但不限于使用、浏览等）即视为对本协议全部条款（包括币信对本协议随时做出的任何修改）充分理解并完全接受，本协议即刻成立并生效。用户使用币信Key服务除须遵守本协议以外，还须遵守平台公示的其他协议及规则，包括但不限于使用许可协议、隐私政策、售后服务政策和法律声明以及其他在平台上已经发布或将来可能发布的各类协议、规则、公告、声明、说明或指引等（包括其不时修订，以下统称“规则”）。
         \n<font color="#000000"><b>第一条 释义 </b></font>
         \n 1.1 “本协议”，指本用户服务协议及其不时修订。
-        \n 1.2 “冷钱包”，指基于分层确定性 (Hierarchical Deterministic，简称 HD)技术方案来实现数字资产安全存储的硬件产品。冷钱包采用两种技术方案生成不同币种的私钥，一种为随机生成种子密码，并设置支付密码，由种子密码联合支付密码共同生成不同币种的私钥；另一种为随机生成助记词，由助记词生成不同币种的私钥。最终都由私钥生成公钥，最后由公钥生成资产地址来实现数字资产的安全存储。 "
+        \n 1.2 “币信Key”，指基于分层确定性 (Hierarchical Deterministic，简称 HD)技术方案来实现数字资产安全存储的硬件产品。币信Key采用两种技术方案生成不同币种的私钥，一种为随机生成种子密码，并设置支付密码，由种子密码联合支付密码共同生成不同币种的私钥；另一种为随机生成助记词，由助记词生成不同币种的私钥。最终都由私钥生成公钥，最后由公钥生成资产地址来实现数字资产的安全存储。 "
         \n 1.3 “热钱包”，指基于区块链开发的数字资产钱包，包括其他为方便用户使用区块链系统而开发的辅助工具。
         \n 1.4 “公钥”，由私钥借助密码学原理单向推导生成，并用以生成区块链数字钱包地址，数字钱包地址即为公开收款地址。
         \n 1.5 “私钥”，由256位随机字符构成，是用户拥有并使用数字资产的关键。
@@ -622,7 +622,7 @@
         \n\t\t e 平台公示的其他服务。
         \n\t\t（2）秉承着区块链的去中心化特点，并为了保护用户数字资产安全，平台提供的是去中心化服务，区别于银行业金融机构。用户了解并接受，平台不承担以下责任：存储用户的安全密码（即用户创建/导入钱包时设置的密码）、私钥、助记词；找回用户的安全密码、私钥、助记词；冻结钱包；挂失钱包；恢复钱包等。
         \n\t\t（3）用户应当自行承担保管含有资产钱包的移动设备、备份钱包信息、备份安全密码、助记词、私钥的责任。如用户遗失移动设备、删除且未备份钱包信息、删除且未备份钱包、钱包被盗或遗忘安全密码、私钥、助记词，平台均无法还原钱包或找回安全密码、私钥、助记词；如用户进行交易时误操作（例如输错转账地址、输错转账数额），平台无法取消交易，且平台亦不应对此承担任何责任。
-        \n 3.3 冷钱包产品
+        \n 3.3 币信Key产品
         \n\t\t（1）平台所发布的产品信息随时都有可能发生变动，因此，币信可能对平台页面中的文字表述、图片效果进行实时修改和调整。币信将尽合理的商业努力，使平台内展示的产品规格参数、功能说明、零部件信息、库存、限购数量等产品信息尽可能准确、详细并与实际产品信息相匹配，但由于平台上产品信息的数量极其庞大，且受网络技术发展水平、产品批次和生产供应因素的实时变化等因素的限制，平台不排除部分信息会存在滞后或差错的可能性。
         \n\t\t（2）平台对产品进行明码标价，但用户应当了解并同意，币信的产品价格信息随时都有可能发生变动，因产品成交价格须以币信确认的用户提交订单结算时的价格为准。同时，尽管币信会尽最大努力确保平台商品价格的准确性，但仍然可能出现部分商品标价错误的情形，对于明显错误标价的商品，币信保留不予确认或取消相应订单的权利。
         \n\t\t（3）用户下订单时，用户需仔细确认所购产品的名称、价格、数量、型号、规格、尺寸、联系地址、电话、收货人等信息。收货人与用户本人不一致的，收货人的行为和意思表示视为用户的行为和意思表示，用户应对收货人的行为及意思表示的法律后果承担责任。
@@ -785,7 +785,7 @@
     <string name="set__pass">设置密码</string>
     <string name="go_to_backup">去备份</string>
     <string name="wallet_un_backup">钱包未备份</string>
-    <string name="un_back_tips">检测到钱包未备份，为了你的资金安全，请备份后使用</string>
+    <string name="un_back_tips">检测到钱包未备份，为了您的资金安全，请备份后使用</string>
     <string name="now_wallet">当前钱包 </string>
     <string name="no_backup">未备份，请备份后使用</string>
     <string name="speed_fee_is">加速后矿工费为</string>
@@ -814,7 +814,7 @@
     <string name="backup2lite">备份到BixinKey Lite</string>
     <string name="backup2lite_finish">备份到BixinKey Lite完成</string>
     <string name="money">人民币</string>
-    <string name="wallet_addr">余额分布</string>
+    <string name="wallet_addr">余额地址列表</string>
     <string name="no_balance">暂无余额</string>
     <string name="check_address">校验地址</string>
     <string name="receive_tip">请核对BixinKey展示地址与App展示地址</string>
