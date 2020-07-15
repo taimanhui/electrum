@@ -675,8 +675,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void receiveAddSpeed() {
         PyObject getRbfFeeInfo = null;
         try {
-            Log.i("getRbfFeeInfosss", "txHash----: " + txHash);
-
             getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash);
         } catch (Exception e) {
             e.printStackTrace();
@@ -718,6 +716,11 @@ public class TransactionDetailsActivity extends BaseActivity {
                 } else {
                     recommendProRate = Integer.parseInt(recommendFeeRate);
                 }
+                //The recommended rate is greater than the minimum rate
+                if (minProRate > recommendProRate) {
+                    mlToast(getString(R.string.not_recommend));
+                    recommendProRate = minProRate + 1;
+                }
 
                 int maxRecommendNum = (recommendProRate * 2) - minProRate;
                 int noeRecommendPro = recommendProRate - minProRate;
@@ -753,14 +756,13 @@ public class TransactionDetailsActivity extends BaseActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 String indicatorText = String.valueOf(seekBar.getProgress() + minProRate);
                 testChangeFee.setText(String.format("%s sat", indicatorText));
-                getCpfpInfo(tetNewfee, seekBar.getProgress() + minProRate);//get tx and fee
+                getCpfpInfo(tetNewfee, (seekBar.getProgress() + minProRate));//get tx and fee
             }
         });
     }
 
     private void getCpfpInfo(TextView tetNewfee, int newFeerate) {
         PyObject getRbfFeeInfo = null;
-        Log.i("getRbfFeeInfosss", "txHash----: " + txHash);
         Log.i("getRbfFeeInfosss", "getCpfpInfo:=========== " + newFeerate);
         try {
             getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash, new Kwarg("suggested_feerate", newFeerate));
@@ -798,7 +800,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 String indicatorText = String.valueOf(seekBar.getProgress() + minPro);
                 testChangeFee.setText(String.format("%s sat", indicatorText));
-                createBumpFee(tetNewfee, ingSingle);//get tx and fee
+                createBumpFee(tetNewfee, (seekBar.getProgress() + minPro));//get tx and fee
 
             }
         });
@@ -808,6 +810,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         PyObject createBumpFee = null;
         try {
             createBumpFee = Daemon.commands.callAttr("create_bump_fee", txHash, newFee);
+            Log.i("getRbfFeeInfosss", "createBumpFee----: " + createBumpFee);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -834,6 +837,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strNewTx, AddspeedNewtrsactionBean.class);
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
             EventBus.getDefault().post(new FirstEvent("22"));
+            tetAddSpeed.setVisibility(View.GONE);
             braodStatus = true;//braod_status = true   -->   speed don't broadcast
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
