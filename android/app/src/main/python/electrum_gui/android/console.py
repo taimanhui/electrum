@@ -1674,7 +1674,9 @@ class AndroidCommands(commands.Commands):
                 if tx_details.can_bump and tx_details.fee is not None:
                     status['rbf'] = True
                 else:
-                    status['cpfp'] = True
+                    child_tx = self.wallet.cpfp(tx, 0)
+                    if child_tx:
+                        status['cpfp'] = True
             return json.dumps(status)
         except BaseException as e:
             raise e

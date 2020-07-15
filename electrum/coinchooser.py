@@ -445,7 +445,8 @@ class CoinChooserPrivacy(CoinChooserRandom):
     """
 
     def keys(self, coins):
-        return [coin.scriptpubkey.hex() for coin in coins]
+        #return [coin.scriptpubkey.hex() for coin in coins]
+        return [(coin.scriptpubkey+bytes(str(index), encoding='utf8')).hex() for index, coin in enumerate(coins)]
 
     def penalty_func(self, base_tx, *, tx_from_buckets):
         min_change = min(o.value for o in base_tx.outputs()) * 0.75
