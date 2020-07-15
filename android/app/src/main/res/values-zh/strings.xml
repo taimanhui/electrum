@@ -814,11 +814,12 @@
     <string name="backup2lite">备份到BixinKey Lite</string>
     <string name="backup2lite_finish">备份到BixinKey Lite完成</string>
     <string name="money">人民币</string>
-    <string name="wallet_addr">余额地址列表</string>
+    <string name="wallet_addr">余额分布</string>
     <string name="no_balance">暂无余额</string>
     <string name="check_address">校验地址</string>
     <string name="receive_tip">请核对BixinKey展示地址与App展示地址</string>
     <string name="mismatch_wallet">当前钱包与此硬件不匹配，请更换硬件</string>
     <string name="transaction_wrong">交易格式错误</string>
+    <string name="not_recommend">此交易不需要加速！</string>
 
 </resources>

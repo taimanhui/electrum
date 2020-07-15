@@ -849,11 +849,12 @@
     <string name="backup2lite">Backup to BixinKey Lite</string>
     <string name="backup2lite_finish">Backup to BixinKey Lite</string>
     <string name="money">RMB</string>
-    <string name="wallet_addr">Address Balance list</string>
+    <string name="wallet_addr">Balance distribution</string>
     <string name="no_balance">No balance</string>
     <string name="check_address">Check address</string>
     <string name="receive_tip">Please check the BixinKey display address with the app display address</string>
     <string name="mismatch_wallet">The current wallet does not match this hardware, please replace the hardware</string>
     <string name="transaction_wrong">Transaction format error</string>
+    <string name="not_recommend">This transaction does not need to be accelerated!</string>
 
 </resources>
