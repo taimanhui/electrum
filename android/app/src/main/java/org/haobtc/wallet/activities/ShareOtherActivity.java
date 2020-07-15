@@ -6,7 +6,9 @@ import android.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -69,6 +71,8 @@ public class ShareOtherActivity extends BaseActivity {
     TextView tetOpen;
     @BindView(R.id.tet_bigMessage)
     TextView tetBigMessage;
+    @BindView(R.id.textView24)
+    TextView textView24;
     private RxPermissions rxPermissions;
     private Bitmap bitmap;
     private boolean toGallery;
@@ -86,6 +90,15 @@ public class ShareOtherActivity extends BaseActivity {
         Intent intent = getIntent();
         rowTx = intent.getStringExtra("rowTx");
         rxPermissions = new RxPermissions(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        //synchronize server
+        boolean setSynServer = preferences.getBoolean("set_syn_server", false);
+        if (setSynServer) {
+            textView24.setVisibility(View.VISIBLE);
+        } else {
+            textView24.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -97,7 +110,7 @@ public class ShareOtherActivity extends BaseActivity {
                 public void run() {
                     //Sub thread
                     try {
-                        getQrDataFromRawTx = Daemon.commands.callAttr("get_qr_data_from_raw_tx", rowTx);
+                        getQrDataFromRawTx = commands.callAttr("get_qr_data_from_raw_tx", rowTx);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return;
@@ -208,7 +221,6 @@ public class ShareOtherActivity extends BaseActivity {
     }
 
     private void showPopupFilename(String stPath) {
-        Log.i("printException", "show---_________________________________" + stPath);
         View view1 = LayoutInflater.from(this).inflate(R.layout.dialog_view, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
         ImageView imfCancel = view1.findViewById(R.id.img_Cancel);
@@ -271,8 +283,8 @@ public class ShareOtherActivity extends BaseActivity {
 
 
     public static Bitmap mCreateQrCode(String str) {
-        //生成二维矩阵,编码时要指定大小,
-        //不要生成了图片以后再进行缩放,以防模糊导致识别失败
+        //Generate a two-dimensional matrix, encoding to specify the size,
+        //Do not scale the image after it has been generated, in case of fuzzy recognition failure
         try {
             BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 500, 500);
             int width = matrix.getWidth();

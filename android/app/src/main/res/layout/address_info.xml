@@ -56,7 +56,7 @@
                     android:layout_marginStart="@dimen/layout_margin"
                     android:layout_marginTop="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/layout_margin"
-                    android:layout_marginBottom="@dimen/dp_10"
+                    android:layout_marginBottom="@dimen/dp_20"
                     android:outlineSpotShadowColor="@color/shadow_color"
                     app:cardCornerRadius="@dimen/dp_8"
                     app:cardElevation="@dimen/dp_8"
@@ -72,7 +72,8 @@
                             android:id="@+id/textView4"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/text_margin"
+                            android:paddingStart="@dimen/dp_16"
+                            android:paddingEnd="@dimen/dp_16"
                             android:layout_marginTop="@dimen/dp_20"
                             android:text="@string/receive"
                             android:textColor="@color/text"
@@ -114,37 +115,48 @@
                             android:gravity="center"
                             android:text="@string/copyAddress"
                             android:textColor="@color/button_bk"
-                            android:textSize="@dimen/text_size" />
+                            android:textSize="@dimen/text_size"
+                            android:visibility="gone" />
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:id="@+id/copy_and_check"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_21"
                             android:layout_marginTop="@dimen/dp_20"
+                            android:gravity="center_vertical"
                             android:layout_marginBottom="@dimen/dp_30"
-                            android:visibility="gone">
+                            android:orientation="horizontal"
+                            android:visibility="visible">
 
                             <TextView
                                 android:id="@+id/textView6"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/dp_59"
+                                android:layout_weight="1"
+                                android:gravity="center|end"
+                                android:paddingEnd="@dimen/dp_59"
                                 android:text="@string/copyAddress"
                                 android:textColor="@color/button_bk"
-                                android:textSize="@dimen/text_size" />
+                                android:textSize="@dimen/text_size"
+                                tools:ignore="RtlSymmetry" />
+
+                            <View
+                                android:layout_width="@dimen/dp_1"
+                                android:layout_height="@dimen/dp_12"
+                                android:background="@color/line_color" />
 
                             <TextView
                                 android:id="@+id/text_check_address"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="@dimen/dp_59"
+                                android:layout_weight="1"
+                                android:paddingStart="@dimen/dp_59"
                                 android:text="@string/check_address"
                                 android:textColor="@color/button_bk"
                                 android:textSize="@dimen/text_size"
-                                tools:ignore="RelativeOverlap" />
+                                tools:ignore="RelativeOverlap,RtlSymmetry" />
 
-                        </RelativeLayout>
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -157,7 +169,7 @@
                 android:layout_height="50dp"
                 android:layout_below="@+id/RelativeLayout"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginBottom="@dimen/dp_40"
                 android:background="@drawable/button_bk"
                 android:text="@string/share"

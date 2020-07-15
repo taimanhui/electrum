@@ -190,6 +190,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private boolean isGetXpub;
     private boolean isErrorOccurred;
     public static boolean backupTip;
+    private static String hideWalletReceive = "";
 
     @Override
     public int getLayoutId() {
@@ -649,7 +650,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 isGetXpub = true;
                 if (SingleSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag)) {
                     if (CheckHideWalletFragment.TAG.equals(tag)) {
+                        Log.i("CheckHideWalletFragment", "11111111");
                         if (features.isPassphraseProtection()) {
+                            Log.i("CheckHideWalletFragment", "222222222");
                             customerUI.callAttr("set_pass_state", 1);
                         } else {
                             Toast.makeText(this, getString(R.string.dont_create), Toast.LENGTH_SHORT).show();
@@ -713,12 +716,17 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
     private void contrastAddress() {
         String contrastAddress = getIntent().getStringExtra("contrastAddress");
+        hideWalletReceive = getIntent().getStringExtra("hideWalletReceive");
         String deviceId = features.getDeviceId();
         PyObject deviceInfo = Daemon.commands.callAttr("get_device_info");
         String strDeviceId = deviceInfo.toString();
         if (strDeviceId.contains(deviceId)) {
-            if (features.isPinCached()) {
-                EventBus.getDefault().post(new CheckReceiveAddress("checking"));
+            if ("hideWalletReceive".equals(hideWalletReceive)) {
+                customerUI.callAttr("set_pass_state", 1);
+            } else {
+                if (features.isPinCached()) {
+                    EventBus.getDefault().post(new CheckReceiveAddress("checking"));
+                }
             }
             try {
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SHOW_ADDRESS, contrastAddress, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
@@ -1060,7 +1068,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             }
 
         } else if (MultiSigWalletCreator.TAG.equals(tag) || SingleSigWalletCreator.TAG.equals(tag) || PersonalMultiSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag) || ImportHistoryWalletActivity.TAG.equals(tag)) {
-            // loading 页面
+            // loading page
             if (hasWindowFocus()) {
                 dialogFragment = showReadingDialog(R.string.reading_dot);
             }
@@ -1254,8 +1262,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     break;
                 case PASS_NEW_PASSPHRASS:
                 case PASS_PASSPHRASS:
+                    Log.i("CheckHideWalletFragment", "33333333");
                     //Set password
                     Intent intent3 = new Intent(fragmentActivity, HideWalletSetPassActivity.class);
+                    intent3.putExtra("hideWalletReceive",hideWalletReceive);
                     fragmentActivity.startActivity(intent3);
                     break;
                 default:

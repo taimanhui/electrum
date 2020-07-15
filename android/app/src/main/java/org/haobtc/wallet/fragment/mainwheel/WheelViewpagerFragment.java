@@ -270,6 +270,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 } else {
                     Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
                     intent2.putExtra("walletType", personce);
+                    intent2.putExtra("hideWalletReceive","");
                     startActivity(intent2);
                 }
                 break;

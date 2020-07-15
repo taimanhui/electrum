@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,11 +64,12 @@ public class ReceivedPageActivity extends BaseActivity {
     @BindView(R.id.text_receive_tip)
     TextView textReceiveTip;
     @BindView(R.id.copy_and_check)
-    RelativeLayout copyAndCheck;
+    LinearLayout copyAndCheck;
     @BindView(R.id.text_copy_address)
     TextView textCopyAddress;
     private Bitmap bitmap;
     private RxPermissions rxPermissions;
+    private String hideWalletReceive;
 
     @Override
     public int getLayoutId() {
@@ -80,6 +82,8 @@ public class ReceivedPageActivity extends BaseActivity {
         EventBus.getDefault().register(this);
         rxPermissions = new RxPermissions(this);
         String walletType = getIntent().getStringExtra("walletType");
+        hideWalletReceive = getIntent().getStringExtra("hideWalletReceive");
+
         if ("standard".equals(walletType)) {
             textCopyAddress.setVisibility(View.VISIBLE);
             copyAndCheck.setVisibility(View.GONE);
@@ -185,6 +189,7 @@ public class ReceivedPageActivity extends BaseActivity {
                 Intent intent = new Intent(this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG);
                 intent.putExtra("contrastAddress", textView5.getText().toString());
+                intent.putExtra("hideWalletReceive",hideWalletReceive);
                 startActivity(intent);
                 break;
             case R.id.text_copy_address:

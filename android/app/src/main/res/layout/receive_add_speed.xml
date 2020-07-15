@@ -49,10 +49,86 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_19"
             android:gravity="center_horizontal"
-            android:text="@string/speed_fee"
+            android:text="@string/speed_fee_is"
             android:textColor="@color/text_color"
             android:textSize="@dimen/sp_16" />
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_22"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_6">
+
+            <View
+                android:layout_width="@dimen/dp_8"
+                android:layout_height="@dimen/dp_8"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/text_margin"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:background="@drawable/little_blue" />
+
+            <View
+                android:layout_width="@dimen/dp_8"
+                android:layout_height="@dimen/dp_8"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@drawable/little_gray" />
+
+            <org.haobtc.wallet.utils.IndicatorSeekBar
+                android:id="@+id/fee_seek_bar_receive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:thumb="@drawable/white_clrcle" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:gravity="center_horizontal"
+                android:text="@string/slowly"
+                android:textColor="#b3b3b3"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/dp_18"
+                android:gravity="center_horizontal"
+                android:text="@string/quikly"
+                android:textColor="#b3b3b3"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:maxLines="1"
+                android:paddingStart="@dimen/dp_8"
+                android:paddingEnd="@dimen/dp_8"
+                android:textColor="#6182f5"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/test_change_fee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/sp_12"
+            tools:text="10sat/bit" />
 
         <TextView
             android:id="@+id/test_tips"

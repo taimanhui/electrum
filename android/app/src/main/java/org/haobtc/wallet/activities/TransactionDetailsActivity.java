@@ -118,8 +118,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     LinearLayout linearSignStatus;
     @BindView(R.id.tet_payAddressNum)
     TextView tetPayAddressNum;
-    @BindView(R.id.tet_receiveAddSpeed)
-    TextView tetReceiveAddSpeed;
     @BindView(R.id.btn_share)
     Button btnShare;
     private String keyValue;
@@ -155,6 +153,9 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String totalFee;
     private int minPro;
     private boolean buttonStatus = true;
+    private int minProRate;
+    private int recommendProRate;
+    private String feeForChildReceive;
 
     @Override
     public int getLayoutId() {
@@ -191,6 +192,7 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        setSpeedBtn();//add speed button show or hide
         if (!TextUtils.isEmpty(signedRawTx)) {
             jsonDetailData(signedRawTx);
             signedRawTx = "";
@@ -198,11 +200,9 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
         //is_mine -->recevid or send
         if (isMine) {
-            setRbfStatus();//Show RBF button or not
             tvInTb2.setText(R.string.sendetail);
             linFee.setVisibility(View.VISIBLE);
         } else {
-            setReciveSpeedBtn();//show receive add speed
             linearSignStatus.setVisibility(View.GONE);
             tvInTb2.setText(R.string.recevid);
         }
@@ -242,33 +242,20 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
-    private void setReciveSpeedBtn() {
-        try {
-            PyObject getRbfOrCpfpStatus = Daemon.commands.callAttr("get_rbf_or_cpfp_status", txHash);
-            if (getRbfOrCpfpStatus.toString().contains("{}")) {
-                tetReceiveAddSpeed.setVisibility(View.GONE);
-            } else {
-                tetReceiveAddSpeed.setVisibility(View.VISIBLE);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     //Show RBF button or not
-    private void setRbfStatus() {
+    private void setSpeedBtn() {
         try {
-            getRbfStatus = Daemon.commands.callAttr("get_rbf_status", txHash);
+            getRbfStatus = Daemon.commands.callAttr("get_rbf_or_cpfp_status", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
         if (getRbfStatus != null) {
-            boolean rbfEnable = getRbfStatus.toBoolean();
+            Log.i("getRbfStatussss", "setSpeedBtn:--- " + getRbfStatus);
             if (setRbf) {
-                if (rbfEnable) {
-                    tetAddSpeed.setVisibility(View.VISIBLE);//rbf speed Whether to display
+                if (getRbfStatus.toString().contains("{}")) {
+                    tetAddSpeed.setVisibility(View.GONE);//rbf speed Whether to display
                 } else {
-                    tetAddSpeed.setVisibility(View.GONE);
+                    tetAddSpeed.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -582,7 +569,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.btn_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans, R.id.lin_payAddress, R.id.tet_receiveAddSpeed})
+    @OnClick({R.id.img_back, R.id.btn_share, R.id.lin_getMoreaddress, R.id.tet_addSpeed, R.id.sig_trans, R.id.lin_payAddress})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -610,7 +597,14 @@ public class TransactionDetailsActivity extends BaseActivity {
                 startActivity(intent1);
                 break;
             case R.id.tet_addSpeed:
-                ifHaveRbf();
+                if (!TextUtils.isEmpty(getRbfStatus.toString())) {
+                    if (getRbfStatus.toString().contains("rbf")) {
+                        ifHaveRbf();
+                    } else if (getRbfStatus.toString().contains("cpfp")) {
+                        receiveAddSpeed();
+                    }
+                }
+
                 break;
             case R.id.lin_payAddress:
                 Intent intent2Pay = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
@@ -621,20 +615,68 @@ public class TransactionDetailsActivity extends BaseActivity {
                 }
                 intent2Pay.putExtra("addressType", "pay");
                 intent2Pay.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
                 startActivity(intent2Pay);
-                break;
-            case R.id.tet_receiveAddSpeed:
-                receiveAddSpeed();
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
+    private void ifHaveRbf() {
+        PyObject getRbfFeeInfo = null;
+        try {
+            getRbfFeeInfo = Daemon.commands.callAttr("get_rbf_fee_info", txHash);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (getRbfFeeInfo != null) {
+            String strNewfee = getRbfFeeInfo.toString();
+            View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
+            alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
+            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);
+            TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
+            TextView testChangeFee = viewSpeed.findViewById(R.id.test_change_fee);
+            IndicatorSeekBar seekBar = viewSpeed.findViewById(R.id.fee_seek_bar);
+            try {
+                JSONObject jsonObject = new JSONObject(strNewfee);
+                String currentFeerate = jsonObject.getString("current_feerate");
+                newFeerate = jsonObject.getString("new_feerate");
+                String minFees = currentFeerate.substring(0, currentFeerate.indexOf("sat/byte"));
+                String singleFee = newFeerate.substring(0, newFeerate.indexOf("."));
+                int ingSingle = Integer.parseInt(singleFee);
+                if (minFees.contains(".")) {
+                    minIntFees = minFees.substring(0, minFees.indexOf("."));
+                    minPro = Integer.parseInt(minIntFees);
+                } else {
+                    minIntFees = minFees.replaceAll(" ", "");
+                    minPro = Integer.parseInt(minIntFees);
+                }
+                int allNum = (ingSingle * 2) - minPro;
+                int noePro = ingSingle - minPro;
+                seekBar.setMax(allNum);
+                seekBar.setProgress(noePro);
+                testChangeFee.setText(String.format("%s sat/byte", newFeerate));
+                createBumpFee(tetNewfee, ingSingle);//get tx and fee
+                seekbarLatoutup(seekBar, testChangeFee, tetNewfee, ingSingle);//seek bar Listener
+                imgCancel.setOnClickListener(v -> {
+                    alertDialog.dismiss();
+                });
+                viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
+                    confirmedSpeed();
+                });
+                alertDialog.show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void receiveAddSpeed() {
         PyObject getRbfFeeInfo = null;
         try {
+            Log.i("getRbfFeeInfosss", "txHash----: " + txHash);
+
             getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash);
         } catch (Exception e) {
             e.printStackTrace();
@@ -644,6 +686,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             return;
         }
         if (getRbfFeeInfo != null) {
+            Log.i("getRbfFeeInfosss", "receiveAddSpeed: " + getRbfFeeInfo.toString());
             String strNewfeeReceive = getRbfFeeInfo.toString();
             View viewSpeed = LayoutInflater.from(this).inflate(R.layout.receive_add_speed, null, false);
             alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
@@ -653,18 +696,41 @@ public class TransactionDetailsActivity extends BaseActivity {
             TextView testTitle = viewSpeed.findViewById(R.id.test_title);
             testTitle.setText(getString(R.string.receive_speed));
             TextView testTip = viewSpeed.findViewById(R.id.test_tips);
+            TextView testChangeFee = viewSpeed.findViewById(R.id.test_change_fee);
+            IndicatorSeekBar seekBar = viewSpeed.findViewById(R.id.fee_seek_bar_receive);
             testTip.setText(getString(R.string.receive_speed_tips));
             try {
                 JSONObject jsonObject = new JSONObject(strNewfeeReceive);
-                String totalFee = jsonObject.getString("total_fee");
-                String feeForChild = jsonObject.getString("fee_for_child");
-                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), totalFee));
+                feeForChildReceive = jsonObject.getString("fee_for_child");//推荐费
+                String parentFeeRate = jsonObject.getString("parent_feerate");//最小费率
+                String feeRateForChild = jsonObject.getString("fee_rate_for_child");//推荐费率
+                String minFeeRate = parentFeeRate.substring(0, parentFeeRate.indexOf(" "));
+                String recommendFeeRate = feeRateForChild.substring(0, feeRateForChild.indexOf(" "));
+                if (minFeeRate.contains(".")) {
+                    String minIntFee = minFeeRate.substring(0, minFeeRate.indexOf("."));
+                    minProRate = Integer.parseInt(minIntFee);
+                } else {
+                    minProRate = Integer.parseInt(minFeeRate);
+                }
+                if (recommendFeeRate.contains(".")) {
+                    String recommendIntFee = recommendFeeRate.substring(0, recommendFeeRate.indexOf("."));
+                    recommendProRate = Integer.parseInt(recommendIntFee);
+                } else {
+                    recommendProRate = Integer.parseInt(recommendFeeRate);
+                }
 
+                int maxRecommendNum = (recommendProRate * 2) - minProRate;
+                int noeRecommendPro = recommendProRate - minProRate;
+                seekBar.setMax(maxRecommendNum);
+                seekBar.setProgress(noeRecommendPro);
+                testChangeFee.setText(feeRateForChild);
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), feeForChildReceive + preferences.getString("base_unit", "mBTC")));
+                seekBarReceiveFee(seekBar, testChangeFee, tetNewfee, recommendProRate);
                 imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
                 viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
-                    confirmedReceiveSpeed(feeForChild);
+                    confirmedReceiveSpeed(feeForChildReceive);
                 });
                 alertDialog.show();
             } catch (JSONException e) {
@@ -673,7 +739,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
-    private void seekBarReceiveFee(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee) {
+    private void seekBarReceiveFee(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee, int recommendProRate) {
         seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
@@ -685,19 +751,74 @@ public class TransactionDetailsActivity extends BaseActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                String indicatorText = String.valueOf(seekBar.getProgress());
-                if (!TextUtils.isEmpty(totalFee)) {
-                    if (seekBar.getProgress() < Integer.parseInt(totalFee)) {
-                        newFeerate = minIntFees;
-                        testChangeFee.setText(String.format("%s sat", minIntFees));
-                    } else {
-                        newFeerate = indicatorText;
-                        testChangeFee.setText(String.format("%s sat", indicatorText));
-                    }
-                }
+                String indicatorText = String.valueOf(seekBar.getProgress() + minProRate);
+                testChangeFee.setText(String.format("%s sat", indicatorText));
+                getCpfpInfo(tetNewfee, seekBar.getProgress() + minProRate);//get tx and fee
+            }
+        });
+    }
+
+    private void getCpfpInfo(TextView tetNewfee, int newFeerate) {
+        PyObject getRbfFeeInfo = null;
+        Log.i("getRbfFeeInfosss", "txHash----: " + txHash);
+        Log.i("getRbfFeeInfosss", "getCpfpInfo:=========== " + newFeerate);
+        try {
+            getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash, new Kwarg("suggested_feerate", newFeerate));
+            Log.i("getRbfFeeInfosss", "getCpfpInfo:+++++++++++ " + getRbfFeeInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("max fee exceeded")) {
+                mToast(getString(R.string.fee_exceeded));
+            }
+            return;
+        }
+        if (getRbfFeeInfo != null) {
+            String strContent = getRbfFeeInfo.toString();
+            try {
+                JSONObject jsonObject = new JSONObject(strContent);
+                String fee_for_child = jsonObject.getString("fee_for_child");
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), fee_for_child + preferences.getString("base_unit", "mBTC")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void seekbarLatoutup(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee, int ingSingle) {
+        seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                String indicatorText = String.valueOf(seekBar.getProgress() + minPro);
+                testChangeFee.setText(String.format("%s sat", indicatorText));
+                createBumpFee(tetNewfee, ingSingle);//get tx and fee
 
             }
         });
+    }
+
+    private void createBumpFee(TextView tetNewfee, int newFee) {
+        PyObject createBumpFee = null;
+        try {
+            createBumpFee = Daemon.commands.callAttr("create_bump_fee", txHash, newFee);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (createBumpFee != null) {
+            String strContent = createBumpFee.toString();
+            Gson gson = new Gson();
+            AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strContent, AddspeedNewtrsactionBean.class);
+            int fee = addspeedNewtrsactionBean.getFee();
+            tetNewfee.setText(String.format("%s  %s sat", getString(R.string.speed_fee_is), fee));
+        }
+
     }
 
     private void confirmedReceiveSpeed(String feeForChild) {
@@ -719,7 +840,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             mCreataSuccsesCheck();
             alertDialog.dismiss();
             buttonStatus = false;//buttonStatus = true-->Click the button   ：  false-->Modify status only
-            signProcess();//add speed  then Re sign
+//            signProcess();//add speed  then Re sign
 
         }
     }
@@ -840,97 +961,6 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     }
 
-    private void ifHaveRbf() {
-        PyObject getRbfFeeInfo = null;
-        try {
-            getRbfFeeInfo = Daemon.commands.callAttr("get_rbf_fee_info", txHash);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (getRbfFeeInfo != null) {
-            String strNewfee = getRbfFeeInfo.toString();
-            View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_speed, null, false);
-            alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
-            Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            ImageView imgCancel = viewSpeed.findViewById(R.id.cancel_select_wallet);
-            TextView tetNewfee = viewSpeed.findViewById(R.id.tet_Newfee);
-            TextView testChangeFee = viewSpeed.findViewById(R.id.test_change_fee);
-            IndicatorSeekBar seekBar = viewSpeed.findViewById(R.id.fee_seek_bar);
-            try {
-                JSONObject jsonObject = new JSONObject(strNewfee);
-                String currentFeerate = jsonObject.getString("current_feerate");
-                newFeerate = jsonObject.getString("new_feerate");
-                String minFees = currentFeerate.substring(0, currentFeerate.indexOf("sat/byte"));
-                String singleFee = newFeerate.substring(0, newFeerate.indexOf("."));
-                int ingSingle = Integer.parseInt(singleFee);
-                if (minFees.contains(".")) {
-                    minIntFees = minFees.substring(0, minFees.indexOf("."));
-                    minPro = Integer.parseInt(minIntFees);
-                } else {
-                    minIntFees = minFees.replaceAll(" ", "");
-                    minPro = Integer.parseInt(minIntFees);
-                }
-                int allNum = (ingSingle * 2) - minPro;
-                int noePro = ingSingle - minPro;
-                seekBar.setMax(allNum);
-                seekBar.setProgress(noePro);
-                testChangeFee.setText(String.format("%s sat/byte", newFeerate));
-                createBumpFee(tetNewfee, newFeerate);//get tx and fee
-                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);//seek bar Listener
-                imgCancel.setOnClickListener(v -> {
-                    alertDialog.dismiss();
-                });
-                viewSpeed.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
-                    confirmedSpeed();
-                });
-                alertDialog.show();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void seekbarLatoutup(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee) {
-        seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                int d = seekBar.getProgress() + minPro;
-                Log.i("onStopTrackingTouch", "111111--: " + seekBar.getProgress());
-                Log.i("onStopTrackingTouch", "222222--: " + d);
-
-                String indicatorText = String.valueOf(seekBar.getProgress() + minPro);
-                testChangeFee.setText(String.format("%s sat", indicatorText));
-                createBumpFee(tetNewfee, newFeerate);//get tx and fee
-
-            }
-        });
-    }
-
-    private void createBumpFee(TextView tetNewfee, String newFee) {
-        PyObject createBumpFee = null;
-        try {
-            createBumpFee = Daemon.commands.callAttr("create_bump_fee", txHash, newFee);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (createBumpFee != null) {
-            String strContent = createBumpFee.toString();
-            Gson gson = new Gson();
-            AddspeedNewtrsactionBean addspeedNewtrsactionBean = gson.fromJson(strContent, AddspeedNewtrsactionBean.class);
-            int fee = addspeedNewtrsactionBean.getFee();
-            tetNewfee.setText(String.format("%s  %s sat", getString(R.string.speed_fee_is), fee));
-        }
-
-    }
-
     //confirm speed
     private void confirmedSpeed() {
         PyObject createBumpFee = null;
@@ -950,7 +980,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             mCreataSuccsesCheck();
             alertDialog.dismiss();
             buttonStatus = false;//buttonStatus = true-->Click the button   ：  false-->Modify status only
-            signProcess();//add speed  then Re sign
+//            signProcess();//add speed  then Re sign
 
         }
     }

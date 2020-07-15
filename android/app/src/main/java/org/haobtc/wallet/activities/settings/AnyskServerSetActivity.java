@@ -80,14 +80,16 @@ public class AnyskServerSetActivity extends BaseActivity {
         editPort.addTextChangedListener(textChange);
 
         //synchronize server
-        boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
-        if (set_syn_server) {
+        boolean setSynServer = preferences.getBoolean("set_syn_server", false);
+        if (setSynServer) {
             open = true;
             switchCynchronez.setChecked(true);
         } else {
             open = false;
             switchCynchronez.setChecked(false);
         }
+        //judge button status
+        buttonColorStatus();
 
     }
 
@@ -121,6 +123,8 @@ public class AnyskServerSetActivity extends BaseActivity {
                     edit.putBoolean("set_syn_server", false);
                     edit.apply();
                 }
+                //judge button status
+                buttonColorStatus();
             }
         });
     }
@@ -158,7 +162,7 @@ public class AnyskServerSetActivity extends BaseActivity {
             return;
         }
         EventBus.getDefault().post(new FirstEvent("add_anysk_server"));
-        mToast(getString(R.string.add_success));
+        finish();
     }
 
     class TextChange implements TextWatcher {

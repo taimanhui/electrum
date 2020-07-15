@@ -15,6 +15,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.CheckReceiveAddress;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.HideInputPassFinishEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
@@ -76,6 +77,9 @@ public class HideWalletSetPassActivity extends BaseActivity {
                 }
                 if (!isNFC) {
                     EventBus.getDefault().post(new PinEvent("", strNewpass));
+                    if ("hideWalletReceive".equals(getIntent().getStringExtra("hideWalletReceive"))){
+                        EventBus.getDefault().post(new CheckReceiveAddress("checking"));
+                    }
                 } else {
                     Intent intent = new Intent(this, NfcNotifyHelper.class);
                     intent.putExtra("tag", "Passphrase");

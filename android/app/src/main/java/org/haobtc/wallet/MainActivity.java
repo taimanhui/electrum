@@ -310,10 +310,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
                         }
                     }, 500);
-                    if (!"standard".equals(strType)) {
-                        //get unBackupKey
-                        getunBackupKey();
-                    }
                 }
             }
 
