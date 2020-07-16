@@ -132,12 +132,13 @@
             android:id="@+id/hjsdjhsbhm"
             android:layout_width="match_parent"
             android:paddingBottom="@dimen/dp_30"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_below="@+id/lin_progress">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingBottom="@dimen/dp_20"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
@@ -492,7 +493,6 @@
                     android:layout_width="300dp"
                     android:layout_height="@dimen/dp_50"
                     android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:background="@drawable/button_bk"
                     android:text="@string/signature_trans"

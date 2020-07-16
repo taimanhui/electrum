@@ -2,7 +2,9 @@ package org.haobtc.wallet.activities.base;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.ImageView;
 
 import com.chaquo.python.Kwarg;
 
@@ -11,18 +13,20 @@ import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.CreateWalletActivity;
 import org.haobtc.wallet.activities.GuideActivity;
-import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Optional;
 
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_BLE;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 public class LunchActivity extends BaseActivity {
 
+    @BindView(R.id.img_lunch)
+    ImageView imgLunch;
     private SharedPreferences preferences;
 
     @Override
@@ -32,6 +36,7 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        ButterKnife.bind(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         SharedPreferences.Editor edit = preferences.edit();
         if (!Optional.ofNullable(NfcUtils.nfcCheck(this, false)).isPresent()) {
@@ -40,7 +45,7 @@ public class LunchActivity extends BaseActivity {
         }
         edit.putBoolean("haveCreateNopass", false);//No password is required to create app wallet for the first time
         edit.apply();
-   }
+    }
 
     private void init() {
         String language = preferences.getString("language", "");
@@ -86,7 +91,7 @@ public class LunchActivity extends BaseActivity {
 
     private void initCreatWallet() {
         Intent intent = new Intent(LunchActivity.this, CreateWalletActivity.class);
-        intent.putExtra("intentWhere","lunch");
+        intent.putExtra("intentWhere", "lunch");
         startActivity(intent);
         finish();
 
@@ -94,20 +99,20 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initData() {
-            if (BuildConfig.net_type.equals(getString(R.string.TestNet))) {
-                Global.py.getModule("electrum.constants").callAttr("set_testnet");
-            } else if (BuildConfig.net_type.equals(getString(R.string.RegTest))) {
-                Global.py.getModule("electrum.constants").callAttr("set_regtest");
-            }
-            Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
-            Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
-            try {
-                Daemon.commands = Global.guiConsole.callAttr("AndroidCommands", new Kwarg("callback", Daemon.getInstance()));
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
-            //Daemon.commands.callAttr("start", Daemon.getInstance());
-            //Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());
-            init();
+        if (BuildConfig.net_type.equals(getString(R.string.TestNet))) {
+            Global.py.getModule("electrum.constants").callAttr("set_testnet");
+        } else if (BuildConfig.net_type.equals(getString(R.string.RegTest))) {
+            Global.py.getModule("electrum.constants").callAttr("set_regtest");
+        }
+        Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
+        Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
+        try {
+            Daemon.commands = Global.guiConsole.callAttr("AndroidCommands", new Kwarg("callback", Daemon.getInstance()));
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
+        //Daemon.commands.callAttr("start", Daemon.getInstance());
+        //Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());
+        init();
     }
 }

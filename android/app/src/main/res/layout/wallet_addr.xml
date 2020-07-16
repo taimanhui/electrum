@@ -18,10 +18,9 @@
             android:layout_marginEnd="@dimen/dp_10"
             android:layout_marginBottom="13.5dp"
             android:layout_weight="1"
-            android:ellipsize="end"
             android:textColor="#494949"
-            android:textSize="15sp"
-            tools:text="HKDHKHLMLSOWUTROMGYSIJNDKK" />
+            android:textSize="@dimen/sp_13"
+            tools:text="HKDHKHLMLSOWUTROMGYSIJNDHKHLMLSOWUTROMGYSIJNDKK" />
 
         <TextView
             android:id="@+id/text_amount"
@@ -32,7 +31,7 @@
             android:ellipsize="end"
             android:gravity="center_vertical|end"
             android:maxLines="1"
-            android:textColor="@color/graytext_color"
+            android:textColor="@color/text_color"
             tools:text="300mBTC" />
     </LinearLayout>
 

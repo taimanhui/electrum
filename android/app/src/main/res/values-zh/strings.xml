@@ -821,5 +821,7 @@
     <string name="mismatch_wallet">当前钱包与此硬件不匹配，请更换硬件</string>
     <string name="transaction_wrong">交易格式错误</string>
     <string name="not_recommend">此交易不需要加速！</string>
+    <string name="download_file">下载交易文件</string>
+    <string name="checking">当前正在校验中……</string>
 
 </resources>

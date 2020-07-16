@@ -58,15 +58,14 @@
                 app:cardElevation="@dimen/dp_8"
                 tools:ignore="UnusedAttribute">
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout
+                        android:id="@+id/RelativeLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="43dp"
                         android:layout_marginTop="@dimen/dp_5">
 
                         <TextView
@@ -100,32 +99,17 @@
 
                     </RelativeLayout>
 
-                    <TextView
-                        android:id="@+id/tet_many_key"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginTop="@dimen/dp_5"
-                        android:text="@string/choose_onekey"
-                        android:textColor="@color/light_text"
-                        android:textSize="@dimen/sp_12"
-                        android:visibility="gone" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginTop="15dp"
-                        android:background="@color/line_color" />
-
                     <ImageView
                         android:id="@+id/ima_receive_code"
                         android:layout_width="match_parent"
-                        android:layout_height="268dp" />
+                        android:layout_height="268dp"
+                        android:layout_marginTop="35dp"/>
 
                     <TextView
                         android:id="@+id/text_addr"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="295dp"
                         android:layout_marginStart="@dimen/dp_20"
                         android:layout_marginEnd="@dimen/dp_20"
                         android:textColor="@color/text"
@@ -136,7 +120,9 @@
                         android:id="@+id/text_copy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginTop="@dimen/dp_20"
+                        android:layout_below="@+id/text_addr"
                         android:layout_marginBottom="@dimen/dp_20"
                         android:gravity="center_horizontal"
                         android:text="@string/copy_self"
@@ -144,7 +130,7 @@
                         android:textSize="@dimen/text_size" />
 
 
-                </LinearLayout>
+                </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
 
@@ -192,6 +178,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_80"
                         android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:layout_marginTop="@dimen/dp_18"
                         android:layout_marginBottom="@dimen/dp_16"
                         android:gravity="center"

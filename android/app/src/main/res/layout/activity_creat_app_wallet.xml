@@ -42,7 +42,7 @@
         android:layout_marginTop="@dimen/dp_20"
         android:paddingStart="@dimen/dp_30"
         android:paddingEnd="@dimen/dp_50"
-        android:text="@string/name_setting"
+        android:text="@string/set_wallet_name"
         android:textColor="@color/text_color"
         android:textSize="22sp" />
 
