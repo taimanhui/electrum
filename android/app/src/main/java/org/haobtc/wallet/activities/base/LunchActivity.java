@@ -25,8 +25,6 @@ import butterknife.ButterKnife;
 
 public class LunchActivity extends BaseActivity {
 
-    @BindView(R.id.img_lunch)
-    ImageView imgLunch;
     private SharedPreferences preferences;
 
     @Override
@@ -36,7 +34,6 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        ButterKnife.bind(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         SharedPreferences.Editor edit = preferences.edit();
         if (!Optional.ofNullable(NfcUtils.nfcCheck(this, false)).isPresent()) {
