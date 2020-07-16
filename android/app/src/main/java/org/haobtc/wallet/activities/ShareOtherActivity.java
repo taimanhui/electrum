@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -64,7 +65,7 @@ public class ShareOtherActivity extends BaseActivity {
     @BindView(R.id.tet_Copy)
     TextView tetCopy;
     @BindView(R.id.lin_downLoad)
-    LinearLayout lindownLoad;
+    Button lindownLoad;
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.tet_open)

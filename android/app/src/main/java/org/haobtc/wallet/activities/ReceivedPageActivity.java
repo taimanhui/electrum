@@ -70,6 +70,7 @@ public class ReceivedPageActivity extends BaseActivity {
     private Bitmap bitmap;
     private RxPermissions rxPermissions;
     private String hideWalletReceive;
+    private boolean checking = true;
 
     @Override
     public int getLayoutId() {
@@ -184,13 +185,18 @@ public class ReceivedPageActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.text_check_address:
-                CommunicationModeSelector.runnables.clear();
-                CommunicationModeSelector.runnables.add(null);
-                Intent intent = new Intent(this, CommunicationModeSelector.class);
-                intent.putExtra("tag", TAG);
-                intent.putExtra("contrastAddress", textView5.getText().toString());
-                intent.putExtra("hideWalletReceive",hideWalletReceive);
-                startActivity(intent);
+                if (checking){
+                    CommunicationModeSelector.runnables.clear();
+                    CommunicationModeSelector.runnables.add(null);
+                    Intent intent = new Intent(this, CommunicationModeSelector.class);
+                    intent.putExtra("tag", TAG);
+                    intent.putExtra("contrastAddress", textView5.getText().toString());
+                    intent.putExtra("hideWalletReceive", hideWalletReceive);
+                    startActivity(intent);
+                }else{
+                    mToast(getString(R.string.checking));
+                }
+
                 break;
             case R.id.text_copy_address:
                 //copy text
@@ -247,8 +253,10 @@ public class ReceivedPageActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(CheckReceiveAddress event) {
         if ("getResult".equals(event.getType())) {
+            checking = true;
             textReceiveTip.setVisibility(View.GONE);
         } else if ("checking".equals(event.getType())) {
+            checking = false;
             textReceiveTip.setVisibility(View.VISIBLE);
         }
     }

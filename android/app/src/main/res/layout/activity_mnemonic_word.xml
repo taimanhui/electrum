@@ -82,6 +82,8 @@
                     <TextView
                         android:id="@+id/text_paste"
                         android:layout_width="@dimen/dp_60"
+                        android:textSize="@dimen/sp_13"
+                        android:textColor="@color/button_bk_disableok"
                         android:layout_height="match_parent"
                         android:layout_alignParentEnd="true"
                         android:gravity="center"

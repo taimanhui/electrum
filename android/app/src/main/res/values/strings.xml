@@ -856,5 +856,7 @@
     <string name="mismatch_wallet">The current wallet does not match this hardware, please replace the hardware</string>
     <string name="transaction_wrong">Transaction format error</string>
     <string name="not_recommend">This transaction does not need to be accelerated!</string>
+    <string name="download_file">Download transaction file</string>
+    <string name="checking">Currently being verified……</string>
 
 </resources>

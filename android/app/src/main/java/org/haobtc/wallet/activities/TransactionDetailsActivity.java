@@ -150,7 +150,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String walletTypeToSign;
     private boolean braodStatus = false;
     private String minIntFees;
-    private String totalFee;
     private int minPro;
     private boolean buttonStatus = true;
     private int minProRate;
@@ -370,7 +369,12 @@ public class TransactionDetailsActivity extends BaseActivity {
                 if (isMine) {
                     textView14.setText(String.format("-%s", amount));
                 } else {
-                    textView14.setText(String.format("+%s", amount));
+                    Log.i("buttonStatus", "jsonDetailData: " + buttonStatus);
+                    if (!buttonStatus) { //speed up change "-"
+                        textView14.setText(String.format("-%s", amount));
+                    } else {
+                        textView14.setText(String.format("+%s", amount));
+                    }
                 }
             }
         }
@@ -390,7 +394,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     //scan get
     @SuppressLint("DefaultLocale")
     private void scanDataDetailMessage() {
-//        Log.i("jinxiaominscan", "scanDataDetailMessage---------: " + strParse);
+//        Log.i("scanDataDetailMessage", "scanDataDetailMessage---------: " + strParse);
         Gson gson = new Gson();
         ScanCheckDetailBean scanCheckDetailBean = gson.fromJson(strParse, ScanCheckDetailBean.class);
         ScanCheckDetailBean.DataBean scanListdata = scanCheckDetailBean.getData();
@@ -582,7 +586,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.sig_trans:
-                buttonStatus = true;//buttonStatus = true-->Click the button   ：  false-->Modify status only
                 //sign technological process
                 signProcess();
                 break;
@@ -604,7 +607,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                         receiveAddSpeed();
                     }
                 }
-
                 break;
             case R.id.lin_payAddress:
                 Intent intent2Pay = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
@@ -763,10 +765,8 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     private void getCpfpInfo(TextView tetNewfee, int newFeerate) {
         PyObject getRbfFeeInfo = null;
-        Log.i("getRbfFeeInfosss", "getCpfpInfo:=========== " + newFeerate);
         try {
             getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash, new Kwarg("suggested_feerate", newFeerate));
-            Log.i("getRbfFeeInfosss", "getCpfpInfo:+++++++++++ " + getRbfFeeInfo);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("max fee exceeded")) {
@@ -778,8 +778,8 @@ public class TransactionDetailsActivity extends BaseActivity {
             String strContent = getRbfFeeInfo.toString();
             try {
                 JSONObject jsonObject = new JSONObject(strContent);
-                String fee_for_child = jsonObject.getString("fee_for_child");
-                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), fee_for_child + preferences.getString("base_unit", "mBTC")));
+                feeForChildReceive = jsonObject.getString("fee_for_child");
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), feeForChildReceive + preferences.getString("base_unit", "mBTC")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -838,13 +838,12 @@ public class TransactionDetailsActivity extends BaseActivity {
             publicTrsation = addspeedNewtrsactionBean.getNewTx();
             EventBus.getDefault().post(new FirstEvent("22"));
             tetAddSpeed.setVisibility(View.GONE);
+            buttonStatus = false;//buttonStatus = true-->don't speed up   ：  false-->speed up
             braodStatus = true;//braod_status = true   -->   speed don't broadcast
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
             alertDialog.dismiss();
-            buttonStatus = false;//buttonStatus = true-->Click the button   ：  false-->Modify status only
-//            signProcess();//add speed  then Re sign
 
         }
     }
@@ -856,11 +855,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             //broadcast transaction
             braodcastTrsaction();
 
-        } else if (strBtncontent.equals(getString(R.string.check_trsaction)) && buttonStatus) {
+        } else if (strBtncontent.equals(getString(R.string.check_trsaction))) {
             Intent intent1 = new Intent(TransactionDetailsActivity.this, CheckChainDetailWebActivity.class);
             intent1.putExtra("checkTxid", txid);
             startActivity(intent1);
-        } else if (strBtncontent.equals(getString(R.string.signature_trans)) && buttonStatus) {
+        } else if (strBtncontent.equals(getString(R.string.signature_trans))) {
             if ("standard".equals(strwalletType)) {
                 //sign input pass
                 signInputpassDialog();
@@ -979,13 +978,12 @@ public class TransactionDetailsActivity extends BaseActivity {
             EventBus.getDefault().post(new FirstEvent("22"));
             //braod_status = true   -->   speed don't broadcast
             braodStatus = true;
+            tetAddSpeed.setVisibility(View.GONE);
+            buttonStatus = false;//buttonStatus = true-->Click the button   ：  false-->Modify status only
             edit.putString("signedRowtrsation", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
             alertDialog.dismiss();
-            buttonStatus = false;//buttonStatus = true-->Click the button   ：  false-->Modify status only
-//            signProcess();//add speed  then Re sign
-
         }
     }
 

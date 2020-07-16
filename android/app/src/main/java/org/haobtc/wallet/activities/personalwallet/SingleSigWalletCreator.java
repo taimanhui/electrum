@@ -37,20 +37,13 @@ public class SingleSigWalletCreator extends BaseActivity {
     ImageView imgBackCreat;
     @BindView(R.id.edit_walletName_setting)
     EditText editWalletNameSetting;
-    @BindView(R.id.seek_bar_num)
-    IndicatorSeekBar seekBarNum;
     @BindView(R.id.bn_multi_next)
     Button bnMultiNext;
-    @BindView(R.id.tv_indicator)
-    TextView tvIndicator;
-    @BindView(R.id.test_key_tips)
-    TextView testKeyTips;
     private SharedPreferences.Editor edit;
     private int defaultName;
     private int walletNameNum;
     public String pin = "";
     public static final String TAG = SingleSigWalletCreator.class.getSimpleName();
-    private String walletName;
     private long lastNotify;
 
     @Override
@@ -87,15 +80,9 @@ public class SingleSigWalletCreator extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String indication = tvIndicator.getText().toString();
                 if (!TextUtils.isEmpty(s.toString())) {
-                    if (Integer.parseInt(indication) != 0) {
-                        bnMultiNext.setEnabled(true);
-                        bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
-                    } else {
-                        bnMultiNext.setEnabled(false);
-                        bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
-                    }
+                    bnMultiNext.setEnabled(true);
+                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
                 } else {
                     bnMultiNext.setEnabled(false);
                     bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
@@ -107,39 +94,6 @@ public class SingleSigWalletCreator extends BaseActivity {
 
     @Override
     public void initData() {
-        seekbarLatoutup();
-    }
-
-    private void seekbarLatoutup() {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
-        seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                walletName = editWalletNameSetting.getText().toString();
-                String indicatorText = String.valueOf(progress + 1);
-                tvIndicator.setText(indicatorText);
-                testKeyTips.setText(String.format("%s%s%s", getString(R.string.need_band3), indicatorText, getString(R.string.band_key)));
-                params.leftMargin = (int) indicatorOffset;
-                tvIndicator.setLayoutParams(params);
-                if (!TextUtils.isEmpty(walletName)) {
-                    bnMultiNext.setEnabled(true);
-                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
-                } else {
-                    bnMultiNext.setEnabled(false);
-                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
-            }
-        });
 
     }
 
@@ -161,31 +115,29 @@ public class SingleSigWalletCreator extends BaseActivity {
     //creat personal wallet
     private void mCreatOnlyWallet() {
         String strWalletName = editWalletNameSetting.getText().toString();
-        String indication = tvIndicator.getText().toString();
-        int pub = Integer.parseInt(indication);
         if (TextUtils.isEmpty(strWalletName)) {
             mToast(getString(R.string.set_wallet));
             return;
         }
-        if (pub == 0) {
-            mToast(getString(R.string.set_bixinkey_num));
-            return;
-        }
-
-        if (pub > 1) {
-            Intent intent = new Intent(SingleSigWalletCreator.this, PersonalMultiSigWalletCreator.class);
-            intent.putExtra("sigNum", pub);
-            intent.putExtra("walletNameNum", walletNameNum);
-            intent.putExtra("walletNames", strWalletName);
-            startActivity(intent);
-            finish();
-        } else {
-            CommunicationModeSelector.runnables.clear();
-            CommunicationModeSelector.runnables.add(null);
-            Intent intent = new Intent(this, CommunicationModeSelector.class);
-            intent.putExtra("tag", TAG);
-            startActivity(intent);
-        }
+//        if (pub == 0) {
+//            mToast(getString(R.string.set_bixinkey_num));
+//            return;
+//        }
+//
+//        if (pub > 1) {
+//            Intent intent = new Intent(SingleSigWalletCreator.this, PersonalMultiSigWalletCreator.class);
+//            intent.putExtra("sigNum", pub);
+//            intent.putExtra("walletNameNum", walletNameNum);
+//            intent.putExtra("walletNames", strWalletName);
+//            startActivity(intent);
+//            finish();
+//        } else {
+        CommunicationModeSelector.runnables.clear();
+        CommunicationModeSelector.runnables.add(null);
+        Intent intent = new Intent(this, CommunicationModeSelector.class);
+        intent.putExtra("tag", TAG);
+        startActivity(intent);
+//        }
 
     }
 
@@ -199,7 +151,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         String xpub = event.getXpub();
         String deviceId = event.getDeviceId();
         String strXpub = "[[\"" + xpub + "\",\"" + deviceId + "\"]]";
-        walletName = editWalletNameSetting.getText().toString();
+        String walletName = editWalletNameSetting.getText().toString();
         try {
             Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, 1, strXpub);
         } catch (Exception e) {
@@ -225,7 +177,7 @@ public class SingleSigWalletCreator extends BaseActivity {
             intent.putExtra("walletNames", walletName);
             intent.putExtra("flagTag", "personal");
             intent.putExtra("strBixinname", xpub);
-            intent.putExtra("needBackup",event.getNeedBackup());
+            intent.putExtra("needBackup", event.getNeedBackup());
             startActivity(intent);
         } else {
             EventBus.getDefault().post(new FixWalletNameEvent(walletName));

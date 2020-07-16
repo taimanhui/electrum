@@ -51,5 +51,6 @@
     <color name="processing_bk">#7b99ff</color>
     <color name="app_name_text">#4a5066</color>
     <color name="shadow_color">#D2D2D2</color>
+    <color name="share_tip">#FFB12B</color>
 
 </resources>
