@@ -86,7 +86,7 @@ public class SettingActivity extends BaseActivity {
     @Override
     public void initData() {
         String versionName = ApkUtil.getVersionName(this);
-        tetVerson.setText(String.format("V%s", versionName));
+        tetVerson.setText(String.format("%s", versionName));
     }
 
 

@@ -11,7 +11,7 @@ android {
         minSdkVersion 26 // android 8.0.0
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         def ecVersion = null
         file("$REPO_ROOT/electrum/version.py").eachLine {
@@ -39,7 +39,6 @@ android {
         } else {
             throw new GradleException("Could not read version.properties!")
         } 
-        versionName "$ecVersion.$BUILD_NUM"
         def verParsed = ecVersion.split(/\./).collect { Integer.parseInt(it) }
         versionCode = (verParsed[0] * 1000000) + (verParsed[1] * 10000) + (verParsed[2] * 100) + BUILD_NUM
 
@@ -130,7 +129,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "bixin-${variant.versionName}-${variant.productFlavors[0].name}-${variant.variantData.variantConfiguration.buildType.name}.apk"
+            outputFileName = "bixin-${variant.versionCode}-${variant.productFlavors[0].name}-${variant.variantData.variantConfiguration.buildType.name}.apk"
         }
     }
 }
