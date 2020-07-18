@@ -30,7 +30,7 @@ from . import bitcoin
 from . import keystore
 from . import mnemonic
 from .bip32 import is_bip32_derivation, xpub_type, normalize_bip32_derivation, BIP32Node, root_fp_and_der_prefix_from_xkey
-from .keystore import bip84_derivation
+from .keystore import purpose48_derivation, bip44_derivation
 from .wallet import (Imported_Wallet, Standard_Wallet, Multisig_Wallet,
                      wallet_types, Wallet, Abstract_Wallet)
 from .storage import (WalletStorage,
@@ -90,10 +90,15 @@ class MutiBase(Logger):
             print("valid is true....")
             #k = keystore.from_master_key(xpub)
             try:
+                if self.wallet_type == 'multisig':
+                    derivation = purpose48_derivation(0, xtype='p2wsh')
+                    #derivation = bip44_derivation(0, bip43_purpose=48)
+                else:
+                    derivation = bip44_derivation(0, bip43_purpose=84)
                 d = {
                     'type': 'hardware',
                     'hw_type': 'trezor',
-                    'derivation': bip84_derivation(0),
+                    'derivation': derivation,
                     'xpub': xpub,
                     'label': 'device_info.label',
                     'device_id': device_id,

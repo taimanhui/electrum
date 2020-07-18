@@ -131,7 +131,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
     def get_xpub(self, bip32_path, xtype, creating=False):
         address_n = parse_path(bip32_path)
         with self.run_flow(creating_wallet=creating):
-            node = trezorlib.btc.get_public_node(self.client, address_n).node
+            node = trezorlib.btc.get_public_node(self.client, address_n, coin_name=self.plugin.get_coin_name(), script_type=self.plugin.get_trezor_input_script_type(xtype)).node
         return BIP32Node(xtype=xtype,
                          eckey=ecc.ECPubkey(node.public_key),
                          chaincode=node.chain_code,

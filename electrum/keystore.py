@@ -958,16 +958,6 @@ def bip44_derivation(account_id, bip43_purpose=44):
     der = "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
     return normalize_bip32_derivation(der)
 
-def bip84_derivation(account_id, bip43_purpose=84):
-    coin = constants.net.BIP44_COIN_TYPE
-    der = "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
-    return normalize_bip32_derivation(der)
-
-def bip49_derivation(account_id, bip43_purpose=49):
-    coin = constants.net.BIP44_COIN_TYPE
-    der = "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
-    return normalize_bip32_derivation(der)
-
 def purpose48_derivation(account_id: int, xtype: str) -> str:
     # m / purpose' / coin_type' / account' / script_type' / change / address_index
     bip43_purpose = 48

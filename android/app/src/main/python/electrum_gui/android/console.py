@@ -12,7 +12,7 @@ import pkgutil
 import unittest
 import threading
 from electrum.bitcoin import base_decode, is_address
-from electrum.keystore import bip84_derivation, bip49_derivation, bip44_derivation
+from electrum.keystore import bip44_derivation, purpose48_derivation
 from electrum.plugin import Plugins
 from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
@@ -256,7 +256,9 @@ class AndroidCommands(commands.Commands):
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
             #print("update_statue out = %s" % (out))
-        if out != self.pre_balance_info:
+        if (out != self.pre_balance_info) or (self.pre_wallet == self.wallet):
+            if self.pre_wallet == self.wallet:
+                self.pre_wallet = None
             self.pre_balance_info = out
             self.callbackIntent.onCallback("update_status", json.dumps(out))
 
@@ -282,7 +284,7 @@ class AndroidCommands(commands.Commands):
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.push_tx(self.wallet, 'deltx', hash)
         except Exception as e:
-            print(f"push_tx delete_tx error {e}")
+            #print(f"push_tx delete_tx error {e}")
             pass
 
     def save_tx_to_file(self, path, tx):
@@ -1353,7 +1355,11 @@ class AndroidCommands(commands.Commands):
 
     def get_xpub_from_hw(self, path='android_usb', _type='p2wsh', is_creating=True):
         client = self.get_client(path=path)
-        derivation = bip84_derivation(0)
+        if _type == "p2wsh":
+            derivation = purpose48_derivation(0, xtype='p2wsh')
+            #derivation = bip44_derivation(0, bip43_purpose=48)
+        else:
+            derivation = bip44_derivation(0, bip43_purpose=84)
         try:
             xpub = client.get_xpub(derivation, _type, creating=is_creating)
         except Exception as e:
@@ -1465,23 +1471,6 @@ class AndroidCommands(commands.Commands):
         for key, value in self.local_wallet_info.items():
             if value['seed'] == seed:
                 raise BaseException(f"The same seed have create wallet, name={key}")
-    
-    def bitpie_derivation(self):
-        return ""
-    def cobo_derivation(self):
-        return ""
-    def trezor_derivation(self):
-        return bip49_derivation(0)
-    def ledger_derivation(self):
-        return ""
-    def get_bip39_derivation(self, name):
-        switch = {'bitpie' : self.bitpie_derivation,
-                  'cobo' : self.cobo_derivation,
-                  'trezor' : self.trezor_derivation,
-                  'ledger' : self.ledger_derivation, 
-                  'electrum' : "",
-                 }
-        return switch.get(name)
 
     def get_addrs_from_seed(self, seed, passphrase=""):
         list_type_info = ["p2wpkh", "p2wpkh-p2sh", "p2pkh", "electrum"]
@@ -1489,11 +1478,11 @@ class AndroidCommands(commands.Commands):
         for type in list_type_info:
             bip39_derivation = ""
             if type == "p2pkh":
-                bip39_derivation = bip44_derivation(0)
+                bip39_derivation = bip44_derivation(0, bip43_purpose=44)
             elif type == "p2wpkh":
-                bip39_derivation = bip84_derivation(0)
+                bip39_derivation = bip44_derivation(0, bip43_purpose=84)
             elif type == "p2wpkh-p2sh":
-                bip39_derivation = bip49_derivation(0)
+                bip39_derivation = bip44_derivation(0, bip43_purpose=49)
 
             if type == "electrum":
                 from electrum.mnemonic import Mnemonic
@@ -1754,7 +1743,10 @@ class AndroidCommands(commands.Commands):
 
             try:
                 self.do_save(new_tx)
-            except:
+                if self.label_flag and self.wallet.wallet_type != "standard":
+                    self.label_plugin.push_tx(self.wallet, 'createtx', new_tx.txid(), new_tx.serialize_as_bytes().hex())
+            except BaseException as e:
+                print(f"cpfp push_tx createtx error {e}")
                 pass
             return json.dumps(out)
         except BaseException as e:
@@ -1823,6 +1815,7 @@ class AndroidCommands(commands.Commands):
             if name is None:
                 self.wallet = None
             else:
+                self.pre_wallet = self.wallet
                 self.wallet = self.daemon._wallets[self._wallet_path(name)]
 
             self.wallet.use_change = self.config.get('use_change', False)
