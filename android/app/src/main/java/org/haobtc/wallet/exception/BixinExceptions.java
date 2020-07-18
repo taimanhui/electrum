@@ -5,7 +5,7 @@ package org.haobtc.wallet.exception;
 //
 public enum BixinExceptions {
 
-   BLE_RESPONSE_READ_TIMEOUT("read ble response timeout", 12),
+   BLE_RESPONSE_READ_TIMEOUT("BaseException: read ble response timeout", 12),
    FILE_FORMAT_ERROR("BaseException: File is not a zip file", 13),
    PASSPHRASE_OPERATION_TIMEOUT("BaseException: waiting passphrase timeout", 11),
    PIN_INVALID("BaseException: (7, 'PIN invalid')", 7),

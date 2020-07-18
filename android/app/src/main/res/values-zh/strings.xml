@@ -482,7 +482,7 @@
     <string name="set_finish">设置完成</string>
     <string name="confirm_hardware_msg">请在硬件上确认</string>
     <string name="nowallet_import">暂无可导入钱包</string>
-    <string name="timeout_error">抱歉！读取公钥超时，不妨再试试！！</string>
+    <string name="timeout_error">抱歉！读取超时，不妨再试试！！</string>
     <string name="check_hide_wallet">点击查看隐藏钱包</string>
     <string name="onclick_check">点击查看</string>
     <string name="usable">可用</string>

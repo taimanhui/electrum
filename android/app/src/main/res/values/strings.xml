@@ -443,7 +443,7 @@
     <string name="signature_need_max">15</string>
     <string name="number_1">1</string>
     <string name="read_pk_failed">Sorry! Failed to read. Try again！！！</string>
-    <string name="timeout_error">I\'m sorry! Timeout reading public key, try again！！！</string>
+    <string name="timeout_error">I\'m sorry! Timeout reading, try again！！！</string>
     <string name="clean_setting">Settings cleared</string>
     <string name="clean_private_key">Clearing private key</string>
     <string name="bootloader_mode">The hardware is in bootloader mode, which is not supported</string>

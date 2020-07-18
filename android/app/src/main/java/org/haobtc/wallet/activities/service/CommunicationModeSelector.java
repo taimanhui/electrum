@@ -191,6 +191,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private boolean isErrorOccurred;
     public static boolean backupTip;
     private static String hideWalletReceive = "";
+    private boolean isTimeout;
 
     @Override
     public int getLayoutId() {
@@ -217,9 +218,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         imageViewCancel.setOnClickListener(this);
         tag = getIntent().getStringExtra("tag");
         action = getIntent().getAction();
-//        if (!bluetoothStatus || SetNameActivity.TAG.equals(tag)) {
-//            radioBle.setVisibility(View.GONE);
-//        }
         nfc = Global.py.getModule("trezorlib.transport.nfc");
         ble = Global.py.getModule("trezorlib.transport.bluetooth");
         usb = Global.py.getModule("trezorlib.transport.android_usb");
@@ -1030,6 +1028,8 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             if (isPairFailed) {
                 isPairFailed = false;
                 showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
+            } else if (isSign && isTimeout) {
+                showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
             }
         }
     }
@@ -1057,6 +1057,8 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Override
     public void onPreExecute() {
         isErrorOccurred = false;
+        isTimeout = false;
+        isPairFailed = false;
         if (isActive) {
             return;
         }
@@ -1074,7 +1076,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             }
         }
     }
-
+    /**
+     * Note: the execute thread isn't the UI thread
+     * **/
     @Override
     public void onException(Exception e) {
         if (dialogFragment != null) {
@@ -1082,23 +1086,22 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         }
         isErrorOccurred = true;
         EventBus.getDefault().post(new FinishEvent());
-//        if (hasWindowFocus()) {
-        if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage())) {
-            showErrorDialog(0, R.string.pin_wrong);
-        } else if (BixinExceptions.UN_PAIRABLE.getMessage().equals(e.getMessage())) {
-            // state variable that can be useful with pin request
-            isPairFailed = true;
-            // can be useful without pin request
-            showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
-        } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
-            showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
-        } else if (BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
-            showErrorDialog(R.string.timeout_error, R.string.read_pk_failed);
-        } else {
-            showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
+        if (!isFinishing()) {
+            if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage())) {
+                showErrorDialog(0, R.string.pin_wrong);
+            } else if (BixinExceptions.UN_PAIRABLE.getMessage().equals(e.getMessage())) {
+                // state variable that can be useful with pin request
+                isPairFailed = true;
+                // can be useful without pin request
+                showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
+            } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
+                showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
+            } else if (BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
+                isTimeout = true;
+            } else {
+                showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
+            }
         }
-//        }
-
     }
 
 
