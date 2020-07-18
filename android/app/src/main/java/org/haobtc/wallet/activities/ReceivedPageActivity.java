@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -85,13 +87,13 @@ public class ReceivedPageActivity extends BaseActivity {
         String walletType = getIntent().getStringExtra("walletType");
         hideWalletReceive = getIntent().getStringExtra("hideWalletReceive");
 
-        if ("standard".equals(walletType)) {
-            textCopyAddress.setVisibility(View.VISIBLE);
-            copyAndCheck.setVisibility(View.GONE);
-        } else {
-            textCopyAddress.setVisibility(View.GONE);
-            copyAndCheck.setVisibility(View.VISIBLE);
-        }
+//        if ("standard".equals(walletType)) {
+//            textCopyAddress.setVisibility(View.VISIBLE);
+//            copyAndCheck.setVisibility(View.GONE);
+//        } else {
+//            textCopyAddress.setVisibility(View.GONE);
+//            copyAndCheck.setVisibility(View.VISIBLE);
+//        }
     }
 
     @Override
@@ -116,32 +118,10 @@ public class ReceivedPageActivity extends BaseActivity {
             String qrData = getCodeAddressBean.getQrData();
             String addr = getCodeAddressBean.getAddr();
             textView5.setText(addr);
-            bitmap = mCreate2DCode(qrData);
+            bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
             imageView2.setImageBitmap(bitmap);
         }
 
-    }
-
-    public static Bitmap mCreate2DCode(String str) {
-        try {
-            BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 500, 500);
-            int width = matrix.getWidth();
-            int height = matrix.getHeight();
-            int[] pixels = new int[width * height];
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    if (matrix.get(x, y)) {
-                        pixels[y * width + x] = 0xff000000;
-                    }
-                }
-            }
-            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-            return bitmap;
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @SingleClick
@@ -185,7 +165,7 @@ public class ReceivedPageActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.text_check_address:
-                if (checking){
+                if (checking) {
                     CommunicationModeSelector.runnables.clear();
                     CommunicationModeSelector.runnables.add(null);
                     Intent intent = new Intent(this, CommunicationModeSelector.class);
@@ -193,7 +173,7 @@ public class ReceivedPageActivity extends BaseActivity {
                     intent.putExtra("contrastAddress", textView5.getText().toString());
                     intent.putExtra("hideWalletReceive", hideWalletReceive);
                     startActivity(intent);
-                }else{
+                } else {
                     mToast(getString(R.string.checking));
                 }
 

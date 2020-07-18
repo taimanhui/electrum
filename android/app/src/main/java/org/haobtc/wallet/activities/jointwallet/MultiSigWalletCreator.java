@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -133,6 +134,10 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     public static final String TAG = MultiSigWalletCreator.class.getSimpleName();
     @BindView(R.id.test_input_wallet)
     TextView testInputWallet;
+    @BindView(R.id.test_public_key)
+    TextView testPublicKey;
+    @BindView(R.id.test_sign_num)
+    TextView testSignNum;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private EditText editScan;
@@ -151,6 +156,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     private int defaultKeyNameNum;
     private int page = 0;
     private int cosignerNum;
+    private String indicatorTextUp;
+    private String indicatorTextDown;
 
     @Override
     public int getLayoutId() {
@@ -184,14 +191,19 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
         seekBarFee.setProgress(1);
         seekBarFee.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
-
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                String indicatorText = String.valueOf(progress + 2);
+                indicatorTextUp = String.valueOf(progress + 2);
                 seekBarNum.setMax(progress + 1);
-                testseekNum.setText(indicatorText);
-                tvIndicator.setText(indicatorText);
+                testseekNum.setText(indicatorTextUp);
+                tvIndicator.setText(indicatorTextUp);
                 params.leftMargin = (int) indicatorOffset;
+                testPublicKey.setText(String.format("%s%s%s", getString(R.string.public1), indicatorTextUp, getString(R.string.key1)));
+                if ("English".equals(preferences.getString("language", ""))) {
+                    testSignNum.setText(String.format("%s%s%s%s%s", getString(R.string.tet_tips1), indicatorTextDown, getString(R.string.tet_tips2), indicatorTextUp, getString(R.string.tet_tips3)));
+                } else {
+                    testSignNum.setText(String.format("%s%s%s%s%s", getString(R.string.tet_tips1), indicatorTextUp, getString(R.string.tet_tips2), indicatorTextDown, getString(R.string.tet_tips3)));
+                }
                 tvIndicator.setLayoutParams(params);
                 if (testseekNum.getText().toString().equals(tvIndicatorTwo.getText().toString())) {
                     testseekNum.setVisibility(View.GONE);
@@ -220,10 +232,15 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                String indicatorText = String.valueOf(progress + 1);
-                tvIndicatorTwo.setText(indicatorText);
+                indicatorTextDown = String.valueOf(progress + 1);
+                tvIndicatorTwo.setText(indicatorTextDown);
                 paramsTwo.leftMargin = (int) indicatorOffset;
                 tvIndicatorTwo.setLayoutParams(paramsTwo);
+                if ("English".equals(preferences.getString("language", ""))) {
+                    testSignNum.setText(String.format("%s%s%s%s%s", getString(R.string.tet_tips1), indicatorTextDown, getString(R.string.tet_tips2), indicatorTextUp, getString(R.string.tet_tips3)));
+                } else {
+                    testSignNum.setText(String.format("%s%s%s%s%s", getString(R.string.tet_tips1), indicatorTextUp, getString(R.string.tet_tips2), indicatorTextDown, getString(R.string.tet_tips3)));
+                }
                 if (testseekNum.getText().toString().equals(tvIndicatorTwo.getText().toString())) {
                     testseekNum.setVisibility(View.GONE);
                 } else {
@@ -840,5 +857,12 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

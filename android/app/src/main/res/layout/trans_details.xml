@@ -131,7 +131,6 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/hjsdjhsbhm"
             android:layout_width="match_parent"
-            android:paddingBottom="@dimen/dp_30"
             android:layout_height="match_parent"
             android:layout_below="@+id/lin_progress">
 
@@ -313,7 +312,7 @@
                                 android:text="@string/add_speed"
                                 android:textColor="@color/button_bk_disableok"
                                 android:textSize="@dimen/sp_13"
-                                android:visibility="visible" />
+                                android:visibility="gone" />
 
 
                         </LinearLayout>
@@ -516,6 +515,7 @@
                     android:id="@+id/tet_grive"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/dp_10"
                     android:gravity="center_horizontal"
                     android:text="@string/broad_text"
                     android:textColor="@color/graytext_color"

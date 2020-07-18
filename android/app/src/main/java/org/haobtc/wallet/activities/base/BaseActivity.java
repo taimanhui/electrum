@@ -74,6 +74,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         Intent intent = new Intent(this, mActivity);
         startActivity(intent);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -209,7 +210,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * get  versionName
-     *
      */
     public String mGetVersionName(Context context) {
         PackageManager packageManager = context.getPackageManager();

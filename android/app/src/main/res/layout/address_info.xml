@@ -72,9 +72,9 @@
                             android:id="@+id/textView4"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dp_20"
                             android:paddingStart="@dimen/dp_16"
                             android:paddingEnd="@dimen/dp_16"
-                            android:layout_marginTop="@dimen/dp_20"
                             android:text="@string/receive"
                             android:textColor="@color/text"
                             android:textSize="@dimen/big_text_size" />
@@ -93,8 +93,10 @@
 
                         <ImageView
                             android:id="@+id/imageView2"
-                            android:layout_width="match_parent"
-                            android:layout_height="268dp" />
+                            android:layout_width="268dp"
+                            android:layout_height="268dp"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:layout_marginBottom="@dimen/dp_10" />
 
                         <TextView
                             android:id="@+id/textView5"
@@ -116,17 +118,17 @@
                             android:text="@string/copyAddress"
                             android:textColor="@color/button_bk"
                             android:textSize="@dimen/text_size"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                         <LinearLayout
                             android:id="@+id/copy_and_check"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_21"
                             android:layout_marginTop="@dimen/dp_20"
-                            android:gravity="center_vertical"
                             android:layout_marginBottom="@dimen/dp_30"
+                            android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:visibility="visible">
+                            android:visibility="gone">
 
                             <TextView
                                 android:id="@+id/textView6"

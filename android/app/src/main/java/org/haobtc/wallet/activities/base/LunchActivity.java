@@ -29,6 +29,10 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
+//        if ("English".equals(preferences.getString("language",""))){
+//            this.setTheme(R.style.LunchTheme);
+//        }
+
         return R.layout.activity_lunch;
     }
 

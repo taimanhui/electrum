@@ -101,15 +101,18 @@
 
                     <ImageView
                         android:id="@+id/ima_receive_code"
-                        android:layout_width="match_parent"
+                        android:layout_below="@+id/RelativeLayout"
+                        android:layout_width="268dp"
+                        android:layout_centerHorizontal="true"
                         android:layout_height="268dp"
-                        android:layout_marginTop="35dp"/>
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginBottom="@dimen/dp_10" />
 
                     <TextView
                         android:id="@+id/text_addr"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="295dp"
+                        android:layout_below="@+id/ima_receive_code"
                         android:layout_marginStart="@dimen/dp_20"
                         android:layout_marginEnd="@dimen/dp_20"
                         android:textColor="@color/text"
@@ -120,9 +123,9 @@
                         android:id="@+id/text_copy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_below="@+id/text_addr"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="@dimen/dp_20"
-                        android:layout_below="@+id/text_addr"
                         android:layout_marginBottom="@dimen/dp_20"
                         android:gravity="center_horizontal"
                         android:text="@string/copy_self"
@@ -178,8 +181,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_80"
                         android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
                         android:layout_marginTop="@dimen/dp_18"
+                        android:layout_marginEnd="@dimen/dp_16"
                         android:layout_marginBottom="@dimen/dp_16"
                         android:gravity="center"
                         android:text="@string/no_balance"

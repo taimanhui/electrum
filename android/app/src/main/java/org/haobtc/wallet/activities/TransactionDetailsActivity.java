@@ -9,8 +9,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,6 +41,7 @@ import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SecondEvent;
@@ -155,6 +160,8 @@ public class TransactionDetailsActivity extends BaseActivity {
     private int minProRate;
     private int recommendProRate;
     private String feeForChildReceive;
+    private String txStatus;
+    private String listTxStatus = "";
 
     @Override
     public int getLayoutId() {
@@ -173,6 +180,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         Intent intent = getIntent();
         if (!TextUtils.isEmpty(intent.getStringExtra("signed_raw_tx"))) {
             signedRawTx = intent.getStringExtra("signed_raw_tx");
+            EventBus.getDefault().post(new FinishEvent());//close sign page
         } else {
             hideWallet = intent.getStringExtra("hideWallet");//hide wallet transaction
             publicTrsation = intent.getStringExtra("txCreatTrsaction");
@@ -185,13 +193,14 @@ public class TransactionDetailsActivity extends BaseActivity {
             String dataTime = intent.getStringExtra("dataTime");
             strwalletType = intent.getStringExtra("strwalletType");
             tetTrsactionTime.setText(dataTime);
+            listTxStatus = getIntent().getStringExtra("listTxStatus");
+            setSpeedBtn();//add speed button show or hide
         }
         isMine = intent.getBooleanExtra("is_mine", false);//is_mine -->recevid or send
     }
 
     @Override
     public void initData() {
-        setSpeedBtn();//add speed button show or hide
         if (!TextUtils.isEmpty(signedRawTx)) {
             jsonDetailData(signedRawTx);
             signedRawTx = "";
@@ -249,12 +258,19 @@ public class TransactionDetailsActivity extends BaseActivity {
             e.printStackTrace();
         }
         if (getRbfStatus != null) {
-            Log.i("getRbfStatussss", "setSpeedBtn:--- " + getRbfStatus);
+            Log.i("getRbfStatus", "setSpeedBtn--: " + getRbfStatus);
             if (setRbf) {
                 if (getRbfStatus.toString().contains("{}")) {
                     tetAddSpeed.setVisibility(View.GONE);//rbf speed Whether to display
                 } else {
-                    tetAddSpeed.setVisibility(View.VISIBLE);
+                    if (!"scan".equals(listType)) {
+                        Log.i("getRbfStatus", "listTxStatus--: " + listTxStatus);
+                        if ("Unconfirmed".equals(listTxStatus)) {
+                            tetAddSpeed.setVisibility(View.VISIBLE);
+                        } else {
+                            tetAddSpeed.setVisibility(View.GONE);
+                        }
+                    }
                 }
             }
         }
@@ -311,7 +327,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         String amount = getnewcreatTrsactionListBean.getAmount();
         fee = getnewcreatTrsactionListBean.getFee();
         String description = getnewcreatTrsactionListBean.getDescription();
-        String txStatus = getnewcreatTrsactionListBean.getTxStatus();
+        txStatus = getnewcreatTrsactionListBean.getTxStatus();
         outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
         List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
         inputAddr = getnewcreatTrsactionListBean.getInputAddr();
@@ -401,7 +417,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         String amount = scanListdata.getAmount();
         String fee = scanListdata.getFee();
         String description = scanListdata.getDescription();
-        String txStatus = scanListdata.getTxStatus();
+        txStatus = scanListdata.getTxStatus();
         inputAddrScan = scanListdata.getInputAddr();
         outputAddrScan = scanListdata.getOutputAddr();
         ScanCheckDetailBean.DataBean data = scanCheckDetailBean.getData();
@@ -440,7 +456,11 @@ public class TransactionDetailsActivity extends BaseActivity {
             String addr = outputAddrScan.get(0).getAddr();
             tetGetMoneyaddress.setText(addr);
         }
-
+        if ("Unconfirmed".equals(txStatus)) {
+            tetAddSpeed.setVisibility(View.VISIBLE);
+        } else {
+            tetAddSpeed.setVisibility(View.GONE);
+        }
         if (signStatusMes != null) {
             Integer integer = signStatusMes.get(0);
             Integer integer1 = signStatusMes.get(1);
@@ -505,6 +525,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 linTractionHash.setVisibility(View.VISIBLE);
                 linTractionTime.setVisibility(View.GONE);
                 linFee.setVisibility(View.VISIBLE);
+
             } else if (txStatus.contains("confirmations")) {//Confirmed
                 tetState.setText(R.string.completed);
                 sigTrans.setText(R.string.check_trsaction);
@@ -656,10 +677,11 @@ public class TransactionDetailsActivity extends BaseActivity {
                 }
                 int allNum = (ingSingle * 2) - minPro;
                 int noePro = ingSingle - minPro;
-                seekBar.setMax(allNum);
-                seekBar.setProgress(noePro);
+                seekBar.setMax(allNum * 10000);
+                seekBar.setProgress(noePro * 10000);
                 testChangeFee.setText(String.format("%s sat/byte", newFeerate));
-                createBumpFee(tetNewfee, ingSingle);//get tx and fee
+                BigDecimal bigSingSingle = new BigDecimal(ingSingle);
+                createBumpFee(tetNewfee, bigSingSingle);//get tx and fee
                 seekbarLatoutup(seekBar, testChangeFee, tetNewfee, ingSingle);//seek bar Listener
                 imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
@@ -726,8 +748,9 @@ public class TransactionDetailsActivity extends BaseActivity {
 
                 int maxRecommendNum = (recommendProRate * 2) - minProRate;
                 int noeRecommendPro = recommendProRate - minProRate;
-                seekBar.setMax(maxRecommendNum);
-                seekBar.setProgress(noeRecommendPro);
+
+                seekBar.setMax(maxRecommendNum * 10000);
+                seekBar.setProgress(noeRecommendPro * 10000);
                 testChangeFee.setText(feeRateForChild);
                 tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), feeForChildReceive + preferences.getString("base_unit", "mBTC")));
                 seekBarReceiveFee(seekBar, testChangeFee, tetNewfee, recommendProRate);
@@ -738,6 +761,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                     confirmedReceiveSpeed(feeForChildReceive);
                 });
                 alertDialog.show();
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -756,17 +780,20 @@ public class TransactionDetailsActivity extends BaseActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                String indicatorText = String.valueOf(seekBar.getProgress() + minProRate);
+                BigDecimal big10 = new BigDecimal(10000);
+                BigDecimal bigChange = new BigDecimal(seekBar.getProgress() + (minProRate * 10000));
+                BigDecimal bigResult = bigChange.divide(big10);
+                String indicatorText = String.valueOf(bigResult);
                 testChangeFee.setText(String.format("%s sat", indicatorText));
-                getCpfpInfo(tetNewfee, (seekBar.getProgress() + minProRate));//get tx and fee
+                getCpfpInfo(tetNewfee, bigResult);//get tx and fee
             }
         });
     }
 
-    private void getCpfpInfo(TextView tetNewfee, int newFeerate) {
+    private void getCpfpInfo(TextView tetNewfee, BigDecimal newFeerate) {
         PyObject getRbfFeeInfo = null;
         try {
-            getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash, new Kwarg("suggested_feerate", newFeerate));
+            getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash, new Kwarg("suggested_feerate", Float.parseFloat(String.valueOf(newFeerate))));
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("max fee exceeded")) {
@@ -798,18 +825,21 @@ public class TransactionDetailsActivity extends BaseActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                String indicatorText = String.valueOf(seekBar.getProgress() + minPro);
-                testChangeFee.setText(String.format("%s sat", indicatorText));
-                createBumpFee(tetNewfee, (seekBar.getProgress() + minPro));//get tx and fee
+                BigDecimal big10rbf = new BigDecimal(10000);
+                BigDecimal bigChangeRbf = new BigDecimal(seekBar.getProgress() + (minPro * 10000));
+                BigDecimal bigResultRbf = bigChangeRbf.divide(big10rbf);
+
+                testChangeFee.setText(String.format("%s sat", bigResultRbf));
+                createBumpFee(tetNewfee, bigResultRbf);//get tx and fee
 
             }
         });
     }
 
-    private void createBumpFee(TextView tetNewfee, int newFee) {
+    private void createBumpFee(TextView tetNewfee, BigDecimal newFee) {
         PyObject createBumpFee = null;
         try {
-            createBumpFee = Daemon.commands.callAttr("create_bump_fee", txHash, newFee);
+            createBumpFee = Daemon.commands.callAttr("create_bump_fee", txHash, Float.parseFloat(String.valueOf(newFee)));
             Log.i("getRbfFeeInfosss", "createBumpFee----: " + createBumpFee);
         } catch (Exception e) {
             e.printStackTrace();
@@ -901,7 +931,9 @@ public class TransactionDetailsActivity extends BaseActivity {
             e.printStackTrace();
             String message = e.getMessage();
             assert message != null;
-            if (message.contains(".")) {
+            if (message.contains("bad-txns-inputs-missingorspent")) {
+                mToast(getString(R.string.dont_braundcast));
+            } else if (message.contains(".")) {
                 if (message.endsWith(".")) {
                     message = message.substring(0, message.length() - 1);
                     mToast(message);

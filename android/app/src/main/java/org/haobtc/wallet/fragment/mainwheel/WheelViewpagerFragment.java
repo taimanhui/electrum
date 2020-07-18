@@ -9,9 +9,14 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -182,7 +187,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
         if (selectWallet != null) {
             String toString = selectWallet.toString();
-//            Log.i("select_wallet", "select_wallet+++: " + toString);
+            Log.i("select_wallet", "select_wallet+++: " + toString);
             Gson gson = new Gson();
             MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
             String walletType = mainWheelBean.getWalletType();
@@ -270,7 +275,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 } else {
                     Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
                     intent2.putExtra("walletType", personce);
-                    intent2.putExtra("hideWalletReceive","");
+                    intent2.putExtra("hideWalletReceive", "");
                     startActivity(intent2);
                 }
                 break;
@@ -293,7 +298,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private void unBackupKeyDialog() {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.un_backup_dialog, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(view).create();
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             alertDialog.dismiss();
         });
@@ -304,6 +309,14 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             alertDialog.dismiss();
         });
         alertDialog.show();
+        //居中显示
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getActivity().getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
     }
 
     @Override

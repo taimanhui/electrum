@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/white_tuo"
     android:layout_marginBottom="@dimen/dp_10"
+    android:background="@drawable/white_tuo"
     android:orientation="vertical">
 
     <TextView
@@ -27,6 +27,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="17dp"
         android:orientation="horizontal">
 
         <TextView
@@ -35,7 +36,6 @@
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginBottom="17dp"
             android:text="@string/to"
             android:textColor="#b3b3b3"
             android:textSize="13sp" />
@@ -46,12 +46,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="@dimen/dp_20"
-            android:maxLines="1"
-            android:text="@string/lnbcdfd4fdsk"
+            tools:text="lnbcdfd4fdsklnb4fdsklnbcdfd4fdsklnbcdfd4fdsk"
             android:textColor="#494949"
             android:textSize="15sp" />
 
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/line_hight"
@@ -60,6 +60,7 @@
         android:background="@color/line_color" />
 
     <LinearLayout
+        android:layout_marginBottom="17dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -70,7 +71,6 @@
             android:layout_marginStart="@dimen/dp_16"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="@dimen/dp_20"
-            android:layout_marginBottom="17dp"
             android:text="@string/feenum"
             android:textColor="#b3b3b3"
             android:textSize="13sp" />
@@ -81,13 +81,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="@dimen/dp_20"
-            android:maxLines="1"
-            tools:text="0.00005BTC"
             android:textColor="#494949"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="0.00005BTC" />
 
     </LinearLayout>
-
 
 
 </LinearLayout>

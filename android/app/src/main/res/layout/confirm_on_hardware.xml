@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:orientation="vertical"
     android:clipToPadding="true"
     android:fitsSystemWindows="true">
 
@@ -37,9 +38,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/relatilayout"
-        android:layout_marginBottom="@dimen/dp_60"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:background="@color/bk_page">
 
         <LinearLayout
@@ -122,6 +122,7 @@
                     android:background="@color/line_color" />
 
                 <LinearLayout
+                    android:layout_marginBottom="17dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -132,7 +133,6 @@
                         android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="17dp"
                         android:layout_marginEnd="@dimen/dp_20"
-                        android:layout_marginBottom="17dp"
                         android:text="@string/from"
                         android:textColor="#b3b3b3"
                         android:textSize="13sp" />
@@ -143,10 +143,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="17dp"
                         android:layout_marginEnd="@dimen/dp_20"
-                        android:maxLines="1"
                         android:textColor="#494949"
                         android:textSize="15sp"
-                        tools:text="ksdhiunrfjskmdliweu893rj98" />
+                        tools:text="ksdhiunrfjskmdliweu893rj98ksdhiunrfjskmdliweu893rj98" />
 
                 </LinearLayout>
 
@@ -158,6 +157,7 @@
                     android:background="@color/line_color" />
 
                 <LinearLayout
+                    android:layout_marginBottom="17dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -168,7 +168,6 @@
                         android:layout_marginStart="@dimen/dp_16"
                         android:layout_marginTop="17dp"
                         android:layout_marginEnd="@dimen/dp_20"
-                        android:layout_marginBottom="17dp"
                         android:text="@string/fee"
                         android:textColor="#b3b3b3"
                         android:textSize="13sp" />
@@ -179,7 +178,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="17dp"
                         android:layout_marginEnd="@dimen/dp_20"
-                        android:maxLines="1"
                         android:textColor="#494949"
                         android:textSize="15sp"
                         tools:text="0.00005BTC" />
@@ -205,7 +203,6 @@
         android:id="@+id/confirm_layout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
         android:background="@color/button_bk_ddake"
         android:gravity="center"
         android:orientation="vertical">
@@ -223,4 +220,4 @@
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

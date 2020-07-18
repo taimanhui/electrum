@@ -29,6 +29,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -138,32 +139,10 @@ public class WalletDetailsActivity extends BaseActivity {
             String qrData = getCodeAddressBean.getQrData();
             String addr = getCodeAddressBean.getAddr();
             textAddr.setText(addr);
-            Bitmap bitmap = mCreate2DCode(qrData);
+            Bitmap    bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
             imaReceiveCode.setImageBitmap(bitmap);
         }
 
-    }
-
-    public static Bitmap mCreate2DCode(String str) {
-        try {
-            BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 500, 500);
-            int width = matrix.getWidth();
-            int height = matrix.getHeight();
-            int[] pixels = new int[width * height];
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    if (matrix.get(x, y)) {
-                        pixels[y * width + x] = 0xff000000;
-                    }
-                }
-            }
-            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-            return bitmap;
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private void getBixinKeyList() {

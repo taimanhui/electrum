@@ -82,10 +82,11 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
                         android:orientation="vertical">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
                             android:layout_marginTop="@dimen/dp_20"
@@ -94,7 +95,7 @@
                             android:textSize="@dimen/big_text_size" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
                             android:layout_marginTop="@dimen/corner_radius"
@@ -104,8 +105,10 @@
 
                         <ImageView
                             android:id="@+id/img_Orcode"
-                            android:layout_width="match_parent"
+                            android:layout_width="268dp"
                             android:layout_height="268dp"
+                            android:layout_marginTop="@dimen/dp_10"
+                            android:layout_marginBottom="@dimen/dp_10"
                             android:visibility="visible" />
 
                         <TextView

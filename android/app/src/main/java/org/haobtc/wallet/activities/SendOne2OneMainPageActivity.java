@@ -58,6 +58,7 @@ import org.haobtc.wallet.bean.GetCodeAddressBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.GetsendFeenumBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
+import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
@@ -407,21 +408,39 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
             try {
                 Daemon.commands.callAttr("load_wallet", wallet_name);
-                Daemon.commands.callAttr("select_wallet", wallet_name);
+                PyObject selectWallet = Daemon.commands.callAttr("select_wallet", wallet_name);
+                if (selectWallet != null) {
+                    Log.i("select_wallet", "select_wallet+++: " + selectWallet.toString());
+                    Gson gson = new Gson();
+                    MainNewWalletBean mainWheelBean = gson.fromJson(selectWallet.toString(), MainNewWalletBean.class);
+                    String balanceC = mainWheelBean.getBalance();
+                    if (!TextUtils.isEmpty(balanceC)) {
+                        if (balanceC.contains("(")) {
+                            String strNowBtc = balanceC.substring(0, balanceC.indexOf("("));
+                            String strNowCny = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
+                            if (strNowCny.contains("≈")) {
+                                testNowCanUse.setText(String.format("%s%s%s", getString(R.string.usable), strNowBtc, strNowCny));
+                            } else {
+                                testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
+                            }
+                        } else {
+                            testNowCanUse.setText(String.format("%s%s", getString(R.string.usable), balanceC));
+                        }
+                    }
+
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+                return;
             }
             getFeerate();
             tetWalletname.setText(wallet_name);
             dialogBtom.cancel();
         });
         RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
-
         choosePayAddressAdapetr = new ChoosePayAddressAdapter(SendOne2OneMainPageActivity.this, dataListName);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
         recyclerviewOnclick();
-
-
         dialogBtom.setContentView(view);
         Window window = dialogBtom.getWindow();
         //set pop_up size

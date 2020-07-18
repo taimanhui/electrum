@@ -162,6 +162,7 @@ public class PinSettingActivity extends BaseActivity {
                                 intent.putExtra("tag", "PIN");
                                 intent.putExtra("pin", pin);
                                 startActivity(intent);
+
                             } else {
                                 EventBus.getDefault().post(new PinEvent(pin, ""));
                                 finish();

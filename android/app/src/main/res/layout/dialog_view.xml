@@ -7,7 +7,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/white_tuo"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/white_tuo_big"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="visible">
@@ -46,9 +48,9 @@
             android:id="@+id/edit_Filename"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"
-            android:layout_marginStart="26dp"
+            android:layout_marginStart="@dimen/dp_16"
             android:layout_marginTop="31.5dp"
-            android:layout_marginEnd="26dp"
+            android:layout_marginEnd="@dimen/dp_16"
             android:background="@drawable/gray_tuo_6"
             android:hint="@string/filename"
             android:paddingStart="@dimen/dp_16"
@@ -59,8 +61,10 @@
 
         <Button
             android:id="@+id/btn_Confirm"
-            android:layout_width="260dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_30"
             android:layout_marginTop="@dimen/dp_30"
             android:layout_marginBottom="@dimen/dp_20"
             android:background="@drawable/button_bk"

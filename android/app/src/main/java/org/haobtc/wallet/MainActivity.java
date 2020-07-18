@@ -249,7 +249,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     viewPager.setOffscreenPageLimit(4);
                     viewPager.setPageMargin(40);
                     viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-
+                    //transaction list data
+                    downMainListdata();
                 } else {
                     addwalletFragment();
                 }
@@ -306,6 +307,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            Log.i("huxianoanid", "refreshListrefreshList: ");
                             //refresh only wallet
                             ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
                         }
@@ -341,7 +343,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             tetNone.setVisibility(View.GONE);
             recy_data.setVisibility(View.VISIBLE);
             String strHistory = getHistoryTx.toString();
-            // Log.i("strHistory", "onPage----: " + strHistory);
+            Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
                 tetNone.setText(getString(R.string.no_records));
@@ -405,10 +407,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 private String txHash1;
                 private boolean status = false;
 
-                @SingleClick
+                @SingleClick(value = 5000)
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    String typeDele = maintrsactionlistEvents.get(position).getType();
+                    String typeDele = null;
+                    try {
+                        typeDele = maintrsactionlistEvents.get(position).getType();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
+                    }
                     switch (view.getId()) {
                         case R.id.lin_Item:
                             try {
@@ -423,6 +431,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     intent.putExtra("tx_hash", txHash1);
                                     intent.putExtra("is_mine", is_mine);
                                     intent.putExtra("strwalletType", strType);
+                                    intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
                                     intent.putExtra("listType", typeDele);
                                     intent.putExtra("dataTime", date);
                                     intent.putExtra("txCreatTrsaction", txOnclick);
@@ -432,6 +441,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     intent.putExtra("tx_hash", txHash1);
                                     intent.putExtra("is_mine", is_mine);
                                     intent.putExtra("dataTime", date);
+                                    intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
                                     intent.putExtra("strwalletType", strType);
                                     intent.putExtra("keyValue", "B");
                                     intent.putExtra("listType", typeDele);
@@ -444,32 +454,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             break;
                         case R.id.txt_delete:
                             try {
+                                maintrsactionlistEvents.remove(position);
+                                trsactionlistAdapter.notifyDataSetChanged();
                                 JSONObject jsonObject = jsonArray.getJSONObject(position);
                                 txHash1 = jsonObject.getString("tx_hash");
-                                Log.i("onItemChildClick", "onItemCh==== " + txHash1);
                                 status = Daemon.commands.callAttr("get_remove_flag", txHash1).toBoolean();
-
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                mToast(getString(R.string.delete_fail));
+                                return;
                             }
                             if (status) {
                                 try {
                                     Daemon.commands.callAttr("remove_local_tx", txHash1);
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                }
-                                if (status) {
-                                    try {
-                                        Daemon.commands.callAttr("remove_local_tx", txHash1);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        mToast(getString(R.string.delete_fail));
-                                        return;
-                                    }
-                                    maintrsactionlistEvents.remove(position);
+                                    mToast(getString(R.string.delete_fail));
+                                    return;
                                 }
                             }
-
                             break;
                         default:
                     }
@@ -582,10 +585,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case "22":
                 if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
-                    maintrsactionlistEvents.clear();
                     //transaction list data
                     downMainListdata();
-                    trsactionlistAdapter.notifyDataSetChanged();
                 }
                 break;
             case "33":

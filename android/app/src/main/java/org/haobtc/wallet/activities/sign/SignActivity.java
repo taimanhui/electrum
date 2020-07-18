@@ -49,6 +49,7 @@ import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.entries.FsActivity;
 import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.SignMessageEvent;
@@ -469,6 +470,11 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             intent.putExtra("is_button_request", true);
             startActivity(intent);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(FinishEvent event) {
+        finish();
     }
 
     @Override

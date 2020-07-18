@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -34,6 +36,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
@@ -45,6 +48,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -224,6 +228,7 @@ public class ShareOtherActivity extends BaseActivity {
     private void showPopupFilename(String stPath) {
         View view1 = LayoutInflater.from(this).inflate(R.layout.dialog_view, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
+        Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         ImageView imfCancel = view1.findViewById(R.id.img_Cancel);
         String newPath = stPath.replace("内部存储", "/storage/emulated/0");
         view1.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
@@ -237,7 +242,6 @@ public class ShareOtherActivity extends BaseActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.i("printException", "show---" + e.getMessage());
                 mToast(getString(R.string.downloadfail));
             }
             alertDialog.dismiss();
@@ -274,7 +278,7 @@ public class ShareOtherActivity extends BaseActivity {
                 if (getQrDataFromRawTx != null) {
                     String strCode = getQrDataFromRawTx.toString();
                     if (!TextUtils.isEmpty(strCode)) {
-                        bitmap = mCreateQrCode(strCode);
+                        bitmap = CodeCreator.createQRCode(strCode, 268, 268, null);
                         imgOrcode.setImageBitmap(bitmap);
                     }
                 }
@@ -282,29 +286,5 @@ public class ShareOtherActivity extends BaseActivity {
         }
     };
 
-
-    public static Bitmap mCreateQrCode(String str) {
-        //Generate a two-dimensional matrix, encoding to specify the size,
-        //Do not scale the image after it has been generated, in case of fuzzy recognition failure
-        try {
-            BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, 500, 500);
-            int width = matrix.getWidth();
-            int height = matrix.getHeight();
-            int[] pixels = new int[width * height];
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    if (matrix.get(x, y)) {
-                        pixels[y * width + x] = 0xff000000;
-                    }
-                }
-            }
-            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-            return bitmap;
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
 

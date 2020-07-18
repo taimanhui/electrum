@@ -182,6 +182,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         intent.putExtra("listType", typeDele);
                                         intent.putExtra("tx_hash", tx_hash1);
                                         intent.putExtra("strwalletType", strwalletType);
+                                        intent.putExtra("listTxStatus",maintrsactionlistEvents.get(position).getTxStatus());
                                         intent.putExtra("is_mine", isMine);
                                         intent.putExtra("dataTime", date);
                                         intent.putExtra("txCreatTrsaction", tx_Onclick);
@@ -192,6 +193,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         intent.putExtra("is_mine", isMine);
                                         intent.putExtra("strwalletType", strwalletType);
                                         intent.putExtra("dataTime", date);
+                                        intent.putExtra("listTxStatus",maintrsactionlistEvents.get(position).getTxStatus());
                                         intent.putExtra("keyValue", "B");
                                         intent.putExtra("listType", typeDele);
                                         startActivity(intent);
