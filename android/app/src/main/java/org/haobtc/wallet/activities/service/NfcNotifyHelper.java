@@ -65,8 +65,7 @@ public class NfcNotifyHelper extends BaseActivity {
         inputLayout.setVisibility(View.GONE);
         radioBle.setVisibility(View.GONE);
         tag = getIntent().getStringExtra("tag");
-
-       EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this);
         Optional.ofNullable(nfcTag).ifPresent((tags) -> {
             boolean buttonRequest = getIntent().getBooleanExtra("is_button_request", false);
             if (!buttonRequest) {

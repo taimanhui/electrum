@@ -204,6 +204,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             finish();
         }
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -215,15 +216,12 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.confirm_on_hardware:
                 if (isNFC && needTouch) {
-                    startActivity(new Intent(this, NfcNotifyHelper.class));
+                    Intent intent = new Intent(this, NfcNotifyHelper.class);
+                    // only used to fix exception with samsung s10
+                    intent.putExtra("is_button_request", true);
+                    startActivity(intent);
                     needTouch = false;
                 }
-//                 else {
-//                    intentAction = 1;
-//                    Intent intent = new Intent(this, ActivatedProcessing.class);
-//                    startActivity(intent);
-//                    finish();
-//                }
                 break;
             default:
         }

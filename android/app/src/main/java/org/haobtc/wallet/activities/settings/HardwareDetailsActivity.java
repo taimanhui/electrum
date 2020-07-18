@@ -53,12 +53,12 @@ public class HardwareDetailsActivity extends BaseActivity {
     @BindView(R.id.lin_OnckFour)
     LinearLayout linOnckFour;
     @BindView(R.id.wipe_device)
-    LinearLayout wipe_device;
+    LinearLayout wipeDevice;
     public static boolean dismiss;
     @BindView(R.id.test_shutdown_time)
     TextView testShutdownTime;
     private String bleName;
-    private String device_id;
+    private String deviceId;
     private String label;
     private boolean isWipe;
     private SharedPreferences devices;
@@ -80,9 +80,9 @@ public class HardwareDetailsActivity extends BaseActivity {
         devices = getSharedPreferences("devices", MODE_PRIVATE);
         Intent intent = getIntent();
         bleName = intent.getStringExtra("bleName");
-        String firmwareVersion = intent.getStringExtra("firmwareVersion");
-        String bleVerson = intent.getStringExtra("bleVerson");
-        device_id = intent.getStringExtra("device_id");
+//        String firmwareVersion = intent.getStringExtra("firmwareVersion");
+//        String bleVerson = intent.getStringExtra("bleVerson");
+        deviceId = intent.getStringExtra("device_id");
         label = intent.getStringExtra("label");
         if (!TextUtils.isEmpty(label)) {
             tetKeyName.setText(label);
@@ -90,7 +90,7 @@ public class HardwareDetailsActivity extends BaseActivity {
             tetKeyName.setText(String.format("%s", "BixinKEY"));
         }
 //        tetCode.setText(firmwareVersion);
-        String shutdownTime = preferences.getString(device_id, "600");
+        String shutdownTime = preferences.getString(deviceId, "600");
         testShutdownTime.setText(String.format("%s%s", shutdownTime, getString(R.string.second)));
     }
 
@@ -110,7 +110,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 Intent intent = new Intent(HardwareDetailsActivity.this, BixinKeyMessageActivity.class);
                 intent.putExtra("bleName", bleName);
                 intent.putExtra("label", label);
-                intent.putExtra("device_id", device_id);
+                intent.putExtra("device_id", deviceId);
                 startActivity(intent);
                 break;
             case R.id.lin_OnckTwo:
@@ -145,7 +145,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
             case R.id.linear_shutdown_time:
                 Intent intent2 = new Intent(this, SetShutdownTimeActivity.class);
-                intent2.putExtra("device_id", device_id);
+                intent2.putExtra("device_id", deviceId);
                 intent2.putExtra("ble_name", bleName);
                 startActivity(intent2);
                 break;
@@ -155,8 +155,8 @@ public class HardwareDetailsActivity extends BaseActivity {
                 startActivity(intent7);
                 break;
             case R.id.tet_deleteWallet:
-                devices.edit().remove(device_id).apply();
-                EventBus.getDefault().post(new FixBixinkeyNameEvent(device_id));
+                devices.edit().remove(deviceId).apply();
+                EventBus.getDefault().post(new FixBixinkeyNameEvent(deviceId));
                 mToast(getString(R.string.delete_succse));
                 finish();
                 break;

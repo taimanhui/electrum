@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.common.base.Strings;
+
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.utils.NfcUtils;
@@ -105,15 +107,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        String action = intent.getAction(); // get the action of the coming intent
-        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
-                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
-                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+        String action = intent.getAction();
+        // to fix the activity started with flag `FLAG_ACTIVITY_SINGLE_TOP` in stm32 1.9.5
+        if (!Strings.isNullOrEmpty(action)) {
+            if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
+                    || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
+                    || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
 //            isNFC = true;
-            CommunicationModeSelector.nfcTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                CommunicationModeSelector.nfcTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            }
         }
-    }
 
+    }
     //toast short
     public void mToast(String str) {
         Toast.makeText(this, str, Toast.LENGTH_SHORT).show();

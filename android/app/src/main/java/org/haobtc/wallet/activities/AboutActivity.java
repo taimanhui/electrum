@@ -63,7 +63,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
         updateVersion.setText(String.format("V%s", versionName));
     }
 
-    @SingleClick
+    @SingleClick(value = 5000)
     @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5})
     public void onViewClicked(View view) {
         switch (view.getId()) {
