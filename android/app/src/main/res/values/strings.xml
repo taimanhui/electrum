@@ -866,5 +866,6 @@
     <string name="checking">Currently being verified……</string>
     <string name="dont_use_bluetooth">You have refused to turn on the location service, unable to scan the Bluetooth device for you</string>
     <string name="dont_band">Unable to bind the device. Please restart the device and try again</string>
+    <string name="backup_tip">Please don\'t keep backup data on APP for long periods, move it to offline device or recovery to a new BixinKey</string>
 
 </resources>

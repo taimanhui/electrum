@@ -40,13 +40,24 @@
         android:layout_height="match_parent"
         android:background="@color/bk_page">
 
-
+        <TextView
+            android:id="@+id/promote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:textColor="@android:color/holo_red_light"
+            android:textStyle="bold"
+            android:text="@string/backup_tip"
+            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_10"
             android:layout_marginTop="@dimen/dp_16"
             android:layout_marginEnd="@dimen/dp_10"
+            android:layout_below="@id/promote"
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView

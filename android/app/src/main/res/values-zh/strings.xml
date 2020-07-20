@@ -831,6 +831,7 @@
     <string name="checking">当前正在校验中……</string>
     <string name="dont_use_bluetooth">您拒绝了开启位置服务，无法为您扫描到蓝牙设备</string>
     <string name="dont_band">无法绑定设备，请重启设备重试</string>
+    <string name="backup_tip">请尽量不要把备份信息在手机端长期保留，可以把备份信息移动到安全的离线设备或导入到另外一个bixinkey中</string>
 
 
 </resources>
