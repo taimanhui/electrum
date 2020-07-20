@@ -82,7 +82,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.com.heaton.blelibrary.ble.Ble;
 
-
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     public static final String TAG = SendOne2OneMainPageActivity.class.getSimpleName();
     @BindView(R.id.edit_changeMoney)
@@ -126,7 +125,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private TextView textView;
     private PyObject get_wallets_list;
     private PyObject pyObject;
-    private int intmaxFee;
+    private float intmaxFee;
     private String strComment = "";
     private String waletType;
     private ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener;
@@ -331,9 +330,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMaxTemp = strFeeamont.replaceAll(" ", "");
                 String strMax = strMaxTemp.split("\\.", 2)[0];
-                intmaxFee = Integer.parseInt(strMax);//fee
-                seekBar.setMax(intmaxFee * 2);
-                seekBar.setProgress(intmaxFee);
+                intmaxFee = Float.parseFloat(strMax);//fee
+                seekBar.setMax((int) (intmaxFee * 20000));
+                seekBar.setProgress((int) (intmaxFee * 10000));
                 textBlocks.setText(strFeemontAs);
             }
             seekbarLatoutup();
@@ -353,9 +352,13 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                String indicatorText = String.valueOf(seekBar.getProgress());
-                intmaxFee = Integer.parseInt(indicatorText);//use get fee
-                textBlocks.setText(String.format("%s sat/byte", indicatorText));
+                if (seekBar.getProgress() == 1){
+                    intmaxFee = 1;
+                    textBlocks.setText(String.format("%s sat/byte", intmaxFee));
+                }else{
+                    intmaxFee = Float.parseFloat(String.valueOf(seekBar.getProgress())) / 10000;
+                    textBlocks.setText(String.format("%s sat/byte", intmaxFee));
+                }
                 //getFeerate
                 getFeerate();
             }
@@ -849,7 +852,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 Gson gson = new Gson();
                 GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
                 int fee = getsendFeenumBean.getFee();
-                tetMoneye.setText(String.format("%ssat", String.valueOf(fee)));
+                tetMoneye.setText(String.format("%s sat", String.valueOf(fee)));
 
             }
         }

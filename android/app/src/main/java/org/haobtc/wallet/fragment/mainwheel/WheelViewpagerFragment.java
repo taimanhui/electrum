@@ -309,7 +309,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             alertDialog.dismiss();
         });
         alertDialog.show();
-        //居中显示
+        //show center
         Window dialogWindow = alertDialog.getWindow();
         WindowManager m = getActivity().getWindowManager();
         Display d = m.getDefaultDisplay();

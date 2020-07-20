@@ -20,6 +20,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -401,7 +402,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     .setTitle(R.string.open_location_service)
                     .setMessage(R.string.promote_ble)
                     .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                        Toast.makeText(this, "您拒绝了开启位置服务，无法为您扫描到蓝牙设备", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.dont_use_bluetooth), Toast.LENGTH_SHORT).show();
                         locationManager.removeUpdates(locationListener);
                         dialog.dismiss();
                         finish();
@@ -413,13 +414,21 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     })
                     .create();
             alertDialog.show();
+            //show center
+            Window dialogWindow = alertDialog.getWindow();
+            WindowManager m = getWindowManager();
+            Display d = m.getDefaultDisplay();
+            WindowManager.LayoutParams p = dialogWindow.getAttributes();
+            p.width = (int) (d.getWidth() * 0.95);
+            p.gravity = Gravity.CENTER;
+            dialogWindow.setAttributes(p);
         } else {
             locationManager = null;
             if (mBle.isScanning()) {
                 mBle.stopScan();
             }
             BleDeviceRecyclerViewAdapter.mValues.clear();
-            // 由于设备被连接时，会停止广播导致该设备无法被搜索到,所以要添加本APP以连接的设备到列表中
+            // When the device is connected, it will stop broadcasting, so the device cannot be searched. Therefore, the device connected by this app will be added to the list
             BleDeviceRecyclerViewAdapter.mValues.addAll(Ble.getInstance().getConnetedDevices());
             adapter.notifyDataSetChanged();
             if (start) {
@@ -1036,7 +1045,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(CheckReceiveAddress event) {
-        if ("checking".equals(event.getType())) {
+        if ("checking".equals(event.getType()) || "finish_mode_select".equals(event.getType())) {
             finish();
         }
     }
@@ -1076,9 +1085,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             }
         }
     }
+
     /**
      * Note: the execute thread isn't the UI thread
-     * **/
+     **/
     @Override
     public void onException(Exception e) {
         if (dialogFragment != null) {
@@ -1268,7 +1278,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     Log.i("CheckHideWalletFragment", "33333333");
                     //Set password
                     Intent intent3 = new Intent(fragmentActivity, HideWalletSetPassActivity.class);
-                    intent3.putExtra("hideWalletReceive",hideWalletReceive);
+                    intent3.putExtra("hideWalletReceive", hideWalletReceive);
                     fragmentActivity.startActivity(intent3);
                     break;
                 default:

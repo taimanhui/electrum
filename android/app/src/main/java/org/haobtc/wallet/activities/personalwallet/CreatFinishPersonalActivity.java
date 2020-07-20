@@ -7,8 +7,12 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,6 +110,14 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             finish();
         });
         alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
     }
 
     private void checkAllBixinkey() {

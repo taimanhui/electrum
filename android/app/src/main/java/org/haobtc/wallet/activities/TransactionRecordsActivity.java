@@ -101,6 +101,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     }
 
     private void getHistroyIntry(PyObject getHistoryTx) {
+        maintrsactionlistEvents.clear();
         //get transaction list
         if (!getHistoryTx.isEmpty()) {
             String strHistory = getHistoryTx.toString();

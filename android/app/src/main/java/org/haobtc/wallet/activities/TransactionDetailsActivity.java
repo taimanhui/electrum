@@ -41,6 +41,7 @@ import org.haobtc.wallet.bean.AddspeedNewtrsactionBean;
 import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.ScanCheckDetailBean;
+import org.haobtc.wallet.event.CheckReceiveAddress;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
@@ -162,6 +163,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String feeForChildReceive;
     private String txStatus;
     private String listTxStatus = "";
+    private float feeForChild;
 
     @Override
     public int getLayoutId() {
@@ -180,7 +182,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         Intent intent = getIntent();
         if (!TextUtils.isEmpty(intent.getStringExtra("signed_raw_tx"))) {
             signedRawTx = intent.getStringExtra("signed_raw_tx");
-            EventBus.getDefault().post(new FinishEvent());//close sign page
+            EventBus.getDefault().post(new CheckReceiveAddress("finish_mode_select"));//close sign page
         } else {
             hideWallet = intent.getStringExtra("hideWallet");//hide wallet transaction
             publicTrsation = intent.getStringExtra("txCreatTrsaction");
@@ -335,7 +337,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         txHash = txid;
         rawtx = getnewcreatTrsactionListBean.getTx();
         canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
-        edit.putString("signedRowtrsation", rawtx);
+        edit.putString("signedRowTransaction", rawtx);
         edit.apply();
         if (inputAddr.size() != 0) {
             String addrInput = inputAddr.get(0).getAddr();
@@ -442,15 +444,18 @@ public class TransactionDetailsActivity extends BaseActivity {
         } else {
             tetAddressNum.setVisibility(View.GONE);
         }
-        if (inputAddr.size() != 1) {
-            if ("English".equals(language)) {
-                tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddr.size()));
+        if (inputAddr != null && inputAddr.size() != 0) {
+            if (inputAddr.size() != 1) {
+                if ("English".equals(language)) {
+                    tetPayAddressNum.setText(String.format("%s%d", getString(R.string.wait), inputAddr.size()));
+                } else {
+                    tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddr.size(), getString(R.string.ge)));
+                }
             } else {
-                tetPayAddressNum.setText(String.format("%s%d%s", getString(R.string.wait), inputAddr.size(), getString(R.string.ge)));
+                tetPayAddressNum.setVisibility(View.GONE);
             }
-        } else {
-            tetPayAddressNum.setVisibility(View.GONE);
         }
+
         //output_address
         if (outputAddrScan.size() != 0) {
             String addr = outputAddrScan.get(0).getAddr();
@@ -682,7 +687,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 testChangeFee.setText(String.format("%s sat/byte", newFeerate));
                 BigDecimal bigSingSingle = new BigDecimal(ingSingle);
                 createBumpFee(tetNewfee, bigSingSingle);//get tx and fee
-                seekbarLatoutup(seekBar, testChangeFee, tetNewfee, ingSingle);//seek bar Listener
+                seekbarLatoutup(seekBar, testChangeFee, tetNewfee);//seek bar Listener
                 imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
                 });
@@ -690,6 +695,14 @@ public class TransactionDetailsActivity extends BaseActivity {
                     confirmedSpeed();
                 });
                 alertDialog.show();
+                //show center
+                Window dialogWindow = alertDialog.getWindow();
+                WindowManager m = getWindowManager();
+                Display d = m.getDefaultDisplay();
+                WindowManager.LayoutParams p = dialogWindow.getAttributes();
+                p.width = (int) (d.getWidth() * 0.95);
+                p.gravity = Gravity.CENTER;
+                dialogWindow.setAttributes(p);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -752,7 +765,20 @@ public class TransactionDetailsActivity extends BaseActivity {
                 seekBar.setMax(maxRecommendNum * 10000);
                 seekBar.setProgress(noeRecommendPro * 10000);
                 testChangeFee.setText(feeRateForChild);
-                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), feeForChildReceive + preferences.getString("base_unit", "mBTC")));
+
+                String baseUnit = preferences.getString("base_unit", "mBTC");
+
+                if ("BTC".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(feeForChildReceive) * 100000000;
+                } else if ("mBTC".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(feeForChildReceive) * 100000;
+                } else if ("bits".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(feeForChildReceive) * 100;
+                } else if ("sat".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(feeForChildReceive);
+                }
+
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), feeForChild + " sat"));
                 seekBarReceiveFee(seekBar, testChangeFee, tetNewfee, recommendProRate);
                 imgCancel.setOnClickListener(v -> {
                     alertDialog.dismiss();
@@ -761,11 +787,19 @@ public class TransactionDetailsActivity extends BaseActivity {
                     confirmedReceiveSpeed(feeForChildReceive);
                 });
                 alertDialog.show();
-
+                //show center
+                Window dialogWindow = alertDialog.getWindow();
+                WindowManager m = getWindowManager();
+                Display d = m.getDefaultDisplay();
+                WindowManager.LayoutParams p = dialogWindow.getAttributes();
+                p.width = (int) (d.getWidth() * 0.95);
+                p.gravity = Gravity.CENTER;
+                dialogWindow.setAttributes(p);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+
     }
 
     private void seekBarReceiveFee(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee, int recommendProRate) {
@@ -784,7 +818,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 BigDecimal bigChange = new BigDecimal(seekBar.getProgress() + (minProRate * 10000));
                 BigDecimal bigResult = bigChange.divide(big10);
                 String indicatorText = String.valueOf(bigResult);
-                testChangeFee.setText(String.format("%s sat", indicatorText));
+                testChangeFee.setText(String.format("%s sat/byte", indicatorText));
                 getCpfpInfo(tetNewfee, bigResult);//get tx and fee
             }
         });
@@ -813,7 +847,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         }
     }
 
-    private void seekbarLatoutup(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee, int ingSingle) {
+    private void seekbarLatoutup(IndicatorSeekBar seekBar, TextView testChangeFee, TextView tetNewfee) {
         seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
@@ -829,7 +863,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 BigDecimal bigChangeRbf = new BigDecimal(seekBar.getProgress() + (minPro * 10000));
                 BigDecimal bigResultRbf = bigChangeRbf.divide(big10rbf);
 
-                testChangeFee.setText(String.format("%s sat", bigResultRbf));
+                testChangeFee.setText(String.format("%s sat/byte", bigResultRbf));
                 createBumpFee(tetNewfee, bigResultRbf);//get tx and fee
 
             }
@@ -870,7 +904,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             tetAddSpeed.setVisibility(View.GONE);
             buttonStatus = false;//buttonStatus = true-->don't speed up   ：  false-->speed up
             braodStatus = true;//braod_status = true   -->   speed don't broadcast
-            edit.putString("signedRowtrsation", publicTrsation);
+            edit.putString("signedRowTransaction", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
             alertDialog.dismiss();
@@ -924,7 +958,7 @@ public class TransactionDetailsActivity extends BaseActivity {
 
     //Radio broadcast
     private void braodcastTrsaction() {
-        String signedRowTrsation = preferences.getString("signedRowtrsation", "");
+        String signedRowTrsation = preferences.getString("signedRowTransaction", "");
         try {
             Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
         } catch (Exception e) {
@@ -993,6 +1027,14 @@ public class TransactionDetailsActivity extends BaseActivity {
         });
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
 
     }
 
@@ -1012,7 +1054,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             braodStatus = true;
             tetAddSpeed.setVisibility(View.GONE);
             buttonStatus = false;//buttonStatus = true-->Click the button   ：  false-->Modify status only
-            edit.putString("signedRowtrsation", publicTrsation);
+            edit.putString("signedRowTransaction", publicTrsation);
             edit.apply();
             mCreataSuccsesCheck();
             alertDialog.dismiss();

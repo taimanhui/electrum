@@ -1,7 +1,6 @@
 package org.haobtc.wallet.activities;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -10,17 +9,17 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,13 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.chaquo.python.PyObject;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
@@ -42,7 +34,6 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.entries.FsActivity;
-import org.haobtc.wallet.utils.Daemon;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,7 +46,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.fileselector.FileSelectConstant;
 
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.executorService;
 import static org.haobtc.wallet.utils.Daemon.commands;
 
 public class ShareOtherActivity extends BaseActivity {
@@ -82,7 +72,6 @@ public class ShareOtherActivity extends BaseActivity {
     private Bitmap bitmap;
     private boolean toGallery;
     private String rowTx;
-    PyObject getQrDataFromRawTx = null;
 
     @Override
     public int getLayoutId() {
@@ -110,19 +99,8 @@ public class ShareOtherActivity extends BaseActivity {
     public void initData() {
         //or code
         if (!TextUtils.isEmpty(rowTx)) {
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    //Sub thread
-                    try {
-                        getQrDataFromRawTx = commands.callAttr("get_qr_data_from_raw_tx", rowTx);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                    mainHandler.sendEmptyMessage(1);
-                }
-            });
+            bitmap = CodeCreator.createQRCode(rowTx, 268, 268, null);
+            imgOrcode.setImageBitmap(bitmap);
         }
         tetTrsactionText.setText(rowTx);
     }
@@ -251,6 +229,14 @@ public class ShareOtherActivity extends BaseActivity {
             alertDialog.dismiss();
         });
         alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
 
     }
 
@@ -268,23 +254,6 @@ public class ShareOtherActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    @SuppressLint("HandlerLeak")
-    Handler mainHandler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1) {
-                if (getQrDataFromRawTx != null) {
-                    String strCode = getQrDataFromRawTx.toString();
-                    if (!TextUtils.isEmpty(strCode)) {
-                        bitmap = CodeCreator.createQRCode(strCode, 268, 268, null);
-                        imgOrcode.setImageBitmap(bitmap);
-                    }
-                }
-            }
-        }
-    };
 
 }
 

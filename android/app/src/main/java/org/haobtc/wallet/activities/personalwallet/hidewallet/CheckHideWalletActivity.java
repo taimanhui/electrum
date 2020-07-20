@@ -248,6 +248,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                                 intent.putExtra("keyValue", "B");
                                 intent.putExtra("dataTime", date);
                                 intent.putExtra("is_mine", isMine);
+                                intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
                                 intent.putExtra("tx_hash", txHash1);
                                 intent.putExtra("strwalletType", "1-1");
                                 intent.putExtra("listType", typeDele);
@@ -269,7 +270,6 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                                 txHash1 = jsonObject.getString("tx_hash");
                                 PyObject getRemoveFlag = Daemon.commands.callAttr("get_remove_flag", txHash1);
                                 status = getRemoveFlag.toBoolean();
-                                Log.i("onItemChildClick", "onItemCh==== " + status);
 
                             } catch (Exception e) {
                                 e.printStackTrace();

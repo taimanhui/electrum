@@ -255,8 +255,8 @@
     <string name="get_bi_address">收币地址</string>
     <string name="get_bi_num">收币数量</string>
     <string name="introduce_choose">备注（选填）</string>
-    <string name="slowly">慢</string>
-    <string name="quikly">快</string>
+    <string name="slowly">低</string>
+    <string name="quikly">高</string>
     <string name="recomend_fee">推荐费率</string>
     <string name="_sat_byte">20sat/byte 预计1个区块（10分钟）确认</string>
     <string name="input_public_key">手动输入公钥</string>
@@ -829,6 +829,8 @@
     <string name="not_recommend">此交易不需要加速！</string>
     <string name="download_file">下载交易文件</string>
     <string name="checking">当前正在校验中……</string>
+    <string name="dont_use_bluetooth">您拒绝了开启位置服务，无法为您扫描到蓝牙设备</string>
+    <string name="dont_band">无法绑定设备，请重启设备重试</string>
 
 
 </resources>

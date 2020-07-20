@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.DfuEvent;
 import org.haobtc.wallet.event.ExitEvent;
@@ -224,7 +225,7 @@ public class BleService extends Service {
                         if (!bond) {
                             EventBus.getDefault().post(new ExitEvent());
                             Log.e("BLE", "无法绑定设备");
-                            Toast.makeText(this, "无法绑定设备，请重启设备重试", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.dont_band), Toast.LENGTH_SHORT).show();
                         }
                         isBonded = true;
                         break;

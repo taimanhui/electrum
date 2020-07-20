@@ -14,8 +14,12 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -253,9 +257,9 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.i("ffffffffff", "onViewClicked: " + e.getMessage());
-                            if (e.getMessage().contains("non-hexadecimal number found in fromhex() arg at position 0")){
+                            if (e.getMessage().contains("non-hexadecimal number found in fromhex() arg at position 0")) {
                                 mToast(getString(R.string.transaction_wrong));
-                            }else{
+                            } else {
                                 mToast(e.getMessage());
                             }
                             return;
@@ -352,6 +356,14 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             alertDialog.dismiss();
         });
         alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
 
     }
 
@@ -372,7 +384,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     mToast(getString(R.string.wrong_pass));
-                }else if (e.getMessage().contains("failed to recognize transaction encoding for txt")){
+                } else if (e.getMessage().contains("failed to recognize transaction encoding for txt")) {
                     mToast(getString(R.string.transaction_wrong));
                 }
                 e.printStackTrace();
@@ -394,6 +406,14 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             alertDialog.dismiss();
         });
         alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
     }
 
     private Runnable runnable = this::gotoConfirmOnHardware;

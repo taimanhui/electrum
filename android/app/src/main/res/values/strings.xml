@@ -256,8 +256,8 @@
     <string name="get_bi_address">To address</string>
     <string name="get_bi_num">Number to receive</string>
     <string name="introduce_choose">Remark (optional)</string>
-    <string name="slowly">Slow</string>
-    <string name="quikly">Fast</string>
+    <string name="slowly">Low</string>
+    <string name="quikly">High</string>
     <string name="recomend_fee">best fee rate</string>
     <string name="_sat_byte">20sat/byte</string>
     <string name="input_public_key">Enter public key manually</string>
@@ -864,5 +864,7 @@
     <string name="not_recommend">This transaction does not need to be accelerated!</string>
     <string name="download_file">Download transaction file</string>
     <string name="checking">Currently being verified……</string>
+    <string name="dont_use_bluetooth">You have refused to turn on the location service, unable to scan the Bluetooth device for you</string>
+    <string name="dont_band">Unable to bind the device. Please restart the device and try again</string>
 
 </resources>

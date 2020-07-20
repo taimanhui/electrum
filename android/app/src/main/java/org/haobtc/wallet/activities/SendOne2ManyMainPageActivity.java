@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -104,14 +105,12 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private Dialog dialogBtom;
     private ChoosePayAddressAdapter choosePayAddressAdapetr;
     private String mwalletName;
-    private double pro;
     private String strmapBtc;
     private List addressList;
-    private int intmaxFee;
+    private float intmaxFee;
     private String walletType;
     private String walletTypeToSign;
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
-    private CommunicationModeSelector modeSelector;
     private String payAddress;
     private String strFeemontAs;
     private boolean showSeek = true;
@@ -200,9 +199,9 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "").split("\\.", 2)[0];
                 textBlocks.setText(strFeemontAs);
-                intmaxFee = Integer.parseInt(strMax);
-                seedBar.setMax(intmaxFee * 2);
-                seedBar.setProgress(intmaxFee);
+                intmaxFee = Float.parseFloat(strMax);//fee
+                seedBar.setMax((int) (intmaxFee * 20000));
+                seedBar.setProgress((int) (intmaxFee * 10000));
 
             }
             seekbarLatoutup();
@@ -223,9 +222,13 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                String indicatorText = String.valueOf(seekBar.getProgress());
-                intmaxFee = Integer.parseInt(indicatorText);//use get fee
-                textBlocks.setText(String.format("%s sat/byte", indicatorText));
+                if (seekBar.getProgress() == 1){
+                    intmaxFee = 1;
+                    textBlocks.setText(String.format("%s sat/byte", intmaxFee));
+                }else{
+                    intmaxFee = Float.parseFloat(String.valueOf(seekBar.getProgress())) / 10000;
+                    textBlocks.setText(String.format("%s sat/byte", intmaxFee));
+                }
                 //getFeerate
                 getFeerate();
             }
@@ -487,6 +490,14 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         });
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
     }
 
     private void recyclerviewOnclick() {
