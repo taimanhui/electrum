@@ -255,11 +255,11 @@ class AndroidCommands(commands.Commands):
                 # append fiat balance and price
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-            #print("update_statue out = %s" % (out))
-        if (out != self.pre_balance_info) or (self.pre_wallet == self.wallet):
-            if self.pre_wallet == self.wallet:
-                self.pre_wallet = None
-            self.pre_balance_info = out
+           # print("update_statue out = %s" % (out))
+        # if (out != self.pre_balance_info) or (self.pre_wallet == self.wallet):
+        #     if self.pre_wallet == self.wallet:
+        #         self.pre_wallet = None
+        #     self.pre_balance_info = out
             self.callbackIntent.onCallback("update_status", json.dumps(out))
 
     def get_remove_flag(self, tx_hash):
@@ -283,8 +283,9 @@ class AndroidCommands(commands.Commands):
         try:
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.push_tx(self.wallet, 'deltx', hash)
-        except Exception as e:
-            #print(f"push_tx delete_tx error {e}")
+        except BaseException as e:
+            if e != 'Could not decode:':
+                print(f"push_tx delete_tx error {e}")
             pass
 
     def save_tx_to_file(self, path, tx):
@@ -1815,7 +1816,6 @@ class AndroidCommands(commands.Commands):
             if name is None:
                 self.wallet = None
             else:
-                self.pre_wallet = self.wallet
                 self.wallet = self.daemon._wallets[self._wallet_path(name)]
 
             self.wallet.use_change = self.config.get('use_change', False)
