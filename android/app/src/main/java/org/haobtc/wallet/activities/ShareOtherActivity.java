@@ -27,6 +27,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
@@ -39,12 +44,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 import dr.android.fileselector.FileSelectConstant;
+
 
 import static org.haobtc.wallet.utils.Daemon.commands;
 
@@ -99,12 +108,42 @@ public class ShareOtherActivity extends BaseActivity {
     public void initData() {
         //or code
         if (!TextUtils.isEmpty(rowTx)) {
-            bitmap = CodeCreator.createQRCode(rowTx, 268, 268, null);
-            imgOrcode.setImageBitmap(bitmap);
+            bitmap = syncEncodeQRCode(rowTx, 268,Color.parseColor("#000000"), Color.parseColor("#ffffff"), null);
+
+            imgOrcode.setImageBitmap(this.bitmap);
         }
         tetTrsactionText.setText(rowTx);
     }
 
+    public static final Map<EncodeHintType, Object> HINTS = new EnumMap<>(EncodeHintType.class);
+
+    static {
+        HINTS.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        HINTS.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        HINTS.put(EncodeHintType.MARGIN, 0);
+    }
+
+    public static Bitmap syncEncodeQRCode(String content, int size, int foregroundColor, int backgroundColor, Bitmap logo) {
+        try {
+            BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, HINTS);
+            int[] pixels = new int[size * size];
+            for (int y = 0; y < size; y++) {
+                for (int x = 0; x < size; x++) {
+                    if (matrix.get(x, y)) {
+                        pixels[y * size + x] = foregroundColor;
+                    } else {
+                        pixels[y * size + x] = backgroundColor;
+                    }
+                }
+            }
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, size, 0, 0, size, size);
+            return bitmap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @SingleClick
     @OnClick({R.id.tet_Preservation, R.id.tet_Copy, R.id.lin_downLoad, R.id.img_back, R.id.tet_open})

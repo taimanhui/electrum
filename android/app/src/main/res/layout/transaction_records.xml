@@ -79,36 +79,6 @@
 
         </RadioGroup>
 
-
-        <!--        <androidx.appcompat.widget.AppCompatSpinner-->
-        <!--            android:id="@+id/spi_BTC"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="54dp"-->
-        <!--            android:layout_marginStart="@dimen/text_margin"-->
-        <!--            android:layout_weight="1"-->
-        <!--            android:dropDownWidth="130dp"-->
-        <!--            android:dropDownHorizontalOffset="70dp"-->
-        <!--            android:dropDownVerticalOffset="54dp"-->
-        <!--            android:elevation="@dimen/layout_margin"-->
-        <!--            android:entries="@array/type"-->
-        <!--            android:gravity="center"-->
-        <!--            android:spinnerMode="dropdown"/>-->
-
-        <!--        <androidx.appcompat.widget.AppCompatSpinner-->
-        <!--            android:id="@+id/spi_ZT"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="54dp"-->
-        <!--            android:layout_marginEnd="@dimen/sp_16"-->
-        <!--            android:layout_weight="1"-->
-        <!--            android:dropDownWidth="130dp"-->
-        <!--            android:dropDownHorizontalOffset="70dp"-->
-        <!--            android:dropDownVerticalOffset="54dp"-->
-        <!--            android:entries="@array/state"-->
-        <!--            android:gravity="center_vertical"-->
-        <!--            android:spinnerMode="dropdown">-->
-
-        <!--        </androidx.appcompat.widget.AppCompatSpinner>-->
-
     </LinearLayout>
 
     <LinearLayout

@@ -74,6 +74,8 @@ public class Send2ManyActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     public void initView() {
+
+
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);

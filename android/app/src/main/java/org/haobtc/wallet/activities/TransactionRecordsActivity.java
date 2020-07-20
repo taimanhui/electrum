@@ -77,11 +77,17 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
 
     @Override
     public void initData() {
-        maintrsactionlistEvents = new ArrayList<>();
-        //Binder Adapter
-        trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
-        recyJylist.setAdapter(trsactionlistAdapter);
-        mTransactionrecordSend(strChoose);
+        if ("none_data".equals(getIntent().getStringExtra("noneData"))) {
+            tetNone.setVisibility(View.VISIBLE);
+            recyJylist.setVisibility(View.GONE);
+        } else {
+            maintrsactionlistEvents = new ArrayList<>();
+            //Binder Adapter
+            trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
+            recyJylist.setAdapter(trsactionlistAdapter);
+            mTransactionrecordSend(strChoose);
+        }
+
 
     }
 
@@ -105,7 +111,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
         //get transaction list
         if (!getHistoryTx.isEmpty()) {
             String strHistory = getHistoryTx.toString();
-           // Log.i("strHistory", "onPage----: " + strHistory);
+            // Log.i("strHistory", "onPage----: " + strHistory);
             if (TextUtils.isEmpty(strHistory) || strHistory.length() == 2) {
                 tetNone.setVisibility(View.VISIBLE);
                 recyJylist.setVisibility(View.GONE);
@@ -168,6 +174,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                 trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                     private boolean status;
                     private String txHash1;
+
                     @Override
                     public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                         String typeDele = maintrsactionlistEvents.get(position).getType();
@@ -183,7 +190,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         intent.putExtra("listType", typeDele);
                                         intent.putExtra("tx_hash", tx_hash1);
                                         intent.putExtra("strwalletType", strwalletType);
-                                        intent.putExtra("listTxStatus",maintrsactionlistEvents.get(position).getTxStatus());
+                                        intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
                                         intent.putExtra("is_mine", isMine);
                                         intent.putExtra("dataTime", date);
                                         intent.putExtra("txCreatTrsaction", tx_Onclick);
@@ -194,7 +201,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                                         intent.putExtra("is_mine", isMine);
                                         intent.putExtra("strwalletType", strwalletType);
                                         intent.putExtra("dataTime", date);
-                                        intent.putExtra("listTxStatus",maintrsactionlistEvents.get(position).getTxStatus());
+                                        intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
                                         intent.putExtra("keyValue", "B");
                                         intent.putExtra("listType", typeDele);
                                         startActivity(intent);
@@ -254,20 +261,29 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         switch (checkedId) {
             case R.id.radio_one:
-                strChoose = "send";
-                maintrsactionlistEvents.clear();
-                mTransactionrecordSend(strChoose);
-                if (trsactionlistAdapter != null) {
-                    trsactionlistAdapter.notifyDataSetChanged();
+                if ("none_data".equals(getIntent().getStringExtra("noneData"))) {
+                    tetNone.setVisibility(View.VISIBLE);
+                    recyJylist.setVisibility(View.GONE);
+                } else {
+                    strChoose = "send";
+                    maintrsactionlistEvents.clear();
+                    mTransactionrecordSend(strChoose);
+                    if (trsactionlistAdapter != null) {
+                        trsactionlistAdapter.notifyDataSetChanged();
+                    }
                 }
-
                 break;
             case R.id.radio_two:
-                strChoose = "receive";
-                maintrsactionlistEvents.clear();
-                mTransactionrecordSend(strChoose);
-                if (trsactionlistAdapter != null) {
-                    trsactionlistAdapter.notifyDataSetChanged();
+                if ("none_data".equals(getIntent().getStringExtra("noneData"))) {
+                    tetNone.setVisibility(View.VISIBLE);
+                    recyJylist.setVisibility(View.GONE);
+                } else {
+                    strChoose = "receive";
+                    maintrsactionlistEvents.clear();
+                    mTransactionrecordSend(strChoose);
+                    if (trsactionlistAdapter != null) {
+                        trsactionlistAdapter.notifyDataSetChanged();
+                    }
                 }
                 break;
             default:

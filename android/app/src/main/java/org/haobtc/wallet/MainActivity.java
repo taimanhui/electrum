@@ -11,9 +11,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -410,6 +414,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 @SingleClick(value = 5000)
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    Log.i("onItemChildClick", "onItemChildClick: " + position);
                     String typeDele = null;
                     try {
                         typeDele = maintrsactionlistEvents.get(position).getType();
@@ -473,6 +478,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     return;
                                 }
                             }
+                            //transaction list data
+                            downMainListdata();
                             break;
                         default:
                     }
@@ -565,6 +572,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.textView_more:
                 Intent intent2 = new Intent(this, TransactionRecordsActivity.class);
                 intent2.putExtra("strwalletType", strType);
+                if (scrollPos == (fragmentList.size() - 1) || scrollPos == (fragmentList.size() - 2)) {
+                    intent2.putExtra("noneData", "none_data");
+                }
                 startActivity(intent2);
                 break;
             case R.id.tet_Addmoney:
@@ -786,6 +796,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         });
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
     }
 
     /**

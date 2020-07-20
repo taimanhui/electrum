@@ -2,9 +2,7 @@ package org.haobtc.wallet.activities.base;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.ImageView;
 
 import com.chaquo.python.Kwarg;
 
@@ -19,20 +17,12 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Optional;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-
 public class LunchActivity extends BaseActivity {
 
     private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
-//        if ("English".equals(preferences.getString("language",""))){
-//            this.setTheme(R.style.LunchTheme);
-//        }
-
         return R.layout.activity_lunch;
     }
 

@@ -22,7 +22,7 @@ public class BixinkeyManagerAdapter extends BaseQuickAdapter<HardwareFeatures, B
         if (!TextUtils.isEmpty(item.getLabel())){
             helper.setText(R.id.tet_keyName,item.getLabel());
         } else {
-            helper.setText(R.id.tet_keyName,item.getBleName());
+            helper.setText(R.id.tet_keyName,"BiXinKEY");
         }
 
         helper.addOnClickListener(R.id.relativeLayout_bixinkey);

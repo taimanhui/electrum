@@ -767,7 +767,6 @@ public class TransactionDetailsActivity extends BaseActivity {
                 testChangeFee.setText(feeRateForChild);
 
                 String baseUnit = preferences.getString("base_unit", "mBTC");
-
                 if ("BTC".equals(baseUnit)) {
                     feeForChild = Float.parseFloat(feeForChildReceive) * 100000000;
                 } else if ("mBTC".equals(baseUnit)) {
@@ -840,7 +839,17 @@ public class TransactionDetailsActivity extends BaseActivity {
             try {
                 JSONObject jsonObject = new JSONObject(strContent);
                 feeForChildReceive = jsonObject.getString("fee_for_child");
-                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), feeForChildReceive + preferences.getString("base_unit", "mBTC")));
+                String baseUnit = preferences.getString("base_unit", "mBTC");
+                if ("BTC".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(feeForChildReceive) * 100000000;
+                } else if ("mBTC".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(feeForChildReceive) * 100000;
+                } else if ("bits".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(feeForChildReceive) * 100;
+                } else if ("sat".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(feeForChildReceive);
+                }
+                tetNewfee.setText(String.format("%s  %s", getString(R.string.speed_fee_is), feeForChild + " sat"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
