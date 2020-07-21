@@ -61,7 +61,7 @@ public class FixWalletNameActivity extends BaseActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 number.setText(String.format(Locale.CHINA, "%d/16", input.length()));
                 if (input.length() > 15) {
-                    mToast(getString(R.string.moreinput_text));
+                    mToast(getString(R.string.moreinput_text_fixbixinkey));
                 }
 
             }

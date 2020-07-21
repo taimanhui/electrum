@@ -105,10 +105,11 @@
 
                         <ImageView
                             android:id="@+id/img_Orcode"
-                            android:layout_width="match_parent"
+                            android:layout_width="268dp"
                             android:layout_height="268dp"
-                            android:layout_marginTop="@dimen/dp_10"
-                            android:layout_marginBottom="@dimen/dp_10"
+                            android:scaleType="fitXY"
+                            android:layout_marginTop="@dimen/dp_20"
+                            android:layout_marginBottom="@dimen/dp_20"
                             android:visibility="visible" />
 
                         <TextView

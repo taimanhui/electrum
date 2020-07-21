@@ -49,14 +49,30 @@
         android:layout_marginEnd="@dimen/dp_16"
         android:layout_marginBottom="@dimen/dp_16">
 
-        <TextView
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/dp_16"
-            android:lineSpacingExtra="8sp"
-            android:text="@string/user_agreement_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/sp_13" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="8sp"
+                android:paddingTop="@dimen/dp_16"
+                android:text="@string/user_agreement_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/sp_13" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="8sp"
+                android:text="@string/user_agreement_content_down"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/sp_13" />
+
+        </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

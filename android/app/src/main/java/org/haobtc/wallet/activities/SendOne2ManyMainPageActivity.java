@@ -52,6 +52,7 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
+import org.haobtc.wallet.event.UpdateWalletMsgEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 
@@ -334,6 +335,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                             } else {
                                 EventBus.getDefault().post(new MainpageWalletEvent("22", walletNamePos));
                             }
+                            EventBus.getDefault().post(new UpdateWalletMsgEvent());
                             //1-n wallet  --> Direct signature and broadcast
                             if ("1-1".equals(walletTypeToSign) && Ble.getInstance().getConnetedDevices().size() != 0) {
                                 String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");

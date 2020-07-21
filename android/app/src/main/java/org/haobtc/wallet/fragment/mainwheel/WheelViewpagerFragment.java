@@ -43,6 +43,7 @@ import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.event.CardUnitEvent;
 import org.haobtc.wallet.event.FirstEvent;
+import org.haobtc.wallet.event.UpdateWalletMsgEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -342,6 +343,10 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(UpdateWalletMsgEvent event) {
+        refreshList();
+    }
 
     @Override
     public void onDestroy() {

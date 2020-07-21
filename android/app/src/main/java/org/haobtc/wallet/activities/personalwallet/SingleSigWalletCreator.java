@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.personalwallet;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -10,8 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -25,7 +24,8 @@ import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FixWalletNameEvent;
 import org.haobtc.wallet.event.ReceiveXpub;
 import org.haobtc.wallet.utils.Daemon;
-import org.haobtc.wallet.utils.IndicatorSeekBar;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +39,8 @@ public class SingleSigWalletCreator extends BaseActivity {
     EditText editWalletNameSetting;
     @BindView(R.id.bn_multi_next)
     Button bnMultiNext;
+    @BindView(R.id.number)
+    TextView number;
     private SharedPreferences.Editor edit;
     private int defaultName;
     private int walletNameNum;
@@ -66,16 +68,22 @@ public class SingleSigWalletCreator extends BaseActivity {
     private void init() {
         walletNameNum = defaultName + 1;
         editWalletNameSetting.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
+        number.setText(String.format(Locale.CHINA, "%d/16", editWalletNameSetting.length()));
 
         editWalletNameSetting.addTextChangedListener(new TextWatcher() {
+            CharSequence input;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                input = s;
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                number.setText(String.format(Locale.CHINA, "%d/16", input.length()));
+                if (input.length() > 15) {
+                    mToast(getString(R.string.moreinput_text_fixbixinkey));
+                }
             }
 
             @Override
@@ -189,5 +197,12 @@ public class SingleSigWalletCreator extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

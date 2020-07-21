@@ -65,6 +65,7 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
+import org.haobtc.wallet.event.UpdateWalletMsgEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.json.JSONException;
@@ -275,6 +276,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             } else {
                 testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
             }
+        }else{
+            testNowCanUse.setText(String.format("%s%s", getString(R.string.usable), strNowBtc));
         }
         onlickName = wallet_name;//if onlickName != wallet_name -->home page don't update transaction list
         tetWalletname.setText(wallet_name);
@@ -636,6 +639,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     } else {
                         EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                     }
+                    EventBus.getDefault().post(new UpdateWalletMsgEvent());
                     //1-n wallet  --> Direct signature and broadcast
                     if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
                         String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");

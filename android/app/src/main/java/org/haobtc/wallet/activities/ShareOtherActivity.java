@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,7 +63,7 @@ import static org.haobtc.wallet.utils.Daemon.commands;
 public class ShareOtherActivity extends BaseActivity {
 
     @BindView(R.id.img_Orcode)
-    ImageView imgOrcode;
+    View imgOrcode;
     @BindView(R.id.tet_Preservation)
     TextView tetPreservation;
     @BindView(R.id.tet_TrsactionText)
@@ -108,11 +111,18 @@ public class ShareOtherActivity extends BaseActivity {
     public void initData() {
         //or code
         if (!TextUtils.isEmpty(rowTx)) {
-            bitmap = syncEncodeQRCode(rowTx, 268,Color.parseColor("#000000"), Color.parseColor("#ffffff"), null);
+            bitmap = syncEncodeQRCode(rowTx, dp2px(268), Color.parseColor("#000000"), Color.parseColor("#ffffff"), null);
 
-            imgOrcode.setImageBitmap(this.bitmap);
+//            LayoutParams lp = new LinearLayout.LayoutParams(dp2px(268), dp2px(268));
+//            imgOrcode.setLayoutParams(lp);
+            imgOrcode.setBackground(new BitmapDrawable(getResources(), bitmap));
         }
         tetTrsactionText.setText(rowTx);
+    }
+
+    public  int dp2px(float dpValue) {
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 
     public static final Map<EncodeHintType, Object> HINTS = new EnumMap<>(EncodeHintType.class);
@@ -123,7 +133,7 @@ public class ShareOtherActivity extends BaseActivity {
         HINTS.put(EncodeHintType.MARGIN, 0);
     }
 
-    public static Bitmap syncEncodeQRCode(String content, int size, int foregroundColor, int backgroundColor, Bitmap logo) {
+    public  Bitmap syncEncodeQRCode(String content, int size, int foregroundColor, int backgroundColor, Bitmap logo) {
         try {
             BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, HINTS);
             int[] pixels = new int[size * size];
@@ -141,6 +151,11 @@ public class ShareOtherActivity extends BaseActivity {
             return bitmap;
         } catch (Exception e) {
             e.printStackTrace();
+            if ("Data too big".equals(e.getMessage())) {
+                imgOrcode.setVisibility(View.GONE);
+                tetPreservation.setVisibility(View.GONE);
+                tetBigMessage.setVisibility(View.VISIBLE);
+            }
             return null;
         }
     }

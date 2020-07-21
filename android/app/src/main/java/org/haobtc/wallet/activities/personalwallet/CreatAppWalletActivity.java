@@ -55,6 +55,7 @@ public class CreatAppWalletActivity extends BaseActivity implements TextWatcher 
         nameEditStyle();
         int walletNameNum = defaultName + 1;
         tetSetWalletName.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
+        number.setText(String.format(Locale.CHINA, "%d/16", tetSetWalletName.length()));
         tetSetWalletName.addTextChangedListener(this);
 
     }
@@ -72,7 +73,7 @@ public class CreatAppWalletActivity extends BaseActivity implements TextWatcher 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 number.setText(String.format(Locale.CHINA, "%d/16", input.length()));
                 if (input.length() > 15) {
-                    mToast(getString(R.string.moreinput_text));
+                    mToast(getString(R.string.moreinput_text_fixbixinkey));
                 }
 
             }
