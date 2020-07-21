@@ -169,6 +169,9 @@ public class SettingActivity extends BaseActivity {
         String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
         String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getStm32().getChangelogCn();
         Bundle bundle = new Bundle();
+        if (urlNrf.startsWith("https") || urlStm32.startsWith("https")) {
+            urlPrefix = "";
+        }
         bundle.putString("nrf_url", urlPrefix + urlNrf);
         bundle.putString("stm32_url", urlPrefix + urlStm32);
         bundle.putString("nrf_version", versionNrf);

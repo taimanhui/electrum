@@ -689,7 +689,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void attemptUpdate(String uri, String versionName, int versionCode, String
             size, String description) {
-        String url = "https://key.bixin.com/" + uri;
+        String url;
+        if (uri.startsWith("https")) {
+            url = uri;
+        } else {
+            url = "https://key.bixin.com/" + uri;
+        }
         UpdateConfiguration configuration = new UpdateConfiguration()
                 .setEnableLog(true)
                 //.setHttpManager()
