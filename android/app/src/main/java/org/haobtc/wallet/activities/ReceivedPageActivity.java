@@ -118,7 +118,7 @@ public class ReceivedPageActivity extends BaseActivity {
             String qrData = getCodeAddressBean.getQrData();
             String addr = getCodeAddressBean.getAddr();
             textView5.setText(addr);
-            bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
+            bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
             imageView2.setImageBitmap(bitmap);
         }
 

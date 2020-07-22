@@ -195,6 +195,7 @@
     <string name="downloadfail">下载失败</string>
     <string name="downloadsuccse">下载成功</string>
     <string name="message_big">交易信息过大，无法使用二维码进行分享</string>
+    <string name="message_too_big">信息过长，无法使用二维码进行分享</string>
     <string name="rate">费率（sat/byte）</string>
     <string name="sendMore">转账数量最多为21000000BTC</string>
     <string name="insufficient">资金不足</string>
@@ -590,7 +591,7 @@
     <string name="sign_error">签名异常</string>
     <string name="reansaction_error">交易签名失败</string>
     <string name="sign_timeout">签名超时</string>
-    <string name="dont_braundcast">副交易未广播前子交易不可广播</string>
+    <string name="dont_braundcast">父交易未广播前子交易不可广播</string>
     <string name="service_text">使用同步服务器，可备份和恢复共管钱包，并可在多个联署人间同步并签名交易；</string>
     <string name="user_agreement_content">"\t\t\t\t本协议是您（以下简称“用户”）与币信官方平台（包括Web端、移动端及应用程序，以下统称“平台”）的所有者Bixin Global Co,.ltd.（以下简称“币信”）之间就币信Key服务等相关事宜所订立的契约，对用户与币信具有法律约束力。币信在此特别提醒用户认真阅读并充分理解本协议项下的各条款，特别是本协议中涉及免除或限制平台责任的条款，以及排除或限制用户权利的条款。用户应当审慎阅读，并选择接受或不接受本协议。除非用户接受本协议项下的所有条款，否则用户无权使用平台基于本协议所提供的服务。若用户不同意本协议的内容，或拒绝承认平台随时对本协议进行单方修改的权利，则用户应当立即停止使用并不再访问本平台。用户使用平台服务（包括但不限于使用、浏览等）即视为对本协议全部条款（包括币信对本协议随时做出的任何修改）充分理解并完全接受，本协议即刻成立并生效。用户使用币信Key服务除须遵守本协议以外，还须遵守平台公示的其他协议及规则，包括但不限于使用许可协议、隐私政策、售后服务政策和法律声明以及其他在平台上已经发布或将来可能发布的各类协议、规则、公告、声明、说明或指引等（包括其不时修订，以下统称“规则”）。
         \n<font color="#000000"><b>第一条 释义 </b></font>

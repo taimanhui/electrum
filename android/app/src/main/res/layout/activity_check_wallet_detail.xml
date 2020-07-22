@@ -102,11 +102,11 @@
                     <ImageView
                         android:id="@+id/ima_receive_code"
                         android:layout_below="@+id/RelativeLayout"
-                        android:layout_width="268dp"
+                        android:layout_width="250dp"
                         android:layout_centerHorizontal="true"
-                        android:layout_height="268dp"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:layout_marginBottom="@dimen/dp_10" />
+                        android:layout_height="250dp"
+                        android:layout_marginTop="@dimen/dp_20"
+                        android:layout_marginBottom="@dimen/dp_20" />
 
                     <TextView
                         android:id="@+id/text_addr"

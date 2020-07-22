@@ -196,6 +196,7 @@
     <string name="downloadfail">Download failed</string>
     <string name="downloadsuccse">Download succeeded</string>
     <string name="message_big">Transaction inormation too big to be shared by QR code</string>
+    <string name="message_too_big">Inormation too big to be shared by QR code</string>
     <string name="rate">Fee rate (sat/byte</string>
     <string name="sendMore">Transaction upper limit is 2100000BTC</string>
     <string name="insufficient">Insufficient fund</string>

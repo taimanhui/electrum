@@ -448,6 +448,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             //scan
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
+                Log.i("xiaomionActivityResult", "onActivityResult: "+content);
                 editTrsactionTest.setText(content);
             }
         } else if (requestCode == 1 && resultCode == RESULT_OK) {

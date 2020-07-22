@@ -58,16 +58,28 @@
 
                 <ImageView
                     android:id="@+id/backup_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="268dp"
-                    android:layout_marginTop="32dp"/>
+                    android:layout_width="250dp"
+                    android:visibility="visible"
+                    android:layout_height="250dp"
+                    android:layout_marginTop="@dimen/dp_50"/>
 
+                <TextView
+                    android:id="@+id/tet_bigMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="248.3dp"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginEnd="@dimen/dp_20"
+                    android:gravity="center"
+                    android:text="@string/message_big"
+                    android:textSize="@dimen/sp_12"
+                    android:visibility="gone" />
                 <TextView
                     android:id="@+id/tet_preversation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="40dp"
-                    android:layout_marginTop="@dimen/dp_10"
+                    android:visibility="visible"
+                    android:layout_marginTop="@dimen/dp_20"
                     android:gravity="center_horizontal"
                     android:text="@string/preservation"
                     android:textColor="@color/button_bk"

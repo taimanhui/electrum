@@ -657,12 +657,11 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 isGetXpub = true;
                 if (SingleSigWalletCreator.TAG.equals(tag) || CheckHideWalletFragment.TAG.equals(tag)) {
                     if (CheckHideWalletFragment.TAG.equals(tag)) {
-                        Log.i("CheckHideWalletFragment", "11111111");
                         if (features.isPassphraseProtection()) {
-                            Log.i("CheckHideWalletFragment", "222222222");
                             customerUI.callAttr("set_pass_state", 1);
                         } else {
                             Toast.makeText(this, getString(R.string.dont_create), Toast.LENGTH_SHORT).show();
+                            finish();
                             return;
                         }
                     }

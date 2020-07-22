@@ -139,7 +139,7 @@ public class WalletDetailsActivity extends BaseActivity {
             String qrData = getCodeAddressBean.getQrData();
             String addr = getCodeAddressBean.getAddr();
             textAddr.setText(addr);
-            Bitmap    bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
+            Bitmap  bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
             imaReceiveCode.setImageBitmap(bitmap);
         }
 

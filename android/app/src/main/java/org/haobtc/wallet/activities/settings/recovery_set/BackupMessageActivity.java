@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,8 +16,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.tbruyelle.rxpermissions2.RxPermissions;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
@@ -28,6 +34,8 @@ import org.haobtc.wallet.event.HandlerEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.EnumMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,13 +59,15 @@ public class BackupMessageActivity extends BaseActivity {
     TextView copyTet;
     @BindView(R.id.btn_continue)
     Button btnContinue;
+    @BindView(R.id.tet_bigMessage)
+    TextView tetBigMessage;
     private RxPermissions rxPermissions;
     private Intent intent;
     private String tag;
     private String message;
     private Bitmap bitmap;
     private String bleName;
-    public final static  String TAG = BackupMessageActivity.class.getSimpleName();
+    public final static String TAG = BackupMessageActivity.class.getSimpleName();
 
     @Override
     public int getLayoutId() {
@@ -87,9 +97,49 @@ public class BackupMessageActivity extends BaseActivity {
                 btnContinue.setText(getString(R.string.finish));
             }
         }
-        if (!TextUtils.isEmpty(message)){
-            bitmap = CodeCreator.createQRCode(message, 268, 268, null);
+        if (!TextUtils.isEmpty(message)) {
+            bitmap = syncEncodeQRCode(message, dp2px(250), Color.parseColor("#000000"), Color.parseColor("#ffffff"), null);
             backupImage.setImageBitmap(bitmap);
+        }
+    }
+
+    public int dp2px(float dpValue) {
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    public static final Map<EncodeHintType, Object> HINTS = new EnumMap<>(EncodeHintType.class);
+
+    static {
+        HINTS.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        HINTS.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        HINTS.put(EncodeHintType.MARGIN, 0);
+    }
+
+    public Bitmap syncEncodeQRCode(String content, int size, int foregroundColor, int backgroundColor, Bitmap logo) {
+        try {
+            BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, HINTS);
+            int[] pixels = new int[size * size];
+            for (int y = 0; y < size; y++) {
+                for (int x = 0; x < size; x++) {
+                    if (matrix.get(x, y)) {
+                        pixels[y * size + x] = foregroundColor;
+                    } else {
+                        pixels[y * size + x] = backgroundColor;
+                    }
+                }
+            }
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, size, 0, 0, size, size);
+            return bitmap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if ("Data too big".equals(e.getMessage())) {
+                backupImage.setVisibility(View.GONE);
+                tetPreversation.setVisibility(View.GONE);
+                tetBigMessage.setVisibility(View.VISIBLE);
+            }
+            return null;
         }
     }
 
