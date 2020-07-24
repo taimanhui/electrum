@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.usb.UsbDevice;
 import android.location.Location;
 import android.location.LocationListener;
@@ -193,6 +194,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public static boolean backupTip;
     private static String hideWalletReceive = "";
     private boolean isTimeout;
+    private AnimationDrawable animationDrawable;
 
     @Override
     public int getLayoutId() {
@@ -243,13 +245,18 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             usbTransport.put("ENABLED", false);
             bleTransport.put("ENABLED", false);
             nfcTransport.put("ENABLED", true);
+            animationDrawable = (AnimationDrawable) imageView.getDrawable();
+            animationDrawable.stop();
+            animationDrawable.selectDrawable(0);
+            animationDrawable.start();
             Optional.ofNullable(nfcTag).ifPresent((tags) -> {
                 nfcHandler.put("device", tags);
                 IsoDep isoDep = IsoDep.get(tags);
                 try {
                     isoDep.connect();
                     isoDep.close();
-                    new Handler().postDelayed(() -> handlerEverything(true), 200);
+                    animationDrawable.stop();
+                    new Handler().postDelayed(() -> handlerEverything(true), 100);
                 } catch (IOException e) {
                     Log.d("NFC", "try connect failed");
                     nfcTag = null;
@@ -298,7 +305,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 }
             } else {
                 Toast.makeText(this, getString(R.string.dnot_use), Toast.LENGTH_LONG).show();
-                new Handler().postDelayed(this::finish, 2000);
+                new Handler().postDelayed(this::finish, 1000);
             }
         }
          /*else {
@@ -469,6 +476,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            animationDrawable.stop();
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             nfcTransport.put("ENABLED", true);
             bleHandler.put("ENABLED", false);
@@ -603,7 +611,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             intent.putExtras(Objects.requireNonNull(getIntent().getExtras()));
             intent.putExtra("tag", 2);
             startActivity(intent);
-            new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 2000);
+            new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new ExecuteEvent()), 1000);
         }
     }
 

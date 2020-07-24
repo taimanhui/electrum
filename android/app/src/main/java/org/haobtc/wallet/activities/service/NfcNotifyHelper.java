@@ -1,6 +1,7 @@
 package org.haobtc.wallet.activities.service;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -50,7 +51,10 @@ public class NfcNotifyHelper extends BaseActivity {
     ImageView imgCancel;
     @BindView(R.id.input_layout)
     RelativeLayout inputLayout;
+    @BindView(R.id.touch_nfc)
+    ImageView imageView;
     private String tag;
+    private AnimationDrawable animationDrawable;
 
 
     @Override
@@ -66,6 +70,10 @@ public class NfcNotifyHelper extends BaseActivity {
         radioBle.setVisibility(View.GONE);
         tag = getIntent().getStringExtra("tag");
         EventBus.getDefault().register(this);
+        animationDrawable = (AnimationDrawable) imageView.getDrawable();
+        animationDrawable.stop();
+        animationDrawable.selectDrawable(0);
+        animationDrawable.start();
         Optional.ofNullable(nfcTag).ifPresent((tags) -> {
             boolean buttonRequest = getIntent().getBooleanExtra("is_button_request", false);
             if (!buttonRequest) {
@@ -73,6 +81,7 @@ public class NfcNotifyHelper extends BaseActivity {
                 try {
                     isoDep.connect();
                     isoDep.close();
+                    animationDrawable.stop();
                     nfcHandler.put("device", tags);
                     notifyNfc();
                 } catch (IOException e) {
@@ -115,6 +124,7 @@ public class NfcNotifyHelper extends BaseActivity {
         if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED)
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            animationDrawable.stop();
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             new Handler().postDelayed(() -> {
                 nfcHandler.put("device", tags);
