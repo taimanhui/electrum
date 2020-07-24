@@ -66,7 +66,7 @@ public class LunchActivity extends BaseActivity {
         if (!TextUtils.isEmpty(language)) {
             if ("English".equals(language)) {
                 mTextEnglish();
-            } else {
+            } else if ("Chinese".equals(language)) {
                 mTextChinese();
             }
         }

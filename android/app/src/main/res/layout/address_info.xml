@@ -102,14 +102,16 @@
                             android:id="@+id/textView5"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dp_20"
-                            android:layout_marginEnd="@dimen/dp_20"
+                            android:drawableEnd="@drawable/img_copy"
+                            android:drawablePadding="@dimen/dp_10"
+                            android:paddingStart="@dimen/dp_20"
+                            android:paddingEnd="@dimen/dp_20"
                             android:textColor="@color/text"
                             android:textSize="@dimen/sp_13"
                             tools:text="lnbcdfd4fdsk4j5gb5...h6jd0sjsadrrfgg55678hhhddddejekejkejkejek3ddkddd" />
 
                         <TextView
-                            android:id="@+id/text_copy_address"
+                            android:id="@+id/text_change_address"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/dp_20"
@@ -130,17 +132,18 @@
                             android:orientation="horizontal"
                             android:visibility="gone">
 
+
                             <TextView
-                                android:id="@+id/textView6"
+                                android:id="@+id/text_check_address"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center|end"
                                 android:paddingEnd="@dimen/dp_59"
-                                android:text="@string/copyAddress"
+                                android:text="@string/check_address"
                                 android:textColor="@color/button_bk"
                                 android:textSize="@dimen/text_size"
-                                tools:ignore="RtlSymmetry" />
+                                tools:ignore="RelativeOverlap,RtlSymmetry" />
 
                             <View
                                 android:layout_width="@dimen/dp_1"
@@ -148,16 +151,15 @@
                                 android:background="@color/line_color" />
 
                             <TextView
-                                android:id="@+id/text_check_address"
+                                android:id="@+id/textView6"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:paddingStart="@dimen/dp_59"
-                                android:text="@string/check_address"
+                                android:text="@string/change_address"
                                 android:textColor="@color/button_bk"
                                 android:textSize="@dimen/text_size"
-                                tools:ignore="RelativeOverlap,RtlSymmetry" />
-
+                                tools:ignore="RtlSymmetry" />
                         </LinearLayout>
 
                     </LinearLayout>

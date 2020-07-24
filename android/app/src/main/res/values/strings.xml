@@ -243,7 +243,7 @@
     <string name="key_name">Xiaomi\'s KEY1</string>
     <string name="hand_input">Enter manually</string>
     <string name="name">Name</string>
-    <string name="public_address">Public address</string>
+    <string name="public_address">Public key</string>
     <string name="make_aname">Set a name as remark</string>
     <string name="set_bixinkey">Set number of BixinKeys</string>
     <string name="blue_toose">Bluetooth connection</string>
@@ -871,5 +871,12 @@
     <string name="dont_use_bluetooth">You have refused to turn on the location service, unable to scan the Bluetooth device for you</string>
     <string name="dont_band">Unable to bind the device. Please restart the device and try again</string>
     <string name="backup_tip">Please don\'t keep backup data on APP for long periods, move it to offline device or recovery to a new BixinKey</string>
+    <string name="link_use">USB connection</string>
+    <string name="dnot_use">No available USB device was found</string>
+    <string name="passphrase_timeout">passphrase input timeout</string>
+    <string name="dont_none">Recovery string cannot be empty</string>
+    <string name="input_pub_key">Please enter public key</string>
+    <string name="follow_system">跟随系统语言</string>
+    <string name="change_address">更改地址</string>
 
 </resources>

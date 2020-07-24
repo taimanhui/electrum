@@ -145,7 +145,7 @@
                     android:autofillHints="@string/input_address"
                     android:background="@null"
                     android:gravity="start"
-                    android:hint="@string/input_address"
+                    android:hint="@string/input_pub_key"
                     android:inputType="textMultiLine"
                     android:padding="@dimen/layout_margin"
                     android:textColor="@color/set_txt"

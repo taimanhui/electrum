@@ -69,7 +69,7 @@ public class PinNewActivity extends BaseActivity {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void timeout(OperationTimeoutEvent event) {
-        Toast.makeText(this, "pin 输入超时", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.pin_timeout), Toast.LENGTH_LONG).show();
         EventBus.getDefault().post(new ExitEvent());
         finish();
     }

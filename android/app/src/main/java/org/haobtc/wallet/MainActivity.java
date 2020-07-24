@@ -854,7 +854,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onRestart() {
         super.onRestart();
-        getunBackupKey();
+        if (!"standard".equals(strType)) {
+            //get unBackupKey
+            getunBackupKey();
+        }
     }
 
     @Override

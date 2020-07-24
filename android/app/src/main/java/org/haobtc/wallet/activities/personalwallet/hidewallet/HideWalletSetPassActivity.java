@@ -52,7 +52,7 @@ public class HideWalletSetPassActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void timeout(OperationTimeoutEvent event) {
-        Toast.makeText(this, "passphrase 输入超时", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.passphrase_timeout), Toast.LENGTH_LONG).show();
         finish();
     }
 

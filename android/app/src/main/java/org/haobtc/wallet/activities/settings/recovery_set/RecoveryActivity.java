@@ -146,7 +146,7 @@ public class RecoveryActivity extends BaseActivity {
                 break;
             case R.id.btn_recovery:
                 if (editText1.getText().length() == 0) {
-                    Toast.makeText(this, "恢复字符串不能为空", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.dont_none), Toast.LENGTH_LONG).show();
                     return;
                 }
                 Intent intent = new Intent(this, CommunicationModeSelector.class);

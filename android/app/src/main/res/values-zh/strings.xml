@@ -242,7 +242,7 @@
     <string name="key_name">小米的KEY1</string>
     <string name="hand_input">手动输入</string>
     <string name="name">名字</string>
-    <string name="public_address">公钥地址</string>
+    <string name="public_address">公钥</string>
     <string name="make_aname">起个名字标记一下</string>
     <string name="set_bixinkey">设置BixinKey数</string>
     <string name="blue_toose">蓝牙连接</string>
@@ -834,6 +834,13 @@
     <string name="dont_use_bluetooth">您拒绝了开启位置服务，无法为您扫描到蓝牙设备</string>
     <string name="dont_band">无法绑定设备，请重启设备重试</string>
     <string name="backup_tip">请尽量不要把备份信息在手机端长期保留，可以把备份信息移动到安全的离线设备或导入到另外一个bixinkey中</string>
+    <string name="link_use">USB连接</string>
+    <string name="dnot_use">未找到可用的USB设备</string>
+    <string name="passphrase_timeout">passphrase 输入超时</string>
+    <string name="dont_none">恢复字符串不能为空</string>
+    <string name="input_pub_key">请输入公钥</string>
+    <string name="follow_system">跟随系统语言</string>
+    <string name="change_address">更改地址</string>
 
 
 </resources>

@@ -6,10 +6,14 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
@@ -67,8 +72,8 @@ public class ReceivedPageActivity extends BaseActivity {
     TextView textReceiveTip;
     @BindView(R.id.copy_and_check)
     LinearLayout copyAndCheck;
-    @BindView(R.id.text_copy_address)
-    TextView textCopyAddress;
+    @BindView(R.id.text_change_address)
+    TextView textChangeAddress;
     private Bitmap bitmap;
     private RxPermissions rxPermissions;
     private String hideWalletReceive;
@@ -88,10 +93,10 @@ public class ReceivedPageActivity extends BaseActivity {
         hideWalletReceive = getIntent().getStringExtra("hideWalletReceive");
 
 //        if ("standard".equals(walletType)) {
-//            textCopyAddress.setVisibility(View.VISIBLE);
+//            textChangeAddress.setVisibility(View.VISIBLE);
 //            copyAndCheck.setVisibility(View.GONE);
 //        } else {
-//            textCopyAddress.setVisibility(View.GONE);
+//            textChangeAddress.setVisibility(View.GONE);
 //            copyAndCheck.setVisibility(View.VISIBLE);
 //        }
     }
@@ -125,15 +130,11 @@ public class ReceivedPageActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.textView6, R.id.button, R.id.img_back, R.id.text_check_address, R.id.text_copy_address})
+    @OnClick({R.id.textView6, R.id.button, R.id.img_back, R.id.text_check_address, R.id.text_change_address, R.id.textView5})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.textView6:
-                //copy text
-                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                // The text is placed on the system clipboard.
-                Objects.requireNonNull(cm, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textView5.getText()));
-                Toast.makeText(ReceivedPageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+                //change address
 
                 break;
             case R.id.button:
@@ -178,13 +179,20 @@ public class ReceivedPageActivity extends BaseActivity {
                 }
 
                 break;
-            case R.id.text_copy_address:
+            case R.id.text_change_address:
                 //copy text
                 ClipboardManager cm1 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
                 Objects.requireNonNull(cm1, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textView5.getText()));
                 Toast.makeText(ReceivedPageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
 
+                break;
+            case R.id.textView5:
+                //copy text
+                ClipboardManager cm2 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                // The text is placed on the system clipboard.
+                Objects.requireNonNull(cm2, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textView5.getText()));
+                Toast.makeText(ReceivedPageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             default:
         }

@@ -283,6 +283,8 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             bleTransport.put("ENABLED", false);
             nfcTransport.put("ENABLED", false);
             radioGroup.setVisibility(View.GONE);
+            textView.setText(getString(R.string.link_use));
+            imageView.setImageResource(R.drawable.img_usb);
             usbManager = CustomerUsbManager.getInstance(this);
             // used to deal with later attach
             usbManager.register(this);
@@ -295,7 +297,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     e.printStackTrace();
                 }
             } else {
-                Toast.makeText(this, "未找到可用的USB设备", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.dnot_use), Toast.LENGTH_LONG).show();
                 new Handler().postDelayed(this::finish, 2000);
             }
         }
