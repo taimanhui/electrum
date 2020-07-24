@@ -604,6 +604,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 recy_data.setVisibility(View.GONE);
                 break;
             case "load_wallet_finish":
+                reclUnBackup.setVisibility(View.VISIBLE);
                 //get unBackupKey
                 getunBackupKey();
                 break;
@@ -856,8 +857,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.i("onRestartonRestart", "onRestart: " + strType);
-        if (!"standard".equals(strType) || TextUtils.isEmpty(strType)) {
+        if (!"standard".equals(strType) || !TextUtils.isEmpty(strType)) {
             //get unBackupKey
             getunBackupKey();
         }

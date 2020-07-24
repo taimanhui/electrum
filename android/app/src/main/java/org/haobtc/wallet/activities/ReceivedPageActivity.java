@@ -166,6 +166,21 @@ public class ReceivedPageActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.text_check_address:
+//                if (checking) {
+//                    CommunicationModeSelector.runnables.clear();
+//                    CommunicationModeSelector.runnables.add(null);
+//                    Intent intent = new Intent(this, CommunicationModeSelector.class);
+//                    intent.putExtra("tag", TAG);
+//                    intent.putExtra("contrastAddress", textView5.getText().toString());
+//                    intent.putExtra("hideWalletReceive", hideWalletReceive);
+//                    startActivity(intent);
+//                } else {
+//                    mToast(getString(R.string.checking));
+//                }
+
+                break;
+            case R.id.text_change_address:
+                //change address
                 if (checking) {
                     CommunicationModeSelector.runnables.clear();
                     CommunicationModeSelector.runnables.add(null);
@@ -177,14 +192,6 @@ public class ReceivedPageActivity extends BaseActivity {
                 } else {
                     mToast(getString(R.string.checking));
                 }
-
-                break;
-            case R.id.text_change_address:
-                //change address
-                ClipboardManager cm1 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                // The text is placed on the system clipboard.
-                Objects.requireNonNull(cm1, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textView5.getText()));
-                Toast.makeText(ReceivedPageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.textView5:
                 //copy text
