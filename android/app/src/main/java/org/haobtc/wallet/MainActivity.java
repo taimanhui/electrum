@@ -531,6 +531,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             } catch (Exception e) {
                 reclUnBackup.setVisibility(View.GONE);
                 e.printStackTrace();
+                Log.i("ExceptionException", "getWalletMsg: " + e.getMessage());
             }
         } else {
             reclUnBackup.setVisibility(View.GONE);
@@ -603,10 +604,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 recy_data.setVisibility(View.GONE);
                 break;
             case "load_wallet_finish":
-                if (!"standard".equals(strType)) {
-                    //get unBackupKey
-                    getunBackupKey();
-                }
+                //get unBackupKey
+                getunBackupKey();
+                break;
+            case "load_wallet_finish_visible":
+                reclUnBackup.setVisibility(View.GONE);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + msgVote);
@@ -854,7 +856,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (!"standard".equals(strType)) {
+        Log.i("onRestartonRestart", "onRestart: " + strType);
+        if (!"standard".equals(strType) || TextUtils.isEmpty(strType)) {
             //get unBackupKey
             getunBackupKey();
         }

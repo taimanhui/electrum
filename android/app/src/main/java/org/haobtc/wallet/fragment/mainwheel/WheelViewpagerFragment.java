@@ -184,6 +184,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             selectWallet = Daemon.commands.callAttr("select_wallet", name);
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
 
         if (selectWallet != null) {
@@ -193,7 +194,11 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
             String walletType = mainWheelBean.getWalletType();
             String balanceC = mainWheelBean.getBalance();
-            EventBus.getDefault().post(new FirstEvent("load_wallet_finish"));
+            if (!"standard".equals(personce)) {
+                EventBus.getDefault().post(new FirstEvent("load_wallet_finish"));
+            }else{
+                EventBus.getDefault().post(new FirstEvent("load_wallet_finish_visible"));
+            }
             if (!TextUtils.isEmpty(walletType)) {
                 String streplaceC = walletType.replaceAll("of", "/");
                 walletpersonce.setText(streplaceC);

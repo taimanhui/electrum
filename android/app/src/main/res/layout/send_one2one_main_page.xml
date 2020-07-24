@@ -147,7 +147,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="@dimen/dp_10"
-                        android:background="@color/little_circle_color">
+                        android:background="@drawable/fee_back_4">
 
                         <EditText
                             android:id="@+id/edit_address_one2one"
@@ -219,7 +219,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginEnd="4.7dp"
                             android:layout_weight="1"
-                            android:background="@color/little_circle_color">
+                            android:background="@drawable/fee_back_4">
 
                             <EditText
                                 android:id="@+id/amount"
@@ -250,7 +250,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginStart="4.7dp"
                             android:layout_weight="1"
-                            android:background="@color/little_circle_color">
+                            android:background="@drawable/fee_back_4">
 
                             <EditText
                                 android:id="@+id/edit_changeMoney"
@@ -283,7 +283,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_50"
                         android:layout_marginTop="@dimen/dp_10"
-                        android:background="@color/little_circle_color"
+                        android:background="@drawable/fee_back_4"
                         android:orientation="horizontal">
 
                         <EditText
@@ -462,17 +462,33 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="24dp"
+                            android:layout_height="@dimen/dp_50"
                             android:layout_marginStart="@dimen/dp_16"
-                            android:layout_marginTop="@dimen/dp_20"
+                            android:layout_marginTop="@dimen/dp_12"
                             android:layout_marginEnd="@dimen/dp_16"
-                            android:layout_marginBottom="@dimen/dp_20"
-                            android:gravity="center_vertical">
+                            android:layout_marginBottom="@dimen/dp_20">
+
+                            <TextView
+                                android:id="@+id/textViewFee"
+                                android:layout_centerVertical="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#b3b3b3"
+                                android:textSize="12sp"
+                                android:text="@string/fees" />
 
                             <TextView
                                 android:id="@+id/text_blocks"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:background="@drawable/fee_back_4"
+                                android:layout_toEndOf="@+id/textViewFee"
+                                android:layout_marginStart="@dimen/dp_10"
+                                android:layout_width="150dp"
+                                android:paddingStart="@dimen/dp_10"
+                                android:maxLines="1"
+                                android:paddingEnd="@dimen/dp_10"
+                                android:gravity="center_vertical"
+                                android:layout_height="@dimen/dp_50"
+                                android:layout_centerVertical="true"
                                 android:textColor="@color/graytext_color"
                                 android:textSize="@dimen/sp_12"
                                 tools:text="180 sat/byte" />
@@ -480,12 +496,13 @@
                             <TextView
                                 android:id="@+id/btnRecommendFee"
                                 android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
+                                android:layout_height="@dimen/dp_24"
                                 android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:background="@drawable/blue_strok"
+                                android:gravity="center"
                                 android:paddingStart="@dimen/dp_10"
                                 android:paddingEnd="@dimen/dp_10"
-                                android:gravity="center"
-                                android:background="@drawable/blue_strok"
                                 android:text="@string/recomend_fee"
                                 android:textColor="@color/button_bk_disableok"
                                 android:textSize="@dimen/sp_13"

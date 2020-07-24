@@ -180,12 +180,11 @@ public class ReceivedPageActivity extends BaseActivity {
 
                 break;
             case R.id.text_change_address:
-                //copy text
+                //change address
                 ClipboardManager cm1 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
                 Objects.requireNonNull(cm1, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textView5.getText()));
                 Toast.makeText(ReceivedPageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
-
                 break;
             case R.id.textView5:
                 //copy text

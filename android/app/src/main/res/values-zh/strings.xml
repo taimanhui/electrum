@@ -841,6 +841,7 @@
     <string name="input_pub_key">请输入公钥</string>
     <string name="follow_system">跟随系统语言</string>
     <string name="change_address">更改地址</string>
+    <string name="fees">费率</string>
 
 
 </resources>
