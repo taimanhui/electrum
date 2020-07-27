@@ -161,6 +161,7 @@ class AndroidCommands(commands.Commands):
         self.rbf = self.config.get("use_rbf", True)
         self.ccy = self.daemon.fx.get_currency()
         self.pre_balance_info = ""
+        self.addr_index = 0
         self.rbf_tx = ""
         self.m = 0
         self.n = 0
@@ -458,6 +459,8 @@ class AndroidCommands(commands.Commands):
             print(f"add_xpub........{xpub, device_id}")
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
+            if BIP32Node.from_xkey(xpub).xtype != 'p2wsh' and self.n >= 2:
+                xpub = BIP32Node.get_p2wsh_from_other(xpub)
             self.wizard.restore_from_xpub(xpub, device_id)
         except Exception as e:
             raise BaseException(e)
@@ -1027,10 +1030,14 @@ class AndroidCommands(commands.Commands):
                 ri['quote_text'] = fiat_value.to_ui_string()
         return ri
 
-    def get_wallet_address_show_UI(self):
+    def get_wallet_address_show_UI(self, next=None):
         try:
             self._assert_wallet_isvalid()
-            data = util.create_bip21_uri(self.wallet.get_addresses()[0], "", "")
+            self.addr_index = self.config.get('addr_index', 0)
+            if next:
+                self.addr_index += 1
+                self.config.set_key('addr_index', self.addr_index)
+            data = util.create_bip21_uri(self.wallet.get_addresses()[self.addr_index], "", "")
         except Exception as e:
             raise BaseException(e)
         data_json = {}
@@ -1065,11 +1072,13 @@ class AndroidCommands(commands.Commands):
             if isinstance(tx, PartialTransaction):
                 tx.finalize_psbt()
             if tx.is_complete():  # network tx hex
+                path += '.txn'
                 with open(path, "w+") as f:
                     network_tx_hex = tx.serialize_to_network()
                     f.write(network_tx_hex + '\n')
             else:  # if partial: PSBT bytes
                 assert isinstance(tx, PartialTransaction)
+                path += '.psbt'
                 with open(path, "wb+") as f:
                     f.write(tx.serialize_as_bytes())
         except Exception as e:

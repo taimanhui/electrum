@@ -162,6 +162,15 @@ class BIP32Node(NamedTuple):
         return vpub
 
     @classmethod
+    def get_p2wsh_from_other(cls, xpub):
+        old_type = cls.xtype
+        node = BIP32Node.from_xkey(xpub)
+        cls.xtype = 'p2wsh'
+        vpub = node.to_xpub()
+        cls.xtype = old_type
+        return vpub
+
+    @classmethod
     def from_rootseed(cls, seed: bytes, *, xtype: str) -> 'BIP32Node':
         I = hmac_oneshot(b"Bitcoin seed", seed, hashlib.sha512)
         master_k = I[0:32]
