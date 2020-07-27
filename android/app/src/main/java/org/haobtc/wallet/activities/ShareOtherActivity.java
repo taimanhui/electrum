@@ -266,7 +266,7 @@ public class ShareOtherActivity extends BaseActivity {
         view1.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
             EditText editFilename = view1.findViewById(R.id.edit_Filename);
             String strFilename = editFilename.getText().toString();
-            String fullFilename = newPath + "/" + strFilename + ".psbt";
+            String fullFilename = newPath + "/" + strFilename;
 
             try {
                 commands.callAttr("save_tx_to_file", fullFilename, rowTx);

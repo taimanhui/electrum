@@ -61,8 +61,8 @@
                     android:id="@+id/radio_system"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:checked="true"
                     android:gravity="center_vertical"
+                    android:visibility="gone"
                     android:paddingStart="@dimen/text_margin"
                     android:paddingEnd="@dimen/text_margin"
                     android:text="@string/follow_system"
@@ -79,12 +79,11 @@
                     android:id="@+id/radio_chineseasy"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:checked="true"
                     android:gravity="center_vertical"
                     android:paddingStart="@dimen/text_margin"
                     android:paddingEnd="@dimen/text_margin"
                     android:text="@string/zh_simple"
-                    android:textColor="@color/text_color1" />
+                    android:textColor="@color/button_bk_disableok" />
 
                 <View
                     android:layout_width="match_parent"

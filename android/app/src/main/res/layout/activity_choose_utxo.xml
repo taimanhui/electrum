@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context="org.haobtc.wallet.activities.ChooseUtxoActivity">
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/send2many"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/RelativeLayout"
+        android:layout_marginBottom="@dimen/dp_60"
+        android:background="@color/bk_page">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_10">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:layout_alignParentBottom="true"
+        android:background="@color/button_bk_ddake">
+
+        <TextView
+            android:id="@+id/text_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16"
+            android:text="@string/all_num"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/sp_12" />
+
+        <TextView
+            android:id="@+id/text_all_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_4"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_toEndOf="@+id/text_all"
+            android:textColor="@color/utxo_color"
+            android:textSize="24sp"
+            tools:text="1.02" />
+
+        <TextView
+            android:id="@+id/text_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_2"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_toEndOf="@+id/text_all_num"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/sp_12"
+            tools:text="mBTC" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_2"
+            android:layout_below="@+id/text_all"
+            android:layout_marginStart="@dimen/dp_16"
+            android:textColor="#b3b3b3"
+            android:textSize="12sp"
+            android:text="@string/utxo_tips" />
+
+        <Button
+            android:id="@+id/bn_send2many_next"
+            android:layout_width="@dimen/dp_120"
+            android:layout_height="@dimen/dp_40"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:background="@drawable/button_bk"
+            android:text="@string/finish"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -39,85 +39,274 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
-        <activity android:name=".activities.personalwallet.mnemonic_word.ImportMnemonicWalletActivity" />
-        <activity android:name=".activities.settings.EditAnyskServerActivity" />
-        <activity android:name=".activities.settings.AnyskServerSetActivity" />
-        <activity android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity" />
-        <activity android:name=".activities.settings.recovery_set.SetBackupPassActivity" />
-        <activity android:name=".activities.settings.ActivateBackupSuccessActivity" />
-        <activity android:name=".activities.personalwallet.FixWalletNameActivity" />
-        <activity android:name=".activities.settings.SetShutdownTimeActivity" />
-        <activity android:name=".activities.UserAgreementActivity" />
-        <activity android:name=".activities.settings.recovery_set.InputBackupPassActivity" />
-        <activity android:name=".activities.settings.FixBixinkeyNameActivity" />
-        <activity android:name=".activities.settings.BixinKeyBluetoothSettingActivity" />
-        <activity android:name=".activities.settings.BlueToothStatusActivity" /> <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->
-        <activity android:name=".activities.settings.AgentServerActivity" />
+        <activity
+            android:name=".activities.ChooseUtxoActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.mnemonic_word.ImportMnemonicWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.EditAnyskServerActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.AnyskServerSetActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.FixHardwareLanguageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.SetBackupPassActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.ActivateBackupSuccessActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.FixWalletNameActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.SetShutdownTimeActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.UserAgreementActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.InputBackupPassActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.FixBixinkeyNameActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.BixinKeyBluetoothSettingActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.BlueToothStatusActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" /> <!-- Request external storage ->   android:requestLegacyExternalStorage="true" -->
+        <activity
+            android:name=".activities.settings.AgentServerActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity android:name=".activities.sign.CheckSignResultActivity" />
-        <activity android:name=".activities.personalwallet.hidewallet.HideWalletActivity" />
-        <activity android:name=".activities.sign.CheckSignActivity" />
-        <activity android:name=".activities.personalwallet.ChooseHistryWalletActivity" />
-        <activity android:name=".activities.settings.ConfidentialPaymentSettings" />
-        <activity android:name=".activities.settings.fixpin.ConfirmActivity" />
-        <activity android:name=".activities.settings.UpgradeFinishedActivity" />
+        <activity
+            android:name=".activities.personalwallet.hidewallet.HideWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.sign.CheckSignActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.ChooseHistryWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.ConfidentialPaymentSettings"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.fixpin.ConfirmActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.UpgradeFinishedActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.settings.UpgradeBixinKEYActivity"
             android:noHistory="false" />
-        <activity android:name=".activities.personalwallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity" />
-        <activity android:name=".activities.personalwallet.mnemonic_word.CreatePersonalHelpPassActivity" />
-        <activity android:name=".activities.personalwallet.mnemonic_word.CreateHelpWordWalletActivity" />
-        <activity android:name=".activities.transaction.CheckChainDetailWebActivity" />
-        <activity android:name=".activities.settings.BlockChooseActivity" />
-        <activity android:name=".activities.personalwallet.WalletDetailsActivity" />
-        <activity android:name=".activities.settings.QuotationServerActivity" />
-        <activity android:name=".activities.personalwallet.ImportHistoryWalletActivity" />
-        <activity android:name=".activities.settings.ElectrumNodeChooseActivity" />
-        <activity android:name=".activities.personalwallet.AppWalletCreateFinishActivity" />
-        <activity android:name=".activities.personalwallet.ImportMnemonicActivity" />
-        <activity android:name=".activities.personalwallet.mnemonic_word.MnemonicWordActivity" />
-        <activity android:name=".activities.settings.recovery_set.ConfirmBackupActivity" />
-        <activity android:name=".activities.personalwallet.MnemonicActivity" />
-        <activity android:name=".activities.personalwallet.AppWalletSetPassActivity" />
-        <activity android:name=".activities.personalwallet.CreatAppWalletActivity" />
-        <activity android:name=".activities.settings.recovery_set.BackupMessageActivity" />
-        <activity android:name=".activities.settings.recovery_set.BackupRecoveryActivity" />
-        <activity android:name=".activities.settings.recovery_set.ResetDeviceActivity" />
-        <activity android:name=".activities.settings.fixpin.ChangePinProcessingActivity" />
-        <activity android:name=".activities.settings.BixinKeyMessageActivity" />
-        <activity android:name=".activities.settings.HardwareDetailsActivity" />
-        <activity android:name=".activities.settings.CurrencyActivity" />
-        <activity android:name=".activities.settings.BixinKEYManageActivity" />
-        <activity android:name=".activities.personalwallet.CreatFinishPersonalActivity" />
-        <activity android:name=".activities.personalwallet.SingleSigWalletCreator" />
-        <activity android:name=".activities.jointwallet.MultiSigWalletCreator" />
-        <activity android:name=".entries.FsActivity" />
-        <activity android:name=".activities.transaction.DeatilMoreAddressActivity" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".activities.personalwallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.mnemonic_word.CreatePersonalHelpPassActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.mnemonic_word.CreateHelpWordWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.transaction.CheckChainDetailWebActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.BlockChooseActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.WalletDetailsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.QuotationServerActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.ImportHistoryWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.ElectrumNodeChooseActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.AppWalletCreateFinishActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.ImportMnemonicActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.mnemonic_word.MnemonicWordActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.ConfirmBackupActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.MnemonicActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.AppWalletSetPassActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.CreatAppWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.BackupMessageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.BackupRecoveryActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.ResetDeviceActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.fixpin.ChangePinProcessingActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.BixinKeyMessageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.HardwareDetailsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.CurrencyActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.BixinKEYManageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.CreatFinishPersonalActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.SingleSigWalletCreator"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.jointwallet.MultiSigWalletCreator"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".entries.FsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.transaction.DeatilMoreAddressActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activities.base.LunchActivity"
-            android:theme="@style/LunchTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/LunchTheme"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.settings.VersionUpgradeActivity" />
-        <activity android:name=".activities.SettingActivity" />
-        <activity android:name=".activities.TransactionRecordsActivity" />
-        <activity android:name=".activities.LanguageSettingActivity" />
-        <activity android:name=".activities.ServerSettingActivity" />
-        <activity android:name=".activities.TransactionsSettingActivity" />
-        <activity android:name=".activities.VerificationKEYActivity" />
-        <activity android:name=".activities.AboutActivity" />
-        <activity android:name=".activities.SendOne2OneMainPageActivity" />
-        <activity android:name=".activities.ReceivedPageActivity" />
+        <activity
+            android:name=".activities.settings.VersionUpgradeActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.SettingActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.TransactionRecordsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.LanguageSettingActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.ServerSettingActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.TransactionsSettingActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.VerificationKEYActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.AboutActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.SendOne2OneMainPageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.ReceivedPageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity android:name=".activities.Send2ManyActivity" />
-        <activity android:name=".activities.SendOne2ManyMainPageActivity" />
+        <activity
+            android:name=".activities.SendOne2ManyMainPageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity android:name=".activities.TransactionDetailsActivity" />
         <activity android:name=".activities.ConfirmOnHardware" />
         <activity android:name=".activities.CreateWalletActivity" />
@@ -125,41 +314,129 @@
         <activity android:name=".activities.SelectMultiSigWalletActivity" />
         <activity
             android:name=".activities.WalletUnActivatedActivity"
-            android:label="" />
-        <activity android:name=".activities.ActivatedProcessing" />
-        <activity android:name=".activities.ActivateSuccessActivity" />
-        <activity android:name=".activities.settings.AgreementActivity" />
-        <activity android:name=".activities.ShareOtherActivity" />
-        <activity android:name=".activities.GuideActivity" />
-        <activity android:name=".activities.PinSettingActivity" />
-        <activity android:name="dr.android.fileselector.FileSelectActivity" />
-        <activity android:name=".activities.settings.VerificationSuccessActivity" />
-        <activity android:name=".activities.sign.SignActivity" />
-        <activity android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity" />
-        <activity android:name=".activities.settings.recovery_set.ResetDeviceProcessing" />
-        <activity android:name=".activities.settings.recovery_set.ResetDeviceSuccessActivity" />
-        <activity android:name=".activities.personalwallet.PersonalMultiSigWalletCreator" />
-        <activity android:name=".dfu.NotificationActivity" />
-        <activity android:name=".activities.personalwallet.hidewallet.CheckHideWalletActivity" />
-        <activity android:name=".activities.sign.CheckSignMessageActivity" />
+            android:label=""
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.ActivatedProcessing"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.ActivateSuccessActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.AgreementActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.ShareOtherActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.GuideActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.PinSettingActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name="dr.android.fileselector.FileSelectActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.VerificationSuccessActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.sign.SignActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.hidewallet.HideWalletSetPassActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.ResetDeviceProcessing"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.ResetDeviceSuccessActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.PersonalMultiSigWalletCreator"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".dfu.NotificationActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.personalwallet.hidewallet.CheckHideWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.sign.CheckSignMessageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.service.CommunicationModeSelector"
-            android:theme="@style/dialog" />
-        <activity android:name=".activities.SetNameActivity" />
-        <activity android:name=".activities.settings.recovery_set.RecoveryActivity" />
-        <activity android:name=".activities.ActiveFailedActivity" />
-        <activity android:name=".activities.transaction.PinNewActivity" />
-        <activity android:name=".activities.SignatureProcessing" />
-        <activity android:name=".activities.settings.recovery_set.ResetDeviceFailedActivity" />
-        <activity android:name=".activities.settings.CheckXpubResultActivity" />
-        <activity android:name=".activities.settings.recovery_set.RecoveryResult" />
-        <activity android:name=".activities.ConfirmPINPrompt" />
-        <activity android:name=".activities.ActivatePromptPIN" />
+            android:screenOrientation="portrait"
+            android:theme="@style/dialog"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.SetNameActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.RecoveryActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.ActiveFailedActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.transaction.PinNewActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.SignatureProcessing"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.ResetDeviceFailedActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.CheckXpubResultActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.recovery_set.RecoveryResult"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.ConfirmPINPrompt"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.ActivatePromptPIN"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.service.NfcNotifyHelper"
             android:noHistory="true"
-            android:theme="@style/dialog" />
-        <activity android:name=".activities.settings.SelectorActivity" />
+            android:screenOrientation="portrait"
+            android:theme="@style/dialog"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.SelectorActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+
         <meta-data
             android:name="design_width_in_dp"
             android:value="360" />

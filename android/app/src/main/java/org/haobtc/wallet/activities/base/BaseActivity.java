@@ -50,10 +50,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (getLayoutId() != R.layout.activity_lunch) {
             setContentView(getLayoutId());
         }
-        // In order to runtime error `fix Only fullscreen activities can request orientation` in some phone type like samsung Galaxy s7
-        if (getLayoutId() != R.layout.bluetooth_nfc) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//Disable horizontal screen
-        }
         mBinitState();
         initView();
         initData();
@@ -262,7 +258,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public void mBinitState() {
         //other one write
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         getWindow().setStatusBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 

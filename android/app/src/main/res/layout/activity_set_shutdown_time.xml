@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/status_text"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context="org.haobtc.wallet.activities.settings.SetShutdownTimeActivity">

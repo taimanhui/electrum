@@ -842,6 +842,9 @@
     <string name="follow_system">跟随系统语言</string>
     <string name="change_address">更改地址</string>
     <string name="fees">费率</string>
+    <string name="choose_UTXO">选择UTXO</string>
+    <string name="all_num">总数量</string>
+    <string name="utxo_tips">需 &gt; 1.05 BTC</string>
 
 
 </resources>

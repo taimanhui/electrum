@@ -60,7 +60,6 @@ import org.haobtc.wallet.bean.GetsendFeenumBean;
 import org.haobtc.wallet.bean.HardwareFeatures;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.bean.MainSweepcodeBean;
-import org.haobtc.wallet.event.ConnectingEvent;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
@@ -81,6 +80,7 @@ import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
@@ -107,6 +107,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     TextView textBlocks;
     @BindView(R.id.linear_show)
     LinearLayout linearShow;
+    @BindView(R.id.choose_text)
+    TextView chooseText;
+    @BindView(R.id.text_choose_num)
+    TextView textChooseNum;
     private LinearLayout selectSend, selectSigNumLin;
     private ImageView buttonSweep, selectSigNum;
     private EditText editTextComments, editAddress;
@@ -138,7 +142,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String errorMessage = "";
     private String hideRefresh = "";
     private String wallet_type_to_sign;
-    private CommunicationModeSelector modeSelector;
     private String payAddress;
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     private boolean showSeek = true;
@@ -163,6 +166,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         strUnit = preferences.getString("cny_strunit", "CNY");
         wallet_type_to_sign = preferences.getString("wallet_type_to_sign", "");//1-n wallet  --> Direct signature and broadcast
         selectSend = findViewById(R.id.llt_select_wallet);
+        LinearLayout linChooseUtxo = findViewById(R.id.lin_choose_utxo);
         tetMoneye = findViewById(R.id.tet_Money);
         tetamount = findViewById(R.id.amount);
         selectSigNumLin = findViewById(R.id.linear_fee_select);
@@ -178,6 +182,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         ImageView imgBack = findViewById(R.id.img_back);
         TextView btnRecommend = findViewById(R.id.btnRecommendFee);
         btnRecommend.setOnClickListener(this);
+        linChooseUtxo.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         init();
 
@@ -276,7 +281,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             } else {
                 testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
             }
-        }else{
+        } else {
             testNowCanUse.setText(String.format("%s%s", getString(R.string.usable), strNowBtc));
         }
         onlickName = wallet_name;//if onlickName != wallet_name -->home page don't update transaction list
@@ -355,10 +360,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (seekBar.getProgress() == 1){
+                if (seekBar.getProgress() == 1) {
                     intmaxFee = 1;
                     textBlocks.setText(String.format("%s sat/byte", intmaxFee));
-                }else{
+                } else {
                     intmaxFee = Float.parseFloat(String.valueOf(seekBar.getProgress())) / 10000;
                     textBlocks.setText(String.format("%s sat/byte", intmaxFee));
                 }
@@ -588,6 +593,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 break;
             case R.id.btnRecommendFee:
                 mToast(strFeemontAs);
+                break;
+            case R.id.lin_choose_utxo:
+
                 break;
             default:
         }

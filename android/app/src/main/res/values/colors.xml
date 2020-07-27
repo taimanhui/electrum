@@ -52,5 +52,6 @@
     <color name="app_name_text">#4a5066</color>
     <color name="shadow_color">#D2D2D2</color>
     <color name="share_tip">#FFB12B</color>
+    <color name="utxo_color">#4063d5</color>
 
 </resources>

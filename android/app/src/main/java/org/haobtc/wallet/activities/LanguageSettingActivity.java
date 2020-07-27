@@ -1,6 +1,9 @@
 package org.haobtc.wallet.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -44,7 +47,6 @@ public class LanguageSettingActivity extends BaseActivity {
     @Override
     @SuppressLint("CommitPrefEdits")
     public void initView() {
-
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         language = preferences.getString("language", "");
@@ -89,8 +91,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 edit.putString("language", "Chinese");
                 edit.apply();
                 radioSystem.setTextColor(getColor(R.color.text_color1));
-                radioEnglish.setTextColor(getColor(R.color.text_color1));
                 radioChineseasy.setTextColor(getColor(R.color.button_bk_disableok));
+                radioEnglish.setTextColor(getColor(R.color.text_color1));
                 refreshSelf();
                 break;
             case R.id.radio_character:
@@ -100,8 +102,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 edit.putString("language", "English");
                 edit.apply();
                 radioSystem.setTextColor(getColor(R.color.text_color1));
-                radioEnglish.setTextColor(getColor(R.color.button_bk_disableok));
                 radioChineseasy.setTextColor(getColor(R.color.text_color1));
+                radioEnglish.setTextColor(getColor(R.color.button_bk_disableok));
                 refreshSelf();
                 break;
             case R.id.radio_Korean:

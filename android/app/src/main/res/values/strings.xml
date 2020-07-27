@@ -876,8 +876,11 @@
     <string name="passphrase_timeout">passphrase input timeout</string>
     <string name="dont_none">Recovery string cannot be empty</string>
     <string name="input_pub_key">Please enter public key</string>
-    <string name="follow_system">跟随系统语言</string>
-    <string name="change_address">更改地址</string>
-    <string name="fees">费率</string>
+    <string name="follow_system">Follow system language</string>
+    <string name="change_address">Change address</string>
+    <string name="fees">Fee</string>
+    <string name="choose_UTXO">Choose UTXO</string>
+    <string name="all_num">Total quantity</string>
+    <string name="utxo_tips">need &gt; 1.05 BTC</string>
 
 </resources>
