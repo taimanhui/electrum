@@ -383,9 +383,7 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.service.CommunicationModeSelector"
-            android:screenOrientation="portrait"
-            android:theme="@style/dialog"
-            tools:ignore="LockedOrientationActivity" />
+            android:theme="@style/dialog" />
         <activity
             android:name=".activities.SetNameActivity"
             android:screenOrientation="portrait"
@@ -429,9 +427,7 @@
         <activity
             android:name=".activities.service.NfcNotifyHelper"
             android:noHistory="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/dialog"
-            tools:ignore="LockedOrientationActivity" />
+            android:theme="@style/dialog" />
         <activity
             android:name=".activities.settings.SelectorActivity"
             android:screenOrientation="portrait"

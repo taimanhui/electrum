@@ -740,12 +740,11 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             if ("hideWalletReceive".equals(hideWalletReceive)) {
                 customerUI.callAttr("set_pass_state", 1);
             } else {
-                Log.i("shxbsjehbfjsn", "contrastAddress:-- "+features.isPinCached());
-                if (features.isPinProtection()){
+                if (features.isPinProtection()) {
                     if (features.isPinCached()) {
                         EventBus.getDefault().post(new CheckReceiveAddress("checking"));
                     }
-                }else{
+                } else {
                     EventBus.getDefault().post(new CheckReceiveAddress("checking"));
                 }
 

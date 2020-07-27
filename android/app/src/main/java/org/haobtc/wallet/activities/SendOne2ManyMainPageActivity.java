@@ -52,11 +52,11 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
-import org.haobtc.wallet.event.UpdateWalletMsgEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -223,10 +223,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (seekBar.getProgress() == 1){
+                if (seekBar.getProgress() == 1) {
                     intmaxFee = 1;
                     textBlocks.setText(String.format("%s sat/byte", intmaxFee));
-                }else{
+                } else {
                     intmaxFee = Float.parseFloat(String.valueOf(seekBar.getProgress())) / 10000;
                     textBlocks.setText(String.format("%s sat/byte", intmaxFee));
                 }
@@ -335,7 +335,6 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                             } else {
                                 EventBus.getDefault().post(new MainpageWalletEvent("22", walletNamePos));
                             }
-                            EventBus.getDefault().post(new UpdateWalletMsgEvent());
                             //1-n wallet  --> Direct signature and broadcast
                             if ("1-1".equals(walletTypeToSign) && Ble.getInstance().getConnetedDevices().size() != 0) {
                                 String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
@@ -527,7 +526,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             String strnewFee = getFeeByFeeRate.toString();
             Gson gson = new Gson();
             GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
-            int fee = getsendFeenumBean.getFee();
+            BigInteger fee = getsendFeenumBean.getFee();
             tvFee.setText(String.format("%ssat", String.valueOf(fee)));
         }
     }

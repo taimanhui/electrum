@@ -43,7 +43,6 @@ import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.MainNewWalletBean;
 import org.haobtc.wallet.event.CardUnitEvent;
 import org.haobtc.wallet.event.FirstEvent;
-import org.haobtc.wallet.event.UpdateWalletMsgEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -196,7 +195,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
             String balanceC = mainWheelBean.getBalance();
             if (!"standard".equals(personce)) {
                 EventBus.getDefault().post(new FirstEvent("load_wallet_finish"));
-            }else{
+            } else {
                 EventBus.getDefault().post(new FirstEvent("load_wallet_finish_visible"));
             }
             if (!TextUtils.isEmpty(walletType)) {
@@ -346,11 +345,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         String cnyStrunit = preferences.getString("cny_strunit", "CNY");
         testStarCny.setText(String.format("%s%s", getString(R.string.cny_star), cnyStrunit));
 
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(UpdateWalletMsgEvent event) {
-        refreshList();
     }
 
     @Override

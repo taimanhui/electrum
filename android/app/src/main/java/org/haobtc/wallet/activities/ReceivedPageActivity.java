@@ -26,6 +26,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
@@ -99,33 +100,18 @@ public class ReceivedPageActivity extends BaseActivity {
 //            textChangeAddress.setVisibility(View.GONE);
 //            copyAndCheck.setVisibility(View.VISIBLE);
 //        }
+        if ("standard".equals(walletType)) {
+            textChangeAddress.setVisibility(View.GONE);
+        } else {
+            textChangeAddress.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
     public void initData() {
         //Generate QR code
-        mGeneratecode();
-
-    }
-
-    private void mGeneratecode() {
-        PyObject walletAddressShowUi = null;
-        try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (walletAddressShowUi != null) {
-            String strCode = walletAddressShowUi.toString();
-            Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qrData = getCodeAddressBean.getQrData();
-            String addr = getCodeAddressBean.getAddr();
-            textView5.setText(addr);
-            bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
-            imageView2.setImageBitmap(bitmap);
-        }
+        mGeneratecode(0);
 
     }
 
@@ -135,7 +121,7 @@ public class ReceivedPageActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.textView6:
                 //change address
-
+//                mGeneratecode(1);
                 break;
             case R.id.button:
                 rxPermissions
@@ -181,6 +167,7 @@ public class ReceivedPageActivity extends BaseActivity {
                 break;
             case R.id.text_change_address:
                 //change address
+//                mGeneratecode(1);
                 if (checking) {
                     CommunicationModeSelector.runnables.clear();
                     CommunicationModeSelector.runnables.add(null);
@@ -204,6 +191,35 @@ public class ReceivedPageActivity extends BaseActivity {
         }
     }
 
+    private void mGeneratecode(int next) {
+        PyObject walletAddressShowUi = null;
+        try {
+            if (next == 0) {
+                walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            } else if (next == 1) {
+                Log.i("get_wallet_address_show", "get_wallet_address_show_UI: " + next);
+                walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI", new Kwarg("next", next));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        if (walletAddressShowUi != null) {
+            String strCode = walletAddressShowUi.toString();
+            Gson gson = new Gson();
+            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
+            String qrData = getCodeAddressBean.getQrData();
+            String addr = getCodeAddressBean.getAddr();
+            textView5.setText(addr);
+            bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
+            imageView2.setImageBitmap(bitmap);
+            if (next == 1) {
+                mToast(getString(R.string.change_address_success));
+            }
+        }
+
+    }
 
     private String saveImageToGallery(Context context, @NonNull Bitmap bmp) {
         // Save picture

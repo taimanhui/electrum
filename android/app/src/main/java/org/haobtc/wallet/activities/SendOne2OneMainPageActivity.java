@@ -64,12 +64,12 @@ import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 import org.haobtc.wallet.event.MainpageWalletEvent;
 import org.haobtc.wallet.event.SecondEvent;
-import org.haobtc.wallet.event.UpdateWalletMsgEvent;
 import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
 import org.json.JSONException;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -80,7 +80,6 @@ import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
@@ -647,7 +646,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     } else {
                         EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                     }
-                    EventBus.getDefault().post(new UpdateWalletMsgEvent());
                     //1-n wallet  --> Direct signature and broadcast
                     if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
                         String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
@@ -858,12 +856,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 errorMessage = e.getMessage();
                 return;
             }
-//            Log.i("get_fee_by_feerate", "getFeerate: " + getFeeByFeeRate);
+            Log.i("get_fee_by_feerate", "getFeerate: " + getFeeByFeeRate);
             if (getFeeByFeeRate != null) {
                 String strnewFee = getFeeByFeeRate.toString();
                 Gson gson = new Gson();
                 GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
-                int fee = getsendFeenumBean.getFee();
+                BigInteger fee = getsendFeenumBean.getFee();
                 tetMoneye.setText(String.format("%s sat", String.valueOf(fee)));
 
             }

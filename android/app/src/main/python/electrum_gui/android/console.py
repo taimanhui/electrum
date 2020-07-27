@@ -574,7 +574,7 @@ class AndroidCommands(commands.Commands):
                         self.do_save(tx)
                         # print(f"pull_tx_infos============ save ok {txinfo['tx_hash']}")
                     except BaseException as e:
-                        print(f"except-------- {txinfo['tx_hash'],txinfo['tx']}")
+                        # print(f"except-------- {txinfo['tx_hash'],txinfo['tx']}")
                         temp_data = {}
                         temp_data['tx_hash'] = txinfo['tx_hash']
                         temp_data['error'] = str(e)
@@ -1042,7 +1042,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         data_json = {}
         data_json['qr_data'] = data
-        data_json['addr'] = self.wallet.get_addresses()[0]
+        data_json['addr'] = self.wallet.get_addresses()[self.addr_index]
         return json.dumps(data_json)
 
     def get_all_funded_address(self):

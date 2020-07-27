@@ -29,7 +29,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-medium"
-            android:text="@string/send2many"
+            android:text="@string/choose_input"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
@@ -44,6 +44,8 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
+            tools:itemCount="3"
+            tools:listitem="@layout/utxo_item"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_16"
             android:layout_marginBottom="@dimen/dp_10">

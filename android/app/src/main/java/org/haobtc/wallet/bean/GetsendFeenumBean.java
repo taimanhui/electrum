@@ -2,6 +2,8 @@ package org.haobtc.wallet.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigInteger;
+
 public class GetsendFeenumBean {
 
     /**
@@ -11,25 +13,25 @@ public class GetsendFeenumBean {
      */
 
     @SerializedName("amount")
-    private int amount;
+    private String amount;
     @SerializedName("fee")
-    private int fee;
+    private BigInteger fee;
     @SerializedName("tx")
     private String tx;
 
-    public int getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 
-    public int getFee() {
+    public BigInteger getFee() {
         return fee;
     }
 
-    public void setFee(int fee) {
+    public void setFee(BigInteger fee) {
         this.fee = fee;
     }
 

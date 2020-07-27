@@ -845,6 +845,10 @@
     <string name="choose_UTXO">选择UTXO</string>
     <string name="all_num">总数量</string>
     <string name="utxo_tips">需 &gt; 1.05 BTC</string>
+    <string name="choose_input">选择输入</string>
+    <string name="hash">HASH：</string>
+    <string name="num">数量：</string>
+    <string name="change_address_success">更改成功！</string>
 
 
 </resources>
