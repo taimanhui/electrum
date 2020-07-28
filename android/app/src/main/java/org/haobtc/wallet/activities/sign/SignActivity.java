@@ -493,11 +493,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFinish(FinishEvent event) {
-        finish();
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
