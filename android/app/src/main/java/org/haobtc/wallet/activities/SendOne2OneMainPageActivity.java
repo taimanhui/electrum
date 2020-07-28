@@ -43,6 +43,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
@@ -568,6 +569,14 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                             if (granted) { // Always true pre-M
                                 //If you have already authorized it, you can directly jump to the QR code scanning interface
                                 Intent intent2 = new Intent(this, CaptureActivity.class);
+                                ZxingConfig config = new ZxingConfig();
+                                config.setPlayBeep(true);
+                                config.setShake(true);
+                                config.setDecodeBarCode(false);
+                                config.setFullScreenScan(true);
+                                config.setShowAlbum(false);
+                                config.setShowbottomLayout(false);
+                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
                                 startActivityForResult(intent2, REQUEST_CODE);
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
