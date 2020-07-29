@@ -24,6 +24,7 @@ import org.haobtc.wallet.adapter.HelpWordAdapter;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.FirstEvent;
 import org.haobtc.wallet.event.MnemonicEvent;
+import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.MyDialog;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class MnemonicActivity extends BaseActivity {
     private String strPass1;
     private String strName;
     private MyDialog myDialog;
+    private String s;
 
     @Override
     public int getLayoutId() {
@@ -82,6 +84,11 @@ public class MnemonicActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_setPin:
+                try {
+                    Daemon.commands.callAttr("select_wallet", strName);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 Intent intent1 = new Intent(MnemonicActivity.this, ImportMnemonicActivity.class);
                 intent1.putExtra("strSeeds", strSeed);
                 intent1.putExtra("strPass1", strPass1);

@@ -44,7 +44,9 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.bean.GetCodeAddressBean;
+import org.haobtc.wallet.event.ButtonRequestEvent;
 import org.haobtc.wallet.event.CheckReceiveAddress;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.utils.Daemon;
 
 import java.io.File;
@@ -197,7 +199,6 @@ public class ReceivedPageActivity extends BaseActivity {
             if (next == 0) {
                 walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
             } else if (next == 1) {
-                Log.i("get_wallet_address_show", "get_wallet_address_show_UI: " + next);
                 walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI", new Kwarg("next", next));
             }
 
@@ -265,10 +266,15 @@ public class ReceivedPageActivity extends BaseActivity {
         if ("getResult".equals(event.getType())) {
             checking = true;
             textReceiveTip.setVisibility(View.GONE);
-        } else if ("checking".equals(event.getType())) {
-            checking = false;
-            textReceiveTip.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showReading(ButtonRequestEvent event) {
+        checking = false;
+        textReceiveTip.setVisibility(View.VISIBLE);
+        EventBus.getDefault().post(new ExitEvent());
+
     }
 
     @Override

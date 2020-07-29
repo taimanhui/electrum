@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -165,6 +166,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         TextView textView = findViewById(R.id.textView_more);
         tetNone = findViewById(R.id.tet_None);
         refreshLayout = findViewById(R.id.smart_RefreshLayout);
+        LinearLayout linearBuyKey = findViewById(R.id.linear_buy_key);
+        linearBuyKey.setOnClickListener(this);
         imageViewSweep.setOnClickListener(this);
         imageViewSetting.setOnClickListener(this);
         textView.setOnClickListener(this);
@@ -588,6 +591,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.tet_Addmoney:
                 Intent intent6 = new Intent(MainActivity.this, CreateWalletActivity.class);
                 startActivity(intent6);
+                break;
+            case R.id.linear_buy_key:
                 break;
             default:
         }

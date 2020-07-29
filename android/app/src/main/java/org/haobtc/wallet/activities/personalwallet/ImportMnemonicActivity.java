@@ -117,39 +117,36 @@ public class ImportMnemonicActivity extends BaseActivity {
 
 
     private void helpWord(String strWord) {
-        if (strWord.equals(strRemeber)) {
-            mToast(getString(R.string.have_word));
-        } else {
-            strRemeber = strWord;
-            if (TextUtils.isEmpty(editOne.getText().toString())) {
-                editOne.setText(strWord);
-            } else if (TextUtils.isEmpty(editTwo.getText().toString())) {
-                editTwo.setText(strWord);
-            } else if (TextUtils.isEmpty(editThree.getText().toString())) {
-                editThree.setText(strWord);
-            } else if (TextUtils.isEmpty(editFour.getText().toString())) {
-                editFour.setText(strWord);
-            } else if (TextUtils.isEmpty(editFive.getText().toString())) {
-                editFive.setText(strWord);
-            } else if (TextUtils.isEmpty(editSix.getText().toString())) {
-                editSix.setText(strWord);
-            } else if (TextUtils.isEmpty(editSeven.getText().toString())) {
-                editSeven.setText(strWord);
-            } else if (TextUtils.isEmpty(editEight.getText().toString())) {
-                editEight.setText(strWord);
-            } else if (TextUtils.isEmpty(editNine.getText().toString())) {
-                editNine.setText(strWord);
-            } else if (TextUtils.isEmpty(editTen.getText().toString())) {
-                editTen.setText(strWord);
-            } else if (TextUtils.isEmpty(editEleven.getText().toString())) {
-                editEleven.setText(strWord);
-            } else if (TextUtils.isEmpty(editTwelve.getText().toString())) {
-                editTwelve.setText(strWord);
-                //if ok
-                helpWordOk();
+        strRemeber = strWord;
+        if (TextUtils.isEmpty(editOne.getText().toString())) {
+            editOne.setText(strWord);
+        } else if (TextUtils.isEmpty(editTwo.getText().toString())) {
+            editTwo.setText(strWord);
+        } else if (TextUtils.isEmpty(editThree.getText().toString())) {
+            editThree.setText(strWord);
+        } else if (TextUtils.isEmpty(editFour.getText().toString())) {
+            editFour.setText(strWord);
+        } else if (TextUtils.isEmpty(editFive.getText().toString())) {
+            editFive.setText(strWord);
+        } else if (TextUtils.isEmpty(editSix.getText().toString())) {
+            editSix.setText(strWord);
+        } else if (TextUtils.isEmpty(editSeven.getText().toString())) {
+            editSeven.setText(strWord);
+        } else if (TextUtils.isEmpty(editEight.getText().toString())) {
+            editEight.setText(strWord);
+        } else if (TextUtils.isEmpty(editNine.getText().toString())) {
+            editNine.setText(strWord);
+        } else if (TextUtils.isEmpty(editTen.getText().toString())) {
+            editTen.setText(strWord);
+        } else if (TextUtils.isEmpty(editEleven.getText().toString())) {
+            editEleven.setText(strWord);
+        } else if (TextUtils.isEmpty(editTwelve.getText().toString())) {
+            editTwelve.setText(strWord);
+            //if ok
+            helpWordOk();
 
-            }
         }
+
     }
 
     private void helpWordOk() {
@@ -179,12 +176,28 @@ public class ImportMnemonicActivity extends BaseActivity {
             myDialog.dismiss();
             if (Objects.requireNonNull(e.getMessage()).contains("pair seed failed")) {
                 mToast(getString(R.string.helpword_wrong));
+                changeNull();
             } else {
                 mToast(getString(R.string.improt_wrong));
             }
             e.printStackTrace();
         }
 
+    }
+
+    private void changeNull() {
+        editOne.setText("");
+        editTwo.setText("");
+        editThree.setText("");
+        editFour.setText("");
+        editFive.setText("");
+        editSix.setText("");
+        editSeven.setText("");
+        editEight.setText("");
+        editNine.setText("");
+        editTen.setText("");
+        editEleven.setText("");
+        editTwelve.setText("");
     }
 
     @Override

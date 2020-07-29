@@ -153,7 +153,7 @@
     <string name="completed">Completed</string>
     <string name="be_carefl">You have turned on transaction auto syncing, other signers can receive the transaction via Bixin HD, or you can forward the transaction to other co-signers</string>
     <string name="forword_transfer">Forward transaction</string>
-    <string name="screenshot">Take screenshot and forward the QR code, or copy the content and forward to other co-signers to finish signing</string>
+    <string name="screenshot">Take screenshot and forward the QR code or copy the content and forward to other co-signers to finish signing</string>
     <string name="preservation">Save QR code</string>
     <string name="transaction_message">Transaction message</string>
     <string name="trsaction_file">Transaction file</string>
@@ -383,7 +383,7 @@
     <string name="setwallet_pass">Set wallet password</string>
     <string name="input_pass_format1">At least 8 digits, only numerals, upper case letters, lower cases letters, and standard symbols are allowed</string>
     <string name="intput_pass_format2">Device does not keep any wallet key info for the user. There is no way to retrieve password. Please keep password in a safe and proper manner yourself</string>
-    <string name="helpword_wrong">Wrong mnemonic phrases. Please check and re-enter</string>
+    <string name="helpword_wrong">Wrong mnemonic phrases. Please try again</string>
     <string name="one_one">1–1</string>
     <string name="_1_0_0">1.0.0</string>
     <string name="lnbcdfd4fdsk">aksdhkjdakjldkajsliieihdihsdkjsjda</string>
@@ -847,7 +847,6 @@
     <string name="edit_anysk_server">Edit synchronization server</string>
     <string name="ip_address">IP address</string>
     <string name="add_success">Added successfully</string>
-    <string name="bitcoin_core_xxx">Due to the different rules of mnemonics in different wallets, at present, bitcoin core, bitpie, Kushen and other platforms use XXX rule to generate mnemonics</string>
     <string name="switch_server">Abnormal link,it is recommended to switch to Bixin server</string>
     <string name="recovery_new_key">Restore to new BixinKey</string>
     <string name="key_lite">Fit the phone with BixinKey Lite</string>
@@ -882,9 +881,11 @@
     <string name="choose_UTXO">Choose UTXO</string>
     <string name="all_num">Total quantity</string>
     <string name="utxo_tips">need &gt; 1.05 BTC</string>
-    <string name="choose_input">选择输入</string>
+    <string name="choose_input">Select input</string>
     <string name="hash">HASH：</string>
-    <string name="num">数量：</string>
-    <string name="change_address_success">更改成功！</string>
+    <string name="num">number：</string>
+    <string name="change_address_success">The change was successful！</string>
+    <string name="have_not_key">No bixinkey?</string>
+    <string name="to_buy">Go and buy &gt;&gt;</string>
 
 </resources>

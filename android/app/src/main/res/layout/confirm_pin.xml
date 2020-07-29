@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     android:background="@color/button_bk_ddake"
     android:orientation="vertical"
     tools:context=".activities.settings.recovery_set.BackupRecoveryActivity">

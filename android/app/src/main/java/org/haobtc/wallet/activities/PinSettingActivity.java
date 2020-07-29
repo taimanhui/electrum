@@ -154,9 +154,6 @@ public class PinSettingActivity extends BaseActivity {
                             finish();
                             break;
                         default:
-                            if (tag.equals(ReceivedPageActivity.TAG)){
-                                EventBus.getDefault().post(new CheckReceiveAddress("checking"));
-                            }
                             if (isNFC) {
                                 Intent intent = new Intent(this, NfcNotifyHelper.class);
                                 intent.putExtra("tag", "PIN");

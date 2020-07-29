@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     tools:context="org.haobtc.wallet.activities.settings.ActivateBackupSuccessActivity">
 
     <RelativeLayout
@@ -23,12 +25,12 @@
             android:id="@+id/text_finish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/dp_16"
-            android:textSize="@dimen/sp_15"
-            android:layout_alignParentEnd="true"
             android:text="@string/finish"
             android:textColor="@color/button_bk"
+            android:textSize="@dimen/sp_15"
             tools:ignore="RelativeOverlap" />
 
     </RelativeLayout>
@@ -101,6 +103,7 @@
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="@dimen/sp_14" />
+
     <Button
         android:id="@+id/btn_finish"
         android:layout_width="300dp"

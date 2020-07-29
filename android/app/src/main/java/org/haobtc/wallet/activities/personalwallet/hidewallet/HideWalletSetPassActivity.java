@@ -77,10 +77,7 @@ public class HideWalletSetPassActivity extends BaseActivity {
                 }
                 if (!isNFC) {
                     EventBus.getDefault().post(new PinEvent("", strNewpass));
-                    if ("hideWalletReceive".equals(getIntent().getStringExtra("hideWalletReceive"))){
-                        EventBus.getDefault().post(new CheckReceiveAddress("checking"));
-                        finish();
-                    }
+                    finish();
                 } else {
                     Intent intent = new Intent(this, NfcNotifyHelper.class);
                     intent.putExtra("tag", "Passphrase");

@@ -50,7 +50,7 @@ public class ConfirmPINPrompt extends BaseActivity {
     public void initData() {
 
     }
-    @SingleClick(value = 10000)
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.backup})
     public void onViewClicked(View view) {
         switch (view.getId()) {

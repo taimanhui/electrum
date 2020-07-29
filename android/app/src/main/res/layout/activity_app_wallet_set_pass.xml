@@ -53,8 +53,8 @@
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="@dimen/dp_16"
             android:text="@string/wallet_tips"
-            android:textColor="#ffb12b"
-            android:textSize="13sp" />
+            android:textColor="@color/share_tip"
+            android:textSize="@dimen/sp_13" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"

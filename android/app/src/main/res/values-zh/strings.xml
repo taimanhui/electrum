@@ -152,7 +152,7 @@
     <string name="completed">已完成</string>
     <string name="be_carefl">您已打开自动同步交易，其他联署人可通过币信HD获取交易或使用以下方式将交易转发给其他联署人进行签名</string>
     <string name="forword_transfer">转发转账</string>
-    <string name="screenshot">截图转发二维码。或复制内容发送给其他联署人完成签名</string>
+    <string name="screenshot">截图转发二维码或复制内容发送给其他联署人完成签名</string>
     <string name="preservation">保存二维码</string>
     <string name="transaction_message">交易报文</string>
     <string name="trsaction_file">交易文件</string>
@@ -381,7 +381,7 @@
     <string name="setwallet_pass">设置钱包密码</string>
     <string name="input_pass_format1">密码至少8位，只能且必须包含大写字母、小写字母、数字和标准符号</string>
     <string name="intput_pass_format2">本钱包不保留钱包的任何信息，密码没有找回途径，请务必牢记钱包密码</string>
-    <string name="helpword_wrong">助记词输入有误，请检查后更改</string>
+    <string name="helpword_wrong">助记词输入有误，请重新输入</string>
     <string name="sign_failed">签名失败</string>
     <string name="passtype_wrong">密码格式输入错误</string>
     <string name="verify_pin">验证PIN码成功</string>
@@ -809,7 +809,6 @@
     <string name="edit_anysk_server">编辑同步服务器</string>
     <string name="ip_address">IP地址</string>
     <string name="add_success">添加成功</string>
-    <string name="bitcoin_core_xxx">由于不同钱包助记词规则不同，目前支持 Bitcoin Core，比特派，库神等平台使用XXX规则生成的助记词</string>
     <string name="switch_server">链接异常，建议切换为bixin服务器</string>
     <string name="recovery_new_key">恢复到新BixinKey</string>
     <string name="key_lite">将手机与BixinKey Lite贴合</string>
@@ -849,6 +848,8 @@
     <string name="hash">HASH：</string>
     <string name="num">数量：</string>
     <string name="change_address_success">更改成功！</string>
+    <string name="have_not_key">还没有BixinKey？</string>
+    <string name="to_buy">去购买 &gt;&gt;</string>
 
 
 </resources>

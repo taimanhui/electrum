@@ -739,15 +739,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         if (strDeviceId.contains(deviceId)) {
             if ("hideWalletReceive".equals(hideWalletReceive)) {
                 customerUI.callAttr("set_pass_state", 1);
-            } else {
-                if (features.isPinProtection()) {
-                    if (features.isPinCached()) {
-                        EventBus.getDefault().post(new CheckReceiveAddress("checking"));
-                    }
-                } else {
-                    EventBus.getDefault().post(new CheckReceiveAddress("checking"));
-                }
-
             }
             try {
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SHOW_ADDRESS, contrastAddress, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
@@ -1289,7 +1280,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     break;
                 case PASS_NEW_PASSPHRASS:
                 case PASS_PASSPHRASS:
-                    Log.i("CheckHideWalletFragment", "33333333");
                     //Set password
                     Intent intent3 = new Intent(fragmentActivity, HideWalletSetPassActivity.class);
                     intent3.putExtra("hideWalletReceive", hideWalletReceive);

@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     android:layout_centerHorizontal="true"
     tools:context=".activities.settings.fixpin.ConfirmActivity">
 

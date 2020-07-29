@@ -29,7 +29,6 @@
                 android:layout_height="@dimen/dp_40"
                 android:contentDescription="@string/scaning"
                 android:padding="8dp"
-
                 android:src="@drawable/soayisao" />
 
             <TextView
@@ -103,28 +102,69 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="@dimen/dp_4"
-                android:layout_marginBottom="@dimen/dp_20"
                 android:layout_marginEnd="30dp"
-                android:clipChildren="false"/>
+                android:layout_marginBottom="@dimen/dp_20"
+                android:clipChildren="false" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recl_un_backup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_16"
                 android:layout_marginBottom="@dimen/dp_22"
-                tools:itemCount="1"
+                android:orientation="horizontal"
                 android:visibility="gone"
-                tools:listitem="@layout/un_backup_item"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                tools:itemCount="1"
+                tools:listitem="@layout/un_backup_item">
 
 
             </androidx.recyclerview.widget.RecyclerView>
 
         </LinearLayout>
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/layout_margin"
+            android:outlineSpotShadowColor="@color/shadow_color"
+            app:cardCornerRadius="@dimen/dp_8"
+            app:cardElevation="@dimen/dp_8"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout"
+            tools:ignore="UnusedAttribute">
 
+            <LinearLayout
+                android:id="@+id/linear_buy_key"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_60">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:gravity="center_vertical"
+                    android:text="@string/have_not_key"
+                    android:textColor="@color/buy_key"
+                    android:textSize="@dimen/sp_16" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/to_buy"
+                    android:textColor="@color/share_tip"
+                    android:textSize="@dimen/sp_16" />
+
+                <ImageView
+                    android:layout_width="121dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/shopping" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"

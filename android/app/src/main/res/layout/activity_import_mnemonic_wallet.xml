@@ -49,20 +49,11 @@
             android:layout_marginTop="@dimen/dp_20"
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_10"
             android:text="@string/choose_help"
             android:textColor="@color/text_color"
             android:textSize="@dimen/sp_15" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_4"
-            android:layout_marginBottom="@dimen/dp_10"
-            android:paddingStart="@dimen/dp_16"
-            android:paddingEnd="@dimen/dp_16"
-            android:text="@string/bitcoin_core_xxx"
-            android:textColor="@color/light_text"
-            android:textSize="@dimen/sp_13" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recl_mnemonic"
