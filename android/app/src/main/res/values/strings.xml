@@ -887,5 +887,6 @@
     <string name="change_address_success">The change was successful！</string>
     <string name="have_not_key">No bixinkey?</string>
     <string name="to_buy">Go and buy &gt;&gt;</string>
+    <string name="differnce_deviceId">Device ID is inconsistent, please replace and backup</string>
 
 </resources>

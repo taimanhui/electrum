@@ -850,6 +850,7 @@
     <string name="change_address_success">更改成功！</string>
     <string name="have_not_key">还没有BixinKey？</string>
     <string name="to_buy">去购买 &gt;&gt;</string>
+    <string name="differnce_deviceId">设备ID不一致，请更换后进行备份</string>
 
 
 </resources>

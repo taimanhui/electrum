@@ -683,9 +683,19 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 dealwithSign(isNFC);
             } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || "recovery".equals(action)) {
                 if (TextUtils.isEmpty(extras)) {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                    String contrastDeviceId = getIntent().getStringExtra("contrastDeviceId");
+                    if (!TextUtils.isEmpty(contrastDeviceId)) {
+                        if (contrastDeviceId.equals(features.getDeviceId())) {
+                            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                        } else {
+                            mToast(getString(R.string.differnce_deviceId));
+                            finish();
+                        }
+                    } else {
+                        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.BACK_UP, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
+                    }
                 } else {
-                    Toast.makeText(this, R.string.recovery_unsupport, Toast.LENGTH_SHORT).show();
+                    mToast(getString(R.string.recovery_unsupport));
                     finish();
                 }
             } else if (SettingActivity.TAG.equals(tag)) {

@@ -526,6 +526,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             CommunicationModeSelector.backupTip = true;
                             Intent intent = new Intent(MainActivity.this, BackupRecoveryActivity.class);
                             intent.putExtra("home_un_backup", "home_un_backup");
+                            intent.putExtra("contrastDeviceId",strDeviceId);
                             startActivity(intent);
                         }
                     });

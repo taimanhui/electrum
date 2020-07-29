@@ -54,6 +54,7 @@ public class BackupRecoveryActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         homeUnbackup = getIntent().getStringExtra("home_un_backup");
+        String contrastDeviceId = getIntent().getStringExtra("contrastDeviceId");
         EventBus.getDefault().register(this);
         if ("home_un_backup".equals(homeUnbackup) || "create_to_backup".equals(homeUnbackup)) {
             if (Ble.getInstance().getConnetedDevices().size() != 0) {
@@ -63,6 +64,7 @@ public class BackupRecoveryActivity extends BaseActivity {
             }
             Intent intent = new Intent(this, CommunicationModeSelector.class);
             intent.putExtra("tag", TAG);
+            intent.putExtra("contrastDeviceId",contrastDeviceId);
             startActivity(intent);
         }
     }
