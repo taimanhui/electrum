@@ -113,8 +113,10 @@ public class VerificationKEYActivity extends BaseActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Request request, Exception e) {
-                        Log.i("strVerification", "onError: ---- " + request);
-                        mToast(e.getMessage());
+                        Log.i("strVerification", "onError: ---- " + e.getMessage());
+                        if (Objects.requireNonNull(e.getMessage()).contains("No address associated with hostname")) {
+                            mToast(getString(R.string.internet_wrong));
+                        }
                         Drawable drawableStartFail = getDrawable(R.drawable.shibai);
                         Objects.requireNonNull(drawableStartFail).setBounds(0, 0, drawableStartFail.getMinimumWidth(), drawableStartFail.getMinimumHeight());
                         if (isNFC) {

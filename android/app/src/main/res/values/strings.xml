@@ -888,5 +888,8 @@
     <string name="have_not_key">No bixinkey?</string>
     <string name="to_buy">Go and buy &gt;&gt;</string>
     <string name="differnce_deviceId">Device ID is inconsistent, please replace and backup</string>
+    <string name="sat_byte">sat/byte</string>
+    <string name="key">BixinKey</string>
+    <string name="internet_wrong">Network error!</string>
 
 </resources>

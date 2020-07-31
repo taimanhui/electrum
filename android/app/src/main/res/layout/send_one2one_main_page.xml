@@ -355,12 +355,12 @@
                 tools:ignore="UnusedAttribute">
 
                 <LinearLayout
-                    android:id="@+id/linear_fee_select"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/linear_fee_select"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
                         android:layout_marginTop="@dimen/layout_margin"
@@ -470,21 +470,40 @@
                                 android:textColor="#b3b3b3"
                                 android:textSize="12sp" />
 
-                            <TextView
-                                android:id="@+id/text_blocks"
+                            <LinearLayout
                                 android:layout_width="150dp"
                                 android:layout_height="@dimen/dp_50"
                                 android:layout_centerVertical="true"
                                 android:layout_marginStart="@dimen/dp_10"
                                 android:layout_toEndOf="@+id/textViewFee"
                                 android:background="@drawable/fee_back_4"
-                                android:gravity="center_vertical"
-                                android:maxLines="1"
+                                android:orientation="horizontal"
                                 android:paddingStart="@dimen/dp_10"
-                                android:paddingEnd="@dimen/dp_10"
-                                android:textColor="@color/graytext_color"
-                                android:textSize="@dimen/sp_12"
-                                tools:text="180 sat/byte" />
+                                android:paddingEnd="@dimen/dp_10">
+
+                                <EditText
+                                    android:id="@+id/text_blocks"
+                                    android:layout_width="0dp"
+                                    android:layout_height="@dimen/dp_50"
+                                    android:layout_weight="1"
+                                    android:background="@null"
+                                    android:gravity="center_vertical"
+                                    android:inputType="numberDecimal"
+                                    android:maxLines="1"
+                                    android:textColor="@color/graytext_color"
+                                    android:textSize="@dimen/sp_12"
+                                    tools:text="180" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/sat_byte"
+                                    android:textColor="@color/graytext_color"
+                                    android:textSize="@dimen/sp_12" />
+
+                            </LinearLayout>
+
 
                             <TextView
                                 android:id="@+id/btnRecommendFee"
@@ -513,8 +532,8 @@
                 android:layout_marginStart="@dimen/layout_margin"
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/layout_margin"
-                android:visibility="gone"
                 android:outlineSpotShadowColor="@color/shadow_color"
+                android:visibility="gone"
                 app:cardCornerRadius="@dimen/dp_8"
                 app:cardElevation="@dimen/dp_8"
                 tools:ignore="UnusedAttribute">
@@ -541,9 +560,9 @@
                         android:id="@+id/text_choose_num"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="已选择1个"
                         android:textColor="@color/text_0"
-                        android:textSize="@dimen/sp_15" />
+                        android:textSize="@dimen/sp_15"
+                        tools:text="已选择1个" />
 
                     <ImageView
                         android:layout_width="35dp"

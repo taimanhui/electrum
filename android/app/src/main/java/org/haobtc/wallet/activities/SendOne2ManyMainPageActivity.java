@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -97,9 +99,9 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     @BindView(R.id.test_wallet_unit)
     TextView testWalletUnit;
     @BindView(R.id.text_blocks)
-    TextView textBlocks;
-    @BindView(R.id.btnRecommendFee)
-    Button btnRecommendFee;
+    EditText textBlocks;
+    @BindView(R.id.btnRecommendFees)
+    TextView btnRecommendFee;
     @BindView(R.id.linear_seek)
     LinearLayout linearSeek;
     private ArrayList<AddressEvent> dataListName;
@@ -113,13 +115,15 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private String walletTypeToSign;
     private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
     private String payAddress;
-    private String strFeemontAs;
     private boolean showSeek = true;
     private String onclickName;
     private int walletNamePos;
     private SharedPreferences preferences;
     private SharedPreferences.Editor edit;
     private String fee;
+    private int recommendFee;
+    private String feeNum;
+    private float tjFee;
 
     @Override
     public int getLayoutId() {
@@ -163,6 +167,14 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         getFeeamont();
         //get pay address
         mGeneratecode();
+        //edittext focus change
+        focusChange();
+
+    }
+
+    private void focusChange() {
+        TextWatcher1 textWatcher1 = new TextWatcher1();
+        textBlocks.addTextChangedListener(textWatcher1);
 
     }
 
@@ -196,13 +208,15 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             String strFee = getDefaultFeeStatuses.toString();
             Log.i("get_default_fee", "strFee:   " + strFee);
             if (strFee.contains("sat/byte")) {
-                strFeemontAs = strFee.substring(0, strFee.indexOf("sat/byte") + 8);
                 String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                 String strMax = strFeeamont.replaceAll(" ", "").split("\\.", 2)[0];
-                textBlocks.setText(strFeemontAs);
                 intmaxFee = Float.parseFloat(strMax);//fee
+                tjFee = Float.parseFloat(strMax);
+                //Current progress
+                recommendFee = (int) (intmaxFee * 10000);
                 seedBar.setMax((int) (intmaxFee * 20000));
-                seedBar.setProgress((int) (intmaxFee * 10000));
+                seedBar.setProgress(recommendFee);
+                textBlocks.setText(String.valueOf(intmaxFee));
 
             }
             seekbarLatoutup();
@@ -225,10 +239,10 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 if (seekBar.getProgress() == 1) {
                     intmaxFee = 1;
-                    textBlocks.setText(String.format("%s sat/byte", intmaxFee));
+                    textBlocks.setText(String.format("%s", intmaxFee));
                 } else {
                     intmaxFee = Float.parseFloat(String.valueOf(seekBar.getProgress())) / 10000;
-                    textBlocks.setText(String.format("%s sat/byte", intmaxFee));
+                    textBlocks.setText(String.format("%s", intmaxFee));
                 }
                 //getFeerate
                 getFeerate();
@@ -270,7 +284,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
 
 
     @SingleClick
-    @OnClick({R.id.lin_chooseAddress, R.id.linearLayout10, R.id.linear_feeSelect, R.id.img_back, R.id.create_trans_one2many})
+    @OnClick({R.id.lin_chooseAddress, R.id.linearLayout10, R.id.linear_feeSelect, R.id.img_back, R.id.create_trans_one2many, R.id.btnRecommendFees})
     public void onViewClicked(View view) {
         PyObject mktx;
         switch (view.getId()) {
@@ -376,8 +390,12 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                     }
                 }
                 break;
-            case R.id.btnRecommendFee:
-                mToast(strFeemontAs);
+            case R.id.btnRecommendFees:
+                intmaxFee = tjFee;
+                //getFeerate
+                getFeerate();
+                seedBar.setProgress(recommendFee);
+                textBlocks.setText(String.valueOf(intmaxFee));
                 break;
             default:
         }
@@ -527,7 +545,54 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             Gson gson = new Gson();
             GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
             BigInteger fee = getsendFeenumBean.getFee();
-            tvFee.setText(String.format("%ssat", String.valueOf(fee)));
+            feeNum = String.valueOf(fee);
+            tvFee.setText(String.format("%ssat", feeNum));
+        }
+    }
+
+    class TextWatcher1 implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            inputType(textBlocks, charSequence);
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if (!TextUtils.isEmpty(editable.toString())) {
+                intmaxFee = Float.parseFloat(editable.toString());
+            } else {
+                intmaxFee = 0;
+            }
+            seedBar.setProgress((int) (intmaxFee * 10000));
+            //getFeerate
+            getFeerate();
+        }
+    }
+
+    private void inputType(EditText edittext, CharSequence s) {
+        if (s.toString().contains(".")) {
+            if (s.length() - 1 - s.toString().indexOf(".") > 7) {
+                s = s.toString().subSequence(0,
+                        s.toString().indexOf(".") + 8);
+                edittext.setText(s);
+                edittext.setSelection(s.length());
+            }
+        }
+        if (".".equals(s.toString().trim().substring(0))) {
+            s = "0" + s;
+            edittext.setText(s);
+            edittext.setSelection(2);
+        }
+        if (s.toString().startsWith("0")
+                && s.toString().trim().length() > 1) {
+            if (!".".equals(s.toString().substring(1, 2))) {
+                edittext.setText(s.subSequence(0, 1));
+                edittext.setSelection(1);
+            }
         }
     }
 

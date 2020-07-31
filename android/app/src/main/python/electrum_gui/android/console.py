@@ -1110,8 +1110,8 @@ class AndroidCommands(commands.Commands):
         from electrum.transaction import Transaction
         from electrum.util import bh2u
         try:
-            text = bh2u(base_decode(data, base=43))
-            tx = self.recover_tx_info(text)
+            # text = bh2u(base_decode(data, base=43))
+            tx = self.recover_tx_info(data)
         except Exception as e:
             tx = None
             raise BaseException(e)

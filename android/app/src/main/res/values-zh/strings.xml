@@ -343,7 +343,7 @@
     <string name="add_speed">加速</string>
     <string name="tips_addspeed">提示</string>
     <string name="Confirm_speed">确认加速</string>
-    <string name="new_trsaction_tips">加速后，将生成新的交易；新交易需重新签名和广播！实际完成交易以链上为准！</string>
+    <string name="new_trsaction_tips">加速后将生成新的交易；新交易需重新签名和广播！实际完成交易以链上为准！</string>
     <string name="speed_fee">加速后费率为</string>
     <string name="dontRBF">该交易不支持rbf功能</string>
     <string name="about_only">关于</string>
@@ -397,7 +397,7 @@
     <string name="confirm_pub">确认公钥</string>
     <string name="input_backup_wallet">导入备份钱包</string>
     <string name="is_use">可使用</string>
-    <string name="the_only_bixinkey">BixinKey中任意一个授权转账</string>
+    <string name="the_only_bixinkey">个BixinKey中任意一个授权转账</string>
     <string name="iknow_risk">我已知晓以上风险</string>
     <string name="key_backup">BixinKey备份&#38;恢复</string>
     <string name="pin_wrong">PIN码输入有误，请重新输入</string>
@@ -851,6 +851,7 @@
     <string name="have_not_key">还没有BixinKey？</string>
     <string name="to_buy">去购买 &gt;&gt;</string>
     <string name="differnce_deviceId">设备ID不一致，请更换后进行备份</string>
+    <string name="internet_wrong">网络错误！</string>
 
 
 </resources>

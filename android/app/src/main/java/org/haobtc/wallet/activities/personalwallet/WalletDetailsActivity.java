@@ -89,6 +89,7 @@ public class WalletDetailsActivity extends BaseActivity {
     private MyDialog myDialog;
     private ArrayList<WalletDetailBixinKeyEvent> addEventsDatas;
     private ArrayList<WalletAddressEvent> walletAddressList;
+    private String walletType;
 
     @Override
     public int getLayoutId() {
@@ -102,7 +103,7 @@ public class WalletDetailsActivity extends BaseActivity {
         myDialog = MyDialog.showDialog(WalletDetailsActivity.this);
         Intent intent = getIntent();
         walletName = intent.getStringExtra("wallet_name");
-        String walletType = intent.getStringExtra("wallet_type");
+        walletType = intent.getStringExtra("wallet_type");
         if ("standard".equals(walletType)) {
             cardThreePublic.setVisibility(View.GONE);
         } else {
@@ -257,6 +258,10 @@ public class WalletDetailsActivity extends BaseActivity {
         //set see view
         View view = View.inflate(context, resource, null);
         dialogBtom = new Dialog(context, R.style.dialog);
+        TextView textSoftDelete = view.findViewById(R.id.text_soft_delete);
+        if ("standard".equals(walletType)) {
+            textSoftDelete.setVisibility(View.GONE);
+        }
         //cancel dialog
         view.findViewById(R.id.tet_ConfirmDelete).setOnClickListener(v -> {
             myDialog.show();

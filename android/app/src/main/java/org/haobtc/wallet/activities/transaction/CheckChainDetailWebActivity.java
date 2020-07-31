@@ -6,9 +6,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -18,6 +19,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.haobtc.wallet.R;
@@ -30,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CheckChainDetailWebActivity extends BaseActivity implements NetBroadcastReceiver.NetStatusMonitor{
+public class CheckChainDetailWebActivity extends BaseActivity implements NetBroadcastReceiver.NetStatusMonitor {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -38,6 +40,8 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     WebView webHeckChain;
     @BindView(R.id.lin_Nonet)
     LinearLayout linNonet;
+    @BindView(R.id.text_title)
+    TextView textTitle;
     private String checkTxid;
     private int nets = 2;
     private boolean netStatus;
@@ -61,6 +65,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     private MyDialog myDialog;
     private NetBroadcastReceiver netBroadcastReceiver;
     private String blockServerLine;
+    private String keyLink;
 
     @Override
     public int getLayoutId() {
@@ -76,6 +81,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         myDialog.show();
         Intent intent = getIntent();
         checkTxid = intent.getStringExtra("checkTxid");
+        keyLink = intent.getStringExtra("key_link");
 
     }
 
@@ -89,7 +95,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         webHeckChain.getSettings().setDomStorageEnabled(true);
         webHeckChain.setWebChromeClient(new WebChromeClient());
         webHeckChain.getSettings().setAllowFileAccess(false);
-        webHeckChain.setWebViewClient(new WebViewClient(){
+        webHeckChain.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
@@ -109,9 +115,13 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             }
         });
 
-//        Log.i("hhhhhhhhhhhh", "initData: "+blockServerLine+checkTxid);
         if (nets == 2) {
-            webHeckChain.loadUrl(blockServerLine+checkTxid);
+            if (!TextUtils.isEmpty(keyLink)) {
+                textTitle.setText(getString(R.string.key));
+                webHeckChain.loadUrl(keyLink);
+            } else {
+                webHeckChain.loadUrl(blockServerLine + checkTxid);
+            }
         }
     }
 
@@ -180,4 +190,10 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     }
 
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }

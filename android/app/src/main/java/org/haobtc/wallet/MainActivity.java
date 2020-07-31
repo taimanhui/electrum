@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,6 +61,7 @@ import org.haobtc.wallet.activities.base.ApplicationObserver;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.recovery_set.BackupRecoveryActivity;
+import org.haobtc.wallet.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.wallet.adapter.MaindowndatalistAdapetr;
 import org.haobtc.wallet.adapter.UnbackupKeyAdapter;
 import org.haobtc.wallet.aop.SingleClick;
@@ -130,6 +132,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private DownloadManager manager;
     private SharedPreferences.Editor edit;
     public static boolean isBacked;
+    private CardView cardBuyKey;
+    private ArrayList<String> softList;
 
     @Override
     public int getLayoutId() {
@@ -166,8 +170,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         TextView textView = findViewById(R.id.textView_more);
         tetNone = findViewById(R.id.tet_None);
         refreshLayout = findViewById(R.id.smart_RefreshLayout);
-        LinearLayout linearBuyKey = findViewById(R.id.linear_buy_key);
-        linearBuyKey.setOnClickListener(this);
+        cardBuyKey = findViewById(R.id.card_buy_key);
+        cardBuyKey.setOnClickListener(this);
         imageViewSweep.setOnClickListener(this);
         imageViewSetting.setOnClickListener(this);
         textView.setOnClickListener(this);
@@ -182,6 +186,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void initData() {
+        softList = new ArrayList<>();//soft wallet num
         maintrsactionlistEvents = new ArrayList<>();
         fragmentList = new ArrayList<>();
         //Binder Adapter
@@ -197,6 +202,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void mWheelplanting() {
+        softList.clear();
         walletnameList.clear();
         fragmentList.clear();
         //wallet list
@@ -212,6 +218,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
                 } catch (Exception e) {
                     e.printStackTrace();
+//                    cardBuyKey.setVisibility(View.VISIBLE);
                     addwalletFragment();
                     return;
                 }
@@ -237,9 +244,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         String value = jsonToMap.get(key).toString();
                         addressEvent.setName(key);
                         addressEvent.setType(value);
+                        if ("standard".equals(value)) {
+                            softList.add(value);
+                        }
                         walletnameList.add(addressEvent);
                     }
                 }
+                Log.i("showWalletList", "showWalletList: "+softList.size());
+                Log.i("showWalletList", "showWalletList: "+walletnameList.size());
+//                if (softList.size() == walletnameList.size()) {
+//                    cardBuyKey.setVisibility(View.VISIBLE);
+//                }
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();
@@ -258,9 +273,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     viewPager.setPageMargin(40);
                     viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
                 } else {
+//                    cardBuyKey.setVisibility(View.VISIBLE);
                     addwalletFragment();
                 }
             } else {
+//                cardBuyKey.setVisibility(View.VISIBLE);
                 addwalletFragment();
             }
         }
@@ -526,7 +543,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             CommunicationModeSelector.backupTip = true;
                             Intent intent = new Intent(MainActivity.this, BackupRecoveryActivity.class);
                             intent.putExtra("home_un_backup", "home_un_backup");
-                            intent.putExtra("contrastDeviceId",strDeviceId);
+                            intent.putExtra("contrastDeviceId", strDeviceId);
                             startActivity(intent);
                         }
                     });
@@ -593,7 +610,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 Intent intent6 = new Intent(MainActivity.this, CreateWalletActivity.class);
                 startActivity(intent6);
                 break;
-            case R.id.linear_buy_key:
+            case R.id.card_buy_key:
+                Intent intent = new Intent(MainActivity.this, CheckChainDetailWebActivity.class);
+                intent.putExtra("key_link", "https://key.bixin.com/");
+                startActivity(intent);
                 break;
             default:
         }
