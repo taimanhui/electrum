@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 
+import android.Manifest;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,6 +49,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
     Button btnFinish;
     private Bitmap bitmap;
     private MyDialog myDialog;
+    private RxPermissions rxPermissions;
 
     @Override
     public int getLayoutId() {
@@ -56,8 +59,11 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        rxPermissions = new RxPermissions(this);
         EventBus.getDefault().register(this);
         myDialog = MyDialog.showDialog(this);
+        String newWalletName = getIntent().getStringExtra("newWalletName");
+        tetWhoWallet.setText(newWalletName);
 
     }
 
@@ -74,12 +80,22 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.tet_Preservation:
-                boolean toGallery = saveBitmap(bitmap);
-                if (toGallery) {
-                    mToast(getString(R.string.preservationbitmappic));
-                } else {
-                    Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
-                }
+                rxPermissions
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                if (bitmap != null) {
+                                    boolean toGallery = saveBitmap(bitmap);
+                                    if (toGallery) {
+                                        mToast(getString(R.string.preservationbitmappic));
+                                    } else {
+                                        Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            } else { // Oups permission denied
+                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
                 break;
             case R.id.btn_Finish:
                 mIntent(MainActivity.class);

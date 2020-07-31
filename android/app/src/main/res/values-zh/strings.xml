@@ -350,7 +350,7 @@
     <string name="verson_updates">版本更新</string>
     <string name="user_agreement">用户协议</string>
     <string name="syncnneth">同步服务器仅存储钱包公钥、名称等公开信息，不存储任何私钥和个人信息。</string>
-    <string name="electrum_tips">币信Key使用Electrum开源分布式节点进行交易广播，和链上信息获取</string>
+    <string name="electrum_tips">BixinKey使用Electrum开源分布式节点进行交易广播和链上信息获取</string>
     <string name="get_btc_price">选择第三方服务获取比特币价格</string>
     <string name="blockchain_choose">区块链浏览器选择</string>
     <string name="check_trsaction_msg">选择区块链浏览器查看链上交易信息</string>

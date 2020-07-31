@@ -124,7 +124,9 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_setPin:
-                mIntent(CreateInputHelpWordWalletSuccseActivity.class);
+                Intent intent = new Intent(CreatePersonalHelpPassActivity.this, CreateInputHelpWordWalletSuccseActivity.class);
+                intent.putExtra("newWalletName", name);
+                startActivity(intent);
                 finish();
                 improtWallet();
                 break;
