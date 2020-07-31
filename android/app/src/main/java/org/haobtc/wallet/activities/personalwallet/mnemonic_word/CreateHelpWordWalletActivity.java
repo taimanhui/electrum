@@ -64,6 +64,7 @@ public class CreateHelpWordWalletActivity extends BaseActivity {
     private void setEditTextComments() {
         walletNameNum = defaultName + 1;
         editWalletNameSetting.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
+        tetTextNum.setText(String.format(Locale.CHINA, "%d/16", editWalletNameSetting.length()));
         editWalletNameSetting.addTextChangedListener(new TextWatcher() {
             CharSequence input;
 

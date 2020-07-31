@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -120,7 +121,7 @@ public class ShareOtherActivity extends BaseActivity {
         tetTrsactionText.setText(rowTx);
     }
 
-    public  int dp2px(float dpValue) {
+    public int dp2px(float dpValue) {
         final float scale = getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
@@ -133,7 +134,7 @@ public class ShareOtherActivity extends BaseActivity {
         HINTS.put(EncodeHintType.MARGIN, 0);
     }
 
-    public  Bitmap syncEncodeQRCode(String content, int size, int foregroundColor, int backgroundColor, Bitmap logo) {
+    public Bitmap syncEncodeQRCode(String content, int size, int foregroundColor, int backgroundColor, Bitmap logo) {
         try {
             BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, HINTS);
             int[] pixels = new int[size * size];
@@ -237,6 +238,7 @@ public class ShareOtherActivity extends BaseActivity {
             boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filePic.getAbsolutePath())));
             return success;
 
         } catch (IOException ignored) {

@@ -133,6 +133,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         if (!TextUtils.isEmpty(personceType)) {
             if (!"1-1".equals(personceType) && !personceType.contains("standard")) {
                 radioSignMsg.setVisibility(View.GONE);
+                textCheckSign.setVisibility(View.GONE);
             }
         }
     }

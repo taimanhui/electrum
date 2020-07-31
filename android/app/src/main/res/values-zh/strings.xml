@@ -227,7 +227,6 @@
     <string name="tet_tips2">位共管人中的</string>
     <string name="tet_tips3">位签名</string>
     <string name="title_name">图图的钥匙</string>
-    <string name="xiaomi_walet">小米的钱包3-5</string>
     <string name="choose_onekey">可使用3个BixinKey中任意一个授权转账</string>
     <string name="creat_personal">创建个人钱包</string>
     <string name="set_two_num">设置备份数</string>
@@ -798,7 +797,7 @@
     <string name="no_backup">未备份，请备份后使用</string>
     <string name="speed_fee_is">加速后矿工费为</string>
     <string name="receive_speed">收币加速</string>
-    <string name="receive_speed_tips">加速后，将未确认交易创建新的交易；新交易需重新进行签名和广播！实际完成交易以链上为准！</string>
+    <string name="receive_speed_tips">加速后将未确认交易创建新的交易；新交易需重新进行签名和广播！实际完成交易以链上为准！</string>
     <string name="pin_timeout">pin 输入超时</string>
     <string name="dont_use_nfc">设备不支持NFC功能！</string>
     <string name="device_activat_fail">设备激活失败</string>
@@ -852,6 +851,7 @@
     <string name="to_buy">去购买 &gt;&gt;</string>
     <string name="differnce_deviceId">设备ID不一致，请更换后进行备份</string>
     <string name="internet_wrong">网络错误！</string>
+    <string name="operation_cancelled">操作已取消！</string>
 
 
 </resources>

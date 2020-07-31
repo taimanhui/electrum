@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
@@ -196,6 +197,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filePic.getAbsolutePath())));
             return success;
 
         } catch (IOException ignored) {

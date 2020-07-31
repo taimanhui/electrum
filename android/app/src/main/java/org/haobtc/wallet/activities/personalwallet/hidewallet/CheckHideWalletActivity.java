@@ -305,13 +305,13 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.wallet_card_bn1, R.id.wallet_card_bn2, R.id.wallet_card_bn3, R.id.conlay_back, R.id.textView_more})
+    @OnClick({R.id.img_back, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.conlay_back, R.id.textView_more})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.wallet_card_bn1:
+            case R.id.linear_send:
                 edit.putString("wallet_type_to_sign", "1-1");
                 edit.apply();
                 Intent intent1 = new Intent(CheckHideWalletActivity.this, SendOne2OneMainPageActivity.class);
@@ -322,12 +322,12 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 intent1.putExtra("hideRefresh", "hideRefresh");
                 startActivity(intent1);
                 break;
-            case R.id.wallet_card_bn2:
+            case R.id.linear_receive:
                 Intent intent2 = new Intent(CheckHideWalletActivity.this, ReceivedPageActivity.class);
                 intent2.putExtra("hideWalletReceive","hideWalletReceive");
                 startActivity(intent2);
                 break;
-            case R.id.wallet_card_bn3:
+            case R.id.linear_sign:
                 Intent intent3 = new Intent(CheckHideWalletActivity.this, SignActivity.class);
                 intent3.putExtra("hide_phrass", "hideWallet");
                 intent3.putExtra("personceType", "1-1");

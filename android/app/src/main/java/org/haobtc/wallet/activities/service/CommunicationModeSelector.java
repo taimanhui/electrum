@@ -308,40 +308,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 new Handler().postDelayed(this::finish, 1000);
             }
         }
-         /*else {
-            mBle = Ble.getInstance();
-            NfcUtils.nfc(this, true);
-            radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-                switch (checkedId) {
-                    case R.id.radio_ble:
-                        frameLayout.setVisibility(View.VISIBLE);
-                        imageView.setVisibility(View.GONE);
-                        textView.setVisibility(View.GONE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.ble_device, bleFragment).commit();
-                        permissions = new RxPermissions(this);
-                        permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION).subscribe(
-                                granted -> {
-                                    if (granted) {
-                                        group.check(R.id.radio_ble);
-                                        turnOnBlueTooth();
-                                        refreshDeviceList(true);
-                                    } else {
-                                        Toast.makeText(this, getString(R.string.blurtooth_need_permission), Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                        ).dispose();
-                        break;
-                    case R.id.radio_nfc:
-                        ble.put("IS_CANCEL", true);
-                        group.check(R.id.radio_nfc);
-                        mBle.disconnectAll();
-                        refreshDeviceList(false);
-                        imageView.setVisibility(View.VISIBLE);
-                        textView.setVisibility(View.VISIBLE);
-                        frameLayout.setVisibility(View.GONE);
-                }
-            });
-        }*/
         Window window = getWindow();
         if (window != null) {
             WindowManager.LayoutParams wlp = window.getAttributes();

@@ -1,7 +1,9 @@
 package org.haobtc.wallet.activities.personalwallet.mnemonic_word;
 
 import android.Manifest;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -139,6 +141,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
             boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filePic.getAbsolutePath())));
             return success;
 
         } catch (IOException ignored) {

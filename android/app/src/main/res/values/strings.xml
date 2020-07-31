@@ -228,7 +228,6 @@
     <string name="tet_tips2">signatures out of </string>
     <string name="tet_tips3">public managers will be required</string>
     <string name="title_name">Tutu\'s key</string>
-    <string name="xiaomi_walet" tools:ignore="TypographyDashes">Xiaomi\'s wallet 3-of-5</string>
     <string name="choose_onekey">Can use any of the 3 BixinKeys to authorize transactions</string>
     <string name="creat_personal">Create personal wallet</string>
     <string name="set_two_num">Set number of backups</string>
@@ -833,7 +832,7 @@
     <string name="no_backup">no backup, please use after backup</string>
     <string name="speed_fee_is">After acceleration, the miner\'s fee is</string>
     <string name="receive_speed">Cash collection acceleration</string>
-    <string name="receive_speed_tips">After acceleration, new transactions will be created for unconfirmed transactions; new transactions need to be signed and broadcast again! The actual completion of the transaction is subject to the chain!</string>
+    <string name="receive_speed_tips">After acceleration new transactions will be created for unconfirmed transactions; new transactions need to be signed and broadcast again! The actual completion of the transaction is subject to the chain!</string>
     <string name="pin_timeout">pin input timeout</string>
     <string name="dont_use_nfc">Device does not support NFC function!</string>
     <string name="device_activat_fail">Device activation failed</string>
@@ -891,5 +890,6 @@
     <string name="sat_byte">sat/byte</string>
     <string name="key">BixinKey</string>
     <string name="internet_wrong">Network error!</string>
+    <string name="operation_cancelled">Operation cancelled！</string>
 
 </resources>

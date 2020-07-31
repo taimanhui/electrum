@@ -416,7 +416,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
                             android:layout_marginTop="@dimen/dp_20"
-                            android:text="@string/xiaomi_walet"
+                            tools:text="小米的钱包"
                             android:textColor="@color/text"
                             android:textSize="@dimen/big_text_size" />
 
