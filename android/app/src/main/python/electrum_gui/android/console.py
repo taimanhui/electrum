@@ -162,6 +162,7 @@ class AndroidCommands(commands.Commands):
         self.ccy = self.daemon.fx.get_currency()
         self.pre_balance_info = ""
         self.addr_index = 0
+        self.coins = list()
         self.rbf_tx = ""
         self.m = 0
         self.n = 0
@@ -223,6 +224,7 @@ class AndroidCommands(commands.Commands):
 
     def update_status(self):
         out = {}
+        status = ''
         if not self.wallet:
             return
         if self.network is None or not self.network.is_connected():
@@ -655,12 +657,24 @@ class AndroidCommands(commands.Commands):
                     self.wallet, self.wallet.wallet_type, self.wallet.use_change, self.wallet.get_addresses()))
         return outputs_addrs
 
-    def get_fee_by_feerate(self, outputs, message, feerate):
+    def get_coins(self, coins_info):
+        coins = []
+        for utxo in self.coins:
+            info = utxo.to_json()
+            temp_utxo = [info['prevout_hash'], info['address']]
+            if coins_info.__contains__(temp_utxo):
+                coins.append(utxo)
+        return coins
+
+    def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
         try:
             self._assert_wallet_isvalid()
             all_output_add = json.loads(outputs)
             outputs_addrs = self.parse_output(outputs)
-            coins = self.wallet.get_spendable_coins(domain=None)
+            if customer is None:
+                coins = self.wallet.get_spendable_coins(domain=None)
+            else:
+                coins = self.get_coins(customer)
             print(f"coins=========={coins}")
             c, u, x = self.wallet.get_balance()
             if not coins and self.config.get('confirmed_only', False):
@@ -1033,16 +1047,17 @@ class AndroidCommands(commands.Commands):
     def get_wallet_address_show_UI(self, next=None):
         try:
             self._assert_wallet_isvalid()
-            self.addr_index = self.config.get('addr_index', 0)
+            self.show_addr = self.config.get('show_addr', self.wallet.get_addresses()[0])
             if next:
-                self.addr_index += 1
-                self.config.set_key('addr_index', self.addr_index)
-            data = util.create_bip21_uri(self.wallet.get_addresses()[self.addr_index], "", "")
+                addr = self.wallet.create_new_address(False)
+                self.show_addr = addr
+                self.config.set_key('show_addr', self.show_addr)
+            data = util.create_bip21_uri(self.show_addr, "", "")
         except Exception as e:
             raise BaseException(e)
         data_json = {}
         data_json['qr_data'] = data
-        data_json['addr'] = self.wallet.get_addresses()[self.addr_index]
+        data_json['addr'] = self.show_addr
         return json.dumps(data_json)
 
     def get_all_funded_address(self):
@@ -1062,6 +1077,19 @@ class AndroidCommands(commands.Commands):
             return json.dumps(funded_addrs_list)
         except Exception as e:
             raise BaseException(e)
+
+    def get_unspend_utxos(self):
+        try:
+            coins = []
+            for txin in self.wallet.get_utxos():
+                d = txin.to_json()
+                v = d.pop("value_sats")
+                d["value"] = str(Decimal(v)/COIN) if v is not None else None
+                coins.append(d)
+                self.coins.append(txin)
+            return coins
+        except BaseException as e:
+            raise e
 
     ##save tx to file
     def save_tx_to_file(self, path, tx):
@@ -1105,7 +1133,6 @@ class AndroidCommands(commands.Commands):
             raise Exception(e)
 
     def parse_tx(self, data):
-        ret_data = {}
         # try to decode transaction
         from electrum.transaction import Transaction
         from electrum.util import bh2u
