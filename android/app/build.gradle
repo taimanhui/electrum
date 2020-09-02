@@ -94,17 +94,17 @@ android {
     productFlavors {
         MainNet {
             buildConfigField "String", "net_type", "\"MainNet\""
-            applicationId "com.bixin.wallet.mainnet"
+            applicationId "com.bixin.key.mainnet"
             manifestPlaceholders = [app_name: "@string/app_name", allow_backup: false]
         }
         TestNet {
             buildConfigField "String", "net_type", "\"TestNet\""
-            applicationId "com.bixin.wallet.testnet"
+            applicationId "com.bixin.key.testnet"
             manifestPlaceholders = [app_name: "@string/testnet", allow_backup: true]
         }
         RegTest {
             buildConfigField "String", "net_type", "\"RegTest\""
-            applicationId "com.bixin.wallet.regnet"
+            applicationId "com.bixin.key.regnet"
             manifestPlaceholders = [app_name: "@string/regnet", allow_backup: true]
         }
     }
