@@ -62,19 +62,6 @@ android {
             }
         }
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-           minifyEnabled false
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
     buildFeatures {
         dataBinding = true
     }
@@ -116,18 +103,44 @@ android {
 
         disable "MissingTranslation"
     }
-    def keystore = file("../keystore.jks")
-    if (keystore.exists()) {
-        signingConfigs {
-            config {
-                storeFile keystore
-                keyAlias "key0"
-                keyPassword "android"
-                storePassword "android"
-            }
+    signingConfigs {
+        debug {
+            storeFile file("../debug.keystore")
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storePassword "android"
+
+			// Optional, specify signing versions used
+			v1SigningEnabled true
+            v2SigningEnabled true
         }
-        buildTypes.all { it.signingConfig signingConfigs.config }
+		release {
+			storeFile file(RELEASE_STORE_FILE)
+			keyAlias RELEASE_KEY_ALIAS
+			storePassword RELEASE_STORE_PASSWORD
+			keyPassword RELEASE_KEY_PASSWORD
+
+			// Optional, specify signing versions used
+			v1SigningEnabled true
+            v2SigningEnabled true
+		}
     }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+			signingConfig signingConfigs.release
+        }
+        debug {
+            minifyEnabled false
+			signingConfig signingConfigs.debug
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+ 
 
     applicationVariants.all { variant ->
         variant.outputs.all {
