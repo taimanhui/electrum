@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.homepage;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,6 +24,8 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.bean.AddressEvent;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -100,6 +103,9 @@ public class WalletListActivity extends BaseActivity {
             case R.id.recl_wallet:
                 break;
             case R.id.lin_pair_wallet:
+                Intent intent = new Intent(this, SearchDevicesActivity.class);
+                intent.putExtra(Constant.SEARCH_DEVICE_MODE,Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
+                startActivity(intent);
                 break;
             case R.id.lin_add_wallet:
                 createWalletChooseDialog(WalletListActivity.this, R.layout.add_wallet);
