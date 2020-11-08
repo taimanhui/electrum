@@ -55,7 +55,6 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
     protected TextView mTitle;
     @BindView(R.id.open_wallet_hide)
     protected TextView mOpenWalletHide;
-
     private int mSearchMode;
 
     @Override

@@ -1,6 +1,7 @@
 package org.haobtc.onekey.ui.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.View
     public static List<BleDevice> mValues = new ArrayList<>();
     private LayoutInflater mInflater;
     private OnItemBleDeviceClick mOnItemBleDeviceClick;
+    private static final String PATTERN = "^K\\d{4}";
 
 
     public BleDeviceAdapter(Context context, OnItemBleDeviceClick click) {
@@ -35,6 +37,14 @@ public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.View
 
 
     public void add(BleDevice device) {
+        if (device == null) {
+            return;
+        }
+//        String name = device.getBleName();
+//        if (TextUtils.isEmpty(name) || !Pattern.matches(PATTERN, name)) {
+//            return;
+//        }
+
         mValues.add(device);
         mValues = mValues.stream().distinct().
                 filter(bleDevice -> bleDevice.getBleName() != null && ((bleDevice.getBleName().toLowerCase()
