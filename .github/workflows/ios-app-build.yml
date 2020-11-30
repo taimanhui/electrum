@@ -108,3 +108,4 @@ jobs:
           name: OneKey-${{ github.sha }}.ipa
           path: |
             ios/iOS/build/${{ env.APP_NAME }}.ipa
+            ios/iOS/build/app_build.xcarchive/dSYMs
