@@ -26,17 +26,10 @@ jobs:
     steps:
       - name: checkout branch
         uses: actions/checkout@v2
-        if: github.event_name != 'pull_request'
         with:
-            submodules: 'true'
-      - name: checkout pull request
-        uses: actions/checkout@v2
-        if: github.event_name == 'pull_request'
-        with:
-            ref: ${{ github.event.pull_request.head.sha }}
             submodules: 'true'
       - name: Switch XCode Version
-        run: sudo xcode-select -s /Applications/Xcode_12.1.app
+        run: sudo xcode-select -s /Applications/Xcode_11.3.1.app
       - name: Cache build env
         uses: actions/cache@v2
         env:
@@ -112,3 +105,11 @@ jobs:
           path: |
             ios/iOS/build/${{ env.APP_NAME }}.ipa
             ios/iOS/build/app_build.xcarchive/dSYMs
+      - name: Upload PGYER File
+        id: pgyer
+        run: |
+          curl -F "file=@build/$APP_NAME.ipa" \
+          -F "uKey=${{ secrets.pgyer_user_key }}"  \
+          -F "_api_key=${{ secrets.pgyer_key }}" \
+          https://www.pgyer.com/apiv2/app/upload
+        working-directory: ios/iOS 
