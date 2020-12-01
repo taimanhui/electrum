@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - bixin_dev
+    paths:
+      - ios/**
   pull_request:
     branches:
       - bixin_dev
+    paths:
+      - ios/**
 
 jobs:
   build:
