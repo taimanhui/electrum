@@ -81,8 +81,12 @@ deploy:
     tags: false
 
 after_deploy:
-  - REGTEST_APK_PATH=`ls android/app/build/outputs/apk/RegTest/debug/*.apk`
-  - curl -F "file=@${REGTEST_APK_PATH}"  -F "uKey=${pyger_userkey}"  -F "_api_key=${pyger_apikey}"  https://www.pgyer.com/apiv2/app/upload
+  - openssl aes-256-cbc -K $encrypted_f217180e22ee_key -iv $encrypted_f217180e22ee_iv -in id_rsa.enc -out id_rsa -d
+  - chmod 400 id_rsa
+  - echo $SSH_KNOWN_HOSTS >> ~/.ssh/known_hosts
+  - export REGTEST_APK_PATH=`ls android/app/build/outputs/apk/RegTest/debug/*.apk`
+  - scp -i id_rsa $REGTEST_APK_PATH $SSH_USER@$SSH_HOST:/output/
+  - ssh -i id_rsa $SSH_USER@$SSH_HOST "cd /output && ./push.sh ${REGTEST_APK_PATH} > android_log"
 
 notifications:
   slack:
