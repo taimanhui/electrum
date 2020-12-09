@@ -119,4 +119,5 @@ jobs:
       - name: push to server
         run: |
             scp "ios/iOS/build/${{ env.APP_NAME }}.ipa" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push.sh ${{ env.APP_NAME }}.ipa>ios_log"
+            export CHANGE_LOG=`git log HEAD -n 1`
+            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push.sh ${{ env.APP_NAME }}.ipa '\"$CHANGE_LOG\"' >ios_log"
