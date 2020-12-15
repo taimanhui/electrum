@@ -21,8 +21,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.RecoveryWalletBean;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.FinishEvent;
@@ -44,6 +46,7 @@ import org.haobtc.onekey.utils.PwdEditText;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -67,8 +70,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     PwdEditText pwdEdittext;
     @BindView(R.id.text_long)
     TextView textLong;
-    @BindView(R.id.btn_next)
-    Button btnNext;
     @BindView(R.id.text_confirm)
     TextView textConfirm;
     @BindView(R.id.text_page_title)
@@ -171,7 +172,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         pwdEdittext.addTextChangedListener(this);
     }
 
-    @OnClick({R.id.img_back, R.id.btn_next, R.id.lin_short_pass})
+    @SingleClick(value = 3000)
+    @OnClick({R.id.img_back, R.id.lin_short_pass})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -195,29 +197,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                     startActivity(intent1);
                 } else {
                     finish();
-                }
-                break;
-            case R.id.btn_next:
-                if (typeList == null || typeList.size() == 0) {
-                    if (!input) {
-                        sixPass = pwdEdittext.getText().toString();
-                        testSetPass.setText(getString(R.string.input_pass));
-                        textTip.setText(getString(R.string.dont_tell));
-                        pwdEdittext.clearText();
-                        textLong.setText(getString(R.string.test_long_tip));
-                        input = true;
-                    } else {
-                        edit.putString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT);
-                        edit.apply();
-                        if (!sixPass.equals(pwdEdittext.getText().toString())) {
-                            mToast(getString(R.string.two_different_pass));
-                            return;
-                        } else {
-                            walletStatus();
-                        }
-                    }
-                } else {
-                    walletStatus();
                 }
                 break;
         }
@@ -269,9 +248,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
         }
     }
 
@@ -281,15 +258,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
-                mToast(getString(R.string.private_key_wrong));
-            } else if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            } else if (e.getMessage().contains("The file already exists")) {
-                mToast(getString(R.string.changemessage));
-            }
+            mToast(e.getMessage());
             return;
         }
         mToast(getString(R.string.delete_succse));
@@ -309,20 +278,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
-            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
-                mToast(getString(R.string.private_key_wrong));
-            } else if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            } else if (e.getMessage().contains("The file already exists")) {
-                mToast(getString(R.string.changemessage));
-            } else if (e.getMessage().contains("Invalid private")) {
-                mToast(getString(R.string.invalid_private));
-            }
+            mToast(e.getMessage());
         }
     }
 
@@ -334,18 +290,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
-            } else if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            } else if (e.getMessage().contains("Invalid private")) {
-                mToast(getString(R.string.wrong_private));
-            } else if (e.getMessage().contains("The file already exist")) {
-                mToast(getString(R.string.have_private));
-            }
+            mToast(e.getMessage());
             finish();
         }
     }
@@ -358,11 +303,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             mIntent(HomeOneKeyActivity.class);
             finish();
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            } else if (e.getMessage().contains("The file already exists")) {
-                mToast(getString(R.string.changemessage));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -375,11 +316,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             mIntent(HomeOneKeyActivity.class);
             finish();
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            } else if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -388,7 +325,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void recoveryHdWallet() {
         try {
             PyObject pyObject = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString(), new Kwarg("seed", seed));
-            if (pyObject.toString().length() > 2) {
+            RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(pyObject.toString(), RecoveryWalletBean.class);
+            List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
+            if (derivedInfo != null && derivedInfo.size() > 0) {
                 Intent intent = new Intent(SetHDWalletPassActivity.this, RecoveryChooseWalletActivity.class);
                 intent.putExtra("recoveryData", pyObject.toString());
                 startActivity(intent);
@@ -399,19 +338,18 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                     Daemon.commands.callAttr("recovery_confirmed", "[]");
                 } catch (Exception e) {
                     e.printStackTrace();
+                    mToast(e.getMessage());
                     return;
                 }
-                mToast(getString(R.string.not_recovery_wallet));
-                CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(pyObject.toString());
-                EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+                List<RecoveryWalletBean.WalletInfoBean> walletInfo = recoveryWalletBean.getWalletInfo();
+                String name = walletInfo.get(0).getName();
+                EventBus.getDefault().post(new CreateSuccessEvent(name));
                 mIntent(HomeOneKeyActivity.class);
                 finish();
             }
 
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
         }
 
@@ -434,9 +372,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             return;
         }
         mToast(getString(R.string.delete_succse));
@@ -460,9 +396,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             finish();
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             return;
         }
     }
@@ -475,16 +409,11 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 Daemon.commands.callAttr("check_password", pwdEdittext.getText().toString());
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.i("fixHdPassfixHdPass", "fixHdPass: " + e.getMessage());
-                if (e.getMessage().contains("Incorrect password")) {
-                    mToast(getString(R.string.wrong_pass_next_input));
-                }
+                mToast(e.getMessage());
                 return;
             }
             sixPass = pwdEdittext.getText().toString();
             testSetPass.setText(getString(R.string.set_new_pass));
-            btnNext.setEnabled(false);
-            btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
             pwdEdittext.clearText();
             input = true;
         } else {
@@ -492,14 +421,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 Daemon.commands.callAttr("update_wallet_password", sixPass, pwdEdittext.getText().toString());
             } catch (Exception e) {
                 e.printStackTrace();
-                if (e.getMessage().contains("Incorrect password")) {
-                    mToast(getString(R.string.wrong_pass_next_input));
-                    testSetPass.setText(getString(R.string.input_your_former_pass));
-                    pwdEdittext.clearText();
-                    btnNext.setEnabled(false);
-                    btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
-                    input = false;
-                }
+                mToast(e.getMessage());
                 return;
             }
             mToast(getString(R.string.fix_success));
@@ -521,9 +443,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 return;
             }
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
             return;
         }
@@ -558,11 +478,27 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     public void afterTextChanged(Editable s) {
         int length = s.length();
         if ((length == 6)) {
-            btnNext.setEnabled(true);
-            btnNext.setBackground(getDrawable(R.drawable.btn_checked));
-        } else {
-            btnNext.setEnabled(false);
-            btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
+            if (typeList == null || typeList.size() == 0) {
+                if (!input) {
+                    sixPass = pwdEdittext.getText().toString();
+                    testSetPass.setText(getString(R.string.input_pass));
+                    textTip.setText(getString(R.string.dont_tell));
+                    pwdEdittext.clearText();
+                    textLong.setText(getString(R.string.test_long_tip));
+                    input = true;
+                } else {
+                    edit.putString("shortOrLongPass", "short");
+                    edit.apply();
+                    if (!sixPass.equals(pwdEdittext.getText().toString())) {
+                        mToast(getString(R.string.two_different_pass));
+                        return;
+                    } else {
+                        walletStatus();
+                    }
+                }
+            } else {
+                walletStatus();
+            }
         }
     }
 
