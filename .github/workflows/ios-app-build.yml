@@ -49,11 +49,11 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}
       - name: Install brew deps
         run: |
-          brew install python@3.8
           brew unlink python
-          brew link --force python@3.8
+          brew link --overwrite --dry-run python@3.8
       - name: Install python3 deps
         run: |
+          export PATH="/usr/local/opt/python@3.8/bin:$PATH"
           python3.8 -m pip install "setuptools==41.2.0"
           python3.8 -m pip install "pip==19.2.3"
           python3.8 -m pip install 'cookiecutter==1.6.0' --user
@@ -66,6 +66,7 @@ jobs:
           ENCRYPT_PASS: ${{ secrets.ENCRYPT_PASS }}
       - name: prepare build env
         run: |
+          export PATH="/usr/local/opt/python@3.8/bin:$PATH"
           ./make_ios_project.sh
         working-directory: ios
       - name: sign lib
