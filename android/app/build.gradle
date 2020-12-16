@@ -26,21 +26,27 @@ android {
         File versionPropsFile = file('version.properties')
 
         def BUILD_NUM
-        if (versionPropsFile.canRead()) {
-            def Properties versionProps = new Properties()
+        def TRAVIS_BUILD_NUMBER = System.getenv("TRAVIS_BUILD_NUMBER") ?: null
+        if (TRAVIS_BUILD_NUMBER == null) {
+            if (versionPropsFile.canRead()) {
+                def Properties versionProps = new Properties()
 
-            versionProps.load(new FileInputStream(versionPropsFile))
+                versionProps.load(new FileInputStream(versionPropsFile))
 
-            BUILD_NUM = versionProps['VERSION_CODE'].toInteger() + 1
+                BUILD_NUM = versionProps['VERSION_CODE'].toInteger() + 1
 
-            versionProps['VERSION_CODE'] = BUILD_NUM.toString()
-            versionProps.store(versionPropsFile.newWriter(), null)
-            println "VERSION_CODE incremented to " + BUILD_NUM
-        } else {
-            throw new GradleException("Could not read version.properties!")
-        } 
+                versionProps['VERSION_CODE'] = BUILD_NUM.toString()
+                versionProps.store(versionPropsFile.newWriter(), null)
+            } else {
+                throw new GradleException("Could not read version.properties!")
+            } 
+        }
+        else {
+           BUILD_NUM = TRAVIS_BUILD_NUMBER.toInteger() 
+        }
         def verParsed = ecVersion.split(/\./).collect { Integer.parseInt(it) }
         versionCode = (verParsed[0] * 1000000) + (verParsed[1] * 10000) + BUILD_NUM
+        println "VERSION_CODE incremented to " + versionCode
 
         python {
             pip {
