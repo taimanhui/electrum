@@ -75,26 +75,6 @@ jobs:
         run: |
           ./coderesign.sh "${{ secrets.CODESIGN_ID }}"
         working-directory: ios
-      - name: lint check
-        id: xcodebuild_lint
-        run: |
-          xcodebuild clean build \
-           -workspace "$PROJECT_WORKSPACE" \
-           -scheme "$PROJECT_SCHEME" \
-           -configuration "$PROJECT_CONFIGURATION" \
-           -archivePath $PWD/build/app_build.xcarchive \
-           CODE_SIGN_IDENTITY="$CODE_SIGN_IDENTITY" \
-           PROVISIONING_PROFILE="$UUID_PROVISION" \
-           DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
-           CODE_SIGN_STYLE="$CODE_SIGN_STYLE" \
-           IPHONEOS_DEPLOYMENT_TARGET=11.0 \
-           COMPILER_INDEX_STORE_ENABLE="NO" \
-           CLANG_ANALYZER_OUTPUT=plist-html \
-           CLANG_ANALYZER_OUTPUT_DIR="$(pwd)/clang-analyze" \
-           | tee xcodebuild.log  \
-           | xcpretty -r json-compilation-database --output compile_commands.json
-          oclint-json-compilation-database -e Pods -e CustomCode/Modules/Third/ -- -report-type html -o oclintReport.html
-        working-directory: ios/iOS  
       - name: Build app
         id: xcodebuild_export
         run: |
@@ -144,4 +124,33 @@ jobs:
             scp "ios/iOS/build/${{ env.APP_NAME }}.ipa" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
             export CHANGE_LOG=`git log HEAD -n 1`
             ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push.sh ${{ env.APP_NAME }}.ipa '\"$CHANGE_LOG\"' >ios_log"
-
+      - name: lint check
+        id: xcodebuild_lint
+        run: |
+          xcodebuild clean analyze \
+           -workspace "$PROJECT_WORKSPACE" \
+           -scheme "$PROJECT_SCHEME" \
+           -configuration "$PROJECT_CONFIGURATION" \
+           -archivePath $PWD/build/app_build.xcarchive \
+           CODE_SIGN_IDENTITY="$CODE_SIGN_IDENTITY" \
+           PROVISIONING_PROFILE="$UUID_PROVISION" \
+           DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+           CODE_SIGN_STYLE="$CODE_SIGN_STYLE" \
+           IPHONEOS_DEPLOYMENT_TARGET=11.0 \
+           COMPILER_INDEX_STORE_ENABLE="NO" \
+           CLANG_ANALYZER_OUTPUT=plist-html \
+           CLANG_ANALYZER_OUTPUT_DIR="$(pwd)/clang-analyze" \
+           | tee xcodebuild.log  \
+           | xcpretty -r json-compilation-database --output compile_commands.json
+          oclint-json-compilation-database -e Pods -e CustomCode/Modules/Third/ -- -report-type html -o oclintReport.html
+        working-directory: ios/iOS 
+      - name: Archive lint artifacts
+        uses: actions/upload-artifact@v2
+        if: success()
+        with:
+          name: OneKey ios app lint report
+          path: |
+            ios/iOS/xcodebuild.log
+            ios/iOS/oclintReport.html 
+            ios/iOS/clang-analyze/StaticAnalyzer/
+ 
