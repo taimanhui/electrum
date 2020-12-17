@@ -38,11 +38,16 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 import static java.util.regex.Pattern.compile;
 
 public abstract class BaseActivity extends AppCompatActivity {
     private String utf8;
     private String filed1utf;
+    private Unbinder bind;
+    public Context mContext;
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -54,6 +59,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (requireSecure()) {
             requestSecure();
         }
+        mContext = this;
+        bind = ButterKnife.bind(this);
         mBinitState();
         initView();
         initData();
@@ -131,6 +138,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         NfcUtils.mNfcAdapter = null;
+        bind.unbind();
     }
 
     @Override

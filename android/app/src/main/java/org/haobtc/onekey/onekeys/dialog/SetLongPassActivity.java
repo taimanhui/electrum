@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -144,7 +143,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         timer.schedule(new TimerTask() {
                            @Override
                            public void run() {
-                               LogUtil.d("xiaopeng", "定时器");
                                InputMethodManager inputManager =
                                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                inputManager.showSoftInput(editPass, 0);
@@ -364,7 +362,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         } catch (Exception e) {
             mToast(e.getMessage());
             e.printStackTrace();
-            return;
         }
     }
 
