@@ -138,7 +138,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
         address_n = parse_path(bip32_path)
         with self.run_flow(creating_wallet=creating):
             node = trezorlib.btc.get_public_node(self.client, address_n, coin_name=self.plugin.get_coin_name(), script_type=self.plugin.get_trezor_input_script_type(xtype)).node
-        return BIP32Node(xtype=xtype,
+        return BIP32Node(xtype=xtype if xtype != "p2pkh" else 'standard',
                          eckey=ecc.ECPubkey(node.public_key),
                          chaincode=node.chain_code,
                          depth=node.depth,
