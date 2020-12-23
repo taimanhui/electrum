@@ -112,9 +112,9 @@ if [ -f "${infoplist}" ]; then
 	#	echo "Encountered error adding custom key UIBackgroundModes to plist!"
 	#	exit 1
 	#fi
-	longver="1.1.0-${GITHUB_RUN_NUMBER:-0}"
+	longver="4000${GITHUB_RUN_NUMBER:-000}"
+	shortver="2.0.0"
 	if [ -n "$longver" ]; then
-		shortver=`echo "$longver" | cut -f 1 -d -`
 		plutil -replace "CFBundleVersion" -string "$longver" -- ${infoplist} && plutil -replace "CFBundleShortVersionString" -string "$shortver" -- ${infoplist}
 		if [ "$?" != "0" ]; then
 			echo "Encountered error adding custom keys to plist!"
