@@ -1,5 +1,4 @@
 package org.haobtc.onekey.activities.base;
-
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -12,8 +11,6 @@ import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
-
-import dr.android.utils.LogUtil;
 
 /**
  * @author liyan
@@ -43,7 +40,6 @@ public class LunchActivity extends BaseActivity {
             Intent intent = new Intent(LunchActivity.this, HomeOneKeyActivity.class);
             startActivity(intent);
             finish();
-
         } else {
             initGuide();
         }
@@ -64,7 +60,6 @@ public class LunchActivity extends BaseActivity {
         Intent intent = new Intent(LunchActivity.this, GuidanceActivity.class);
         startActivity(intent);
         finish();
-
     }
 
     @Override

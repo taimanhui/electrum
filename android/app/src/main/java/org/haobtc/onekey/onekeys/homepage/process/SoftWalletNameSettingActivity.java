@@ -1,11 +1,9 @@
 package org.haobtc.onekey.onekeys.homepage.process;
-
 import android.content.Context;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -99,4 +97,5 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
             btnImport.setEnabled(false);
         }
     }
+
 }
