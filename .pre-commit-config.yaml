@@ -1,0 +1,20 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: check-merge-conflict
+-   repo: https://github.com/maltzj/google-style-precommit-hook
+    rev: 95c2f5632710e095220e22cc1a4e1a1451abf75f
+    hooks:
+    -   id: google-style-java
+-   repo: https://github.com/doublify/pre-commit-clang-format
+    rev: 62302476d0da01515660132d76902359bed0f782
+    hooks:
+    -   id: clang-format
+-   repo: https://gitlab.com/PyCQA/flake8
+    rev: 39ceae7491f4121902a5dccc22657a0675c95539
+    hooks:
+    -   id: flake8
