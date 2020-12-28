@@ -142,8 +142,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
         preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         int defaultName = preferences.getInt("defaultName", 0);
         edit = preferences.edit();
-//        rxPermissions = new RxPermissions(this);
-//        myDialog = MyDialog.showDialog(MultiSigWalletCreator.this);
         editWalletname.addTextChangedListener(this);
         walletNameNum = defaultName + 1;
         editWalletname.setText(String.format("钱包%s", String.valueOf(walletNameNum)));

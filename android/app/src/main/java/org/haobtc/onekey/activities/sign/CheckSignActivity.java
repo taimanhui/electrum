@@ -1,6 +1,6 @@
 package org.haobtc.onekey.activities.sign;
-
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -25,7 +25,6 @@ import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
@@ -167,6 +166,7 @@ public class CheckSignActivity extends BaseActivity {
             default:
         }
     }
+
 
     private void scan(int code) {
         rxPermissions

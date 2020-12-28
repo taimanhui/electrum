@@ -17,6 +17,7 @@ import androidx.annotation.IdRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -30,6 +31,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
@@ -218,30 +220,29 @@ public class WalletFragment extends BaseFragment {
         String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
         try {
             if (!Strings.isNullOrEmpty(loadWalletName)) {
-                Optional.ofNullable(PyEnv.selectWallet(loadWalletName)).ifPresent((balanceInfo -> {
+                BalanceInfo balanceInfo = PyEnv.selectWallet(loadWalletName);
+                if (balanceInfo != null) {
                     String balance = balanceInfo.getBalance();
                     name = balanceInfo.getName();
                     LocalWalletInfo localWalletInfo;
                     String str = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.WALLETS, name, "").toString();
                     if (!Strings.isNullOrEmpty(str)) {
                         localWalletInfo = LocalWalletInfo.objectFromData(str);
-                        LogUtil.d("显示钱包", "-->" + localWalletInfo.getLabel());
                         textWalletName.setText(localWalletInfo.getLabel());
                         showTypeInfo(localWalletInfo);
                     }
                     num = balance.substring(0, balance.indexOf(" "));
+                    changeBalance = num;
                     String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
                     if (strCny.contains(" ")) {
                         String cash = strCny.substring(0, strCny.indexOf(" "));
                         String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
                         tetAmount.setText(String.format("%s %s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : currencySymbol, cash));
-                        textBtcAmount.setText(String.format("%s %s", num, preferences.getString("base_unit", "")));
-                        if (!"0".equals(num)) {
-                            getCny(num, currencySymbol);
-                        }
+                        textBtcAmount.setText(num);
+                        textDollar.setText(String.format("≈ %s %s", currencySymbol, cash));
                     }
                     whetherBackup();
-                }));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

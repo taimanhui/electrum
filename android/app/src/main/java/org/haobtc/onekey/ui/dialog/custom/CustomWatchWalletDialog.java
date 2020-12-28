@@ -23,28 +23,25 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class CustomWatchWalletDialog extends BottomPopupView implements NoLeakHandler.HandlerCallback {
-    private ImageView qrImg;
+public class CustomWatchWalletDialog extends BottomPopupView {
+    private ImageView qrImg,cancelImg;
     private String url;
     private TextView qrExceptionTV;
-    private RelativeLayout closeLayout;
-    private NoLeakHandler handler;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     public CustomWatchWalletDialog (@NonNull Context context, String url) {
         super(context);
         this.url = url;
-        handler = new NoLeakHandler(this::handleMessage);
     }
 
     @Override
     protected void onCreate () {
         super.onCreate();
-        closeLayout = findViewById(R.id.close_layout);
         qrExceptionTV = findViewById(R.id.qr_tv);
         qrImg = findViewById(R.id.qr_img);
+        cancelImg=findViewById(R.id.img_cancel);
         startDownBitMap();
-        closeLayout.setOnClickListener(new OnClickListener() {
+        cancelImg.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick (View v) {
                 dismiss();
@@ -89,10 +86,6 @@ public class CustomWatchWalletDialog extends BottomPopupView implements NoLeakHa
     public void onDestroy () {
         super.onDestroy();
         mCompositeDisposable.dispose();
-    }
-
-    @Override
-    public void handleMessage (Message msg) {
     }
 
 }

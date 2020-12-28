@@ -1,10 +1,8 @@
 package org.haobtc.onekey.activities.sign;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,7 +19,6 @@ import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -48,7 +45,6 @@ import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionCompletion;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
@@ -157,7 +153,26 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                 importTxFromFile();
                 break;
             case R.id.btn_scan:
-                scanMessage();
+                //扫描二维码
+                rxPermissions
+                        .request(Manifest.permission.CAMERA)
+                        .subscribe(granted -> {
+                            if (granted) {
+                                // If you have already authorized it, you can directly jump to the QR code scanning interface
+                                Intent intent2 = new Intent(this, CaptureActivity.class);
+                                ZxingConfig config = new ZxingConfig();
+                                config.setPlayBeep(true);
+                                config.setShake(true);
+                                config.setDecodeBarCode(false);
+                                config.setFullScreenScan(true);
+                                config.setShowAlbum(false);
+                                config.setShowbottomLayout(false);
+                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                                startActivityForResult(intent2, REQUEST_CODE);
+                            } else {
+                                Toast.makeText(this, getString(R.string.photopersion), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 break;
             case R.id.btn_parse:
                 editTransactionText.setText(ClipboardUtils.pasteText(this));
@@ -428,31 +443,6 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             intent.putExtra("signedFinish", signedMessage);
             startActivity(intent);
         }
-    }
-
-    /**
-     * 扫描二维码
-     */
-    private void scanMessage() {
-        rxPermissions
-                .request(Manifest.permission.CAMERA)
-                .subscribe(granted -> {
-                    if (granted) {
-                        // If you have already authorized it, you can directly jump to the QR code scanning interface
-                        Intent intent2 = new Intent(this, CaptureActivity.class);
-                        ZxingConfig config = new ZxingConfig();
-                        config.setPlayBeep(true);
-                        config.setShake(true);
-                        config.setDecodeBarCode(false);
-                        config.setFullScreenScan(true);
-                        config.setShowAlbum(false);
-                        config.setShowbottomLayout(false);
-                        intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                        startActivityForResult(intent2, REQUEST_CODE);
-                    } else {
-                        Toast.makeText(this, getString(R.string.photopersion), Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     /**

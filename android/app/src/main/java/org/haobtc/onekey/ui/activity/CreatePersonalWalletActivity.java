@@ -1,11 +1,10 @@
 package org.haobtc.onekey.ui.activity;
-
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.google.common.base.Strings;
+import com.lxj.xpopup.XPopup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -25,7 +24,7 @@ import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
-import org.haobtc.onekey.ui.dialog.SelectAddressTypeDialog;
+import org.haobtc.onekey.ui.dialog.custom.SelectWalletTypeDialog;
 import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.SetWalletNameFragment;
@@ -68,7 +67,24 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
         coinType = event.getCoinName();
         switch (coinType) {
             case Constant.COIN_TYPE_BTC:
-                new SelectAddressTypeDialog().show(getSupportFragmentManager(), "");
+                new XPopup.Builder(mContext).asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
+                    @Override
+                    public void onClick (int mode) {
+                        String walletType = null;
+                        switch (mode) {
+                            case SelectWalletTypeDialog.RecommendType:
+                                walletType = PyConstant.ADDRESS_TYPE_P2SH_P2WPKH;
+                                break;
+                            case SelectWalletTypeDialog.NativeType:
+                                walletType = PyConstant.ADDRESS_TYPE_P2WPKH;
+                                break;
+                            case SelectWalletTypeDialog.NormalType:
+                                walletType = PyConstant.ADDRESS_TYPE_P2PKH;
+                                break;
+                        }
+                        getXpub(walletType);
+                    }
+                })).show();
             case Constant.COIN_TYPE_ETH:
                 break;
             case Constant.COIN_TYPE_EOS:

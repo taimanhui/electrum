@@ -42,6 +42,7 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
+import org.haobtc.onekey.ui.dialog.custom.CustomCenterDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.ImageUtils;
@@ -112,6 +113,9 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
             textSendType.setText(String.format("%s ETH", getString(R.string.scan_send)));
             textWalletAddressText.setText(String.format("ETH %s", getString(R.string.wallet_address)));
         } else {
+            if (showWalletType.equals(Constant.BTC_WATCH)) {
+                showWatchTipDialog();
+            }
             textSendType.setText(String.format("%s BTC", getString(R.string.scan_send)));
             textWalletAddressText.setText(String.format("BTC %s", getString(R.string.wallet_address)));
         }
@@ -132,9 +136,19 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         //get receive address
         mGeneratecode();
+    }
+
+    private void showWatchTipDialog () {
+        CustomCenterDialog centerDialog = new CustomCenterDialog(mContext, new CustomCenterDialog.onConfirmClick() {
+            @Override
+            public void onConfirm () {
+                finish();
+            }
+        });
+        centerDialog.setContent(getString(R.string.watch_wallet_receive_tip));
+        new XPopup.Builder(mContext).asCustom(centerDialog).show();
     }
 
     /***
@@ -142,7 +156,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
      * @return
      */
     @Override
-    public int getContentViewId() {
+    public int getContentViewId () {
         return R.layout.activity_receive_h_d;
     }
 

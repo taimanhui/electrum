@@ -1263,5 +1263,6 @@
     <string name="qr_exception">The transaction amount is too large to generate a QR code</string>
     <string name="home_tip">HD wallet is the most advanced wallet format, which is called hierarchical deterministic wallet in Chinese. Only one mnemonic word can be used to derive infinite public chain or currency. Easy to remember, easy to use, easy to manage, very safe.</string>
     <string name="already_has_local_hd">HD wallet already exists in the local area. The hardware wallet in backup mode cannot be connected</string>
+    <string name="watch_wallet_receive_tip">Are you sure you want to use the address of the wallet to initiate a collection in order to view the wallet?</string>
 
 </resources>

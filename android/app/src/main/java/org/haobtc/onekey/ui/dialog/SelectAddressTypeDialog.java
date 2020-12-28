@@ -13,7 +13,7 @@ import butterknife.OnClick;
  * @author liyan
  * @date 12/21/20
  */
-
+@Deprecated
 public class SelectAddressTypeDialog extends BaseDialogFragment {
 
     /***

@@ -12,9 +12,9 @@ import org.haobtc.onekey.R;
 public class SelectWalletTypeDialog extends BottomPopupView {
     private LinearLayout recommendLayout, nativeLayout, normalLayout;
     private onClickListener onClickListener;
-    private static final int RecommendType = 49;
-    private static final int NativeType = 84;
-    private static final int NormalType = 44;
+    public static final int RecommendType = 49;
+    public static final int NativeType = 84;
+    public static final int NormalType = 44;
     private Context context;
 
     public SelectWalletTypeDialog (@NonNull Context context, onClickListener onClickListener) {

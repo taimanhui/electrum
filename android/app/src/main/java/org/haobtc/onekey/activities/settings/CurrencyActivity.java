@@ -246,4 +246,5 @@ public class CurrencyActivity extends BaseActivity {
             default:
         }
     }
+
 }
