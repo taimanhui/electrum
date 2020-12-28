@@ -113,7 +113,7 @@ if [ -f "${infoplist}" ]; then
 	#	exit 1
 	#fi
 	longver="4000${GITHUB_RUN_NUMBER:-000}"
-	shortver="2.0.1"
+	shortver="2.0.2"
 	if [ -n "$longver" ]; then
 		plutil -replace "CFBundleVersion" -string "$longver" -- ${infoplist} && plutil -replace "CFBundleShortVersionString" -string "$shortver" -- ${infoplist}
 		if [ "$?" != "0" ]; then
