@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.backup;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,12 +14,9 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.event.BackupEvent;
-import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -189,7 +185,7 @@ public class CheckMnemonicActivity extends BaseActivity {
         textWordTwo.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(1), getString(R.string.chooseword_right)));
         textWordThree.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(2), getString(R.string.chooseword_right)));
 
-        List list1 = new ArrayList();
+        List<String> list1 = new ArrayList();
         for (int i = 0; i < 3; i++) {
             int num = rand.nextInt(12);
             String word = array[num];
@@ -198,7 +194,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                 word = array[num];
             }
             if (i == 2) {
-                String aaa = array[Integer.valueOf(listPos.get(0).toString()) - 1];
+                String aaa = array[(int) (listPos.get(0)) - 1];
                 if (!list1.contains(aaa)) {
                     list1.add(aaa);
                 } else {
@@ -210,11 +206,10 @@ public class CheckMnemonicActivity extends BaseActivity {
         }
         Collections.shuffle(list1);
 
-        oneLine1.setText(list1.get(0).toString());
-        oneLine2.setText(list1.get(1).toString());
-        oneLine3.setText(list1.get(2).toString());
-
-        List list2 = new ArrayList();
+        oneLine1.setText(list1.get(0));
+        oneLine2.setText(list1.get(1));
+        oneLine3.setText(list1.get(2));
+        List<String> list2 = new ArrayList();
         for (int i = 0; i < 3; i++) {
             int num = rand.nextInt(12);
             String word = array[num];
@@ -223,7 +218,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                 word = array[num];
             }
             if (i == 2) {
-                String aaa = array[Integer.valueOf(listPos.get(1).toString()) - 1];
+                String aaa = array[(int) (listPos.get(1)) - 1];
                 if (!list2.contains(aaa)) {
                     list2.add(aaa);
                 } else {
@@ -235,10 +230,10 @@ public class CheckMnemonicActivity extends BaseActivity {
         }
         Collections.shuffle(list2);
 
-        twoLine1.setText(list2.get(0).toString());
-        twoLine2.setText(list2.get(1).toString());
-        twoLine3.setText(list2.get(2).toString());
-        List list3 = new ArrayList();
+        twoLine1.setText(list2.get(0));
+        twoLine2.setText(list2.get(1));
+        twoLine3.setText(list2.get(2));
+        List<String> list3 = new ArrayList();
         for (int i = 0; i < 3; i++) {
             int num = rand.nextInt(12);
             String word = array[num];
@@ -247,7 +242,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                 word = array[num];
             }
             if (i == 2) {
-                String aaa = array[Integer.valueOf(listPos.get(2).toString()) - 1];
+                String aaa = array[(int) (listPos.get(2)) - 1];
                 if (!list3.contains(aaa)) {
                     list3.add(aaa);
                 } else {
@@ -259,9 +254,9 @@ public class CheckMnemonicActivity extends BaseActivity {
         }
         Collections.shuffle(list3);
 
-        threeLine1.setText(list3.get(0).toString());
-        threeLine2.setText(list3.get(1).toString());
-        threeLine3.setText(list3.get(2).toString());
+        threeLine1.setText(list3.get(0));
+        threeLine2.setText(list3.get(1));
+        threeLine3.setText(list3.get(2));
 
     }
 
@@ -274,7 +269,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                 break;
             case R.id.btn_check:
                 String keyName = PreferencesManager.get(this, "Preferences", CURRENT_SELECTED_WALLET_NAME, "").toString();
-                if (chooseWord.toString().contains(word1) && chooseWord.toString().contains(word2) && chooseWord.toString().contains(word3)) {
+                if (chooseWord.get(0).equals(word1) && chooseWord.get(1).equals(word2) && chooseWord.get(2).equals(word3)) {
                     try {
                         Daemon.commands.callAttr("delete_backup_info", keyName);
                     } catch (Exception e) {
@@ -282,10 +277,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                         mToast(e.getMessage().replace("BaseException:", ""));
                         return;
                     }
-//                    EventBus.getDefault().post(new BackupEvent());
-//                    EventBus.getDefault().post(new FinishEvent());
                     mIntent(BackupCheckSuccessActivity.class);
-//                    finish();
                 } else {
                     checkMnemonicFail(CheckMnemonicActivity.this, R.layout.check_mnemonic_fail);
                 }
