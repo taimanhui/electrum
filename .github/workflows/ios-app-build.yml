@@ -89,17 +89,17 @@ jobs:
         working-directory: ios/iOS
       - name: Create ExportOptions
         run: |
-          plutil -insert  'provisioningProfiles' -xml "<dict> <key>$APP_ID</key> <string>$UUID_PROVISION</string> </dict>" -- ../Support/OneKey-Info.plist
-          plutil -insert  'teamID' -string "$DEVELOPMENT_TEAM" -- ../Support/OneKey-Info.plist
-          plutil -insert  'signingStyle' -string "mannual" -- ../Support/OneKey-Info.plist
-        working-directory: ios/iOS
+          plutil -insert  'provisioningProfiles' -xml "<dict> <key>$APP_ID</key> <string>$UUID_PROVISION</string> </dict>" -- Support/OneKey-Info.plist
+          plutil -insert  'teamID' -string "$DEVELOPMENT_TEAM" -- Support/OneKey-Info.plist
+          plutil -insert  'signingStyle' -string "mannual" -- Support/OneKey-Info.plist
+        working-directory: ios
       - name: Export IPA
         id: xcodebuild_archive
         run: |
           xcodebuild -exportArchive \
           -exportPath $PWD/build \
           -archivePath $PWD/build/app_build.xcarchive \
-          -exportOptionsPlist ${APP_NAME}/${APP_NAME}-Info.plist
+          -exportOptionsPlist ../Support/${APP_NAME}-Info.plist
         working-directory: ios/iOS
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
