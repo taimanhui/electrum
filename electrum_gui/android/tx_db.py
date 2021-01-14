@@ -48,7 +48,7 @@ class TxDb:
     @classmethod
     def create_save_fee_table(cls):
         cls.cursor.execute(
-            "CREATE TABLE IF NOT EXISTS receviedtxfeeinfo (tx_hash TEXT PRIMARY KEY, fee TEXT)")
+            "CREATE TABLE IF NOT EXISTS receviedtxfeeinfo (tx_hash TEXT PRIMARY KEY, fee TEXT, tx_list TEXT)")
 
     @classmethod
     @connect_db
@@ -100,7 +100,20 @@ class TxDb:
 
     @classmethod
     @connect_db
-    def add_received_tx_fee_info(cls, tx_hash, fee):
+    def update_received_tx_fee_info(cls, tx_hash, fee):
         cls.create_save_fee_table()
-        cls.cursor.execute("INSERT OR IGNORE INTO receviedtxfeeinfo VALUES(?, ?)",
-                           (tx_hash, fee))
+        cls.cursor.execute("SELECT * FROM receviedtxfeeinfo WHERE tx_hash=?", (tx_hash,))
+        input_list = cls.cursor.fetchall()
+        input_list = "" if len(input_list) == 0 else input_list[0][2]
+        cls.cursor.execute("INSERT OR IGNORE INTO receviedtxfeeinfo VALUES(?, ?, ?)",
+                           (tx_hash, fee, input_list))
+
+    @classmethod
+    @connect_db
+    def update_received_tx_input_info(cls, tx_hash, input_list):
+        cls.create_save_fee_table(self.cursor)
+        cls.cursor.execute("SELECT * FROM receviedtxfeeinfo WHERE tx_hash=?", (tx_hash,))
+        fee = cls.cursor.fetchall()
+        fee = "" if len(fee) == 0 else fee[0][1]
+        self.cursor.execute("INSERT OR REPLACE INTO receviedtxfeeinfo VALUES(?, ?, ?)",
+                                (tx_hash, fee, input_list))
