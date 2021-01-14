@@ -71,6 +71,13 @@ jobs:
           export PATH="/usr/local/opt/python@3.8/bin:$PATH"
           ./make_ios_project.sh
         working-directory: ios
+      - name: Create ExportOptions
+        run: |
+          plutil -replace  'CFBundleVersion' -string "4000$GITHUB_RUN_NUMBER" -- Support/OneKey-Info.plist
+          plutil -insert  'provisioningProfiles' -xml "<dict> <key>$APP_ID</key> <string>$UUID_PROVISION</string> </dict>" -- Support/OneKey-Info.plist
+          plutil -insert  'teamID' -string "$DEVELOPMENT_TEAM" -- Support/OneKey-Info.plist
+          plutil -insert  'signingStyle' -string "mannual" -- Support/OneKey-Info.plist
+        working-directory: ios 
       - name: Build app
         id: xcodebuild_export
         run: |
@@ -87,13 +94,6 @@ jobs:
            CODE_SIGN_STYLE="$CODE_SIGN_STYLE" \
            IPHONEOS_DEPLOYMENT_TARGET=11.0
         working-directory: ios/iOS
-      - name: Create ExportOptions
-        run: |
-          plutil -replace  'CFBundleVersion' -string "4000$GITHUB_RUN_NUMBER" -- Support/OneKey-Info.plist
-          plutil -insert  'provisioningProfiles' -xml "<dict> <key>$APP_ID</key> <string>$UUID_PROVISION</string> </dict>" -- Support/OneKey-Info.plist
-          plutil -insert  'teamID' -string "$DEVELOPMENT_TEAM" -- Support/OneKey-Info.plist
-          plutil -insert  'signingStyle' -string "mannual" -- Support/OneKey-Info.plist
-        working-directory: ios
       - name: Export IPA
         id: xcodebuild_archive
         run: |
