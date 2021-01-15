@@ -1266,9 +1266,9 @@ class AndroidCommands(commands.Commands):
 
     def get_input_info(self, tx):
         input_list = []
-        local_addr = self.txdb.get_received_tx_fee_info(tx.txid())
+        local_addr = self.txdb.get_received_tx_input_info(tx.txid())
         if len(local_addr) != 0:
-            local_addr = json.loads(local_addr[0][2])
+            local_addr = json.loads(local_addr[0][1])
             if len(local_addr) != 0:
                 return local_addr
         for txin in tx.inputs():
@@ -1284,7 +1284,7 @@ class AndroidCommands(commands.Commands):
                     addr = ''
             input_info['address'] = addr
             input_list.append(input_info)
-            self.txdb.update_received_tx_input_info(tx.txid(), json.dumps(input_list))
+            self.txdb.add_received_tx_input_info(tx.txid(), json.dumps(input_list))
         return input_list
 
     def get_fee_from_server(self, txid):
@@ -1367,7 +1367,7 @@ class AndroidCommands(commands.Commands):
                 if show_fee  == "":
                     show_fee = self.get_fee_from_server(tx_details.txid)
                     if show_fee != "":
-                        self.txdb.update_received_tx_fee_info(tx_details.txid, show_fee)
+                        self.txdb.add_received_tx_fee_info(tx_details.txid, show_fee)
         if block_height == -2:
             status = _("Unconfirmed")
             can_broadcast = False
@@ -3345,6 +3345,19 @@ class AndroidCommands(commands.Commands):
         else:
             xpub = self.get_hd_wallet_encode_seed(seed=seed, coin='btc')
             self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
+
+            #for coin, info in self.coins.items():
+                #     xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
+                #     PyWalib.set_server(info)
+                #     self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
+
+        recovery_list = self.filter_wallet()
+        out_info = []
+        if wallet_data is not None:
+            for info in wallet_data:
+                out_info.append(info["wallet_info"][0])
+        out = self.get_create_info_by_json(wallet_info=out_info, derived_info=recovery_list)
+        return json.dumps(out)
 
     def get_derivat_path(self, purpose=84, coin=None):
         '''

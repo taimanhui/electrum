@@ -24,6 +24,7 @@ class SortWalletList():
 
         for key, info in wallets_info.items():
             if -1 != info['type'].find('derived'):
+                temp = {}
                 temp[key] = info
                 hd_wallets.append(temp)
         return hd_wallets
@@ -47,6 +48,7 @@ class SortWalletList():
         import_walletw = []
         watchonly_wallets = []
         for key, info in wallets_info.items():
+            temp = {}
             temp[key] = info
             if -1 != info['type'].find('hw'):
                 hw_wallets.append(temp)
