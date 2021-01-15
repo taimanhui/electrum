@@ -745,7 +745,7 @@ class AndroidCommands(commands.Commands):
         :param name: wallet name as string
         :param m: number of consigner as string
         :param n: number of signers as string
-        :param xpubs: all xpubs as {[xpub1, device_id], [xpub2, device_id],....}
+        :param xpubs: all xpubs as [[xpub1, device_id], [xpub2, device_id],....]
         :param hide_type: whether to create a hidden wallet as bool
         :param hd: whether to create hd wallet as bool
         :param derived: whether to create hd derived wallet as bool
@@ -803,19 +803,6 @@ class AndroidCommands(commands.Commands):
             self.config.set_key('mempool_fees', x == 2)
             self.config.set_key('dynamic_fees', x > 0)
             return self.config.get_fee_status()
-        except BaseException as e:
-            raise e
-
-    def get_eth_gas_price(self):
-        '''
-        Get eth gas price, for eth only
-        :return: json like {"rapid":{"price":1, "time":"15 Seconds"},
-                            "fast":{"price":1, "time":"1 Minute",
-                            "standard":{"price":1, "time":"3 Minutes",
-                            "timestamp":{"price":1, "time":"> 10 Minutes"}
-        '''
-        try:
-            return self.pywalib.get_gas_price()
         except BaseException as e:
             raise e
 
@@ -918,6 +905,19 @@ class AndroidCommands(commands.Commands):
                 block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
                 out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
             return json.dumps(out_info)
+        except BaseException as e:
+            raise e
+
+    def get_eth_gas_price(self):
+        '''
+        Get eth gas price, for eth only
+        :return: json like {"rapid":{"price":1, "time":"15 Seconds"},
+                            "fast":{"price":1, "time":"1 Minute",
+                            "standard":{"price":1, "time":"3 Minutes",
+                            "timestamp":{"price":1, "time":"> 10 Minutes"}
+        '''
+        try:
+            return self.pywalib.get_gas_price()
         except BaseException as e:
             raise e
 
@@ -1266,6 +1266,11 @@ class AndroidCommands(commands.Commands):
 
     def get_input_info(self, tx):
         input_list = []
+        local_addr = self.txdb.get_received_tx_input_info(tx.txid())
+        if len(local_addr) != 0:
+            local_addr = json.loads(local_addr[0][1])
+            if len(local_addr) != 0:
+                return local_addr
         for txin in tx.inputs():
             input_info = {}
             addr = self.wallet.get_txin_address(txin)
@@ -1279,6 +1284,7 @@ class AndroidCommands(commands.Commands):
                     addr = ''
             input_info['address'] = addr
             input_list.append(input_info)
+            self.txdb.add_received_tx_input_info(tx.txid(), json.dumps(input_list))
         return input_list
 
     def get_fee_from_server(self, txid):
@@ -1361,7 +1367,7 @@ class AndroidCommands(commands.Commands):
                 if show_fee  == "":
                     show_fee = self.get_fee_from_server(tx_details.txid)
                     if show_fee != "":
-                        self.txdb.add_received_tx_fee_info(tx_details.txid, show_fee, is_add=True)
+                        self.txdb.add_received_tx_fee_info(tx_details.txid, show_fee)
         if block_height == -2:
             status = _("Unconfirmed")
             can_broadcast = False
@@ -1429,13 +1435,6 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    ##get history
-    def get_eth_tx_list(self):
-        try:
-            return PyWalib.get_transaction_history(self.wallet.get_addresses()[0])
-        except BaseException as e:
-            raise e
-
     ##history
     def get_history_tx(self):
         try:
@@ -1460,30 +1459,7 @@ class AndroidCommands(commands.Commands):
         addr = tx._outputs[n].address
         return addr
 
-    def get_all_tx_list(self, search_type=None, coin='btc'):
-        '''
-        Get the histroy list with the wallet that you select
-        :param search_type: None/send/receive as str
-        :param coin: btc/eth as string
-        :return:
-            exp:
-                if coin is btc, return data like:
-                            [{"type":"",
-                             "tx_status":"",
-                             "date":"",
-                             "tx_hash":"",
-                             "is_mine":"",
-                             "confirmations":"",
-                             "address":"",
-                             "amount":""}, ...]
-                if coin is eth, return data like:
-                           [{'time': "",
-                            'value_eth': "",
-                            'sent': "",
-                            'received': "",
-                            'from_address': "",
-                           ' to_address': ""}, ...]
-        '''
+    def get_btc_tx_list(self, search_type=None):
         history_data = []
         try:
             history_info = self.get_history_tx()
@@ -1536,6 +1512,45 @@ class AndroidCommands(commands.Commands):
 
             all_data.sort(reverse=True, key=lambda info: info['date'])
             return json.dumps(all_data)
+
+    ##get history
+    def get_eth_tx_list(self):
+        try:
+            return PyWalib.get_transaction_history(self.wallet.get_addresses()[0])
+        except BaseException as e:
+            raise e
+
+    def get_all_tx_list(self, search_type=None, coin='btc'):
+        '''
+        Get the histroy list with the wallet that you select
+        :param search_type: None/send/receive as str
+        :param coin: btc/eth as string
+        :return:
+            exp:
+                if coin is btc, return data like:
+                            [{"type":"",
+                             "tx_status":"",
+                             "date":"",
+                             "tx_hash":"",
+                             "is_mine":"",
+                             "confirmations":"",
+                             "address":"",
+                             "amount":""}, ...]
+                if coin is eth, return data like:
+                           [{'time': "",
+                            'value_eth': "",
+                            'sent': "",
+                            'received': "",
+                            'from_address': "",
+                           ' to_address': ""}, ...]
+        '''
+        try:
+            if coin == "btc":
+                return self.get_btc_tx_list(search_type=search_type)
+            else:
+                return self.get_eth_tx_list()
+        except BaseException as e:
+            raise e
 
     def get_show_addr(self, addr):
         return '%s...%s' % (addr[0:6], addr[-6:])
@@ -1819,7 +1834,7 @@ class AndroidCommands(commands.Commands):
 
     def update_local_info(self, txid, address, tx, msg):
         self.remove_local_tx(txid)
-        self.txdb.add_tx_info(address=address, tx_hash=txid, psbt_tx="", is_add=True, raw_tx=tx,
+        self.txdb.add_tx_info(address=address, tx_hash=txid, psbt_tx="", raw_tx=tx,
                               failed_info=msg)
 
     def broadcast_tx(self, tx: str) -> str:
@@ -1837,7 +1852,7 @@ class AndroidCommands(commands.Commands):
             if self.network and self.network.is_connected():
                 self.network.run_from_another_thread(self.network.broadcast_transaction(trans))
             else:
-                self.txdb.add_tx_time_info(trans.txid(), is_add=True)
+                self.txdb.add_tx_time_info(trans.txid())
                 raise BaseException(_('Cannot broadcast transaction due to network connected exceptions'))
         except SerializationError:
             raise BaseException(_('Transaction formatter error'))
@@ -1852,7 +1867,7 @@ class AndroidCommands(commands.Commands):
             return "success"
         finally:
             if trans:
-                self.txdb.add_tx_time_info(trans.txid(), is_add=True)
+                self.txdb.add_tx_time_info(trans.txid())
 
     def set_use_change(self, status_change):
         '''
@@ -1928,20 +1943,20 @@ class AndroidCommands(commands.Commands):
         :return: raise except if error
         '''
         try:
-            self.wallet.add_contract_token(symbol, PyWalib.get_web3().toChecksumAddress(contract_addr))
+            self.wallet.add_contract_token(symbol, contract_addr)
         except BaseException as e:
             raise e
 
-    # def delete_token(self, contract_addr):
-    #     '''
-    #     Delete token from current wallet, for eth/bsc only
-    #     :param contract_addr: coin address
-    #     :return: raise except if error
-    #     '''
-    #     try:
-    #         self.wallet.add_contract_token(symbol, PyWalib.get_web3().toChecksumAddress(contract_addr))
-    #     except BaseException as e:
-    #         raise e
+    def delete_token(self, contract_addr):
+        '''
+        Delete token from current wallet, for eth/bsc only
+        :param contract_addr: coin address
+        :return: raise except if error
+        '''
+        try:
+            self.wallet.delete_contract_token(contract_addr)
+        except BaseException as e:
+            raise e
 
     ###############
     def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, contract_addr=None, gasprice=None):
@@ -2717,8 +2732,8 @@ class AndroidCommands(commands.Commands):
         for coin, info in self.coins.items():
             name = "%s-1" % coin.upper()
             bip39_derivation = bip44_derivation(0, info['addressType'], info['coinId'])
-            #wallet_info = self.create(name, password, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation, hd=True, coin=coin)
-            #wallet_data.append(json.loads(wallet_info))
+            wallet_info = self.create(name, password, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation, hd=True, coin=coin)
+            wallet_data.append(json.loads(wallet_info))
 
         if new_seed is None:
             return self.recovery_hd_derived_wallet(password, seed, passphrase, wallet_data=wallet_data)
@@ -3330,6 +3345,19 @@ class AndroidCommands(commands.Commands):
         else:
             xpub = self.get_hd_wallet_encode_seed(seed=seed, coin='btc')
             self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
+
+            #for coin, info in self.coins.items():
+                #     xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
+                #     PyWalib.set_server(info)
+                #     self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
+
+        recovery_list = self.filter_wallet()
+        out_info = []
+        if wallet_data is not None:
+            for info in wallet_data:
+                out_info.append(info["wallet_info"][0])
+        out = self.get_create_info_by_json(wallet_info=out_info, derived_info=recovery_list)
+        return json.dumps(out)
 
     def get_derivat_path(self, purpose=84, coin=None):
         '''
