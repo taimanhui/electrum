@@ -1284,7 +1284,7 @@ class AndroidCommands(commands.Commands):
                     addr = ''
             input_info['address'] = addr
             input_list.append(input_info)
-            self.txdb.update_received_tx_input_info(tx.txid(), json.dumps(input_list), is_add=True)
+            self.txdb.update_received_tx_input_info(tx.txid(), json.dumps(input_list))
         return input_list
 
     def get_fee_from_server(self, txid):
@@ -1367,7 +1367,7 @@ class AndroidCommands(commands.Commands):
                 if show_fee  == "":
                     show_fee = self.get_fee_from_server(tx_details.txid)
                     if show_fee != "":
-                        self.txdb.update_received_tx_fee_info(tx_details.txid, show_fee, is_add=True)
+                        self.txdb.update_received_tx_fee_info(tx_details.txid, show_fee)
         if block_height == -2:
             status = _("Unconfirmed")
             can_broadcast = False
@@ -1834,7 +1834,7 @@ class AndroidCommands(commands.Commands):
 
     def update_local_info(self, txid, address, tx, msg):
         self.remove_local_tx(txid)
-        self.txdb.add_tx_info(address=address, tx_hash=txid, psbt_tx="", is_add=True, raw_tx=tx,
+        self.txdb.add_tx_info(address=address, tx_hash=txid, psbt_tx="", raw_tx=tx,
                               failed_info=msg)
 
     def broadcast_tx(self, tx: str) -> str:
@@ -1852,7 +1852,7 @@ class AndroidCommands(commands.Commands):
             if self.network and self.network.is_connected():
                 self.network.run_from_another_thread(self.network.broadcast_transaction(trans))
             else:
-                self.txdb.add_tx_time_info(trans.txid(), is_add=True)
+                self.txdb.add_tx_time_info(trans.txid())
                 raise BaseException(_('Cannot broadcast transaction due to network connected exceptions'))
         except SerializationError:
             raise BaseException(_('Transaction formatter error'))
@@ -1867,7 +1867,7 @@ class AndroidCommands(commands.Commands):
             return "success"
         finally:
             if trans:
-                self.txdb.add_tx_time_info(trans.txid(), is_add=True)
+                self.txdb.add_tx_time_info(trans.txid())
 
     def set_use_change(self, status_change):
         '''
