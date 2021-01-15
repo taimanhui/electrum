@@ -95,6 +95,12 @@ after_deploy:
   - export CHANGE_LOG=`git log HEAD -n 1`
   - scp -i id_rsa $REGTEST_APK_PATH $SSH_USER@$SSH_HOST:/output/
   - ssh -i id_rsa $SSH_USER@$SSH_HOST "cd /output && ./push.sh ${REGTEST_APK_PATH} '\"${CHANGE_LOG}\"' > android_log"
+  - export TESTNET_APK_PATH=`ls android/app/build/outputs/apk/TestNet/debug/*.apk`
+  - scp -i id_rsa $TESTNET_APK_PATH $SSH_USER@$SSH_HOST:/output/
+  - ssh -i id_rsa $SSH_USER@$SSH_HOST "cd /output && ./push.sh ${TESTNET_APK_PATH} '\"${CHANGE_LOG}\"' > android_log"
+  - export MAINNET_APK_PATH=`ls android/app/build/outputs/apk/MainNet/debug/*.apk`
+  - scp -i id_rsa $MAINNET_APK_PATH $SSH_USER@$SSH_HOST:/output/
+  - ssh -i id_rsa $SSH_USER@$SSH_HOST "cd /output && ./push.sh ${MAINNET_APK_PATH} '\"${CHANGE_LOG}\"' > android_log"
 
 notifications:
   slack:
