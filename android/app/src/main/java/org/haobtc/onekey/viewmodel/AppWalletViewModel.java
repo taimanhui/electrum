@@ -149,7 +149,11 @@ public class AppWalletViewModel extends ViewModel {
             if (localWalletInfo == null) {
                 mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
             }
-            currentWalletInfo.postValue(localWalletInfo);
+            mMainHandler.post(() -> {
+                currentWalletInfo.setValue(localWalletInfo);
+                refreshExistsWallet();
+                refreshBalance();
+            });
         });
     }
 
@@ -158,13 +162,7 @@ public class AppWalletViewModel extends ViewModel {
      */
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(LoadOtherWalletEvent event) {
-        mExecutorService.execute(() -> {
-            LocalWalletInfo localWalletInfo = mAccountManager.autoSelectNextWallet();
-            if (localWalletInfo == null) {
-                mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
-            }
-            currentWalletInfo.postValue(localWalletInfo);
-        });
+        autoSelectWallet();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
