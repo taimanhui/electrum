@@ -103,6 +103,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case READ_MNEMONIC_FROM_HARDWARE:
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1]).toString();
+                    Logger.d("look Seeds:" + result);
                 } catch (Exception e) {
                     cancel(true);
                     onException(e);

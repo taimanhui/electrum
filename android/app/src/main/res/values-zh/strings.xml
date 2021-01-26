@@ -710,7 +710,7 @@
     <string name="mind">我的</string>
     <string name="no_use_wallet">无可用账户</string>
     <string name="creat_hd">创建主钱包</string>
-    <string name="not_num">多链、简单、安全、好用</string>
+    <string name="not_num">多公链、简单、安全、好用</string>
     <string name="recovery_hd">恢复主钱包</string>
     <string name="word_recovery">通过助记词</string>
     <string name="pair_hard">配对硬件</string>
@@ -948,13 +948,13 @@
     <string name="please_input_fee">请输入费率</string>
     <string name="check_pass">校验主密码</string>
     <string name="wrong_pass_next_input">原密码输入错误</string>
-    <string name="what_is_hd">HD钱包即 Hierarchical Deterministic Wallet，中文称为分层确定性钱包。它是目前来说最好用的、最方便的确定性钱包。</string>
+    <string name="what_is_hd">同一台设备至多只有一个主钱包，但其下可以有多个账户。它的底层技术是「分层确定性」，这种钱包格式先进、好用，方便，未来普及率高，兼容性极好。</string>
     <string name="i_know_">我知道了</string>
     <string name="please_create_wallet">请先创建钱包</string>
     <string name="dont_greater_than">不得超过1*10^8</string>
     <string name="private_key_export">私钥导出</string>
     <string name="find_wallet_tip">您曾使用 HD 助记词派生过以下钱包,\n选择您要恢复的。暂时不想恢复的钱包您可以跳过，并稍后在 HD 钱包中重新添加，您的资产不会丢失。</string>
-    <string name="add_hd_wallet">添加主钱包</string>
+    <string name="add_hd_wallet">创建主钱包</string>
     <string name="recovery_wallet">恢复主钱包</string>
     <string name="input_seed_import">通过助记词</string>
     <string name="quotation_choose">价格行情</string>
@@ -1050,7 +1050,7 @@
     <string name="pass_lenth_tip">密码长度不应小于 8 位字符，建议使用大小写字母、数字、特殊字符混用的高复杂度密码。</string>
     <string name="input_again">重新填写</string>
     <string name="invalid_address">输入地址不可用，请重新输入</string>
-    <string name="what_is_hd_">什么是HD钱包？</string>
+    <string name="what_is_hd_">什么是主钱包？</string>
     <string name="private_invalid">请输入正确的地址或公钥！</string>
     <string name="easy_to_identy">方便您轻松识别</string>
     <string name="input_you_like_name">输入一个你喜欢的名称</string>
@@ -1190,7 +1190,7 @@
     <string name="restart_tip">重置成功，请重新启动应用</string>
     <string name="delete_hd_derived">抹除主钱包</string>
     <string name="delete_dh_derived_tip">该钱包是 App 内仅存的主钱包账户。删除该钱包的同时，整个主钱包也将被抹除。</string>
-    <string name="delete_hd_derived_confirm">同时删除根 HD 钱包</string>
+
     <string name="reset_ok">重置App成功</string>
     <string name="reset_failure">重置失败，请重试</string>
     <string name="unknown_version">未知版本</string>
@@ -1204,7 +1204,6 @@
     <string name="use_cold_sign">使用冷钱包进行扫码签名</string>
     <string name="watch_wallet_tip">当前为观察钱包，发起的转账需使用掌握该私钥的冷钱包进行扫码签名。</string>
     <string name="qr_exception">交易金额过大，无法生成二维码</string>
-    <string name="home_tip">HD 钱包是迄今最为先进的钱包格式，中文称为分层确定性钱包。只需一个助记词，就能派生无限公链或币种。好记、好用、好管理，很安全。</string>
     <string name="already_has_local_hd">本地已存在 HD 钱包，无法再连接 backup 模式的硬件钱包</string>
     <string name="watch_wallet_receive_tip">当前为观察钱包，确定要使用该钱包的地址发起收款吗？</string>
     <string name="connecting_1">连接中…</string>

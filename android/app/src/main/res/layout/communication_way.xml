@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -59,7 +58,8 @@
             android:layout_height="74dp"
             android:background="@color/button_bk_ddake"
             android:paddingStart="@dimen/dp_22"
-            android:paddingEnd="@dimen/dp_22">
+            android:paddingEnd="@dimen/dp_22"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -135,7 +135,8 @@
             android:layout_height="74dp"
             android:background="@color/button_bk_ddake"
             android:paddingStart="@dimen/dp_22"
-            android:paddingEnd="@dimen/dp_22">
+            android:paddingEnd="@dimen/dp_22"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"

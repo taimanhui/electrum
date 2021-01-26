@@ -1221,7 +1221,6 @@
     <string name="restart_tip">Reset successfully, please restart the application</string>
     <string name="delete_hd_derived">Delete root HD Wallet</string>
     <string name="delete_dh_derived_tip">This wallet is the only remaining child wallet derived from the root HD in the app. When this wallet is deleted, the root HD wallet is also deleted.</string>
-    <string name="delete_hd_derived_confirm">Also delete root HD wallet</string>
     <string name="reset_ok">Reset App succeed</string>
     <string name="reset_failure">Reset failed, please try again</string>
     <string name="unknown_version">Unknown Version</string>
@@ -1233,7 +1232,6 @@
     <string name="use_cold_sign">Use Cold Wallet for sweep signatures</string>
     <string name="watch_wallet_tip">Currently it is a watch wallet, and initiated transfers need to be swept and signed using the cold wallet that holds the private key.</string>
     <string name="qr_exception">The transaction amount is too large to generate a QR code</string>
-    <string name="home_tip">HD Wallet is the most advanced wallet format to date. With root seed phrase, it can derive unlimited wallets of all kinds. It is easy to remember, easy to use, easy to manage and very secure.</string>
     <string name="already_has_local_hd">The HD wallet already exists locally and cannot be connected to the hardware wallet in backup mode</string>
     <string name="watch_wallet_receive_tip">Currently it is an observation wallet，sure you want to initiate receiving using the wallet\'s address?</string>
     <string name="connecting_1">Connecting...</string>

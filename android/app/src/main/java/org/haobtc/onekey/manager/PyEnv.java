@@ -518,6 +518,29 @@ public final class PyEnv {
     }
 
     /**
+     * 助记词恢复钱包
+     *
+     * @param password  密码
+     * @param mnemonics seed
+     *
+     * @return
+     */
+    public static PyResponse<CreateWalletBean> restoreLocalWallet(@NotNull String password, @NotNull String mnemonics) {
+        PyResponse<CreateWalletBean> pyResponse = new PyResponse();
+        try {
+            String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, password, mnemonics, new Kwarg(Constant.Purpose, 49)).toString();
+            CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
+            pyResponse.setResult(walletBean);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            pyResponse.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+        return pyResponse;
+    }
+
+
+    /**
      * 创建HD钱包
      *
      * @param passwd    APP主密码
@@ -1125,7 +1148,7 @@ public final class PyEnv {
     /**
      * 获取派生HD钱包的个数
      *
-     * @param coin
+     * @param
      *
      * @return
      */
