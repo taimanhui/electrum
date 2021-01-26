@@ -1715,7 +1715,13 @@ class AndroidCommands(commands.Commands):
                 self.show_addr = addr
                 show_addr_info[self.wallet.__str__()] = self.show_addr
                 self.config.set_key("show_addr_info", show_addr_info)
-            data = util.create_bip21_uri(self.show_addr, "", "")
+
+            if bitcoin.is_address(self.show_addr):
+                data = util.create_bip21_uri(self.show_addr, "", "")
+            elif self.pywalib.web3.isAddress(self.show_addr):
+                data = f"ethereum:{self.show_addr}"
+            else:
+                data = self.show_addr
         except Exception as e:
             raise BaseException(e)
         data_json = {}
@@ -1820,7 +1826,6 @@ class AndroidCommands(commands.Commands):
             name = out.get('name')
 
             if r or (name and sig):
-
                 if name and sig:
                     s = paymentrequest.serialize_request(out).SerializeToString()
                     result = paymentrequest.PaymentRequest(s)
@@ -1832,9 +1837,6 @@ class AndroidCommands(commands.Commands):
                 out = {'address': result.get_address(), 'memo': result.get_memo()}
                 if result.get_amount() != 0:
                     out['amount'] = result.get_amount()
-
-            if out.__contains__('amount'):
-                out['amount'] = self.format_amount_and_units(out['amount'])
 
             return out
         except Exception as e:
@@ -1892,7 +1894,7 @@ class AndroidCommands(commands.Commands):
         else:
             out_data['type'] = 3
             out_data['data'] = "parse pr error"
-        return json.dumps(out_data)
+        return json.dumps(out_data, cls=DecimalEncoder)
 
     def update_local_info(self, txid, address, tx, msg):
         self.remove_local_tx(txid)
