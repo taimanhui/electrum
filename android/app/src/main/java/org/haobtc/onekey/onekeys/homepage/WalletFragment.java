@@ -48,6 +48,7 @@ import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.RefreshEvent;
+import org.haobtc.onekey.extensions.StringKt;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
@@ -229,7 +230,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             }
         });
         mAppWalletViewModel.currentWalletBalance.observe(this, balance -> {
-            textBtcAmount.setText(balance.getBalance());
+            textBtcAmount.setText(StringKt.interceptDecimal(balance.getBalance()));
         });
         mAppWalletViewModel.currentWalletFiatBalance.observe(this, balance -> {
             tetAmount.setText(String.format("%s %s", balance.getSymbol(), Strings.isNullOrEmpty(balance.getBalance()) ? getString(R.string.zero) : balance.getBalance()));
