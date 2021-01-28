@@ -603,10 +603,8 @@
         _allData = [NSArray array];
         OKSelectCellModel *model1 = [OKSelectCellModel new];
         model1.titleStr = MyLocalizedString(@"Create HD Wallet", nil);
-        model1.descStr = MyLocalizedString(@"More child wallets are derived from mnemonics", nil);
+        model1.descStr = MyLocalizedString(@"easy to use", nil);
         model1.imageStr = @"add";
-        model1.descStrL = MyLocalizedString(@"HD Wallet is the most advanced wallet format, known in Chinese as hierarchical deterministic wallet. An infinite chain or currency can be derived from a mnemonic. Easy to remember, easy to use, good management, very safe", nil);
-        model1.type = OKSelectCellTypeCreateHD;
         
         OKSelectCellModel *model2 = [OKSelectCellModel new];
         model2.titleStr = MyLocalizedString(@"Recover HD Wallet", nil);

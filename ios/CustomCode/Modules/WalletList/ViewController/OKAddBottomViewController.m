@@ -30,6 +30,8 @@
     [self.importButton setLayerBoarderColor:HexColor(0xBDBDBD) width:1 radius:20];
     [self.createButton setLayerDefaultRadius];
     [self.contentView setLayerDefaultRadius];
+    self.viewTitleLabel.text = MyLocalizedString(@"Add wallet account", nil);
+    [self.createButton setTitle: MyLocalizedString(@"Create account", nil) forState:UIControlStateNormal];
 }
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];

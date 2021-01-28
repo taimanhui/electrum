@@ -176,7 +176,10 @@
                                         <rect key="frame" x="0.0" y="445" width="414" height="421"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_banner" translatesAutoresizingMaskIntoConstraints="NO" id="Jjk-Zq-dVa">
-                                                <rect key="frame" x="20" y="45" width="374" height="355"/>
+                                                <rect key="frame" x="20" y="45" width="374" height="395"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="Jjk-Zq-dVa" secondAttribute="height" multiplier="336:355" id="gW5-wJ-cBf"/>
+                                                </constraints>
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

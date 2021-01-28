@@ -31,6 +31,8 @@
 @property (nonatomic,copy)NSString *HDWalletName;
 @property (nonatomic,strong)NSArray *NoHDArray;
 @property (weak, nonatomic) IBOutlet UIView *footerBgView;
+@property (weak, nonatomic) IBOutlet UILabel *addAccountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *accountDescLabel;
 @end
 
 @implementation OKHDWalletViewController
@@ -56,6 +58,8 @@
 - (void)stupUI
 {
     self.title = MyLocalizedString(@"HD wallet", nil);
+    self.addAccountLabel.text = MyLocalizedString(@"Add wallet account", nil);
+    self.accountDescLabel.text = MyLocalizedString(@"Support BTC, ETH and other main chain", nil);
     [self.countBgView setLayerRadius:10];
     [self.footerBgView setLayerDefaultRadius];
     

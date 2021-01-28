@@ -103,7 +103,9 @@
     [self.footBgView setLayerDefaultRadius];
     [self.footBgView setLayerBoarderColor:HexColorA(0x546370, 0.3) width:1 radius:20];
     self.pairHDWallet.titleLabel.text = MyLocalizedString(@"Paired hardware", nil);
-    self.addWallet.titleLabel.text = MyLocalizedString(@"Add wallet", nil);
+    self.addWallet.titleLabel.text = MyLocalizedString(@"Add wallet account", nil);
+    [self.pairHDWallet setTitle:MyLocalizedString(@"Paired hardware",nil) forState:UIControlStateNormal];
+    [self.addWallet setTitle:MyLocalizedString(@"Add wallet account",nil) forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated

@@ -387,7 +387,7 @@
 {
     switch (type) {
         case OKWalletTypeHD:
-            return MyLocalizedString(@"HD derived wallet", nil);
+            return MyLocalizedString(@"HD wallet account", nil);
             break;
         case OKWalletTypeIndependent:
             return MyLocalizedString(@"Independent wallet", nil);
