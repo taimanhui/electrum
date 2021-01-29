@@ -51,8 +51,9 @@ jobs:
       - name: build release
         run: |
           yes | /usr/local/lib/android/sdk/tools/bin/sdkmanager "platforms;android-29"
-          yes | /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" --sdk_root=${ANDROID_SDK_ROOT}
-          echo 'sdk.dir=/usr/local/lib/android/sdk'>local.properties
+          yes | /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" --sdk_root=${ANDROID_SDK_ROOT} >> /dev/null
+          echo 'chaquopy.license=${{ secrets.CHAQUOPY_LICENSE }}' > local.properties
+          echo 'sdk.dir=/usr/local/lib/android/sdk' >> local.properties
           ./gradlew app:assembleMainNetOnekeyRelease
           ./gradlew app:assembleMainNetGooglePlayRelease
           ./gradlew app:assembleRegTestOneKeyRelease
@@ -77,4 +78,4 @@ jobs:
             # push regtest apk
             export REGTEST_APK_PATH=`ls android/app/build/outputs/apk/RegTestOnekey/release/*.apk`
             scp "$REGTEST_APK_PATH" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push.sh $REGTEST_APK_PATH'$TAG_NAME' >android_release.log"
+            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push.sh $REGTEST_APK_PATH '$TAG_NAME for regtest network' >android_release.log"
