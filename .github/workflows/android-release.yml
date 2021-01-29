@@ -55,6 +55,7 @@ jobs:
           echo 'sdk.dir=/usr/local/lib/android/sdk'>local.properties
           ./gradlew app:assembleMainNetOnekeyRelease
           ./gradlew app:assembleMainNetGooglePlayRelease
+          ./gradlew app:assembleRegTestOneKeyRelease
         working-directory: android
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -64,11 +65,16 @@ jobs:
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: push to server
         run: |
+            # push release apk
             export MAINNET_APK_PATH=`ls android/app/build/outputs/apk/MainNetOnekey/release/*.apk`
             export TAG_NAME=`git describe --tags --abbrev=0`
             scp "$MAINNET_APK_PATH" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK_PATH $TAG_NAME >android_release.log" 
+            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK_PATH $TAG_NAME >android_release.log"
             # push googleplay apk
             export MAINNET_APK_PATH=`ls android/app/build/outputs/apk/MainNetGooglePlay/release/*.apk`
             scp "$MAINNET_APK_PATH" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK_PATH '$TAG_NAME for googleplay' >android_release.log" 
+            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK_PATH '$TAG_NAME for googleplay' >android_release.log"
+            # push regtest apk
+            export REGTEST_APK_PATH=`ls android/app/build/outputs/apk/RegTestOnekey/release/*.apk`
+            scp "$REGTEST_APK_PATH" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
+            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push.sh $REGTEST_APK_PATH'$TAG_NAME' >android_release.log"
