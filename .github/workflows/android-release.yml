@@ -52,9 +52,9 @@ jobs:
           ENCRYPT_PASS: ${{ secrets.ENCRYPT_PASS }}
       - name: build release
         env:
-          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          RELEASE_STORE_FILE: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          RELEASE_STORE_FILE: ${{ secrets.RELEASE_STORE_FILE }}
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
         run: |
           yes | /usr/local/lib/android/sdk/tools/bin/sdkmanager "platforms;android-29"
