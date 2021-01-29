@@ -51,6 +51,11 @@ jobs:
           IOS_CERTIFICATE_PASS: ${{ secrets.IOS_CERTIFICATE_PASS }}
           ENCRYPT_PASS: ${{ secrets.ENCRYPT_PASS }}
       - name: build release
+        env:
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_STORE_FILE: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
         run: |
           yes | /usr/local/lib/android/sdk/tools/bin/sdkmanager "platforms;android-29"
           yes | /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" --sdk_root=${ANDROID_SDK_ROOT} >> /dev/null
