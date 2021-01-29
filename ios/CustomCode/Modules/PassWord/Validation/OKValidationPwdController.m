@@ -56,6 +56,7 @@ typedef enum {
     validationVc.block = complete;
     validationVc.isDis = isDis;
     BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:validationVc];
+    baseVc.modalPresentationStyle = UIModalPresentationFullScreen;
     [vc.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
 }
 
@@ -191,7 +192,7 @@ typedef enum {
     id result = [kPyCommandsManager callInterface:kInterfacecheck_password parameter:@{@"password":pwd}];
     if (result != nil) {
         if (self.block) {
-            self.block(pwd);
+            self.block([pwd copy]);
             if (_isDis == YES) {
                 [self dismissViewControllerAnimated:YES completion:nil];
             }
