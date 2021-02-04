@@ -272,6 +272,7 @@
                             }
                         }else{
                             OKDiscoverNewDeviceViewController *discoverNewDeviceVc = [OKDiscoverNewDeviceViewController discoverNewDeviceViewController];
+                            discoverNewDeviceVc.where = self.where;
                             [self.navigationController pushViewController:discoverNewDeviceVc animated:YES];
                         }
                     });
