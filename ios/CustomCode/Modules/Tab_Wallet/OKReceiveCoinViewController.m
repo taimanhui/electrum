@@ -88,6 +88,7 @@
         self.verifyBtn.hidden = YES;
         self.hwBgView.hidden = YES;
     }
+    self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithTitle:MyLocalizedString(@"Save", nil) titleColor:[UIColor whiteColor] target:self selector:@selector(save)];
 }
 
 - (void)refreshUI{
@@ -104,9 +105,9 @@
 - (IBAction)shareBtnClick:(UIButton *)sender {
     OKShareView *shareView = [OKShareView initViewWithImage:self.QRCodeImageView.image coinType:self.coinType address:self.walletAddressLabel.text];
     [OKSystemShareView showSystemShareViewWithActivityItems:@[[shareView convertImage2WithOptions]] parentVc:self cancelBlock:^{
-        
+
     } shareCompletionBlock:^{
-        
+
     }];
 }
 
@@ -131,6 +132,19 @@
     });
 }
 
+- (void)save {
+    OKShareView *shareView = [OKShareView initViewWithImage:self.QRCodeImageView.image coinType:self.coinType address:self.walletAddressLabel.text];
+    UIImageWriteToSavedPhotosAlbum([shareView convertImage2WithOptions], self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+}
+
+-(void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+    NSString *msg = MyLocalizedString(@"Save Success", nil);
+    if (error) {
+        msg = MyLocalizedString(@"Save Failed", nil);
+    }
+    [kTools tipMessage:msg];
+}
+
 #pragma mark - OKHwNotiManagerDelegate
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
 {
@@ -142,7 +156,7 @@
 
 
 - (IBAction)verifyBtnClick:(UIButton *)sender {
-    
+
 }
 
 - (void)backToPrevious

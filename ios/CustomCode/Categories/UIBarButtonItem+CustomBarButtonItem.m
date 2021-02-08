@@ -54,6 +54,18 @@
     return rightBBI;
 }
 
++ (UIBarButtonItem *)barButtonItemWithTitle:(NSString *)title titleColor:(UIColor *)titleColor target:(id)object selector:(SEL)action {
+    UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightBtn setTitle:title forState:UIControlStateNormal];
+    [rightBtn setTitleColor:titleColor forState:UIControlStateNormal];
+    [rightBtn setContentMode:UIViewContentModeRight];
+    [rightBtn.titleLabel setFont:[UIFont systemFontOfSize:17]];
+    [rightBtn addTarget:object action:action forControlEvents:UIControlEventTouchUpInside];
+    [rightBtn sizeToFit];
+    UIBarButtonItem *rightBBI = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
+    return rightBBI;
+}
+
 + (UIBarButtonItem *)barButtonItemScanBtnWithTarget:(id)target selector:(SEL)action {
     return [self barButtonItemWithImage:[UIImage imageNamed:@"scan"] frame:CGRectMake(0, 0, 28, 28) target:target selector:action];
 }

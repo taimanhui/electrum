@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIBarButtonItem (CustomBarButtonItem) 
+@interface UIBarButtonItem (CustomBarButtonItem)
 // 创建导航栏返回按钮
 + (UIBarButtonItem *)backBarButtonItemWithTarget:(UIViewController *)target selector:(SEL)action;
 
@@ -20,5 +20,5 @@
 + (UIBarButtonItem *)barButtonItemScanBtnWithTarget:(id)target selector:(SEL)action;
 + (UIBarButtonItem *)barButtonItemWithImage:(UIImage *)image frame:(CGRect)frame target:(id)target selector:(SEL)action;
 + (UIBarButtonItem *)closeBarButtonItemWithTitleColor:(UIColor *)titleColor target:(id)target selector:(SEL)action;
-
++ (UIBarButtonItem *)barButtonItemWithTitle:(NSString *)title titleColor:(UIColor *)titleColor target:(id)object selector:(SEL)action;
 @end
