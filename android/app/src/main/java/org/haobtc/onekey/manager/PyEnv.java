@@ -525,6 +525,7 @@ public final class PyEnv {
         PyResponse<AllWalletBalanceInfoDTO> pyResponse = new PyResponse<>();
         try {
             String info = sCommands.callAttr("get_all_wallet_balance").toString();
+            Logger.json(info);
             AllWalletBalanceInfoDTO allWalletBalanceInfoDTO =
                     new Gson().fromJson(info, AllWalletBalanceInfoDTO.class);
             pyResponse.setResult(allWalletBalanceInfoDTO);

@@ -8,7 +8,8 @@ data class WalletBalanceBean(
     val balanceFiat: String?,
     val balanceFiaUnit: String?,
     val tokens: List<TokenBalanceBean> = arrayListOf(),
-    val name: String
+    val name: String,
+    val walletName: String
 )
 
 interface TokenBalanceBean {
