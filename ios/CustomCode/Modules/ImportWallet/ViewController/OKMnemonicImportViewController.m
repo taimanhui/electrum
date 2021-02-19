@@ -9,6 +9,7 @@
 #import "OKMnemonicImportViewController.h"
 #import "OKSetWalletNameViewController.h"
 #import "OKWordImportView.h"
+#import "OKBTCAddressTypeSelectController.h"
 
 @interface OKMnemonicImportViewController ()
 
@@ -39,14 +40,35 @@
         [kTools tipMessage:MyLocalizedString(@"Please fill in the mnemonic", nil)];
         return;
     }
-  
+
     id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":[self.wordInputView.wordsArr componentsJoinedByString:@" "],@"flag":@"seed"}];
     if (result != nil) {
-        OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
-        setNameVc.addType = OKAddTypeImportSeed;
-        setNameVc.where = OKWhereToSelectTypeWalletList;
-        setNameVc.seed = [self.wordInputView.wordsArr componentsJoinedByString:@" "];
-        [self.navigationController pushViewController:setNameVc animated:YES];
+        [self getAddressType:^(OKBTCAddressType btcAddressType) {
+            OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
+            setNameVc.addType = OKAddTypeImportSeed;
+            setNameVc.where = OKWhereToSelectTypeWalletList;
+            setNameVc.seed = [self.wordInputView.wordsArr componentsJoinedByString:@" "];
+            setNameVc.btcAddressType = btcAddressType;
+            [self.navigationController pushViewController:setNameVc animated:YES];
+        }];
     }
+}
+
+- (void)getAddressType:(void(^)(OKBTCAddressType btcAddressType))callback {
+    if (!callback) { return; }
+
+    NSString *coinType = self.coinType.lowercaseString;
+    if (![coinType isEqualToString:@"btc"]) {
+        callback(OKBTCAddressTypeNotBTC);
+        return;
+    }
+
+    OKWeakSelf(self)
+    OKBTCAddressTypeSelectController *vc = [OKBTCAddressTypeSelectController viewControllerWithStoryboard];
+    vc.callback = ^(OKBTCAddressType type) {
+        [weakself.navigationController dismissViewControllerAnimated:YES completion:nil];
+        callback(type);
+    };
+    [self.navigationController presentViewController:vc animated:YES completion:nil];
 }
 @end

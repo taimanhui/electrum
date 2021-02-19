@@ -62,6 +62,13 @@ typedef enum {
     OKWalletTypeObserve             //观察钱包
 }OKWalletType;
 
+// BTC 地址类型
+typedef NS_ENUM(NSInteger, OKBTCAddressType) {
+    OKBTCAddressTypeNotBTC = 0,          // 非 BTC 地址
+    OKBTCAddressTypeNormal = 44,         // 普通地址，以 1 开头
+    OKBTCAddressTypeSegwit = 49,         // 兼容隔离见证地址，以 3 开头
+    OKBTCAddressTypeNativeSegwit = 84,   // 原生隔离见证地址，以 bc1 开头
+};
 
 
 //创建和导入的钱包类型

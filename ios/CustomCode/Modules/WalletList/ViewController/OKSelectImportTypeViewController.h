@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKSelectImportTypeViewController : BaseViewController
+@property (nonatomic,copy)NSString *coinType;
 + (instancetype)selectImportTypeViewController;
 @end
 
