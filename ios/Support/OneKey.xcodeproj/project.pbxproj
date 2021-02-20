@@ -462,6 +462,8 @@
 		B03A1A4425C90835004137F1 /* OKPINInputMethodController.m in Sources */ = {isa = PBXBuildFile; fileRef = B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */; };
 		B03A1A4725C91601004137F1 /* OKPINInputMethodCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */; };
 		B03A1A4825C91601004137F1 /* OKPINInputMethodCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B03A1A4625C91601004137F1 /* OKPINInputMethodCell.m */; };
+		B04F6E0825DE573500FF377E /* OKBTCAddressTypeSelectController.h in Headers */ = {isa = PBXBuildFile; fileRef = B04F6E0625DE573500FF377E /* OKBTCAddressTypeSelectController.h */; };
+		B04F6E0925DE573500FF377E /* OKBTCAddressTypeSelectController.m in Sources */ = {isa = PBXBuildFile; fileRef = B04F6E0725DE573500FF377E /* OKBTCAddressTypeSelectController.m */; };
 		B058D8A325B55662000EB27C /* OKResetDeviceWarningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */; };
 		B058D8A425B55663000EB27C /* OKDeviceListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88425B55662000EB27C /* OKDeviceListViewController.m */; };
 		B058D8A525B55663000EB27C /* OKDeviceListCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D88525B55662000EB27C /* OKDeviceListCellModel.h */; };
@@ -1040,6 +1042,9 @@
 		B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKPINInputMethodController.m; sourceTree = "<group>"; };
 		B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKPINInputMethodCell.h; sourceTree = "<group>"; };
 		B03A1A4625C91601004137F1 /* OKPINInputMethodCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKPINInputMethodCell.m; sourceTree = "<group>"; };
+		B04F6E0525DE09C400FF377E /* OneKey.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneKey.entitlements; sourceTree = "<group>"; };
+		B04F6E0625DE573500FF377E /* OKBTCAddressTypeSelectController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKBTCAddressTypeSelectController.h; sourceTree = "<group>"; };
+		B04F6E0725DE573500FF377E /* OKBTCAddressTypeSelectController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKBTCAddressTypeSelectController.m; sourceTree = "<group>"; };
 		B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKResetDeviceWarningViewController.m; sourceTree = "<group>"; };
 		B058D88425B55662000EB27C /* OKDeviceListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceListViewController.m; sourceTree = "<group>"; };
 		B058D88525B55662000EB27C /* OKDeviceListCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceListCellModel.h; sourceTree = "<group>"; };
@@ -1223,6 +1228,7 @@
 		60796EEB19190F4100A9926B /* OneKey */ = {
 			isa = PBXGroup;
 			children = (
+				B04F6E0525DE09C400FF377E /* OneKey.entitlements */,
 				BA578E2E25ACA68700EFE0AA /* Images.xcassets */,
 				60F0BABF191FC868006EC268 /* app_packages */,
 				60796EEC19190F4100A9926B /* Supporting Files */,
@@ -1971,18 +1977,18 @@
 		881423F025B18EAA00961668 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				881423F125B18EAA00961668 /* OKSelectCoinTypeTableViewCellModel.m */,
 				881423F225B18EAA00961668 /* OKCreateSelectWalletTypeModel.h */,
+				881423F725B18EAA00961668 /* OKCreateSelectWalletTypeModel.m */,
+				881423F625B18EAA00961668 /* OKSelectCellModel.h */,
+				881423FA25B18EAA00961668 /* OKSelectCellModel.m */,
+				881423F825B18EAA00961668 /* OKSelectCoinTypeTableViewCellModel.h */,
+				881423F125B18EAA00961668 /* OKSelectCoinTypeTableViewCellModel.m */,
+				881423F925B18EAA00961668 /* OKWalletListCollectionViewCellModel.h */,
 				881423F325B18EAA00961668 /* OKWalletListCollectionViewCellModel.m */,
 				881423F425B18EAA00961668 /* OKWalletListNoHDTableViewCellModel.h */,
-				881423F525B18EAA00961668 /* OKWalletListTableViewCellModel.h */,
-				881423F625B18EAA00961668 /* OKSelectCellModel.h */,
-				881423F725B18EAA00961668 /* OKCreateSelectWalletTypeModel.m */,
-				881423F825B18EAA00961668 /* OKSelectCoinTypeTableViewCellModel.h */,
-				881423F925B18EAA00961668 /* OKWalletListCollectionViewCellModel.h */,
-				881423FA25B18EAA00961668 /* OKSelectCellModel.m */,
-				881423FB25B18EAA00961668 /* OKWalletListTableViewCellModel.m */,
 				881423FC25B18EAA00961668 /* OKWalletListNoHDTableViewCellModel.m */,
+				881423F525B18EAA00961668 /* OKWalletListTableViewCellModel.h */,
+				881423FB25B18EAA00961668 /* OKWalletListTableViewCellModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1990,20 +1996,20 @@
 		881423FD25B18EAA00961668 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				881423FE25B18EAA00961668 /* OKWalletListCollectionViewCell.h */,
-				881423FF25B18EAA00961668 /* OKWalletListBottomBtn.m */,
-				8814240025B18EAA00961668 /* OKWalletListNoHDTableViewCell.m */,
+				8814240925B18EAA00961668 /* OKCreateSelectWalletTypeCell.h */,
 				8814240125B18EAA00961668 /* OKCreateSelectWalletTypeCell.m */,
-				8814240225B18EAA00961668 /* OKSelectTableViewCell.m */,
-				8814240325B18EAA00961668 /* OKWalletListTableViewCell.m */,
+				8814240A25B18EAA00961668 /* OKSelectCoinTypeTableViewCell.h */,
 				8814240425B18EAA00961668 /* OKSelectCoinTypeTableViewCell.m */,
+				8814240825B18EAA00961668 /* OKSelectTableViewCell.h */,
+				8814240225B18EAA00961668 /* OKSelectTableViewCell.m */,
+				8814240725B18EAA00961668 /* OKWalletListBottomBtn.h */,
+				881423FF25B18EAA00961668 /* OKWalletListBottomBtn.m */,
+				881423FE25B18EAA00961668 /* OKWalletListCollectionViewCell.h */,
 				8814240525B18EAA00961668 /* OKWalletListCollectionViewCell.m */,
 				8814240625B18EAA00961668 /* OKWalletListNoHDTableViewCell.h */,
-				8814240725B18EAA00961668 /* OKWalletListBottomBtn.h */,
-				8814240825B18EAA00961668 /* OKSelectTableViewCell.h */,
-				8814240925B18EAA00961668 /* OKCreateSelectWalletTypeCell.h */,
-				8814240A25B18EAA00961668 /* OKSelectCoinTypeTableViewCell.h */,
+				8814240025B18EAA00961668 /* OKWalletListNoHDTableViewCell.m */,
 				8814240B25B18EAA00961668 /* OKWalletListTableViewCell.h */,
+				8814240325B18EAA00961668 /* OKWalletListTableViewCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -2011,21 +2017,23 @@
 		8814240C25B18EAA00961668 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				8814240D25B18EAA00961668 /* WalletList.storyboard */,
-				8814240E25B18EAA00961668 /* OKSelectImportTypeViewController.h */,
 				8814240F25B18EAA00961668 /* OKAddBottomViewController.h */,
-				8814241025B18EAA00961668 /* OKWalletListViewController.m */,
-				8814241125B18EAA00961668 /* OKCreateSelectWalletTypeController.h */,
-				8814241225B18EAA00961668 /* OKTipsViewController.h */,
-				8814241325B18EAA00961668 /* OKSelectCoinTypeViewController.h */,
-				8814241425B18EAA00961668 /* OKSetWalletNameViewController.m */,
-				8814241525B18EAA00961668 /* OKSelectImportTypeViewController.m */,
-				8814241625B18EAA00961668 /* OKSelectCoinTypeViewController.m */,
-				8814241725B18EAA00961668 /* OKTipsViewController.m */,
-				8814241825B18EAA00961668 /* OKCreateSelectWalletTypeController.m */,
-				8814241925B18EAA00961668 /* OKWalletListViewController.h */,
 				8814241A25B18EAA00961668 /* OKAddBottomViewController.m */,
+				B04F6E0625DE573500FF377E /* OKBTCAddressTypeSelectController.h */,
+				B04F6E0725DE573500FF377E /* OKBTCAddressTypeSelectController.m */,
+				8814241125B18EAA00961668 /* OKCreateSelectWalletTypeController.h */,
+				8814241825B18EAA00961668 /* OKCreateSelectWalletTypeController.m */,
+				8814241325B18EAA00961668 /* OKSelectCoinTypeViewController.h */,
+				8814241625B18EAA00961668 /* OKSelectCoinTypeViewController.m */,
+				8814240E25B18EAA00961668 /* OKSelectImportTypeViewController.h */,
+				8814241525B18EAA00961668 /* OKSelectImportTypeViewController.m */,
 				8814241B25B18EAA00961668 /* OKSetWalletNameViewController.h */,
+				8814241425B18EAA00961668 /* OKSetWalletNameViewController.m */,
+				8814241225B18EAA00961668 /* OKTipsViewController.h */,
+				8814241725B18EAA00961668 /* OKTipsViewController.m */,
+				8814241925B18EAA00961668 /* OKWalletListViewController.h */,
+				8814241025B18EAA00961668 /* OKWalletListViewController.m */,
+				8814240D25B18EAA00961668 /* WalletList.storyboard */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -2355,6 +2363,7 @@
 				39DE42A3930B14748D009F40 /* NSDictionary+OneKey.h in Headers */,
 				881424A325B18EAA00961668 /* OKNetworkViewController.h in Headers */,
 				8814247225B18EAA00961668 /* InternalApis.h in Headers */,
+				B04F6E0825DE573500FF377E /* OKBTCAddressTypeSelectController.h in Headers */,
 				8814256725B18EAA00961668 /* OKCreateSelectWalletTypeModel.h in Headers */,
 				881424D525B18EAA00961668 /* OKAllAssetsTableViewCellModel.h in Headers */,
 				6BDF47D5862FBD1B0521C6EA /* UIImage+OneKey.h in Headers */,
@@ -2727,6 +2736,7 @@
 				8814256625B18EAA00961668 /* OKSelectCoinTypeTableViewCellModel.m in Sources */,
 				8814255325B18EAA00961668 /* OKYouareDoneViewController.m in Sources */,
 				8814251F25B18EAA00961668 /* OKLookWalletTipsViewController.m in Sources */,
+				B04F6E0925DE573500FF377E /* OKBTCAddressTypeSelectController.m in Sources */,
 				B058D8AE25B55663000EB27C /* OKDeviceVerifyController.m in Sources */,
 				B016510825BFE0810037C6B4 /* OKDeviceShowXPUBController.m in Sources */,
 				49ED4D5CBEE7C1D01849C28E /* NSString+OKAdd.m in Sources */,
@@ -3017,6 +3027,7 @@
 					arm64,
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = OneKey/OneKey.entitlements;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 4000003;
 				DEVELOPMENT_TEAM = 6M2QF4T7XG;
@@ -3113,6 +3124,7 @@
 					arm64,
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = OneKey/OneKey.entitlements;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 4000003;
 				DEVELOPMENT_TEAM = 6M2QF4T7XG;
