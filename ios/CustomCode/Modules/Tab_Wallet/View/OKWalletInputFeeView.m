@@ -47,12 +47,12 @@
         inputView.sizeTF.text = dsize;
     }
     [[NSNotificationCenter defaultCenter] addObserver:inputView selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:inputView
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:inputView
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
@@ -85,7 +85,7 @@
         [kTools tipMessage:MyLocalizedString(@"The rate is lower than the minimum for the current network. Please reenter", nil)];
         return;
     }
-    
+
     if (self.sureBlock) {
         self.sureBlock(self.customFeeDict,self.fiatCustom,self.feeTF.text);
         [self closeBtnClick:nil];
@@ -139,7 +139,7 @@
         self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
     }else{
         self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
-        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
+        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@ ≈ %@%@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit,kWalletManager.currentFiatSymbol,self.fiatCustom];
         self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
     }
 }
