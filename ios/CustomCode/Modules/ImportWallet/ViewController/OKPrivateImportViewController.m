@@ -8,6 +8,7 @@
 
 #import "OKPrivateImportViewController.h"
 #import "OKSetWalletNameViewController.h"
+#import "OKBTCAddressTypeSelectController.h"
 
 @interface OKPrivateImportViewController ()<UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
@@ -49,15 +50,36 @@
         [kTools tipMessage:MyLocalizedString(@"The private key cannot be empty", nil)];
         return;
     }
-    
+
     id reult =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"private"}];
     if (reult != nil) {
-        OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
-        setNameVc.addType = self.importType;
-        setNameVc.privkeys = self.textView.text;
-        setNameVc.where = OKWhereToSelectTypeWalletList;
-        [self.navigationController pushViewController:setNameVc animated:YES];
+        [self getAddressType:^(OKBTCAddressType btcAddressType) {
+            OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
+            setNameVc.addType = self.importType;
+            setNameVc.privkeys = self.textView.text;
+            setNameVc.where = OKWhereToSelectTypeWalletList;
+            setNameVc.btcAddressType = btcAddressType;
+            [self.navigationController pushViewController:setNameVc animated:YES];
+        }];
     }
+}
+
+- (void)getAddressType:(void(^)(OKBTCAddressType btcAddressType))callback {
+    if (!callback) { return; }
+
+    NSString *coinType = self.coinType.lowercaseString;
+    if (![coinType isEqualToString:@"btc"]) {
+        callback(OKBTCAddressTypeNotBTC);
+        return;
+    }
+
+    OKWeakSelf(self)
+    OKBTCAddressTypeSelectController *vc = [OKBTCAddressTypeSelectController viewControllerWithStoryboard];
+    vc.callback = ^(OKBTCAddressType type) {
+        [weakself.navigationController dismissViewControllerAnimated:YES completion:nil];
+        callback(type);
+    };
+    [self.navigationController presentViewController:vc animated:YES completion:nil];
 }
 
 #pragma mark - 扫描二维码
@@ -107,7 +129,7 @@
             }
         }
     }
-    
+
     return YES;
 }
 

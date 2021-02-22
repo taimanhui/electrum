@@ -117,28 +117,41 @@
 {
     OKWeakSelf(self)
     __block NSDictionary* create = nil;
+
+    NSMutableDictionary *params = [@{
+        @"name": self.walletNameTextfield.text ?: @"",
+        @"password": pwd ?: @"",
+        @"coin": [self.coinType lowercaseString] ?: @"btc",
+        @"purpose": @(self.btcAddressType)
+    } mutableCopy];
     switch (weakself.addType) {
         case OKAddTypeCreateHDDerived:
         {
-            create = [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
+            create = [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:params];
             [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
         }
             break;
         case OKAddTypeCreateSolo:
         {
-            create = [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
+            create = [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:params];
             [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
         }
             break;
         case OKAddTypeImportPrivkeys:
         {
-            create = [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
+            [params addEntriesFromDictionary:@{
+                @"privkeys":self.privkeys
+            }];
+            create = [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:params];
             [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
         }
             break;
         case OKAddTypeImportSeed:
         {
-            create =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"seed":self.seed}];
+            [params addEntriesFromDictionary:@{
+                @"seed":self.seed
+            }];
+            create =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:params];
             [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
         }
             break;
@@ -148,7 +161,7 @@
             [OKHwNotiManager  sharedInstance].delegate = self;
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
-               NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{}];
+               NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{@"purpose": @(self.btcAddressType)}];
                 if (xpub == nil) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [self.OK_TopViewController dismissViewControllerWithCount:1 animated:YES complete:^{

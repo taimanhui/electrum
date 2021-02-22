@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 //添加类型
 @property (nonatomic,assign)OKAddType addType;
 @property (nonatomic,assign)OKWhereToSelectType where;
+@property (nonatomic,assign)OKBTCAddressType btcAddressType;
 @property (nonatomic,copy)NSString *coinType;
 @property (nonatomic,copy)NSString *privkeys;
 @property (nonatomic,copy)NSString *address;

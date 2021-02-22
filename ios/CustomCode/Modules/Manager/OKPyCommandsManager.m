@@ -73,33 +73,92 @@ static dispatch_once_t once;
 
 
     }else if([method isEqualToString:kInterfaceCreate_hd_wallet]){
+
+//        def create_hd_wallet(
+//            self, password, seed=None, passphrase="", purpose=84, strength=128, create_coin=json.dumps(["btc"])
+//        ):
+//            """
+//            Create hd wallet
+//            :param password: password as str
+//            :param seed: import create hd wallet if seed is not None
+//            :param purpose: 84/44/49 only for btc
+//            :param strength: Length of the　Mnemonic word as (128/256)
+//            :param create_coin: List of wallet types to be created like "["btc","eth"]"
+//            :return: json like {'seed':''
+//                                'wallet_info':''
+//                                'derived_info':''}
+//            """
         NSString *password = [parameter safeStringForKey:@"password"];
         NSString *seed = [parameter safeStringForKey:@"seed"];
-        if (seed == NULL || seed.length == 0) {
-            result = PyObject_CallMethod(self.pyInstance, [kInterfaceCreate_hd_wallet UTF8String], "(s)",[password UTF8String]);
-        }else{
-            result = PyObject_CallMethod(self.pyInstance, [kInterfaceCreate_hd_wallet UTF8String], "(s,s)",[password UTF8String],[seed UTF8String]);
-        }
+        NSInteger purpose = [[parameter objectForKey:@"purpose"] integerValue];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceCreate_hd_wallet UTF8String], "(s,s,s,i)", [password UTF8String], seed.length ? [seed UTF8String] : NULL , "", purpose ?: 84);
+
 
     }else if([method isEqualToString:kInterfaceCreate_derived_wallet]){
         NSString *name = [parameter safeStringForKey:@"name"];
         NSString *password = [parameter safeStringForKey:@"password"];
         NSString *coin = [parameter safeStringForKey:@"coin"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceCreate_derived_wallet UTF8String], "(s,s,s)",[name UTF8String],[password UTF8String],[coin UTF8String]);
+        NSInteger purpose = [[parameter objectForKey:@"purpose"] integerValue];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceCreate_derived_wallet UTF8String], "(s,s,s,i)",[name UTF8String],[password UTF8String],[coin UTF8String],purpose ?: 84);
 
 
     }else if([method isEqualToString:kInterfaceCreate_create]){
+//        def create(  # noqa
+//            self,
+//            name,
+//            password=None,
+//            seed_type="segwit",
+//            seed=None,
+//            passphrase="",
+//            bip39_derivation=None,
+//            master=None,
+//            addresses=None,
+//            privkeys=None,
+//            hd=False,
+//            purpose=49,
+//            coin="btc",
+//            keystores=None,
+//            keystore_password=None,
+//            strength=128,
+//        ):
+//            """
+//            Create or restore a new wallet
+//            :param name: Wallet name as string
+//            :param password: Password ans string
+//            :param seed_type: Not for now
+//            :param seed: Mnemonic word as string
+//            :param passphrase:Customised passwords as string
+//            :param bip39_derivation:Not for now
+//            :param master:Not for now
+//            :param addresses:To create a watch-only wallet you need
+//            :param privkeys:To create a wallet with a private key you need
+//            :param hd:Not for app
+//            :param purpose:BTC address type as (44/49/84), for BTC only
+//            :param coin:"btc"/"eth" as string to specify whether to create a BTC/ETH wallet
+//            :param keystores:as string for ETH only
+//            :param strength:Length of the　Mnemonic word as (128/256)
+//            :return: json like {'seed':''
+//                                'wallet_info':''
+//                                'derived_info':''}
         NSString *name = [parameter safeStringForKey:@"name"];
         NSString *password = [parameter safeStringForKey:@"password"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceCreate_create UTF8String], "(s,s)",[name UTF8String],[password UTF8String]);
+        NSString *coin = [parameter safeStringForKey:@"coin"];
+        NSInteger purpose = [[parameter objectForKey:@"purpose"] integerValue];
+
+        PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s,s:s,s:i}", "password", [password UTF8String],"coin",[coin UTF8String], "purpose", purpose ?: 49);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceCreate_create UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
 
     }else if([method isEqualToString:kInterfaceImport_Privkeys]){
         NSString *name = [parameter safeStringForKey:@"name"];
         NSString *password = [parameter safeStringForKey:@"password"];
         NSString *privkeys = [parameter safeStringForKey:@"privkeys"];
+        NSInteger purpose = [[parameter objectForKey:@"purpose"] integerValue];
         PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:s,s:s}", "password", [password UTF8String],"privkeys",[privkeys UTF8String]);
+        kwargs = Py_BuildValue("{s:s,s:s,s:i}", "password", [password UTF8String],"privkeys",[privkeys UTF8String], "purpose", purpose ?: 49);
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceCreate_create UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
 
@@ -108,9 +167,10 @@ static dispatch_once_t once;
         NSString *name = [parameter safeStringForKey:@"name"];
         NSString *password = [parameter safeStringForKey:@"password"];
         NSString *seed = [parameter safeStringForKey:@"seed"];
+        NSInteger purpose = [[parameter objectForKey:@"purpose"] integerValue];
         PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:s,s:s}", "password", [password UTF8String],"seed",[seed UTF8String]);
+        kwargs = Py_BuildValue("{s:s,s:s,s:i}", "password", [password UTF8String],"seed",[seed UTF8String], "purpose", purpose ?: 49);
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceCreate_create UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
 
@@ -391,8 +451,23 @@ static dispatch_once_t once;
 
 
     }else if([method isEqualToString:kInterfacecreate_hw_derived_wallet]){
+//        def create_hw_derived_wallet(self, path="android_usb", _type="p2wpkh", is_creating=True, coin="btc"):
+//            """
+//            Create derived wallet by hardware, used by hardware
+//            :param path: NFC/android_usb/bluetooth as string
+//            :param _type: p2wsh/p2wsh/p2pkh/p2wpkh-p2sh as string
+//            :coin: btc/eth as string
+//            :return: xpub as string
+//            """
         NSString *path = kBluetooth_iOS;
-        result = PyObject_CallMethod(self.pyInstance, [kInterfacecreate_hw_derived_wallet UTF8String], "(s)",[path UTF8String]);
+        NSInteger purpose = [[parameter objectForKey:@"purpose"] integerValue];
+        NSString *type = @"p2wpkh";
+        if (purpose == OKBTCAddressTypeNormal) {
+            type = @"p2pkh";
+        } else if (purpose == OKBTCAddressTypeSegwit) {
+            type = @"p2wpkh-p2sh";
+        }
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacecreate_hw_derived_wallet UTF8String], "(s,s)",[path UTF8String],[type UTF8String]);
 
     }else if ([method isEqualToString:kInterfaceimport_create_hw_wallet]){
         NSString *name = [parameter safeStringForKey:@"name"];

@@ -2,6 +2,7 @@ package org.haobtc.onekey.adapter
 
 import android.content.Context
 import android.text.TextUtils
+import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
@@ -10,20 +11,22 @@ import org.haobtc.onekey.R
 import org.haobtc.onekey.business.wallet.SystemConfigManager
 import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean
 import org.haobtc.onekey.constant.Vm.CoinType
+import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity
+import org.haobtc.onekey.viewmodel.AppWalletViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class HdWalletAssetAdapter(context: Context, data: List<WalletBalanceBean?>?) : BaseQuickAdapter<WalletBalanceBean, BaseViewHolder>(R.layout.all_assets_item, data) {
+class HdWalletAssetAdapter(context: Context, appViewModel: AppWalletViewModel, data: List<WalletBalanceBean?>?) : BaseQuickAdapter<WalletBalanceBean, BaseViewHolder>(R.layout.all_assets_item, data) {
   private val mSystemConfigManager by lazy {
     SystemConfigManager(context.applicationContext)
   }
+  val model = appViewModel
 
   override fun convert(helper: BaseViewHolder, item: WalletBalanceBean) {
     val drawable = when (item.coinType) {
       CoinType.BTC -> ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_btc, null)
       CoinType.ETH -> ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_eth, null)
     }
-
     val balance = if (!TextUtils.isEmpty(item.balance) && !item.balance.equals("0")) {
       BigDecimal(item.balance)
           .setScale(8, RoundingMode.DOWN)
@@ -42,6 +45,19 @@ class HdWalletAssetAdapter(context: Context, data: List<WalletBalanceBean?>?) : 
     }
     if (!Strings.isNullOrEmpty(strFiat)) {
       helper.setText(R.id.text_fiat, "≈ " + mSystemConfigManager.currentFiatSymbol + " " + strFiat)
+    }
+    helper.getView<View>(R.id.back_layout).setOnClickListener {
+      if (!Strings.isNullOrEmpty(item.label)) {
+        model.changeCurrentWallet(item.label)
+        TransactionDetailWalletActivity.start(
+            mContext,
+            "",
+            "≈ " + mSystemConfigManager.currentFiatSymbol + " " + strFiat,
+            item.name,
+            item.coinType.coinName,
+            null,
+            null)
+      }
     }
 
   }

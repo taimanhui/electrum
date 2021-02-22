@@ -55,9 +55,9 @@
     if (cell == nil) {
         cell = [[OKSelectCoinTypeTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
-    
+
     cell.model = self.coinTypeListArray[indexPath.row];
-    
+
     return cell;
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -67,6 +67,7 @@
         {
             OKPrivateImportViewController *privateImportVc = [OKPrivateImportViewController privateImportViewController];
             privateImportVc.importType = OKAddTypeImportPrivkeys;
+            privateImportVc.coinType = self.coinType;
             [self.navigationController pushViewController:privateImportVc animated:YES];
         }
             break;
@@ -74,6 +75,7 @@
         {
             OKMnemonicImportViewController *mnemonicImportVc = [OKMnemonicImportViewController mnemonicImportViewController];
             mnemonicImportVc.importType = OKAddTypeImportSeed;
+            mnemonicImportVc.coinType = self.coinType;
             [self.navigationController pushViewController:mnemonicImportVc animated:YES];
         }
             break;
@@ -91,7 +93,7 @@
             [self.navigationController pushViewController:observeImportVc animated:YES];
         }
             break;
-            
+
         default:
             break;
     }
@@ -100,23 +102,23 @@
 - (NSArray *)coinTypeListArray
 {
     if (!_coinTypeListArray) {
-        
+
         OKSelectCoinTypeTableViewCellModel *model = [OKSelectCoinTypeTableViewCellModel new];
         model.titleString = MyLocalizedString(@"Private key import (direct input or scan)", nil);
         model.iconName = @"private_key_import";
-        
+
         OKSelectCoinTypeTableViewCellModel *model1 = [OKSelectCoinTypeTableViewCellModel new];
         model1.titleString = MyLocalizedString(@"Mnemonic import", nil);
         model1.iconName = @"memo_import";
-        
+
 //        OKSelectCoinTypeTableViewCellModel *model2 = [OKSelectCoinTypeTableViewCellModel new];
 //        model2.titleString = MyLocalizedString(@"Keystore import", nil);
 //        model2.iconName = @"keystore_import";
-        
+
         OKSelectCoinTypeTableViewCellModel *model3 = [OKSelectCoinTypeTableViewCellModel new];
         model3.titleString = MyLocalizedString(@"Observe the purse", nil);
         model3.iconName = @"watch_only_wallet";
-        
+
         _coinTypeListArray = @[model,model1,model3];
     }
     return _coinTypeListArray;

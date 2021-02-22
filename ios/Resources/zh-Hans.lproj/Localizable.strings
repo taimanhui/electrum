@@ -503,3 +503,18 @@
 "Save" = "保存";
 "Save Success" = "保存成功";
 "Save Failed" = "保存失败";
+
+"wallet.btc.selectAddrType" = "选择 BTC 地址类型";
+"wallet.btc.selectAddrTypeTip" = "地址类型选择后无法更改，推荐使用兼容隔离见证 SegWit。";
+"wallet.btc.segwit" = "兼容隔离见证 SegWit";
+"wallet.btc.segwitDesc" = "以 3 开头，广泛普及，转账手续费较低";
+"wallet.btc.nativeSegwit" = "原生隔离见证 Native SegWit";
+"wallet.btc.nativeSegwitDesc" = "以 bc1 开头，正在普及，转账手续费最低";
+"wallet.btc.normalAddr" = "普通地址 Legacy";
+"wallet.btc.normalAddrDesc" = "以 1 开头，全面普及，转账手续费中等";
+
+"cs" = "客服";
+"cs.title" = "客户支持";
+"cs.ticket" = "工单";
+"cs.ticket.submit" = "提交工单";
+"cs.ticket.history" = "查看历史工单";

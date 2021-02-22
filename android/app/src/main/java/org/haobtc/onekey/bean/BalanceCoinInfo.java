@@ -11,10 +11,23 @@ import com.google.gson.annotations.SerializedName;
 public class BalanceCoinInfo {
     @SerializedName("balance")
     private String balance = "0.00";
+
     @SerializedName("coin")
     private String coin = "btc";
+
     @SerializedName("fiat")
     private String fiat = "0.00 USD";
+
+    @SerializedName("wallet_name")
+    private String walletName = "";
+
+    public String getWalletName() {
+        return walletName;
+    }
+
+    public void setWalletName(String walletName) {
+        this.walletName = walletName;
+    }
 
     public String getBalance() {
         return balance;

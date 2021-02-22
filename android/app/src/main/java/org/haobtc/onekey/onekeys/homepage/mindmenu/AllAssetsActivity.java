@@ -6,6 +6,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.adapter.HdWalletAssetAdapter;
 import org.haobtc.onekey.bean.AllWalletBalanceBean;
 import org.haobtc.onekey.bean.PyResponse;
@@ -28,7 +30,7 @@ import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
 import org.haobtc.onekey.exception.HardWareExceptions;
-import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 public class AllAssetsActivity extends BaseActivity implements TextWatcher {
 
@@ -45,10 +47,13 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     TextView tetNone;
 
     private List<WalletBalanceBean> walletInfo;
-    private ArrayList<WalletBalanceBean> searchList;
+    private ArrayList<WalletBalanceBean> mAdapterDatas;
     private SystemConfigManager mSystemConfigManager;
     private BalanceManager mBalanceManager;
     private Disposable mLoadDisposable;
+    private AppWalletViewModel mAppWalletViewModel;
+    private HdWalletAssetAdapter hdWalletAssetAdapter;
+    private ArrayList<WalletBalanceBean> mTempList;
 
     @Override
     public int getLayoutId() {
@@ -60,12 +65,19 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
         ButterKnife.bind(this);
         mSystemConfigManager = new SystemConfigManager(this);
         mBalanceManager = new BalanceManager();
+
         editSearch.addTextChangedListener(this);
     }
 
     @Override
     public void initData() {
-        searchList = new ArrayList<>();
+        mAppWalletViewModel =
+                new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
+        mAdapterDatas = new ArrayList<>();
+        mTempList = new ArrayList<>();
+        hdWalletAssetAdapter =
+                new HdWalletAssetAdapter(mContext, mAppWalletViewModel, mAdapterDatas);
+        reclAssets.setAdapter(hdWalletAssetAdapter);
         reclAssets.setNestedScrollingEnabled(false);
         // get all wallet
         getAllWalletList();
@@ -111,20 +123,8 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                                             testAllAssets.setText(
                                                     String.format("%s %s", currencySymbol, money));
                                             walletInfo = allWalletBalance.getWalletInfo();
-                                            HdWalletAssetAdapter hdWalletAssetAdapter =
-                                                    new HdWalletAssetAdapter(
-                                                            getBaseContext(), walletInfo);
-                                            reclAssets.setAdapter(hdWalletAssetAdapter);
-                                            hdWalletAssetAdapter.setOnItemClickListener(
-                                                    (adapter, view, position) -> {
-                                                        WalletBalanceBean walletBalanceBean =
-                                                                (WalletBalanceBean)
-                                                                        adapter.getData()
-                                                                                .get(position);
-                                                        String name = walletBalanceBean.getName();
-                                                        HdWalletDetailActivity.start(
-                                                                mContext, name);
-                                                    });
+                                            mAdapterDatas.addAll(walletInfo);
+                                            hdWalletAssetAdapter.notifyDataSetChanged();
                                         }
                                     } else {
                                         tetNone.setVisibility(View.VISIBLE);
@@ -155,21 +155,19 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        searchList.clear();
+        mAdapterDatas.clear();
+        mTempList.clear();
         if (!TextUtils.isEmpty(s.toString()) && walletInfo != null && walletInfo.size() > 0) {
             for (int i = 0; i < walletInfo.size(); i++) {
                 if (walletInfo.get(i).getName().startsWith(s.toString())) {
-                    searchList.add(walletInfo.get(i));
+                    mTempList.add(walletInfo.get(i));
                 }
             }
-            HdWalletAssetAdapter hdWalletAssetAdapter =
-                    new HdWalletAssetAdapter(getBaseContext(), searchList);
-            reclAssets.setAdapter(hdWalletAssetAdapter);
+            mAdapterDatas.addAll(mTempList);
         } else {
-            HdWalletAssetAdapter hdWalletAssetAdapter =
-                    new HdWalletAssetAdapter(getBaseContext(), walletInfo);
-            reclAssets.setAdapter(hdWalletAssetAdapter);
+            mAdapterDatas.addAll(walletInfo);
         }
+        hdWalletAssetAdapter.notifyDataSetChanged();
     }
 
     @Override
