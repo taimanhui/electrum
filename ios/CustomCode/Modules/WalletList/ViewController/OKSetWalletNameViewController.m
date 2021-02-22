@@ -13,6 +13,7 @@
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKBiologicalViewController.h"
 #import "OKPINCodeViewController.h"
+#import "OKMatchingInCirclesViewController.h"
 
 
 @interface OKSetWalletNameViewController ()<UITextFieldDelegate,OKHwNotiManagerDelegate>
@@ -53,7 +54,7 @@
         [kTools tipMessage:MyLocalizedString(@"The wallet name cannot be empty", nil)];
         return;
     }
-    
+
     if (![kWalletManager checkWalletName:self.walletNameTextfield.text]) {
         [kTools tipMessage:MyLocalizedString(@"Wallet names cannot exceed 15 characters", nil)];
         return;
@@ -76,7 +77,7 @@
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
 
             [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
-                
+
             }];
             [weakself.navigationController popToRootViewControllerAnimated:YES];
         }
@@ -148,6 +149,19 @@
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{}];
+                if (xpub == nil) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.OK_TopViewController dismissViewControllerWithCount:1 animated:YES complete:^{
+                            for (int i = 0; i < weakself.navigationController.viewControllers.count; i++) {
+                                UIViewController *vc = weakself.navigationController.viewControllers[i];
+                                if ([vc isKindOfClass:[OKMatchingInCirclesViewController class]]) {
+                                    [weakself.navigationController popToViewController:vc animated:YES];
+                                }
+                            }
+                        }];
+                    });
+                    return;
+                }
                 NSArray *array = @[@[xpub,kOKBlueManager.currentDeviceID]];
                 NSString *xpubs = [array mj_JSONString];
                 create = [kPyCommandsManager callInterface:kInterfaceimport_create_hw_wallet parameter:@{@"name":name,@"m":@"1",@"n":@"1",@"xpubs":xpubs,@"hd":@"0"}];
