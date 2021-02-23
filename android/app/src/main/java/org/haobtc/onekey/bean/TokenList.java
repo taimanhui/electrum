@@ -19,6 +19,6 @@ public class TokenList {
         public int decimals;
         public String icon;
         public int rank;
-        public int isAdd = -1;
+        public boolean isAdd;
     }
 }

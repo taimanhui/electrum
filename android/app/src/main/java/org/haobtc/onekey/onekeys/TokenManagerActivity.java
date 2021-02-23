@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Strings;
 import com.orhanobut.logger.Logger;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -20,10 +21,12 @@ import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.adapter.HotTokenAdapter;
 import org.haobtc.onekey.adapter.MoreTokenAdapter;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TokenList;
 import org.haobtc.onekey.business.wallet.TokenManager;
 import org.haobtc.onekey.card.utils.JsonParseUtils;
 import org.haobtc.onekey.databinding.ActivityTokenManagerBinding;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.widget.EditTextSearch;
 import org.haobtc.onekey.ui.widget.WaveSideBarView;
@@ -75,7 +78,6 @@ public class TokenManagerActivity extends BaseActivity
                     @Override
                     public void onLetterChange(String letter) {
                         int letterIndex = getLetterIndex(moreTokens, letter);
-                        Logger.d("索引字母点击" + letter + "  定位的位置：" + letterIndex);
                         if (letterIndex > 0) {
                             mBinding.moreRecyclerview.smoothScrollToPosition(letterIndex);
                         }
@@ -109,7 +111,6 @@ public class TokenManagerActivity extends BaseActivity
                                 result -> {
                                     Logger.d("File upload Success:  " + result);
                                     String localTokenList = mTokenManager.getLocalTokenList();
-                                    Logger.d("读取文件：" + localTokenList);
                                 });
         mCompositeDisposable.add(disposable);
     }
@@ -149,19 +150,76 @@ public class TokenManagerActivity extends BaseActivity
 
     @Override
     public void onHotCheckedListener(TokenList.ERCToken item, boolean isChecked, int position) {
-        Logger.d("添加token" + item.isAdd);
         if (isChecked) {
-            //            PyResponse<String> response = PyEnv.addToken(item.symbol, item.address);
-            //            if (Strings.isNullOrEmpty(response.getResult())) {
-            //                Logger.d("添加token" + "成功");
-            //            } else {
-            //                Logger.d("添加token" + "失败");
-            //            }
+            addToken(item.symbol, item.address);
         } else {
-
+            deleteToken(item.address);
         }
     }
 
     @Override
-    public void onMoreCheckedListener(TokenList.ERCToken item, boolean isChecked, int position) {}
+    public void onMoreCheckedListener(TokenList.ERCToken item, boolean isChecked) {
+        List<TokenList.ERCToken> data = mHotTokenAdapter.getData();
+        for (TokenList.ERCToken datum : data) {
+            if (item.address.equals(datum.address)) {
+                datum.isAdd = isChecked;
+                if (!mHotRecyclerView.isComputingLayout()
+                        && RecyclerView.SCROLL_STATE_IDLE == mHotRecyclerView.getScrollState()) {
+                    mHotTokenAdapter.notifyDataSetChanged();
+                }
+                break;
+            }
+        }
+        if (isChecked) {
+            addToken(item.symbol, item.address);
+        } else {
+            deleteToken(item.address);
+        }
+    }
+
+    /**
+     * 添加token
+     *
+     * @param symbol
+     * @param address
+     */
+    private void addToken(String symbol, String address) {
+        Disposable disposable =
+                Observable.create(
+                                (ObservableOnSubscribe<PyResponse<String>>)
+                                        emitter -> {
+                                            PyResponse<String> response =
+                                                    PyEnv.addToken(symbol, address);
+                                            emitter.onNext(response);
+                                            emitter.onComplete();
+                                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    if (!Strings.isNullOrEmpty(result.getErrors())) {
+                                        mToast(result.getErrors());
+                                    }
+                                });
+        mCompositeDisposable.add(disposable);
+    }
+
+    /**
+     * 删除token
+     *
+     * @param address
+     */
+    private void deleteToken(String address) {
+        Disposable disposable =
+                Observable.create((ObservableOnSubscribe<PyResponse<String>>) emitter -> {})
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    if (!Strings.isNullOrEmpty(result.getErrors())) {
+                                        mToast(result.getErrors());
+                                    }
+                                });
+        mCompositeDisposable.add(disposable);
+    }
 }

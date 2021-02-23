@@ -1,6 +1,5 @@
 package org.haobtc.onekey.adapter;
 
-import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import androidx.annotation.Nullable;
@@ -34,27 +33,19 @@ public class MoreTokenAdapter extends BaseQuickAdapter<TokenList.ERCToken, BaseV
         String end = item.address.substring(item.address.length() - 8);
         helper.setText(
                 R.id.token_address, String.format(Locale.getDefault(), "%s...%s", start, end));
-
-        switchBtn.setChecked(item.isAdd == 0);
+        switchBtn.setOnCheckedChangeListener(null);
+        switchBtn.setChecked(item.isAdd);
         setAddData(item, backGround, position);
         switchBtn.setOnCheckedChangeListener(
-                new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked) {
-                            item.isAdd = 0;
-                        } else {
-                            item.isAdd = -1;
-                        }
-                        switchBtn.setTag(isChecked);
-                        setAddData(item, backGround, position);
-                        mOnMoreSwitchClick.onMoreCheckedListener(item, isChecked, position);
-                    }
+                (buttonView, isChecked) -> {
+                    item.isAdd = isChecked;
+                    setAddData(item, backGround, position);
+                    mOnMoreSwitchClick.onMoreCheckedListener(item, isChecked);
                 });
     }
 
     private void setAddData(TokenList.ERCToken item, RelativeLayout backGround, int position) {
-        if (item.isAdd == 0) {
+        if (item.isAdd) {
             if (position == 1) {
                 backGround.setBackgroundResource(R.drawable.top_round_shape_gray);
             } else if (position == mList.size()) {
@@ -74,6 +65,6 @@ public class MoreTokenAdapter extends BaseQuickAdapter<TokenList.ERCToken, BaseV
     }
 
     public interface onMoreSwitchClick {
-        void onMoreCheckedListener(TokenList.ERCToken item, boolean isChecked, int position);
+        void onMoreCheckedListener(TokenList.ERCToken item, boolean isChecked);
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="45dp"
     android:id="@+id/toolbar_base"
     android:background="@color/color_page_background"
     android:contentInsetStartWithNavigation="@dimen/dp_0"
