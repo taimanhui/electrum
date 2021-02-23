@@ -122,7 +122,7 @@ public class DetailTransactionActivity extends BaseActivity {
                                                                     new Kwarg(
                                                                             "coin",
                                                                             Vm.CoinType.BTC
-                                                                                    .coinName));
+                                                                                    .callFlag));
                                                 }
                                                 emitter.onNext(infoFromRaw);
                                                 emitter.onComplete();

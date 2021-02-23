@@ -38,8 +38,8 @@ import org.haobtc.onekey.utils.Daemon;
  */
 public class AccountManager {
 
-    private Context mContext;
-    private SharedPreferences mPreferencesSharedPreferences;
+    private final Context mContext;
+    private final SharedPreferences mPreferencesSharedPreferences;
 
     public AccountManager(Context context) {
         mContext = context.getApplicationContext();
@@ -225,7 +225,7 @@ public class AccountManager {
                                     "create_derived_wallet",
                                     walletName,
                                     walletPassword,
-                                    coinType.coinName,
+                                    coinType.callFlag,
                                     purpose)
                             .toString();
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
@@ -338,7 +338,7 @@ public class AccountManager {
                             PyConstant.CREATE_WALLET,
                             walletName,
                             new Kwarg("addresses", address),
-                            new Kwarg("coin", coinType.coinName));
+                            new Kwarg("coin", coinType.callFlag));
             CreateWalletBean walletBean =
                     new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
             EventBus.getDefault()

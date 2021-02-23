@@ -733,7 +733,7 @@
     <string name="set_you_pass">设置主密码</string>
     <string name="input_you_pass">再输一次您的密码</string>
     <string name="pass_warning">我们不存储任何您的信息，因此一旦您忘记自己的密码，我们也无法帮您找回。</string>
-    <string name="my_amount">我的资产</string>
+    <string name="my_amount">账户总资产</string>
     <string name="assets">资产</string>
     <string name="search">搜索</string>
     <string name="all_assets">全部资产</string>

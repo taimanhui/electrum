@@ -13,21 +13,45 @@ import org.haobtc.onekey.BuildConfig;
  * @create 2021-01-15 6:08 PM
  */
 public class Vm {
+
     public enum CoinType {
-        BTC("btc", true),
-        ETH("eth", true);
+        BTC("BTC", "BTC", 8, "btc", false, true),
+        ETH("BTC", "ETH", 18, "eth", true, true);
 
         public final String coinName;
+        public final String callFlag;
+        public final String defUnit;
+        public final int digits;
         public final boolean enable;
+        public final boolean supportTokens;
 
-        CoinType(String coinName, boolean enable) {
+        CoinType(
+                String coinName,
+                String unit,
+                int digits,
+                String flag,
+                boolean supportTokens,
+                boolean enable) {
             this.coinName = coinName;
+            this.defUnit = unit;
+            this.digits = digits;
+            this.callFlag = flag;
+            this.supportTokens = supportTokens;
             this.enable = enable;
         }
 
-        public static CoinType convert(String coinName) {
+        public static CoinType convertByCoinName(String coinName) {
             for (CoinType item : CoinType.values()) {
-                if (item.coinName.equals(coinName)) {
+                if (item.coinName.equalsIgnoreCase(coinName)) {
+                    return item;
+                }
+            }
+            return CoinType.BTC;
+        }
+
+        public static CoinType convertByCallFlag(String callFlag) {
+            for (CoinType item : CoinType.values()) {
+                if (item.callFlag.equalsIgnoreCase(callFlag)) {
                     return item;
                 }
             }
@@ -37,6 +61,7 @@ public class Vm {
 
     @StringDef
     public @interface PyenvETHNetworkType {
+
         String MainNet = "mainnet";
         String TestNet = "testnet";
     }
@@ -52,6 +77,7 @@ public class Vm {
 
     @StringDef
     public @interface BTCNetworkType {
+
         String MainNet = "mainnet";
         String TestNet = "testnet";
         String RegTest = "regtest";
@@ -76,6 +102,7 @@ public class Vm {
         WalletType.HARDWARE
     })
     public @interface WalletType {
+
         /** HD 派生钱包 */
         int MAIN = 0;
         /** 创建的独立钱包，助记词导入的钱包。 */
@@ -87,6 +114,16 @@ public class Vm {
 
         /** 硬件钱包 */
         int HARDWARE = 4;
+    }
+
+    @IntDef({
+        HardwareType.OneKey,
+        HardwareType.OneKeyMini,
+    })
+    public @interface HardwareType {
+
+        int OneKey = 0;
+        int OneKeyMini = 1;
     }
 
     @WalletType

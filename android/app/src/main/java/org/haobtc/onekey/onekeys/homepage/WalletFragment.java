@@ -2,17 +2,13 @@ package org.haobtc.onekey.onekeys.homepage;
 
 import static android.app.Activity.RESULT_OK;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -20,14 +16,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.IdRes;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.scwang.smartrefresh.layout.util.SmartUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
@@ -40,8 +40,9 @@ import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
-import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
+import org.haobtc.onekey.bean.WalletAccountInfo;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.StringConstant;
@@ -67,6 +68,7 @@ import org.haobtc.onekey.onekeys.homepage.process.SendEthActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.adapter.WalletAssetsAdapter;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.utils.Daemon;
@@ -82,6 +84,15 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     private static final int REQUEST_CODE = 0;
     private static int currentAction;
 
+    @BindView(R.id.layout_swipe_refresh)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
+    @BindView(R.id.layout_nested_scroll)
+    NestedScrollView mNestedScrollView;
+
+    @BindView(R.id.view_slide_interval_line)
+    View mViewSlideIntervalLine;
+
     @BindView(R.id.text_wallet_name)
     TextView textWalletName;
 
@@ -96,6 +107,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
 
     @BindView(R.id.img_Add)
     ImageView imgAdd;
+
+    @BindView(R.id.img_add_token)
+    ImageView imgAddToken;
 
     @BindView(R.id.rel_create_hd)
     RelativeLayout relCreateHd;
@@ -118,14 +132,20 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     @BindView(R.id.text_amount)
     TextView tetAmount;
 
+    @BindView(R.id.text_amount_unit)
+    TextView tetAmountUnit;
+
     @BindView(R.id.text_amount_star)
     TextView textStar;
 
     @BindView(R.id.img_check_money)
-    CheckBox imgCheckMoney;
+    ImageView imgCheckMoney;
 
-    @BindView(R.id.rel_wallet_detail)
-    RelativeLayout relWalletDetail;
+    @BindView(R.id.layout_hidden_assets)
+    View layouthHiddenAssets;
+
+    @BindView(R.id.layout_total_amount)
+    View layoutTotalAmount;
 
     @BindView(R.id.linear_send)
     LinearLayout linearSend;
@@ -145,49 +165,25 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     @BindView(R.id.rel_now_back_up)
     android.widget.RelativeLayout relNowBackUp;
 
-    @BindView(R.id.text_btc_amount)
-    TextView textBtcAmount;
-
-    @BindView(R.id.text_btc_amount_stars)
-    TextView amountStars;
-
-    @BindView(R.id.text_dollar)
-    TextView textDollar;
-
-    @BindView(R.id.text_dollar_stars)
-    TextView dollarStars;
-
-    @BindView(R.id.rel_bi_detail)
-    android.widget.RelativeLayout relBiDetail;
-
     @BindView(R.id.recl_hd_list)
     RecyclerView reclHdList;
 
     @BindView(R.id.lin_wallet_list)
     LinearLayout linearWalletList;
 
-    @BindView(R.id.iv_token_type)
-    ImageView ivTokenType;
-
-    @BindView(R.id.tv_token_name)
-    TextView tvTokenName;
-
-    private SharedPreferences preferences;
-    private String num;
-    private String changeBalance;
-    private String name;
     private RxPermissions rxPermissions;
-    private String nowType;
+    @Deprecated private String nowType;
     private boolean isBackup;
     private String bleMac;
-    private boolean isRecovery;
     private boolean isAddHd;
     private NetworkViewModel mNetworkViewModel;
     private AppWalletViewModel mAppWalletViewModel;
     private SystemConfigManager mSystemConfigManager;
     private BackupDialog mBackupDialog;
     private AccountManager mAccountManager;
+    private AssetsLogo mAssetsLogo;
     private String currentDeviceId = "";
+    private final WalletAssetsAdapter mWalletAssetsAdapter = new WalletAssetsAdapter();
 
     /**
      * init views
@@ -196,14 +192,88 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
      */
     @Override
     public void init(View view) {
+        mAssetsLogo = new AssetsLogo();
         mNetworkViewModel = getApplicationViewModel(NetworkViewModel.class);
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         mSystemConfigManager = new SystemConfigManager(requireContext());
         rxPermissions = new RxPermissions(this);
         mAccountManager = new AccountManager(getActivity());
-        preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         tetAmount.addTextChangedListener(this);
+        initAdapter();
         initViewModelValue();
+        initNestedScrollViewListener();
+        initPrivacyMode();
+        initRefresh();
+    }
+
+    private void initRefresh() {
+        mSwipeRefreshLayout.setOnRefreshListener(() -> mAppWalletViewModel.refreshWalletInfo());
+    }
+
+    private void initPrivacyMode() {
+        imgCheckMoney.setSelected(true);
+        layouthHiddenAssets.setOnClickListener(
+                v -> {
+                    if (imgCheckMoney.isSelected()) {
+                        layoutTotalAmount.setVisibility(View.GONE);
+                        textStar.setVisibility(View.VISIBLE);
+                        mWalletAssetsAdapter.setPrivacyMode(true);
+                    } else {
+                        layoutTotalAmount.setVisibility(View.VISIBLE);
+                        textStar.setVisibility(View.GONE);
+                        mWalletAssetsAdapter.setPrivacyMode(false);
+                    }
+                    imgCheckMoney.setSelected(!imgCheckMoney.isSelected());
+                });
+    }
+
+    private void initAdapter() {
+        HorizontalDividerItemDecoration itemDecoration =
+                new HorizontalDividerItemDecoration.Builder(getContext())
+                        .color(
+                                ResourcesCompat.getColor(
+                                        getResources(), R.color.color_select_wallet_divider, null))
+                        .sizeResId(R.dimen.line_hight)
+                        .margin(SmartUtil.dp2px(12F), SmartUtil.dp2px(12F))
+                        .showLastDivider()
+                        .build();
+
+        reclHdList.setAdapter(mWalletAssetsAdapter);
+        reclHdList.setNestedScrollingEnabled(false);
+        reclHdList.addItemDecoration(itemDecoration);
+        mWalletAssetsAdapter.setOnItemClickListener(
+                (position, assets) -> {
+                    WalletAccountInfo value =
+                            mAppWalletViewModel.currentWalletAccountInfo.getValue();
+                    if (value == null) {
+                        return;
+                    }
+                    String coinType = assets.getCoinType().callFlag;
+                    String ble = null;
+                    if (value.getWalletType() == Vm.WalletType.HARDWARE
+                            && value.getDeviceType() == Vm.HardwareType.OneKey) {
+                        ble = bleMac;
+                    }
+                    TransactionDetailWalletActivity.start(
+                            getContext(),
+                            textWalletName.getText().toString(),
+                            coinType,
+                            ble,
+                            currentDeviceId);
+                });
+    }
+
+    private void initNestedScrollViewListener() {
+        mNestedScrollView.setOnScrollChangeListener(
+                (View.OnScrollChangeListener)
+                        (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                            if (scrollY == 0) {
+                                // 滚动到顶，隐藏间隔线
+                                mViewSlideIntervalLine.setVisibility(View.INVISIBLE);
+                            } else {
+                                mViewSlideIntervalLine.setVisibility(View.VISIBLE);
+                            }
+                        });
     }
 
     /**
@@ -260,34 +330,34 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                         mSystemConfigManager.setNeedPopBackUpDialog(true);
                     }
                 });
-        mAppWalletViewModel.currentWalletInfo.observe(
+        mAppWalletViewModel.currentWalletAccountInfo.observe(
                 this,
-                localWalletInfo -> {
-                    if (localWalletInfo != null) {
-                        textWalletName.setText(localWalletInfo.getLabel());
-                        showTypeInfo(localWalletInfo);
+                walletAccountInfo -> {
+                    if (walletAccountInfo != null) {
+                        textWalletName.setText(walletAccountInfo.getName());
+                        showTypeInfo(walletAccountInfo);
+                        imgAddToken.setVisibility(
+                                walletAccountInfo.getCoinType().supportTokens
+                                        ? View.VISIBLE
+                                        : View.GONE);
                         whetherBackup();
                     }
                 });
-        mAppWalletViewModel.currentWalletBalance.observe(
+        mAppWalletViewModel.currentWalletTotalBalanceFiat.observe(
                 this,
-                balance -> {
-                    String amount = balance.getBalanceFormat(8);
-                    textBtcAmount.setText(amount);
+                totalBalance -> {
+                    tetAmountUnit.setText(totalBalance.getSymbol());
+                    tetAmount.setText(totalBalance.getBalanceFormat());
                 });
-        mAppWalletViewModel.currentWalletFiatBalance.observe(
+        mAppWalletViewModel.currentWalletAssetsList.observe(
                 this,
-                balance -> {
-                    tetAmount.setText(
-                            String.format(
-                                    "%s %s", balance.getSymbol(), balance.getBalanceFormat()));
-                    textDollar.setText(
-                            String.format(
-                                    "≈ %s %s", balance.getSymbol(), balance.getBalanceFormat()));
+                assets -> {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    mWalletAssetsAdapter.submitList(assets.toList());
                 });
     }
 
-    private void showTypeInfo(LocalWalletInfo localWalletInfo) {
+    private void showTypeInfo(WalletAccountInfo localWalletInfo) {
         int walletType = localWalletInfo.getWalletType();
         Vm.CoinType coinType = localWalletInfo.getCoinType();
 
@@ -299,26 +369,11 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                     org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD,
                     true);
         }
-        preferences
-                .edit()
-                .putString(CURRENT_SELECTED_WALLET_TYPE, localWalletInfo.getType())
-                .apply();
-        if (coinType == Vm.CoinType.BTC) {
-            imgType.setImageDrawable(
-                    ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
-            ivTokenType.setImageDrawable(
-                    ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
-            tvTokenName.setText(getString(R.string.btc_c));
-        } else if (coinType == Vm.CoinType.ETH) {
-            imgType.setImageDrawable(
-                    ContextCompat.getDrawable(requireContext(), R.drawable.token_eth));
-            ivTokenType.setImageDrawable(
-                    ContextCompat.getDrawable(requireContext(), R.drawable.token_eth));
-            tvTokenName.setText(getString(R.string.eth));
-        } else {
-            imgType.setImageDrawable(
-                    ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
-        }
+
+        imgType.setImageDrawable(
+                ContextCompat.getDrawable(
+                        requireContext(), mAssetsLogo.getLogoResources(coinType)));
+
         if (walletType == Vm.WalletType.HARDWARE) {
             textHard.setVisibility(View.VISIBLE);
             if (coinType == Vm.CoinType.BTC) {
@@ -422,7 +477,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 } else {
                     intent = new Intent(getActivity(), SendEthActivity.class);
                 }
-                intent.putExtra(WALLET_BALANCE, changeBalance);
                 intent.putExtra("hdWalletName", textWalletName.getText().toString());
                 startActivity(intent);
                 break;
@@ -514,7 +568,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                 String address = listData.getAddress();
                                 if (!mAccountManager
                                         .getCurWalletType()
-                                        .equalsIgnoreCase(listData.getCoin().coinName)) {
+                                        .equalsIgnoreCase(listData.getCoin().callFlag)) {
                                     showToast(R.string.hint_temp_scan_inconformity);
                                     return;
                                 }
@@ -522,7 +576,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                     case BTC:
                                         SendHdActivity.start(
                                                 getActivity(),
-                                                changeBalance,
                                                 textWalletName.getText().toString(),
                                                 address,
                                                 listData.getAmount());
@@ -530,7 +583,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                     case ETH:
                                         SendEthActivity.start(
                                                 getActivity(),
-                                                changeBalance,
                                                 textWalletName.getText().toString(),
                                                 address,
                                                 listData.getAmount());
@@ -555,25 +607,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    @OnCheckedChanged(R.id.img_check_money)
-    public void onCheckedChange(boolean checked) {
-        if (checked) {
-            tetAmount.setVisibility(View.VISIBLE);
-            textStar.setVisibility(View.GONE);
-            textBtcAmount.setVisibility(View.VISIBLE);
-            textDollar.setVisibility(View.VISIBLE);
-            amountStars.setVisibility(View.GONE);
-            dollarStars.setVisibility(View.GONE);
-        } else {
-            tetAmount.setVisibility(View.GONE);
-            textStar.setVisibility(View.VISIBLE);
-            textBtcAmount.setVisibility(View.GONE);
-            textDollar.setVisibility(View.GONE);
-            amountStars.setVisibility(View.VISIBLE);
-            dollarStars.setVisibility(View.VISIBLE);
-        }
-    }
-
     @SingleClick(value = 1000L)
     @OnClick({
         R.id.rel_check_wallet,
@@ -587,7 +620,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         R.id.linear_receive,
         R.id.linear_sign,
         R.id.rel_now_back_up,
-        R.id.rel_bi_detail,
         R.id.img_bottom
     })
     public void onViewClicked(View view) {
@@ -635,7 +667,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 NavUtils.gotoSoftPassActivity(getActivity(), 0);
                 break;
             case R.id.rel_recovery_hd:
-                isRecovery = true;
                 Intent intent = new Intent(getActivity(), RecoverHdWalletActivity.class);
                 startActivity(intent);
                 break;
@@ -659,30 +690,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 Intent intent6 = new Intent(getActivity(), BackupGuideActivity.class);
                 intent6.putExtra(CURRENT_SELECTED_WALLET_TYPE, nowType);
                 startActivity(intent6);
-                break;
-            case R.id.rel_bi_detail:
-                if (!TextUtils.isEmpty(nowType)) {
-                    String coinType = null;
-                    if (nowType.contains("btc")) {
-                        coinType = Vm.CoinType.BTC.coinName;
-                    } else if (nowType.contains("eth")) {
-                        coinType = Vm.CoinType.ETH.coinName;
-                    } else {
-                        coinType = Vm.CoinType.BTC.coinName;
-                    }
-                    String ble = null;
-                    if (nowType.contains("hw")) {
-                        ble = bleMac;
-                    }
-                    TransactionDetailWalletActivity.start(
-                            getContext(),
-                            changeBalance,
-                            textDollar.getText().toString().trim(),
-                            textWalletName.getText().toString(),
-                            coinType,
-                            ble,
-                            currentDeviceId);
-                }
                 break;
             case R.id.img_bottom:
                 CheckChainDetailWebActivity.start(

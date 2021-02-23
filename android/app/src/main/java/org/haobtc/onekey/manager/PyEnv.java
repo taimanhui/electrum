@@ -702,7 +702,7 @@ public final class PyEnv {
 
         JsonArray coins = new JsonArray();
         for (Vm.CoinType coinType : coinTypes) {
-            coins.add(coinType.coinName);
+            coins.add(coinType.callFlag);
         }
         String walletsInfo =
                 sCommands
@@ -1178,7 +1178,7 @@ public final class PyEnv {
             List<Kwarg> argList = new LinkedList<>();
             argList.add(new Kwarg("name", walletName));
             argList.add(new Kwarg("password", password));
-            argList.add(new Kwarg("coin", coinType.coinName));
+            argList.add(new Kwarg("coin", coinType.callFlag));
 
             if (!TextUtils.isEmpty(privateKey)) {
                 argList.add(new Kwarg("privkeys", privateKey));
@@ -1590,7 +1590,7 @@ public final class PyEnv {
         PyResponse<String> response = new PyResponse<>();
         try {
             String result = "";
-            if (coinType.equals(Vm.CoinType.ETH.coinName)) {
+            if (coinType.equals(Vm.CoinType.ETH.callFlag)) {
                 result =
                         sCommands
                                 .callAttr(

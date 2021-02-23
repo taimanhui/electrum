@@ -771,7 +771,7 @@
     <string name="set_you_pass">Set Master Password</string>
     <string name="input_you_pass">Enter your password again</string>
     <string name="pass_warning">We do not store any of your information, so if you forget your password, we cannot help you retrieve it.</string>
-    <string name="my_amount">My Assets</string>
+    <string name="my_amount">账户总资产</string>
     <string name="assets">Assets</string>
     <string name="search">Search</string>
     <string name="all_assets">All Crypto</string>

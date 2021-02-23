@@ -1,23 +1,35 @@
 package org.haobtc.onekey.bean;
 
+import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
- * 钱包数字货币金额视图模型
+ * 钱包数字货币金额模型
  *
  * @author Onekey@QuincySx
  * @create 2021-01-08 10:47 AM
  */
-public class WalletBalanceVo {
+public class AssetsBalance {
 
     private final BigDecimal balance;
     private final String unit;
 
-    public WalletBalanceVo(@NonNull BigDecimal balance, @NonNull String unit) {
+    public AssetsBalance(@NonNull BigDecimal balance, @NonNull String unit) {
         this.balance = balance;
+        this.unit = unit;
+    }
+
+    public AssetsBalance(@NonNull String balance, @NonNull String unit) {
+        BigDecimal balanceBigDecimal;
+        try {
+            balanceBigDecimal = new BigDecimal(TextUtils.isEmpty(balance) ? "0" : balance);
+        } catch (NumberFormatException e) {
+            balanceBigDecimal = BigDecimal.ZERO;
+        }
+        this.balance = balanceBigDecimal;
         this.unit = unit;
     }
 
@@ -45,12 +57,17 @@ public class WalletBalanceVo {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        WalletBalanceVo that = (WalletBalanceVo) o;
+        AssetsBalance that = (AssetsBalance) o;
         return balance.compareTo(that.balance) == 0 && Objects.equals(unit, that.unit);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(balance, unit);
+    }
+
+    @Override
+    public String toString() {
+        return "AssetsBalance{" + "balance=" + balance + ", unit='" + unit + '\'' + '}';
     }
 }

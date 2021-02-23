@@ -5,7 +5,6 @@ import com.chaquo.python.Kwarg
 import com.chaquo.python.PyObject
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.orhanobut.logger.Logger
 import com.tencent.bugly.crashreport.CrashReport
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.MaintrsactionlistEvent
@@ -15,10 +14,8 @@ import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
 import java.lang.Exception
-import java.lang.RuntimeException
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.text.DecimalFormat
 import kotlin.jvm.Throws
 
 class EthService {
@@ -29,8 +26,8 @@ class EthService {
   private fun request(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): PyObject? {
     return when (status) {
       TransactionListType.ALL ->
-        Daemon.commands.callAttr("get_all_tx_list", Kwarg("coin", Vm.CoinType.ETH.coinName))
-      else -> Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.ETH.coinName)
+        Daemon.commands.callAttr("get_all_tx_list", Kwarg("coin", Vm.CoinType.ETH.callFlag))
+      else -> Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.ETH.callFlag)
     }
   }
 

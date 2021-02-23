@@ -5,20 +5,23 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 /**
- * 数字钱包法币金额视图模型
+ * 数字钱包法币金额模型
  *
  * @author Onekey@QuincySx
  * @create 2021-01-08 10:47 AM
  */
-public class WalletBalanceFiatVo {
+public class AssetsBalanceFiat {
 
     private final String balance;
     private final String unit;
     private final String symbol;
 
-    public WalletBalanceFiatVo(
+    public AssetsBalanceFiat(
             @NonNull String balance, @NonNull String unit, @NonNull String symbol) {
-        this.balance = balance;
+        this.balance =
+                TextUtils.isEmpty(balance)
+                        ? AssetsKt.DEF_WALLET_FIAT_BALANCE.getBalance()
+                        : balance;
         this.unit = unit;
         this.symbol = symbol;
     }
@@ -50,7 +53,7 @@ public class WalletBalanceFiatVo {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        WalletBalanceFiatVo that = (WalletBalanceFiatVo) o;
+        AssetsBalanceFiat that = (AssetsBalanceFiat) o;
         return Objects.equals(balance, that.balance)
                 && Objects.equals(unit, that.unit)
                 && Objects.equals(symbol, that.symbol);
@@ -59,5 +62,20 @@ public class WalletBalanceFiatVo {
     @Override
     public int hashCode() {
         return Objects.hash(balance, unit, symbol);
+    }
+
+    @Override
+    public String toString() {
+        return "AssetsBalanceFiat{"
+                + "balance='"
+                + balance
+                + '\''
+                + ", unit='"
+                + unit
+                + '\''
+                + ", symbol='"
+                + symbol
+                + '\''
+                + '}';
     }
 }

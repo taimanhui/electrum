@@ -184,7 +184,7 @@ public class ImportKeystoreFragment extends BaseFragment implements View.OnClick
                                                                 "coin",
                                                                 mImportSoftWalletProvider
                                                                         .currentCoinType()
-                                                                        .coinName));
+                                                                        .callFlag));
                                             }
                                             argList.add(new Kwarg("data", keystoreContent));
                                             argList.add(new Kwarg("password", keystorePass));

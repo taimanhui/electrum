@@ -348,7 +348,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                         BusinessAsyncTask.SHOW_ADDRESS,
                         address,
                         MyApplication.getInstance().getDeviceWay(),
-                        mShowWalletType.coinName);
+                        mShowWalletType.callFlag);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

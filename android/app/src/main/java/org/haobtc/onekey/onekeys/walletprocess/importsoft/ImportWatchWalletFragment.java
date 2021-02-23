@@ -170,7 +170,7 @@ public class ImportWatchWalletFragment extends BaseFragment
             if (mImportSoftWalletProvider != null
                     && mImportSoftWalletProvider.currentCoinType() != null) {
                 argList.add(
-                        new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().coinName));
+                        new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().callFlag));
             }
             argList.add(new Kwarg("data", watchAddress));
             argList.add(new Kwarg("flag", "address"));

@@ -51,10 +51,8 @@ class HdWalletAssetAdapter(context: Context, appViewModel: AppWalletViewModel, d
         model.changeCurrentWallet(item.label)
         TransactionDetailWalletActivity.start(
             mContext,
-            "",
-            "≈ " + mSystemConfigManager.currentFiatSymbol + " " + strFiat,
             item.name,
-            item.coinType.coinName,
+            item.coinType.callFlag,
             null,
             null)
       }

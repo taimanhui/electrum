@@ -26,8 +26,8 @@ import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.adapter.OnekeyTxListAdapter;
-import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.TransactionSummaryVo;
+import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
 import org.haobtc.onekey.business.chain.bitcoin.BitcoinService;
 import org.haobtc.onekey.business.chain.ethereum.EthService;
@@ -294,12 +294,12 @@ public class TransactionListFragment extends BaseLazyFragment
     }
 
     private void startBrowser() {
-        LocalWalletInfo value = mAppWalletViewModel.currentWalletInfo.getValue();
+        WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
         if (value != null) {
             CheckChainDetailWebActivity.startWebUrl(
                     getContext(),
                     getString(R.string.check_trsaction),
-                    BlockBrowserManager.INSTANCE.browseAddressUrl(mCoinType, value.getAddr()));
+                    BlockBrowserManager.INSTANCE.browseAddressUrl(mCoinType, value.getAddress()));
         }
     }
 

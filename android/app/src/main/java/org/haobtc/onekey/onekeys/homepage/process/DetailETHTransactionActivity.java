@@ -116,7 +116,7 @@ public class DetailETHTransactionActivity extends BaseActivity {
                                                                 hashDetail,
                                                                 new Kwarg(
                                                                         "coin",
-                                                                        Vm.CoinType.ETH.coinName));
+                                                                        Vm.CoinType.ETH.callFlag));
                                                 emitter.onNext(infoFromRaw);
                                                 emitter.onComplete();
                                             } catch (Exception e) {

@@ -1,7 +1,6 @@
 package org.haobtc.onekey.bean
 
 import com.google.gson.annotations.SerializedName
-import org.haobtc.onekey.viewmodel.AppWalletViewModel.DEF_WALLET_FIAT_BALANCE
 
 
 data class BalanceBroadcastEventBean(

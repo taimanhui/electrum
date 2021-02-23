@@ -44,22 +44,16 @@ public class TransactionDetailWalletActivity extends BaseActivity
                 TransactionListFragment.CoinTypeProvider {
 
     private static final String EXT_BLE_HW = Constant.BLE_MAC;
-    private static final String EXT_WALLET_BALANCE = "walletBalance";
-    private static final String EXT_WALLET_DOLLAR = "walletDollar";
     private static final String EXT_HD_WALLET_NAME = "hdWalletName";
     private static final String EXT_WALLET_COIN_TYPE = "walletCoinType";
 
     public static void start(
             @NotNull Context context,
-            @NotNull String balance,
-            @NotNull String dollar,
             @NotNull String walletName,
             @NotNull String coinType,
             @Nullable String bleMac,
             @Nullable String deviceId) {
         Intent intent = new Intent(context, TransactionDetailWalletActivity.class);
-        intent.putExtra(EXT_WALLET_BALANCE, balance);
-        intent.putExtra(EXT_WALLET_DOLLAR, dollar);
         intent.putExtra(EXT_HD_WALLET_NAME, walletName);
         intent.putExtra(EXT_WALLET_COIN_TYPE, coinType);
         intent.putExtra(EXT_BLE_HW, bleMac);
@@ -114,7 +108,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         bleMac = getIntent().getStringExtra(Constant.BLE_MAC);
-        mCoinType = Vm.CoinType.convert(getIntent().getStringExtra(EXT_WALLET_COIN_TYPE));
+        mCoinType = Vm.CoinType.convertByCallFlag(getIntent().getStringExtra(EXT_WALLET_COIN_TYPE));
         currentDeviceId = getIntent().getStringExtra(Constant.DEVICE_ID);
         listenerViewModel();
         switch (mCoinType) {

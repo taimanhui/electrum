@@ -90,12 +90,12 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
                                                     walletType = PyConstant.ADDRESS_TYPE_P2PKH;
                                                     break;
                                             }
-                                            getBtcXpub(walletType, Vm.CoinType.BTC.coinName);
+                                            getBtcXpub(walletType, Vm.CoinType.BTC.callFlag);
                                         }))
                         .show();
                 break;
             case Constant.COIN_TYPE_ETH:
-                getEthXpub(Vm.CoinType.ETH.coinName);
+                getEthXpub(Vm.CoinType.ETH.callFlag);
                 break;
             case Constant.COIN_TYPE_EOS:
                 break;
@@ -122,7 +122,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     public void getEthXpub(String coinType) {
         Disposable disposable =
-                getXpubObserVable(Vm.CoinType.ETH.coinName, "")
+                getXpubObserVable(Vm.CoinType.ETH.callFlag, "")
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -167,13 +167,13 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
                 String walletName = event.getName();
                 String xpubs =
                         "[[\"" + xpub + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
-                createWallet(walletName, xpubs, Vm.CoinType.BTC.coinName);
+                createWallet(walletName, xpubs, Vm.CoinType.BTC.callFlag);
                 break;
             case Constant.COIN_TYPE_ETH:
                 String name = event.getName();
                 String ethXpubs =
                         "[[\"" + xpub + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
-                createWallet(event.getName(), ethXpubs, Vm.CoinType.ETH.coinName);
+                createWallet(event.getName(), ethXpubs, Vm.CoinType.ETH.callFlag);
                 break;
             case Constant.COIN_TYPE_EOS:
                 break;

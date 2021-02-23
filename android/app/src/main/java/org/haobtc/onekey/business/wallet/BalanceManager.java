@@ -6,7 +6,6 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import org.haobtc.onekey.bean.AllWalletBalanceBean;
 import org.haobtc.onekey.bean.AllWalletBalanceInfoDTO;
 import org.haobtc.onekey.bean.BalanceBroadcastEventBean;
@@ -34,7 +33,7 @@ public class BalanceManager {
      * @return WalletBalanceBean
      */
     @Nullable
-    public WalletBalanceBean getBalanceByWalletName(String walletName) {
+    public WalletBalanceBean getBalanceByWalletId(String walletName) {
         BalanceInfoDTO balanceInfoDTO = PyEnv.selectWallet(walletName);
         if (balanceInfoDTO == null) {
             return null;
@@ -56,13 +55,7 @@ public class BalanceManager {
                     new ArrayList<>(allWalletBalanceInfoDTO.getWalletInfo().size());
             allWalletBalanceInfoDTO
                     .getWalletInfo()
-                    .forEach(
-                            new Consumer<BalanceInfoDTO>() {
-                                @Override
-                                public void accept(BalanceInfoDTO balanceInfoDTO) {
-                                    walletBalanceBean.add(convert(balanceInfoDTO));
-                                }
-                            });
+                    .forEach(balanceInfoDTO -> walletBalanceBean.add(convert(balanceInfoDTO)));
 
             AllWalletBalanceBean allWallet =
                     new AllWalletBalanceBean(
@@ -110,7 +103,7 @@ public class BalanceManager {
             if (i == 0) {
                 walletBalanceBean =
                         new WalletBalanceBean(
-                                Vm.CoinType.convert(item.getCoin()),
+                                Vm.CoinType.convertByCallFlag(item.getCoin()),
                                 balance,
                                 fiatBalance,
                                 fiatUnit,

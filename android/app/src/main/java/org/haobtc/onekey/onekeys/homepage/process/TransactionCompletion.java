@@ -30,7 +30,7 @@ public class TransactionCompletion extends BaseActivity {
             Context context, Vm.CoinType coinType, String signedTx, String amounts) {
         Intent intent = new Intent(context, TransactionCompletion.class);
         intent.putExtra(EXT_TX_DETAIL, signedTx);
-        intent.putExtra(EXT_COIN_TYPE, coinType.coinName);
+        intent.putExtra(EXT_COIN_TYPE, coinType.callFlag);
         intent.putExtra(EXT_AMOUNT, amounts);
         context.startActivity(intent);
     }
@@ -44,7 +44,7 @@ public class TransactionCompletion extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         txDetail = getIntent().getStringExtra(EXT_TX_DETAIL);
-        mCoinType = Vm.CoinType.convert(getIntent().getStringExtra(EXT_COIN_TYPE));
+        mCoinType = Vm.CoinType.convertByCallFlag(getIntent().getStringExtra(EXT_COIN_TYPE));
         String amount = getIntent().getStringExtra(EXT_AMOUNT);
         if (amount.contains("(")) {
             String txAmount = amount.substring(0, amount.indexOf("("));

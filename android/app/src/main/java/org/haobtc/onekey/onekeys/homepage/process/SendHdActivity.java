@@ -1,7 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
-import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -88,19 +86,13 @@ import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 /** @author liyan */
 public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
-    private static final String EXT_BALANCE = WALLET_BALANCE;
     private static final String EXT_WALLET_NAME = "hdWalletName";
     private static final String EXT_SCAN_ADDRESS = "addressScan";
     private static final String EXT_SCAN_AMOUNT = "amountScan";
 
     public static void start(
-            Context context,
-            String balance,
-            String name,
-            @Nullable String address,
-            @Nullable String amount) {
+            Context context, String name, @Nullable String address, @Nullable String amount) {
         Intent intent = new Intent(context, SendHdActivity.class);
-        intent.putExtra(EXT_BALANCE, balance);
         intent.putExtra(EXT_WALLET_NAME, name);
         if (!TextUtils.isEmpty(address)) {
             intent.putExtra(EXT_SCAN_ADDRESS, address);

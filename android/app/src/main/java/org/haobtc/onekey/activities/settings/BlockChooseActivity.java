@@ -25,7 +25,7 @@ public class BlockChooseActivity extends BaseActivity {
 
     public static void start(Context context, Vm.CoinType coinType) {
         Intent intent = new Intent(context, BlockChooseActivity.class);
-        intent.putExtra(EXT_COIN_TYPE, coinType.coinName);
+        intent.putExtra(EXT_COIN_TYPE, coinType.callFlag);
         context.startActivity(intent);
     }
 
@@ -44,7 +44,7 @@ public class BlockChooseActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        mCoinType = Vm.CoinType.convert(getIntent().getStringExtra(EXT_COIN_TYPE));
+        mCoinType = Vm.CoinType.convertByCallFlag(getIntent().getStringExtra(EXT_COIN_TYPE));
         ButterKnife.bind(this);
     }
 

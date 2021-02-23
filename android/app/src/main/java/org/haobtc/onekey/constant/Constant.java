@@ -40,6 +40,7 @@ public final class Constant {
     /** 当前选择钱包名称 */
     public static final String CURRENT_SELECTED_WALLET_NAME = "current_selected_wallet_name";
     /** 当前选择钱包类型 */
+    @Deprecated
     public static final String CURRENT_SELECTED_WALLET_TYPE = "current_selected_wallet_type";
     /** appHD钱包使用的密码类型 */
     public static final String SOFT_HD_PASS_TYPE = "shortOrLongPass";
@@ -130,7 +131,7 @@ public final class Constant {
     public static final String FORCE_UPDATE = "force_update";
     public static final String DEVICE_DEFAULT_LABEL = "oneKey";
     /** 本地是否存在软件hd */
-    public static final String HAS_LOCAL_HD = "has_local_hd";
+    @Deprecated public static final String HAS_LOCAL_HD = "has_local_hd";
     /** 校验PIN方式 */
     public static final String PIN_VERIFY_ON_HARDWARE = "pin_verify_on_hardware";
 

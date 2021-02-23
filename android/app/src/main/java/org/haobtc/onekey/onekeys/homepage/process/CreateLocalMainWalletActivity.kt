@@ -6,9 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
-import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.chad.library.adapter.base.entity.MultiItemEntity
@@ -20,6 +18,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import org.haobtc.onekey.R
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.BalanceInfoDTO
+import org.haobtc.onekey.bean.ImageResources
+import org.haobtc.onekey.bean.LocalImage
 import org.haobtc.onekey.business.wallet.SystemConfigManager
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.databinding.ActivityCreateLocalMainWalletBinding
@@ -98,7 +98,7 @@ class CreateLocalMainWalletActivity : BaseActivity(), AccountSelectAdapter.OnSel
 
             accounts.add(AccountSelectVo(
                 it,
-                it.coinName.toUpperCase(Locale.ROOT),
+                it.coinName,
                 describe,
                 LocalImage(resId),
                 true
@@ -204,21 +204,4 @@ class AccountSelectAdapter(private val accountList: List<AccountSelectVo>, priva
   }
 
   fun getSelectorItems() = accountList.filter { it.checked }.toList()
-}
-
-// 测试一下用法，成熟后拿出去。
-interface ImageResources {
-  fun intoTarget(imageView: ImageView)
-}
-
-class LocalImage(@DrawableRes val res: Int) : ImageResources {
-  override fun intoTarget(imageView: ImageView) {
-    imageView.setImageDrawable(ResourcesCompat.getDrawable(imageView.resources, res, null))
-  }
-}
-
-class RemoteImage(val url: String) : ImageResources {
-  override fun intoTarget(imageView: ImageView) {
-    Glide.with(imageView.context).load(url).into(imageView)
-  }
 }

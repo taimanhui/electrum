@@ -5,7 +5,6 @@ import com.chaquo.python.Kwarg
 import com.chaquo.python.PyObject
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.orhanobut.logger.Logger
 import com.tencent.bugly.crashreport.CrashReport
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.MaintrsactionlistEvent
@@ -14,10 +13,8 @@ import org.haobtc.onekey.business.chain.TransactionListType
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
-import java.lang.RuntimeException
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.text.DecimalFormat
 import kotlin.jvm.Throws
 
 class BitcoinService {
@@ -29,11 +26,11 @@ class BitcoinService {
     return when (status) {
       TransactionListType.ALL ->
         Daemon.commands.callAttr("get_all_tx_list",
-            Kwarg("coin", Vm.CoinType.BTC.coinName),
+            Kwarg("coin", Vm.CoinType.BTC.callFlag),
             Kwarg("start", position),
             Kwarg("end", position + limit))
       else ->
-        Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.BTC.coinName, position, position + limit)
+        Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.BTC.callFlag, position, position + limit)
     }
   }
 
