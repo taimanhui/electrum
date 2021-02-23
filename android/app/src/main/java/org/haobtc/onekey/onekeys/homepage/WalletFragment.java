@@ -1,8 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage;
 
-import static android.app.Activity.RESULT_OK;
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-
 import android.Manifest;
 import android.content.Intent;
 import android.text.Editable;
@@ -14,14 +11,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.IdRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import butterknife.BindView;
-import butterknife.OnClick;
+
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -31,7 +28,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
-import io.reactivex.functions.Consumer;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -58,6 +55,7 @@ import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.TokenManagerActivity;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateLocalMainWalletActivity;
@@ -77,6 +75,13 @@ import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.haobtc.onekey.viewmodel.NetworkViewModel;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import io.reactivex.functions.Consumer;
+
+import static android.app.Activity.RESULT_OK;
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 /** @author jinxiaomin */
 public class WalletFragment extends BaseFragment implements TextWatcher {
@@ -609,18 +614,20 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
 
     @SingleClick(value = 1000L)
     @OnClick({
-        R.id.rel_check_wallet,
-        R.id.img_scan,
-        R.id.img_Add,
-        R.id.rel_create_hd,
-        R.id.rel_recovery_hd,
-        R.id.rel_pair_hard,
-        R.id.rel_wallet_detail,
-        R.id.linear_send,
-        R.id.linear_receive,
-        R.id.linear_sign,
-        R.id.rel_now_back_up,
-        R.id.img_bottom
+            R.id.rel_check_wallet,
+            R.id.img_scan,
+            R.id.img_Add,
+            R.id.rel_create_hd,
+            R.id.rel_recovery_hd,
+            R.id.rel_pair_hard,
+            R.id.rel_wallet_detail,
+            R.id.linear_send,
+            R.id.linear_receive,
+            R.id.linear_sign,
+            R.id.rel_now_back_up,
+            R.id.img_bottom,
+            R.id.img_add_token
+
     })
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -653,15 +660,14 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                             startActivityForResult(intent2, REQUEST_CODE);
                                         } else {
                                             Toast.makeText(
-                                                            getActivity(),
-                                                            R.string.photopersion,
-                                                            Toast.LENGTH_SHORT)
+                                                    getActivity(),
+                                                    R.string.photopersion,
+                                                    Toast.LENGTH_SHORT)
                                                     .show();
                                         }
                                     }
                                 });
                 break;
-            case R.id.img_Add:
             case R.id.rel_create_hd:
                 isAddHd = true;
                 NavUtils.gotoSoftPassActivity(getActivity(), 0);
@@ -694,6 +700,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             case R.id.img_bottom:
                 CheckChainDetailWebActivity.start(
                         getActivity(), StringConstant.NEW_GUIDE, StringConstant.NEW_GUIDE_URL);
+                break;
+            case R.id.img_add_token:
+                TokenManagerActivity.start(getActivity());
                 break;
             default:
                 break;

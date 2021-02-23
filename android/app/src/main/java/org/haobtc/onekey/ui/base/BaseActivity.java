@@ -253,9 +253,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     }
 
     // 动态设置tooBar 左边的标题
-    public void setLeftTitle(String titleText) {
+    public void setLeftTitle(int textId) {
         if (leftTitle != null) {
-            leftTitle.setText(titleText);
+            leftTitle.setText(getString(textId));
         }
     }
 

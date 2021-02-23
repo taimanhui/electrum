@@ -165,4 +165,8 @@ public final class PyConstant {
     public static final String Create_Hw_Derived_Wallet = "create_hw_derived_wallet";
 
     public static final String GET_XPUB_FORM_HW = "get_xpub_from_hw";
+    /** 添加代币 */
+    public static final String Add_Token = "add_token";
+
+    public static final String Delete_Token = "delete_token";
 }

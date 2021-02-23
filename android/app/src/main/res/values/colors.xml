@@ -90,5 +90,8 @@
     <color name="color_AAffffff">#AAffffff</color>
     <color name="color_26CF02">#1A26CF02</color>
     <color name="color_select_wallet_divider">#283C3C43</color>
+    <color name="color_page_background">#F2F2F7</color>
+    <color name="color_F9F9FB">#F9F9FB</color>
+    <color name="color_be69be91">#969696</color>
 
 </resources>

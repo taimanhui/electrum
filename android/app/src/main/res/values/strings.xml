@@ -1313,4 +1313,9 @@
     <string name="action_refresh">刷新</string>
     <string name="hint_view_record_load_error">数据获取失败</string>
     <string name="hint_unknown_error">未知错误</string>
+    <string name="token_manager">代币管理</string>
+    <string name="search_token">输入代币名称或合约地址</string>
+    <string name="my_tokens">我的代币</string>
+    <string name="hot_token">热门代币</string>
+
 </resources>

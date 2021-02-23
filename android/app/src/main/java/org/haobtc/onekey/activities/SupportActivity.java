@@ -22,7 +22,7 @@ public class SupportActivity extends BaseActivity {
 
     @Override
     public void init() {
-        setLeftTitle(getString(R.string.service_support));
+        setLeftTitle(R.string.service_support);
     }
 
     @Override

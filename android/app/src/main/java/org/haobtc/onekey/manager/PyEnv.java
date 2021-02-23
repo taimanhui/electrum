@@ -1631,4 +1631,43 @@ public final class PyEnv {
         }
         return response;
     }
+
+    /**
+     * 添加代币 token
+     *
+     * @param symbol
+     * @param address
+     * @return
+     */
+    public static PyResponse<String> addToken(String symbol, String address) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.Add_Token, symbol, address).toString();
+            response.setResult(result);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * 删除代币 token
+     *
+     * @param address
+     * @return
+     */
+    public static PyResponse<String> deleteToken(String address) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.Delete_Token, address).toString();
+            response.setResult(result);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
 }

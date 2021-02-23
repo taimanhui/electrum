@@ -75,6 +75,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                 new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
         mAdapterDatas = new ArrayList<>();
         mTempList = new ArrayList<>();
+        walletInfo = new ArrayList<>();
         hdWalletAssetAdapter =
                 new HdWalletAssetAdapter(mContext, mAppWalletViewModel, mAdapterDatas);
         reclAssets.setAdapter(hdWalletAssetAdapter);
@@ -122,7 +123,8 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                                                     mSystemConfigManager.getCurrentFiatSymbol();
                                             testAllAssets.setText(
                                                     String.format("%s %s", currencySymbol, money));
-                                            walletInfo = allWalletBalance.getWalletInfo();
+                                            walletInfo.clear();
+                                            walletInfo.addAll(allWalletBalance.getWalletInfo());
                                             mAdapterDatas.addAll(walletInfo);
                                             hdWalletAssetAdapter.notifyDataSetChanged();
                                         }

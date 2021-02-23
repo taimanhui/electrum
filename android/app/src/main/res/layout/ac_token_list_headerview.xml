@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/dp_16"
+    android:orientation="vertical">
+
+    <org.haobtc.onekey.ui.widget.EditTextSearch
+        android:id="@+id/search_et"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_36"
+        android:background="@drawable/add_bk"
+        android:drawablePadding="5dp"
+        android:hint="@string/search_token"
+        android:paddingHorizontal="11dp"
+        android:textColor="@color/black_0"
+        android:textColorHint="@color/color_select_wallet_divider"
+        android:textSize="@dimen/sp_16" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/dp_16"
+        android:background="@drawable/add_bk"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:text="@string/my_tokens"
+            android:textColor="@color/text_color2" />
+
+        <TextView
+            android:id="@+id/token_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.3"
+            android:text="1"
+            android:textColor="@color/color_3C3C43"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_28"
+            android:layout_height="@dimen/dp_28"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/right_arrow_small" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_32"
+        android:text="@string/hot_token"
+        android:textColor="@color/text_color2"
+        android:textSize="@dimen/sp_20" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/hot_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:background="@drawable/add_bk"
+        android:nestedScrollingEnabled="false" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_32"
+        android:text="@string/more"
+        android:textColor="@color/text_color2"
+        android:textSize="@dimen/sp_20" />
+
+</LinearLayout>
