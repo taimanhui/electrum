@@ -16,7 +16,7 @@ public class Vm {
 
     public enum CoinType {
         BTC("BTC", "BTC", 8, "btc", false, true),
-        ETH("BTC", "ETH", 18, "eth", true, true);
+        ETH("ETH", "ETH", 18, "eth", true, true);
 
         public final String coinName;
         public final String callFlag;

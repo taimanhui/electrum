@@ -111,6 +111,7 @@ class CoinAssets @JvmOverloads constructor(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
+    if (hashCode() != other.hashCode()) return false
     return true
   }
 }
@@ -150,6 +151,7 @@ class ERC20Assets @JvmOverloads constructor(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
+    if (hashCode() != other.hashCode()) return false
     return true
   }
 }
