@@ -2,14 +2,20 @@ package org.haobtc.onekey.onekeys;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
-import com.orhanobut.logger.Logger;
+import com.zy.multistatepage.MultiStateContainer;
+import com.zy.multistatepage.MultiStatePage;
+import com.zy.multistatepage.state.SuccessState;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
@@ -19,17 +25,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.adapter.HotTokenAdapter;
 import org.haobtc.onekey.adapter.MoreTokenAdapter;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TokenList;
-import org.haobtc.onekey.business.wallet.TokenManager;
 import org.haobtc.onekey.card.utils.JsonParseUtils;
 import org.haobtc.onekey.databinding.ActivityTokenManagerBinding;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
-import org.haobtc.onekey.ui.widget.EditTextSearch;
-import org.haobtc.onekey.ui.widget.WaveSideBarView;
+import org.haobtc.onekey.ui.status.NoSearchState;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 public class TokenManagerActivity extends BaseActivity
         implements HotTokenAdapter.onHotSwitchClick, MoreTokenAdapter.onMoreSwitchClick {
@@ -38,10 +44,16 @@ public class TokenManagerActivity extends BaseActivity
     private HotTokenAdapter mHotTokenAdapter;
     private MoreTokenAdapter mMoreTokenAdapter;
     private View mHeaderView;
-    private EditTextSearch mSearch;
     private TextView mTokenNum;
     private RecyclerView mHotRecyclerView;
-    private TokenManager mTokenManager;
+    private List<TokenList.ERCToken> mAllTokens;
+    private List<TokenList.ERCToken> moreTokens;
+    private List<TokenList.ERCToken> mHotTokens;
+    private List<TokenList.ERCToken> mSearchTokens;
+    private HotTokenAdapter mSearchAdapter;
+    private LinearLayout headerLayout;
+    private MultiStateContainer mMultiStateContainer;
+    private AppWalletViewModel mAppWalletViewModel;
 
     public static void start(Context context) {
         context.startActivity(new Intent(context, TokenManagerActivity.class));
@@ -50,19 +62,20 @@ public class TokenManagerActivity extends BaseActivity
     @Override
     public void init() {
         setLeftTitle(R.string.token_manager);
-        mTokenManager = new TokenManager();
-        Logger.d("当前时间戳：" + System.currentTimeMillis());
+        mAppWalletViewModel =
+                new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
+        mAllTokens = new ArrayList<>();
+        moreTokens = new ArrayList<>();
+        mHotTokens = new ArrayList<>();
+        mSearchTokens = new ArrayList<>();
+        mMultiStateContainer = MultiStatePage.bindMultiState(mBinding.searchRecyclerview);
         String json = JsonParseUtils.getJsonStr(mContext, "eth_token_list.json");
         TokenList tokenList = JSON.parseObject(json, TokenList.class);
-        Collections.sort(tokenList.tokens, (o1, o2) -> o1.rank > o2.rank ? -1 : 1);
-        long currentTime = System.currentTimeMillis() / 1000;
-        if (tokenList.timestamp > currentTime) {
-            uploadLocal(json);
-        }
-        List<TokenList.ERCToken> hotTokens = tokenList.tokens.subList(0, 10);
-
-        List<TokenList.ERCToken> moreTokens = new ArrayList<>();
-        moreTokens.addAll(tokenList.tokens.subList(0, 50));
+        mAllTokens.addAll(tokenList.tokens);
+        Collections.sort(mAllTokens, (o1, o2) -> o1.rank > o2.rank ? -1 : 1);
+        getAllAddToken(mAllTokens);
+        mHotTokens.addAll(mAllTokens.subList(0, 10));
+        moreTokens.addAll(mAllTokens.subList(0, 50));
         moreTokens.sort(
                 (o1, o2) -> {
                     String start = o1.symbol;
@@ -71,19 +84,55 @@ public class TokenManagerActivity extends BaseActivity
                 });
 
         mMoreTokenAdapter = new MoreTokenAdapter(moreTokens, this);
+        mSearchAdapter = new HotTokenAdapter(mSearchTokens, this);
+        mBinding.searchRecyclerview.setAdapter(mSearchAdapter);
+        mBinding.searchRecyclerview.setLayoutManager(new LinearLayoutManager(mContext));
         mBinding.moreRecyclerview.setLayoutManager(new LinearLayoutManager(mContext));
         mBinding.moreRecyclerview.setAdapter(mMoreTokenAdapter);
         mBinding.waveSlideBar.setOnTouchLetterChangeListener(
-                new WaveSideBarView.OnTouchLetterChangeListener() {
-                    @Override
-                    public void onLetterChange(String letter) {
-                        int letterIndex = getLetterIndex(moreTokens, letter);
-                        if (letterIndex > 0) {
-                            mBinding.moreRecyclerview.smoothScrollToPosition(letterIndex);
-                        }
+                letter -> {
+                    int letterIndex = getLetterIndex(moreTokens, letter);
+                    if (letterIndex > 0) {
+                        mBinding.moreRecyclerview.smoothScrollToPosition(letterIndex);
                     }
                 });
-        initHeaderView(hotTokens);
+        initHeaderView(mHotTokens);
+    }
+
+    private void getAllAddToken(List<TokenList.ERCToken> tokenList) {
+        Disposable disposable =
+                Observable.create(
+                                (ObservableOnSubscribe<PyResponse<String>>)
+                                        emitter -> {
+                                            PyResponse<String> response = PyEnv.getAllTokenInfo();
+                                            emitter.onNext(response);
+                                            emitter.onComplete();
+                                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(response -> doSelectToken(response, tokenList));
+        mCompositeDisposable.add(disposable);
+    }
+
+    private void doSelectToken(PyResponse<String> response, List<TokenList.ERCToken> tokenList) {
+        if (Strings.isNullOrEmpty(response.getErrors())) {
+            try {
+                List<String> list = JSON.parseArray(response.getResult(), String.class);
+                if (list.size() > 0) {
+                    for (TokenList.ERCToken token : tokenList) {
+                        for (String s : list) {
+                            if (token.address.equals(s)) {
+                                token.isAdd = true;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.toString();
+            }
+        } else {
+            mToast(response.getErrors());
+        }
     }
 
     private int getLetterIndex(List<TokenList.ERCToken> moreTokens, String letter) {
@@ -96,34 +145,67 @@ public class TokenManagerActivity extends BaseActivity
         return -1;
     }
 
-    private void uploadLocal(String json) {
-        Disposable disposable =
-                Observable.create(
-                                (ObservableOnSubscribe<Boolean>)
-                                        emitter -> {
-                                            boolean b = mTokenManager.uploadLocalTokenList(json);
-                                            emitter.onNext(b);
-                                            emitter.onComplete();
-                                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                result -> {
-                                    Logger.d("File upload Success:  " + result);
-                                    String localTokenList = mTokenManager.getLocalTokenList();
-                                });
-        mCompositeDisposable.add(disposable);
-    }
-
     private void initHeaderView(List<TokenList.ERCToken> hotTokens) {
         mHeaderView = getLayoutInflater().inflate(R.layout.ac_token_list_headerview, null);
-        mSearch = mHeaderView.findViewById(R.id.search_et);
+        headerLayout = mHeaderView.findViewById(R.id.layout_header);
         mTokenNum = mHeaderView.findViewById(R.id.token_num);
         mHotRecyclerView = mHeaderView.findViewById(R.id.hot_recyclerView);
         mHotTokenAdapter = new HotTokenAdapter(hotTokens, this);
         mHotRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mHotRecyclerView.setAdapter(mHotTokenAdapter);
         mMoreTokenAdapter.setHeaderView(mHeaderView);
+        mBinding.searchEt.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        String search = s.toString();
+                        if (Strings.isNullOrEmpty(search)) {
+                            mBinding.slideBarLayout.setVisibility(View.VISIBLE);
+                            mHotTokenAdapter.setNewData(mHotTokens);
+                            mHotRecyclerView.setAdapter(mHotTokenAdapter);
+                            mBinding.searchRecyclerview.setVisibility(View.GONE);
+                            mBinding.moreRecyclerview.setVisibility(View.VISIBLE);
+                        } else {
+                            mBinding.slideBarLayout.setVisibility(View.GONE);
+                            mBinding.searchRecyclerview.setVisibility(View.VISIBLE);
+                            mBinding.moreRecyclerview.setVisibility(View.GONE);
+                            packageSearchData(search);
+                        }
+                    }
+                });
+    }
+
+    private void packageSearchData(String search) {
+        mSearchTokens.clear();
+        List<TokenList.ERCToken> tempData = new ArrayList<>();
+        for (TokenList.ERCToken allToken : mAllTokens) {
+            if (search.startsWith("0x")) {
+                if (allToken.address.equals(search)) {
+                    tempData.add(allToken);
+                }
+            } else {
+                if (allToken.symbol.contains(search.toLowerCase())
+                        || allToken.symbol.contains(search.toUpperCase())
+                        || allToken.name.contains(search.toLowerCase())
+                        || allToken.name.contains(search.toUpperCase())) {
+                    tempData.add(allToken);
+                }
+            }
+        }
+        if (tempData.size() == 0) {
+            mMultiStateContainer.show(NoSearchState.class);
+        } else {
+            mMultiStateContainer.show(SuccessState.class);
+            mSearchTokens.addAll(tempData);
+        }
+        mSearchAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -152,6 +234,20 @@ public class TokenManagerActivity extends BaseActivity
     public void onHotCheckedListener(TokenList.ERCToken item, boolean isChecked, int position) {
         if (isChecked) {
             addToken(item.symbol, item.address);
+            if (!moreTokens.contains(item)) {
+                if (!mBinding.moreRecyclerview.isComputingLayout()
+                        && RecyclerView.SCROLL_STATE_IDLE
+                                == mBinding.moreRecyclerview.getScrollState()) {
+                    moreTokens.add(item);
+                    moreTokens.sort(
+                            (o1, o2) -> {
+                                String start = o1.symbol;
+                                String end = o2.symbol;
+                                return start.compareToIgnoreCase(end);
+                            });
+                    mMoreTokenAdapter.notifyDataSetChanged();
+                }
+            }
         } else {
             deleteToken(item.address);
         }
@@ -199,6 +295,8 @@ public class TokenManagerActivity extends BaseActivity
                                 result -> {
                                     if (!Strings.isNullOrEmpty(result.getErrors())) {
                                         mToast(result.getErrors());
+                                    } else {
+
                                     }
                                 });
         mCompositeDisposable.add(disposable);
@@ -211,7 +309,14 @@ public class TokenManagerActivity extends BaseActivity
      */
     private void deleteToken(String address) {
         Disposable disposable =
-                Observable.create((ObservableOnSubscribe<PyResponse<String>>) emitter -> {})
+                Observable.create(
+                                (ObservableOnSubscribe<PyResponse<String>>)
+                                        emitter -> {
+                                            PyResponse<String> response =
+                                                    PyEnv.deleteToken(address);
+                                            emitter.onNext(response);
+                                            emitter.onComplete();
+                                        })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -221,5 +326,11 @@ public class TokenManagerActivity extends BaseActivity
                                     }
                                 });
         mCompositeDisposable.add(disposable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mCompositeDisposable.dispose();
     }
 }

@@ -46,21 +46,31 @@ public class HotTokenAdapter extends BaseQuickAdapter<TokenList.ERCToken, BaseVi
     }
 
     private void setAddData(TokenList.ERCToken item, RelativeLayout backGround, int position) {
-        if (item.isAdd) {
+        if (mData.size() > 1) {
             if (position == 0) {
-                backGround.setBackgroundResource(R.drawable.top_round_shape_gray);
+                if (item.isAdd) {
+                    backGround.setBackgroundResource(R.drawable.top_round_shape_gray);
+                } else {
+                    backGround.setBackgroundResource(R.drawable.top_round_shape_white);
+                }
             } else if (position == mData.size() - 1) {
-                backGround.setBackgroundResource(R.drawable.bottom_round_shape_gray);
+                if (item.isAdd) {
+                    backGround.setBackgroundResource(R.drawable.bottom_round_shape_gray);
+                } else {
+                    backGround.setBackgroundResource(R.drawable.bottom_round_shape_white);
+                }
             } else {
-                backGround.setBackgroundColor(mContext.getColor(R.color.color_F9F9FB));
+                if (item.isAdd) {
+                    backGround.setBackgroundColor(mContext.getColor(R.color.color_F9F9FB));
+                } else {
+                    backGround.setBackgroundColor(mContext.getColor(R.color.white));
+                }
             }
         } else {
-            if (position == 0) {
-                backGround.setBackgroundResource(R.drawable.top_round_shape_white);
-            } else if (position == mData.size() - 1) {
-                backGround.setBackgroundResource(R.drawable.bottom_round_shape_white);
+            if (item.isAdd) {
+                backGround.setBackgroundResource(R.drawable.round_shape_gray);
             } else {
-                backGround.setBackgroundColor(mContext.getColor(R.color.white));
+                backGround.setBackgroundResource(R.drawable.round_shape_white);
             }
         }
     }

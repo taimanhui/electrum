@@ -1317,5 +1317,5 @@
     <string name="search_token">输入代币名称或合约地址</string>
     <string name="my_tokens">我的代币</string>
     <string name="hot_token">热门代币</string>
-
+    <string name="no_search">找不到搜索结果</string>
 </resources>

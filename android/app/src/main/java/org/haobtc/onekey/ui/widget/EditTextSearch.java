@@ -5,7 +5,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.Toast;
 import androidx.appcompat.widget.AppCompatEditText;
 import org.haobtc.onekey.R;
 
@@ -87,7 +86,6 @@ public class EditTextSearch extends AppCompatEditText {
                                             - getPaddingRight()
                                             - drawable.getBounds().width())) {
                         setText("");
-                        Toast.makeText(context, "点击了清除图标", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;

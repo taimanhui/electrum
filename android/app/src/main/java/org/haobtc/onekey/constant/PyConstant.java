@@ -169,4 +169,6 @@ public final class PyConstant {
     public static final String Add_Token = "add_token";
 
     public static final String Delete_Token = "delete_token";
+    /** 获取已添加token 列表 */
+    public static final String GET_ALL_TOKEN = "get_all_token_info";
 }

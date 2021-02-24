@@ -1642,8 +1642,7 @@ public final class PyEnv {
     public static PyResponse<String> addToken(String symbol, String address) {
         PyResponse<String> response = new PyResponse<>();
         try {
-            String result = sCommands.callAttr(PyConstant.Add_Token, symbol, address).toString();
-            response.setResult(result);
+            sCommands.callAttr(PyConstant.Add_Token, symbol, address);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());
@@ -1661,8 +1660,26 @@ public final class PyEnv {
     public static PyResponse<String> deleteToken(String address) {
         PyResponse<String> response = new PyResponse<>();
         try {
-            String result = sCommands.callAttr(PyConstant.Delete_Token, address).toString();
+            sCommands.callAttr(PyConstant.Delete_Token, address);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * 获取 已添加token列表
+     *
+     * @return
+     */
+    public static PyResponse<String> getAllTokenInfo() {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.GET_ALL_TOKEN).toString();
             response.setResult(result);
+            Logger.json(result);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());
