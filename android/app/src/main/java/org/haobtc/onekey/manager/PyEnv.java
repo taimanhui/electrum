@@ -46,9 +46,11 @@ import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.bean.CurrentWalletBalanceBean;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.MakeTxResponseBean;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.bean.SwitchWalletBean;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.bean.WalletInfo;
@@ -1697,5 +1699,25 @@ public final class PyEnv {
             response.setErrors(exception.getMessage());
         }
         return response;
+    }
+
+    public static SwitchWalletBean switchWallet(String walletId) throws Exception {
+        try {
+            String result = sCommands.callAttr("switch_wallet", walletId).toString();
+            return new Gson().fromJson(result, SwitchWalletBean.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw HardWareExceptions.exceptionConvert(e);
+        }
+    }
+
+    public static CurrentWalletBalanceBean getCurrentWallet() throws Exception {
+        try {
+            String result = sCommands.callAttr("get_wallet_balance").toString();
+            return new Gson().fromJson(result, CurrentWalletBalanceBean.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw HardWareExceptions.exceptionConvert(e);
+        }
     }
 }

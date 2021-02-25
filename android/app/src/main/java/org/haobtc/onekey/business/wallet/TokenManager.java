@@ -5,19 +5,18 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.TokenList;
 
 /** @Description: java类作用描述 @Author: peter Qin */
 public class TokenManager {
 
-    private static final String FILE_PATH =
-            MyApplication.getInstance().getFilesDir().getAbsolutePath()
-                    + "/"
-                    + "eth_token_list.json";
+    private static final String FILE_PATH = "eth_token_list.json";
 
     /**
      * 如果没网，就用本地文件存储的 TokenList 展示 如果能从服务器拿到数据，判断是否需要更新本地文件
@@ -59,7 +58,8 @@ public class TokenManager {
     public String getLocalTokenList() {
         try {
             // 创建字符流对象
-            FileReader reader = new FileReader(FILE_PATH);
+            InputStream open = MyApplication.getInstance().getAssets().open(FILE_PATH);
+            Reader reader = new InputStreamReader(open);
             // 创建字符串拼接
             StringBuilder builder = new StringBuilder();
             // 读取一个字符

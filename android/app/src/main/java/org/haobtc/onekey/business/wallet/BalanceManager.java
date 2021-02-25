@@ -11,6 +11,7 @@ import org.haobtc.onekey.bean.AllWalletBalanceInfoDTO;
 import org.haobtc.onekey.bean.BalanceBroadcastEventBean;
 import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
+import org.haobtc.onekey.bean.CurrentWalletBalanceBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.business.wallet.bean.ETHTokenBalanceBean;
 import org.haobtc.onekey.business.wallet.bean.TokenBalanceBean;
@@ -39,6 +40,15 @@ public class BalanceManager {
             return null;
         }
         return convert(balanceInfoDTO);
+    }
+
+    @Nullable
+    public CurrentWalletBalanceBean getCurrentBalance() {
+        try {
+            return PyEnv.getCurrentWallet();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**

@@ -19,6 +19,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.bean.SwitchWalletBean;
 import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
@@ -115,6 +116,26 @@ public class AccountManager {
                 .putString(CURRENT_SELECTED_WALLET_TYPE, info.getType())
                 .apply();
         return info;
+    }
+
+    @WorkerThread
+    @Nullable
+    public SwitchWalletBean getWalletAssets(String walletId) throws Exception {
+        try {
+            SwitchWalletBean switchWalletBean = PyEnv.switchWallet(walletId);
+            if (switchWalletBean == null) {
+                return null;
+            }
+            mPreferencesSharedPreferences
+                    .edit()
+                    .putString(
+                            org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME,
+                            switchWalletBean.getName())
+                    .apply();
+            return switchWalletBean;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**

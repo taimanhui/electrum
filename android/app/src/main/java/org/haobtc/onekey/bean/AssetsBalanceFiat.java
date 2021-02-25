@@ -16,6 +16,26 @@ public class AssetsBalanceFiat {
     private final String unit;
     private final String symbol;
 
+    public static AssetsBalanceFiat fromAmountAndUnit(
+            @NonNull String balanceAndUnit, @NonNull String symbol) {
+        String[] s = balanceAndUnit.split(" ");
+
+        String balance;
+        if (s.length > 0) {
+            balance = s[0].trim();
+        } else {
+            balance = AssetsKt.DEF_WALLET_FIAT_BALANCE.balance;
+        }
+
+        String unit;
+        if (s.length > 1) {
+            unit = s[1].trim();
+        } else {
+            unit = AssetsKt.DEF_WALLET_FIAT_BALANCE.unit;
+        }
+        return new AssetsBalanceFiat(balance, unit, symbol);
+    }
+
     public AssetsBalanceFiat(
             @NonNull String balance, @NonNull String unit, @NonNull String symbol) {
         this.balance =

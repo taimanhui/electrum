@@ -11,18 +11,23 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.haobtc.onekey.activities.base.MyApplication
+import org.haobtc.onekey.bean.Assets
 import org.haobtc.onekey.bean.AssetsBalance
 import org.haobtc.onekey.bean.AssetsBalanceFiat
 import org.haobtc.onekey.bean.CoinAssets
 import org.haobtc.onekey.bean.DEF_WALLET_FIAT_BALANCE
+import org.haobtc.onekey.bean.ERC20Assets
 import org.haobtc.onekey.bean.LocalImage
 import org.haobtc.onekey.bean.LocalWalletInfo
+import org.haobtc.onekey.bean.RemoteImage
 import org.haobtc.onekey.bean.WalletAccountInfo
 import org.haobtc.onekey.bean.WalletAccountInfo.Companion.convert
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.business.wallet.AccountManager
 import org.haobtc.onekey.business.wallet.BalanceManager
 import org.haobtc.onekey.business.wallet.SystemConfigManager
+import org.haobtc.onekey.business.wallet.TokenManager
+import org.haobtc.onekey.constant.Vm.CoinType.ETH
 import org.haobtc.onekey.constant.Vm.CoinType.convertByCallFlag
 import org.haobtc.onekey.event.CreateSuccessEvent
 import org.haobtc.onekey.event.LoadOtherWalletEvent
@@ -44,6 +49,7 @@ class AppWalletViewModel : ViewModel() {
   private val mBalanceManager = BalanceManager()
   private val mAssetsLogo = AssetsLogo()
   private val mAccountManager = AccountManager(MyApplication.getInstance())
+  private val mTokenManager = TokenManager()
   private val mSystemConfigManager = SystemConfigManager(MyApplication.getInstance())
 
   @JvmField
@@ -90,36 +96,89 @@ class AppWalletViewModel : ViewModel() {
     }
   }
 
-  private fun refreshBalance(walletAccountInfo: WalletAccountInfo?) {
-    mExecutorService.execute {
-      if (walletAccountInfo == null) {
-        return@execute
+  private fun refreshAssets(walletAccountInfo: WalletAccountInfo?): AssetsList? {
+    if (walletAccountInfo == null) {
+      return null
+    }
+    val walletAssets = mAccountManager.getWalletAssets(walletAccountInfo.id)
+    val assets = AssetsList()
+    val coinAssets = CoinAssets(
+        walletAccountInfo.coinType,
+        walletAccountInfo.coinType.coinName,
+        walletAccountInfo.coinType.digits,
+        "",
+        LocalImage(
+            mAssetsLogo.getLogoResources(walletAccountInfo.coinType))
+    )
+    assets.add(coinAssets)
+    walletAssets?.wallets
+        ?.filter { it.address.isNotEmpty() }
+        ?.forEach {
+          if (walletAccountInfo.coinType == ETH) {
+            mTokenManager.getTokenByAddress(it.address)?.let { tokenByAddress ->
+              assets.add(ERC20Assets(
+                  it.address,
+                  tokenByAddress.symbol,
+                  tokenByAddress.decimals,
+                  tokenByAddress.name,
+                  RemoteImage(tokenByAddress.icon),
+                  AssetsBalance("0", tokenByAddress.symbol)
+              ))
+            }
+          }
+        }
+    currentWalletAssetsList.postValue(assets)
+    return assets
+  }
+
+  private fun searchTokenName(assets: AssetsList, name: String): Assets? {
+    assets.forEach {
+      if (it.name.equals(name, ignoreCase = true)) {
+        return it
       }
-      val currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit(
-          walletAccountInfo.coinType)
-      val currentFiatUnitSymbol = mSystemConfigManager.currentFiatUnitSymbol
-      val balance = mBalanceManager.getBalanceByWalletId(walletAccountInfo.id)
-      val assets = AssetsList()
-      val coinAssets = CoinAssets(
-          walletAccountInfo.coinType,
-          walletAccountInfo.coinType.coinName,
-          walletAccountInfo.coinType.digits,
-          "",
-          LocalImage(
-              mAssetsLogo.getLogoResources(walletAccountInfo.coinType))
-      )
-      assets.add(coinAssets)
-      if (balance != null) {
-        currentWalletTotalBalanceFiat.postValue(AssetsBalanceFiat(
-            balance.balanceFiat!!,
-            currentFiatUnitSymbol.unit,
-            currentFiatUnitSymbol.symbol))
-        coinAssets.balance = AssetsBalance(balance.balance!!, currentBaseUnit)
-        coinAssets.balanceFiat = AssetsBalanceFiat(
-            balance.balanceFiat,
-            currentFiatUnitSymbol.unit,
+    }
+    return null
+  }
+
+  private fun refreshBalance(walletAccountInfo: WalletAccountInfo?, assets: AssetsList) {
+    if (walletAccountInfo == null) {
+      return
+    }
+    val currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit(
+        walletAccountInfo.coinType)
+    val currentFiatUnitSymbol = mSystemConfigManager.currentFiatUnitSymbol
+    val balance = mBalanceManager.currentBalance
+
+    balance?.allBalance?.let {
+      currentWalletTotalBalanceFiat.postValue(AssetsBalanceFiat.fromAmountAndUnit(
+          it,
+          currentFiatUnitSymbol.symbol))
+    }
+    val triggerMark = TriggerMark()
+    balance?.wallets?.forEachIndexed { index, walletBalanceBean ->
+      val generateUniqueId = if (index == 0) {
+        CoinAssets.generateUniqueId(convertByCallFlag(walletAccountInfo.name))
+      } else {
+        ERC20Assets.generateUniqueId(walletBalanceBean.contractAddress, walletAccountInfo.coinType)
+      }
+
+      assets.getByUniqueId(generateUniqueId)?.let {
+        val assetsBalance = AssetsBalance(walletBalanceBean.balance, currentBaseUnit)
+        val assetsBalanceFiat = AssetsBalanceFiat.fromAmountAndUnit(
+            walletBalanceBean.fiat,
             currentFiatUnitSymbol.symbol)
+        val setBalance = checkRepeatAssignment(it.balance, assetsBalance)
+        val setBalanceFiat = checkRepeatAssignment(it.balanceFiat, assetsBalanceFiat)
+        if (setBalance || setBalanceFiat) {
+          val newInstance = it.newInstance()
+          newInstance.balance = assetsBalance
+          newInstance.balanceFiat = assetsBalanceFiat
+          currentWalletAssetsList.value?.replace(newInstance)
+        }
+        triggerMark.trigger(setBalance || setBalanceFiat)
       }
+    }
+    if (triggerMark.isTriggered()) {
       currentWalletAssetsList.postValue(assets)
     }
   }
@@ -169,7 +228,6 @@ class AppWalletViewModel : ViewModel() {
   @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
   fun event(event: SecondEvent) {
     mExecutorService.execute {
-      Logger.e("SecondEvent " + event.msg)
       val eventBean = mBalanceManager.decodePythonBalanceNotice(event.msg)
       if (currentWalletAccountInfo.value == null) {
         return@execute
@@ -259,12 +317,26 @@ class AppWalletViewModel : ViewModel() {
     }
   }
 
+  private var mOldAccountName = ""
+
   init {
     EventBus.getDefault().register(this)
     refresh()
     currentWalletAccountInfo
         .observeForever { walletAccountInfo: WalletAccountInfo? ->
-          refreshBalance(walletAccountInfo)
+          mExecutorService.execute {
+            refreshAssets(walletAccountInfo)?.let {
+              if (walletAccountInfo?.id != mOldAccountName) {
+                // 切换账户清零总金额
+                val currentFiatUnitSymbol = mSystemConfigManager.currentFiatUnitSymbol
+                currentWalletTotalBalanceFiat.postValue(AssetsBalanceFiat(
+                    DEF_WALLET_FIAT_BALANCE.balance,
+                    currentFiatUnitSymbol.unit,
+                    currentFiatUnitSymbol.symbol))
+              }
+              refreshBalance(walletAccountInfo, it)
+            }
+          }
         }
   }
 }
