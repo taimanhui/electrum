@@ -8,6 +8,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 import java.util.Locale;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.bean.RemoteImage;
 import org.haobtc.onekey.bean.TokenList;
 
 /** @Description: 更多代币的适配器 @Author: peter Qin */
@@ -42,6 +43,7 @@ public class MoreTokenAdapter extends BaseQuickAdapter<TokenList.ERCToken, BaseV
                     setAddData(item, backGround, position);
                     mOnMoreSwitchClick.onMoreCheckedListener(item, isChecked);
                 });
+        new RemoteImage(item.icon).intoTarget(helper.getView(R.id.icon_img));
     }
 
     private void setAddData(TokenList.ERCToken item, RelativeLayout backGround, int position) {
