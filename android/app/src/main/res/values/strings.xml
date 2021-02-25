@@ -1318,4 +1318,5 @@
     <string name="my_tokens">我的代币</string>
     <string name="hot_token">热门代币</string>
     <string name="no_search">找不到搜索结果</string>
+    <string name="select_token">选择代币</string>
 </resources>

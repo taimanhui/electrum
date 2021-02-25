@@ -27,6 +27,7 @@ import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -68,6 +69,7 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.SelectTokenActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
@@ -87,6 +89,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private static final String EXT_WALLET_NAME = "hdWalletName";
     private static final String EXT_SCAN_ADDRESS = "addressScan";
     private static final String EXT_SCAN_AMOUNT = "amountScan";
+    private static final String EXT_TOKEN_NAME = "tokenName";
 
     public static void start(
             Context context, String name, @Nullable String address, @Nullable String amount) {
@@ -96,6 +99,13 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             intent.putExtra(EXT_SCAN_ADDRESS, address);
             intent.putExtra(EXT_SCAN_AMOUNT, amount);
         }
+        context.startActivity(intent);
+    }
+
+    public static void start(Context context, @Nullable String walletName, String tokenName) {
+        Intent intent = new Intent(context, SendEthActivity.class);
+        intent.putExtra(EXT_WALLET_NAME, walletName);
+        intent.putExtra(EXT_TOKEN_NAME, tokenName);
         context.startActivity(intent);
     }
 
@@ -261,6 +271,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private String mCurrentFee;
     private String mGasPrice;
 
+    private String mTokenName;
+
     /** init */
     @Override
     public void init() {
@@ -280,7 +292,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                         aLong -> getDefaultObservable())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::doDefaultInfo);
+                        .subscribe(
+                                response -> {
+                                    doDefaultInfo(response, true);
+                                });
         myLoopDisposable.add(mLoopDisposable);
     }
 
@@ -367,6 +382,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         currentWalletName = mAccountManager.getCurrentWalletName();
         localWalletByName = mAccountManager.getLocalWalletByName(currentWalletName);
         baseUnit = mSystemConfigManager.getCurrentBaseUnit(localWalletByName.getCoinType());
+        mTokenName = getIntent().getStringExtra(EXT_TOKEN_NAME);
         setMinAmount();
     }
 
@@ -401,7 +417,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
 
     @OnClick({
         R.id.img_back,
-        R.id.switch_coin_type,
+        R.id.switch_layout,
         R.id.text_max_amount,
         R.id.text_customize_fee_rate,
         R.id.linear_slow,
@@ -418,8 +434,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.switch_coin_type:
+            case R.id.switch_layout:
                 // not support
+                Logger.d("支持ERC-20Token");
+                SelectTokenActivity.start(mContext);
                 break;
             case R.id.text_max_amount:
                 if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
@@ -620,11 +638,11 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                         .doFinally(this::dismissProgress)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::doDefaultInfo);
+                        .subscribe(response -> doDefaultInfo(response, false));
         mCompositeDisposable.add(disposable);
     }
 
-    private void doDefaultInfo(PyResponse<String> data) {
+    private void doDefaultInfo(PyResponse<String> data, boolean isLoop) {
         String errors = data.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             mCurrentFeeDetails = CurrentFeeDetails.objectFromDate(data.getResult());
@@ -646,7 +664,9 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             doDealMaxAmount();
             changeButton();
         } else {
-            mToast(errors);
+            if (!isLoop) {
+                mToast(errors);
+            }
         }
     }
 
@@ -1216,7 +1236,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                             .doOnSubscribe(show -> showProgress())
                             .doFinally(this::dismissProgress)
                             .observeOn(AndroidSchedulers.mainThread())
-                            .doOnNext(this::doDefaultInfo)
+                            .doOnNext(response -> doDefaultInfo(response, false))
                             .subscribe();
             mCompositeDisposable.add(disposable);
         }
@@ -1370,8 +1390,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 }
             }
             editAmount.setFocusable(true);
-        } else {
-            mToast(mContext.getString(R.string.balance_zero));
         }
     }
 

@@ -146,6 +146,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @BindView(R.id.switch_coin_type)
     TextView switchCoinType;
 
+    @BindView(R.id.switch_icon)
+    ImageView switchIcon;
+
     @BindView(R.id.text_max_amount)
     TextView textMaxAmount;
 
@@ -274,6 +277,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         mWalletType = mAccountManager.getCurWalletType();
         baseUnit = mSystemConfigManager.getCurrentBaseUnit();
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
+        switchCoinType.setText(Vm.CoinType.BTC.coinName);
+        switchIcon.setVisibility(View.GONE);
         getDefaultFee();
         setMinAmount();
         editAmount.setFilters(
@@ -379,7 +384,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
 
     @OnClick({
         R.id.img_back,
-        R.id.switch_coin_type,
         R.id.text_max_amount,
         R.id.text_customize_fee_rate,
         R.id.linear_slow,
@@ -395,9 +399,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
-                break;
-            case R.id.switch_coin_type:
-                // not support
                 break;
             case R.id.text_max_amount:
                 if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
