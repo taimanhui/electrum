@@ -7,7 +7,7 @@ object BlockBrowserManager {
   private const val SAVE_UNIQUE_TAG = "setBlock"
   const val BLOCK_BROWSER_DEFAULT = "Default"
 
-  private val EMPTY_DEFAULT = object : BlockBrowser {
+  val BLOCK_EMPTY_DEFAULT = object : BlockBrowser {
     override fun uniqueTag() = BLOCK_BROWSER_DEFAULT
 
     override fun showName() = "Onekey Test"
@@ -19,6 +19,8 @@ object BlockBrowserManager {
     override fun browseTransactionDetailsUrl(txHash: String) = "https://onekey.so/"
 
     override fun browseBlockUrl(block: String) = "https://onekey.so/"
+
+    override fun browseContractAddressUrl(contractAddress: String, address: String) = "https://onekey.so/"
   }
 
   private val mPreferences by lazy {
@@ -31,6 +33,10 @@ object BlockBrowserManager {
 
   fun browseAddressUrl(coinType: Vm.CoinType, address: String): String {
     return getCurrentBlockBrowser(coinType).browseAddressUrl(address)
+  }
+
+  fun browseAddressUrl(coinType: Vm.CoinType, contractAddress: String, address: String): String {
+    return getCurrentBlockBrowser(coinType).browseContractAddressUrl(contractAddress, address)
   }
 
   fun browseTransactionDetailsUrl(coinType: Vm.CoinType, txHash: String): String {
@@ -48,7 +54,7 @@ object BlockBrowserManager {
   fun getCurrentBlockBrowser(coinType: Vm.CoinType): BlockBrowser {
     val blockBrowserList = getBlockBrowserList(coinType)
     val key = mPreferences.getString(getSaveTag(coinType), BLOCK_BROWSER_DEFAULT)
-    return blockBrowserList.getOrElse(key ?: BLOCK_BROWSER_DEFAULT) { EMPTY_DEFAULT }
+    return blockBrowserList.getOrElse(key ?: BLOCK_BROWSER_DEFAULT) { BLOCK_EMPTY_DEFAULT }
   }
 
   fun getBlockBrowserList(coinType: Vm.CoinType): Map<String, BlockBrowser> {
@@ -65,7 +71,7 @@ object BlockBrowserManager {
       coinType == Vm.CoinType.BTC && Vm.getBTCNetwork() == Vm.BTCNetworkType.TestNet -> {
         getBlockBrowserBTCTest()
       }
-      else -> mapOf(Pair(BLOCK_BROWSER_DEFAULT, EMPTY_DEFAULT))
+      else -> mapOf(Pair(BLOCK_BROWSER_DEFAULT, BLOCK_EMPTY_DEFAULT))
     }
   }
 }

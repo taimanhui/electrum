@@ -19,6 +19,7 @@ abstract class BlockBrowserEthMain(val url: String) : ETHBlockBrowser {
   override fun showName() = url()
   override fun url() = url
   override fun uniqueTag() = "${blockBrowserTag()}ETHMain"
+  override fun browseContractAddressUrl(contractAddress: String, address: String) = browseAddressUrl(address)
   abstract fun blockBrowserTag(): String
 
   class EtherScanCN : BlockBrowserEthMain("https://cn.etherscan.com/") {
@@ -27,6 +28,7 @@ abstract class BlockBrowserEthMain(val url: String) : ETHBlockBrowser {
     override fun browseBlockUrl(block: String) = "${url()}block/$block"
     override fun uniqueTag() = BlockBrowserManager.BLOCK_BROWSER_DEFAULT
     override fun blockBrowserTag() = "EtherScanCN"
+    override fun browseContractAddressUrl(contractAddress: String, address: String) = "${url()}token/$contractAddress?a=$address"
   }
 
   class EtherScan : BlockBrowserEthMain("https://etherscan.io/") {
@@ -34,6 +36,7 @@ abstract class BlockBrowserEthMain(val url: String) : ETHBlockBrowser {
     override fun browseTransactionDetailsUrl(txHash: String) = "${url()}tx/$txHash"
     override fun browseBlockUrl(block: String) = "${url()}block/$block"
     override fun blockBrowserTag() = "EtherScan"
+    override fun browseContractAddressUrl(contractAddress: String, address: String) = "${url()}token/$contractAddress?a=$address"
   }
 
   class OkLink : BlockBrowserEthMain("https://www.oklink.com/") {

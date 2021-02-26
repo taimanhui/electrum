@@ -13,6 +13,7 @@ abstract class BlockBrowserEthRopsten(val url: String) : ETHBlockBrowser {
   override fun showName() = url()
   override fun url() = url
   override fun uniqueTag() = "${blockBrowserTag()}ETHRopsten"
+  override fun browseContractAddressUrl(contractAddress: String, address: String) = browseAddressUrl(address)
   abstract fun blockBrowserTag(): String
 
   class BitAps : BlockBrowserEthRopsten("https://teth.bitaps.com/") {
@@ -27,6 +28,7 @@ abstract class BlockBrowserEthRopsten(val url: String) : ETHBlockBrowser {
     override fun browseAddressUrl(address: String) = "${url()}address/$address"
     override fun browseTransactionDetailsUrl(txHash: String) = "${url()}tx/$txHash"
     override fun browseBlockUrl(block: String) = "${url()}block/$block"
+    override fun browseContractAddressUrl(contractAddress: String, address: String) = "${url()}token/$contractAddress?a=$address"
     override fun blockBrowserTag() = "EtherScan"
   }
 
