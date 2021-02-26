@@ -302,23 +302,8 @@ class AppWalletViewModel : ViewModel() {
   private fun setCurrentWalletInfo(info: LocalWalletInfo?) {
     setCurrentWalletInfo(convert(info))
   }
-
-  private fun convert(info: LocalWalletInfo?): WalletAccountInfo? {
-    return if (info == null) {
-      null
-    } else {
-      convert(
-          info.type,
-          info.addr,
-          info.name,
-          info.label,
-          info.deviceId
-      )
-    }
-  }
-
+  
   private var mOldAccountName = ""
-
   init {
     EventBus.getDefault().register(this)
     refresh()
@@ -338,6 +323,22 @@ class AppWalletViewModel : ViewModel() {
             }
           }
         }
+  }
+
+  companion object{
+    fun convert(info: LocalWalletInfo?): WalletAccountInfo? {
+      return if (info == null) {
+        null
+      } else {
+        convert(
+            info.type,
+            info.addr,
+            info.name,
+            info.label,
+            info.deviceId
+        )
+      }
+    }
   }
 }
 

@@ -31,6 +31,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.BleConnectedEvent;
@@ -241,13 +242,10 @@ public class TransactionDetailWalletActivity extends BaseActivity
 
                 break;
             case R.id.btn_collect:
-                Intent intent3 = new Intent(this, ReceiveHDActivity.class);
-                if (!Strings.isNullOrEmpty(bleMac)) {
-                    intent3.putExtra(
-                            org.haobtc.onekey.constant.Constant.WALLET_TYPE,
-                            org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);
+                WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
+                if (value != null) {
+                    ReceiveHDActivity.start(this, value.getId());
                 }
-                startActivity(intent3);
                 break;
             default:
         }

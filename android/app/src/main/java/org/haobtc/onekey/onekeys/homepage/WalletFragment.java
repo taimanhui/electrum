@@ -470,14 +470,10 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 startActivity(intent);
                 break;
             case R.id.linear_receive:
-                Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
-                int i = Vm.convertWalletType(nowType);
-                if (i == Vm.WalletType.HARDWARE) {
-                    intent3.putExtra(
-                            org.haobtc.onekey.constant.Constant.WALLET_TYPE,
-                            org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);
+                WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
+                if (value != null) {
+                    ReceiveHDActivity.start(getActivity(), value.getId());
                 }
-                startActivity(intent3);
                 break;
             case R.id.linear_sign:
                 Intent intent8 = new Intent(getActivity(), SignActivity.class);

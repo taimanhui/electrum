@@ -2,8 +2,8 @@ package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.lifecycle.ViewModelProvider;
 import butterknife.BindView;
 import butterknife.OnClick;
 import com.chaquo.python.PyObject;
@@ -38,8 +39,12 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
+import org.haobtc.onekey.bean.Assets;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
-import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.WalletAccountInfo;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
+import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.ButtonRequestEvent;
@@ -55,9 +60,24 @@ import org.haobtc.onekey.ui.dialog.custom.CustomCenterDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.ImageUtils;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 /** @author liyan */
 public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask.Helper {
+
+    private static final String EXT_ASSETS_ID = "ext_assets_id";
+    private static final String EXT_WALLET_ID = "ext_wallet_id";
+
+    public static void start(Context context, String walletId) {
+        start(context, walletId, -1);
+    }
+
+    public static void start(Context context, String walletId, int assetsId) {
+        Intent intent = new Intent(context, ReceiveHDActivity.class);
+        intent.putExtra(EXT_ASSETS_ID, assetsId);
+        intent.putExtra(EXT_WALLET_ID, walletId);
+        context.startActivity(intent);
+    }
 
     @BindView(R.id.img_type)
     ImageView imgType;
@@ -116,40 +136,71 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
     @BindView(R.id.verify_d)
     LinearLayout verifyD;
 
+    private int mAssetsID;
+    private String mWalletId;
     private RxPermissions rxPermissions;
     private Bitmap bitmap;
-    private int walletType;
     private String address;
     private Disposable subscriber;
-    private String mShowWalletInfo;
-    private Vm.CoinType mShowWalletType;
+    private Vm.CoinType mCoinType;
+    @Vm.WalletType private int mWalletType;
 
     /** init */
     @Override
     public void init() {
-        walletType = getIntent().getIntExtra(Constant.WALLET_TYPE, 0);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        mShowWalletInfo = preferences.getString(Constant.CURRENT_SELECTED_WALLET_TYPE, "");
-        mShowWalletType = Vm.convertCoinType(mShowWalletInfo);
-        rxPermissions = new RxPermissions(this);
-        if (mShowWalletInfo.contains("eth")) {
-            Drawable drawable =
-                    ResourcesCompat.getDrawable(getResources(), R.drawable.token_eth, null);
-            imgType.setImageDrawable(drawable);
-            tvShowSwipeHint.setText(R.string.scan_input_eth);
-
-            imgShowTokenLogo.setImageDrawable(drawable);
-            textSendType.setText(String.format("%s ETH", getString(R.string.scan_send)));
-            textWalletAddressText.setText(
-                    String.format("ETH %s", getString(R.string.wallet_address)));
-        } else {
-            if (mShowWalletInfo.equals(Constant.BTC_WATCH)) {
-                showWatchTipDialog();
-            }
-            textSendType.setText(String.format("%s BTC", getString(R.string.scan_send)));
-            textWalletAddressText.setText(
-                    String.format("BTC %s", getString(R.string.wallet_address)));
+        mWalletId = getIntent().getStringExtra(EXT_WALLET_ID);
+        if (mWalletId == null) {
+            finish();
         }
+        AccountManager accountManager = new AccountManager(this);
+        LocalWalletInfo localWalletByName = accountManager.getLocalWalletByName(mWalletId);
+        if (localWalletByName == null) {
+            finish();
+        }
+
+        AppWalletViewModel appWalletViewModel =
+                new ViewModelProvider(((MyApplication) getApplicationContext()))
+                        .get(AppWalletViewModel.class);
+
+        WalletAccountInfo walletInfo = AppWalletViewModel.Companion.convert(localWalletByName);
+
+        mAssetsID = getIntent().getIntExtra(EXT_ASSETS_ID, -1);
+
+        mWalletType = walletInfo.getWalletType();
+        mCoinType = walletInfo.getCoinType();
+
+        rxPermissions = new RxPermissions(this);
+        if (mWalletType == Vm.WalletType.IMPORT_WATCH) {
+            showWatchTipDialog();
+        }
+        String currencySymbol;
+        Drawable assetsDrawable = null;
+        Assets assets = null;
+        if (mAssetsID != -1) {
+            assets = appWalletViewModel.currentWalletAssetsList.getValue().getByUniqueId(mAssetsID);
+            currencySymbol = assets.getName();
+        } else {
+            currencySymbol = walletInfo.getCoinType().coinName;
+            assetsDrawable =
+                    ResourcesCompat.getDrawable(
+                            getResources(),
+                            new AssetsLogo().getLogoResources(walletInfo.getCoinType()),
+                            null);
+        }
+
+        textSendType.setText(String.format("%s %s", getString(R.string.scan_send), currencySymbol));
+        textWalletAddressText.setText(
+                String.format("%s %s", currencySymbol, getString(R.string.wallet_address)));
+        tvShowSwipeHint.setText(String.format(getString(R.string.scan_input), currencySymbol));
+
+        if (assetsDrawable != null) {
+            imgType.setImageDrawable(assetsDrawable);
+            imgShowTokenLogo.setImageDrawable(assetsDrawable);
+        } else if (assets != null) {
+            assets.getLogo().intoTarget(imgType);
+            assets.getLogo().intoTarget(imgShowTokenLogo);
+        }
+
         // whether backup
         try {
             boolean isBackup = PyEnv.hasBackup(getActivity());
@@ -224,16 +275,8 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
             textReceiveAddress.setText(address);
             textWalletAddress.setText(address);
             bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
-            switch (walletType) {
-                case Constant.WALLET_TYPE_SOFTWARE:
-                    needVerifyLayout.setVisibility(View.GONE);
-                    receivePaymentLayout.setVisibility(View.VISIBLE);
-                    verifyD.setVisibility(View.GONE);
-                    normalLayout.setVisibility(View.VISIBLE);
-                    imgOrcode.setImageBitmap(bitmap);
-                    imgShareQrcode.setImageBitmap(bitmap);
-                    break;
-                case Constant.WALLET_TYPE_HARDWARE_PERSONAL:
+            switch (mWalletType) {
+                case Vm.WalletType.HARDWARE:
                     textReceiveAddress.setText(
                             String.format(
                                     Locale.ENGLISH,
@@ -241,6 +284,14 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                                     address.substring(0, 6),
                                     address.substring(address.length() - 6)));
                     imgOrcode.setImageResource(R.drawable.qrcode_shade);
+                    break;
+                default:
+                    needVerifyLayout.setVisibility(View.GONE);
+                    receivePaymentLayout.setVisibility(View.VISIBLE);
+                    verifyD.setVisibility(View.GONE);
+                    normalLayout.setVisibility(View.VISIBLE);
+                    imgOrcode.setImageBitmap(bitmap);
+                    imgShareQrcode.setImageBitmap(bitmap);
                     break;
             }
         }
@@ -348,7 +399,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                         BusinessAsyncTask.SHOW_ADDRESS,
                         address,
                         MyApplication.getInstance().getDeviceWay(),
-                        mShowWalletType.callFlag);
+                        mCoinType.callFlag);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
