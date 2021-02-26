@@ -15,34 +15,30 @@
  */
 
 package com.yzq.zxinglibrary.android;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Toast;
-
 import com.google.gson.JsonSyntaxException;
 import com.google.zxing.Result;
-import com.yzq.zxinglibrary.R;
 import com.yzq.zxinglibrary.bean.PsbtData;
 import com.yzq.zxinglibrary.camera.CameraManager;
 import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.decode.DecodeThread;
 import com.yzq.zxinglibrary.view.ViewfinderResultPointCallback;
-
 import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * This class handles all the messaging which comprises the state machine for
- * capture. 该类用于处理有关拍摄状态的所有信息
+ * This class handles all the messaging which comprises the state machine for capture.
+ * 该类用于处理有关拍摄状态的所有信息
  *
  * @author dswitkin@google.com (Daniel Switkin)
  */
 public final class CaptureActivityHandler extends Handler {
 
-    private static final String TAG = CaptureActivityHandler.class
-            .getSimpleName();
+    private static final String TAG = CaptureActivityHandler.class.getSimpleName();
 
     private final CaptureActivity activity;
     private final DecodeThread decodeThread;
@@ -52,13 +48,16 @@ public final class CaptureActivityHandler extends Handler {
     private PsbtData[] datas;
 
     private enum State {
-        PREVIEW, SUCCESS, DONE
+        PREVIEW,
+        SUCCESS,
+        DONE
     }
 
     public CaptureActivityHandler(CaptureActivity activity, CameraManager cameraManager) {
         this.activity = activity;
-        decodeThread = new DecodeThread(activity, new ViewfinderResultPointCallback(
-                activity.getViewfinderView()));
+        decodeThread =
+                new DecodeThread(
+                        activity, new ViewfinderResultPointCallback(activity.getViewfinderView()));
         decodeThread.start();
         state = State.SUCCESS;
 
@@ -83,7 +82,7 @@ public final class CaptureActivityHandler extends Handler {
                 try {
                     PsbtData data = PsbtData.objectFromData(text);
                     if (data.getTotal() == 0 || "".equals(data.getCheckSum())) {
-                       throw new JsonSyntaxException("bad format");
+                        throw new JsonSyntaxException("bad format");
                     }
                     if (datas == null) {
                         datas = new PsbtData[data.getTotal()];
@@ -94,22 +93,21 @@ public final class CaptureActivityHandler extends Handler {
                     // publishProgress();
                 } catch (JsonSyntaxException e) {
                     e.printStackTrace();
-                    //not json return
+                    // not json return
                     state = State.SUCCESS;
                     activity.handleDecode(text);
                     return;
                 }
                 if (Arrays.stream(datas).anyMatch(Objects::isNull)) {
                     state = State.PREVIEW;
-                    cameraManager.requestPreviewFrame(decodeThread.getHandler(),
-                            Constant.DECODE);
+                    cameraManager.requestPreviewFrame(decodeThread.getHandler(), Constant.DECODE);
                 } else {
                     state = State.SUCCESS;
                     Arrays.asList(datas).forEach((psbtData -> result.append(psbtData.getValue())));
                     activity.handleDecode(result.toString());
                 }
-//                state = State.SUCCESS;
-//                activity.handleDecode((Result) message.obj);
+                //                state = State.SUCCESS;
+                //                activity.handleDecode((Result) message.obj);
 
                 break;
             case Constant.DECODE_FAILED:
@@ -117,8 +115,7 @@ public final class CaptureActivityHandler extends Handler {
                 // 尽可能快的解码，以便可以在解码失败时，开始另一次解码
 
                 state = State.PREVIEW;
-                cameraManager.requestPreviewFrame(decodeThread.getHandler(),
-                        Constant.DECODE);
+                cameraManager.requestPreviewFrame(decodeThread.getHandler(), Constant.DECODE);
                 break;
             case Constant.RETURN_SCAN_RESULT:
                 activity.setResult(Activity.RESULT_OK, (Intent) message.obj);
@@ -134,9 +131,7 @@ public final class CaptureActivityHandler extends Handler {
         }
     }
 
-    /**
-     * 完全退出
-     */
+    /** 完全退出 */
     public void quitSynchronously() {
         state = State.DONE;
         cameraManager.stopPreview();
@@ -151,7 +146,7 @@ public final class CaptureActivityHandler extends Handler {
         }
 
         // Be absolutely sure we don't send any queued up messages
-        //确保不会发送任何队列消息
+        // 确保不会发送任何队列消息
         removeMessages(Constant.DECODE_SUCCEEDED);
         removeMessages(Constant.DECODE_FAILED);
     }
@@ -159,10 +154,12 @@ public final class CaptureActivityHandler extends Handler {
     public void restartPreviewAndDecode() {
         if (state == State.SUCCESS) {
             state = State.PREVIEW;
-            cameraManager.requestPreviewFrame(decodeThread.getHandler(),
-                    Constant.DECODE);
+            cameraManager.requestPreviewFrame(decodeThread.getHandler(), Constant.DECODE);
             activity.drawViewfinder();
         }
     }
 
+    public void restartPreviewAndDecodeDelayed(long second) {
+        decodeThread.getHandler().postDelayed(this::restartPreviewAndDecode, second);
+    }
 }

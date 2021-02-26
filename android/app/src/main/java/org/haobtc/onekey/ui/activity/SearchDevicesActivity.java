@@ -59,6 +59,15 @@ public class SearchDevicesActivity extends BaseActivity
 
     public static final int REQUEST_ID = 65578;
 
+    public static void startSearchADevice(Activity activity, String deviceId, int requestCode) {
+        Intent intent = new Intent(activity, SearchDevicesActivity.class);
+        intent.putExtra(
+                org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE,
+                org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
+        intent.putExtra(org.haobtc.onekey.constant.Constant.DEVICE_ID, deviceId);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
     @BindView(R.id.open_wallet_hide)
     protected TextView mOpenWalletHide;
 
@@ -320,6 +329,7 @@ public class SearchDevicesActivity extends BaseActivity
                                             .show(getSupportFragmentManager(), "");
                                     return;
                                 }
+                                setResult(Activity.RESULT_OK);
                                 EventBus.getDefault().post(new BleConnectedEvent());
                             } else {
                                 showToast(getString(R.string.hard_tip3));

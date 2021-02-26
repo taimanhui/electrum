@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.orhanobut.logger.Logger
 import org.haobtc.onekey.bean.Assets
 import org.haobtc.onekey.databinding.HomeItemBinding
 
@@ -16,7 +15,6 @@ class WalletAssetsAdapter : ListAdapter<Assets, WalletAssetsAdapter.AssetsViewHo
   companion object {
     const val EXT_PAYLOAD_AMOUNT = "amount"
     const val EXT_PAYLOAD_AMOUNT_FIAT = "amount_fiat"
-    const val EXT_PAYLOAD_LOGO = "logo"
     const val PAYLOAD_FLAG = 1
   }
 
@@ -85,9 +83,6 @@ class WalletAssetsAdapter : ListAdapter<Assets, WalletAssetsAdapter.AssetsViewHo
             String.format(
                 "%s %s", item.balanceFiat.symbol, item.balanceFiat.balanceFormat))
       }
-      if (bundle.getInt(EXT_PAYLOAD_LOGO, 0) == PAYLOAD_FLAG) {
-        item.logo.intoTarget(holder.bind.ivAssetsLogo)
-      }
     }
   }
 
@@ -119,9 +114,6 @@ class AssetsDiff : DiffUtil.ItemCallback<Assets>() {
     if (oldItem.balanceFiat != newItem.balanceFiat) {
       return false
     }
-    if (oldItem.logo != newItem.logo) {
-      return false
-    }
     return true
   }
 
@@ -131,16 +123,10 @@ class AssetsDiff : DiffUtil.ItemCallback<Assets>() {
   override fun getChangePayload(oldItem: Assets, newItem: Assets): Any? {
     val diffBundle = Bundle()
     if (oldItem.balance != newItem.balance) {
-      Logger.e("ChangePayload =====  balance")
       diffBundle.putInt(WalletAssetsAdapter.EXT_PAYLOAD_AMOUNT, WalletAssetsAdapter.PAYLOAD_FLAG)
     }
     if (oldItem.balanceFiat != newItem.balanceFiat) {
-      Logger.e("ChangePayload =====  balanceFiat")
       diffBundle.putInt(WalletAssetsAdapter.EXT_PAYLOAD_AMOUNT_FIAT, WalletAssetsAdapter.PAYLOAD_FLAG)
-    }
-    if (oldItem.logo != newItem.logo) {
-      Logger.e("ChangePayload =====  logo")
-      diffBundle.putInt(WalletAssetsAdapter.EXT_PAYLOAD_LOGO, WalletAssetsAdapter.PAYLOAD_FLAG)
     }
     if (diffBundle.size() > 0) {
       return diffBundle

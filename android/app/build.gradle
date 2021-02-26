@@ -312,6 +312,7 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.12.0'
     implementation 'com.yqritc:recyclerview-flexibledivider:1.4.0'
     implementation 'com.github.Zhao-Yan-Yan:MultiStatePage:1.1.1'
+    implementation 'com.noober.background:core:1.6.5'
 }
 
 // 为 lint 任务设置别名

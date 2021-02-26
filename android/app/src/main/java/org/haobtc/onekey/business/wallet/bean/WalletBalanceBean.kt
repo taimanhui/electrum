@@ -10,7 +10,11 @@ data class WalletBalanceBean(
     val tokens: List<TokenBalanceBean> = arrayListOf(),
     val name: String,
     val label: String
-)
+){
+  override fun toString(): String {
+    return "WalletBalanceBean(coinType=$coinType, balance=$balance, balanceFiat=$balanceFiat, balanceFiaUnit=$balanceFiaUnit, tokens=$tokens, name='$name', label='$label')"
+  }
+}
 
 interface TokenBalanceBean {
   fun getTokenID(): String

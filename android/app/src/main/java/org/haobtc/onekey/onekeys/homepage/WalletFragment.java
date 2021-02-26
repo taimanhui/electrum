@@ -1,9 +1,10 @@
 package org.haobtc.onekey.onekeys.homepage;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 import android.Manifest;
 import android.content.Intent;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,24 +12,18 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.IdRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.chaquo.python.PyObject;
+import butterknife.BindView;
+import butterknife.OnClick;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.util.SmartUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-import com.yzq.zxinglibrary.android.CaptureActivity;
-import com.yzq.zxinglibrary.bean.ZxingConfig;
-import com.yzq.zxinglibrary.common.Constant;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -37,7 +32,6 @@ import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
-import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.business.wallet.AccountManager;
@@ -51,7 +45,6 @@ import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.RefreshEvent;
-import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
@@ -59,12 +52,12 @@ import org.haobtc.onekey.onekeys.TokenManagerActivity;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateLocalMainWalletActivity;
-import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendEthActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
+import org.haobtc.onekey.ui.activity.OnekeyScanQrActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.adapter.WalletAssetsAdapter;
 import org.haobtc.onekey.ui.base.BaseFragment;
@@ -73,15 +66,6 @@ import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.haobtc.onekey.viewmodel.NetworkViewModel;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import io.reactivex.functions.Consumer;
-
-import static android.app.Activity.RESULT_OK;
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 /** @author jinxiaomin */
 public class WalletFragment extends BaseFragment implements TextWatcher {
@@ -538,96 +522,21 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         mAppWalletViewModel.refreshWalletInfo();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // Scan QR code / barcode return
-        if (requestCode == 0 && resultCode == RESULT_OK) {
-            if (data != null) {
-                String content = data.getStringExtra(Constant.CODED_CONTENT);
-                if (!TextUtils.isEmpty(content)) {
-                    PyObject parseQr;
-                    try {
-                        parseQr = Daemon.commands.callAttr("parse_pr", content);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(
-                                        getActivity(),
-                                        HardWareExceptions.getExceptionString(e),
-                                        Toast.LENGTH_SHORT)
-                                .show();
-                        return;
-                    }
-                    if (parseQr.toString().length() > 2) {
-                        String strParse = parseQr.toString();
-                        String substring = strParse.substring(20);
-                        String detailScan = substring.substring(0, substring.length() - 1);
-                        try {
-                            JSONObject jsonObject = new JSONObject(strParse);
-                            int type = jsonObject.getInt("type");
-                            Gson gson = new Gson();
-                            if (type == 1) {
-                                MainSweepcodeBean mainSweepcodeBean =
-                                        gson.fromJson(strParse, MainSweepcodeBean.class);
-                                MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
-                                String address = listData.getAddress();
-                                if (!mAccountManager
-                                        .getCurWalletType()
-                                        .equalsIgnoreCase(listData.getCoin().callFlag)) {
-                                    showToast(R.string.hint_temp_scan_inconformity);
-                                    return;
-                                }
-                                switch (listData.getCoin()) {
-                                    case BTC:
-                                        SendHdActivity.start(
-                                                getActivity(),
-                                                textWalletName.getText().toString(),
-                                                address,
-                                                listData.getAmount());
-                                        break;
-                                    case ETH:
-                                        SendEthActivity.start(
-                                                getActivity(),
-                                                textWalletName.getText().toString(),
-                                                address,
-                                                listData.getAmount());
-                                        break;
-                                }
-                            } else if (type == 2) {
-                                Intent intent =
-                                        new Intent(getActivity(), DetailTransactionActivity.class);
-                                intent.putExtra("scanDetail", detailScan);
-                                intent.putExtra("detailType", "homeScanDetail");
-                                startActivity(intent);
-                            } else {
-                                showToast(R.string.address_wrong);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            showToast(R.string.address_wrong);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     @SingleClick(value = 1000L)
     @OnClick({
-            R.id.rel_check_wallet,
-            R.id.img_scan,
-            R.id.img_Add,
-            R.id.rel_create_hd,
-            R.id.rel_recovery_hd,
-            R.id.rel_pair_hard,
-            R.id.rel_wallet_detail,
-            R.id.linear_send,
-            R.id.linear_receive,
-            R.id.linear_sign,
-            R.id.rel_now_back_up,
-            R.id.img_bottom,
-            R.id.img_add_token
-
+        R.id.rel_check_wallet,
+        R.id.img_scan,
+        R.id.img_Add,
+        R.id.rel_create_hd,
+        R.id.rel_recovery_hd,
+        R.id.rel_pair_hard,
+        R.id.rel_wallet_detail,
+        R.id.linear_send,
+        R.id.linear_receive,
+        R.id.linear_sign,
+        R.id.rel_now_back_up,
+        R.id.img_bottom,
+        R.id.img_add_token
     })
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -639,32 +548,18 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
                         .subscribe(
-                                new Consumer<Boolean>() {
-                                    @Override
-                                    public void accept(Boolean granted) throws Exception {
-                                        if (granted) {
-                                            // Always true pre-M
-                                            // If you have already authorized it, you can directly
-                                            // jump to the QR code scanning interface
-                                            Intent intent2 =
-                                                    new Intent(
-                                                            getActivity(), CaptureActivity.class);
-                                            ZxingConfig config = new ZxingConfig();
-                                            config.setPlayBeep(true);
-                                            config.setShake(true);
-                                            config.setDecodeBarCode(false);
-                                            config.setFullScreenScan(true);
-                                            config.setShowAlbum(false);
-                                            config.setShowbottomLayout(false);
-                                            intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                                            startActivityForResult(intent2, REQUEST_CODE);
-                                        } else {
-                                            Toast.makeText(
-                                                    getActivity(),
-                                                    R.string.photopersion,
-                                                    Toast.LENGTH_SHORT)
-                                                    .show();
-                                        }
+                                granted -> {
+                                    if (granted) {
+                                        OnekeyScanQrActivity.start(
+                                                WalletFragment.this,
+                                                textWalletName.getText().toString(),
+                                                REQUEST_CODE);
+                                    } else {
+                                        Toast.makeText(
+                                                        getActivity(),
+                                                        R.string.photopersion,
+                                                        Toast.LENGTH_SHORT)
+                                                .show();
                                     }
                                 });
                 break;

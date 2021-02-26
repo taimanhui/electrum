@@ -2,50 +2,13 @@ package org.haobtc.onekey.bean
 
 import androidx.annotation.Keep
 import com.google.common.base.Objects
-import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.constant.Vm.CoinType
-import org.haobtc.onekey.constant.Vm.HardwareType
-import org.haobtc.onekey.constant.Vm.WalletType
 import java.math.BigDecimal
+import java.util.*
 
 @JvmField
 val DEF_WALLET_FIAT_BALANCE = AssetsBalanceFiat("0", "CNY", "¥")
 fun defWalletBalance(defUnit: String) = AssetsBalance(BigDecimal.ZERO, defUnit)
-
-data class WalletAccountInfo(
-    val coinType: CoinType,
-    val id: String,
-    var name: String,
-
-    @WalletType
-    val walletType: Int,
-    val address: String,
-    @Deprecated("Transitioned fields")
-    val type: String,
-    @HardwareType
-    val deviceType: Int = HardwareType.OneKey,
-    val deviceId: String? = null,
-) {
-  companion object {
-    @JvmStatic
-    fun convert(type: String,
-                addr: String,
-                name: String,
-                label: String,
-                deviceId: String? = null): WalletAccountInfo {
-      return WalletAccountInfo(
-          Vm.convertCoinType(type),
-          name,
-          label,
-          Vm.convertWalletType(type),
-          addr,
-          type,
-          HardwareType.OneKey,
-          deviceId
-      )
-    }
-  }
-}
 
 /**
  * 子类记得复写 hashCode
@@ -111,7 +74,6 @@ class CoinAssets @JvmOverloads constructor(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
-    if (hashCode() != other.hashCode()) return false
     return true
   }
 }
@@ -128,7 +90,9 @@ class ERC20Assets @JvmOverloads constructor(
   companion object {
     @JvmStatic
     fun generateUniqueId(contractAddress: String, coinType: CoinType): Int {
-      return Objects.hashCode("erc20", contractAddress, coinType.coinName)
+      return Objects.hashCode("erc20",
+          contractAddress.replace("0x", "").replace("0X", "").toLowerCase(Locale.ROOT),
+          coinType.coinName)
     }
   }
 
@@ -151,7 +115,6 @@ class ERC20Assets @JvmOverloads constructor(
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
-    if (hashCode() != other.hashCode()) return false
     return true
   }
 }

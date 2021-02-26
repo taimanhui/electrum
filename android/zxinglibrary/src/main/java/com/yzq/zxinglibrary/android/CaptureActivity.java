@@ -20,12 +20,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.LinearLayoutCompat;
-
 import com.google.zxing.Result;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.R;
@@ -36,17 +34,15 @@ import com.yzq.zxinglibrary.decode.DecodeImgCallback;
 import com.yzq.zxinglibrary.decode.DecodeImgThread;
 import com.yzq.zxinglibrary.decode.ImageUtil;
 import com.yzq.zxinglibrary.view.ViewfinderView;
-
 import java.io.IOException;
-
 
 /**
  * @author: yzq
  * @date: 2017/10/26 15:22
  * @declare :扫一扫
  */
-
-public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.Callback, View.OnClickListener {
+public class CaptureActivity extends AppCompatActivity
+        implements SurfaceHolder.Callback, View.OnClickListener {
 
     private static final String TAG = CaptureActivity.class.getSimpleName();
     public ZxingConfig config;
@@ -59,14 +55,13 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     private LinearLayoutCompat albumLayout;
     private LinearLayoutCompat bottomLayout;
     private boolean hasSurface;
-    private InactivityTimer inactivityTimer;
-    private BeepManager beepManager;
+    protected InactivityTimer inactivityTimer;
+    protected BeepManager beepManager;
     private CameraManager cameraManager;
-    private CaptureActivityHandler handler;
+    protected CaptureActivityHandler handler;
     private SurfaceHolder surfaceHolder;
     private LinearLayout flightLayout;
     private RxPermissions rxPermissions;
-
 
     public ViewfinderView getViewfinderView() {
         return viewfinderView;
@@ -83,7 +78,6 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     public void drawViewfinder() {
         viewfinderView.drawViewfinder();
     }
-
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -112,9 +106,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
             config = new ZxingConfig();
         }
 
-
         setContentView(R.layout.activity_capture);
-
 
         initView();
 
@@ -124,10 +116,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         beepManager = new BeepManager(this);
         beepManager.setPlayBeep(config.isPlayBeep());
         beepManager.setVibrate(config.isShake());
-
-
     }
-
 
     private void initView() {
         previewView = findViewById(R.id.preview_view);
@@ -135,7 +124,6 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
 
         viewfinderView = findViewById(R.id.viewfinder_view);
         viewfinderView.setZxingConfig(config);
-
 
         backIv = findViewById(R.id.backIv);
         backIv.setOnClickListener(this);
@@ -154,11 +142,9 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         flightLayout = findViewById(R.id.turn_flight_ll);
         flightLayout.setOnClickListener(this);
 
-
         switchVisibility(bottomLayout, config.isShowbottomLayout());
         switchVisibility(flashLightLayout, config.isShowFlashLight());
         switchVisibility(albumLayout, config.isShowAlbum());
-
 
         /*有闪光灯就显示手电筒按钮  否则不显示*/
         if (isSupportCameraLedFlash(getPackageManager())) {
@@ -166,9 +152,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         } else {
             flashLightLayout.setVisibility(View.GONE);
         }
-
     }
-
 
     /**
      * @param pm
@@ -188,9 +172,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         return false;
     }
 
-    /**
-     * @param flashState 切换闪光灯图片
-     */
+    /** @param flashState 切换闪光灯图片 */
     public void switchFlashImg(int flashState) {
 
         if (flashState == Constant.FLASH_OPEN) {
@@ -200,12 +182,9 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
             flashLightIv.setImageResource(R.drawable.ic_close);
             flashLightTv.setText(R.string.open_flash);
         }
-
     }
 
-    /**
-     * @param rawResult 返回的扫描结果
-     */
+    /** @param rawResult 返回的扫描结果 */
     public void handleDecode(String rawResult) {
 
         inactivityTimer.onActivity();
@@ -225,7 +204,6 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
             view.setVisibility(View.GONE);
         }
     }
-
 
     @Override
     protected void onResume() {
@@ -247,7 +225,6 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
 
         beepManager.updatePrefs();
         inactivityTimer.onResume();
-
     }
 
     private void initCamera(SurfaceHolder surfaceHolder) {
@@ -313,17 +290,13 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         }
     }
 
-
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         hasSurface = false;
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                               int height) {
-
-    }
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
     @SuppressLint("CheckResult")
     @Override
@@ -333,26 +306,32 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
             /*切换闪光灯*/
             cameraManager.switchFlashLight(handler);
         } else if (id == R.id.new_galley) {
-            rxPermissions.requestEach(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    .subscribe(permission -> {
-                        if (permission.name.equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                            if (permission.granted) {
-                                //权限被用户通过
-                                /*打开相册*/
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_PICK);
-                                intent.setType("image/*");
-                                startActivityForResult(intent, Constant.REQUEST_IMAGE);
-                            } else {
-                                Toast.makeText(CaptureActivity.this, R.string.request_galley, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+            rxPermissions
+                    .requestEach(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .subscribe(
+                            permission -> {
+                                if (permission.name.equalsIgnoreCase(
+                                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                                    if (permission.granted) {
+                                        // 权限被用户通过
+                                        /*打开相册*/
+                                        Intent intent = new Intent();
+                                        intent.setAction(Intent.ACTION_PICK);
+                                        intent.setType("image/*");
+                                        startActivityForResult(intent, Constant.REQUEST_IMAGE);
+                                    } else {
+                                        Toast.makeText(
+                                                        CaptureActivity.this,
+                                                        R.string.request_galley,
+                                                        Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                }
+                            });
         } else if (id == R.id.backIv) {
             finish();
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -361,24 +340,30 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         if (requestCode == Constant.REQUEST_IMAGE && resultCode == RESULT_OK) {
             String path = ImageUtil.getImageAbsolutePath(this, data.getData());
 
+            new DecodeImgThread(
+                            path,
+                            new DecodeImgCallback() {
+                                @Override
+                                public void onImageDecodeSuccess(Result result) {
+                                    handleDecode(result.getText());
+                                }
 
-            new DecodeImgThread(path, new DecodeImgCallback() {
-                @Override
-                public void onImageDecodeSuccess(Result result) {
-                    handleDecode(result.getText());
-                }
-
-                @Override
-                public void onImageDecodeFailed() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run () {
-                            Toast.makeText(CaptureActivity.this, R.string.scan_failed_tip, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }).start();
+                                @Override
+                                public void onImageDecodeFailed() {
+                                    runOnUiThread(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(
+                                                                    CaptureActivity.this,
+                                                                    R.string.scan_failed_tip,
+                                                                    Toast.LENGTH_SHORT)
+                                                            .show();
+                                                }
+                                            });
+                                }
+                            })
+                    .start();
         }
     }
-
 }

@@ -1,19 +1,17 @@
 package org.haobtc.onekey.bean;
 
 import com.google.gson.annotations.SerializedName;
-
 import org.haobtc.onekey.constant.Vm;
 
 public class MainSweepcodeBean {
 
-
     /**
-     * type : 1
-     * data : {"amount":"0.005 BTC","message":"bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr","time":1591325822,"address":"bcrt1q82vs5lafxtr305utt62s8875s7df30vfnwnrjldtwsys8yjdtx2qslvf49","memo":"bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr"}
+     * type : 1 data : {"amount":"0.005
+     * BTC","message":"bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr","time":1591325822,"address":"bcrt1q82vs5lafxtr305utt62s8875s7df30vfnwnrjldtwsys8yjdtx2qslvf49","memo":"bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr"}
      */
-
     @SerializedName("type")
     private int type;
+
     @SerializedName("data")
     private DataBean data;
 
@@ -34,23 +32,28 @@ public class MainSweepcodeBean {
     }
 
     public static class DataBean {
+
         /**
-         * amount : 0.005 BTC
-         * message : bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr
-         * time : 1591325822
-         * address : bcrt1q82vs5lafxtr305utt62s8875s7df30vfnwnrjldtwsys8yjdtx2qslvf49
-         * memo : bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr
+         * amount : 0.005 BTC message :
+         * bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr time : 1591325822
+         * address : bcrt1q82vs5lafxtr305utt62s8875s7df30vfnwnrjldtwsys8yjdtx2qslvf49 memo :
+         * bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr
          */
         @SerializedName("coin")
         private String coin;
+
         @SerializedName("amount")
         private String amount;
+
         @SerializedName("message")
         private String message;
+
         @SerializedName("time")
         private int time;
+
         @SerializedName("address")
         private String address;
+
         @SerializedName("memo")
         private String memo;
 
@@ -95,7 +98,7 @@ public class MainSweepcodeBean {
         }
 
         public Vm.CoinType getCoin() {
-            return Vm.convertCoinType(coin);
+            return Vm.CoinType.convertByCallFlag(coin);
         }
 
         public void setCoin(String coin) {

@@ -1669,6 +1669,19 @@ public final class PyEnv {
         return response;
     }
 
+    public static PyResponse<String> parseQrCode(String content) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr("parse_pr", content).toString();
+            response.setResult(result);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
     /**
      * 获取 已添加token列表
      *
@@ -1679,11 +1692,9 @@ public final class PyEnv {
         try {
             String result = sCommands.callAttr(PyConstant.GET_ALL_TOKEN).toString();
             response.setResult(result);
-            Logger.json(result);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());
-            e.printStackTrace();
         }
         return response;
     }
