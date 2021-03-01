@@ -10,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
@@ -30,6 +29,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.adapter.WalletAssetAccountAdapter;
 import org.haobtc.onekey.bean.AllWalletBalanceInfoDTO;
+import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.business.wallet.BalanceManager;
@@ -70,7 +70,6 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
 
     @Override
     public void initView() {
-        ButterKnife.bind(this);
         mSystemConfigManager = new SystemConfigManager(this);
         mBalanceManager = new BalanceManager();
         mTokenManager = new TokenManager();
@@ -165,11 +164,10 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
         if (walletInfo != null && walletInfo.size() > 0) {
             for (BalanceInfoDTO balanceInfoDTO : walletInfo) {
                 if (balanceInfoDTO.getWallets() != null && balanceInfoDTO.getWallets().size() > 0) {
-                    for (int i = 0; i < balanceInfoDTO.getWallets().size(); i++) {
-                        balanceInfoDTO.getWallets().get(i).icon =
-                                mTokenManager.getTokenByAddress(
-                                                balanceInfoDTO.getWallets().get(i).address)
-                                        .icon;
+                    for (BalanceCoinInfo wallet : balanceInfoDTO.getWallets()) {
+                        if (!Strings.isNullOrEmpty(wallet.address)) {
+                            wallet.icon = mTokenManager.getTokenByAddress(wallet.address).icon;
+                        }
                     }
                 }
             }
@@ -197,12 +195,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
         mAdapterDatas.clear();
         mTempList.clear();
         if (!TextUtils.isEmpty(s.toString()) && walletInfo != null && walletInfo.size() > 0) {
-            for (int i = 0; i < walletInfo.size(); i++) {
-                if (walletInfo.get(i).getName().startsWith(s.toString())) {
-                    mTempList.add(walletInfo.get(i));
-                }
-            }
-            //            getSearchList(s.toString());
+            mTempList.addAll(getSearchList(s.toString()));
             mAdapterDatas.addAll(mTempList);
         } else {
             mAdapterDatas.addAll(walletInfo);
@@ -210,18 +203,38 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
         mWalletAssetAccountAdapter.notifyDataSetChanged();
     }
 
-    //    private List<BalanceInfoDTO> getSearchList(String searchText) {
-    //        List<BalanceInfoDTO> list = new ArrayList<>();
-    //        for (BalanceInfoDTO balanceInfoDTO : walletInfo) {
-    //            if (balanceInfoDTO.getName().contains(searchText.toLowerCase()) ||
-    //                    balanceInfoDTO.getName().contains(searchText.toUpperCase())) {
-    //                list.add(balanceInfoDTO);
-    //            }else {
-    //
-    //            }
-    //        }
-    //        return list;
-    //    }
+    private List<BalanceInfoDTO> getSearchList(String searchText) {
+        List<BalanceInfoDTO> list = new ArrayList<>();
+        for (BalanceInfoDTO balanceInfoDTO : walletInfo) {
+            if (balanceInfoDTO.getName().contains(searchText.toLowerCase())
+                    || balanceInfoDTO.getName().contains(searchText.toUpperCase())) {
+                list.add(balanceInfoDTO);
+            } else {
+                if (balanceInfoDTO.getWallets() != null && balanceInfoDTO.getWallets().size() > 0) {
+                    List<BalanceCoinInfo> tokenList =
+                            getTokenList(balanceInfoDTO.getWallets(), searchText);
+                    if (tokenList.size() > 0) {
+                        BalanceInfoDTO balanceInfo = new BalanceInfoDTO();
+                        balanceInfo.setName(balanceInfoDTO.getName());
+                        balanceInfo.setWallets(tokenList);
+                        list.add(balanceInfo);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    private List<BalanceCoinInfo> getTokenList(List<BalanceCoinInfo> wallets, String searchText) {
+        List<BalanceCoinInfo> list = new ArrayList<>();
+        for (BalanceCoinInfo wallet : wallets) {
+            if (wallet.getCoin().startsWith(searchText.toLowerCase())
+                    || wallet.getCoin().startsWith(searchText.toUpperCase())) {
+                list.add(wallet);
+            }
+        }
+        return list;
+    }
 
     @Override
     protected void onDestroy() {
