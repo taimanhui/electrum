@@ -68,6 +68,9 @@ public class TransactionDetailWalletActivity extends BaseActivity
     @BindView(R.id.text_wallet_amount)
     TextView textWalletAmount;
 
+    @BindView(R.id.text_wallet_amount_unit)
+    TextView textWalletAmountUnit;
+
     @BindView(R.id.text_wallet_dollar)
     TextView textWalletDollar;
 
@@ -158,9 +161,8 @@ public class TransactionDetailWalletActivity extends BaseActivity
                                         .getBalance()
                                         .stripTrailingZeros()
                                         .toPlainString();
-                        textWalletAmount.setText(
-                                String.format(
-                                        "%s%s", amount, mCurrentAssets.getBalance().getUnit()));
+                        textWalletAmount.setText(amount);
+                        textWalletAmountUnit.setText(mCurrentAssets.getBalance().getUnit());
 
                         textWalletDollar.setText(
                                 String.format(
