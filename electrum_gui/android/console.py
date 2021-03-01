@@ -253,6 +253,7 @@ class AndroidCommands(commands.Commands):
         self.rbf_tx = ""
         self.m = 0
         self.n = 0
+        self.token_list_info = []
         self.config.set_key("auto_connect", True, True)
         global ticker
         ticker = Ticker(5.0, self.ticker_action)
@@ -2087,7 +2088,7 @@ class AndroidCommands(commands.Commands):
             verified = False
         return verified
 
-    def get_all_token_info(self):
+    def get_cur_wallet_token_address(self):
         """
         Get all token contract addresses in the current wallet
         :return:
@@ -2096,6 +2097,21 @@ class AndroidCommands(commands.Commands):
             return json.dumps(self.wallet.get_all_token_address())
         except BaseException as e:
             raise e
+
+    def get_all_token_info(self):
+        """
+        Get all token information
+        :return:
+        """
+        if self.token_list_info:
+            return json.dumps(self.token_list_info)
+
+        token_data = read_json("eth_token_list.json", {})
+        if not token_data:
+            return '[]'
+
+        self.token_list_info = token_data['tokens']
+        return json.dumps(self.token_list_info)
 
     def add_token(self, symbol, contract_addr):
         """
