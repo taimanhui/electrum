@@ -27,7 +27,10 @@ class AssetsList(initialCapacity: Int = 15) : Collection<AliasT> {
    */
   private val mAssetStorage = SparseArrayCompat<AliasT>(initialCapacity)
 
-  override val size: Int = mAssetStorage.size()
+  override val size: Int
+    get() = mReadWriteLock.read {
+      mAssetStorage.size()
+    }
 
   fun get(index: Int): AliasT? {
     mReadWriteLock.read {
@@ -39,6 +42,16 @@ class AssetsList(initialCapacity: Int = 15) : Collection<AliasT> {
   fun getByUniqueId(uniqueId: Int): AliasT? {
     mReadWriteLock.read {
       return mAssetStorage.get(uniqueId)
+    }
+  }
+
+  /**
+   * 根据唯一 ID 获取，获取不到返回第 0 个资产
+   */
+  fun getByUniqueIdOrZero(uniqueId: Int): AliasT? {
+    mReadWriteLock.read {
+      return mAssetStorage.get(uniqueId)
+          ?: return mIndexList.getOrNull(0)?.let { mAssetStorage.get(it) }
     }
   }
 

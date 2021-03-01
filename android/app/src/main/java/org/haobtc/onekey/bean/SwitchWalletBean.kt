@@ -13,7 +13,7 @@ data class SwitchWalletBean(
 ) {
   data class WalletBean(
       @SerializedName("address")
-      val address: String,
+      val contractAddress: String,
       @SerializedName("coin")
       val coin: String
   )

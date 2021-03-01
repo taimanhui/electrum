@@ -26,6 +26,8 @@ import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.adapter.OnekeyTxListAdapter;
+import org.haobtc.onekey.bean.Assets;
+import org.haobtc.onekey.bean.ERC20Assets;
 import org.haobtc.onekey.bean.TransactionSummaryVo;
 import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
@@ -76,12 +78,12 @@ public class TransactionListFragment extends BaseLazyFragment
     private Disposable mLoadTxListDisposable;
     @TransactionListType private String mType = TransactionListType.ALL;
     private SchedulerProvide mSchedulerProvide = null;
-    private CoinTypeProvider mCoinTypeProvider = null;
+    private AssetsProvider mCoinTypeProvider = null;
 
     private BitcoinService mBitcoinService = null;
     private EthService mEthService = null;
 
-    private Vm.CoinType mCoinType;
+    private Assets mAssets;
     private int mTotalCount = 0;
 
     private AppWalletViewModel mAppWalletViewModel;
@@ -94,8 +96,8 @@ public class TransactionListFragment extends BaseLazyFragment
         if (context instanceof SchedulerProvide) {
             mSchedulerProvide = ((SchedulerProvide) context);
         }
-        if (context instanceof CoinTypeProvider) {
-            mCoinTypeProvider = ((CoinTypeProvider) context);
+        if (context instanceof AssetsProvider) {
+            mCoinTypeProvider = ((AssetsProvider) context);
         }
     }
 
@@ -155,12 +157,10 @@ public class TransactionListFragment extends BaseLazyFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (mCoinTypeProvider != null) {
-            mCoinType = mCoinTypeProvider.getCurrentCoinType();
-        } else {
-            mCoinType = Vm.CoinType.BTC;
+            mAssets = mCoinTypeProvider.getCurrentAssets();
         }
 
-        if (mCoinType == Vm.CoinType.ETH) {
+        if (mAssets.getCoinType() == Vm.CoinType.ETH) {
             mBinding.smartRefreshLayout.setOnRefreshListener(this);
             mBinding.smartRefreshLayout.setEnableLoadMore(false);
         } else {
@@ -186,7 +186,7 @@ public class TransactionListFragment extends BaseLazyFragment
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
         mTotalCount = 0;
-        if (mCoinType != Vm.CoinType.ETH) {
+        if (mAssets.getCoinType() != Vm.CoinType.ETH) {
             refreshLayout.setEnableLoadMore(true);
         }
         getTxList(mType);
@@ -208,7 +208,7 @@ public class TransactionListFragment extends BaseLazyFragment
                                         emitter -> {
                                             try {
                                                 List<TransactionSummaryVo> summaryVoList;
-                                                switch (mCoinType) {
+                                                switch (mAssets.getCoinType()) {
                                                     default:
                                                     case BTC:
                                                         if (mBitcoinService == null) {
@@ -224,9 +224,16 @@ public class TransactionListFragment extends BaseLazyFragment
                                                         if (mEthService == null) {
                                                             mEthService = new EthService();
                                                         }
+                                                        String contractAddress = null;
+                                                        if (mAssets instanceof ERC20Assets) {
+                                                            contractAddress =
+                                                                    ((ERC20Assets) mAssets)
+                                                                            .getContractAddress();
+                                                        }
                                                         summaryVoList =
                                                                 mEthService.getTxList(
                                                                         status,
+                                                                        contractAddress,
                                                                         mTotalCount,
                                                                         PAGE_SIZE);
                                                         break;
@@ -257,7 +264,7 @@ public class TransactionListFragment extends BaseLazyFragment
                                     }
                                     listBeans.addAll(historyTx);
                                     // 没有数据可以加载
-                                    if (mCoinType == Vm.CoinType.ETH
+                                    if (mAssets.getCoinType() == Vm.CoinType.ETH
                                             || (mTotalCount != 0 && mTotalCount == listBeans.size())
                                             || (mTotalCount == 0 && listBeans.size() < PAGE_SIZE)) {
                                         mFooterMore.setVisibility(View.VISIBLE);
@@ -296,10 +303,21 @@ public class TransactionListFragment extends BaseLazyFragment
     private void startBrowser() {
         WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
         if (value != null) {
-            CheckChainDetailWebActivity.startWebUrl(
-                    getContext(),
-                    getString(R.string.check_trsaction),
-                    BlockBrowserManager.INSTANCE.browseAddressUrl(mCoinType, value.getAddress()));
+            if (mAssets instanceof ERC20Assets) {
+                CheckChainDetailWebActivity.startWebUrl(
+                        getContext(),
+                        getString(R.string.check_trsaction),
+                        BlockBrowserManager.INSTANCE.browseAddressUrl(
+                                mAssets.getCoinType(),
+                                ((ERC20Assets) mAssets).getContractAddress(),
+                                value.getAddress()));
+            } else {
+                CheckChainDetailWebActivity.startWebUrl(
+                        getContext(),
+                        getString(R.string.check_trsaction),
+                        BlockBrowserManager.INSTANCE.browseAddressUrl(
+                                mAssets.getCoinType(), value.getAddress()));
+            }
         }
     }
 
@@ -335,8 +353,8 @@ public class TransactionListFragment extends BaseLazyFragment
         Scheduler getScheduler();
     }
 
-    public interface CoinTypeProvider {
+    public interface AssetsProvider {
 
-        Vm.CoinType getCurrentCoinType();
+        Assets getCurrentAssets();
     }
 }

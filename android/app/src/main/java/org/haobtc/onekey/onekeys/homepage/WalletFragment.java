@@ -232,23 +232,13 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         reclHdList.addItemDecoration(itemDecoration);
         mWalletAssetsAdapter.setOnItemClickListener(
                 (position, assets) -> {
-                    WalletAccountInfo value =
+                    WalletAccountInfo accountInfo =
                             mAppWalletViewModel.currentWalletAccountInfo.getValue();
-                    if (value == null) {
+                    if (accountInfo == null) {
                         return;
                     }
-                    String coinType = assets.getCoinType().callFlag;
-                    String ble = null;
-                    if (value.getWalletType() == Vm.WalletType.HARDWARE
-                            && value.getDeviceType() == Vm.HardwareType.OneKey) {
-                        ble = bleMac;
-                    }
                     TransactionDetailWalletActivity.start(
-                            getContext(),
-                            textWalletName.getText().toString(),
-                            coinType,
-                            ble,
-                            currentDeviceId);
+                            getContext(), accountInfo.getId(), assets.uniqueId());
                 });
     }
 

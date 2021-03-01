@@ -13,29 +13,34 @@ import org.haobtc.onekey.business.chain.TransactionListType
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
-import java.lang.Exception
 import java.math.BigDecimal
 import java.math.RoundingMode
-import kotlin.jvm.Throws
+import java.util.*
+import kotlin.collections.ArrayList
 
 class EthService {
   private val mGson by lazy {
     Gson()
   }
 
-  private fun request(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): PyObject? {
-    return when (status) {
-      TransactionListType.ALL ->
-        Daemon.commands.callAttr("get_all_tx_list", Kwarg("coin", Vm.CoinType.ETH.callFlag))
-      else -> Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.ETH.callFlag)
+  private fun request(@TransactionListType status: String = TransactionListType.ALL, contractAddress: String? = null, position: Int = 0, limit: Int = 10): PyObject? {
+    val argList = LinkedList<Kwarg>()
+    argList.add(Kwarg("coin", Vm.CoinType.ETH.callFlag))
+    if (status != TransactionListType.ALL) {
+      argList.add(Kwarg("search_type", status))
     }
+    contractAddress?.let {
+      argList.add(Kwarg("contract_address", it))
+    }
+
+    return Daemon.commands.callAttr("get_all_tx_list", *argList.toTypedArray())
   }
 
   @Throws(Exception::class)
   @WorkerThread
-  fun getTxList(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): List<TransactionSummaryVo> {
+  fun getTxList(@TransactionListType status: String = TransactionListType.ALL, contractAddress: String? = null, position: Int = 0, limit: Int = 10): List<TransactionSummaryVo> {
     return try {
-      val historyTx = request(status, position, limit)
+      val historyTx = request(status, contractAddress, position, limit)
       historyTx?.toString()?.let {
         val listBeans: ArrayList<TransactionSummaryVo> = ArrayList(limit)
 
@@ -62,7 +67,7 @@ class EthService {
 
             val amountFiatUnit = amountSplit.getOrNull(3)?.trim()?.replace(")", "") ?: "CNY"
 
-            val item = TransactionSummaryVo(Vm.CoinType.ETH, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus.replace("。",""), amountStr, amountUnit, amountFiat, amountFiatUnit)
+            val item = TransactionSummaryVo(Vm.CoinType.ETH, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus.replace("。", ""), amountStr, amountUnit, amountFiat, amountFiatUnit)
             listBeans.add(item)
           }
         }

@@ -49,12 +49,12 @@ class HdWalletAssetAdapter(context: Context, appViewModel: AppWalletViewModel, d
     helper.getView<View>(R.id.back_layout).setOnClickListener {
       if (!Strings.isNullOrEmpty(item.label)) {
         model.changeCurrentWallet(item.label)
-        TransactionDetailWalletActivity.start(
-            mContext,
-            item.name,
-            item.coinType.callFlag,
-            null,
-            null)
+//        TransactionDetailWalletActivity.start(
+//            mContext,
+//            item.name,
+//            item.coinType.callFlag,
+//            null,
+//            null)
       }
     }
 

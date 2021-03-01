@@ -68,10 +68,6 @@ class AppWalletViewModel : ViewModel() {
   @Deprecated("")
   val currentWalletBalance = MutableLiveData(AssetsBalance(BigDecimal("0"), "BTC"))
 
-  @JvmField
-  @Deprecated("")
-  val currentWalletFiatBalance = MutableLiveData(DEF_WALLET_FIAT_BALANCE)
-
   @WorkerThread
   fun refresh() {
     refreshExistsWallet()
@@ -112,12 +108,12 @@ class AppWalletViewModel : ViewModel() {
     )
     assets.add(coinAssets)
     walletAssets?.wallets
-        ?.filter { it.address.isNotEmpty() }
+        ?.filter { it.contractAddress.isNotEmpty() }
         ?.forEach {
           if (walletAccountInfo.coinType == ETH) {
-            mTokenManager.getTokenByAddress(it.address)?.let { tokenByAddress ->
+            mTokenManager.getTokenByAddress(it.contractAddress)?.let { tokenByAddress ->
               assets.add(ERC20Assets(
-                  it.address,
+                  it.contractAddress,
                   tokenByAddress.symbol,
                   tokenByAddress.decimals,
                   tokenByAddress.name,
@@ -129,15 +125,6 @@ class AppWalletViewModel : ViewModel() {
         }
     currentWalletAssetsList.postValue(assets)
     return assets
-  }
-
-  private fun searchTokenName(assets: AssetsList, name: String): Assets? {
-    assets.forEach {
-      if (it.name.equals(name, ignoreCase = true)) {
-        return it
-      }
-    }
-    return null
   }
 
   private fun refreshBalance(walletAccountInfo: WalletAccountInfo?, assets: AssetsList) {
@@ -156,10 +143,21 @@ class AppWalletViewModel : ViewModel() {
     }
     val triggerMark = TriggerMark()
     balance?.wallets?.forEachIndexed { index, walletBalanceBean ->
+      if (walletBalanceBean == null
+          || walletBalanceBean.contractAddress?.isEmpty() == true) {
+        // continue
+        return@forEachIndexed
+      }
+
       val generateUniqueId = if (index == 0) {
         CoinAssets.generateUniqueId(convertByCallFlag(walletAccountInfo.name))
       } else {
-        ERC20Assets.generateUniqueId(walletBalanceBean.contractAddress, walletAccountInfo.coinType)
+        walletBalanceBean.contractAddress?.let { ERC20Assets.generateUniqueId(it, walletAccountInfo.coinType) }
+      }
+
+      if (generateUniqueId == null) {
+        // continue
+        return@forEachIndexed
       }
 
       assets.getByUniqueId(generateUniqueId)?.let {
@@ -302,8 +300,9 @@ class AppWalletViewModel : ViewModel() {
   private fun setCurrentWalletInfo(info: LocalWalletInfo?) {
     setCurrentWalletInfo(convert(info))
   }
-  
+
   private var mOldAccountName = ""
+
   init {
     EventBus.getDefault().register(this)
     refresh()
@@ -325,7 +324,7 @@ class AppWalletViewModel : ViewModel() {
         }
   }
 
-  companion object{
+  companion object {
     fun convert(info: LocalWalletInfo?): WalletAccountInfo? {
       return if (info == null) {
         null

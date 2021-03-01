@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -17,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -43,7 +41,6 @@ import org.haobtc.onekey.bean.Assets;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.WalletAccountInfo;
-import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.Vm;
@@ -138,6 +135,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
 
     private int mAssetsID;
     private String mWalletId;
+    private Assets mAssets;
     private RxPermissions rxPermissions;
     private Bitmap bitmap;
     private String address;
@@ -173,33 +171,24 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         if (mWalletType == Vm.WalletType.IMPORT_WATCH) {
             showWatchTipDialog();
         }
-        String currencySymbol;
-        Drawable assetsDrawable = null;
-        Assets assets = null;
-        if (mAssetsID != -1) {
-            assets = appWalletViewModel.currentWalletAssetsList.getValue().getByUniqueId(mAssetsID);
-            currencySymbol = assets.getName();
-        } else {
-            currencySymbol = walletInfo.getCoinType().coinName;
-            assetsDrawable =
-                    ResourcesCompat.getDrawable(
-                            getResources(),
-                            new AssetsLogo().getLogoResources(walletInfo.getCoinType()),
-                            null);
-        }
+        mAssets =
+                appWalletViewModel
+                        .currentWalletAssetsList
+                        .getValue()
+                        .getByUniqueIdOrZero(mAssetsID);
 
+        if (mAssets == null) {
+            finish();
+            return;
+        }
+        String currencySymbol = mAssets.getName();
         textSendType.setText(String.format("%s %s", getString(R.string.scan_send), currencySymbol));
         textWalletAddressText.setText(
                 String.format("%s %s", currencySymbol, getString(R.string.wallet_address)));
         tvShowSwipeHint.setText(String.format(getString(R.string.scan_input), currencySymbol));
 
-        if (assetsDrawable != null) {
-            imgType.setImageDrawable(assetsDrawable);
-            imgShowTokenLogo.setImageDrawable(assetsDrawable);
-        } else if (assets != null) {
-            assets.getLogo().intoTarget(imgType);
-            assets.getLogo().intoTarget(imgShowTokenLogo);
-        }
+        mAssets.getLogo().intoTarget(imgType);
+        mAssets.getLogo().intoTarget(imgShowTokenLogo);
 
         // whether backup
         try {

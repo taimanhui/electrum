@@ -6,13 +6,13 @@ data class CurrentWalletBalanceBean(
     @SerializedName("all_balance")
     val allBalance: String,
     @SerializedName("wallets")
-    val wallets: List<WalletBalanceBean>
+    val wallets: List<WalletBalanceBean?>?
 ) {
   data class WalletBalanceBean(
       @SerializedName("balance")
       val balance: String,
       @SerializedName("address")
-      val contractAddress: String,
+      val contractAddress: String?,
       @SerializedName("coin")
       val coin: String,
       @SerializedName("fiat")

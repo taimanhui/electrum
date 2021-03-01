@@ -11,11 +11,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,10 +29,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.Assets;
+import org.haobtc.onekey.bean.HardwareFeatures;
+import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.WalletAccountInfo;
+import org.haobtc.onekey.business.wallet.AccountManager;
+import org.haobtc.onekey.business.wallet.DeviceManager;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
@@ -42,23 +46,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class TransactionDetailWalletActivity extends BaseActivity
         implements TransactionListFragment.SchedulerProvide,
-                TransactionListFragment.CoinTypeProvider {
+                TransactionListFragment.AssetsProvider {
 
-    private static final String EXT_BLE_HW = Constant.BLE_MAC;
-    private static final String EXT_HD_WALLET_NAME = "hdWalletName";
-    private static final String EXT_WALLET_COIN_TYPE = "walletCoinType";
+    private static final String EXT_ASSETS_ID = "assets_id";
+    private static final String EXT_WALLET_ID = "wallet_id";
 
-    public static void start(
-            @NotNull Context context,
-            @NotNull String walletName,
-            @NotNull String coinType,
-            @Nullable String bleMac,
-            @Nullable String deviceId) {
+    public static void start(@NotNull Context context, @NotNull String walletId) {
+        start(context, walletId, -1);
+    }
+
+    public static void start(@NotNull Context context, @NotNull String walletId, int assetsId) {
         Intent intent = new Intent(context, TransactionDetailWalletActivity.class);
-        intent.putExtra(EXT_HD_WALLET_NAME, walletName);
-        intent.putExtra(EXT_WALLET_COIN_TYPE, coinType);
-        intent.putExtra(EXT_BLE_HW, bleMac);
-        intent.putExtra(Constant.DEVICE_ID, deviceId);
+        intent.putExtra(EXT_WALLET_ID, walletId);
+        intent.putExtra(EXT_ASSETS_ID, assetsId);
         context.startActivity(intent);
     }
 
@@ -89,13 +89,14 @@ public class TransactionDetailWalletActivity extends BaseActivity
     @BindView(R.id.tv_token_name)
     TextView mTvTokenName;
 
-    private String hdWalletName;
     private String walletBalance;
-    private String bleMac;
-    private Vm.CoinType mCoinType;
     private int currentAction;
     private AppWalletViewModel mAppWalletViewModel;
-    private String currentDeviceId;
+    private AccountManager mAccountManager;
+    private DeviceManager mDeviceManager;
+    private int mAssetsId;
+    private WalletAccountInfo mWalletAccountInfo;
+    private Assets mCurrentAssets;
 
     @Override
     public int getLayoutId() {
@@ -106,41 +107,67 @@ public class TransactionDetailWalletActivity extends BaseActivity
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
-        hdWalletName = getIntent().getStringExtra("hdWalletName");
-        bleMac = getIntent().getStringExtra(Constant.BLE_MAC);
-        mCoinType = Vm.CoinType.convertByCallFlag(getIntent().getStringExtra(EXT_WALLET_COIN_TYPE));
-        currentDeviceId = getIntent().getStringExtra(Constant.DEVICE_ID);
-        listenerViewModel();
-        switch (mCoinType) {
-            default:
-            case BTC:
-                mTvTokenName.setText(R.string.btc_c);
-                mImgTokenLogo.setImageDrawable(
-                        ResourcesCompat.getDrawable(getResources(), R.drawable.token_btc, null));
-                break;
-            case ETH:
-                mTvTokenName.setText(R.string.eth);
-                mImgTokenLogo.setImageDrawable(
-                        ResourcesCompat.getDrawable(getResources(), R.drawable.token_eth, null));
-                break;
+
+        String walletId = getIntent().getStringExtra(EXT_WALLET_ID);
+        if (walletId == null) {
+            finish();
+            return;
         }
+
+        mAssetsId = getIntent().getIntExtra(EXT_ASSETS_ID, -1);
+        mAccountManager = new AccountManager(this);
+        mDeviceManager = new DeviceManager(this);
+
+        mAppWalletViewModel =
+                new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
+        listenerViewModel();
+
+        if (mAppWalletViewModel.currentWalletAssetsList.getValue() == null
+                || mAppWalletViewModel.currentWalletAssetsList.getValue().size() == 0) {
+            finish();
+        }
+
+        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(walletId);
+        mWalletAccountInfo = AppWalletViewModel.Companion.convert(localWalletByName);
+
+        mCurrentAssets =
+                mAppWalletViewModel
+                        .currentWalletAssetsList
+                        .getValue()
+                        .getByUniqueIdOrZero(mAssetsId);
+
+        mTvTokenName.setText(mCurrentAssets.getName());
+        mCurrentAssets.getLogo().intoTarget(mImgTokenLogo);
     }
 
     private void listenerViewModel() {
-        mAppWalletViewModel.currentWalletBalance.observe(
+        mAppWalletViewModel.currentWalletAssetsList.observe(
                 this,
-                balance -> {
-                    walletBalance = balance.getBalance().stripTrailingZeros().toPlainString();
-                    String amount = balance.getBalance().stripTrailingZeros().toPlainString();
-                    textWalletAmount.setText(String.format("%s%s", amount, balance.getUnit()));
-                });
-        mAppWalletViewModel.currentWalletFiatBalance.observe(
-                this,
-                balance -> {
-                    textWalletDollar.setText(
-                            String.format(
-                                    "≈ %s %s", balance.getSymbol(), balance.getBalanceFormat()));
+                assetsList -> {
+                    mCurrentAssets = assetsList.getByUniqueIdOrZero(mAssetsId);
+                    if (mCurrentAssets != null) {
+                        walletBalance =
+                                mCurrentAssets
+                                        .getBalance()
+                                        .getBalance()
+                                        .stripTrailingZeros()
+                                        .toPlainString();
+                        String amount =
+                                mCurrentAssets
+                                        .getBalance()
+                                        .getBalance()
+                                        .stripTrailingZeros()
+                                        .toPlainString();
+                        textWalletAmount.setText(
+                                String.format(
+                                        "%s%s", amount, mCurrentAssets.getBalance().getUnit()));
+
+                        textWalletDollar.setText(
+                                String.format(
+                                        "≈ %s %s",
+                                        mCurrentAssets.getBalanceFiat().getSymbol(),
+                                        mCurrentAssets.getBalanceFiat().getBalanceFormat()));
+                    }
                 });
     }
 
@@ -203,21 +230,28 @@ public class TransactionDetailWalletActivity extends BaseActivity
 
     /** 统一处理硬件连接 */
     private void deal(@IdRes int id) {
-        if (!Strings.isNullOrEmpty(bleMac)) {
-            currentAction = id;
-            if (Strings.isNullOrEmpty(bleMac)) {
-                Toast.makeText(this, "未发现设备信息", Toast.LENGTH_SHORT).show();
-            } else {
-                Intent intent2 = new Intent(this, SearchDevicesActivity.class);
-                intent2.putExtra(
-                        org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE,
-                        org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
-                intent2.putExtra(Constant.DEVICE_ID, currentDeviceId);
-                startActivity(intent2);
-                BleManager.getInstance(this).connDevByMac(bleMac);
+        HardwareFeatures deviceInfo =
+                mDeviceManager.getDeviceInfo(mWalletAccountInfo.getDeviceId());
+        if (deviceInfo != null) {
+            String deviceBleMacAddress =
+                    mDeviceManager.getDeviceBleMacAddress(deviceInfo.getBleName());
+            if (!Strings.isNullOrEmpty(deviceBleMacAddress)) {
+                currentAction = id;
+                if (Strings.isNullOrEmpty(deviceBleMacAddress)) {
+                    Toast.makeText(this, "未发现设备信息", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent2 = new Intent(this, SearchDevicesActivity.class);
+                    intent2.putExtra(
+                            org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE,
+                            org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
+                    intent2.putExtra(Constant.DEVICE_ID, deviceInfo.getDeviceId());
+                    startActivity(intent2);
+                    BleManager.getInstance(this).connDevByMac(deviceBleMacAddress);
+                }
+                return;
             }
-            return;
         }
+
         toNext(id);
     }
 
@@ -225,17 +259,17 @@ public class TransactionDetailWalletActivity extends BaseActivity
     private void toNext(int id) {
         switch (id) {
             case R.id.btn_forward:
-                switch (mCoinType) {
+                switch (mCurrentAssets.getCoinType()) {
                     case BTC:
                         Intent intent2 = new Intent(this, SendHdActivity.class);
                         intent2.putExtra(WALLET_BALANCE, walletBalance);
-                        intent2.putExtra("hdWalletName", hdWalletName);
+                        intent2.putExtra("hdWalletName", mWalletAccountInfo.getName());
                         startActivity(intent2);
                         break;
                     case ETH:
                         Intent intent = new Intent(this, SendEthActivity.class);
                         intent.putExtra(WALLET_BALANCE, walletBalance);
-                        intent.putExtra("hdWalletName", hdWalletName);
+                        intent.putExtra("hdWalletName", mWalletAccountInfo.getName());
                         startActivity(intent);
                         break;
                 }
@@ -244,7 +278,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
             case R.id.btn_collect:
                 WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
                 if (value != null) {
-                    ReceiveHDActivity.start(this, value.getId());
+                    ReceiveHDActivity.start(this, value.getId(), mCurrentAssets.uniqueId());
                 }
                 break;
             default:
@@ -258,8 +292,8 @@ public class TransactionDetailWalletActivity extends BaseActivity
     }
 
     @Override
-    public Vm.CoinType getCurrentCoinType() {
-        return mCoinType;
+    public Assets getCurrentAssets() {
+        return mCurrentAssets;
     }
 
     static class ViewPageAdapter extends FragmentPagerAdapter {

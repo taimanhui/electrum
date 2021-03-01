@@ -1660,6 +1660,7 @@ class AndroidCommands(commands.Commands):
                  "address":"",
                  "amount":""}, ...]
         """
+        print(f" = = = = {search_type}  {coin}")
         try:
             if coin == "btc":
                 return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
