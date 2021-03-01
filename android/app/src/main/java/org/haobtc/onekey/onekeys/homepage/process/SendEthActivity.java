@@ -90,6 +90,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private static final String EXT_SCAN_ADDRESS = "addressScan";
     private static final String EXT_SCAN_AMOUNT = "amountScan";
     private static final String EXT_TOKEN_NAME = "tokenName";
+    private static final int SELECT_TOKEN = 1001;
 
     public static void start(
             Context context, String name, @Nullable String address, @Nullable String amount) {
@@ -99,13 +100,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             intent.putExtra(EXT_SCAN_ADDRESS, address);
             intent.putExtra(EXT_SCAN_AMOUNT, amount);
         }
-        context.startActivity(intent);
-    }
-
-    public static void start(Context context, @Nullable String walletName, String tokenName) {
-        Intent intent = new Intent(context, SendEthActivity.class);
-        intent.putExtra(EXT_WALLET_NAME, walletName);
-        intent.putExtra(EXT_TOKEN_NAME, tokenName);
         context.startActivity(intent);
     }
 
@@ -437,7 +431,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             case R.id.switch_layout:
                 // not support
                 Logger.d("支持ERC-20Token");
-                SelectTokenActivity.start(mContext);
+                startActivityForResult(
+                        new Intent(mContext, SelectTokenActivity.class), SELECT_TOKEN);
                 break;
             case R.id.text_max_amount:
                 if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
@@ -1140,6 +1135,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                         });
                 mCompositeDisposable.add(disposable);
             }
+        } else if (requestCode == SELECT_TOKEN) {
+            //            Assets assets =
+            // JSON.parseObject(data.getStringExtra(SelectTokenActivity.ASSET_JSON),Assets.class);
+            String result = data.getStringExtra(SelectTokenActivity.ASSET_JSON);
         }
     }
 

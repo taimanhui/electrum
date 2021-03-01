@@ -20,7 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.OnClick;
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
+import com.orhanobut.logger.Logger;
 import com.scwang.smartrefresh.layout.util.SmartUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
@@ -332,6 +334,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 this,
                 assets -> {
                     mSwipeRefreshLayout.setRefreshing(false);
+                    Logger.d("刷新-->" + JSON.toJSONString(assets.toList()));
                     mWalletAssetsAdapter.submitList(assets.toList());
                 });
     }

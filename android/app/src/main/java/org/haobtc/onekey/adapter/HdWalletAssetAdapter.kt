@@ -8,25 +8,31 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.google.common.base.Strings
 import org.haobtc.onekey.R
+import org.haobtc.onekey.bean.BalanceCoinInfo
+import org.haobtc.onekey.bean.RemoteImage
 import org.haobtc.onekey.business.wallet.SystemConfigManager
-import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean
-import org.haobtc.onekey.constant.Vm.CoinType
-import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity
-import org.haobtc.onekey.viewmodel.AppWalletViewModel
+import org.haobtc.onekey.constant.Vm
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class HdWalletAssetAdapter(context: Context, appViewModel: AppWalletViewModel, data: List<WalletBalanceBean?>?) : BaseQuickAdapter<WalletBalanceBean, BaseViewHolder>(R.layout.all_assets_item, data) {
+class HdWalletAssetAdapter(context: Context, data: List<BalanceCoinInfo?>?) : BaseQuickAdapter<BalanceCoinInfo, BaseViewHolder>(R.layout.all_assets_item, data) {
   private val mSystemConfigManager by lazy {
     SystemConfigManager(context.applicationContext)
   }
-  val model = appViewModel
 
-  override fun convert(helper: BaseViewHolder, item: WalletBalanceBean) {
-    val drawable = when (item.coinType) {
-      CoinType.BTC -> ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_btc, null)
-      CoinType.ETH -> ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_eth, null)
+  override fun convert(helper: BaseViewHolder, item: BalanceCoinInfo) {
+    when {
+      item.coin.equals(Vm.CoinType.BTC.callFlag, true) -> {
+        helper.setImageDrawable(R.id.imageView, ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_btc, null))
+      }
+      item.coin.equals(Vm.CoinType.ETH.callFlag, true) -> {
+        helper.setImageDrawable(R.id.imageView, ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_eth, null))
+      }
+      else -> {
+        RemoteImage(item.icon).intoTarget(helper.getView(R.id.imageView))
+      }
     }
+
     val balance = if (!TextUtils.isEmpty(item.balance) && !item.balance.equals("0")) {
       BigDecimal(item.balance)
           .setScale(8, RoundingMode.DOWN)
@@ -34,28 +40,15 @@ class HdWalletAssetAdapter(context: Context, appViewModel: AppWalletViewModel, d
     } else {
       "0"
     }
+    helper.setText(R.id.text_wallet_name, item.coin).setText(R.id.text_balance, balance)
 
-    helper.setImageDrawable(R.id.imageView, drawable)
-    helper.setText(R.id.text_wallet_name, item.name).setText(R.id.text_balance, balance)
-
-    val strFiat = if (!TextUtils.isEmpty(item.balanceFiat) && item.balanceFiat == "0") {
+    val strFiat = if (!TextUtils.isEmpty(item.fiat) && item.fiat == "0") {
       "0.00"
     } else {
-      item.balanceFiat
+      item.fiat.substring(0, item.fiat.indexOf(" "))
     }
     if (!Strings.isNullOrEmpty(strFiat)) {
-      helper.setText(R.id.text_fiat, "≈ " + mSystemConfigManager.currentFiatSymbol + " " + strFiat)
-    }
-    helper.getView<View>(R.id.back_layout).setOnClickListener {
-      if (!Strings.isNullOrEmpty(item.label)) {
-        model.changeCurrentWallet(item.label)
-//        TransactionDetailWalletActivity.start(
-//            mContext,
-//            item.name,
-//            item.coinType.callFlag,
-//            null,
-//            null)
-      }
+      helper.setText(R.id.text_fiat, mSystemConfigManager.currentFiatSymbol + " " + strFiat)
     }
 
   }

@@ -52,4 +52,8 @@ public class BalanceCoinInfo {
     public void setFiat(String fiat) {
         this.fiat = fiat;
     }
+
+    public String address = "0x9a42D6dCD2519E94D037439c447a7a752Ba9F66c";
+
+    public String icon = "https://assets.coingecko.com/coins/images/2518/large/weth.png?1547036627";
 }

@@ -1320,4 +1320,5 @@
     <string name="select_token">选择代币</string>
     <string name="title_qr_code_scan_results">扫描结果</string>
     <string name="title_select_account">选择账户</string>
+    <string name="search_account_token">搜索账户或代币</string>
 </resources>

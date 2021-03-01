@@ -293,10 +293,9 @@ public class TokenManagerActivity extends BaseActivity
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
+                                    mAppWalletViewModel.refresh();
                                     if (!Strings.isNullOrEmpty(result.getErrors())) {
                                         mToast(result.getErrors());
-                                    } else {
-
                                     }
                                 });
         mCompositeDisposable.add(disposable);
@@ -321,6 +320,7 @@ public class TokenManagerActivity extends BaseActivity
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
+                                    mAppWalletViewModel.refresh();
                                     if (!Strings.isNullOrEmpty(result.getErrors())) {
                                         mToast(result.getErrors());
                                     }
