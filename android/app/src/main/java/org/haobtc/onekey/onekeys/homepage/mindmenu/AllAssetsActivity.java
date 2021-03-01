@@ -211,12 +211,16 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     }
 
     //    private List<BalanceInfoDTO> getSearchList(String searchText) {
+    //        List<BalanceInfoDTO> list = new ArrayList<>();
     //        for (BalanceInfoDTO balanceInfoDTO : walletInfo) {
     //            if (balanceInfoDTO.getName().contains(searchText.toLowerCase()) ||
-    // balanceInfoDTO.getName().contains(searchText.toUpperCase())){
+    //                    balanceInfoDTO.getName().contains(searchText.toUpperCase())) {
+    //                list.add(balanceInfoDTO);
+    //            }else {
     //
     //            }
     //        }
+    //        return list;
     //    }
 
     @Override
