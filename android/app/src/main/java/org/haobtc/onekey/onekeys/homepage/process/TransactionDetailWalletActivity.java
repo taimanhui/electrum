@@ -259,6 +259,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
 
     /** 处理具体业务 */
     private void toNext(int id) {
+        WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
         switch (id) {
             case R.id.btn_forward:
                 switch (mCurrentAssets.getCoinType()) {
@@ -269,16 +270,14 @@ public class TransactionDetailWalletActivity extends BaseActivity
                         startActivity(intent2);
                         break;
                     case ETH:
-                        Intent intent = new Intent(this, SendEthActivity.class);
-                        intent.putExtra(WALLET_BALANCE, walletBalance);
-                        intent.putExtra("hdWalletName", mWalletAccountInfo.getName());
-                        startActivity(intent);
+                        if (value != null)
+                            SendEthActivity.start(
+                                    mContext, value.getId(), mCurrentAssets.uniqueId());
                         break;
                 }
 
                 break;
             case R.id.btn_collect:
-                WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
                 if (value != null) {
                     ReceiveHDActivity.start(this, value.getId(), mCurrentAssets.uniqueId());
                 }

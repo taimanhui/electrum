@@ -816,7 +816,11 @@ public final class PyEnv {
      * @description 获取费率详情
      */
     public static PyResponse<String> getFeeInfo(
-            @Nullable String type, String receiver, String amount, String feeRate) {
+            @Nullable String type,
+            String receiver,
+            String amount,
+            String feeRate,
+            String contractAddress) {
         PyResponse<String> response = new PyResponse<>();
         try {
             String info;
@@ -825,6 +829,9 @@ public final class PyEnv {
                 map.put("to_address", receiver);
                 if (!Strings.isNullOrEmpty(amount)) {
                     map.put("value", amount);
+                }
+                if (!Strings.isNullOrEmpty(contractAddress)) {
+                    map.put("contract_address", contractAddress);
                 }
                 info =
                         sCommands
@@ -1503,33 +1510,63 @@ public final class PyEnv {
             String path,
             @NotNull String pass,
             @NotNull String gasPrice,
-            @NotNull String gasLimit) {
+            @NotNull String gasLimit,
+            String contractAddress) {
         PyResponse<String> response = new PyResponse<>();
         try {
             String res;
             if (Strings.isNullOrEmpty(path)) {
-                res =
-                        sCommands
-                                .callAttr(
-                                        PyConstant.SIGN_ETH_TX,
-                                        to_addr,
-                                        value,
-                                        new Kwarg("password", pass),
-                                        new Kwarg("gas_price", gasPrice),
-                                        new Kwarg("gas_limit", gasLimit))
-                                .toString();
+                if (!Strings.isNullOrEmpty(contractAddress)) {
+                    res =
+                            sCommands
+                                    .callAttr(
+                                            PyConstant.SIGN_ETH_TX,
+                                            to_addr,
+                                            value,
+                                            new Kwarg("password", pass),
+                                            new Kwarg("contract_addr", contractAddress),
+                                            new Kwarg("gas_price", gasPrice),
+                                            new Kwarg("gas_limit", gasLimit))
+                                    .toString();
+                } else {
+                    res =
+                            sCommands
+                                    .callAttr(
+                                            PyConstant.SIGN_ETH_TX,
+                                            to_addr,
+                                            value,
+                                            new Kwarg("password", pass),
+                                            new Kwarg("gas_price", gasPrice),
+                                            new Kwarg("gas_limit", gasLimit))
+                                    .toString();
+                }
             } else {
-                res =
-                        sCommands
-                                .callAttr(
-                                        PyConstant.SIGN_ETH_TX,
-                                        to_addr,
-                                        value,
-                                        new Kwarg("path", path),
-                                        new Kwarg("password", pass),
-                                        new Kwarg("gas_price", gasPrice),
-                                        new Kwarg("gas_limit", gasLimit))
-                                .toString();
+                if (!Strings.isNullOrEmpty(contractAddress)) {
+                    res =
+                            sCommands
+                                    .callAttr(
+                                            PyConstant.SIGN_ETH_TX,
+                                            to_addr,
+                                            value,
+                                            new Kwarg("path", path),
+                                            new Kwarg("password", pass),
+                                            new Kwarg("contract_addr", contractAddress),
+                                            new Kwarg("gas_price", gasPrice),
+                                            new Kwarg("gas_limit", gasLimit))
+                                    .toString();
+                } else {
+                    res =
+                            sCommands
+                                    .callAttr(
+                                            PyConstant.SIGN_ETH_TX,
+                                            to_addr,
+                                            value,
+                                            new Kwarg("path", path),
+                                            new Kwarg("password", pass),
+                                            new Kwarg("gas_price", gasPrice),
+                                            new Kwarg("gas_limit", gasLimit))
+                                    .toString();
+                }
             }
             Logger.json(res);
             response.setResult(res);
@@ -1556,21 +1593,35 @@ public final class PyEnv {
             @NotNull String value,
             String path,
             @NotNull String gasPrice,
-            @NotNull String gasLimit) {
+            @NotNull String gasLimit,
+            String contractAddress) {
         PyResponse<String> response = new PyResponse<>();
         try {
             String res;
-
-            res =
-                    sCommands
-                            .callAttr(
-                                    PyConstant.SIGN_ETH_TX,
-                                    to_addr,
-                                    value,
-                                    new Kwarg("path", path),
-                                    new Kwarg("gas_price", gasPrice),
-                                    new Kwarg("gas_limit", gasLimit))
-                            .toString();
+            if (Strings.isNullOrEmpty(contractAddress)) {
+                res =
+                        sCommands
+                                .callAttr(
+                                        PyConstant.SIGN_ETH_TX,
+                                        to_addr,
+                                        value,
+                                        new Kwarg("path", path),
+                                        new Kwarg("gas_price", gasPrice),
+                                        new Kwarg("gas_limit", gasLimit))
+                                .toString();
+            } else {
+                res =
+                        sCommands
+                                .callAttr(
+                                        PyConstant.SIGN_ETH_TX,
+                                        to_addr,
+                                        value,
+                                        new Kwarg("path", path),
+                                        new Kwarg("contract_addr", contractAddress),
+                                        new Kwarg("gas_price", gasPrice),
+                                        new Kwarg("gas_limit", gasLimit))
+                                .toString();
+            }
             response.setResult(res);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);

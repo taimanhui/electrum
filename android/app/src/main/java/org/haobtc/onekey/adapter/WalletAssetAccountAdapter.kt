@@ -29,13 +29,7 @@ class WalletAssetAccountAdapter(context: Context, appViewModel: AppWalletViewMod
     adapter.setOnItemClickListener { adapter, view, position ->
       val balance = adapter.data[position] as BalanceCoinInfo
       model.changeCurrentWallet(item.label)
-//      TransactionDetailWalletActivity.start(
-//          mContext,
-//          balance.coin,
-//          Vm.convertCoinType(balance.coin).callFlag,
-//          null,
-//          null
-//      )
+      TransactionDetailWalletActivity.start(mContext,item.label)
     }
   }
 

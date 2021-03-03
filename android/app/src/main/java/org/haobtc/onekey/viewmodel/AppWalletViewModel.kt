@@ -32,7 +32,6 @@ import org.haobtc.onekey.event.LoadOtherWalletEvent
 import org.haobtc.onekey.event.SecondEvent
 import org.haobtc.onekey.manager.PyEnv
 import java.math.BigDecimal
-import java.util.*
 import java.util.concurrent.Executors
 
 /**
@@ -97,6 +96,8 @@ class AppWalletViewModel : ViewModel() {
       return null
     }
     val isOriginalAccount = walletAccountInfo.id == mOldAccountName
+    val currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit(
+        walletAccountInfo.coinType)
 
     val walletAssets = mAccountManager.getWalletAssets(walletAccountInfo.id)
     val assets = AssetsList()
@@ -106,7 +107,8 @@ class AppWalletViewModel : ViewModel() {
         walletAccountInfo.coinType.digits,
         "",
         LocalImage(
-            mAssetsLogo.getLogoResources(walletAccountInfo.coinType))
+            mAssetsLogo.getLogoResources(walletAccountInfo.coinType)),
+        AssetsBalance("0", currentBaseUnit)
     )
     if (isOriginalAccount) {
       currentWalletAssetsList.value?.getByUniqueId(coinAssets.uniqueId())?.let {
@@ -129,9 +131,9 @@ class AppWalletViewModel : ViewModel() {
                   AssetsBalance("0", tokenByAddress.symbol)
               )
               if (isOriginalAccount) {
-                currentWalletAssetsList.value?.getByUniqueId(erC20Assets.uniqueId())?.let {
-                  erC20Assets.balance = it.balance
-                  erC20Assets.balanceFiat = it.balanceFiat
+                currentWalletAssetsList.value?.getByUniqueId(erC20Assets.uniqueId())?.let { assets ->
+                  erC20Assets.balance = assets.balance
+                  erC20Assets.balanceFiat = assets.balanceFiat
                 }
               }
               assets.add(erC20Assets)
@@ -168,12 +170,7 @@ class AppWalletViewModel : ViewModel() {
         CoinAssets.generateUniqueId(convertByCallFlag(walletAccountInfo.name))
       } else {
         walletBalanceBean.contractAddress?.let { ERC20Assets.generateUniqueId(it, walletAccountInfo.coinType) }
-      }
-
-      if (generateUniqueId == null) {
-        // continue
-        return@forEachIndexed
-      }
+      } ?: return@forEachIndexed
 
       setBalance(
           triggerMark,
@@ -282,7 +279,11 @@ class AppWalletViewModel : ViewModel() {
 
   private fun setBalance(triggerMark: TriggerMark, assetsId: Int, balance: String, balanceUnit: String, balanceFiat: String, fiatSymbol: String) {
     currentWalletAssetsList.value?.getByUniqueId(assetsId)?.let {
-      val assetsBalance = AssetsBalance(balance, balanceUnit)
+      val assetsBalance = if (it is CoinAssets) {
+        AssetsBalance(balance, balanceUnit)
+      } else {
+        AssetsBalance(balance, it.balance.unit)
+      }
       val assetsBalanceFiat = AssetsBalanceFiat.fromAmountAndUnit(balanceFiat, fiatSymbol)
       val setBalance = checkRepeatAssignment(it.balance, assetsBalance)
       val setBalanceFiat = checkRepeatAssignment(it.balanceFiat, assetsBalanceFiat)

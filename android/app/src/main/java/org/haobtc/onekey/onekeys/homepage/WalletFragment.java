@@ -449,21 +449,21 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
 
     /** 处理具体业务 */
     private void toNext(int id) {
+        WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
         switch (id) {
             case R.id.linear_send:
-                Intent intent;
-                if (mAccountManager
-                        .getCurWalletType()
-                        .contains(org.haobtc.onekey.constant.Constant.BTC)) {
-                    intent = new Intent(getActivity(), SendHdActivity.class);
-                } else {
-                    intent = new Intent(getActivity(), SendEthActivity.class);
-                }
-                intent.putExtra("hdWalletName", textWalletName.getText().toString());
-                startActivity(intent);
+                if (null != value)
+                    if (value.getCoinType().callFlag.equalsIgnoreCase(Vm.CoinType.BTC.callFlag)) {
+                        Intent intent = new Intent(getActivity(), SendHdActivity.class);
+                        intent.putExtra("hdWalletName", textWalletName.getText().toString());
+                        startActivity(intent);
+                    } else if (value.getCoinType()
+                            .callFlag
+                            .equalsIgnoreCase(Vm.CoinType.ETH.callFlag)) {
+                        SendEthActivity.start(getActivity(), value.getId());
+                    }
                 break;
             case R.id.linear_receive:
-                WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
                 if (value != null) {
                     ReceiveHDActivity.start(getActivity(), value.getId());
                 }
@@ -541,7 +541,10 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                     if (granted) {
                                         OnekeyScanQrActivity.start(
                                                 WalletFragment.this,
-                                                textWalletName.getText().toString(),
+                                                mAppWalletViewModel
+                                                        .currentWalletAccountInfo
+                                                        .getValue()
+                                                        .getId(),
                                                 REQUEST_CODE);
                                     } else {
                                         Toast.makeText(

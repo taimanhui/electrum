@@ -49,6 +49,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
+import org.haobtc.onekey.bean.Assets;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.bean.PyResponse;
@@ -143,7 +144,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @BindView(R.id.paste_address)
     TextView pasteAddress;
 
-    @BindView(R.id.switch_coin_type)
+    @BindView(R.id.wallet_name)
     TextView switchCoinType;
 
     @BindView(R.id.switch_icon)
@@ -279,6 +280,23 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         switchCoinType.setText(Vm.CoinType.BTC.coinName);
         switchIcon.setVisibility(View.GONE);
+
+        mAppWalletViewModel.currentWalletAssetsList.observe(
+                this,
+                assets -> {
+                    Assets mAssets =
+                            mAppWalletViewModel
+                                    .currentWalletAssetsList
+                                    .getValue()
+                                    .getByUniqueIdOrZero(-1);
+                    balance =
+                            mAssets.getBalance().getBalance().stripTrailingZeros().toPlainString();
+                    if (!Strings.isNullOrEmpty(balance)) {
+                        decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
+                    }
+                    textBalance.setText(String.format("%s%s", balance, baseUnit));
+                });
+
         getDefaultFee();
         setMinAmount();
         editAmount.setFilters(
@@ -328,15 +346,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             showWatchTipDialog();
         }
         registerLayoutChangeListener();
-        mAppWalletViewModel.currentWalletBalance.observe(
-                this,
-                mBalance -> {
-                    balance = mBalance.getBalance().stripTrailingZeros().toPlainString();
-                    if (!Strings.isNullOrEmpty(balance)) {
-                        decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
-                    }
-                    textBalance.setText(String.format("%s%s", balance, baseUnit));
-                });
         editReceiverAddress.setOnPasteCallback(() -> isAddressClickPaste = true);
         editAmount.setOnPasteCallback(() -> isAmountClickPaste = true);
     }
@@ -593,7 +602,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     /** 获取费率详情 */
     private void getDefaultFee() {
         try {
-            PyResponse<String> response = PyEnv.getFeeInfo("", "", "", "");
+            PyResponse<String> response = PyEnv.getFeeInfo("", "", "", "", "");
             String errors = response.getErrors();
             if (Strings.isNullOrEmpty(errors)) {
                 Logger.json(response.getResult());
@@ -603,7 +612,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             } else {
                 showToast(R.string.get_fee_info_failed);
             }
-            currentFeeRate = mCurrentFeeDetails.getFast().getFeerate();
+            currentFeeRate = mCurrentFeeDetails.getNormal().getFeerate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -812,6 +821,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         editReceiverAddress.getText().toString(),
                         isSetBig ? "!" : amount,
                         feeRate);
+        Logger.d(" currentFeeRate-->" + feeRate);
         String errors = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();

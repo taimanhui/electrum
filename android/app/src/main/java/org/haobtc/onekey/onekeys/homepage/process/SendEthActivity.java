@@ -25,6 +25,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.orhanobut.logger.Logger;
@@ -50,11 +51,15 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.Assets;
+import org.haobtc.onekey.bean.CoinAssets;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
+import org.haobtc.onekey.bean.ERC20Assets;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
+import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.business.qrdecode.QRDecode;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
@@ -82,24 +87,39 @@ import org.haobtc.onekey.ui.widget.PasteEditText;
 import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
+import org.jetbrains.annotations.NotNull;
 
 /** @author liyan */
 public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.onCustomInterface {
 
-    private static final String EXT_WALLET_NAME = "hdWalletName";
     private static final String EXT_SCAN_ADDRESS = "addressScan";
     private static final String EXT_SCAN_AMOUNT = "amountScan";
-    private static final String EXT_TOKEN_NAME = "tokenName";
+    private static final String EXT_ASSETS_ID = "ext_assets_id";
+    private static final String EXT_WALLET_ID = "ext_wallet_id";
     private static final int SELECT_TOKEN = 1001;
 
     public static void start(
-            Context context, String name, @Nullable String address, @Nullable String amount) {
+            Context context,
+            @NotNull String walletID,
+            @Nullable String address,
+            @Nullable String amount) {
         Intent intent = new Intent(context, SendEthActivity.class);
-        intent.putExtra(EXT_WALLET_NAME, name);
+        intent.putExtra(EXT_WALLET_ID, walletID);
         if (!TextUtils.isEmpty(address)) {
             intent.putExtra(EXT_SCAN_ADDRESS, address);
             intent.putExtra(EXT_SCAN_AMOUNT, amount);
         }
+        context.startActivity(intent);
+    }
+
+    public static void start(Context context, @NotNull String walletID) {
+        start(context, walletID, -1);
+    }
+
+    public static void start(Context context, @NotNull String walletID, int assetID) {
+        Intent intent = new Intent(context, SendEthActivity.class);
+        intent.putExtra(EXT_WALLET_ID, walletID);
+        intent.putExtra(EXT_ASSETS_ID, assetID);
         context.startActivity(intent);
     }
 
@@ -145,8 +165,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     @BindView(R.id.paste_address)
     TextView pasteAddress;
 
-    @BindView(R.id.switch_coin_type)
-    TextView switchCoinType;
+    @BindView(R.id.wallet_name)
+    TextView walletName;
 
     @BindView(R.id.text_max_amount)
     TextView textMaxAmount;
@@ -221,7 +241,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private String hdWalletName;
     private String baseUnit;
     private String currencySymbols;
-    private String showWalletType;
+    //    private String showWalletType;
     private String signedTx;
     private String rawTx;
     private TransactionConfirmDialog confirmDialog;
@@ -230,7 +250,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private String tempSlowTransaction;
     private String tempRecommendTransaction;
     private double currentFeeRate;
-    private BigDecimal minAmount;
+    //    private BigDecimal minAmount;
     private BigDecimal decimalBalance;
     private int scale;
     private boolean addressInvalid;
@@ -252,20 +272,20 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private boolean isAddressClickPaste;
     private boolean isAmountClickPaste;
     // 钱包类型：btc || eth
-    private static final String walletType = Constant.ETH;
+    private static final String walletType = Vm.CoinType.ETH.callFlag;
     private int mGasLimit = 0;
     private int mCusGasLimit = 0;
     private CustomEthFeeDialog mCustomEthFeeDialog;
-    private String currentWalletName;
-    private LocalWalletInfo localWalletByName;
     private String mCusFeeRate;
     // 作为定时轮询的
     private CompositeDisposable myLoopDisposable;
     // 当前的Fee
     private String mCurrentFee;
     private String mGasPrice;
-
-    private String mTokenName;
+    private WalletAccountInfo walletInfo;
+    private String contractAddress;
+    private int mAssetsID;
+    private boolean isToken = false;
 
     /** init */
     @Override
@@ -339,19 +359,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                         .show();
             }
         }
-        if (Constant.BTC_WATCH.equals(showWalletType)) {
+        if (walletInfo.getWalletType() == Vm.WalletType.IMPORT_WATCH) {
             showWatchTipDialog();
         }
-        mAppWalletViewModel.currentWalletBalance.observe(
-                this,
-                mBalance -> {
-                    balance = mBalance.getBalance().stripTrailingZeros().toPlainString();
-                    if (!Strings.isNullOrEmpty(balance)) {
-                        decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
-                    }
-                    textBalance.setText(String.format("%s%s", balance, baseUnit));
-                });
-        switchCoinType.setText(Constant.COIN_TYPE_ETH);
+
         editReceiverAddress.setOnPasteCallback(() -> isAddressClickPaste = true);
         editAmount.setOnPasteCallback(() -> isAmountClickPaste = true);
         registerLayoutChangeListener();
@@ -369,15 +380,38 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         mAccountManager = new AccountManager(mContext);
         mSystemConfigManager = new SystemConfigManager(this);
         rxPermissions = new RxPermissions(this);
-        hdWalletName = getIntent().getStringExtra(EXT_WALLET_NAME);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        showWalletType = mAccountManager.getCurrentWalletAccurateType();
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
-        currentWalletName = mAccountManager.getCurrentWalletName();
-        localWalletByName = mAccountManager.getLocalWalletByName(currentWalletName);
-        baseUnit = mSystemConfigManager.getCurrentBaseUnit(localWalletByName.getCoinType());
-        mTokenName = getIntent().getStringExtra(EXT_TOKEN_NAME);
-        setMinAmount();
+        String mWalletID = getIntent().getStringExtra(EXT_WALLET_ID);
+        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(mWalletID);
+        walletInfo = AppWalletViewModel.Companion.convert(localWalletByName);
+        scale = localWalletByName.getCoinType().digits;
+        walletName.setText(Vm.CoinType.ETH.coinName);
+        mAssetsID = getIntent().getIntExtra(EXT_ASSETS_ID, -1);
+        mAppWalletViewModel.currentWalletAssetsList.observe(
+                this,
+                assets -> {
+                    Assets mAssets = assets.getByUniqueIdOrZero(mAssetsID);
+                    initAssetBalance(mAssets);
+                    hdWalletName = mAssets.getName();
+                    walletName.setText(hdWalletName);
+                    if (mAssets instanceof ERC20Assets) {
+                        ERC20Assets erc20Assets = (ERC20Assets) mAssets;
+                        contractAddress = erc20Assets.getContractAddress();
+                        isToken = true;
+                    } else if (mAssets instanceof CoinAssets) {
+                        contractAddress = localWalletByName.getAddr();
+                        isToken = false;
+                    }
+                    Logger.d("mAssets-->" + JSON.toJSONString(mAssets));
+                });
+    }
+
+    private void initAssetBalance(Assets mAssets) {
+        balance = mAssets.getBalance().getBalance().toPlainString();
+        baseUnit = mAssets.getBalance().getUnit();
+        decimalBalance = mAssets.getBalance().getBalance();
+        textBalance.setText(String.format("%s%s", balance, baseUnit));
     }
 
     private void showWatchTipDialog() {
@@ -402,11 +436,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     @Override
     public int getContentViewId() {
         return R.layout.activity_send_hd;
-    }
-
-    private void setMinAmount() {
-        minAmount = BigDecimal.valueOf(0.000000000000000001);
-        scale = 18;
     }
 
     @OnClick({
@@ -731,7 +760,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
 
     /** 发送交易 */
     private void sendETH() {
-        if (showWalletType.contains(Constant.HW)) {
+        if (walletInfo.getWalletType() == Vm.WalletType.HARDWARE) {
             signHardWare();
         } else {
             sendConfirmDialog();
@@ -739,7 +768,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     }
 
     private void sendConfirmDialog() {
-        String sender = localWalletByName.getAddr();
         String receiver = editReceiverAddress.getText().toString().trim();
         String fee = "";
 
@@ -781,14 +809,14 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
 
         String mSendAmounts = String.format(Locale.ENGLISH, "%s %s", amount, baseUnit);
         Bundle bundle = new Bundle();
-        bundle.putString(Constant.TRANSACTION_SENDER, sender);
+        bundle.putString(Constant.TRANSACTION_SENDER, contractAddress);
         bundle.putString(Constant.TRANSACTION_RECEIVER, receiver);
         bundle.putString(Constant.TRANSACTION_AMOUNT, mSendAmounts);
         bundle.putString(Constant.TRANSACTION_FEE, fee);
         bundle.putString(Constant.WALLET_LABEL, hdWalletName);
         bundle.putInt(
                 Constant.WALLET_TYPE,
-                showWalletType.contains(Constant.HW)
+                walletInfo.getWalletType() == Vm.WalletType.HARDWARE
                         ? Constant.WALLET_TYPE_HARDWARE_PERSONAL
                         : Constant.WALLET_TYPE_SOFTWARE);
         confirmDialog = new TransactionConfirmDialog();
@@ -804,7 +832,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     /** 软件签名交易 path : NFC/android_usb/bluetooth as str, used by hardware */
     private void softSign(String password) {
         String path;
-        if (Constant.WALLET_TYPE_HARDWARE_ETH.equals(showWalletType)) {
+        if (walletInfo.getWalletType() == Vm.WalletType.HARDWARE) {
             path = MyApplication.getInstance().getDeviceWay();
         } else {
             path = "";
@@ -823,7 +851,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                                             path,
                                                             password,
                                                             String.valueOf(currentFeeRate),
-                                                            String.valueOf(mGasLimit));
+                                                            String.valueOf(mGasLimit),
+                                                            isToken ? contractAddress : "");
                                             emitter.onNext(response);
                                             emitter.onComplete();
                                         })
@@ -856,14 +885,14 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConfirm(ButtonRequestConfirmedEvent event) {
-        if (showWalletType.contains(Constant.HW)) {
+        if (walletInfo.getWalletType() == Vm.WalletType.HARDWARE) {
             TransactionCompletion.start(
                     mContext,
                     Vm.CoinType.ETH,
                     signedTx,
                     String.format(Locale.ENGLISH, "%s %s", amount, baseUnit));
             finish();
-        } else if (showWalletType.contains(Constant.WATCH)) {
+        } else if (walletInfo.getWalletType() == Vm.WalletType.IMPORT_WATCH) {
             showWatchQrDialog();
         } else {
             // 获取主密码
@@ -888,7 +917,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                                             MyApplication.getInstance()
                                                                     .getDeviceWay(),
                                                             String.valueOf(currentFeeRate),
-                                                            String.valueOf(mGasLimit));
+                                                            String.valueOf(mGasLimit),
+                                                            contractAddress);
                                             emitter.onNext(response);
                                             emitter.onComplete();
                                         })
@@ -938,7 +968,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private void changeButton() {
         if (addressInvalid && isFeeValid && !Strings.isNullOrEmpty(amount)) {
             BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-            if (decimal.compareTo(minAmount) < 0 || Double.parseDouble(balance) <= 0) {
+            if (decimal.compareTo(BigDecimal.ZERO) <= 0 || Double.parseDouble(balance) <= 0) {
                 btnNext.setEnabled(false);
             } else {
                 btnNext.setEnabled(true);
@@ -1088,7 +1118,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Scan QR code return
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_SCAN_CODE && resultCode == RESULT_OK) {
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_SCAN_CODE) {
             if (data != null) {
                 String content =
                         data.getStringExtra(com.yzq.zxinglibrary.common.Constant.CODED_CONTENT);
@@ -1136,9 +1169,39 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 mCompositeDisposable.add(disposable);
             }
         } else if (requestCode == SELECT_TOKEN) {
-            //            Assets assets =
-            // JSON.parseObject(data.getStringExtra(SelectTokenActivity.ASSET_JSON),Assets.class);
-            String result = data.getStringExtra(SelectTokenActivity.ASSET_JSON);
+            if (data != null) {
+                int assetsID = data.getIntExtra(SelectTokenActivity.ASSET_ID, -1);
+                Assets mAssets =
+                        mAppWalletViewModel
+                                .currentWalletAssetsList
+                                .getValue()
+                                .getByUniqueIdOrZero(assetsID);
+                Logger.d(" 选择token：" + JSON.toJSONString(mAssets));
+                if (mAssets == null) {
+                    return;
+                }
+                hdWalletName = mAssets.getName();
+                walletName.setText(hdWalletName);
+                initAssetBalance(mAssets);
+                if (mAssets instanceof ERC20Assets) {
+                    isToken = true;
+                    ERC20Assets erc20Assets = (ERC20Assets) mAssets;
+                    mAssetsID = erc20Assets.uniqueId();
+                    String address = erc20Assets.getContractAddress();
+                    if (!address.equals(contractAddress)) {
+                        contractAddress = erc20Assets.getContractAddress();
+                        refreshFeeView();
+                    }
+                } else if (mAssets instanceof CoinAssets) {
+                    isToken = false;
+                    String walletID =
+                            mAppWalletViewModel.currentWalletAccountInfo.getValue().getId();
+                    LocalWalletInfo localWalletByName =
+                            mAccountManager.getLocalWalletByName(walletID);
+                    contractAddress = localWalletByName.getAddr();
+                    refreshFeeView();
+                }
+            }
         }
     }
 
@@ -1205,15 +1268,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         if (!focused) {
             if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
                 BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-                if (decimal.compareTo(minAmount) < 0) {
-                    String min =
-                            String.format(
-                                    Locale.ENGLISH,
-                                    "%s",
-                                    minAmount.stripTrailingZeros().toPlainString());
-                    editAmount.setText(min);
-                    editAmount.setSelection(min.length());
-                } else if (decimal.compareTo(decimalBalance) >= 0) {
+                if (decimal.compareTo(decimalBalance) >= 0) {
                     if (addressInvalid) {
                         doDealMaxAmount();
                     }
@@ -1331,7 +1386,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                     walletType,
                                     editReceiverAddress.getText().toString().trim(),
                                     amount,
-                                    String.valueOf(currentFeeRate));
+                                    String.valueOf(currentFeeRate),
+                                    contractAddress);
                     emitter.onNext(response);
                     emitter.onComplete();
                 });

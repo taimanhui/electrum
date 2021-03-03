@@ -31,7 +31,7 @@ class OnekeyScanQrActivity : CaptureActivity() {
     private const val REQUEST_CONNECT_DEVICE = 1
     private const val EXT_WALLET_NAME = "wallet_name"
 
-    private fun obtainIntent(context: Context, walletName: String): Intent {
+    private fun obtainIntent(context: Context, walletID: String): Intent {
       return Intent(context, OnekeyScanQrActivity::class.java).apply {
         val config = ZxingConfig()
         config.isPlayBeep = true
@@ -41,7 +41,7 @@ class OnekeyScanQrActivity : CaptureActivity() {
         config.isShowAlbum = false
         config.isShowbottomLayout = false
         putExtra(Constant.INTENT_ZXING_CONFIG, config)
-        putExtra(EXT_WALLET_NAME, walletName)
+        putExtra(EXT_WALLET_NAME, walletID)
       }
     }
 
@@ -51,8 +51,8 @@ class OnekeyScanQrActivity : CaptureActivity() {
     }
 
     @JvmStatic
-    fun start(fragment: Fragment, walletName: String, requestCode: Int) {
-      fragment.startActivityForResult(obtainIntent(fragment.requireContext(), walletName), requestCode)
+    fun start(fragment: Fragment, walletID: String, requestCode: Int) {
+      fragment.startActivityForResult(obtainIntent(fragment.requireContext(), walletID), requestCode)
     }
   }
 

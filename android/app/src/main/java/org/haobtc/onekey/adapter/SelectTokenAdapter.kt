@@ -3,8 +3,7 @@ package org.haobtc.onekey.adapter
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import org.haobtc.onekey.R
-import org.haobtc.onekey.bean.RemoteImage
-import org.haobtc.onekey.bean.TokenList
+import org.haobtc.onekey.bean.Assets
 
 /**
  *
@@ -12,12 +11,20 @@ import org.haobtc.onekey.bean.TokenList
  * @Author:         peter Qin
  *
  */
-class SelectTokenAdapter(data: List<TokenList.ERCToken>) :
-    BaseQuickAdapter<TokenList.ERCToken, BaseViewHolder>(R.layout.item_select_token,data) {
+class SelectTokenAdapter(data: List<Assets>) :
+    BaseQuickAdapter<Assets, BaseViewHolder>(R.layout.item_select_token, data) {
 
 
-  override fun convert(helper: BaseViewHolder, item: TokenList.ERCToken) {
-    helper.setText(R.id.name, item.symbol)
-    RemoteImage(item.icon).intoTarget(helper.getView(R.id.icon))
+  override fun convert(helper: BaseViewHolder, item: Assets) {
+    helper.setText(R.id.name, item.name)
+    item.logo.let {
+      item.logo.intoTarget(helper.getView(R.id.icon))
+    }
+    item.balanceFiat.let {
+      helper.setText(R.id.fait_num, String.format("%s %s", item.balanceFiat.symbol, item.balanceFiat.balanceFormat))
+    }
+    item.balance.let {
+      helper.setText(R.id.balance_num, item.balance.balance.toPlainString())
+    }
   }
 }
