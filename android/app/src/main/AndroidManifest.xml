@@ -46,8 +46,13 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
-        <activity android:name=".onekeys.SelectTokenActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".onekeys.SelectTokenActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".onekeys.homepage.mindmenu.AddNewTokenActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity"
             android:screenOrientation="portrait"
@@ -717,7 +722,6 @@
             android:name=".onekeys.TokenManagerActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-
     </application>
 
 </manifest>

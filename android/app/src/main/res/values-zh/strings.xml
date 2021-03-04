@@ -717,8 +717,8 @@
     <string name="not_num">多公链、简单、安全、好用</string>
     <string name="recovery_hd">恢复主钱包</string>
     <string name="word_recovery">通过助记词</string>
-    <string name="pair_hard">配对硬件</string>
-    <string name="match_hard">配对硬件设备</string>
+    <string name="pair_hard">连接硬件</string>
+    <string name="match_hard">连接硬件设备</string>
     <string name="encryption">端到端加密</string>
     <string name="encryption_tip">我们采用业内先进的加密技术将信息储存在本地。只有您能解密信息，我们不会也无法查看、使用或出售任何您的数据。</string>
     <string name="only_you">只有您可以解锁自己的钱包</string>
@@ -1263,4 +1263,10 @@
     <string name="title_qr_code_scan_results">扫描结果</string>
     <string name="title_select_account">选择账户</string>
     <string name="search_account_token">搜索账户或代币</string>
+    <string name="token_address">合约地址</string>
+    <string name="input_valid_address">请输入有效的合约地址</string>
+    <string name="add_token">添加代币</string>
+    <string name="address_invalid">合约地址不存在</string>
+    <string name="token_img">代币图标</string>
+    <string name="token_name">代币名称</string>
 </resources>

@@ -33,6 +33,7 @@ import org.haobtc.onekey.bean.TokenList;
 import org.haobtc.onekey.card.utils.JsonParseUtils;
 import org.haobtc.onekey.databinding.ActivityTokenManagerBinding;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.homepage.mindmenu.AddNewTokenActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.status.NoSearchState;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
@@ -93,7 +94,7 @@ public class TokenManagerActivity extends BaseActivity
                 letter -> {
                     int letterIndex = getLetterIndex(moreTokens, letter);
                     if (letterIndex > 0) {
-                        mBinding.moreRecyclerview.smoothScrollToPosition(letterIndex);
+                        mBinding.moreRecyclerview.smoothScrollToPosition(letterIndex + 1);
                     }
                 });
         initHeaderView(mHotTokens);
@@ -200,7 +201,14 @@ public class TokenManagerActivity extends BaseActivity
             }
         }
         if (tempData.size() == 0) {
-            mMultiStateContainer.show(NoSearchState.class);
+            mMultiStateContainer.show(
+                    NoSearchState.class,
+                    noSearch -> {
+                        noSearch.setOnAddTokenListener(
+                                v -> {
+                                    AddNewTokenActivity.start(mContext);
+                                });
+                    });
         } else {
             mMultiStateContainer.show(SuccessState.class);
             mSearchTokens.addAll(tempData);

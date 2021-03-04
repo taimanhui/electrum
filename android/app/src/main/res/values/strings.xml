@@ -1280,7 +1280,7 @@
     <string name="hd_wallet_account">主钱包账户</string>
     <string name="single">独立</string>
     <string name="create_new">创建新账户</string>
-    <string name="match_hard">配对硬件设备</string>
+    <string name="match_hard">连接硬件设备</string>
     <string name="choose_account_type">选择账户类型</string>
     <string name="hint_backup_keystore">Keystore 是你独有的、用于签署交易的以太坊私钥的加密文件。请确认无误后将其放置在只有您知道的安全地方。</string>
     <string name="keystore_export">Keystore 导出</string>
@@ -1321,4 +1321,11 @@
     <string name="title_qr_code_scan_results">扫描结果</string>
     <string name="title_select_account">选择账户</string>
     <string name="search_account_token">搜索账户或代币</string>
+    <string name="token_address">合约地址</string>
+    <string name="input_valid_address">请输入有效的合约地址</string>
+    <string name="add_token">添加代币</string>
+    <string name="address_invalid">合约地址不存在</string>
+    <string name="token_img">代币图标</string>
+    <string name="token_name">代币名称</string>
+
 </resources>
