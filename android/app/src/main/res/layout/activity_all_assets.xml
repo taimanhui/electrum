@@ -67,6 +67,7 @@
                 android:paddingHorizontal="11dp"
                 android:textColor="@color/black_0"
                 android:textColorHint="@color/color_select_wallet_divider"
+                android:singleLine="true"
                 android:textSize="@dimen/sp_16" />
 
 

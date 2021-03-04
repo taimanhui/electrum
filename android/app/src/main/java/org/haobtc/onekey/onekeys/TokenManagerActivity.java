@@ -188,7 +188,7 @@ public class TokenManagerActivity extends BaseActivity
         List<TokenList.ERCToken> tempData = new ArrayList<>();
         for (TokenList.ERCToken allToken : mAllTokens) {
             if (search.startsWith("0x")) {
-                if (allToken.address.equals(search)) {
+                if (allToken.address.equalsIgnoreCase(search)) {
                     tempData.add(allToken);
                 }
             } else {
