@@ -27,8 +27,6 @@
 #define kInterfaceLoad_all_wallet        @"load_all_wallet" //加载并且选择钱包
 #define kInterfaceList_wallets           @"list_wallets" //加载钱包列表
 
-
-#define kInterfaceSelect_wallet          @"select_wallet" //选择钱包
 #define kInterfaceGet_tx_info            @"get_tx_info" //获取交易详情
 #define kInterfaceGet_all_tx_list        @"get_all_tx_list" //获取交易记录
 #define kInterfaceGet_default_fee_status @"get_default_fee_status" //获取默认费率
@@ -115,6 +113,10 @@
 #define kInterfaceverify_message       @"verify_message" //验证签名信息
 #define kInterfaceget_tx_info_from_raw  @"get_tx_info_from_raw" //获取签名信息的原始信息
 #define kInterfaceset_recovery_flag     @"_set_recovery_flag"  //停止扫描曾经使用的钱包
+
+#define kInterfacesign_eth_tx           @"sign_eth_tx"   //ETH签名
+#define kInterface_switch_wallet        @"switch_wallet" //切换钱包
+#define kInterface_get_wallet_balance   @"get_wallet_balance"//获取余额
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN

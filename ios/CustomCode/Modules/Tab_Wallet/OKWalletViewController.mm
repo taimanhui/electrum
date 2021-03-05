@@ -70,7 +70,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *signatureBtn;
 - (IBAction)signatureBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UITableView *assetTableView;
-
+@property (strong, nonatomic) UIRefreshControl* refreshControl;
 @property (weak, nonatomic) IBOutlet UIView *hwBgView;
 @property (weak, nonatomic) IBOutlet UILabel *hwWalletNameLabel;
 
@@ -191,12 +191,17 @@
         NSDictionary *value = dict[name];
         [kWalletManager setCurrentWalletInfo:[OKWalletInfoModel mj_objectWithKeyValues:value]];
     }
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
-    NSArray *bArray = dict[@"wallets"];
-    NSDictionary *bDict = [bArray firstObject];
-    NSString *balance = [bDict safeStringForKey:@"balance"];
-    NSString *fiat = [bDict safeStringForKey:@"fiat"];
-    [self updateStatus:@{@"balance":balance,@"fiat":fiat}];
+    [kPyCommandsManager callInterface:kInterface_switch_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
+    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
+        NSDictionary* result = [kPyCommandsManager callInterface:kInterface_get_wallet_balance parameter:@{}];
+        if (result != nil) {
+            NSArray *bArray = result[@"wallets"];
+            NSDictionary *bDict = [bArray firstObject];
+            NSString *balance = [bDict safeStringForKey:@"balance"];
+            NSString *fiat = [bDict safeStringForKey:@"fiat"];
+            [self updateStatus:@{@"balance":balance,@"fiat":fiat}];;
+        }
+    });
 }
 
 - (void)updateStatus:(NSDictionary *)dict
@@ -249,6 +254,13 @@
     [self.backupBgView setLayerDefaultRadius];
     [self.tableViewHeaderSearch setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:self.tableViewHeaderSearch.height * 0.5];
     self.assetTableView.rowHeight = 75;
+
+    _refreshControl = [[UIRefreshControl alloc]init];
+    _refreshControl.tintColor = [UIColor lightGrayColor];
+    _refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@""];
+    [_refreshControl addTarget:self action:@selector(onRefresh) forControlEvents:UIControlEventValueChanged];
+    self.assetTableView.refreshControl = _refreshControl;
+
     if (@available(iOS 11.0, *)) {
         [self.stackView setCustomSpacing:0 afterView:self.walletTopBgView];
     } else {
@@ -273,6 +285,14 @@
     UITapGestureRecognizer *tapBanner = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapBanner)];
     self.bannerImageView.userInteractionEnabled = YES;
     [self.bannerImageView addGestureRecognizer:tapBanner];
+}
+- (void)onRefresh
+{
+    [self performSelector:@selector(loadData) withObject:nil afterDelay:1.5];
+}
+- (void)loadData
+{
+    [_refreshControl endRefreshing];
 }
 #pragma mark - 检查钱包状态并重置UI
 - (void)checkWalletResetUI
