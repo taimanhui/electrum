@@ -1269,4 +1269,7 @@
     <string name="address_invalid">合约地址不存在</string>
     <string name="token_img">代币图标</string>
     <string name="token_name">代币名称</string>
+    <string name="invalid_btc">无效的BTC地址</string>
+    <string name="invalid_eth">无效的ETH地址</string>
+    <string name="re_input">请重新输入</string>
 </resources>

@@ -334,7 +334,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             String amountConvert = new QRDecode().getAmountByPythonResultAmount(amountScan);
             String amountStr = checkAndConvertAmount(amountConvert);
             if (amountStr == null) {
-                getAddressIsValid();
+                getAddressIsValid(true);
             } else {
                 editAmount.setText(amountStr);
                 keyBoardHideRefresh();
@@ -385,6 +385,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         String mWalletID = getIntent().getStringExtra(EXT_WALLET_ID);
         LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(mWalletID);
         walletInfo = AppWalletViewModel.Companion.convert(localWalletByName);
+        baseUnit = mSystemConfigManager.getCurrentBaseUnit(localWalletByName.getCoinType());
         scale = localWalletByName.getCoinType().digits;
         walletName.setText(Vm.CoinType.ETH.coinName);
         mAssetsID = getIntent().getIntExtra(EXT_ASSETS_ID, -1);
@@ -411,7 +412,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         balance = mAssets.getBalance().getBalance().toPlainString();
         baseUnit = mAssets.getBalance().getUnit();
         decimalBalance = mAssets.getBalance().getBalance();
-        textBalance.setText(String.format("%s%s", balance, baseUnit));
+        textBalance.setText(String.format("%s%s", balance, mAssets.getBalance().getUnit()));
     }
 
     private void showWatchTipDialog() {
@@ -1056,7 +1057,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             return;
         } else {
             // 收起键盘地址认为 focus，所以再次校验地址正确性
-            getAddressIsValid();
+            getAddressIsValid(false);
         }
         if (Strings.isNullOrEmpty(editAmount.getText().toString().trim())) {
             showToast(R.string.inoutnum);
@@ -1159,7 +1160,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                                 editAmount.setText(output.getAmount());
                                                 keyBoardHideRefresh();
                                             } else {
-                                                getAddressIsValid();
+                                                getAddressIsValid(true);
                                             }
                                         },
                                         e -> {
@@ -1212,7 +1213,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     }
 
     /** 校验收款地址是否有效 */
-    private void getAddressIsValid() {
+    private void getAddressIsValid(boolean isScan) {
         String address = editReceiverAddress.getText().toString();
         if (!Strings.isNullOrEmpty(address)) {
             PyResponse<Void> response = PyEnv.VerifyLegality(address, "address", walletType);
@@ -1223,8 +1224,16 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             }
             if (!addressInvalid) {
                 editReceiverAddress.setText("");
-                showToast(R.string.invalid_address);
                 btnNext.setEnabled(false);
+                if (isScan) {
+                    CustomCenterDialog centerDialog = new CustomCenterDialog(mContext, false);
+                    centerDialog.setContent(getString(R.string.re_input));
+                    centerDialog.setTitle(getString(R.string.invalid_eth));
+                    new XPopup.Builder(mContext).asCustom(centerDialog).show();
+
+                } else {
+                    showToast(R.string.invalid_address);
+                }
             }
         }
     }

@@ -317,7 +317,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             String amountConvert = new QRDecode().getAmountByPythonResultAmount(amountScan);
             String amountStr = checkAndConvertAmount(amountConvert);
             if (amountStr == null) {
-                getAddressIsValid();
+                getAddressIsValid(true);
             } else {
                 editAmount.setText(amountStr);
                 keyBoardHideRefresh();
@@ -1028,7 +1028,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             return;
         } else {
             // 收起键盘地址认为 focus，所以再次校验地址正确性
-            getAddressIsValid();
+            getAddressIsValid(false);
         }
         if (Strings.isNullOrEmpty(editAmount.getText().toString().trim())) {
             showToast(R.string.inoutnum);
@@ -1138,7 +1138,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                                                 editAmount.setText(output.getAmount());
                                                 keyBoardHideRefresh();
                                             } else {
-                                                getAddressIsValid();
+                                                getAddressIsValid(true);
                                             }
                                         },
                                         e -> {
@@ -1157,7 +1157,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     /** 校验收款地址是否有效 */
-    private void getAddressIsValid() {
+    private void getAddressIsValid(boolean isScan) {
         String address = editReceiverAddress.getText().toString();
         if (!Strings.isNullOrEmpty(address)) {
             PyResponse<Void> response = PyEnv.VerifyLegality(address, "address", mWalletType);
@@ -1168,8 +1168,15 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             }
             if (!addressInvalid) {
                 editReceiverAddress.setText("");
-                showToast(R.string.invalid_address);
                 btnNext.setEnabled(false);
+                if (isScan) {
+                    CustomCenterDialog centerDialog = new CustomCenterDialog(mContext, false);
+                    centerDialog.setContent(getString(R.string.re_input));
+                    centerDialog.setTitle(getString(R.string.invalid_btc));
+                    new XPopup.Builder(mContext).asCustom(centerDialog).show();
+                } else {
+                    showToast(R.string.invalid_address);
+                }
             }
         }
     }
