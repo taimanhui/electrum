@@ -32,6 +32,7 @@ import org.haobtc.onekey.bean.AllWalletBalanceInfoDTO;
 import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.bean.TokenList;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.business.wallet.TokenManager;
@@ -166,7 +167,11 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                 if (balanceInfoDTO.getWallets() != null && balanceInfoDTO.getWallets().size() > 0) {
                     for (BalanceCoinInfo wallet : balanceInfoDTO.getWallets()) {
                         if (!Strings.isNullOrEmpty(wallet.address)) {
-                            wallet.icon = mTokenManager.getTokenByAddress(wallet.address).logoURI;
+                            TokenList.ERCToken tokenByAddress =
+                                    mTokenManager.getTokenByAddress(wallet.address);
+                            if (tokenByAddress != null) {
+                                wallet.icon = tokenByAddress.logoURI;
+                            }
                         }
                     }
                 }

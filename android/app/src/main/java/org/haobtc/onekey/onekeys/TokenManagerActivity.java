@@ -165,6 +165,7 @@ public class TokenManagerActivity extends BaseActivity
                         for (String s : list) {
                             if (token.address.equalsIgnoreCase(s)) {
                                 token.isAdd = true;
+                                break;
                             }
                         }
                     }
