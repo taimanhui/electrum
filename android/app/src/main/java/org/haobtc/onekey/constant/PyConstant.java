@@ -170,6 +170,11 @@ public final class PyConstant {
 
     public static final String Delete_Token = "delete_token";
 
-    /** 获取已添加token 列表 */
+    /** 获取token 总列表 */
     public static final String GET_ALL_TOKEN = "get_all_token_info";
+
+    /** 获取已添加的Token列表 */
+    public static final String GET_CUR_TOKEN_ADDRESS = "get_cur_wallet_token_address";
+    /** 获取用户自定义的Token */
+    public static final String GET_CUS_LIST_INFO = "get_customer_list_info";
 }

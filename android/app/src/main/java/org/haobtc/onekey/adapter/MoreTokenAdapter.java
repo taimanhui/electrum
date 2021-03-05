@@ -43,7 +43,7 @@ public class MoreTokenAdapter extends BaseQuickAdapter<TokenList.ERCToken, BaseV
                     setAddData(item, backGround, position);
                     mOnMoreSwitchClick.onMoreCheckedListener(item, isChecked);
                 });
-        new RemoteImage(item.icon).intoTarget(helper.getView(R.id.icon_img));
+        new RemoteImage(item.logoURI).intoTarget(helper.getView(R.id.icon_img));
     }
 
     private void setAddData(TokenList.ERCToken item, RelativeLayout backGround, int position) {

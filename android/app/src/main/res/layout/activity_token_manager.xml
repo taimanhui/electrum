@@ -24,10 +24,10 @@
             android:background="@drawable/add_bk"
             android:drawablePadding="5dp"
             android:hint="@string/search_token"
-            android:singleLine="true"
             android:paddingHorizontal="11dp"
             android:textColor="@color/black_0"
             android:textColorHint="@color/color_select_wallet_divider"
+            android:singleLine="true"
             android:textSize="@dimen/sp_16" />
 
 

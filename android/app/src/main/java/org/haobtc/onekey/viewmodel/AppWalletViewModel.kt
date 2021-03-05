@@ -127,7 +127,7 @@ class AppWalletViewModel : ViewModel() {
                   tokenByAddress.symbol,
                   tokenByAddress.decimals,
                   tokenByAddress.name,
-                  RemoteImage(tokenByAddress.icon),
+                  RemoteImage(tokenByAddress.logoURI),
                   AssetsBalance("0", tokenByAddress.symbol)
               )
               if (isOriginalAccount) {

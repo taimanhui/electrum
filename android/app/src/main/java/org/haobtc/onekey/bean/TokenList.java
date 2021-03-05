@@ -17,7 +17,7 @@ public class TokenList {
         public String symbol;
         public String cgk_id;
         public int decimals;
-        public String icon;
+        public String logoURI;
         public int rank;
         public boolean isAdd;
     }

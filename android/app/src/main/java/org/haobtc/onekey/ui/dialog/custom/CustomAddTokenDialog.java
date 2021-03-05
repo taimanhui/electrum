@@ -9,9 +9,11 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.lxj.xpopup.core.BottomPopupView;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.bean.RemoteImage;
+import org.haobtc.onekey.bean.TokenList;
 
 /** @Description: 自定义添加代币弹窗 @Author: peter Qin */
-class CustomAddTokenDialog extends BottomPopupView {
+public class CustomAddTokenDialog extends BottomPopupView {
 
     private Unbinder bind;
 
@@ -30,14 +32,26 @@ class CustomAddTokenDialog extends BottomPopupView {
     @BindView(R.id.add_token_btn)
     TextView addTokenBtn;
 
-    public CustomAddTokenDialog(@NonNull Context context) {
+    private onConfirmClick mOnConfirmClick;
+    private TokenList.ERCToken token;
+
+    public CustomAddTokenDialog(@NonNull Context context, onConfirmClick mOnConfirmClick) {
         super(context);
+        this.mOnConfirmClick = mOnConfirmClick;
     }
 
     @Override
     protected void onCreate() {
         super.onCreate();
         bind = ButterKnife.bind(this);
+        if (token == null) {
+            return;
+        }
+        new RemoteImage(token.logoURI).intoTarget(mImageView);
+        tokenNameTV.setText(token.symbol);
+        tokenAddressTV.setText(token.address);
+        cancelBtn.setOnClickListener(view -> dismiss());
+        addTokenBtn.setOnClickListener(view -> mOnConfirmClick.onConfirmClickListener());
     }
 
     @Override
@@ -49,5 +63,13 @@ class CustomAddTokenDialog extends BottomPopupView {
     public void onDestroy() {
         super.onDestroy();
         bind.unbind();
+    }
+
+    public void setToken(TokenList.ERCToken token) {
+        this.token = token;
+    }
+
+    public interface onConfirmClick {
+        void onConfirmClickListener();
     }
 }

@@ -52,6 +52,7 @@ import org.haobtc.onekey.bean.MakeTxResponseBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.SwitchWalletBean;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
+import org.haobtc.onekey.bean.TokenList;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Constant;
@@ -1735,11 +1736,6 @@ public final class PyEnv {
         return response;
     }
 
-    /**
-     * 获取 已添加token列表
-     *
-     * @return
-     */
     public static PyResponse<String> getAllTokenInfo() {
         PyResponse<String> response = new PyResponse<>();
         try {
@@ -1770,5 +1766,52 @@ public final class PyEnv {
             e.printStackTrace();
             throw HardWareExceptions.exceptionConvert(e);
         }
+    }
+
+    public static PyResponse<List<TokenList.ERCToken>> getTokenList() {
+        PyResponse<List<TokenList.ERCToken>> pyResponse = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.GET_CUS_LIST_INFO).toString();
+            List<TokenList.ERCToken> list = JSON.parseArray(result, TokenList.ERCToken.class);
+            pyResponse.setResult(list);
+            Logger.json(result);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            pyResponse.setErrors(exception.getMessage());
+        }
+        return pyResponse;
+    }
+
+    public static PyResponse<String> getAddTokenAddress() {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.GET_CUR_TOKEN_ADDRESS).toString();
+            response.setResult(result);
+            Logger.json(result);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
+    /**
+     * 获取用户自定义添加的Token
+     *
+     * @param address
+     * @return
+     */
+    public static PyResponse<TokenList.ERCToken> getCustomerTokenInfo(String address) {
+        PyResponse<TokenList.ERCToken> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr("get_customer_token_info", address).toString();
+            Logger.json(result);
+            TokenList.ERCToken token = JSON.parseObject(result, TokenList.ERCToken.class);
+            response.setResult(token);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
     }
 }

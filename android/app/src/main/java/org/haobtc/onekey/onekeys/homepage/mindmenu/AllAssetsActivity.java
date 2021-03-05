@@ -166,7 +166,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                 if (balanceInfoDTO.getWallets() != null && balanceInfoDTO.getWallets().size() > 0) {
                     for (BalanceCoinInfo wallet : balanceInfoDTO.getWallets()) {
                         if (!Strings.isNullOrEmpty(wallet.address)) {
-                            wallet.icon = mTokenManager.getTokenByAddress(wallet.address).icon;
+                            wallet.icon = mTokenManager.getTokenByAddress(wallet.address).logoURI;
                         }
                     }
                 }

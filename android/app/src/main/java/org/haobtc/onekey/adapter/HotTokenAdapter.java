@@ -44,7 +44,7 @@ public class HotTokenAdapter extends BaseQuickAdapter<TokenList.ERCToken, BaseVi
                     mOnHotSwitchClick.onHotCheckedListener(
                             item, isChecked, helper.getAdapterPosition());
                 });
-        new RemoteImage(item.icon).intoTarget(helper.getView(R.id.icon_img));
+        new RemoteImage(item.logoURI).intoTarget(helper.getView(R.id.icon_img));
     }
 
     private void setAddData(TokenList.ERCToken item, RelativeLayout backGround, int position) {
