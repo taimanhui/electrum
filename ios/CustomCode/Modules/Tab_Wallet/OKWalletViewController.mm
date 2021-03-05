@@ -91,6 +91,10 @@
 - (IBAction)assetListBtnClick:(UIButton *)sender;
 
 @property (weak, nonatomic) IBOutlet UIView *tableViewHeaderView;
+@property (weak, nonatomic) IBOutlet UIView *tableViewFooterView;
+@property (weak, nonatomic) IBOutlet UIView *footerViewlow;
+@property (weak, nonatomic) IBOutlet UIView *footerViewBlank;
+
 
 @property (nonatomic,strong)NSArray *listWallets;
 
@@ -251,6 +255,7 @@
     [self.walletTopBgView setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 168)];
     [self.srBgView setCornerWith:20 side:OKCornerPathBottomLeft|OKCornerPathBottomRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 68)];
     [self.assettableViewHeader setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 74)];
+    [self.footerViewlow setCornerWith:20 side:OKCornerPathBottomLeft|OKCornerPathBottomRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 74)];
     [self.backupBgView setLayerDefaultRadius];
     [self.tableViewHeaderSearch setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:self.tableViewHeaderSearch.height * 0.5];
     self.assetTableView.rowHeight = 75;
@@ -270,7 +275,6 @@
 
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(backUpBgClick)];
     [self.backupBgView addGestureRecognizer:tap];
-    self.assetTableView.tableFooterView = [UIView new];
 
 
     UITapGestureRecognizer *tapWalletTopBgView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapWalletTopBgViewClick)];
@@ -586,15 +590,6 @@
     selectAssetTypeVc.isInit = isInit;
     [self.OK_TopViewController.navigationController pushViewController:selectAssetTypeVc animated:YES];
 }
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    if (scrollView == self.assetTableView) {
-        CGFloat offY = scrollView.contentOffset.y;
-        if (offY < 0) {
-            scrollView.contentOffset = CGPointZero;
-        }
-    }
-}
 
 - (NSArray *)allData
 {
@@ -673,9 +668,9 @@
 {
     [self assetListBtnClick:nil];
 }
-#pragma mark - 添加资产
+#pragma mark - 添加Token
 - (IBAction)tableViewHeaderAddBtnClick:(UIButton *)sender {
-    //NSLog(@"添加资产");
+    //NSLog(@"添加Token");
 }
 
 #pragma mark - NotiWalletCreateComplete

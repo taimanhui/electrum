@@ -308,12 +308,17 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceget_default_fee_info]){
         NSString *feerate = [parameter safeStringForKey:@"feerate"];
         NSString *coin = [parameter safeStringForKey:@"coin"]?:@"btc";
+        NSString *eth_tx_info = [parameter safeStringForKey:@"eth_tx_info"];
         PyObject *args =  Py_BuildValue("()");
         PyObject *kwargs;
-        if (feerate.length == 0 || feerate == nil) {
-            kwargs = Py_BuildValue("{s:s}", "coin", [coin UTF8String]);
+        if (eth_tx_info.length != 0) {
+            kwargs = Py_BuildValue("{s:s,s:s}", "coin", [coin UTF8String],"eth_tx_info",[eth_tx_info UTF8String]);
         }else{
-            kwargs = Py_BuildValue("{s:s,s:s}", "feerate", [feerate UTF8String],"coin",[coin UTF8String]);
+            if (feerate.length == 0 || feerate == nil) {
+                kwargs = Py_BuildValue("{s:s}", "coin", [coin UTF8String]);
+            }else{
+                kwargs = Py_BuildValue("{s:s,s:s}", "feerate", [feerate UTF8String],"coin",[coin UTF8String]);
+            }
         }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceget_default_fee_info UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
@@ -570,6 +575,7 @@ static dispatch_once_t once;
         }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfacesign_eth_tx UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
+
     }else if([method isEqualToString:kInterface_get_wallet_balance]){
         result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "()",NULL);
     }
