@@ -3,6 +3,7 @@ package org.haobtc.onekey.business.wallet;
 import androidx.annotation.WorkerThread;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -64,24 +65,16 @@ public class TokenManager {
     @WorkerThread
     private String getLocalTokenList() {
         try {
-            // 创建字符流对象
-            FileReader reader = new FileReader(FILE_PATH);
-            // 创建字符串拼接
+            BufferedReader bfr = new BufferedReader(new FileReader(FILE_PATH));
+            String line = bfr.readLine();
             StringBuilder builder = new StringBuilder();
-            // 读取一个字符
-            int read = reader.read();
-            // 能读取到字符
-            while (read != -1) {
-                // 拼接字符串
-                builder.append((char) read);
-                // 读取下一个字符
-                read = reader.read();
+            while (line != null) {
+                builder.append(line);
+                builder.append("\n");
+                line = bfr.readLine();
             }
-            // 关闭字符流
-            reader.close();
+            bfr.close();
             return builder.toString();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,12 +124,10 @@ public class TokenManager {
     public TokenList.ERCToken getTokenByAddress(String address) {
         List<TokenList.ERCToken> tokenList =
                 JSON.parseArray(getLocalTokenList(), TokenList.ERCToken.class);
-        if (tokenList != null && tokenList.size() > 0) {
-            for (TokenList.ERCToken token : tokenList) {
-                if (!Strings.isNullOrEmpty(token.address) && !Strings.isNullOrEmpty(address)) {
-                    if (token.address.equals(address)) {
-                        return token;
-                    }
+        for (TokenList.ERCToken token : tokenList) {
+            if (!Strings.isNullOrEmpty(token.address) && !Strings.isNullOrEmpty(address)) {
+                if (token.address.equalsIgnoreCase(address)) {
+                    return token;
                 }
             }
         }

@@ -176,5 +176,5 @@ public final class PyConstant {
     /** 获取已添加的Token列表 */
     public static final String GET_CUR_TOKEN_ADDRESS = "get_cur_wallet_token_address";
     /** 获取用户自定义的Token */
-    public static final String GET_CUS_LIST_INFO = "get_customer_list_info";
+    public static final String GET_CUS_LIST_INFO = "get_all_customer_token_info";
 }

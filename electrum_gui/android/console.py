@@ -2142,7 +2142,7 @@ class AndroidCommands(commands.Commands):
             }
             self.token_list_by_chain[chain_code] = token_info
 
-        return json.dumps(list(self.token_list_by_chain.values()))
+        return json.dumps(list(self.token_list_by_chain.get(chain_code).values()))
 
     def get_all_customer_token_info(self):
         chain_code = PyWalib.get_chain_code()
@@ -2159,9 +2159,11 @@ class AndroidCommands(commands.Commands):
             if not contract_addr:
                 raise BaseException("Contract address cannot be empty")
             chain_code = PyWalib.get_chain_code()
-            if contract_addr.lower() in list(self.token_list_by_chain)[50:]:
-                self.wallet_context.add_customer_token_info(self.token_list_by_chain[contract_addr.lower()], chain_code)
-            elif contract_addr.lower() not in self.token_list_by_chain:
+            if contract_addr.lower() in list(self.token_list_by_chain.get(chain_code))[50:]:
+                self.wallet_context.add_customer_token_info(
+                    self.token_list_by_chain.get(chain_code)[contract_addr.lower()], chain_code
+                )
+            elif contract_addr.lower() not in self.token_list_by_chain.get(chain_code):
                 token_info = PyWalib.get_token_info("", contract_addr)
                 self.wallet_context.add_customer_token_info(token_info, chain_code)
 

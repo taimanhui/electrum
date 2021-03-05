@@ -1778,6 +1778,7 @@ public final class PyEnv {
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             pyResponse.setErrors(exception.getMessage());
+            Logger.d(" 异常--->" + e.toString());
         }
         return pyResponse;
     }
