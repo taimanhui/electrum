@@ -183,7 +183,7 @@ static dispatch_once_t once;
 
 
 
-    }else if([method isEqualToString:kInterfaceSelect_wallet]){
+    }else if([method isEqualToString:kInterface_switch_wallet]){
         NSString *selectName = [parameter safeStringForKey:@"name"];
         result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "(s)",[selectName UTF8String]);
 
@@ -548,6 +548,7 @@ static dispatch_once_t once;
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_tx_info_from_raw UTF8String], "(s)",[raw_tx UTF8String]);
     }else if ([method isEqualToString:kInterfaceset_recovery_flag]){
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_recovery_flag UTF8String], "()",NULL);
+
     }else if ([method isEqualToString:kInterfacesign_eth_tx]){
 
         NSString *to_addr = [parameter safeStringForKey:@"to_addr"];
@@ -574,6 +575,9 @@ static dispatch_once_t once;
         }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfacesign_eth_tx UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
+
+    }else if([method isEqualToString:kInterface_get_wallet_balance]){
+        result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "()",NULL);
     }
 
 

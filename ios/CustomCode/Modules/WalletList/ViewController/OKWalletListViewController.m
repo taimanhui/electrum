@@ -278,10 +278,16 @@
     OKWalletListTableViewCellModel *model = self.showList[indexPath.row];
     OKWalletInfoModel *curentWalletModel= [kWalletManager getCurrentWalletAddress:model.walletName];
     [kWalletManager setCurrentWalletInfo:curentWalletModel];
-    [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
-    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSelectWalletComplete object:nil];
-    [self refreshListData];
-    [self dismissViewControllerAnimated:YES completion:nil];
+    OKWeakSelf(self)
+    [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+    [kPyCommandsManager asyncCall:kInterface_switch_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name} callback:^(id  _Nonnull result) {
+        [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+        if (result != nil) {
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSelectWalletComplete object:nil];
+            [self refreshListData];
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+    }];
 }
 
 + (void)createWallet:(NSString *)pwd isInit:(BOOL)isInit
