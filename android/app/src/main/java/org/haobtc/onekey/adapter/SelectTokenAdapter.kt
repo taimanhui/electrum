@@ -4,15 +4,9 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import org.haobtc.onekey.R
 import org.haobtc.onekey.bean.Assets
+import org.haobtc.onekey.bean.CoinAssets
 import org.haobtc.onekey.bean.ERC20Assets
-import java.math.BigDecimal
 
-/**
- *
- * @Description:     java类作用描述
- * @Author:         peter Qin
- *
- */
 class SelectTokenAdapter(data: List<Assets>) :
     BaseQuickAdapter<Assets, BaseViewHolder>(R.layout.item_select_token, data) {
 
@@ -27,8 +21,10 @@ class SelectTokenAdapter(data: List<Assets>) :
     }
     item.balance.let {
       when (item) {
-        is ERC20Assets -> helper.setText(R.id.balance_num, item.balance.balance.setScale(4, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString())
-        else -> helper.setText(R.id.balance_num, item.balance.balance.setScale(6, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString())
+        is ERC20Assets -> helper.setText(R.id.balance_num, item.balance.getBalanceFormat(4))
+        else -> {
+          helper.setText(R.id.balance_num, (item as CoinAssets).balance.getBalanceFormat(6))
+        }
       }
 
     }
