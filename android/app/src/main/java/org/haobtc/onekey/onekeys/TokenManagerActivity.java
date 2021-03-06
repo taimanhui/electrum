@@ -18,6 +18,7 @@ import com.zy.multistatepage.MultiStateContainer;
 import com.zy.multistatepage.MultiStatePage;
 import com.zy.multistatepage.state.SuccessState;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.core.ObservableSource;
@@ -58,6 +59,8 @@ public class TokenManagerActivity extends BaseActivity
     private MultiStateContainer mMultiStateContainer;
     private AppWalletViewModel mAppWalletViewModel;
     private int mScrollState;
+    private boolean mShouldScroll;
+    private int mToPosition;
 
     public static void start(Context context) {
         context.startActivity(new Intent(context, TokenManagerActivity.class));
@@ -80,16 +83,45 @@ public class TokenManagerActivity extends BaseActivity
                         for (int i = 0; i < moreTokens.size(); i++) {
                             if (moreTokens.get(i).symbol.startsWith(letter.toLowerCase())
                                     || moreTokens.get(i).symbol.startsWith(letter)) {
-                                mBinding.moreRecyclerview.smoothScrollToPosition(i);
-                                LinearLayoutManager layoutManager =
-                                        (LinearLayoutManager)
-                                                mBinding.moreRecyclerview.getLayoutManager();
-                                layoutManager.scrollToPositionWithOffset(i, 0);
+                                smoothMoveToPosition(mBinding.moreRecyclerview, i + 1);
                                 break;
                             }
                         }
                     }
                 });
+        mBinding.moreRecyclerview.addOnScrollListener(
+                new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(
+                            @NonNull RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
+                        if (mShouldScroll && RecyclerView.SCROLL_STATE_IDLE == newState) {
+                            mShouldScroll = false;
+                            smoothMoveToPosition(mBinding.moreRecyclerview, mToPosition);
+                        }
+                    }
+                });
+    }
+
+    /** 滑动到指定位置 */
+    private void smoothMoveToPosition(RecyclerView mRecyclerView, final int position) {
+        int firstItem = mRecyclerView.getChildLayoutPosition(mRecyclerView.getChildAt(0));
+        int lastItem =
+                mRecyclerView.getChildLayoutPosition(
+                        mRecyclerView.getChildAt(mRecyclerView.getChildCount() - 1));
+        if (position < firstItem) {
+            mRecyclerView.smoothScrollToPosition(position);
+        } else if (position <= lastItem) {
+            int movePosition = position - firstItem;
+            if (movePosition >= 0 && movePosition < mRecyclerView.getChildCount()) {
+                int top = mRecyclerView.getChildAt(movePosition).getTop();
+                mRecyclerView.smoothScrollBy(0, top);
+            }
+        } else {
+            mRecyclerView.smoothScrollToPosition(position);
+            mToPosition = position;
+            mShouldScroll = true;
+        }
     }
 
     private void getSelectTokenList(List<TokenList.ERCToken> tokenList) {
