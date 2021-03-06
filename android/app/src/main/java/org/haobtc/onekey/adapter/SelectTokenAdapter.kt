@@ -4,6 +4,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import org.haobtc.onekey.R
 import org.haobtc.onekey.bean.Assets
+import org.haobtc.onekey.bean.ERC20Assets
+import java.math.BigDecimal
 
 /**
  *
@@ -24,7 +26,11 @@ class SelectTokenAdapter(data: List<Assets>) :
       helper.setText(R.id.fait_num, String.format("%s %s", item.balanceFiat.symbol, item.balanceFiat.balanceFormat))
     }
     item.balance.let {
-      helper.setText(R.id.balance_num, item.balance.balance.toPlainString())
+      when (item) {
+        is ERC20Assets -> helper.setText(R.id.balance_num, item.balance.balance.setScale(4, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString())
+        else -> helper.setText(R.id.balance_num, item.balance.balance.setScale(6, BigDecimal.ROUND_DOWN).stripTrailingZeros().toPlainString())
+      }
+
     }
   }
 }

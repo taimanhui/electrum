@@ -59,7 +59,7 @@ class SelectTokenActivity : BaseActivity() {
     var list: MutableList<Assets> = ArrayList()
     mAppViewModel.currentWalletAssetsList.observe(
         this,
-        Observer { assets ->
+        { assets ->
           list.clear()
           list.addAll(assets)
         })

@@ -25,10 +25,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
-import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
-import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -258,7 +256,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private boolean isFeeValid;
     private boolean isCustom = false;
     private boolean isSetBig;
-    private String balance;
     private BigDecimal maxAmount;
     private int selectFlag = 0;
     private boolean isResume;
@@ -292,7 +289,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     public void init() {
         initData();
         initView();
-        startLoop();
     }
 
     // 30秒轮询开启，取最新的fee
@@ -398,21 +394,21 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     walletName.setText(hdWalletName);
                     if (mAssets instanceof ERC20Assets) {
                         ERC20Assets erc20Assets = (ERC20Assets) mAssets;
+                        decimalBalance = new BigDecimal(mAssets.getBalanceFiat().getBalance());
                         contractAddress = erc20Assets.getContractAddress();
                         isToken = true;
                     } else if (mAssets instanceof CoinAssets) {
+                        CoinAssets coinAssets = (CoinAssets) mAssets;
+                        decimalBalance = coinAssets.getBalance().getBalance();
                         contractAddress = localWalletByName.getAddr();
                         isToken = false;
                     }
-                    Logger.d("mAssets-->" + JSON.toJSONString(mAssets));
                 });
     }
 
     private void initAssetBalance(Assets mAssets) {
-        balance = mAssets.getBalance().getBalance().toPlainString();
-        baseUnit = mAssets.getBalance().getUnit();
-        decimalBalance = mAssets.getBalance().getBalance();
-        textBalance.setText(String.format("%s%s", balance, mAssets.getBalance().getUnit()));
+        String balance = mAssets.getBalance().getBalance().toPlainString();
+        textBalance.setText(String.format("%s %s", balance, mAssets.getBalance().getUnit()));
     }
 
     private void showWatchTipDialog() {
@@ -459,8 +455,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 finish();
                 break;
             case R.id.switch_layout:
-                // not support
-                Logger.d("支持ERC-20Token");
                 startActivityForResult(
                         new Intent(mContext, SelectTokenActivity.class), SELECT_TOKEN);
                 break;
@@ -469,12 +463,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     showToast(R.string.input_number);
                 } else {
                     // 先取最大值再刷新View
-                    if (Double.parseDouble(balance) > 0) {
+                    if (decimalBalance.compareTo(BigDecimal.ZERO) > 0) {
                         maxAmount =
-                                BigDecimal.valueOf(Double.parseDouble(balance))
-                                        .subtract(
-                                                BigDecimal.valueOf(
-                                                        Double.parseDouble(mCurrentFee)));
+                                decimalBalance.subtract(
+                                        BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
                         if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
                             isSetBig = true;
                             editAmount.setText(maxAmount.toPlainString());
@@ -619,7 +611,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
 
     /** 取消自定义费率 */
     private void turnOffCustomize() {
-        startLoop();
         isCustom = false;
         linearRateSelector.setVisibility(View.VISIBLE);
         linearCustomize.setVisibility(View.GONE);
@@ -918,8 +909,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                                             MyApplication.getInstance()
                                                                     .getDeviceWay(),
                                                             String.valueOf(currentFeeRate),
-                                                            String.valueOf(mGasLimit),
-                                                            contractAddress);
+                                                            String.valueOf(mGasLimit));
                                             emitter.onNext(response);
                                             emitter.onComplete();
                                         })
@@ -969,7 +959,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private void changeButton() {
         if (addressInvalid && isFeeValid && !Strings.isNullOrEmpty(amount)) {
             BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-            if (decimal.compareTo(BigDecimal.ZERO) <= 0 || Double.parseDouble(balance) <= 0) {
+            if (decimal.compareTo(BigDecimal.ZERO) <= 0
+                    || decimalBalance.compareTo(BigDecimal.ZERO) <= 0) {
                 btnNext.setEnabled(false);
             } else {
                 btnNext.setEnabled(true);
@@ -1071,6 +1062,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     protected void onResume() {
         super.onResume();
         isResume = true;
+        startLoop();
     }
 
     /**
@@ -1171,35 +1163,35 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             }
         } else if (requestCode == SELECT_TOKEN) {
             if (data != null) {
-                int assetsID = data.getIntExtra(SelectTokenActivity.ASSET_ID, -1);
+                mAssetsID = data.getIntExtra(SelectTokenActivity.ASSET_ID, -1);
                 Assets mAssets =
                         mAppWalletViewModel
                                 .currentWalletAssetsList
                                 .getValue()
-                                .getByUniqueIdOrZero(assetsID);
-                Logger.d(" 选择token：" + JSON.toJSONString(mAssets));
+                                .getByUniqueIdOrZero(mAssetsID);
                 if (mAssets == null) {
                     return;
                 }
                 hdWalletName = mAssets.getName();
                 walletName.setText(hdWalletName);
                 initAssetBalance(mAssets);
+                String address = "";
                 if (mAssets instanceof ERC20Assets) {
                     isToken = true;
                     ERC20Assets erc20Assets = (ERC20Assets) mAssets;
-                    mAssetsID = erc20Assets.uniqueId();
-                    String address = erc20Assets.getContractAddress();
-                    if (!address.equals(contractAddress)) {
-                        contractAddress = erc20Assets.getContractAddress();
-                        refreshFeeView();
-                    }
+                    address = erc20Assets.getContractAddress();
+                    decimalBalance = new BigDecimal(erc20Assets.getBalanceFiat().getBalance());
                 } else if (mAssets instanceof CoinAssets) {
                     isToken = false;
                     String walletID =
                             mAppWalletViewModel.currentWalletAccountInfo.getValue().getId();
                     LocalWalletInfo localWalletByName =
                             mAccountManager.getLocalWalletByName(walletID);
-                    contractAddress = localWalletByName.getAddr();
+                    address = localWalletByName.getAddr();
+                    decimalBalance = ((CoinAssets) mAssets).getBalance().getBalance();
+                }
+                if (!address.equals(contractAddress)) {
+                    contractAddress = address;
                     refreshFeeView();
                 }
             }
@@ -1210,6 +1202,9 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     protected void onPause() {
         super.onPause();
         isResume = false;
+        if (myLoopDisposable != null) {
+            myLoopDisposable.dispose();
+        }
     }
 
     /** 校验收款地址是否有效 */
@@ -1438,9 +1433,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     /** 如果当前是最大模式，那么需要根据当前选中的费率，计算最大值 */
     private void doDealMaxAmount() {
         // 查看输入的值是否大于最大值
-        maxAmount =
-                BigDecimal.valueOf(Double.parseDouble(balance))
-                        .subtract(BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
+        maxAmount = decimalBalance.subtract(BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
         if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
             if (isSetBig) {
                 editAmount.setText(maxAmount.toPlainString());
@@ -1503,7 +1496,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         mCompositeDisposable.dispose();
-        myLoopDisposable.dispose();
         if (Objects.nonNull(subscribe)) {
             subscribe.dispose();
         }

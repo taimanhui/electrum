@@ -277,7 +277,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
                     dismissProgress();
                     mProgressDialog = MyDialog.showDialog(this);
                     mProgressDialog.show();
-                    mProgressDialog.setCancelable(false);
                     mProgressDialog.onTouchOutside(false);
                 });
     }

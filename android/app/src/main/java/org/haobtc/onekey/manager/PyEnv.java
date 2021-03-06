@@ -1594,35 +1594,19 @@ public final class PyEnv {
             @NotNull String value,
             String path,
             @NotNull String gasPrice,
-            @NotNull String gasLimit,
-            String contractAddress) {
+            @NotNull String gasLimit) {
         PyResponse<String> response = new PyResponse<>();
         try {
-            String res;
-            if (Strings.isNullOrEmpty(contractAddress)) {
-                res =
-                        sCommands
-                                .callAttr(
-                                        PyConstant.SIGN_ETH_TX,
-                                        to_addr,
-                                        value,
-                                        new Kwarg("path", path),
-                                        new Kwarg("gas_price", gasPrice),
-                                        new Kwarg("gas_limit", gasLimit))
-                                .toString();
-            } else {
-                res =
-                        sCommands
-                                .callAttr(
-                                        PyConstant.SIGN_ETH_TX,
-                                        to_addr,
-                                        value,
-                                        new Kwarg("path", path),
-                                        new Kwarg("contract_addr", contractAddress),
-                                        new Kwarg("gas_price", gasPrice),
-                                        new Kwarg("gas_limit", gasLimit))
-                                .toString();
-            }
+            String res =
+                    sCommands
+                            .callAttr(
+                                    PyConstant.SIGN_ETH_TX,
+                                    to_addr,
+                                    value,
+                                    new Kwarg("path", path),
+                                    new Kwarg("gas_price", gasPrice),
+                                    new Kwarg("gas_limit", gasLimit))
+                            .toString();
             response.setResult(res);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
