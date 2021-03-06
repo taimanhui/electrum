@@ -37,14 +37,14 @@
 
         <TextView
             android:id="@+id/text_tx_amount"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/text"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/dp_25"
             android:textColor="@color/text_two"
             android:textSize="26sp"
-            tools:text="0.1mBTC" />
+            android:gravity="center"/>
 
         <LinearLayout
             android:layout_width="match_parent"

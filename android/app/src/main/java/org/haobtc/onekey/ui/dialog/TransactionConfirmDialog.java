@@ -5,7 +5,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
@@ -13,34 +14,38 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-
 /**
  * @author liyan
  * @date 12/11/20
  */
-
 public class TransactionConfirmDialog extends BaseDialogFragment {
 
     @BindView(R.id.img_cancel)
     ImageView imgCancel;
+
     @BindView(R.id.text_tx_amount)
     TextView textTxAmount;
+
     @BindView(R.id.text_send_address)
     TextView textSendAddress;
+
     @BindView(R.id.text_send_name)
     TextView textSendName;
+
     @BindView(R.id.text_receive_address)
     TextView textReceiveAddress;
+
     @BindView(R.id.text_tx_fee)
     TextView textTxFee;
+
     @BindView(R.id.btn_confirm_pay)
     Button btnConfirmPay;
+
     private SystemConfigManager mSystemConfigManager;
 
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
@@ -61,22 +66,33 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
         textSendName.setText(name);
         textSendAddress.setText(sender);
         textReceiveAddress.setText(receiver);
+        String showAmount = "";
         if (amount.contains("-")) {
             String amounts = amount.replace("-", "");
             if (amounts.contains("(")) {
-                String btcAmount = amounts.substring(0, amounts.indexOf("("));
-                textTxAmount.setText(btcAmount);
+                showAmount = amounts.substring(0, amounts.indexOf("("));
             } else {
-                textTxAmount.setText(amounts);
+                showAmount = amounts;
             }
         } else {
+            showAmount = amount;
             textTxAmount.setText(amount);
         }
+        textTxAmount.setText(showAmount);
+        if (showAmount.length() > 15) {
+            textTxAmount.setTextSize(20);
+        } else {
+            textTxAmount.setTextSize(26);
+        }
+
         if (fee.contains("(")) {
             String feeAmount = fee.substring(0, fee.indexOf("("));
             String strCny = fee.substring(fee.indexOf("(") + 1, fee.indexOf(")"));
             String cny = strCny.substring(0, strCny.indexOf(" "));
-            textTxFee.setText(String.format("%s ≈ %s %s", feeAmount, mSystemConfigManager.getCurrentFiatSymbol(), cny));
+            textTxFee.setText(
+                    String.format(
+                            "%s ≈ %s %s",
+                            feeAmount, mSystemConfigManager.getCurrentFiatSymbol(), cny));
         } else {
             textTxFee.setText(fee);
         }
