@@ -463,7 +463,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     showToast(R.string.input_number);
                 } else {
                     // 先取最大值再刷新View
-                    if (decimalBalance.compareTo(BigDecimal.ZERO) > 0) {
+                    if (decimalBalance.compareTo(BigDecimal.ZERO) > 0
+                            && Strings.isNullOrEmpty(mCurrentFee)) {
                         maxAmount =
                                 decimalBalance.subtract(
                                         BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
@@ -1086,20 +1087,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         }
         if (amountBigDecimal.equals(BigDecimal.ZERO)) {
             return null;
-        }
-        int scale;
-        switch (baseUnit) {
-            case Constant.BTC_UNIT_BTC:
-                scale = 8;
-                break;
-            case Constant.BTC_UNIT_M_BTC:
-                scale = 5;
-                break;
-            case Constant.BTC_UNIT_M_BITS:
-                scale = 2;
-                break;
-            default:
-                scale = 0;
         }
         return amountBigDecimal
                 .setScale(scale, RoundingMode.DOWN)

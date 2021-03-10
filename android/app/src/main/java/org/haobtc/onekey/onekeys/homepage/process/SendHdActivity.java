@@ -272,7 +272,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         mAccountManager = new AccountManager(mContext);
         mSystemConfigManager = new SystemConfigManager(this);
         rxPermissions = new RxPermissions(this);
-        hdWalletName = getIntent().getStringExtra(EXT_WALLET_NAME);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         showWalletType = mAccountManager.getCurrentWalletAccurateType();
         mWalletType = mAccountManager.getCurWalletType();
@@ -289,6 +288,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                                     .currentWalletAssetsList
                                     .getValue()
                                     .getByUniqueIdOrZero(-1);
+                    hdWalletName = mAssets.getName();
                     balance =
                             mAssets.getBalance().getBalance().stripTrailingZeros().toPlainString();
                     if (!Strings.isNullOrEmpty(balance)) {
