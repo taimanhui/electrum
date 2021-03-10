@@ -270,7 +270,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self.receive_requests = db.get_dict('payment_requests')  # type: Dict[str, Invoice]
         self.invoices = db.get_dict('invoices')  # type: Dict[str, Invoice]
         self._reserved_addresses = set(db.get('reserved_addresses', []))
-
+        self.derived_master_xpub = ""
         self._prepare_onchain_invoice_paid_detection()
         self.calc_unused_change_addresses()
         # save wallet type the first time
