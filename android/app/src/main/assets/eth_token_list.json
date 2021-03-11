@@ -1,14 +1,11 @@
-{
-  "chain": "ETH",
-  "timestamp": 1614010602,
-  "tokens": [
+[
     {
       "address": "0x9a42D6dCD2519E94D037439c447a7a752Ba9F66c",
       "chainId": 1,
       "name": "TTTTTT",
       "symbol": "TTT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/2518/large/weth.png?1547036627",
+      "logoURI": "https://assets.coingecko.com/coins/images/2518/large/weth.png?1547036627",
       "cgk_id": "weth",
       "rank": 9999
     },
@@ -18,7 +15,7 @@
       "name": "Wrapped Ether",
       "symbol": "WETH",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/2518/large/weth.png?1547036627",
+      "logoURI": "https://assets.coingecko.com/coins/images/2518/large/weth.png?1547036627",
       "cgk_id": "weth",
       "rank": 2395
     },
@@ -28,7 +25,7 @@
       "name": "0xBitcoin Token",
       "symbol": "0xBTC",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/4454/large/0xbtc.png?1561603765",
+      "logoURI": "https://assets.coingecko.com/coins/images/4454/large/0xbtc.png?1561603765",
       "cgk_id": "oxbitcoin",
       "rank": 268
     },
@@ -38,7 +35,7 @@
       "name": "Aave Interest bearing DAI",
       "symbol": "aDAI",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/10843/large/aDAI.png?1584698791",
+      "logoURI": "https://assets.coingecko.com/coins/images/10843/large/aDAI.png?1584698791",
       "cgk_id": "aave-dai",
       "rank": 174
     },
@@ -48,7 +45,7 @@
       "name": "Amon",
       "symbol": "AMN",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/2369/large/amon.png?1547036554",
+      "logoURI": "https://assets.coingecko.com/coins/images/2369/large/amon.png?1547036554",
       "cgk_id": "amon",
       "rank": 707
     },
@@ -58,7 +55,7 @@
       "name": "Ampleforth",
       "symbol": "AMPL",
       "decimals": 9,
-      "icon": "https://assets.coingecko.com/coins/images/4708/large/Ampleforth.png?1561684250",
+      "logoURI": "https://assets.coingecko.com/coins/images/4708/large/Ampleforth.png?1561684250",
       "cgk_id": "ampleforth",
       "rank": 145
     },
@@ -68,7 +65,7 @@
       "name": "Aragon Network Juror",
       "symbol": "ANJ",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/10765/large/ANJ.png?1588956187",
+      "logoURI": "https://assets.coingecko.com/coins/images/10765/large/ANJ.png?1588956187",
       "cgk_id": "anj",
       "rank": 251
     },
@@ -78,7 +75,7 @@
       "name": "Aragon Network Token",
       "symbol": "ANT",
       "decimals": 18,
-      "icon": "",
+      "logoURI": "",
       "cgk_id": "",
       "rank": 0
     },
@@ -88,7 +85,7 @@
       "name": "AirSwap Token",
       "symbol": "AST",
       "decimals": 4,
-      "icon": "https://assets.coingecko.com/coins/images/1019/large/AST.png?1547034939",
+      "logoURI": "https://assets.coingecko.com/coins/images/1019/large/AST.png?1547034939",
       "cgk_id": "airswap",
       "rank": 263
     },
@@ -98,7 +95,7 @@
       "name": "BandToken",
       "symbol": "BAND",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9545/large/band-protocol.png?1568730326",
+      "logoURI": "https://assets.coingecko.com/coins/images/9545/large/band-protocol.png?1568730326",
       "cgk_id": "band-protocol",
       "rank": 43
     },
@@ -108,7 +105,7 @@
       "name": "Basic Attention Token",
       "symbol": "BAT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/677/large/basic-attention-token.png?1547034427",
+      "logoURI": "https://assets.coingecko.com/coins/images/677/large/basic-attention-token.png?1547034427",
       "cgk_id": "basic-attention-token",
       "rank": 22
     },
@@ -118,7 +115,7 @@
       "name": "Bloom Token",
       "symbol": "BLT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/2662/large/bloom.png?1547036854",
+      "logoURI": "https://assets.coingecko.com/coins/images/2662/large/bloom.png?1547036854",
       "cgk_id": "bloom",
       "rank": 419
     },
@@ -128,7 +125,7 @@
       "name": "Bancor Network Token",
       "symbol": "BNT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/736/large/bancor.png?1547034477",
+      "logoURI": "https://assets.coingecko.com/coins/images/736/large/bancor.png?1547034477",
       "cgk_id": "bancor",
       "rank": 31
     },
@@ -138,7 +135,7 @@
       "name": "PieDAO BTC++",
       "symbol": "BTC++",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/10959/large/BTC__.png?1586499443",
+      "logoURI": "https://assets.coingecko.com/coins/images/10959/large/BTC__.png?1586499443",
       "cgk_id": "piedao-btc",
       "rank": 2121
     },
@@ -148,7 +145,7 @@
       "name": "CelerToken",
       "symbol": "CELR",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/4379/large/Celr.png?1554705437",
+      "logoURI": "https://assets.coingecko.com/coins/images/4379/large/Celr.png?1554705437",
       "cgk_id": "celer-network",
       "rank": 678
     },
@@ -158,7 +155,7 @@
       "name": "Compound Dai",
       "symbol": "cSAI",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/10148/large/cSAI.png?1576467788",
+      "logoURI": "https://assets.coingecko.com/coins/images/10148/large/cSAI.png?1576467788",
       "cgk_id": "compound-sai",
       "rank": 1192
     },
@@ -168,7 +165,7 @@
       "name": "Compound Dai",
       "symbol": "cDAI",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/9281/large/cDAI.png?1576467585",
+      "logoURI": "https://assets.coingecko.com/coins/images/9281/large/cDAI.png?1576467585",
       "cgk_id": "cdai",
       "rank": 266
     },
@@ -178,7 +175,7 @@
       "name": "Compound USD Coin",
       "symbol": "cUSDC",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/9442/large/Compound_USDC.png?1567581577",
+      "logoURI": "https://assets.coingecko.com/coins/images/9442/large/Compound_USDC.png?1567581577",
       "cgk_id": "compound-usd-coin",
       "rank": 532
     },
@@ -188,7 +185,7 @@
       "name": "Celsius",
       "symbol": "CEL",
       "decimals": 4,
-      "icon": "https://assets.coingecko.com/coins/images/3263/large/CEL_logo.png?1609598753",
+      "logoURI": "https://assets.coingecko.com/coins/images/3263/large/CEL_logo.png?1609598753",
       "cgk_id": "celsius-degree-token",
       "rank": 274
     },
@@ -198,7 +195,7 @@
       "name": "Chai",
       "symbol": "CHAI",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/10147/large/CHAI.png?1576467289",
+      "logoURI": "https://assets.coingecko.com/coins/images/10147/large/CHAI.png?1576467289",
       "cgk_id": "chai",
       "rank": 2531
     },
@@ -208,7 +205,7 @@
       "name": "Dai Stablecoin v1.0 aka SAI",
       "symbol": "SAI",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1442/large/dai.png?1547035520",
+      "logoURI": "https://assets.coingecko.com/coins/images/1442/large/dai.png?1547035520",
       "cgk_id": "sai",
       "rank": 160
     },
@@ -218,7 +215,7 @@
       "name": "Dai Stablecoin",
       "symbol": "DAI",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9956/large/dai-multi-collateral-mcd.png?1574218774",
+      "logoURI": "https://assets.coingecko.com/coins/images/9956/large/dai-multi-collateral-mcd.png?1574218774",
       "cgk_id": "dai",
       "rank": 183
     },
@@ -228,7 +225,7 @@
       "name": "Streamr DATAcoin",
       "symbol": "DATA",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1115/large/streamr.png?1547035101",
+      "logoURI": "https://assets.coingecko.com/coins/images/1115/large/streamr.png?1547035101",
       "cgk_id": "streamr-datacoin",
       "rank": 104
     },
@@ -238,7 +235,7 @@
       "name": "DigixDAO",
       "symbol": "DGD",
       "decimals": 9,
-      "icon": "https://assets.coingecko.com/coins/images/397/large/dgd.png?1547034124",
+      "logoURI": "https://assets.coingecko.com/coins/images/397/large/dgd.png?1547034124",
       "cgk_id": "digixdao",
       "rank": 264
     },
@@ -248,7 +245,7 @@
       "name": "Digix Gold Token",
       "symbol": "DGX",
       "decimals": 9,
-      "icon": "https://assets.coingecko.com/coins/images/4171/large/DGX_Token.png?1547039436",
+      "logoURI": "https://assets.coingecko.com/coins/images/4171/large/DGX_Token.png?1547039436",
       "cgk_id": "digix-gold",
       "rank": 1167
     },
@@ -258,7 +255,7 @@
       "name": "Decentralized Insurance Protocol",
       "symbol": "DIP",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/4586/large/dip.png?1547039863",
+      "logoURI": "https://assets.coingecko.com/coins/images/4586/large/dip.png?1547039863",
       "cgk_id": "etherisc",
       "rank": 231
     },
@@ -268,7 +265,7 @@
       "name": "Donut",
       "symbol": "DONUT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/7538/large/Donut.png?1548234345",
+      "logoURI": "https://assets.coingecko.com/coins/images/7538/large/Donut.png?1548234345",
       "cgk_id": "donut",
       "rank": 2099
     },
@@ -278,7 +275,7 @@
       "name": "EURBASE Stablecoin",
       "symbol": "EBASE",
       "decimals": 18,
-      "icon": "",
+      "logoURI": "",
       "cgk_id": "",
       "rank": 0
     },
@@ -288,7 +285,7 @@
       "name": "Enjin Coin",
       "symbol": "ENJ",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1102/large/enjin-coin-logo.png?1547035078",
+      "logoURI": "https://assets.coingecko.com/coins/images/1102/large/enjin-coin-logo.png?1547035078",
       "cgk_id": "enjincoin",
       "rank": 86
     },
@@ -298,7 +295,7 @@
       "name": "SAINT FAME Genesis Shirt",
       "symbol": "FAME",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/11521/large/FAME.png?1590622461",
+      "logoURI": "https://assets.coingecko.com/coins/images/11521/large/FAME.png?1590622461",
       "cgk_id": "saint-fame",
       "rank": 4403
     },
@@ -308,7 +305,7 @@
       "name": "FOAM Token",
       "symbol": "FOAM",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3345/large/K51lJQc.png?1547037959",
+      "logoURI": "https://assets.coingecko.com/coins/images/3345/large/K51lJQc.png?1547037959",
       "cgk_id": "foam-protocol",
       "rank": 1179
     },
@@ -318,7 +315,7 @@
       "name": "FunFair",
       "symbol": "FUN",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/761/large/funfair.png?1592404368",
+      "logoURI": "https://assets.coingecko.com/coins/images/761/large/funfair.png?1592404368",
       "cgk_id": "funfair",
       "rank": 408
     },
@@ -328,7 +325,7 @@
       "name": "Flexacoin",
       "symbol": "FXC",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/7834/large/flexacoin.png?1563780906",
+      "logoURI": "https://assets.coingecko.com/coins/images/7834/large/flexacoin.png?1563780906",
       "cgk_id": "flexacoin",
       "rank": 2835
     },
@@ -338,7 +335,7 @@
       "name": "DAOstack",
       "symbol": "GEN",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3479/large/gen.png?1547038215",
+      "logoURI": "https://assets.coingecko.com/coins/images/3479/large/gen.png?1547038215",
       "cgk_id": "daostack",
       "rank": 240
     },
@@ -348,7 +345,7 @@
       "name": "Gnosis Token",
       "symbol": "GNO",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/662/large/logo_square_simple_300px.png?1609402668",
+      "logoURI": "https://assets.coingecko.com/coins/images/662/large/logo_square_simple_300px.png?1609402668",
       "cgk_id": "gnosis",
       "rank": 203
     },
@@ -358,7 +355,7 @@
       "name": "GRID Token",
       "symbol": "GRID",
       "decimals": 12,
-      "icon": "https://assets.coingecko.com/coins/images/1106/large/grid.png?1547743150",
+      "logoURI": "https://assets.coingecko.com/coins/images/1106/large/grid.png?1547743150",
       "cgk_id": "grid",
       "rank": 324
     },
@@ -368,7 +365,7 @@
       "name": "Gastoken.io",
       "symbol": "GST2",
       "decimals": 2,
-      "icon": "https://assets.coingecko.com/coins/images/10779/large/gas.png?1583466756",
+      "logoURI": "https://assets.coingecko.com/coins/images/10779/large/gas.png?1583466756",
       "cgk_id": "gastoken",
       "rank": 1645
     },
@@ -378,7 +375,7 @@
       "name": "HedgeTrade",
       "symbol": "HEDG",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/7196/large/to3Vj4EZ_400x400.jpg?1547043758",
+      "logoURI": "https://assets.coingecko.com/coins/images/7196/large/to3Vj4EZ_400x400.jpg?1547043758",
       "cgk_id": "hedgetrade",
       "rank": 3064
     },
@@ -388,7 +385,7 @@
       "name": "HoloToken",
       "symbol": "HOT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3348/large/Holologo_Profile.png?1547037966",
+      "logoURI": "https://assets.coingecko.com/coins/images/3348/large/Holologo_Profile.png?1547037966",
       "cgk_id": "holotoken",
       "rank": 52
     },
@@ -398,7 +395,7 @@
       "name": "Fulcrum DAI iToken",
       "symbol": "iDAI",
       "decimals": 18,
-      "icon": "",
+      "logoURI": "",
       "cgk_id": "",
       "rank": 0
     },
@@ -408,7 +405,7 @@
       "name": "Fulcrum SAI iToken ",
       "symbol": "iSAI",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9643/large/oMkNHnF3.png?1572095444",
+      "logoURI": "https://assets.coingecko.com/coins/images/9643/large/oMkNHnF3.png?1572095444",
       "cgk_id": "bzx-dai-itoken",
       "rank": 5001
     },
@@ -418,7 +415,7 @@
       "name": "IoTeX Network",
       "symbol": "IOTX",
       "decimals": 18,
-      "icon": "",
+      "logoURI": "",
       "cgk_id": "",
       "rank": 0
     },
@@ -428,7 +425,7 @@
       "name": "KEY",
       "symbol": "KEY",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/4182/large/bihu-key-token.png?1547039459",
+      "logoURI": "https://assets.coingecko.com/coins/images/4182/large/bihu-key-token.png?1547039459",
       "cgk_id": "key",
       "rank": 2305
     },
@@ -438,7 +435,7 @@
       "name": "Kyber Network Crystal",
       "symbol": "KNC",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/947/large/kyber-logo.png?1547034806",
+      "logoURI": "https://assets.coingecko.com/coins/images/947/large/kyber-logo.png?1547034806",
       "cgk_id": "kyber-network",
       "rank": 46
     },
@@ -448,7 +445,7 @@
       "name": "ChainLink Token",
       "symbol": "LINK",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1547034700",
+      "logoURI": "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png?1547034700",
       "cgk_id": "chainlink",
       "rank": 11
     },
@@ -458,7 +455,7 @@
       "name": "LoopringCoin V2",
       "symbol": "LRC",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/913/large/LRC.png?1572852344",
+      "logoURI": "https://assets.coingecko.com/coins/images/913/large/LRC.png?1572852344",
       "cgk_id": "loopring",
       "rank": 44
     },
@@ -468,7 +465,7 @@
       "name": "EthLend Token",
       "symbol": "LEND",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1365/large/ethlend.png?1547394586",
+      "logoURI": "https://assets.coingecko.com/coins/images/1365/large/ethlend.png?1547394586",
       "cgk_id": "ethlend",
       "rank": 193
     },
@@ -478,7 +475,7 @@
       "name": "LoomToken",
       "symbol": "LOOM",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3387/large/1_K76UVoLq-FOL7l-_Fag-Qw_2x.png?1547038040",
+      "logoURI": "https://assets.coingecko.com/coins/images/3387/large/1_K76UVoLq-FOL7l-_Fag-Qw_2x.png?1547038040",
       "cgk_id": "loom-network",
       "rank": 147
     },
@@ -488,7 +485,7 @@
       "name": "Livepeer Token",
       "symbol": "LPT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/7137/large/logo-circle-white.png?1611492552",
+      "logoURI": "https://assets.coingecko.com/coins/images/7137/large/logo-circle-white.png?1611492552",
       "cgk_id": "livepeer",
       "rank": 119
     },
@@ -498,7 +495,7 @@
       "name": "Liquidity.Network Token",
       "symbol": "LQD",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3801/large/liquidity-network.png?1547975994",
+      "logoURI": "https://assets.coingecko.com/coins/images/3801/large/liquidity-network.png?1547975994",
       "cgk_id": "liquidity-network",
       "rank": 1417
     },
@@ -508,7 +505,7 @@
       "name": "Decentraland MANA",
       "symbol": "MANA",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/878/large/decentraland-mana.png?1550108745",
+      "logoURI": "https://assets.coingecko.com/coins/images/878/large/decentraland-mana.png?1550108745",
       "cgk_id": "decentraland",
       "rank": 67
     },
@@ -518,7 +515,7 @@
       "name": "Matic Token",
       "symbol": "MATIC",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/4713/large/matic___polygon.jpg?1612939050",
+      "logoURI": "https://assets.coingecko.com/coins/images/4713/large/matic___polygon.jpg?1612939050",
       "cgk_id": "matic-network",
       "rank": 63
     },
@@ -528,7 +525,7 @@
       "name": "Marblecoin",
       "symbol": "MBC",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9770/large/logo_%2824%29.png?1571610155",
+      "logoURI": "https://assets.coingecko.com/coins/images/9770/large/logo_%2824%29.png?1571610155",
       "cgk_id": "marblecoin",
       "rank": 3443
     },
@@ -538,7 +535,7 @@
       "name": "MachiX Token",
       "symbol": "MCX",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/11329/large/MachiX.png?1589926940",
+      "logoURI": "https://assets.coingecko.com/coins/images/11329/large/MachiX.png?1589926940",
       "cgk_id": "machix",
       "rank": 2067
     },
@@ -548,7 +545,7 @@
       "name": "Metronome",
       "symbol": "MET",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3249/large/metronome.png?1548084800",
+      "logoURI": "https://assets.coingecko.com/coins/images/3249/large/metronome.png?1548084800",
       "cgk_id": "metronome",
       "rank": 276
     },
@@ -558,7 +555,7 @@
       "name": "Magnolia Token",
       "symbol": "MGN",
       "decimals": 18,
-      "icon": "",
+      "logoURI": "",
       "cgk_id": "",
       "rank": 0
     },
@@ -568,7 +565,7 @@
       "name": "Maker",
       "symbol": "MKR",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1364/large/Mark_Maker.png?1585191826",
+      "logoURI": "https://assets.coingecko.com/coins/images/1364/large/Mark_Maker.png?1585191826",
       "cgk_id": "maker",
       "rank": 40
     },
@@ -578,7 +575,7 @@
       "name": "Melon Token",
       "symbol": "MLN",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/605/large/Enzyme_Icon_Secondary.png?1611576629",
+      "logoURI": "https://assets.coingecko.com/coins/images/605/large/Enzyme_logoURI_Secondary.png?1611576629",
       "cgk_id": "melon",
       "rank": 698
     },
@@ -588,7 +585,7 @@
       "name": "Modum Token",
       "symbol": "MOD",
       "decimals": 0,
-      "icon": "https://assets.coingecko.com/coins/images/1040/large/modum.png?1548085261",
+      "logoURI": "https://assets.coingecko.com/coins/images/1040/large/modum.png?1548085261",
       "cgk_id": "modum",
       "rank": 2914
     },
@@ -598,7 +595,7 @@
       "name": "Nexo",
       "symbol": "NEXO",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3695/large/nexo.png?1548086057",
+      "logoURI": "https://assets.coingecko.com/coins/images/3695/large/nexo.png?1548086057",
       "cgk_id": "nexo",
       "rank": 157
     },
@@ -608,7 +605,7 @@
       "name": "Numeraire",
       "symbol": "NMR",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/752/large/numeraire.png?1592538976",
+      "logoURI": "https://assets.coingecko.com/coins/images/752/large/numeraire.png?1592538976",
       "cgk_id": "numeraire",
       "rank": 109
     },
@@ -618,7 +615,7 @@
       "name": "OceanToken",
       "symbol": "OCEAN",
       "decimals": 18,
-      "icon": "",
+      "logoURI": "",
       "cgk_id": "",
       "rank": 0
     },
@@ -628,7 +625,7 @@
       "name": "Orchid",
       "symbol": "OXT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3916/large/download_%285%29.png?1576624060",
+      "logoURI": "https://assets.coingecko.com/coins/images/3916/large/download_%285%29.png?1576624060",
       "cgk_id": "orchid-protocol",
       "rank": 216
     },
@@ -638,7 +635,7 @@
       "name": "Panvala pan",
       "symbol": "PAN",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9543/large/pan-logo.png?1568674599",
+      "logoURI": "https://assets.coingecko.com/coins/images/9543/large/pan-logo.png?1568674599",
       "cgk_id": "panvala-pan",
       "rank": 4661
     },
@@ -648,7 +645,7 @@
       "name": "PAX",
       "symbol": "PAX",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/6013/large/paxos_standard.png?1548386291",
+      "logoURI": "https://assets.coingecko.com/coins/images/6013/large/paxos_standard.png?1548386291",
       "cgk_id": "paxos-standard",
       "rank": 139
     },
@@ -658,7 +655,7 @@
       "name": "Paxos Gold",
       "symbol": "PAXG",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9519/large/paxg.PNG?1568542565",
+      "logoURI": "https://assets.coingecko.com/coins/images/9519/large/paxg.PNG?1568542565",
       "cgk_id": "pax-gold",
       "rank": 813
     },
@@ -668,7 +665,7 @@
       "name": "Pinakion",
       "symbol": "PNK",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3833/large/kleros.png?1547975322",
+      "logoURI": "https://assets.coingecko.com/coins/images/3833/large/kleros.png?1547975322",
       "cgk_id": "kleros",
       "rank": 173
     },
@@ -678,7 +675,7 @@
       "name": "POA ERC20 on Foundation",
       "symbol": "POA20",
       "decimals": 18,
-      "icon": "",
+      "logoURI": "",
       "cgk_id": "",
       "rank": 0
     },
@@ -688,7 +685,7 @@
       "name": "QChi",
       "symbol": "QCH",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/5392/large/qchi.png?1548607478",
+      "logoURI": "https://assets.coingecko.com/coins/images/5392/large/qchi.png?1548607478",
       "cgk_id": "qchi",
       "rank": 1994
     },
@@ -698,7 +695,7 @@
       "name": "Quant",
       "symbol": "QNT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3370/large/5ZOu7brX_400x400.jpg?1612437252",
+      "logoURI": "https://assets.coingecko.com/coins/images/3370/large/5ZOu7brX_400x400.jpg?1612437252",
       "cgk_id": "quant-network",
       "rank": 285
     },
@@ -708,7 +705,7 @@
       "name": "Quantstamp Token",
       "symbol": "QSP",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1219/large/0_E0kZjb4dG4hUnoDD_.png?1604815917",
+      "logoURI": "https://assets.coingecko.com/coins/images/1219/large/0_E0kZjb4dG4hUnoDD_.png?1604815917",
       "cgk_id": "quantstamp",
       "rank": 256
     },
@@ -718,7 +715,7 @@
       "name": "Ripio Credit Network Token",
       "symbol": "RCN",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1057/large/ripio-credit-network.png?1548608361",
+      "logoURI": "https://assets.coingecko.com/coins/images/1057/large/ripio-credit-network.png?1548608361",
       "cgk_id": "ripio-credit-network",
       "rank": 186
     },
@@ -728,7 +725,7 @@
       "name": "Raiden Token",
       "symbol": "RDN",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1132/large/raiden-logo.jpg?1547035131",
+      "logoURI": "https://assets.coingecko.com/coins/images/1132/large/raiden-logo.jpg?1547035131",
       "cgk_id": "raiden-network",
       "rank": 82
     },
@@ -738,7 +735,7 @@
       "name": "Republic Token",
       "symbol": "REN",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3139/large/REN.png?1589985807",
+      "logoURI": "https://assets.coingecko.com/coins/images/3139/large/REN.png?1589985807",
       "cgk_id": "republic-protocol",
       "rank": 127
     },
@@ -748,7 +745,7 @@
       "name": "renBCH",
       "symbol": "renBCH",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/11563/large/renBCH.png?1591185978",
+      "logoURI": "https://assets.coingecko.com/coins/images/11563/large/renBCH.png?1591185978",
       "cgk_id": "renbch",
       "rank": 228
     },
@@ -758,7 +755,7 @@
       "name": "renBTC",
       "symbol": "renBTC",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/11370/large/renBTC.png?1589985711",
+      "logoURI": "https://assets.coingecko.com/coins/images/11370/large/renBTC.png?1589985711",
       "cgk_id": "renbtc",
       "rank": 72
     },
@@ -768,7 +765,7 @@
       "name": "renZEC",
       "symbol": "renZEC",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/11564/large/renZEC.png?1591186101",
+      "logoURI": "https://assets.coingecko.com/coins/images/11564/large/renZEC.png?1591186101",
       "cgk_id": "renzec",
       "rank": 190
     },
@@ -778,7 +775,7 @@
       "name": "Reputation",
       "symbol": "REP",
       "decimals": 18,
-      "icon": "",
+      "logoURI": "",
       "cgk_id": "",
       "rank": 0
     },
@@ -788,7 +785,7 @@
       "name": "Darwinia Network Native Token",
       "symbol": "RING",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9443/large/iHFgzyCK_400x400.png?1567463393",
+      "logoURI": "https://assets.coingecko.com/coins/images/9443/large/iHFgzyCK_400x400.png?1567463393",
       "cgk_id": "darwinia-network-native-token",
       "rank": 922
     },
@@ -798,7 +795,7 @@
       "name": "iEx.ec Network Token",
       "symbol": "RLC",
       "decimals": 9,
-      "icon": "https://assets.coingecko.com/coins/images/646/large/pL1VuXm.png?1604543202",
+      "logoURI": "https://assets.coingecko.com/coins/images/646/large/pL1VuXm.png?1604543202",
       "cgk_id": "iexec-rlc",
       "rank": 121
     },
@@ -808,7 +805,7 @@
       "name": "Rocket Pool",
       "symbol": "RPL",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/2090/large/rocket.png?1563781948",
+      "logoURI": "https://assets.coingecko.com/coins/images/2090/large/rocket.png?1563781948",
       "cgk_id": "rocket-pool",
       "rank": 118
     },
@@ -818,7 +815,7 @@
       "name": "Salt",
       "symbol": "SALT",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/962/large/salt.png?1548608746",
+      "logoURI": "https://assets.coingecko.com/coins/images/962/large/salt.png?1548608746",
       "cgk_id": "salt",
       "rank": 1208
     },
@@ -828,7 +825,7 @@
       "name": "SANtiment network token",
       "symbol": "SAN",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/797/large/santiment-network-token.png?1547034571",
+      "logoURI": "https://assets.coingecko.com/coins/images/797/large/santiment-network-token.png?1547034571",
       "cgk_id": "santiment-network-token",
       "rank": 535
     },
@@ -838,7 +835,7 @@
       "name": "Synth sETH",
       "symbol": "sETH",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/8843/large/9ZAujYk.png?1605006952",
+      "logoURI": "https://assets.coingecko.com/coins/images/8843/large/9ZAujYk.png?1605006952",
       "cgk_id": "seth",
       "rank": 396
     },
@@ -848,7 +845,7 @@
       "name": "Shuffle.Monster V3",
       "symbol": "SHUF",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9222/large/shuf.png?1568038008",
+      "logoURI": "https://assets.coingecko.com/coins/images/9222/large/shuf.png?1568038008",
       "cgk_id": "shuffle-monster",
       "rank": 1662
     },
@@ -858,7 +855,7 @@
       "name": "Status Network Token",
       "symbol": "SNT",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/779/large/status.png?1548610778",
+      "logoURI": "https://assets.coingecko.com/coins/images/779/large/status.png?1548610778",
       "cgk_id": "status",
       "rank": 33
     },
@@ -868,7 +865,7 @@
       "name": "Synthetix Network Token",
       "symbol": "SNX",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3406/large/SNX.png?1598631139",
+      "logoURI": "https://assets.coingecko.com/coins/images/3406/large/SNX.png?1598631139",
       "cgk_id": "havven",
       "rank": 35
     },
@@ -878,7 +875,7 @@
       "name": "Unisocks Edition 0",
       "symbol": "SOCKS",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/10717/large/qFrcoiM.png?1582525244",
+      "logoURI": "https://assets.coingecko.com/coins/images/10717/large/qFrcoiM.png?1582525244",
       "cgk_id": "unisocks",
       "rank": 537
     },
@@ -888,7 +885,7 @@
       "name": "SPANK",
       "symbol": "SPANK",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/1226/large/spankchain.png?1548610811",
+      "logoURI": "https://assets.coingecko.com/coins/images/1226/large/spankchain.png?1548610811",
       "cgk_id": "spankchain",
       "rank": 810
     },
@@ -898,7 +895,7 @@
       "name": "StorjToken",
       "symbol": "STORJ",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/949/large/storj.png?1547034811",
+      "logoURI": "https://assets.coingecko.com/coins/images/949/large/storj.png?1547034811",
       "cgk_id": "storj",
       "rank": 49
     },
@@ -908,7 +905,7 @@
       "name": "Synth sUSD",
       "symbol": "sUSD",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/5013/large/sUSD.png?1562212426",
+      "logoURI": "https://assets.coingecko.com/coins/images/5013/large/sUSD.png?1562212426",
       "cgk_id": "nusd",
       "rank": 62
     },
@@ -918,7 +915,7 @@
       "name": "Synth sXAU",
       "symbol": "sXAU",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/11559/large/sXAU.png?1591090407",
+      "logoURI": "https://assets.coingecko.com/coins/images/11559/large/sXAU.png?1591090407",
       "cgk_id": "sxau",
       "rank": 2131
     },
@@ -928,7 +925,7 @@
       "name": "Swipe",
       "symbol": "SXP",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9368/large/swipe.png?1566792311",
+      "logoURI": "https://assets.coingecko.com/coins/images/9368/large/swipe.png?1566792311",
       "cgk_id": "swipe",
       "rank": 406
     },
@@ -938,7 +935,7 @@
       "name": "TrueAUD",
       "symbol": "TAUD",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/10146/large/TAUD.png?1576466892",
+      "logoURI": "https://assets.coingecko.com/coins/images/10146/large/TAUD.png?1576466892",
       "cgk_id": "trueaud",
       "rank": 3997
     },
@@ -948,7 +945,7 @@
       "name": "TrueCAD",
       "symbol": "TCAD",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/12725/large/TCAD.png?1602043400",
+      "logoURI": "https://assets.coingecko.com/coins/images/12725/large/TCAD.png?1602043400",
       "cgk_id": "truecad",
       "rank": 4192
     },
@@ -958,7 +955,7 @@
       "name": "TrueGBP",
       "symbol": "TGBP",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/12724/large/TGBP.png?1602042166",
+      "logoURI": "https://assets.coingecko.com/coins/images/12724/large/TGBP.png?1602042166",
       "cgk_id": "truegbp",
       "rank": 2954
     },
@@ -968,7 +965,7 @@
       "name": "TrueHKD",
       "symbol": "THKD",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9465/large/THKD.png?1567642964",
+      "logoURI": "https://assets.coingecko.com/coins/images/9465/large/THKD.png?1567642964",
       "cgk_id": "truehkd",
       "rank": 554
     },
@@ -978,7 +975,7 @@
       "name": "Monolith TKN",
       "symbol": "TKN",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/675/large/Monolith.png?1566296607",
+      "logoURI": "https://assets.coingecko.com/coins/images/675/large/Monolith.png?1566296607",
       "cgk_id": "tokencard",
       "rank": 675
     },
@@ -988,7 +985,7 @@
       "name": "Tellor Tributes",
       "symbol": "TRB",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9644/large/Blk_icon_current.png?1584980686",
+      "logoURI": "https://assets.coingecko.com/coins/images/9644/large/Blk_logoURI_current.png?1584980686",
       "cgk_id": "tellor",
       "rank": 582
     },
@@ -998,7 +995,7 @@
       "name": "Trustcoin",
       "symbol": "TRST",
       "decimals": 6,
-      "icon": "https://assets.coingecko.com/coins/images/645/large/wetrust.png?1547034370",
+      "logoURI": "https://assets.coingecko.com/coins/images/645/large/wetrust.png?1547034370",
       "cgk_id": "wetrust",
       "rank": 362
     },
@@ -1008,7 +1005,7 @@
       "name": "BiLira",
       "symbol": "TRYB",
       "decimals": 6,
-      "icon": "https://assets.coingecko.com/coins/images/10119/large/v1bIhvRr_400x400.png?1576359242",
+      "logoURI": "https://assets.coingecko.com/coins/images/10119/large/v1bIhvRr_400x400.png?1576359242",
       "cgk_id": "bilira",
       "rank": 1233
     },
@@ -1018,7 +1015,7 @@
       "name": "TrueUSD",
       "symbol": "TUSD",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/3449/large/TUSD.png?1559172762",
+      "logoURI": "https://assets.coingecko.com/coins/images/3449/large/TUSD.png?1559172762",
       "cgk_id": "true-usd",
       "rank": 87
     },
@@ -1028,7 +1025,7 @@
       "name": "UniBright",
       "symbol": "UBT",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/2707/large/UnibrightLogo_colorful_500x500_preview.png?1547036916",
+      "logoURI": "https://assets.coingecko.com/coins/images/2707/large/UnibrightLogo_colorful_500x500_preview.png?1547036916",
       "cgk_id": "unibright",
       "rank": 474
     },
@@ -1038,7 +1035,7 @@
       "name": "UMA Voting Token v1",
       "symbol": "UMA",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/10951/large/UMA.png?1586307916",
+      "logoURI": "https://assets.coingecko.com/coins/images/10951/large/UMA.png?1586307916",
       "cgk_id": "uma",
       "rank": 79
     },
@@ -1048,7 +1045,7 @@
       "name": "USD Coin",
       "symbol": "USDC",
       "decimals": 6,
-      "icon": "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png?1547042389",
+      "logoURI": "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_logoURI.png?1547042389",
       "cgk_id": "usd-coin",
       "rank": 81
     },
@@ -1058,7 +1055,7 @@
       "name": "StableUSD",
       "symbol": "USDS",
       "decimals": 6,
-      "icon": "https://assets.coingecko.com/coins/images/7596/large/logo.png?1604543121",
+      "logoURI": "https://assets.coingecko.com/coins/images/7596/large/logo.png?1604543121",
       "cgk_id": "stableusd",
       "rank": 2256
     },
@@ -1068,7 +1065,7 @@
       "name": "Tether USD",
       "symbol": "USDT",
       "decimals": 6,
-      "icon": "https://assets.coingecko.com/coins/images/325/large/Tether-logo.png?1598003707",
+      "logoURI": "https://assets.coingecko.com/coins/images/325/large/Tether-logo.png?1598003707",
       "cgk_id": "tether",
       "rank": 146
     },
@@ -1078,7 +1075,7 @@
       "name": "dForce",
       "symbol": "USDx",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/9375/large/logo_USDx_256x256.png?1568695741",
+      "logoURI": "https://assets.coingecko.com/coins/images/9375/large/logo_USDx_256x256.png?1568695741",
       "cgk_id": "usdx-stablecoin",
       "rank": 3356
     },
@@ -1088,7 +1085,7 @@
       "name": "Veritaseum",
       "symbol": "VERI",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/695/large/veritaseum.png?1547034460",
+      "logoURI": "https://assets.coingecko.com/coins/images/695/large/veritaseum.png?1547034460",
       "cgk_id": "veritaseum",
       "rank": 642
     },
@@ -1098,7 +1095,7 @@
       "name": "Wrapped BTC",
       "symbol": "WBTC",
       "decimals": 8,
-      "icon": "https://assets.coingecko.com/coins/images/7598/large/wrapped_bitcoin_wbtc.png?1548822744",
+      "logoURI": "https://assets.coingecko.com/coins/images/7598/large/wrapped_bitcoin_wbtc.png?1548822744",
       "cgk_id": "wrapped-bitcoin",
       "rank": 429
     },
@@ -1108,7 +1105,7 @@
       "name": "Wrapped CryptoKitties",
       "symbol": "WCK",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/8797/large/WCK.png?1561705836",
+      "logoURI": "https://assets.coingecko.com/coins/images/8797/large/WCK.png?1561705836",
       "cgk_id": "wrapped-cryptokitties",
       "rank": 2538
     },
@@ -1118,7 +1115,7 @@
       "name": "CryptoFranc",
       "symbol": "XCHF",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/8465/large/WhuiuJBc_400x400.jpg?1558699947",
+      "logoURI": "https://assets.coingecko.com/coins/images/8465/large/WhuiuJBc_400x400.jpg?1558699947",
       "cgk_id": "cryptofranc",
       "rank": 4958
     },
@@ -1128,7 +1125,7 @@
       "name": "XIO Network",
       "symbol": "XIO",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/10029/large/blockzero.jpg?1611110205",
+      "logoURI": "https://assets.coingecko.com/coins/images/10029/large/blockzero.jpg?1611110205",
       "cgk_id": "xio",
       "rank": 971
     },
@@ -1138,9 +1135,8 @@
       "name": "0x Protocol Token",
       "symbol": "ZRX",
       "decimals": 18,
-      "icon": "https://assets.coingecko.com/coins/images/863/large/0x.png?1547034672",
+      "logoURI": "https://assets.coingecko.com/coins/images/863/large/0x.png?1547034672",
       "cgk_id": "0x",
       "rank": 41
     }
   ]
-}

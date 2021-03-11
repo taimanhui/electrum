@@ -146,7 +146,12 @@ public class TokenManagerActivity extends BaseActivity
                                                                         List<TokenList.ERCToken>>>>)
                                                 ercTokens -> {
                                                     mAllTokens.addAll(ercTokens);
-                                                    moreTokens.addAll(mAllTokens.subList(0, 50));
+                                                    if (mAllTokens.size() > 50) {
+                                                        moreTokens.addAll(
+                                                                mAllTokens.subList(0, 50));
+                                                    } else {
+                                                        moreTokens.addAll(mAllTokens);
+                                                    }
                                                     return getCustomTokenList();
                                                 })
                                 .subscribeOn(Schedulers.io())
@@ -206,7 +211,11 @@ public class TokenManagerActivity extends BaseActivity
                         }
                     }
                 }
-                mHotTokens.addAll(tokenList.subList(0, 10));
+                if (tokenList.size() > 10) {
+                    mHotTokens.addAll(tokenList.subList(0, 10));
+                } else {
+                    mHotTokens.addAll(tokenList);
+                }
                 sortByName();
                 mMoreTokenAdapter = new MoreTokenAdapter(moreTokens, this);
                 mSearchAdapter = new HotTokenAdapter(mSearchTokens, this);
