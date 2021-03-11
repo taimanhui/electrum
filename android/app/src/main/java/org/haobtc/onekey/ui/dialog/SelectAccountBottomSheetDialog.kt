@@ -11,10 +11,12 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.alibaba.fastjson.JSON
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.common.base.Strings
+import com.orhanobut.logger.Logger
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
@@ -31,6 +33,7 @@ import org.haobtc.onekey.bean.PyResponse
 import org.haobtc.onekey.bean.WalletAccountBalanceInfo
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.business.wallet.BalanceManager
+import org.haobtc.onekey.business.wallet.DeviceManager
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
@@ -77,6 +80,10 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
     return this
   }
 
+  private val mDeviceManager by lazy {
+    DeviceManager()
+  }
+
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
     val view = View.inflate(context, R.layout.dialog_select_account, null)
@@ -85,7 +92,7 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
     mTvCoinType = view.findViewById(R.id.text_wallet_type)
     mRecyclerView = view.findViewById(R.id.recl_wallet_list)
     dialog.delegate
-        ?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+      ?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         ?.setBackgroundColor(Color.TRANSPARENT)
     mBehavior = BottomSheetBehavior.from(view.parent as View)
     return dialog
@@ -185,12 +192,25 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
     val response = PyEnv.loadWalletByType(coinType.callFlag)
     if (Strings.isNullOrEmpty(response.errors)) {
       return response.result.map { info ->
+        var hardwareLabel = "";
+        info.deviceId?.let {
+          val deviceInfo = mDeviceManager.getDeviceInfo(info.deviceId)
+          deviceInfo?.let {
+            when {
+              !Strings.isNullOrEmpty(deviceInfo.label) -> hardwareLabel = deviceInfo.label
+              else -> {
+                deviceInfo.bleName?.let { hardwareLabel = deviceInfo.bleName }
+              }
+            }
+          }
+        }
         WalletAccountBalanceInfo.convert(
-            info.type,
-            info.addr,
-            info.name,
-            info.label,
-            info.deviceId
+          info.type,
+          info.addr,
+          info.name,
+          info.label,
+          info.deviceId,
+          hardwareLabel
         )
       }
     } else {

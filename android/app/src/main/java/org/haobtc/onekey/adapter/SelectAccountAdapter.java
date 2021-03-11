@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.google.common.base.Strings;
 import com.noober.background.drawable.DrawableCreator;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 import org.haobtc.onekey.R;
@@ -26,7 +27,11 @@ public class SelectAccountAdapter
     protected void convert(BaseViewHolder helper, WalletAccountBalanceInfo item) {
         helper.setText(R.id.text_name, item.getName());
         View view = helper.getView(R.id.layout_background);
-
+        if (!Strings.isNullOrEmpty(item.getHardwareLabel())) {
+            helper.setGone(R.id.hardware_label_img, true);
+        } else {
+            helper.setGone(R.id.hardware_label_img, false);
+        }
         Vm.CoinType coinType = item.getCoinType();
         int walletType = item.getWalletType();
 
@@ -44,16 +49,16 @@ public class SelectAccountAdapter
         view.setBackground(build);
 
         if (walletType == Vm.WalletType.MAIN) {
-            helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
-            helper.setText(R.id.text_type, "HD");
+            helper.setGone(R.id.type_layout, true);
+            helper.setText(R.id.text_type, mContext.getString(R.string.main_account));
         } else if (walletType == Vm.WalletType.HARDWARE) {
-            helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
-            helper.setText(R.id.text_type, mContext.getString(R.string.hardwares));
+            helper.setGone(R.id.type_layout, true);
+            helper.setText(R.id.text_type, item.getHardwareLabel());
         } else if (walletType == Vm.WalletType.IMPORT_WATCH) {
-            helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
+            helper.setGone(R.id.type_layout, true);
             helper.setText(R.id.text_type, mContext.getString(R.string.watch));
         } else {
-            helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
+            helper.setGone(R.id.type_layout, false);
         }
         String address = item.getAddress();
         String front6 = address.substring(0, 6);

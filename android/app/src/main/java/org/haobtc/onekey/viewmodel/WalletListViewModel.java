@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.adapter.WalletListTypeAdapter;
+import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.WalletAsset;
 import org.haobtc.onekey.bean.WalletInfo;
+import org.haobtc.onekey.business.wallet.DeviceManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
@@ -23,9 +25,11 @@ public class WalletListViewModel extends AndroidViewModel {
     public MutableLiveData<List<WalletInfo>> mBtcWallets = new MutableLiveData<>();
     public MutableLiveData<List<WalletInfo>> mEthWallets = new MutableLiveData<>();
     public MutableLiveData<List<WalletInfo>> mHardwareWallets = new MutableLiveData<>();
+    private DeviceManager mDeviceManager;
 
     public WalletListViewModel(@NonNull Application application) {
         super(application);
+        mDeviceManager = new DeviceManager();
         getAllWallets(Constant.HD);
         getBtcWallets(Constant.BTC);
         getEthWallets(Constant.ETH);
@@ -91,6 +95,23 @@ public class WalletListViewModel extends AndroidViewModel {
 
     // 组装数据
     private void setItemType(List<WalletInfo> list, int type) {
+        for (WalletInfo walletInfo : list) {
+            walletInfo.itemType = type;
+            if (!Strings.isNullOrEmpty(walletInfo.deviceId)) {
+                HardwareFeatures deviceInfo = mDeviceManager.getDeviceInfo(walletInfo.deviceId);
+                if (deviceInfo != null) {
+                    if (!Strings.isNullOrEmpty(deviceInfo.getLabel())) {
+                        walletInfo.hardWareLabel = deviceInfo.getLabel();
+                    } else if (!Strings.isNullOrEmpty(deviceInfo.getBleName())) {
+                        walletInfo.hardWareLabel = deviceInfo.getBleName();
+                    }
+                }
+            }
+        }
+    }
+
+    // 组装数据
+    private void setHardWareItemType(List<WalletInfo> list, int type) {
         for (WalletInfo walletInfo : list) {
             walletInfo.itemType = type;
         }

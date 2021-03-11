@@ -38,18 +38,19 @@ open class WalletAccountInfo(
 }
 
 open class WalletAccountBalanceInfo(
-    coinType: Vm.CoinType,
-    id: String,
-    name: String,
+  coinType: Vm.CoinType,
+  id: String,
+  name: String,
 
-    @Vm.WalletType
-    walletType: Int,
-    address: String,
-    type: String,
-    @Vm.HardwareType
-    deviceType: Int = Vm.HardwareType.OneKey,
-    deviceId: String? = null,
-    var balance: AssetsBalance = defWalletBalance(coinType.defUnit)
+  @Vm.WalletType
+  walletType: Int,
+  address: String,
+  type: String,
+  @Vm.HardwareType
+  deviceType: Int = Vm.HardwareType.OneKey,
+  deviceId: String? = null,
+  val hardwareLabel: String? = null,
+  var balance: AssetsBalance = defWalletBalance(coinType.defUnit)
 ) : WalletAccountInfo(
     coinType,
     id,
@@ -63,20 +64,23 @@ open class WalletAccountBalanceInfo(
 ) {
   companion object {
     @JvmStatic
-    fun convert(type: String,
-                addr: String,
-                name: String,
-                label: String,
-                deviceId: String? = null): WalletAccountBalanceInfo {
+    fun convert(
+      type: String,
+      addr: String,
+      name: String,
+      label: String,
+      deviceId: String? = null,
+      hardwareLabel: String?
+    ): WalletAccountBalanceInfo {
       return WalletAccountBalanceInfo(
-          Vm.convertCoinType(type),
-          name,
-          label,
-          Vm.convertWalletType(type),
-          addr,
-          type,
-          Vm.HardwareType.OneKey,
-          deviceId
+        Vm.convertCoinType(type),
+        name,
+        label,
+        Vm.convertWalletType(type),
+        addr,
+        type,
+        Vm.HardwareType.OneKey,
+        deviceId, hardwareLabel
       )
     }
   }

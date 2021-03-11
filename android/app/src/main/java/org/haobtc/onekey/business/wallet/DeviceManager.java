@@ -3,6 +3,7 @@ package org.haobtc.onekey.business.wallet;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.google.common.base.Strings;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.manager.PreferencesManager;
 
@@ -16,8 +17,8 @@ public class DeviceManager {
 
     private final Context mContext;
 
-    public DeviceManager(Context context) {
-        mContext = context.getApplicationContext();
+    public DeviceManager() {
+        mContext = MyApplication.getInstance();
     }
 
     /**

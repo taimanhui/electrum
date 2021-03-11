@@ -1272,4 +1272,5 @@
     <string name="invalid_btc">无效的BTC地址</string>
     <string name="invalid_eth">无效的ETH地址</string>
     <string name="re_input">请重新输入</string>
+    <string name="main_account">主账户</string>
 </resources>

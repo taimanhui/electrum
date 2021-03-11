@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.google.common.base.Strings;
 import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.WalletInfo;
@@ -38,6 +39,12 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                 break;
             case WalletNorMal:
                 helper.setText(R.id.text_name, item.label);
+                ImageView imageView = helper.getView(R.id.hardware_label_img);
+                if (!Strings.isNullOrEmpty(item.hardWareLabel)) {
+                    imageView.setVisibility(View.VISIBLE);
+                } else {
+                    imageView.setVisibility(View.GONE);
+                }
                 RelativeLayout view = helper.getView(R.id.rel_background);
                 ImageView imgType = helper.getView(R.id.img_type);
                 if (item.type.contains("btc")) {
@@ -62,17 +69,20 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                                     null));
                 }
                 if (item.type.contains("derived-standard")) {
-                    helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
-                    helper.setText(R.id.text_type, "HD");
+                    helper.setVisible(R.id.type_layout, true);
+                    helper.setText(R.id.text_type, mContext.getString(R.string.main_account));
                 } else if (item.type.contains("hw")) {
-                    helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
-                    String type = item.type.substring(item.type.indexOf("hw-") + 3);
-                    helper.setText(R.id.text_type, mContext.getString(R.string.hardwares));
+                    helper.setVisible(R.id.type_layout, true);
+                    if (!Strings.isNullOrEmpty(item.hardWareLabel)) {
+                        helper.setText(R.id.text_type, item.hardWareLabel);
+                    } else {
+                        helper.setText(R.id.text_type, mContext.getString(R.string.hardwares));
+                    }
                 } else if (item.type.contains("watch")) {
-                    helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
+                    helper.setVisible(R.id.type_layout, true);
                     helper.setText(R.id.text_type, mContext.getString(R.string.watch));
                 } else {
-                    helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
+                    helper.setVisible(R.id.type_layout, false);
                 }
                 TextView textAddr = helper.getView(R.id.text_addr);
                 String address = item.addr;

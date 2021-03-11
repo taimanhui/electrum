@@ -96,7 +96,6 @@ public class WalletListActivity extends BaseActivity
     public void initData() {
         mWalletModel = new ViewModelProvider(this).get(WalletListViewModel.class);
         reclWalletList.setNestedScrollingEnabled(false);
-
         mAdapter = new WalletListTypeAdapter(mAllList);
         reclWalletList.setAdapter(mAdapter);
         mWalletModel.mAllWallets.observe(

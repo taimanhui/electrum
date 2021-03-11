@@ -425,7 +425,7 @@ public class TokenManagerActivity extends BaseActivity
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
-                                    mAppWalletViewModel.submit(mAppWalletViewModel::refresh);
+                                    mAppWalletViewModel.refresh();
                                     if (!Strings.isNullOrEmpty(result.getErrors())) {
                                         mToast(result.getErrors());
                                     }
@@ -452,7 +452,7 @@ public class TokenManagerActivity extends BaseActivity
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
-                                    mAppWalletViewModel.submit(mAppWalletViewModel::refresh);
+                                    mAppWalletViewModel.refresh();
                                     if (!Strings.isNullOrEmpty(result.getErrors())) {
                                         mToast(result.getErrors());
                                     }
