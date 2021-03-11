@@ -99,6 +99,15 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
   private fun initData() {
     Vm.CoinType.convertByCallFlag(arguments?.getString(EXT_DATA)).let {
+
+      when {
+        it.callFlag.equals(Vm.CoinType.ETH.callFlag) -> {
+          mTvCoinType.text = resources.getString(R.string.eth_wallet)
+        }
+        it.callFlag.equals(Vm.CoinType.BTC.callFlag) -> {
+          mTvCoinType.text = resources.getString(R.string.btc_wallet)
+        }
+      }
       val drawableLogo = AssetsLogo().getLogoResources(it)
       mImgCoinType.setImageDrawable(ResourcesCompat.getDrawable(resources, drawableLogo, null))
       mAdapter.setNewData(getWallets(it))
@@ -109,19 +118,19 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
             mSwitchDisposable?.dispose()
           }
           mSwitchDisposable = Single
-              .fromCallable {
-                mAppWalletViewModel.changeCurrentWallet(walletInfo.id)
-              }
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe({
-                dismissAllowingStateLoss()
-                mOnDismissListener?.onDismiss(dialog)
-                mOnSelectAccountCallback?.onCall(walletInfo)
-              }, {
-                dismissAllowingStateLoss()
-                mOnDismissListener?.onDismiss(dialog)
-              })
+            .fromCallable {
+              mAppWalletViewModel.changeCurrentWallet(walletInfo.id)
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+              dismissAllowingStateLoss()
+              mOnDismissListener?.onDismiss(dialog)
+              mOnSelectAccountCallback?.onCall(walletInfo)
+            }, {
+              dismissAllowingStateLoss()
+              mOnDismissListener?.onDismiss(dialog)
+            })
         }
       }
       mRecyclerView.adapter = mAdapter
