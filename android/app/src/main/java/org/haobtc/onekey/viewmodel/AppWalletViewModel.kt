@@ -6,8 +6,6 @@ import android.text.TextUtils
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.alibaba.fastjson.JSON
-import com.orhanobut.logger.Logger
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -33,7 +31,6 @@ import org.haobtc.onekey.event.CreateSuccessEvent
 import org.haobtc.onekey.event.LoadOtherWalletEvent
 import org.haobtc.onekey.event.SecondEvent
 import org.haobtc.onekey.manager.PyEnv
-import java.math.BigDecimal
 import java.util.concurrent.Executors
 
 /**
@@ -327,12 +324,17 @@ class AppWalletViewModel : ViewModel() {
         // 切换账户清零总金额
         mOldAccountName = info?.id
         val currentFiatUnitSymbol = mSystemConfigManager.currentFiatUnitSymbol
-        currentWalletTotalBalanceFiat.postValue(AssetsBalanceFiat(
+        currentWalletTotalBalanceFiat.postValue(
+          AssetsBalanceFiat(
             DEF_WALLET_FIAT_BALANCE.balance,
             currentFiatUnitSymbol.unit,
-            currentFiatUnitSymbol.symbol))
+            currentFiatUnitSymbol.symbol
+          )
+        )
       }
-      refreshBalance(info, it)
+      submit {
+        refreshBalance(info, it)
+      }
     }
   }
 
