@@ -13,6 +13,7 @@ import com.google.common.base.Strings;
 import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.WalletInfo;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
 /** @Description: java类作用描述 @Author: peter Qin */
@@ -47,7 +48,7 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                 }
                 RelativeLayout view = helper.getView(R.id.rel_background);
                 ImageView imgType = helper.getView(R.id.img_type);
-                if (item.type.contains("btc")) {
+                if (item.mCoinType == Vm.CoinType.BTC) {
                     view.setBackground(
                             ResourcesCompat.getDrawable(
                                     helper.itemView.getResources(), R.drawable.orange_back, null));
@@ -56,7 +57,7 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                                     helper.itemView.getResources(),
                                     R.drawable.token_trans_btc_list,
                                     null));
-                } else if (item.type.contains("eth")) {
+                } else if (item.mCoinType == Vm.CoinType.ETH) {
                     view.setBackground(
                             ResourcesCompat.getDrawable(
                                     helper.itemView.getResources(),
@@ -68,17 +69,17 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                                     R.drawable.token_trans_eth_list,
                                     null));
                 }
-                if (item.type.contains("derived-standard")) {
+                if (item.mWalletType == Vm.WalletType.MAIN) {
                     helper.setVisible(R.id.type_layout, true);
                     helper.setText(R.id.text_type, mContext.getString(R.string.main_account));
-                } else if (item.type.contains("hw")) {
+                } else if (item.mWalletType == Vm.WalletType.HARDWARE) {
                     helper.setVisible(R.id.type_layout, true);
                     if (!Strings.isNullOrEmpty(item.hardWareLabel)) {
                         helper.setText(R.id.text_type, item.hardWareLabel);
                     } else {
                         helper.setText(R.id.text_type, mContext.getString(R.string.hardwares));
                     }
-                } else if (item.type.contains("watch")) {
+                } else if (item.mWalletType == Vm.WalletType.IMPORT_WATCH) {
                     helper.setVisible(R.id.type_layout, true);
                     helper.setText(R.id.text_type, mContext.getString(R.string.watch));
                 } else {

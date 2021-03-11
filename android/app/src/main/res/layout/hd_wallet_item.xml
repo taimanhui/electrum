@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:visibility="gone"
-                android:background="@drawable/ic_hardware_label" />
+                android:background="@drawable/vector_hardware_label" />
 
             <TextView
                 android:id="@+id/text_type"

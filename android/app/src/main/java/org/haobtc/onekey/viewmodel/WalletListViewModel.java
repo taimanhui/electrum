@@ -16,6 +16,7 @@ import org.haobtc.onekey.bean.WalletAsset;
 import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.business.wallet.DeviceManager;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 
@@ -106,6 +107,10 @@ public class WalletListViewModel extends AndroidViewModel {
                         walletInfo.hardWareLabel = deviceInfo.getBleName();
                     }
                 }
+            }
+            if (!Strings.isNullOrEmpty(walletInfo.type)) {
+                walletInfo.mCoinType = Vm.convertCoinType(walletInfo.type);
+                walletInfo.mWalletType = Vm.convertWalletType(walletInfo.type);
             }
         }
     }

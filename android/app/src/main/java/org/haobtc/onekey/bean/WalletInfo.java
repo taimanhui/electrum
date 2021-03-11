@@ -1,6 +1,7 @@
 package org.haobtc.onekey.bean;
 
 import com.chad.library.adapter.base.entity.MultiItemEntity;
+import org.haobtc.onekey.constant.Vm;
 
 /** @Description: 钱包信息的数据模型 @Author: peter Qin @CreateDate: 2021/1/14 6:13 PM */
 public class WalletInfo implements MultiItemEntity {
@@ -17,6 +18,8 @@ public class WalletInfo implements MultiItemEntity {
     public String deviceId;
     public int itemType;
     public String hardWareLabel;
+    public Vm.CoinType mCoinType;
+    public int mWalletType;
 
     @Override
     public int getItemType() {
