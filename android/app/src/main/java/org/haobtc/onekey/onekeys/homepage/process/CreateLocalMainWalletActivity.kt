@@ -20,6 +20,7 @@ import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.BalanceInfoDTO
 import org.haobtc.onekey.bean.ImageResources
 import org.haobtc.onekey.bean.LocalImage
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.business.wallet.SystemConfigManager
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.databinding.ActivityCreateLocalMainWalletBinding
@@ -82,19 +83,15 @@ class CreateLocalMainWalletActivity : BaseActivity(), AccountSelectAdapter.OnSel
   }
 
   private fun initData() {
+
     Single
         .create<List<AccountSelectVo>> { emitter ->
           val accounts = ArrayList<AccountSelectVo>()
           Vm.CoinType.values().filter { it.enable }.forEach {
-            val resId = when (it) {
-              Vm.CoinType.BTC -> R.drawable.token_btc
-              Vm.CoinType.ETH -> R.drawable.token_eth
-            }
 
-            val describe = when (it) {
-              Vm.CoinType.BTC -> getString(R.string.coin_btc)
-              Vm.CoinType.ETH -> getString(R.string.coin_eth)
-            }
+
+            val resId = AssetsLogo.getLogoResources(it)
+            val describe = AssetsLogo.getAssetDescribe(it)
 
             accounts.add(AccountSelectVo(
                 it,

@@ -119,7 +119,8 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
           mTvCoinType.text = resources.getString(R.string.btc_wallet)
         }
       }
-      val drawableLogo = AssetsLogo().getLogoResources(it)
+      val drawableLogo = AssetsLogo.getLogoResources(it)
+
       mImgCoinType.setImageDrawable(ResourcesCompat.getDrawable(resources, drawableLogo, null))
       mAdapter.setNewData(getWallets(it))
       getAccountBalance()

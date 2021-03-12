@@ -195,7 +195,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
      */
     @Override
     public void init(View view) {
-        mAssetsLogo = new AssetsLogo();
         mNetworkViewModel = getApplicationViewModel(NetworkViewModel.class);
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         mSystemConfigManager = new SystemConfigManager(requireContext());
@@ -403,8 +402,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
 
         imgType.setImageDrawable(
-                ContextCompat.getDrawable(
-                        requireContext(), mAssetsLogo.getLogoResources(coinType)));
+                ContextCompat.getDrawable(requireContext(), AssetsLogo.getLogoResources(coinType)));
 
         if (walletType == Vm.WalletType.HARDWARE) {
             textHard.setVisibility(View.VISIBLE);

@@ -7,7 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.scwang.smartrefresh.layout.util.SmartUtil;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+import java.util.Arrays;
+import java.util.List;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.adapter.SelectChainListAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.databinding.FragmentSelectorChainCoinBinding;
@@ -32,6 +39,7 @@ public class SelectChainCoinFragment extends BaseFragment implements View.OnClic
 
     private OnSelectCoinTypeCallback mOnSelectCoinTypeCallback = null;
     private OnFinishViewCallBack mOnFinishViewCallBack = null;
+    private SelectChainListAdapter mChainListAdapter;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -73,20 +81,33 @@ public class SelectChainCoinFragment extends BaseFragment implements View.OnClic
         mBindingView.imgBack.setOnClickListener(this);
         mBindingView.relBtc.setOnClickListener(this);
         mBindingView.relEth.setOnClickListener(this);
-
+        mChainListAdapter = new SelectChainListAdapter(Arrays.asList(Vm.CoinType.values()));
+        mBindingView.chainRecycler.setAdapter(mChainListAdapter);
         if (mImportSoftWalletProvider != null && !mImportSoftWalletProvider.isImportHDWallet()) {
             mBindingView.tvTitleContent.setText(R.string.import_wallet);
         } else {
             mBindingView.tvTitleContent.setText(R.string.choose_amount);
         }
 
-        if (Vm.CoinType.BTC.enable) {
-            mBindingView.relBtc.setVisibility(View.VISIBLE);
-        }
-
-        if (Vm.CoinType.ETH.enable) {
-            mBindingView.relEth.setVisibility(View.VISIBLE);
-        }
+        HorizontalDividerItemDecoration build =
+                new HorizontalDividerItemDecoration.Builder(getActivity())
+                        .color(
+                                ResourcesCompat.getColor(
+                                        getResources(),
+                                        R.color.color_select_wallet_divider,
+                                        getActivity().getTheme()))
+                        .sizeResId(R.dimen.line_hight)
+                        .margin(SmartUtil.dp2px(20F), SmartUtil.dp2px(20F))
+                        .build();
+        mBindingView.chainRecycler.addItemDecoration(build);
+        mChainListAdapter.setOnItemClickListener(
+                new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        List<Vm.CoinType> list = adapter.getData();
+                        dealSelect(list.get(position));
+                    }
+                });
     }
 
     @Override
@@ -102,12 +123,6 @@ public class SelectChainCoinFragment extends BaseFragment implements View.OnClic
                 if (mOnFinishViewCallBack != null) {
                     mOnFinishViewCallBack.onFinishView();
                 }
-                break;
-            case R.id.rel_btc:
-                dealSelect(Vm.CoinType.BTC);
-                break;
-            case R.id.rel_eth:
-                dealSelect(Vm.CoinType.ETH);
                 break;
         }
     }

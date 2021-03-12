@@ -15,8 +15,10 @@ import org.haobtc.onekey.BuildConfig;
 public class Vm {
 
     public enum CoinType {
-        BTC("BTC", "BTC", 8, "btc", false, true),
-        ETH("ETH", "ETH", 18, "eth", true, true);
+        BTC("BTC", "BTC", "BTC", 8, "btc", false, true),
+        ETH("ETH", "ETH", "ETH", 18, "eth", true, true),
+        BSC("BSC", "BSC", "BSC", 18, "bsc", true, true),
+        HECO("HECO", "HECO", "HECO", 18, "heco", true, true);
 
         public final String coinName;
         public final String callFlag;
@@ -24,14 +26,17 @@ public class Vm {
         public final int digits;
         public final boolean enable;
         public final boolean supportTokens;
+        public final String chainType;
 
         CoinType(
+                String chainType,
                 String coinName,
                 String unit,
                 int digits,
                 String flag,
                 boolean supportTokens,
                 boolean enable) {
+            this.chainType = chainType;
             this.coinName = coinName;
             this.defUnit = unit;
             this.digits = digits;

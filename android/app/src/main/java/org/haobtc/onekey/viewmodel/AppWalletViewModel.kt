@@ -43,7 +43,6 @@ class AppWalletViewModel : ViewModel() {
   private val mExecutorService = Executors.newFixedThreadPool(4)
   private val mMainHandler = Handler(Looper.getMainLooper())
   private val mBalanceManager = BalanceManager()
-  private val mAssetsLogo = AssetsLogo()
   private val mAccountManager = AccountManager(MyApplication.getInstance())
   private val mTokenManager = TokenManager()
   private val mSystemConfigManager = SystemConfigManager(MyApplication.getInstance())
@@ -105,7 +104,7 @@ class AppWalletViewModel : ViewModel() {
         walletAccountInfo.coinType.digits,
         "",
         LocalImage(
-            mAssetsLogo.getLogoResources(walletAccountInfo.coinType)),
+            AssetsLogo.getLogoResources(walletAccountInfo.coinType)),
         AssetsBalance("0", currentBaseUnit)
     )
     if (isOriginalAccount) {
