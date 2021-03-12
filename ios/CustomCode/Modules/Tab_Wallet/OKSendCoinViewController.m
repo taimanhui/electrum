@@ -122,11 +122,11 @@
 @property (nonatomic,strong)NSTimer* ethTimer;
 
 @property (nonatomic,strong)OKSendTxPreInfoViewController *sendTxPreInfoVc;
-@property (nonatomic,strong)NSArray *tokensArray;
 
 //当前选择的Token模型
 @property (nonatomic,strong)OKAllAssetsCellModel *selectedToken;
 
+@property (nonatomic,strong)NSDictionary *tokensDict;
 @end
 
 @implementation OKSendCoinViewController
@@ -251,17 +251,18 @@
     OKWeakSelf(self)
     NSDictionary *dict = noti.object;
     NSLog(@"dict === %@",dict);
-    weakself.tokensArray = [dict objectForKey:@"tokens"];
+    weakself.tokensDict = dict;
+    NSArray *tokensArray = [dict objectForKey:@"tokens"];
     dispatch_async(dispatch_get_main_queue(), ^{
         // UI更新代码
-        if (weakself.tokensArray != nil && weakself.tokensArray.count > 0 ) {
+        if (tokensArray != nil && tokensArray.count > 0 ) {
             [weakself.coinTypeBtn status:OKButtonStatusEnabled];
         }else{
             [weakself.coinTypeBtn status:OKButtonStatusDisabled];
         }
         if ([kWalletManager isETHClassification:weakself.coinType] && ![kWalletManager isETHClassification:weakself.coinTypeBtn.currentTitle]) {
             NSDictionary *tokenDict;
-            for (NSDictionary *sub in weakself.tokensArray) {
+            for (NSDictionary *sub in tokensArray) {
                 NSString *coin = [sub safeStringForKey:@"coin"];
                 if ([coin isEqualToString:weakself.selectedToken.coin]) {
                     tokenDict = sub;
@@ -390,7 +391,7 @@
 - (IBAction)coinTypeBtnClick:(UIButton *)sender {
     OKWeakSelf(self)
     OKTokenSelectController *tokenSelectVc = [OKTokenSelectController controllerWithStoryboard];
-    tokenSelectVc.data = self.tokensArray;
+    tokenSelectVc.data = self.tokensDict;
     tokenSelectVc.selectCallback = ^(OKAllAssetsCellModel * _Nonnull selected) {
         weakself.selectedToken = selected;
         [weakself.coinTypeBtn setTitle:selected.coin forState:UIControlStateNormal];

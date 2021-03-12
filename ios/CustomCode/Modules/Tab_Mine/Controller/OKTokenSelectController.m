@@ -12,7 +12,7 @@
 
 @interface OKTokenSelectController () <UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic, strong)NSArray *tokens;
+@property (nonatomic, strong)NSMutableArray <OKAllAssetsCellModel *>*tokens;
 @end
 
 @implementation OKTokenSelectController
@@ -27,7 +27,11 @@
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.tableView.mj_insetT = 8;
-    self.tokens = [OKAllAssetsCellModel mj_objectArrayWithKeyValuesArray:self.data];
+    NSArray *tokensArray = [self.data objectForKey:@"tokens"];
+    OKAllAssetsCellModel *nativeToken = [OKAllAssetsCellModel mj_objectWithKeyValues:self.data];
+    nativeToken.isNativeToken = YES;
+    self.tokens = [@[nativeToken] mutableCopy];
+    [self.tokens addObjectsFromArray:[OKAllAssetsCellModel mj_objectArrayWithKeyValuesArray:tokensArray]];
 }
 
 #pragma mark - UITableViewDataSource, UITableViewDelegate

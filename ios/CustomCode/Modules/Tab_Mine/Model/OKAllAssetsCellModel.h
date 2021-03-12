@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy)NSString *balance;
 @property (nonatomic, copy)NSString *fiat;
 @property (nonatomic, copy)NSString *address;
+@property (nonatomic, assign) BOOL isNativeToken; // 是否链原生代币，如 ETH/BNB/HT 等
 @end
 
 @interface OKAllAssetsSectionModel : NSObject <NSCopying>

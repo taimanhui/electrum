@@ -28,7 +28,7 @@
     self.cointypeLabel.text = model.coin;
     self.balanceLabel.text = model.balance;
     self.moneyLabel.text = model.fiat;
-    if (model.address.length) {
+    if (model.address.length && !model.isNativeToken) {
         OKToken *token = [kOKTokenManager tokensWithAddress:model.address];
         [self.iconImageView sd_setImageWithURL:token.logoURI.toURL placeholderImage:[UIImage imageNamed:@"icon_ph"]];
     } else {

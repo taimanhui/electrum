@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKTokenSelectController : BaseViewController
-@property (nonatomic, strong)NSArray *data;
+@property (nonatomic, strong)NSDictionary *data;
 @property (nonatomic, copy) void(^selectCallback)(OKAllAssetsCellModel *selected);
 
 + (instancetype)controllerWithStoryboard;
