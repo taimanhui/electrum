@@ -61,7 +61,7 @@ def _type_info_by_type_and_time_sort_func(type_info_item: Tuple[str, dict]) -> T
 
 class WalletContext(object):
     def __init__(self, config: simple_config.SimpleConfig, user_dir: str) -> None:
-        # NOTE: we use user config to store these infomation, should consider
+        # NOTE: we use user config to store these information, should consider
         # using database instead.
         self.config = config
 
