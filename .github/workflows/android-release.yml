@@ -74,15 +74,9 @@ jobs:
       - name: push to server
         run: |
             # push release apk
-            export MAINNET_APK_PATH=`ls android/app/build/outputs/apk/MainNetOnekey/release/*.apk`
+            export MAINNET_APK=`ls android/app/build/outputs/apk/MainNetOnekey/release/*.apk`
             export TAG_NAME=`git describe --tags --abbrev=0`
-            scp "$MAINNET_APK_PATH" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK_PATH '\"$TAG_NAME\"' >android_release.log"
-            # push googleplay apk
-            export MAINNET_APK_PATH=`ls android/app/build/outputs/apk/MainNetGooglePlay/release/*.apk`
-            scp "$MAINNET_APK_PATH" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK_PATH '\"$TAG_NAME for googleplay\"' >>android_release.log"
-            # push regtest apk
-            export REGTEST_APK_PATH=`ls android/app/build/outputs/apk/RegTestOnekey/release/*.apk`
-            scp "$REGTEST_APK_PATH" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push.sh $REGTEST_APK_PATH '\"$TAG_NAME for regtest network\"' >>android_release.log"
+            export MAINNET_GOOGLEPLAY_APK=`ls android/app/build/outputs/apk/MainNetGooglePlay/release/*.apk`
+            export REGTEST_APK=`ls android/app/build/outputs/apk/RegTestOnekey/release/*.apk`
+            scp "$MAINNET_APK" "MAINNET_GOOGLEPLAY_APK" "REGTEST_APK" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
+            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK '\"$TAG_NAME\"' && ./push_release.sh $MAINNET_APK '\"$TAG_NAME for googleplay\"' && ./push.sh $REGTEST_APK '\"$TAG_NAME for regtest network\"' >>android_release.log"
