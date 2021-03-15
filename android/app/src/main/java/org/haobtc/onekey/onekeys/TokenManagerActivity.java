@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
-import com.orhanobut.logger.Logger;
 import com.zy.multistatepage.MultiStateContainer;
 import com.zy.multistatepage.MultiStatePage;
 import com.zy.multistatepage.state.SuccessState;
@@ -299,7 +298,6 @@ public class TokenManagerActivity extends BaseActivity
                 }
             }
         }
-        Logger.d("--->" + JSON.toJSONString(tempData));
         convertSearchData(tempData);
         if (tempData.size() == 0) {
             mMultiStateContainer.show(

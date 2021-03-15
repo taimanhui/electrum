@@ -35,8 +35,8 @@ public class HotTokenAdapter extends BaseQuickAdapter<TokenList.ERCToken, BaseVi
         helper.setText(
                 R.id.token_address, String.format(Locale.getDefault(), "%s...%s", start, end));
         setAddData(item, backGround, position);
-        switchBtn.setChecked(item.isAdd);
         switchBtn.setOnCheckedChangeListener(null);
+        switchBtn.setChecked(item.isAdd);
         switchBtn.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
                     item.isAdd = isChecked;

@@ -1446,7 +1446,6 @@ public final class PyEnv {
             } else {
                 walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO, type).toString();
             }
-            Logger.json(walletsInfo);
             List<WalletInfo> list = new ArrayList<>();
             if (!Strings.isNullOrEmpty(walletsInfo)) {
                 JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
@@ -1760,7 +1759,6 @@ public final class PyEnv {
             String result = sCommands.callAttr(PyConstant.GET_CUS_LIST_INFO).toString();
             List<TokenList.ERCToken> list = JSON.parseArray(result, TokenList.ERCToken.class);
             pyResponse.setResult(list);
-            Logger.json(result);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             pyResponse.setErrors(exception.getMessage());
