@@ -1,4 +1,4 @@
-name: Build iOS app
+name: Lint iOS app
 
 on:
   push:
@@ -78,12 +78,10 @@ jobs:
           plutil -insert  'teamID' -string "$DEVELOPMENT_TEAM" -- Support/OneKey-Info.plist
           plutil -insert  'signingStyle' -string "mannual" -- Support/OneKey-Info.plist
         working-directory: ios
-      - name: Build app
-        id: xcodebuild_export
+      - name: lint check
+        id: xcodebuild_lint
         run: |
-          mkdir build
-          mkdir logs
-          xcodebuild archive \
+          xcodebuild clean analyze \
            -workspace "$PROJECT_WORKSPACE" \
            -scheme "$PROJECT_SCHEME" \
            -configuration "$PROJECT_CONFIGURATION" \
@@ -92,32 +90,20 @@ jobs:
            PROVISIONING_PROFILE="$UUID_PROVISION" \
            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
            CODE_SIGN_STYLE="$CODE_SIGN_STYLE" \
-           IPHONEOS_DEPLOYMENT_TARGET=11.0
+           IPHONEOS_DEPLOYMENT_TARGET=11.0 \
+           COMPILER_INDEX_STORE_ENABLE="NO" \
+           CLANG_ANALYZER_OUTPUT=plist-html \
+           CLANG_ANALYZER_OUTPUT_DIR="$(pwd)/clang-analyze" \
+           | tee xcodebuild.log  \
+           | xcpretty -r json-compilation-database --output compile_commands.json
+          oclint-json-compilation-database -e Pods -e CustomCode/Modules/Third/ -- -report-type html -o oclintReport.html
         working-directory: ios/iOS
-      - name: Export IPA
-        id: xcodebuild_archive
-        run: |
-          xcodebuild -exportArchive \
-          -exportPath $PWD/build \
-          -archivePath $PWD/build/app_build.xcarchive \
-          -exportOptionsPlist ../Support/${APP_NAME}-Info.plist
-        working-directory: ios/iOS
-      - name: Archive production artifacts
+      - name: Archive lint artifacts
         uses: actions/upload-artifact@v2
         if: success()
         with:
-          name: OneKey-${{ github.sha }}.ipa
+          name: OneKey ios app lint report
           path: |
-            ios/iOS/build/${{ env.APP_NAME }}.ipa
-            ios/iOS/build/app_build.xcarchive/dSYMs
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          name: id_rsa # optional
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-      - name: push to server
-        run: |
-            scp "ios/iOS/build/${{ env.APP_NAME }}.ipa" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            export CHANGE_LOG=`git log HEAD -n 1`
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push.sh ${{ env.APP_NAME }}.ipa '\"$CHANGE_LOG\"' >ios_log"
+            ios/iOS/xcodebuild.log
+            ios/iOS/oclintReport.html
+            ios/iOS/clang-analyze/StaticAnalyzer/
