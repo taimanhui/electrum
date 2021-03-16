@@ -13,14 +13,14 @@ jobs:
   build:
     runs-on: macos-latest
     env:
-      APP_ID: so.onekey.one.OneKey
+      APP_ID: so.onekey.testflight
       APP_NAME: OneKey
       EMAIL: hello@onekey.so
       PROJECT_WORKSPACE: OneKey.xcworkspace
       PROJECT_SCHEME: OneKey
       PROJECT_CONFIGURATION: Debug
       CODE_SIGN_IDENTITY: "iPhone Developer"
-      UUID_PROVISION: 5ba698c8-a3c7-4e73-9c7b-7667b353a5bb
+      UUID_PROVISION: 140b8d23-801d-47df-a060-8376a869f6b2
       CODE_SIGN_STYLE: Manual
       DEVELOPMENT_TEAM: 6M2QF4T7XG
       PUBLISH_IPA: false
@@ -77,7 +77,7 @@ jobs:
           plutil -insert  'provisioningProfiles' -xml "<dict> <key>$APP_ID</key> <string>$UUID_PROVISION</string> </dict>" -- Support/OneKey-Info.plist
           plutil -insert  'teamID' -string "$DEVELOPMENT_TEAM" -- Support/OneKey-Info.plist
           plutil -insert  'signingStyle' -string "mannual" -- Support/OneKey-Info.plist
-        working-directory: ios 
+        working-directory: ios
       - name: Build app
         id: xcodebuild_export
         run: |
@@ -140,7 +140,7 @@ jobs:
            | tee xcodebuild.log  \
            | xcpretty -r json-compilation-database --output compile_commands.json
           oclint-json-compilation-database -e Pods -e CustomCode/Modules/Third/ -- -report-type html -o oclintReport.html
-        working-directory: ios/iOS 
+        working-directory: ios/iOS
       - name: Archive lint artifacts
         uses: actions/upload-artifact@v2
         if: success()
@@ -148,6 +148,5 @@ jobs:
           name: OneKey ios app lint report
           path: |
             ios/iOS/xcodebuild.log
-            ios/iOS/oclintReport.html 
+            ios/iOS/oclintReport.html
             ios/iOS/clang-analyze/StaticAnalyzer/
- 
