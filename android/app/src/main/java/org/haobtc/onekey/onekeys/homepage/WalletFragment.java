@@ -506,8 +506,14 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                         intent.putExtra("hdWalletName", textWalletName.getText().toString());
                         startActivity(intent);
                     } else if (value.getCoinType()
-                            .callFlag
-                            .equalsIgnoreCase(Vm.CoinType.ETH.callFlag)) {
+                                    .callFlag
+                                    .equalsIgnoreCase(Vm.CoinType.ETH.callFlag)
+                            || value.getCoinType()
+                                    .callFlag
+                                    .equalsIgnoreCase(Vm.CoinType.BSC.callFlag)
+                            || value.getCoinType()
+                                    .callFlag
+                                    .equalsIgnoreCase(Vm.CoinType.HECO.callFlag)) {
                         SendEthActivity.start(getActivity(), value.getId());
                     }
                 }

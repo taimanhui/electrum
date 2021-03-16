@@ -57,12 +57,13 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                                     helper.itemView.getResources(),
                                     R.drawable.token_trans_btc_list,
                                     null));
-                } else if (item.mCoinType == Vm.CoinType.ETH) {
+                } else if (item.mCoinType.chainType.equalsIgnoreCase(Vm.CoinType.ETH.chainType)) {
                     view.setBackground(
                             ResourcesCompat.getDrawable(
                                     helper.itemView.getResources(),
                                     R.drawable.eth_blue_back,
                                     null));
+                    // TODO: 2021/3/15  根据chain 获取 logo
                     imgType.setImageDrawable(
                             ResourcesCompat.getDrawable(
                                     helper.itemView.getResources(),

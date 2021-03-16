@@ -17,8 +17,8 @@ public class Vm {
     public enum CoinType {
         BTC("BTC", "BTC", "BTC", 8, "btc", false, true),
         ETH("ETH", "ETH", "ETH", 18, "eth", true, true),
-        BSC("BSC", "BSC", "BSC", 18, "bsc", true, true),
-        HECO("HECO", "HECO", "HECO", 18, "heco", true, true);
+        BSC("ETH", "BSC", "BNB", 18, "bsc", true, true),
+        HECO("ETH", "HECO", "HT", 18, "heco", true, true);
 
         public final String coinName;
         public final String callFlag;
@@ -180,6 +180,10 @@ public class Vm {
             return Vm.CoinType.BTC;
         } else if (type.contains("eth")) {
             return Vm.CoinType.ETH;
+        } else if (type.contains("bsc")) {
+            return Vm.CoinType.BSC;
+        } else if (type.contains("heco")) {
+            return CoinType.HECO;
         } else {
             return Vm.CoinType.BTC;
         }

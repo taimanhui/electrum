@@ -117,15 +117,15 @@ class AppWalletViewModel : ViewModel() {
     walletAssets?.wallets
         ?.filter { it.contractAddress.isNotEmpty() }
         ?.forEach {
-          if (walletAccountInfo.coinType == ETH) {
+          if (walletAccountInfo.coinType.chainType.equals(ETH.chainType)) {
             mTokenManager.getTokenByAddress(it.contractAddress)?.let { tokenByAddress ->
               val erC20Assets = ERC20Assets(
-                  it.contractAddress,
-                  tokenByAddress.symbol,
-                  tokenByAddress.decimals,
-                  tokenByAddress.name,
-                  RemoteImage(tokenByAddress.logoURI),
-                  AssetsBalance("0", tokenByAddress.symbol)
+                it.contractAddress,
+                tokenByAddress.symbol,
+                tokenByAddress.decimals,
+                tokenByAddress.name,
+                RemoteImage(tokenByAddress.logoURI),
+                AssetsBalance("0", tokenByAddress.symbol)
               )
               if (isOriginalAccount) {
                 currentWalletAssetsList.value?.getByUniqueId(erC20Assets.uniqueId())?.let { assets ->

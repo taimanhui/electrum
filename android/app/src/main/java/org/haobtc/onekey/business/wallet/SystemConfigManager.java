@@ -138,6 +138,10 @@ public class SystemConfigManager {
         switch (coinType) {
             case ETH:
                 return "ETH";
+            case BSC:
+                return Vm.CoinType.BSC.defUnit;
+            case HECO:
+                return Vm.CoinType.HECO.defUnit;
             default:
             case BTC:
                 return getCurrentBaseUnit();

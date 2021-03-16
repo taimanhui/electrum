@@ -171,6 +171,16 @@ public class HdWalletDetailActivity extends BaseActivity {
                 mImageTokenLogo.setImageDrawable(
                         ResourcesCompat.getDrawable(getResources(), R.drawable.token_eth, null));
                 break;
+            case BSC:
+                mImageTokenLogo.setImageDrawable(
+                        ResourcesCompat.getDrawable(
+                                getResources(), R.drawable.vector_token_bsc, null));
+                break;
+            case HECO:
+                mImageTokenLogo.setImageDrawable(
+                        ResourcesCompat.getDrawable(
+                                getResources(), R.drawable.vector_token_heco, null));
+                break;
         }
 
         Logger.e(showWalletType);

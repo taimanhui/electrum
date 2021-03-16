@@ -273,7 +273,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private boolean isAddressClickPaste;
     private boolean isAmountClickPaste;
     // 钱包类型：btc || eth
-    private static final String walletType = Vm.CoinType.ETH.callFlag;
+    private String walletType;
     private int mGasLimit = 0;
     private CustomEthFeeDialog mCustomEthFeeDialog;
     private String mCusFeeRate;
@@ -393,6 +393,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 assets -> {
                     Assets mAssets = assets.getByUniqueIdOrZero(mAssetsID);
                     coinAssetBalance = assets.getCoinAsset().getBalance().getBalance();
+                    walletType = assets.getCoinAsset().getCoinType().callFlag;
                     initAssetBalance(mAssets);
                     hdWalletName = mAssets.getName();
                     walletName.setText(hdWalletName);
@@ -660,13 +661,11 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         Disposable disposable =
                 getDefaultObservable()
                         .doOnSubscribe(show -> showProgress())
-                        .doFinally(this::dismissProgress)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                response -> {
-                                    doDefaultInfo(response, false);
-                                });
+                        .doFinally(this::dismissProgress)
+                        .subscribe(response -> doDefaultInfo(response, false));
+
         mCompositeDisposable.add(disposable);
     }
 

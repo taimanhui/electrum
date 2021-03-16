@@ -20,6 +20,7 @@ class HdWalletAssetAdapter(context: Context, data: List<BalanceCoinInfo?>?) : Ba
   }
 
   override fun convert(helper: BaseViewHolder, item: BalanceCoinInfo) {
+
     when {
       item.coin.equals(Vm.CoinType.BTC.callFlag, true) -> {
         helper.setImageDrawable(
@@ -33,6 +34,22 @@ class HdWalletAssetAdapter(context: Context, data: List<BalanceCoinInfo?>?) : Ba
         helper.setImageDrawable(
           R.id.imageView,
           ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_eth, null)
+        )
+        helper.setText(R.id.text_wallet_name, item.coin)
+          .setText(R.id.text_balance, getFormatBalance(item, 6))
+      }
+      item.coin.equals(Vm.CoinType.BSC.callFlag, true) -> {
+        helper.setImageDrawable(
+          R.id.imageView,
+          ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.vector_token_bsc, null)
+        )
+        helper.setText(R.id.text_wallet_name, item.coin)
+          .setText(R.id.text_balance, getFormatBalance(item, 6))
+      }
+      item.coin.equals(Vm.CoinType.HECO.callFlag, true) -> {
+        helper.setImageDrawable(
+          R.id.imageView,
+          ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.vector_token_heco, null)
         )
         helper.setText(R.id.text_wallet_name, item.coin)
           .setText(R.id.text_balance, getFormatBalance(item, 6))

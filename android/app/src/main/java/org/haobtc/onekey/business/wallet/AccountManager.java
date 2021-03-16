@@ -239,6 +239,7 @@ public class AccountManager {
     public CreateWalletBean deriveHdWallet(
             Vm.CoinType coinType, String walletName, String walletPassword, int purpose)
             throws AccountException {
+        String type = coinType.callFlag;
         try {
             String result =
                     Daemon.commands
@@ -246,7 +247,7 @@ public class AccountManager {
                                     "create_derived_wallet",
                                     walletName,
                                     walletPassword,
-                                    coinType.callFlag,
+                                    type,
                                     purpose)
                             .toString();
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
