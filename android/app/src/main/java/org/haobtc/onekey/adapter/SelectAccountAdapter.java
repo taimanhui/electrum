@@ -6,10 +6,12 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
-import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.google.common.base.Strings;
 import com.noober.background.drawable.DrawableCreator;
+import java.util.ArrayList;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.WalletAccountBalanceInfo;
@@ -17,14 +19,25 @@ import org.haobtc.onekey.constant.Vm;
 
 /** @Description: java类作用描述 @Author: peter Qin */
 public class SelectAccountAdapter
-        extends BaseQuickAdapter<WalletAccountBalanceInfo, BaseViewHolder> {
+        extends BaseMultiItemQuickAdapter<
+                SelectAccountAdapter.MultiWalletAccountBalanceInfo, BaseViewHolder> {
+
+    public static final int NoWallet = 0;
+    public static final int WalletNormal = 1;
 
     public SelectAccountAdapter() {
-        super(R.layout.item_select_account);
+        super(new ArrayList<>());
+        addItemType(NoWallet, R.layout.item_add_wallet_concise);
+        addItemType(WalletNormal, R.layout.item_select_account);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, WalletAccountBalanceInfo item) {
+    protected void convert(BaseViewHolder helper, MultiWalletAccountBalanceInfo wrapItem) {
+        if (wrapItem.itemType == NoWallet) {
+            helper.addOnClickListener(R.id.recl_add_wallet);
+            return;
+        }
+        WalletAccountBalanceInfo item = wrapItem.data;
         helper.setText(R.id.text_name, item.getName());
         View view = helper.getView(R.id.layout_background);
         if (!Strings.isNullOrEmpty(item.getHardwareLabel())) {
@@ -76,6 +89,26 @@ public class SelectAccountAdapter
             chooseView.setVisibility(View.GONE);
         }
         helper.setText(R.id.tv_amount, item.getBalance().getBalanceFormat(8));
-        helper.addOnClickListener(R.id.rel_background);
+        helper.addOnClickListener(R.id.layout_background);
+    }
+
+    public static class MultiWalletAccountBalanceInfo implements MultiItemEntity {
+
+        public MultiWalletAccountBalanceInfo(WalletAccountBalanceInfo data) {
+            this.itemType = WalletNormal;
+            this.data = data;
+        }
+
+        public MultiWalletAccountBalanceInfo(int itemType) {
+            this.itemType = itemType;
+        }
+
+        public int itemType;
+        public WalletAccountBalanceInfo data;
+
+        @Override
+        public int getItemType() {
+            return itemType;
+        }
     }
 }

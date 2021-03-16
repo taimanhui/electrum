@@ -42,7 +42,7 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
     @JvmStatic
     fun newInstance(data: Vm.CoinType): SelectAccountBottomSheetDialog {
-      return newInstance(arrayListOf(data))
+      return newInstance(arrayListOf(Vm.CoinType.ETH, Vm.CoinType.HECO, Vm.CoinType.BSC))
     }
 
     @JvmStatic
@@ -135,25 +135,33 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
     mAdapter.setNewData(getWallets(coinType))
     getAccountBalance()
-    mAdapter.setOnItemClickListener { _, _, position ->
-      mAdapter.getItem(position)?.let { walletInfo ->
-        if (mSwitchDisposable?.isDisposed() == false) {
-          mSwitchDisposable?.dispose()
-        }
-        mSwitchDisposable = Single
-            .fromCallable {
-              mAppWalletViewModel.changeCurrentWallet(walletInfo.id)
+    mAdapter.setOnItemChildClickListener { adapter, view, position ->
+      when (view.id) {
+        R.id.layout_background -> {
+          mAdapter.getItem(position)?.let { walletInfo ->
+            if (mSwitchDisposable?.isDisposed() == false) {
+              mSwitchDisposable?.dispose()
             }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-              dismissAllowingStateLoss()
-              mOnDismissListener?.onDismiss(dialog)
-              mOnSelectAccountCallback?.onCall(walletInfo)
-            }, {
-              dismissAllowingStateLoss()
-              mOnDismissListener?.onDismiss(dialog)
-            })
+            mSwitchDisposable = Single
+                .fromCallable {
+                  mAppWalletViewModel.changeCurrentWallet(walletInfo.data.id)
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                  dismissAllowingStateLoss()
+                  mOnDismissListener?.onDismiss(dialog)
+                  mOnSelectAccountCallback?.onCall(walletInfo.data)
+                }, {
+                  dismissAllowingStateLoss()
+                  mOnDismissListener?.onDismiss(dialog)
+                })
+          }
+        }
+        R.id.recl_add_wallet -> {
+          CreateWalletWaySelectorDialog().show(parentFragmentManager, "")
+          dismiss()
+        }
       }
     }
     mRecyclerView.adapter = mAdapter
@@ -179,10 +187,10 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
                 val allWalletBalance = allWalletBalanceString.result
                 if (allWalletBalance != null
                     && allWalletBalance.walletInfo.isNotEmpty()) {
-                  val currentAccount = mAdapter.data.map { it.id to it }.toMap()
+                  val currentAccount = mAdapter.data.map { it.data.id to it }.toMap()
                   allWalletBalance.walletInfo.forEach {
                     if (currentAccount.containsKey(it.label)) {
-                      currentAccount[it.label]?.balance = AssetsBalance(it.balance
+                      currentAccount[it.label]?.data?.balance = AssetsBalance(it.balance
                           ?: "0", it.coinType.defUnit)
                     }
                   }
@@ -205,7 +213,7 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
     super.onDestroyView()
   }
 
-  fun getWallets(coinType: Vm.CoinType): List<WalletAccountBalanceInfo> {
+  fun getWallets(coinType: Vm.CoinType): List<SelectAccountAdapter.MultiWalletAccountBalanceInfo> {
     val response = PyEnv.loadWalletByType(coinType.callFlag)
     if (Strings.isNullOrEmpty(response.errors)) {
       return response.result.map { info ->
@@ -221,17 +229,23 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
             }
           }
         }
-        WalletAccountBalanceInfo.convert(
-            info.type,
-            info.addr,
-            info.name,
-            info.label,
-            info.deviceId,
-            hardwareLabel
+        SelectAccountAdapter.MultiWalletAccountBalanceInfo(
+            WalletAccountBalanceInfo.convert(
+                info.type,
+                info.addr,
+                info.name,
+                info.label,
+                info.deviceId,
+                hardwareLabel
+            )
         )
+      }.also {
+        if (it.isEmpty()) {
+          return arrayListOf(SelectAccountAdapter.MultiWalletAccountBalanceInfo(SelectAccountAdapter.NoWallet))
+        }
       }
     } else {
-      return ArrayList()
+      return arrayListOf(SelectAccountAdapter.MultiWalletAccountBalanceInfo(SelectAccountAdapter.NoWallet))
     }
   }
 }

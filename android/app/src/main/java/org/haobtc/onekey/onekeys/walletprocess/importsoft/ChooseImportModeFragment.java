@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import org.haobtc.onekey.R;
@@ -109,7 +108,7 @@ public class ChooseImportModeFragment extends BaseFragment implements View.OnCli
         }
     }
 
-    @IntDef({Private, Mnemonic, Keystore, Watch})
+    // @IntDef({Private, Mnemonic, Keystore, Watch})
     public @interface SoftWalletImportMode {
         int Private = 0;
         int Mnemonic = 1;
