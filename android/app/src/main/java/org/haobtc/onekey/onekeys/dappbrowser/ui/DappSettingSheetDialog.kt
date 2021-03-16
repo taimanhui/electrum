@@ -64,9 +64,7 @@ class DappSettingSheetDialog : BottomSheetDialogFragment(), View.OnClickListener
     ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel::class.java)
   }
   private var mOnSettingHandleClick: OnSettingHandleClick? = null
-  private val mAssetsLogo by lazy {
-    AssetsLogo()
-  }
+
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -112,7 +110,7 @@ class DappSettingSheetDialog : BottomSheetDialogFragment(), View.OnClickListener
 
   private fun setAccount(walletInfo: WalletAccountInfo) {
     mBinding.tvWalletName.text = walletInfo.address.cutTheLast(4)
-    mAssetsLogo.getLogoResources(walletInfo.coinType).apply {
+    AssetsLogo.getLogoResources(walletInfo.coinType).apply {
       mBinding.ivTokenLogo.setImageDrawable(ResourcesCompat.getDrawable(resources, this, null))
     }
   }

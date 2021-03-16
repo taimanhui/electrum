@@ -2,6 +2,7 @@ package org.haobtc.onekey.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -10,7 +11,9 @@ import androidx.core.content.res.ResourcesCompat;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.common.base.Strings;
+import com.noober.background.drawable.DrawableCreator;
 import java.util.List;
+import me.jessyan.autosize.utils.AutoSizeUtils;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Vm;
@@ -48,28 +51,43 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                 }
                 RelativeLayout view = helper.getView(R.id.rel_background);
                 ImageView imgType = helper.getView(R.id.img_type);
+                int backgroundColor = mContext.getColor(R.color.text_nine);
                 if (item.mCoinType == Vm.CoinType.BTC) {
-                    view.setBackground(
-                            ResourcesCompat.getDrawable(
-                                    helper.itemView.getResources(), R.drawable.orange_back, null));
+                    backgroundColor = mContext.getColor(R.color.text_nine);
                     imgType.setImageDrawable(
                             ResourcesCompat.getDrawable(
                                     helper.itemView.getResources(),
                                     R.drawable.token_trans_btc_list,
                                     null));
-                } else if (item.mCoinType.chainType.equalsIgnoreCase(Vm.CoinType.ETH.chainType)) {
-                    view.setBackground(
-                            ResourcesCompat.getDrawable(
-                                    helper.itemView.getResources(),
-                                    R.drawable.eth_blue_back,
-                                    null));
-                    // TODO: 2021/3/15  根据chain 获取 logo
+                } else if (item.mCoinType == Vm.CoinType.ETH) {
+                    backgroundColor = mContext.getColor(R.color.color_3E5BF2);
                     imgType.setImageDrawable(
                             ResourcesCompat.getDrawable(
                                     helper.itemView.getResources(),
                                     R.drawable.token_trans_eth_list,
                                     null));
+                } else if (item.mCoinType == Vm.CoinType.BSC) {
+                    backgroundColor = mContext.getColor(R.color.color_f0b90b);
+                    imgType.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    helper.itemView.getResources(),
+                                    R.drawable.vector_token_bsc,
+                                    null));
+                } else if (item.mCoinType == Vm.CoinType.HECO) {
+                    backgroundColor = mContext.getColor(R.color.color_01943f);
+                    imgType.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    helper.itemView.getResources(),
+                                    R.drawable.vector_token_heco,
+                                    null));
                 }
+
+                Drawable build =
+                        new DrawableCreator.Builder()
+                                .setCornersRadius(AutoSizeUtils.dp2px(mContext, 20F))
+                                .setSolidColor(backgroundColor)
+                                .build();
+                view.setBackground(build);
                 if (item.mWalletType == Vm.WalletType.MAIN) {
                     helper.setVisible(R.id.type_layout, true);
                     helper.setText(R.id.text_type, mContext.getString(R.string.main_account));

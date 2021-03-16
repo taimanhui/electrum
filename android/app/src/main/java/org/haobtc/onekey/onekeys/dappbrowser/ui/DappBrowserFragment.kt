@@ -206,7 +206,6 @@ class DappBrowserFragment : BaseFragment(),
     MultiStatePage.bindMultiState(mBinding.viewWeb3view)
   }
 
-  private val mAssetsLogo = AssetsLogo()
   private val mDappWeb3Manager = DappWeb3Manager()
   private val web3: Web3View
     get() = mBinding.viewWeb3view
@@ -279,7 +278,7 @@ class DappBrowserFragment : BaseFragment(),
 
   private fun setupViewModule() {
     mAppWalletViewModel.currentWalletAccountInfo.observe(viewLifecycleOwner) {
-      val drawable = ResourcesCompat.getDrawable(resources, mAssetsLogo.getLogoResources(it?.coinType), null)
+      val drawable = ResourcesCompat.getDrawable(resources, AssetsLogo.getLogoResources(it?.coinType), null)
       mBinding.ivTokenLogo.setImageDrawable(drawable)
       mBinding.tvWalletName.text = it?.address?.cutTheLast(4) ?: getString(R.string.title_select_account)
 

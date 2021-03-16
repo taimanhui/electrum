@@ -5,7 +5,9 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url "https://chaquo.com/maven" }
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.2'
@@ -25,6 +27,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        // 添加阿里云 maven 地址
+        maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://www.jitpack.io' }
     }
 }
