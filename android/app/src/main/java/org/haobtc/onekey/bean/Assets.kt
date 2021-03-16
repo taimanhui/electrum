@@ -4,7 +4,6 @@ import androidx.annotation.Keep
 import com.google.common.base.Objects
 import org.haobtc.onekey.constant.Vm.CoinType
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.*
 
 @JvmField
@@ -16,20 +15,20 @@ fun defWalletBalance(defUnit: String) = AssetsBalance(BigDecimal.ZERO, defUnit)
  */
 @Keep
 abstract class Assets(
-  // 币种类型
-  val coinType: CoinType,
-  // 资产名称
-  val name: String,
-  // 资产小数位数
-  val digits: Int,
-  // 资产描述
-  val describe: String,
-  // 资产 Logo
-  val logo: ImageResources,
-  // 资产余额
-  var balance: AssetsBalance,
-  // 资产法币余额
-  var balanceFiat: AssetsBalanceFiat,
+    // 币种类型
+    val coinType: CoinType,
+    // 资产名称
+    val name: String,
+    // 资产小数位数
+    val digits: Int,
+    // 资产描述
+    val describe: String,
+    // 资产 Logo
+    val logo: ImageResources,
+    // 资产余额
+    var balance: AssetsBalance,
+    // 资产法币余额
+    var balanceFiat: AssetsBalanceFiat,
 ) {
   fun uniqueId() = hashCode()
 
@@ -41,13 +40,13 @@ abstract class Assets(
 }
 
 class CoinAssets @JvmOverloads constructor(
-  coinType: CoinType,
-  name: String,
-  digits: Int,
-  describe: String,
-  logo: ImageResources,
-  balance: AssetsBalance = defWalletBalance(coinType.defUnit),
-  balanceFiat: AssetsBalanceFiat = DEF_WALLET_FIAT_BALANCE,
+    coinType: CoinType,
+    name: String,
+    digits: Int,
+    describe: String,
+    logo: ImageResources,
+    balance: AssetsBalance = defWalletBalance(coinType.defUnit),
+    balanceFiat: AssetsBalanceFiat = DEF_WALLET_FIAT_BALANCE,
 ) : Assets(coinType, name, digits, describe, logo, balance, balanceFiat) {
   companion object {
     @JvmStatic
@@ -62,13 +61,13 @@ class CoinAssets @JvmOverloads constructor(
 
   override fun newInstance(): Assets {
     return CoinAssets(
-      coinType,
-      name,
-      digits,
-      describe,
-      logo,
-      balance,
-      balanceFiat
+        coinType,
+        name,
+        digits,
+        describe,
+        logo,
+        balance,
+        balanceFiat
     )
   }
 
@@ -82,21 +81,22 @@ class CoinAssets @JvmOverloads constructor(
 }
 
 class ERC20Assets @JvmOverloads constructor(
-  val contractAddress: String,
-  name: String,
-  digits: Int,
-  describe: String,
-  logo: ImageResources,
-  balance: AssetsBalance,
-  balanceFiat: AssetsBalanceFiat = DEF_WALLET_FIAT_BALANCE,
-) : Assets(CoinType.ETH, name, digits, describe, logo, balance, balanceFiat) {
+    coinType: CoinType,
+    val contractAddress: String,
+    name: String,
+    digits: Int,
+    describe: String,
+    logo: ImageResources,
+    balance: AssetsBalance,
+    balanceFiat: AssetsBalanceFiat = DEF_WALLET_FIAT_BALANCE,
+) : Assets(coinType, name, digits, describe, logo, balance, balanceFiat) {
   companion object {
     @JvmStatic
     fun generateUniqueId(contractAddress: String, coinType: CoinType): Int {
       return Objects.hashCode(
-        "erc20",
-        contractAddress.replace("0x", "").toLowerCase(Locale.ROOT),
-        coinType.coinName
+          "erc20",
+          contractAddress.replace("0x", "").toLowerCase(Locale.ROOT),
+          coinType.coinName
       )
     }
   }
@@ -107,13 +107,14 @@ class ERC20Assets @JvmOverloads constructor(
 
   override fun newInstance(): Assets {
     return ERC20Assets(
-      contractAddress,
-      name,
-      digits,
-      describe,
-      logo,
-      balance,
-      balanceFiat
+        coinType,
+        contractAddress,
+        name,
+        digits,
+        describe,
+        logo,
+        balance,
+        balanceFiat
     )
   }
 

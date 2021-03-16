@@ -120,12 +120,13 @@ class AppWalletViewModel : ViewModel() {
           if (walletAccountInfo.coinType.chainType.equals(ETH.chainType)) {
             mTokenManager.getTokenByAddress(it.contractAddress)?.let { tokenByAddress ->
               val erC20Assets = ERC20Assets(
-                it.contractAddress,
-                tokenByAddress.symbol,
-                tokenByAddress.decimals,
-                tokenByAddress.name,
-                RemoteImage(tokenByAddress.logoURI),
-                AssetsBalance("0", tokenByAddress.symbol)
+                  walletAccountInfo.coinType,
+                  it.contractAddress,
+                  tokenByAddress.symbol,
+                  tokenByAddress.decimals,
+                  tokenByAddress.name,
+                  RemoteImage(tokenByAddress.logoURI),
+                  AssetsBalance("0", tokenByAddress.symbol)
               )
               if (isOriginalAccount) {
                 currentWalletAssetsList.value?.getByUniqueId(erC20Assets.uniqueId())?.let { assets ->
@@ -325,11 +326,11 @@ class AppWalletViewModel : ViewModel() {
         mOldAccountName = info?.id
         val currentFiatUnitSymbol = mSystemConfigManager.currentFiatUnitSymbol
         currentWalletTotalBalanceFiat.postValue(
-          AssetsBalanceFiat(
-            DEF_WALLET_FIAT_BALANCE.balance,
-            currentFiatUnitSymbol.unit,
-            currentFiatUnitSymbol.symbol
-          )
+            AssetsBalanceFiat(
+                DEF_WALLET_FIAT_BALANCE.balance,
+                currentFiatUnitSymbol.unit,
+                currentFiatUnitSymbol.symbol
+            )
         )
       }
       submit {
