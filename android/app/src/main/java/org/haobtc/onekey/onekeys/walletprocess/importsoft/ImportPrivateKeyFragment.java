@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.databinding.FragmentImportPrivateKeyBinding;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
@@ -42,6 +44,7 @@ import org.haobtc.onekey.utils.Daemon;
 @Keep
 public class ImportPrivateKeyFragment extends BaseFragment
         implements View.OnClickListener, TextWatcher {
+
     private static final int REQUEST_CODE = 0;
 
     private FragmentImportPrivateKeyBinding mBinding;
@@ -84,19 +87,17 @@ public class ImportPrivateKeyFragment extends BaseFragment
         mBinding.imgScan.setOnClickListener(this);
         mBinding.btnImport.setOnClickListener(this);
         if (mImportSoftWalletProvider != null) {
-            switch (mImportSoftWalletProvider.currentCoinType()) {
-                case BTC:
-                    mBinding.imgCoinType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    getResources(), R.drawable.token_btc, null));
-                    mBinding.editInputPrivate.setHint(R.string.imput_private_tip);
-                    break;
-                case ETH:
-                    mBinding.imgCoinType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    getResources(), R.drawable.token_eth, null));
-                    mBinding.editInputPrivate.setHint(R.string.imput_private_eth_tip);
-                    break;
+            int logoResources =
+                    AssetsLogo.getLogoResources(mImportSoftWalletProvider.currentCoinType());
+            mBinding.imgCoinType.setImageDrawable(
+                    ResourcesCompat.getDrawable(getResources(), logoResources, null));
+            String chainType = mImportSoftWalletProvider.currentCoinType().chainType;
+
+            if (chainType.equalsIgnoreCase(Vm.CoinType.BTC.chainType)) {
+                mBinding.editInputPrivate.setHint(R.string.imput_private_tip);
+            }
+            if (chainType.equalsIgnoreCase(Vm.CoinType.ETH.chainType)) {
+                mBinding.editInputPrivate.setHint(R.string.imput_private_tip);
             }
         }
     }

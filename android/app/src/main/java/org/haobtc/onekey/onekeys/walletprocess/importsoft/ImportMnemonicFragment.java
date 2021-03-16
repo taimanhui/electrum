@@ -29,6 +29,7 @@ import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.databinding.FragmentImportMnemonicBinding;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
@@ -97,18 +98,10 @@ public class ImportMnemonicFragment extends BaseFragment
         super.onViewCreated(view, savedInstanceState);
         initData();
         if (mImportSoftWalletProvider != null) {
-            switch (mImportSoftWalletProvider.currentCoinType()) {
-                case BTC:
-                    mBinding.imgCoinType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    getResources(), R.drawable.token_btc, null));
-                    break;
-                case ETH:
-                    mBinding.imgCoinType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    getResources(), R.drawable.token_eth, null));
-                    break;
-            }
+            int logoResources =
+                    AssetsLogo.getLogoResources(mImportSoftWalletProvider.currentCoinType());
+            mBinding.imgCoinType.setImageDrawable(
+                    ResourcesCompat.getDrawable(getResources(), logoResources, null));
         }
     }
 

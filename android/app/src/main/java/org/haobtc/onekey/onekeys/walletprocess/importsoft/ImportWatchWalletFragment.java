@@ -32,7 +32,9 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.business.qrdecode.QRDecode;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.databinding.FragmentImportWatchWalletBinding;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
@@ -48,6 +50,7 @@ import org.haobtc.onekey.utils.Daemon;
 @Keep
 public class ImportWatchWalletFragment extends BaseFragment
         implements TextWatcher, View.OnClickListener {
+
     private static final int REQUEST_CODE = 0;
 
     private FragmentImportWatchWalletBinding mBinding;
@@ -95,19 +98,17 @@ public class ImportWatchWalletFragment extends BaseFragment
         mBinding.imgScan.setOnClickListener(this);
         mBinding.btnImport.setOnClickListener(this);
         if (mImportSoftWalletProvider != null) {
-            switch (mImportSoftWalletProvider.currentCoinType()) {
-                case BTC:
-                    mBinding.imgCoinType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    getResources(), R.drawable.token_btc, null));
-                    mBinding.editAddress.setHint(R.string.watch_tip);
-                    break;
-                case ETH:
-                    mBinding.imgCoinType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    getResources(), R.drawable.token_eth, null));
-                    mBinding.editAddress.setHint(R.string.watch_eth_tip);
-                    break;
+            int logoResources =
+                    AssetsLogo.getLogoResources(mImportSoftWalletProvider.currentCoinType());
+            mBinding.imgCoinType.setImageDrawable(
+                    ResourcesCompat.getDrawable(getResources(), logoResources, null));
+            String chainType = mImportSoftWalletProvider.currentCoinType().chainType;
+
+            if (chainType.equalsIgnoreCase(Vm.CoinType.BTC.chainType)) {
+                mBinding.editAddress.setHint(R.string.watch_tip);
+            }
+            if (chainType.equalsIgnoreCase(Vm.CoinType.ETH.chainType)) {
+                mBinding.editAddress.setHint(R.string.watch_eth_tip);
             }
         }
     }
@@ -287,6 +288,7 @@ public class ImportWatchWalletFragment extends BaseFragment
     }
 
     public interface OnImportWatchAddressCallback {
+
         void onImportWatchAddress(String watchAddress);
     }
 }

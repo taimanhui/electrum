@@ -1,24 +1,21 @@
 package org.haobtc.onekey.onekeys.walletprocess.importsoft;
 
-import android.annotation.SuppressLint;
+import static org.haobtc.onekey.onekeys.walletprocess.importsoft.ChooseImportModeFragment.SoftWalletImportMode.*;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.databinding.FragmentChooseImportModeBinding;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
-
-import static org.haobtc.onekey.onekeys.walletprocess.importsoft.ChooseImportModeFragment.SoftWalletImportMode.*;
 
 /**
  * 选择钱包导入方式
@@ -50,7 +47,10 @@ public class ChooseImportModeFragment extends BaseFragment implements View.OnCli
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         mBinding = FragmentChooseImportModeBinding.inflate(inflater, container, false);
         init(mBinding.getRoot());
         return mBinding.getRoot();
@@ -65,12 +65,14 @@ public class ChooseImportModeFragment extends BaseFragment implements View.OnCli
         mBinding.relWatch.setOnClickListener(this);
 
         if (mImportSoftWalletProvider != null
-                && mImportSoftWalletProvider.currentCoinType() == Vm.CoinType.ETH
-                && Vm.CoinType.ETH.enable) {
+                && mImportSoftWalletProvider
+                        .currentCoinType()
+                        .chainType
+                        .equalsIgnoreCase(Vm.CoinType.ETH.chainType)
+                && mImportSoftWalletProvider.currentCoinType().enable) {
             mBinding.relImportKeystore.setVisibility(View.VISIBLE);
         }
     }
-
 
     @Override
     public int getContentViewId() {
