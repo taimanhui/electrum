@@ -65,11 +65,23 @@ object BlockBrowserManager {
       coinType == Vm.CoinType.ETH && Vm.getEthNetwork() == Vm.PyenvETHNetworkType.TestNet -> {
         getBlockBrowserEthRopsten()
       }
-      coinType == Vm.CoinType.BTC && Vm.getBTCNetwork() == Vm.BTCNetworkType.MainNet -> {
+      coinType == Vm.CoinType.BTC && Vm.getEthNetwork() == Vm.BTCNetworkType.MainNet -> {
         getBlockBrowserBTCMain()
       }
-      coinType == Vm.CoinType.BTC && Vm.getBTCNetwork() == Vm.BTCNetworkType.TestNet -> {
+      coinType == Vm.CoinType.BTC && Vm.getEthNetwork() == Vm.BTCNetworkType.TestNet -> {
         getBlockBrowserBTCTest()
+      }
+      coinType == Vm.CoinType.BSC && Vm.getEthNetwork() == Vm.PyenvETHNetworkType.MainNet -> {
+        getBlockBrowserBscMain()
+      }
+      coinType == Vm.CoinType.BSC && Vm.getEthNetwork() == Vm.PyenvETHNetworkType.TestNet -> {
+        getBlockBrowserBscTest()
+      }
+      coinType == Vm.CoinType.HECO && Vm.getEthNetwork() == Vm.PyenvETHNetworkType.MainNet -> {
+        getBlockBrowserHecoMain()
+      }
+      coinType == Vm.CoinType.HECO && Vm.getEthNetwork() == Vm.PyenvETHNetworkType.TestNet -> {
+        getBlockBrowserHecoTest()
       }
       else -> mapOf(Pair(BLOCK_BROWSER_DEFAULT, BLOCK_EMPTY_DEFAULT))
     }
