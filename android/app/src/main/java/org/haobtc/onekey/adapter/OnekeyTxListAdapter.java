@@ -35,7 +35,7 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<TransactionSummaryVo, 
         String amount = StringKt.interceptDecimal(item.getAmount()) + " " + item.getAmountUnit();
         switch (mType) {
             default:
-            case TransactionListFragment.TransactionListType.ALL:
+            case TransactionListFragment.ALL:
                 if (item.isMine()) {
                     // send
                     tetAmount.setTextColor(mContext.getColor(R.color.text_eight));
@@ -52,14 +52,14 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<TransactionSummaryVo, 
                                     helper.itemView.getResources(), R.drawable.receive_, null));
                 }
                 break;
-            case TransactionListFragment.TransactionListType.RECEIVE:
+            case TransactionListFragment.RECEIVE:
                 tetAmount.setTextColor(mContext.getColor(R.color.onekey));
                 helper.setText(R.id.text_send_amount, "+" + amount);
                 imgStatus.setImageDrawable(
                         ResourcesCompat.getDrawable(
                                 helper.itemView.getResources(), R.drawable.receive_, null));
                 break;
-            case TransactionListFragment.TransactionListType.SEND:
+            case TransactionListFragment.SEND:
                 tetAmount.setTextColor(mContext.getColor(R.color.text_eight));
                 helper.setText(R.id.text_send_amount, "-" + amount);
                 imgStatus.setImageDrawable(

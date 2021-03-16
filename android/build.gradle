@@ -4,6 +4,7 @@ buildscript {
     ext.kotlin_version = '1.4.21-2'
     repositories {
         google()
+        mavenCentral()
         jcenter()
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url "https://chaquo.com/maven" }
@@ -26,6 +27,7 @@ buildscript {
 allprojects {
     repositories {
         google()
+        mavenCentral()
         jcenter()
         // 添加阿里云 maven 地址
         maven { url 'https://maven.aliyun.com/repository/public' }

@@ -173,15 +173,9 @@ public class TransactionDetailWalletActivity extends BaseActivity
 
     private void initTransactionList() {
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(
-                TransactionListFragment.getInstance(
-                        TransactionListFragment.TransactionListType.ALL));
-        fragments.add(
-                TransactionListFragment.getInstance(
-                        TransactionListFragment.TransactionListType.RECEIVE));
-        fragments.add(
-                TransactionListFragment.getInstance(
-                        TransactionListFragment.TransactionListType.SEND));
+        fragments.add(TransactionListFragment.getInstance(TransactionListFragment.ALL));
+        fragments.add(TransactionListFragment.getInstance(TransactionListFragment.RECEIVE));
+        fragments.add(TransactionListFragment.getInstance(TransactionListFragment.SEND));
         ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager(), fragments);
         mViewPager.setAdapter(adapter);
         mViewPager.setOffscreenPageLimit(3);

@@ -19,9 +19,9 @@ class EthService {
     Gson()
   }
 
-  private fun request(@TransactionListType status: String = TransactionListType.ALL, contractAddress: String? = null, position: Int = 0, limit: Int = 10): PyObject? {
+  private fun request(coinType: Vm.CoinType, @TransactionListType status: String = TransactionListType.ALL, contractAddress: String? = null, position: Int = 0, limit: Int = 10): PyObject? {
     val argList = LinkedList<Kwarg>()
-    argList.add(Kwarg("coin", Vm.CoinType.ETH.callFlag))
+    argList.add(Kwarg("coin", coinType.callFlag))
     if (status != TransactionListType.ALL) {
       argList.add(Kwarg("search_type", status))
     }
@@ -34,9 +34,9 @@ class EthService {
 
   @Throws(Exception::class)
   @WorkerThread
-  fun getTxList(@TransactionListType status: String = TransactionListType.ALL, contractAddress: String? = null, position: Int = 0, limit: Int = 10): List<TransactionSummaryVo> {
+  fun getTxList(coinType: Vm.CoinType, @TransactionListType status: String = TransactionListType.ALL, contractAddress: String? = null, position: Int = 0, limit: Int = 10): List<TransactionSummaryVo> {
     return try {
-      val historyTx = request(status, contractAddress, position, limit)
+      val historyTx = request(coinType, status, contractAddress, position, limit)
       historyTx?.toString()?.let {
         mGson.fromJson<List<TransactionSummaryVo>>(it, object : TypeToken<List<TransactionSummaryVo>>() {}.type).apply {
           forEach {
