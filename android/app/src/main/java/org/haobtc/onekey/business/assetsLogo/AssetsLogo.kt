@@ -18,6 +18,17 @@ object AssetsLogo {
   }
 
   @JvmStatic
+  fun getLogoDarkResources(coinType: CoinType?): Int {
+    return when (coinType) {
+      CoinType.ETH -> R.drawable.vector_dark_eth_icon
+      CoinType.BTC -> R.drawable.vector_dark_btc_icon
+      CoinType.BSC -> R.drawable.vector_dark_bsc_icon
+      CoinType.HECO -> R.drawable.vector_dark_heco_icon
+      else -> R.drawable.loco_round
+    }
+  }
+
+  @JvmStatic
   fun getAssetDescribe(coinType: CoinType?): String {
     return when (coinType) {
       CoinType.BTC -> MyApplication.getInstance().getString(R.string.coin_btc)

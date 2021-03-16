@@ -50,22 +50,14 @@
         android:layout_marginBottom="@dimen/dp_80"
         android:background="@color/line_color" />
 
-    <LinearLayout
-        android:id="@+id/sj_radiogroup"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_coin_list"
         android:layout_width="64dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/view"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/img_coin_type"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="@dimen/dp_15"
-            android:src="@drawable/hd_wallet_1" />
-
-    </LinearLayout>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_select_coin_logo" />
 
     <LinearLayout
         android:id="@+id/recl_wallet"

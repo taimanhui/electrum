@@ -1312,4 +1312,5 @@
     <string name="hint_forced_hardware_upgrade">请先升级硬件</string>
     <string name="coin_bsc">BSC</string>
     <string name="coin_heco">HECO</string>
+    <string name="title_coin_name">%s钱包</string>
 </resources>

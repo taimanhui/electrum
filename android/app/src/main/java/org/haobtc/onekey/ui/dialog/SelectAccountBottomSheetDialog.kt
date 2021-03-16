@@ -6,17 +6,13 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.alibaba.fastjson.JSON
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.common.base.Strings
-import com.orhanobut.logger.Logger
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
@@ -27,6 +23,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import org.haobtc.onekey.R
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.adapter.SelectAccountAdapter
+import org.haobtc.onekey.adapter.SelectAccountCoinItemAdapter
 import org.haobtc.onekey.bean.AllWalletBalanceBean
 import org.haobtc.onekey.bean.AssetsBalance
 import org.haobtc.onekey.bean.PyResponse
@@ -45,9 +42,14 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
     @JvmStatic
     fun newInstance(data: Vm.CoinType): SelectAccountBottomSheetDialog {
+      return newInstance(arrayListOf(data))
+    }
+
+    @JvmStatic
+    fun newInstance(data: List<Vm.CoinType>): SelectAccountBottomSheetDialog {
       val selectAccountBottomSheetDialog = SelectAccountBottomSheetDialog()
       val bundle = Bundle()
-      bundle.putString(EXT_DATA, data.callFlag)
+      bundle.putStringArray(EXT_DATA, data.map { it.callFlag }.toTypedArray())
       selectAccountBottomSheetDialog.arguments = bundle
       return selectAccountBottomSheetDialog
     }
@@ -55,12 +57,14 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
   private var mBehavior: BottomSheetBehavior<*>? = null
   private val mAdapter = SelectAccountAdapter()
+  private val mCoinsAdapter = SelectAccountCoinItemAdapter()
   private var mLoadDisposable: Disposable? = null
   private var mSwitchDisposable: Disposable? = null
+  private var mAllWalletBalance: PyResponse<AllWalletBalanceBean?>? = null
 
-  private lateinit var mImgCoinType: ImageView
   private lateinit var mTvCoinType: TextView
   private lateinit var mRecyclerView: RecyclerView
+  private lateinit var mCoinRecyclerView: RecyclerView
   private var mOnSelectAccountCallback: OnSelectAccountCallback? = null
   private var mOnDismissListener: DialogInterface.OnDismissListener? = null
   private val mAppWalletViewModel by lazy {
@@ -89,11 +93,11 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
     val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
     val view = View.inflate(context, R.layout.dialog_select_account, null)
     dialog.setContentView(view)
-    mImgCoinType = view.findViewById(R.id.img_coin_type)
     mTvCoinType = view.findViewById(R.id.text_wallet_type)
     mRecyclerView = view.findViewById(R.id.recl_wallet_list)
+    mCoinRecyclerView = view.findViewById(R.id.recycler_coin_list)
     dialog.delegate
-      ?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        ?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         ?.setBackgroundColor(Color.TRANSPARENT)
     mBehavior = BottomSheetBehavior.from(view.parent as View)
     return dialog
@@ -109,27 +113,34 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
   }
 
   private fun initData() {
-    Vm.CoinType.convertByCallFlag(arguments?.getString(EXT_DATA)).let {
+    val coinList = arguments?.getStringArray(EXT_DATA)?.map { Vm.CoinType.convertByCallFlag(it) }
+    mCoinsAdapter.setNewData(coinList)
 
-      when {
-        it.callFlag.equals(Vm.CoinType.ETH.callFlag) -> {
-          mTvCoinType.text = resources.getString(R.string.eth_wallet)
-        }
-        it.callFlag.equals(Vm.CoinType.BTC.callFlag) -> {
-          mTvCoinType.text = resources.getString(R.string.btc_wallet)
-        }
+    mCoinsAdapter.setOnItemClickListener { _, _, position ->
+      mCoinsAdapter.getItem(position)?.let {
+        switchWalletList(it)
+        mCoinsAdapter.selectIndex(position)
       }
-      val drawableLogo = AssetsLogo.getLogoResources(it)
+    }
+    mCoinRecyclerView.adapter = mCoinsAdapter
 
-      mImgCoinType.setImageDrawable(ResourcesCompat.getDrawable(resources, drawableLogo, null))
-      mAdapter.setNewData(getWallets(it))
-      getAccountBalance()
-      mAdapter.setOnItemClickListener { adapter, view, position ->
-        mAdapter.getItem(position)?.let { walletInfo ->
-          if (mSwitchDisposable?.isDisposed() == false) {
-            mSwitchDisposable?.dispose()
-          }
-          mSwitchDisposable = Single
+    coinList?.getOrNull(0)?.let {
+      switchWalletList(it)
+    }
+  }
+
+  private fun switchWalletList(coinType: Vm.CoinType) {
+    val formatCoinNamw = String.format(getString(R.string.title_coin_name), AssetsLogo.getAssetDescribe(coinType))
+    mTvCoinType.text = formatCoinNamw
+
+    mAdapter.setNewData(getWallets(coinType))
+    getAccountBalance()
+    mAdapter.setOnItemClickListener { _, _, position ->
+      mAdapter.getItem(position)?.let { walletInfo ->
+        if (mSwitchDisposable?.isDisposed() == false) {
+          mSwitchDisposable?.dispose()
+        }
+        mSwitchDisposable = Single
             .fromCallable {
               mAppWalletViewModel.changeCurrentWallet(walletInfo.id)
             }
@@ -143,10 +154,9 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
               dismissAllowingStateLoss()
               mOnDismissListener?.onDismiss(dialog)
             })
-        }
       }
-      mRecyclerView.adapter = mAdapter
     }
+    mRecyclerView.adapter = mAdapter
   }
 
   private fun getAccountBalance() {
@@ -155,8 +165,10 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
     }
     mLoadDisposable = Observable.create(
         ObservableOnSubscribe { emitter: ObservableEmitter<PyResponse<AllWalletBalanceBean?>> ->
-          val allWalletBalance: PyResponse<AllWalletBalanceBean?> = mBalanceManager.getAllWalletBalances()
-          emitter.onNext(allWalletBalance)
+          if (mAllWalletBalance == null) {
+            mAllWalletBalance = mBalanceManager.allWalletBalances
+          }
+          emitter.onNext(mAllWalletBalance)
           emitter.onComplete()
         } as ObservableOnSubscribe<PyResponse<AllWalletBalanceBean?>>)
         .subscribeOn(Schedulers.io())
@@ -210,12 +222,12 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
           }
         }
         WalletAccountBalanceInfo.convert(
-          info.type,
-          info.addr,
-          info.name,
-          info.label,
-          info.deviceId,
-          hardwareLabel
+            info.type,
+            info.addr,
+            info.name,
+            info.label,
+            info.deviceId,
+            hardwareLabel
         )
       }
     } else {
