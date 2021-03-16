@@ -1,12 +1,8 @@
 package org.haobtc.onekey.activities.base;
 
 import android.content.Intent;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.Optional;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.business.wallet.TokenManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
@@ -52,18 +48,5 @@ public class LunchActivity extends BaseActivity {
     public void initData() {
         PyEnv.init(MyApplication.getInstance());
         init();
-        requestTokenList();
-    }
-
-    private void requestTokenList() {
-        Observable.create(
-                        (ObservableOnSubscribe<String>)
-                                emitter -> {
-                                    new TokenManager().initFile();
-                                    emitter.onNext("");
-                                    emitter.onComplete();
-                                })
-                .subscribeOn(Schedulers.io())
-                .subscribe(it -> {});
     }
 }

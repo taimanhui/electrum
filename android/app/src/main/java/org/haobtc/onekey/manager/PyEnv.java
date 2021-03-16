@@ -1764,6 +1764,7 @@ public final class PyEnv {
         try {
             String result = sCommands.callAttr(PyConstant.GET_ALL_TOKEN).toString();
             response.setResult(result);
+            Logger.json(result);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());

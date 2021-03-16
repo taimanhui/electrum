@@ -111,10 +111,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         context.startActivity(intent);
     }
 
-    public static void start(Context context, @NotNull String walletID) {
-        start(context, walletID, -1);
-    }
-
     public static void start(Context context, @NotNull String walletID, int assetID) {
         Intent intent = new Intent(context, SendEthActivity.class);
         intent.putExtra(EXT_WALLET_ID, walletID);

@@ -1,7 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
-import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +39,7 @@ import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.CoinDisplayUtils;
+import org.haobtc.onekey.utils.NavUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -259,21 +258,11 @@ public class TransactionDetailWalletActivity extends BaseActivity
         WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
         switch (id) {
             case R.id.btn_forward:
-                switch (mCurrentAssets.getCoinType()) {
-                    case BTC:
-                        Intent intent2 = new Intent(this, SendHdActivity.class);
-                        intent2.putExtra(WALLET_BALANCE, walletBalance);
-                        intent2.putExtra("hdWalletName", mWalletAccountInfo.getName());
-                        startActivity(intent2);
-                        break;
-                    case ETH:
-                        if (value != null) {
-                            SendEthActivity.start(
-                                    mContext, value.getId(), mCurrentAssets.uniqueId());
-                        }
-                        break;
-                }
-
+                NavUtils.gotoTransferActivity(
+                        mContext,
+                        value.getId(),
+                        mCurrentAssets.uniqueId(),
+                        mCurrentAssets.getCoinType());
                 break;
             case R.id.btn_collect:
                 if (value != null) {

@@ -74,15 +74,15 @@ class TokenManager {
   }
 
   @WorkerThread
-  fun initFile() {
+  fun requestTokenList() {
     Log.e("TokenManager", "init file")
     mReadWriteLock.write {
       val response = PyEnv.getAllTokenInfo()
-      uploadLocalTokenList(response.result)
-
       JSON.parseArray(response.result, ERCToken::class.java).forEach {
-
-        mTokenSoftReferenceMap[it.address.toLowerCase(Locale.ROOT)] = SoftReference(it, mReferenceQueue)
+        mTokenSoftReferenceMap[it.address.toLowerCase(Locale.ROOT)] = SoftReference(
+          it,
+          mReferenceQueue
+        )
       }
       Log.e("TokenManager", "init file done")
     }
@@ -126,7 +126,7 @@ class TokenManager {
       customERCToken = getCustomTokenByAddress(address)
       if (customERCToken == null) {
         cleanCache()
-        initFile()
+        requestTokenList()
       }
     }
     return mTokenSoftReferenceMap[address?.toLowerCase(Locale.ROOT)]?.get() ?: customERCToken

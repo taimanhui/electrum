@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import androidx.core.content.res.ResourcesCompat;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.common.base.Strings;
@@ -50,38 +49,16 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                     imageView.setVisibility(View.GONE);
                 }
                 RelativeLayout view = helper.getView(R.id.rel_background);
-                ImageView imgType = helper.getView(R.id.img_type);
                 int backgroundColor = mContext.getColor(R.color.text_nine);
                 if (item.mCoinType == Vm.CoinType.BTC) {
                     backgroundColor = mContext.getColor(R.color.text_nine);
-                    imgType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    helper.itemView.getResources(),
-                                    R.drawable.token_trans_btc_list,
-                                    null));
                 } else if (item.mCoinType == Vm.CoinType.ETH) {
                     backgroundColor = mContext.getColor(R.color.color_3E5BF2);
-                    imgType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    helper.itemView.getResources(),
-                                    R.drawable.token_trans_eth_list,
-                                    null));
                 } else if (item.mCoinType == Vm.CoinType.BSC) {
                     backgroundColor = mContext.getColor(R.color.color_f0b90b);
-                    imgType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    helper.itemView.getResources(),
-                                    R.drawable.vector_token_bsc,
-                                    null));
                 } else if (item.mCoinType == Vm.CoinType.HECO) {
                     backgroundColor = mContext.getColor(R.color.color_01943f);
-                    imgType.setImageDrawable(
-                            ResourcesCompat.getDrawable(
-                                    helper.itemView.getResources(),
-                                    R.drawable.vector_token_heco,
-                                    null));
                 }
-
                 Drawable build =
                         new DrawableCreator.Builder()
                                 .setCornersRadius(AutoSizeUtils.dp2px(mContext, 20F))

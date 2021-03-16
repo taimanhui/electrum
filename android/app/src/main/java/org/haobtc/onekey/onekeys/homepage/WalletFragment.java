@@ -63,8 +63,6 @@ import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateLocalMainWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
-import org.haobtc.onekey.onekeys.homepage.process.SendEthActivity;
-import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.OnekeyScanQrActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
@@ -501,21 +499,8 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         switch (id) {
             case R.id.linear_send:
                 if (null != value) {
-                    if (value.getCoinType().callFlag.equalsIgnoreCase(Vm.CoinType.BTC.callFlag)) {
-                        Intent intent = new Intent(getActivity(), SendHdActivity.class);
-                        intent.putExtra("hdWalletName", textWalletName.getText().toString());
-                        startActivity(intent);
-                    } else if (value.getCoinType()
-                                    .callFlag
-                                    .equalsIgnoreCase(Vm.CoinType.ETH.callFlag)
-                            || value.getCoinType()
-                                    .callFlag
-                                    .equalsIgnoreCase(Vm.CoinType.BSC.callFlag)
-                            || value.getCoinType()
-                                    .callFlag
-                                    .equalsIgnoreCase(Vm.CoinType.HECO.callFlag)) {
-                        SendEthActivity.start(getActivity(), value.getId());
-                    }
+                    NavUtils.gotoTransferActivity(
+                            getActivity(), value.getId(), -1, value.getCoinType());
                 }
                 break;
             case R.id.linear_receive:

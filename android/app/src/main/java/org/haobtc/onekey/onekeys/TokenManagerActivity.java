@@ -32,7 +32,6 @@ import org.haobtc.onekey.adapter.HotTokenAdapter;
 import org.haobtc.onekey.adapter.MoreTokenAdapter;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TokenList;
-import org.haobtc.onekey.business.wallet.TokenManager;
 import org.haobtc.onekey.databinding.ActivityTokenManagerBinding;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.AddNewTokenActivity;
@@ -129,10 +128,23 @@ public class TokenManagerActivity extends BaseActivity
                         Observable.create(
                                         (ObservableOnSubscribe<List<TokenList.ERCToken>>)
                                                 emitter -> {
-                                                    List<TokenList.ERCToken> tokenList1 =
-                                                            new TokenManager().getTokenList();
-                                                    emitter.onNext(tokenList1);
-                                                    emitter.onComplete();
+                                                    //
+                                                    //      List<TokenList.ERCToken> tokenList1 =
+                                                    //
+                                                    //              new
+                                                    // TokenManager().getTokenList();
+                                                    PyResponse<String> allTokenInfo =
+                                                            PyEnv.getAllTokenInfo();
+                                                    try {
+                                                        List<TokenList.ERCToken> tokenList1 =
+                                                                JSON.parseArray(
+                                                                        allTokenInfo.getResult(),
+                                                                        TokenList.ERCToken.class);
+                                                        emitter.onNext(tokenList1);
+                                                        emitter.onComplete();
+                                                    } catch (Exception e) {
+                                                        emitter.onError(new Throwable(e));
+                                                    }
                                                 })
                                 .doOnSubscribe(show -> showProgress())
                                 .doFinally(this::dismissProgress)

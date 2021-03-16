@@ -19,10 +19,9 @@ import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.manager.BleManager
 import org.haobtc.onekey.manager.PreferencesManager
 import org.haobtc.onekey.manager.PyEnv
-import org.haobtc.onekey.onekeys.homepage.process.SendEthActivity
-import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity
 import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
 import org.haobtc.onekey.utils.MyDialog
+import org.haobtc.onekey.utils.NavUtils
 import org.json.JSONObject
 
 class OnekeyScanQrActivity : CaptureActivity() {
@@ -162,23 +161,11 @@ class OnekeyScanQrActivity : CaptureActivity() {
 
   private fun toSend(dataBean: MainSweepcodeBean.DataBean, rawResult: String?) {
     val address: String = dataBean.address
-    when (dataBean.coin) {
-      Vm.CoinType.BTC ->
-        SendHdActivity.start(
-            this,
-            intent.getStringExtra(EXT_WALLET_NAME),
-            address,
-            dataBean.amount)
-      Vm.CoinType.ETH ->
-        SendEthActivity.start(
-            this,
-            intent.getStringExtra(EXT_WALLET_NAME),
-            address,
-            dataBean.amount)
-      else -> {
-        rawResult?.let { it1 -> OnekeyScanQrResultActivity.start(this, it1) }
-      }
-    }
+    NavUtils.afterScanGotoTransferActivity(
+      this, intent.getStringExtra(EXT_WALLET_NAME),
+      address,
+      dataBean.amount, dataBean.coin
+    )
     finish()
   }
 

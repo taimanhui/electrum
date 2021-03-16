@@ -18,18 +18,30 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.ViewModelProvider;
-
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.OnFocusChange;
+import butterknife.OnTextChanged;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
-
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -73,23 +85,6 @@ import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.utils.CoinDisplayUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnFocusChange;
-import butterknife.OnTextChanged;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
 /** @author liyan */
 public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
@@ -105,6 +100,11 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             intent.putExtra(EXT_SCAN_ADDRESS, address);
             intent.putExtra(EXT_SCAN_AMOUNT, amount);
         }
+        context.startActivity(intent);
+    }
+
+    public static void start(Context context, String walletID, int assetID) {
+        Intent intent = new Intent(context, SendHdActivity.class);
         context.startActivity(intent);
     }
 
