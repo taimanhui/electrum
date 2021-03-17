@@ -42,7 +42,7 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
     @JvmStatic
     fun newInstance(data: Vm.CoinType): SelectAccountBottomSheetDialog {
-      return newInstance(arrayListOf(Vm.CoinType.ETH, Vm.CoinType.HECO, Vm.CoinType.BSC))
+      return newInstance(arrayListOf(data))
     }
 
     @JvmStatic

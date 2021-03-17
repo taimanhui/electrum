@@ -37,6 +37,9 @@ public class RecoveryWalletInfoAdapter
         helper.setText(
                 R.id.text_wallet_balance,
                 String.format(Locale.getDefault(), "0 %s", coinType.defUnit));
+        if (!Strings.isNullOrEmpty(item.getLabel())) {
+            helper.setText(R.id.text_wallet_name, item.getLabel());
+        }
         CheckBox checkBox = helper.getView(R.id.check_wallet);
         if (!Strings.isNullOrEmpty(item.getExist())) {
             if (item.getExist().equals("0")) {

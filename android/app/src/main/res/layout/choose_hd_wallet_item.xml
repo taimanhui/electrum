@@ -30,7 +30,6 @@
                 android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_14"
                 android:layout_toEndOf="@+id/token_btc"
-                android:text="@string/btc_c"
                 android:textColor="@color/text_two"
                 android:textSize="@dimen/sp_16" />
 

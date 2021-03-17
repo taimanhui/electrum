@@ -67,6 +67,17 @@ public class CreateWalletBean {
         @SerializedName("exist")
         private String exist;
 
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        @SerializedName("label")
+        private String label;
+
         public String getExist() {
             return exist;
         }

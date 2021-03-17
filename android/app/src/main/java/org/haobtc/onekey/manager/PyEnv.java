@@ -701,6 +701,7 @@ public final class PyEnv {
                             .toString();
             CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
             pyResponse.setResult(walletBean);
+            Logger.json(walletsInfo);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             String message = exception.getMessage();
