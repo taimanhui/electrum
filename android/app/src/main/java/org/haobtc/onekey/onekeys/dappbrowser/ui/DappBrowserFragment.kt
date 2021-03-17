@@ -775,8 +775,16 @@ class DappBrowserFragment : BaseFragment(),
    * 展示账户切换弹窗
    */
   private fun showChangeAccountDialog() {
-    SelectAccountBottomSheetDialog.newInstance(Vm.CoinType.ETH)
-        .show(childFragmentManager, "SelectAccount")
+    if (mDAppBean == null) {
+      val toList = Vm.CoinType.values().filter { it.chainType == Vm.CoinType.ETH.chainType }
+          .toList()
+      SelectAccountBottomSheetDialog.newInstance(toList)
+          .show(childFragmentManager, "SelectAccount")
+    } else {
+      val convertByCallFlag = Vm.CoinType.convertByCallFlag(mDAppBean?.chain)
+      SelectAccountBottomSheetDialog.newInstance(convertByCallFlag)
+          .show(childFragmentManager, "SelectAccount")
+    }
   }
 
   /**

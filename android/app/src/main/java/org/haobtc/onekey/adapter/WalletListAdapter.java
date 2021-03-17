@@ -22,6 +22,7 @@ import java.util.List;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
 public class WalletListAdapter extends BaseQuickAdapter<LocalWalletInfo, BaseViewHolder> {
@@ -34,22 +35,8 @@ public class WalletListAdapter extends BaseQuickAdapter<LocalWalletInfo, BaseVie
     protected void convert(BaseViewHolder helper, LocalWalletInfo item) {
         helper.setText(R.id.text_name, item.getLabel());
         RelativeLayout view = helper.getView(R.id.rel_background);
-        int backgroundColor = mContext.getColor(R.color.text_nine);
-        switch (item.getCoinType()) {
-            case ETH:
-                backgroundColor = mContext.getColor(R.color.color_3E5BF2);
-                break;
-            case BSC:
-                backgroundColor = mContext.getColor(R.color.color_f0b90b);
-                break;
-            case HECO:
-                backgroundColor = mContext.getColor(R.color.color_01943f);
-                break;
-            default:
-            case BTC:
-                backgroundColor = mContext.getColor(R.color.text_nine);
-                break;
-        }
+        int backgroundColor = AssetsLogo.getLogoBackgroundColor(item.getCoinType());
+
         Drawable build =
                 new DrawableCreator.Builder()
                         .setCornersRadius(AutoSizeUtils.dp2px(mContext, 20F))

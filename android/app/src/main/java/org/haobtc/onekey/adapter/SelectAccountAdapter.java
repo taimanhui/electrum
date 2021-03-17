@@ -2,7 +2,6 @@ package org.haobtc.onekey.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.WalletAccountBalanceInfo;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.constant.Vm;
 
 /** @Description: java类作用描述 @Author: peter Qin */
@@ -48,16 +48,10 @@ public class SelectAccountAdapter
         Vm.CoinType coinType = item.getCoinType();
         int walletType = item.getWalletType();
 
-        int bgColor = Color.parseColor("#F7931B");
-        if (coinType == Vm.CoinType.BTC) {
-            bgColor = Color.parseColor("#F7931B");
-        } else if (coinType == Vm.CoinType.ETH) {
-            bgColor = Color.parseColor("#3E5BF2");
-        }
         Drawable build =
                 new DrawableCreator.Builder()
                         .setCornersRadius(AutoSizeUtils.dp2px(mContext, 13F))
-                        .setSolidColor(bgColor)
+                        .setSolidColor(AssetsLogo.getLogoBackgroundColor(coinType))
                         .build();
         view.setBackground(build);
 
