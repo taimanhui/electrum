@@ -39,6 +39,7 @@ import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.business.version.VersionManager;
 import org.haobtc.onekey.business.wallet.DeviceManager;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.BleScanStopEvent;
@@ -311,8 +312,7 @@ public class SearchDevicesActivity extends BaseActivity
                             // 共管钱包
                         case Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON:
                             if (features.isInitialized() && !features.isBackupOnly()) {
-                                EventBus.getDefault()
-                                        .post(new GetXpubEvent(Constant.COIN_TYPE_BTC));
+                                EventBus.getDefault().post(new GetXpubEvent(Vm.CoinType.BTC));
                             } else {
                                 showToast(getString(R.string.hard_tip1));
                             }

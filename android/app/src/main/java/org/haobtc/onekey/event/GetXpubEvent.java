@@ -1,18 +1,19 @@
 package org.haobtc.onekey.event;
 
+import org.haobtc.onekey.constant.Vm;
+
 /**
  * @author liyan
  * @date 11/23/20
  */
-
 public class GetXpubEvent {
-    private String coinName;
+    private Vm.CoinType coinType;
 
-    public GetXpubEvent(String coinName) {
-        this.coinName = coinName;
+    public GetXpubEvent(Vm.CoinType coinType) {
+        this.coinType = coinType;
     }
 
-    public String getCoinName() {
-        return coinName;
+    public Vm.CoinType getCoinType() {
+        return coinType;
     }
 }

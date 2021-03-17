@@ -25,8 +25,10 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -378,7 +380,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         String mWalletID = getIntent().getStringExtra(EXT_WALLET_ID);
-        walletName.setText(Vm.CoinType.ETH.coinName);
         walletInfo = mAppWalletViewModel.currentWalletAccountInfo.getValue();
         scale = walletInfo.getCoinType().digits;
         baseUnit = walletInfo.getCoinType().defUnit;
@@ -388,6 +389,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 this,
                 assets -> {
                     Assets mAssets = assets.getByUniqueIdOrZero(mAssetsID);
+                    Logger.json(JSON.toJSONString(mAssets));
                     coinAssetBalance = assets.getCoinAsset().getBalance().getBalance();
                     walletType = assets.getCoinAsset().getCoinType().callFlag;
                     initAssetBalance(mAssets);
@@ -467,12 +469,12 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 } else {
                     // 先取最大值再刷新View
 
-                    if (coinAssetBalance.doubleValue() > 0) {
+                    if (coinAssetBalance.compareTo(BigDecimal.ZERO) > 0) {
                         maxAmount =
                                 isToken
                                         ? tokenBalance
                                         : coinAssetBalance.subtract(new BigDecimal(mCurrentFee));
-                        if (maxAmount.doubleValue() > 0) {
+                        if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
                             isSetBig = true;
                             editAmount.setText(maxAmount.toPlainString());
                             refreshFeeView();

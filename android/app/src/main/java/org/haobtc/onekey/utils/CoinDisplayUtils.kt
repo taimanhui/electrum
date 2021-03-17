@@ -21,11 +21,11 @@ class CoinDisplayUtils {
    when (asset) {
      is CoinAssets -> {
        when {
-         asset.coinType.callFlag.equals(Vm.CoinType.ETH.callFlag, true) -> {
+         asset.coinType.chainType.equals(Vm.CoinType.ETH.chainType, true) -> {
            return asset.balance.balance.setScale(6, RoundingMode.DOWN).stripTrailingZeros()
              .toPlainString()
          }
-         asset.coinType.callFlag.equals(Vm.CoinType.BTC.callFlag, true) -> {
+         asset.coinType.chainType.equals(Vm.CoinType.BTC.chainType, true) -> {
            return asset.balance.balance.setScale(8, RoundingMode.DOWN).stripTrailingZeros()
              .toPlainString()
          }
@@ -41,9 +41,9 @@ class CoinDisplayUtils {
 
    @JvmStatic
    fun getCoinFeeDisplay(fee: String, coinType: Vm.CoinType): String {
-     if (coinType.callFlag.equals(Vm.CoinType.ETH.callFlag)) {
+     if (coinType.chainType.equals(Vm.CoinType.ETH.chainType)) {
        return BigDecimal(fee).setScale(6, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
-     } else if (coinType.callFlag.equals(Vm.CoinType.BTC.callFlag)) {
+     } else if (coinType.chainType.equals(Vm.CoinType.BTC.chainType)) {
        return BigDecimal(fee).setScale(8, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
      }
      return ""

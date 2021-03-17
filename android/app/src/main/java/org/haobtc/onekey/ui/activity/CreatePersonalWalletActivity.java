@@ -20,7 +20,6 @@ import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.PyResponse;
-import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.ButtonRequestEvent;
@@ -36,6 +35,7 @@ import org.haobtc.onekey.ui.dialog.custom.SelectWalletTypeDialog;
 import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.SetWalletNameFragment;
+import org.haobtc.onekey.utils.ToastUtils;
 
 /**
  * @author liyan
@@ -46,7 +46,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
     @BindView(R.id.img_back)
     ImageView imgBack;
 
-    private String coinType;
+    private Vm.CoinType coinType;
     private String xpub;
     private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
@@ -69,36 +69,32 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetXpub(GetXpubEvent event) {
-        coinType = event.getCoinName();
-        switch (coinType) {
-            case Constant.COIN_TYPE_BTC:
-                new XPopup.Builder(mContext)
-                        .asCustom(
-                                new SelectWalletTypeDialog(
-                                        mContext,
-                                        mode -> {
-                                            String walletType = null;
-                                            switch (mode) {
-                                                case SelectWalletTypeDialog.RecommendType:
-                                                    walletType =
-                                                            PyConstant.ADDRESS_TYPE_P2SH_P2WPKH;
-                                                    break;
-                                                case SelectWalletTypeDialog.NativeType:
-                                                    walletType = PyConstant.ADDRESS_TYPE_P2WPKH;
-                                                    break;
-                                                case SelectWalletTypeDialog.NormalType:
-                                                    walletType = PyConstant.ADDRESS_TYPE_P2PKH;
-                                                    break;
-                                            }
-                                            getBtcXpub(walletType, Vm.CoinType.BTC.callFlag);
-                                        }))
-                        .show();
-                break;
-            case Constant.COIN_TYPE_ETH:
-                getEthXpub(Vm.CoinType.ETH.callFlag);
-                break;
-            case Constant.COIN_TYPE_EOS:
-                break;
+        coinType = event.getCoinType();
+        if (coinType == Vm.CoinType.BTC) {
+            new XPopup.Builder(mContext)
+                    .asCustom(
+                            new SelectWalletTypeDialog(
+                                    mContext,
+                                    mode -> {
+                                        String walletType = null;
+                                        switch (mode) {
+                                            case SelectWalletTypeDialog.RecommendType:
+                                                walletType = PyConstant.ADDRESS_TYPE_P2SH_P2WPKH;
+                                                break;
+                                            case SelectWalletTypeDialog.NativeType:
+                                                walletType = PyConstant.ADDRESS_TYPE_P2WPKH;
+                                                break;
+                                            case SelectWalletTypeDialog.NormalType:
+                                                walletType = PyConstant.ADDRESS_TYPE_P2PKH;
+                                                break;
+                                        }
+                                        getBtcXpub(walletType, Vm.CoinType.BTC.callFlag);
+                                    }))
+                    .show();
+        } else if (coinType.chainType.equalsIgnoreCase(Vm.CoinType.ETH.chainType)) {
+            getEthXpub(coinType.callFlag);
+        } else {
+            ToastUtils.toast(getString(R.string.support_less_promote));
         }
     }
 
@@ -164,21 +160,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
     public void onCreateWallet(CreateWalletEvent event) {
         String walletName = event.getName();
         String xpubs = "[[\"" + xpub + "\", \"" + PyEnv.currentHwFeatures.getSerialNum() + "\"]]";
-        String callFlag = "";
-        switch (coinType) {
-            case Constant.COIN_TYPE_BTC:
-                callFlag = Vm.CoinType.BTC.callFlag;
-                break;
-            case Constant.COIN_TYPE_ETH:
-                callFlag = Vm.CoinType.ETH.callFlag;
-                break;
-            case Constant.COIN_TYPE_EOS:
-                break;
-            default:
-        }
-        if (!Strings.isNullOrEmpty(callFlag)) {
-            createWallet(walletName, xpubs, callFlag);
-        }
+        createWallet(walletName, xpubs, coinType.callFlag);
     }
 
     /**
