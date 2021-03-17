@@ -3,6 +3,7 @@ package org.haobtc.onekey.bean;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
+import org.haobtc.onekey.constant.Vm;
 
 /** @author liyan */
 public class CreateWalletBean {
@@ -115,6 +116,8 @@ public class CreateWalletBean {
 
         @SerializedName("exist")
         private String exist;
+
+        private Vm.CoinType mCoinType;
 
         public String getExist() {
             return exist;

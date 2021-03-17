@@ -194,7 +194,7 @@ public class WalletListActivity extends BaseActivity
                 imgW.setVisibility(View.VISIBLE);
                 mAdapter.setNewData(mAllList);
                 mSelectAccountCoinItemAdapter.selectIndex(-1);
-                viewHardware.setImageDrawable(getDrawable(R.drawable.vector_all_wallet_dark));
+                viewHardware.setImageDrawable(getDrawable(R.drawable.vector_hardware_dark));
                 break;
             case R.id.view_hardware:
                 textWalletType.setText(getString(R.string.hardware_wallet_list));

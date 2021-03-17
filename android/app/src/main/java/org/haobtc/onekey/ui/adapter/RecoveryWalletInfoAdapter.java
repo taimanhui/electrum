@@ -8,8 +8,11 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.common.base.Strings;
 import java.util.List;
+import java.util.Locale;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.onekeys.walletprocess.OnWalletCheckListener;
 
 /** @Description: 恢复钱包的 WalletInfoBean Adapter @Author: peter Qin */
@@ -28,19 +31,13 @@ public class RecoveryWalletInfoAdapter
 
     @Override
     protected void convert(BaseViewHolder helper, CreateWalletBean.WalletInfoBean item) {
-        String coinType = item.getCoinType();
         ImageView coinImg = helper.getView(R.id.token_btc);
-        if (coinType.contains("btc")) {
-            helper.setText(R.id.text_wallet_name, "BTC-1");
-            helper.setText(R.id.text_wallet_balance, "0 BTC");
-            coinImg.setBackgroundResource(R.drawable.token_btc);
-        } else if (coinType.contains("eth")) {
-            helper.setText(R.id.text_wallet_name, "ETH-1");
-            helper.setText(R.id.text_wallet_balance, "0 ETH");
-            coinImg.setBackgroundResource(R.drawable.token_eth);
-        }
+        Vm.CoinType coinType = Vm.convertCoinType(item.getCoinType());
+        coinImg.setBackgroundResource(AssetsLogo.getLogoResources(coinType));
+        helper.setText(
+                R.id.text_wallet_balance,
+                String.format(Locale.getDefault(), "0 %s", coinType.defUnit));
         CheckBox checkBox = helper.getView(R.id.check_wallet);
-
         if (!Strings.isNullOrEmpty(item.getExist())) {
             if (item.getExist().equals("0")) {
                 helper.setGone(R.id.exist_tv, false);

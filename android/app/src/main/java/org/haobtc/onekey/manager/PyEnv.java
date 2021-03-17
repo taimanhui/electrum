@@ -699,7 +699,6 @@ public final class PyEnv {
                                     mnemonics,
                                     new Kwarg(Constant.Purpose, 49))
                             .toString();
-            Logger.json(walletsInfo);
             CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
             pyResponse.setResult(walletBean);
         } catch (Exception e) {
@@ -1483,7 +1482,6 @@ public final class PyEnv {
             } else {
                 walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO, type).toString();
             }
-            Logger.json(walletsInfo);
             List<WalletInfo> list = new ArrayList<>();
             if (!Strings.isNullOrEmpty(walletsInfo)) {
                 JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();

@@ -9,6 +9,8 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.onekeys.walletprocess.OnWalletCheckListener;
 
 /** @Description: 恢复钱包 DerivedInfo Adapter @Author: peter Qin */
@@ -30,12 +32,8 @@ public class RecoveryWalletDerivedInfoAdapter
         CheckBox checkBox = helper.getView(R.id.check_wallet);
         ImageView coinImg = helper.getView(R.id.token_btc);
         helper.setText(R.id.text_wallet_name, item.getLabel());
-        if (item.getCoin().contains("btc")) {
-
-            coinImg.setBackgroundResource(R.drawable.token_btc);
-        } else {
-            coinImg.setBackgroundResource(R.drawable.token_eth);
-        }
+        Vm.CoinType coinType = Vm.convertCoinType(item.getCoin());
+        coinImg.setBackgroundResource(AssetsLogo.getLogoResources(coinType));
         if (item.getBlance().contains("(")) {
             helper.setText(
                     R.id.text_wallet_balance,
