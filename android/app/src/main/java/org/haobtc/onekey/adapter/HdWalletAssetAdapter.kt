@@ -27,39 +27,35 @@ class HdWalletAssetAdapter(context: Context, data: List<BalanceCoinInfo?>?) : Ba
           R.id.imageView,
           ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_btc, null)
         )
-        helper.setText(R.id.text_wallet_name, item.coin)
-          .setText(R.id.text_balance, getFormatBalance(item, 8))
+        helper.setText(R.id.text_balance, getFormatBalance(item, 8))
       }
       item.coin.equals(Vm.CoinType.ETH.callFlag, true) -> {
         helper.setImageDrawable(
           R.id.imageView,
           ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.token_eth, null)
         )
-        helper.setText(R.id.text_wallet_name, item.coin)
-          .setText(R.id.text_balance, getFormatBalance(item, 6))
+        helper.setText(R.id.text_balance, getFormatBalance(item, 6))
       }
       item.coin.equals(Vm.CoinType.BSC.callFlag, true) -> {
         helper.setImageDrawable(
           R.id.imageView,
           ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.vector_token_bsc, null)
         )
-        helper.setText(R.id.text_wallet_name, item.coin)
-          .setText(R.id.text_balance, getFormatBalance(item, 6))
+        helper.setText(R.id.text_balance, getFormatBalance(item, 6))
       }
       item.coin.equals(Vm.CoinType.HECO.callFlag, true) -> {
         helper.setImageDrawable(
           R.id.imageView,
           ResourcesCompat.getDrawable(helper.itemView.resources, R.drawable.vector_token_heco, null)
         )
-        helper.setText(R.id.text_wallet_name, item.coin)
-          .setText(R.id.text_balance, getFormatBalance(item, 6))
+        helper.setText(R.id.text_balance, getFormatBalance(item, 6))
       }
       else -> {
         RemoteImage(item.icon).intoTarget(helper.getView(R.id.imageView))
-        helper.setText(R.id.text_wallet_name, item.coin)
-          .setText(R.id.text_balance, getFormatBalance(item, 4))
+        helper.setText(R.id.text_balance, getFormatBalance(item, 4))
       }
     }
+    helper.setText(R.id.text_wallet_name, item.coin.toUpperCase())
 
 
     val strFiat = if (!TextUtils.isEmpty(item.fiat) && item.fiat == "0") {

@@ -218,7 +218,6 @@ class AppWalletViewModel : ViewModel() {
 
   @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
   fun event(event: SecondEvent) {
-    com.orhanobut.logger.Logger.d(event.msg)
     mExecutorService.execute {
       val eventBean = mBalanceManager.decodePythonBalanceNotice(event.msg)
       if (currentWalletAccountInfo.value == null) {

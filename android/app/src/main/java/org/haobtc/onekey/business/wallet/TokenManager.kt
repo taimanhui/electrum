@@ -7,9 +7,7 @@ import com.google.common.base.Strings
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.TokenList.ERCToken
 import org.haobtc.onekey.manager.PyEnv
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.lang.ref.ReferenceQueue
@@ -90,22 +88,8 @@ class TokenManager {
 
   @get:WorkerThread
   private val localTokenList: String?
-    private get() {
-      try {
-        val bfr = BufferedReader(FileReader(FILE_PATH))
-        var line = bfr.readLine()
-        val builder = StringBuilder()
-        while (line != null) {
-          builder.append(line)
-          builder.append("\n")
-          line = bfr.readLine()
-        }
-        bfr.close()
-        return builder.toString()
-      } catch (e: IOException) {
-        e.printStackTrace()
-      }
-      return null
+    get() {
+      return PyEnv.getAllTokenInfo().result
     }
 
   val tokenList: List<ERCToken>

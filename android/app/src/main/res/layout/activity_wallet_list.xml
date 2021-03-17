@@ -53,49 +53,41 @@
         android:layout_marginBottom="@dimen/dp_80"
         android:background="@color/line_color" />
 
-    <LinearLayout
-        android:id="@+id/sj_radiogroup"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="64dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/view"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_below="@+id/view">
 
-        <ImageView
-            android:id="@+id/view_all"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="@dimen/dp_15"
-            android:src="@drawable/hd_wallet_1" />
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginTop="11dp"
-            android:background="@color/text_four" />
+            <ImageView
+                android:id="@+id/view_all"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_marginBottom="15dp"
+                android:src="@drawable/vector_all_wallet_light" />
 
-        <ImageView
-            android:id="@+id/view_btc"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="14dp"
-            android:src="@drawable/token_trans_btc" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/left_recyclerview"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <ImageView
-            android:id="@+id/view_eth"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="27dp"
-            android:src="@drawable/eth_icon_gray" />
+            <ImageView
+                android:id="@+id/view_hardware"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/vector_hardware_dark" />
+        </LinearLayout>
 
-        <ImageView
-            android:id="@+id/view_hardware"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="27dp"
-            android:src="@drawable/ic_list_hardware_normal" />
+    </androidx.core.widget.NestedScrollView>
 
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/recl_wallet"

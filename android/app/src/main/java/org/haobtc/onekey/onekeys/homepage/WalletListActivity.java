@@ -9,20 +9,23 @@ import android.widget.TextView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.adapter.SelectAccountCoinItemAdapter;
 import org.haobtc.onekey.adapter.WalletListTypeAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.RefreshEvent;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
@@ -54,12 +57,6 @@ public class WalletListActivity extends BaseActivity
     @BindView(R.id.view_all)
     ImageView viewAll;
 
-    @BindView(R.id.view_btc)
-    ImageView viewBtc;
-
-    @BindView(R.id.view_eth)
-    ImageView viewEth;
-
     @BindView(R.id.view_hardware)
     ImageView viewHardware;
 
@@ -75,6 +72,9 @@ public class WalletListActivity extends BaseActivity
     @BindView(R.id.img_w)
     ImageView imgW;
 
+    @BindView(R.id.left_recyclerview)
+    RecyclerView leftRecyclerView;
+
     private boolean isAddHd;
     private AppWalletViewModel mAppWalletViewModel;
     private WalletListTypeAdapter mAdapter;
@@ -83,9 +83,9 @@ public class WalletListActivity extends BaseActivity
     private final List<WalletInfo> mAllList = new ArrayList<>();
     // 显示钱包
     private int mAllNum;
-    private final ArrayList<WalletInfo> btcList = new ArrayList<>();
-    private final ArrayList<WalletInfo> ethList = new ArrayList<>();
+    private final ArrayList<WalletInfo> coinList = new ArrayList<>();
     private final ArrayList<WalletInfo> hardwareList = new ArrayList<>();
+    private SelectAccountCoinItemAdapter mSelectAccountCoinItemAdapter;
 
     @Override
     public int getLayoutId() {
@@ -97,7 +97,22 @@ public class WalletListActivity extends BaseActivity
         mWalletModel = new ViewModelProvider(this).get(WalletListViewModel.class);
         reclWalletList.setNestedScrollingEnabled(false);
         mAdapter = new WalletListTypeAdapter(mAllList);
+        initLeftCoinList();
         reclWalletList.setAdapter(mAdapter);
+        mSelectAccountCoinItemAdapter.setOnItemClickListener(
+                (adapter, view, position) -> {
+                    List<Vm.CoinType> coinTypes = adapter.getData();
+                    Vm.CoinType coinType = coinTypes.get(position);
+                    textWalletType.setText(
+                            String.format(
+                                    Locale.ENGLISH,
+                                    "%s%s",
+                                    coinType.callFlag.toUpperCase(),
+                                    getString(R.string.account)));
+                    mWalletModel.getAllWallets(coinType.callFlag);
+                    setOtherState();
+                    mSelectAccountCoinItemAdapter.selectIndex(position);
+                });
         mWalletModel.mAllWallets.observe(
                 this,
                 mAllData -> {
@@ -105,15 +120,35 @@ public class WalletListActivity extends BaseActivity
                     mAllList.addAll(mAllData.wallets);
                     mAdapter.setNewData(mAllData.wallets);
                 });
-        mWalletModel.mBtcWallets.observe(this, btcList::addAll);
-        mWalletModel.mEthWallets.observe(this, ethList::addAll);
+
+        mWalletModel.mCoinWallets.observe(
+                this,
+                list -> {
+                    if (list != null && list.size() >= 0)
+                        textWalletNum.setText(String.valueOf(list.size()));
+                    mAdapter.setNewData(list);
+                });
         mWalletModel.mHardwareWallets.observe(this, hardwareList::addAll);
         mAdapter.setOnItemChildClickListener(this);
     }
 
+    private void setOtherState() {
+        textWalletNum.setVisibility(View.VISIBLE);
+        reclWalletDetail.setVisibility(View.GONE);
+        imgW.setVisibility(View.GONE);
+        viewHardware.setImageDrawable(getDrawable(R.drawable.vector_hardware_dark));
+        viewAll.setImageDrawable(getDrawable(R.drawable.vector_all_wallet_dark));
+    }
+
+    private void initLeftCoinList() {
+        mSelectAccountCoinItemAdapter = new SelectAccountCoinItemAdapter();
+        mSelectAccountCoinItemAdapter.selectIndex(-1);
+        mSelectAccountCoinItemAdapter.setNewData(Arrays.asList(Vm.CoinType.values()));
+        leftRecyclerView.setAdapter(mSelectAccountCoinItemAdapter);
+    }
+
     @Override
     public void initView() {
-        ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
     }
@@ -126,8 +161,6 @@ public class WalletListActivity extends BaseActivity
         R.id.lin_pair_wallet,
         R.id.lin_add_wallet,
         R.id.view_all,
-        R.id.view_btc,
-        R.id.view_eth,
         R.id.view_hardware,
         R.id.img_add,
         R.id.img_w
@@ -140,7 +173,6 @@ public class WalletListActivity extends BaseActivity
             case R.id.recl_wallet_detail:
                 Intent intent4 = new Intent(WalletListActivity.this, HDWalletActivity.class);
                 startActivity(intent4);
-                finish();
                 break;
             case R.id.lin_pair_wallet:
                 EventBus.getDefault().removeAllStickyEvents();
@@ -155,54 +187,26 @@ public class WalletListActivity extends BaseActivity
                 break;
             case R.id.view_all:
                 textWalletType.setText(getString(R.string.hd_wallet));
-                viewAll.setImageDrawable(getDrawable(R.drawable.hd_wallet_1));
-                viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
-                viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
-                viewHardware.setImageDrawable(getDrawable(R.drawable.ic_list_hardware_normal));
+                viewAll.setImageDrawable(getDrawable(R.drawable.vector_all_wallet_light));
                 reclWalletDetail.setVisibility(View.VISIBLE);
                 textWalletNum.setVisibility(View.GONE);
                 imgAdd.setVisibility(View.GONE);
                 imgW.setVisibility(View.VISIBLE);
                 mAdapter.setNewData(mAllList);
-                break;
-            case R.id.view_btc:
-                textWalletType.setText(getString(R.string.btc_wallet));
-                viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
-                viewBtc.setImageDrawable(getDrawable(R.drawable.token_btc));
-                viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
-                viewHardware.setImageDrawable(getDrawable(R.drawable.ic_list_hardware_normal));
-                textWalletNum.setVisibility(View.VISIBLE);
-                textWalletNum.setText(String.valueOf(btcList.size()));
-                reclWalletDetail.setVisibility(View.GONE);
-                imgW.setVisibility(View.GONE);
-                imgAdd.setVisibility(View.VISIBLE);
-                mAdapter.setNewData(btcList);
-                break;
-            case R.id.view_eth:
-                textWalletType.setText(getString(R.string.eth_wallet));
-                viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
-                viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
-                viewEth.setImageDrawable(getDrawable(R.drawable.token_eth));
-                viewHardware.setImageDrawable(getDrawable(R.drawable.ic_list_hardware_normal));
-                textWalletNum.setVisibility(View.VISIBLE);
-                textWalletNum.setText(String.valueOf(ethList.size()));
-                reclWalletDetail.setVisibility(View.GONE);
-                imgAdd.setVisibility(View.VISIBLE);
-                imgW.setVisibility(View.GONE);
-                mAdapter.setNewData(ethList);
+                mSelectAccountCoinItemAdapter.selectIndex(-1);
+                viewHardware.setImageDrawable(getDrawable(R.drawable.vector_all_wallet_dark));
                 break;
             case R.id.view_hardware:
                 textWalletType.setText(getString(R.string.hardware_wallet_list));
-                viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
-                viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
-                viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
-                viewHardware.setImageDrawable(getDrawable(R.drawable.ic_list_hardware_selected));
+                viewAll.setImageDrawable(getDrawable(R.drawable.vector_all_wallet_dark));
+                viewHardware.setImageDrawable(getDrawable(R.drawable.vector_hardware_light));
                 textWalletNum.setVisibility(View.VISIBLE);
                 textWalletNum.setText(String.valueOf(Math.max(0, hardwareList.size() - 1)));
                 reclWalletDetail.setVisibility(View.GONE);
                 imgAdd.setVisibility(View.GONE);
                 imgW.setVisibility(View.GONE);
                 mAdapter.setNewData(hardwareList);
+                mSelectAccountCoinItemAdapter.selectIndex(-1);
                 break;
             case R.id.img_add:
                 CreateSoftWalletActivity.start(this);

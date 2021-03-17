@@ -6,10 +6,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import com.google.common.base.Strings;
 import com.orhanobut.logger.Logger;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.SingleSource;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
 import org.haobtc.onekey.activities.base.MyApplication;
@@ -27,78 +23,21 @@ import org.haobtc.onekey.manager.PyEnv;
 /** @Description: 钱包列表页面的ViewModel @Author: peter Qin */
 public class WalletListViewModel extends AndroidViewModel {
     public MutableLiveData<WalletAsset> mAllWallets = new MutableLiveData<>();
-    public MutableLiveData<List<WalletInfo>> mBtcWallets = new MutableLiveData<>();
-    public MutableLiveData<List<WalletInfo>> mEthWallets = new MutableLiveData<>();
+    public MutableLiveData<List<WalletInfo>> mCoinWallets = new MutableLiveData<>();
     public MutableLiveData<List<WalletInfo>> mHardwareWallets = new MutableLiveData<>();
     private DeviceManager mDeviceManager;
-    protected final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     public WalletListViewModel(@NonNull Application application) {
         super(application);
         mDeviceManager = DeviceManager.getInstance();
-        mCompositeDisposable.add(
-                Observable.fromSingle(
-                                (SingleSource<PyResponse<List<WalletInfo>>>)
-                                        emitter -> {
-                                            PyResponse<List<WalletInfo>> response =
-                                                    PyEnv.loadWalletByType(Constant.HD);
-                                            emitter.onSuccess(response);
-                                        })
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(this::dealWithResponse));
-        Observable.create(
-                        emitter -> {
-                            PyResponse<List<WalletInfo>> response =
-                                    PyEnv.loadWalletByType(Vm.CoinType.BTC.callFlag);
-                            emitter.onNext(response);
-                            emitter.onComplete();
-                        })
-                .subscribeOn(Schedulers.io())
-                .subscribe();
-
-        getBtcWallets(Vm.CoinType.BTC.callFlag);
-        getEthWallets(Vm.CoinType.ETH.callFlag);
-        getEthWallets(Vm.CoinType.BSC.callFlag);
-        getEthWallets(Vm.CoinType.HECO.callFlag);
+        getAllWallets(Constant.HD);
         getHardwareWallets();
-    }
-
-    // get HD wallet
-    private void dealWithResponse(PyResponse<List<WalletInfo>> response) {
-        if (Strings.isNullOrEmpty(response.getErrors())) {
-            List<WalletInfo> list = response.getResult();
-            if (list.size() == 0) {
-                WalletInfo walletInfo = new WalletInfo();
-                walletInfo.itemType = WalletListTypeAdapter.NoWallet;
-                list.add(walletInfo);
-                PreferencesManager.put(
-                        MyApplication.getInstance(), "Preferences", Constant.HAS_LOCAL_HD, false);
-            } else {
-                setItemType(list, WalletListTypeAdapter.WalletNorMal);
-                WalletInfo walletInfo = new WalletInfo();
-                walletInfo.itemType = WalletListTypeAdapter.AddWallet;
-                list.add(walletInfo);
-            }
-            WalletAsset asset = new WalletAsset();
-            asset.wallets.addAll(list);
-            asset.validShowNum = getShowNum(list);
-            mAllWallets.postValue(asset);
-        }
-    }
-
-    private void getEthWallets(String eth) {
-        getAllWallets(eth);
-    }
-
-    private void getBtcWallets(String btc) {
-        getAllWallets(btc);
     }
 
     private void getHardwareWallets() {
         getAllWallets(Constant.HW);
     }
 
-    /** 获取本地所有钱包 */
     public void getAllWallets(String type) {
         PyResponse<List<WalletInfo>> response = PyEnv.loadWalletByType(type);
         if (Strings.isNullOrEmpty(response.getErrors())) {
@@ -124,18 +63,15 @@ public class WalletListViewModel extends AndroidViewModel {
                 asset.validShowNum = getShowNum(list);
                 mAllWallets.postValue(asset);
             } else {
-                if (type.equals(Constant.BTC)) {
-                    setItemType(list, WalletListTypeAdapter.WalletNorMal);
-                    mBtcWallets.postValue(list);
-                } else if (type.equals(Constant.ETH)) {
-                    setItemType(list, WalletListTypeAdapter.WalletNorMal);
-                    mEthWallets.postValue(list);
-                } else if (type.equals(Constant.HW)) {
+                if (type.equals(Constant.HW)) {
                     setItemType(list, WalletListTypeAdapter.WalletNorMal);
                     WalletInfo walletInfo = new WalletInfo();
                     walletInfo.itemType = WalletListTypeAdapter.AddHardwareWallet;
                     list.add(walletInfo);
                     mHardwareWallets.postValue(list);
+                } else {
+                    setItemType(list, WalletListTypeAdapter.WalletNorMal);
+                    mCoinWallets.postValue(list);
                 }
             }
         } else {
@@ -143,7 +79,6 @@ public class WalletListViewModel extends AndroidViewModel {
         }
     }
 
-    // 组装数据
     private void setItemType(List<WalletInfo> list, int type) {
         for (WalletInfo walletInfo : list) {
             walletInfo.itemType = type;
@@ -161,13 +96,6 @@ public class WalletListViewModel extends AndroidViewModel {
                 walletInfo.mCoinType = Vm.convertCoinType(walletInfo.type);
                 walletInfo.mWalletType = Vm.convertWalletType(walletInfo.type);
             }
-        }
-    }
-
-    // 组装数据
-    private void setHardWareItemType(List<WalletInfo> list, int type) {
-        for (WalletInfo walletInfo : list) {
-            walletInfo.itemType = type;
         }
     }
 
