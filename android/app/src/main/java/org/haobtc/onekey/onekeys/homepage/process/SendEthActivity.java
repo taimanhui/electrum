@@ -707,7 +707,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 String.format(
                         Locale.ENGLISH,
                         "%s %s",
-                        CoinDisplayUtils.getCoinFeeDisplay(
+                        CoinDisplayUtils.getCoinPrecisionDisplay(
                                 mCurrentFeeDetails.getSlow().getFee(), walletInfo.getCoinType()),
                         baseUnit));
         textFeeInCash0.setText(
@@ -730,7 +730,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 String.format(
                         Locale.ENGLISH,
                         "%s %s",
-                        CoinDisplayUtils.getCoinFeeDisplay(
+                        CoinDisplayUtils.getCoinPrecisionDisplay(
                                 mCurrentFeeDetails.getNormal().getFee(), walletInfo.getCoinType()),
                         baseUnit));
         textFeeInCash1.setText(
@@ -753,7 +753,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 String.format(
                         Locale.ENGLISH,
                         "%s %s",
-                        CoinDisplayUtils.getCoinFeeDisplay(
+                        CoinDisplayUtils.getCoinPrecisionDisplay(
                                 mCurrentFeeDetails.getFast().getFee(), walletInfo.getCoinType()),
                         baseUnit));
         textFeeInCash2.setText(
@@ -1494,7 +1494,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 String.format(
                         Locale.ENGLISH,
                         "%s %s",
-                        CoinDisplayUtils.getCoinFeeDisplay(
+                        CoinDisplayUtils.getCoinPrecisionDisplay(
                                 event.getFee(), walletInfo.getCoinType()),
                         baseUnit));
         textFeeCustomizeInCash.setText(

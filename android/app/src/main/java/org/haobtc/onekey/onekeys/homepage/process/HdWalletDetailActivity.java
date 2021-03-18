@@ -31,7 +31,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
-import com.orhanobut.logger.Logger;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleOnSubscribe;
@@ -48,6 +47,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.constant.Vm.WalletType;
@@ -161,29 +161,9 @@ public class HdWalletDetailActivity extends BaseActivity {
         Vm.CoinType coinType = Vm.convertCoinType(showWalletType);
         @WalletType int walletType = Vm.convertWalletType(showWalletType);
 
-        switch (coinType) {
-            default:
-            case BTC:
-                mImageTokenLogo.setImageDrawable(
-                        ResourcesCompat.getDrawable(getResources(), R.drawable.token_btc, null));
-                break;
-            case ETH:
-                mImageTokenLogo.setImageDrawable(
-                        ResourcesCompat.getDrawable(getResources(), R.drawable.token_eth, null));
-                break;
-            case BSC:
-                mImageTokenLogo.setImageDrawable(
-                        ResourcesCompat.getDrawable(
-                                getResources(), R.drawable.vector_token_bsc, null));
-                break;
-            case HECO:
-                mImageTokenLogo.setImageDrawable(
-                        ResourcesCompat.getDrawable(
-                                getResources(), R.drawable.vector_token_heco, null));
-                break;
-        }
-
-        Logger.e(showWalletType);
+        mImageTokenLogo.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(), AssetsLogo.getLogoResources(coinType), null));
         textWalletName.setText(hdWalletName);
 
         switch (walletType) {

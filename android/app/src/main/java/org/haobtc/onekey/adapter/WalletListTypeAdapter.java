@@ -15,6 +15,7 @@ import java.util.List;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.WalletInfo;
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
@@ -49,20 +50,10 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                     imageView.setVisibility(View.GONE);
                 }
                 RelativeLayout view = helper.getView(R.id.rel_background);
-                int backgroundColor = mContext.getColor(R.color.text_nine);
-                if (item.mCoinType == Vm.CoinType.BTC) {
-                    backgroundColor = mContext.getColor(R.color.text_nine);
-                } else if (item.mCoinType == Vm.CoinType.ETH) {
-                    backgroundColor = mContext.getColor(R.color.color_3E5BF2);
-                } else if (item.mCoinType == Vm.CoinType.BSC) {
-                    backgroundColor = mContext.getColor(R.color.color_f0b90b);
-                } else if (item.mCoinType == Vm.CoinType.HECO) {
-                    backgroundColor = mContext.getColor(R.color.color_01943f);
-                }
                 Drawable build =
                         new DrawableCreator.Builder()
                                 .setCornersRadius(AutoSizeUtils.dp2px(mContext, 20F))
-                                .setSolidColor(backgroundColor)
+                                .setSolidColor(AssetsLogo.getLogoBackgroundColor(item.mCoinType))
                                 .build();
                 view.setBackground(build);
                 if (item.mWalletType == Vm.WalletType.MAIN) {

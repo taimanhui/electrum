@@ -1,5 +1,6 @@
 package org.haobtc.onekey.utils
 
+import com.google.common.base.Strings
 import org.haobtc.onekey.bean.Assets
 import org.haobtc.onekey.bean.CoinAssets
 import org.haobtc.onekey.bean.ERC20Assets
@@ -40,14 +41,15 @@ class CoinDisplayUtils {
   }
 
    @JvmStatic
-   fun getCoinFeeDisplay(fee: String, coinType: Vm.CoinType): String {
-     if (coinType.chainType.equals(Vm.CoinType.ETH.chainType)) {
-       return BigDecimal(fee).setScale(6, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
-     } else if (coinType.chainType.equals(Vm.CoinType.BTC.chainType)) {
-       return BigDecimal(fee).setScale(8, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+   fun getCoinPrecisionDisplay(fee: String, coinType: Vm.CoinType): String {
+     if (!Strings.isNullOrEmpty(fee)) {
+       if (coinType.chainType.equals(Vm.CoinType.ETH.chainType)) {
+         return BigDecimal(fee).setScale(6, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+       } else if (coinType.chainType.equals(Vm.CoinType.BTC.chainType)) {
+         return BigDecimal(fee).setScale(8, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
+       }
      }
-     return ""
+     return "0"
    }
-
  }
 }
