@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -800,7 +801,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         : Constant.WALLET_TYPE_SOFTWARE);
         confirmDialog = new TransactionConfirmDialog();
         confirmDialog.setArguments(bundle);
-        confirmDialog.show(getSupportFragmentManager(), "confirm");
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(confirmDialog, "confirm");
+        ft.commitAllowingStateLoss();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

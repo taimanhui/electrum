@@ -58,7 +58,7 @@ public class HomeOneKeyActivity extends BaseActivity {
     /** init */
     @Override
     public void init() {
-        HardwareCallbackHandler callbackHandler = HardwareCallbackHandler.getInstance(this);
+        HardwareCallbackHandler callbackHandler = HardwareCallbackHandler.getInstance();
         PyEnv.setHandle(callbackHandler);
         initPage();
         mAutoCheckUpdate = AutoCheckUpdate.getInstance(this);
