@@ -22,8 +22,6 @@ import java.util.Locale;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
-import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.utils.MyDialog;
 import org.haobtc.onekey.utils.ToastUtils;
@@ -60,7 +58,7 @@ public class CustomEthFeeDialog extends BottomPopupView {
     TextView titleRight;
 
     private int size;
-    private static final double feeRateMin = 0.4;
+    private static final double feeRateMin = 1.0;
     private double feeRateMax;
     private String time;
     private String fee;
@@ -118,6 +116,7 @@ public class CustomEthFeeDialog extends BottomPopupView {
                         .getCoinAsset()
                         .getBalance()
                         .getBalance();
+
         bind = ButterKnife.bind(this);
         mDisposable = new CompositeDisposable();
         titleLeft.setText(R.string.eth_gas_fee);
@@ -278,7 +277,12 @@ public class CustomEthFeeDialog extends BottomPopupView {
                         Locale.ENGLISH,
                         "%s %s",
                         fee,
-                        mSystemConfigManager.getCurrentBaseUnit(Vm.convertCoinType(Constant.ETH))));
+                        mAppWalletViewModel
+                                .currentWalletAssetsList
+                                .getValue()
+                                .getCoinAsset()
+                                .getCoinType()
+                                .defUnit));
         textFeeInCash.setVisibility(View.VISIBLE);
         textFeeInCash.setText(
                 String.format(

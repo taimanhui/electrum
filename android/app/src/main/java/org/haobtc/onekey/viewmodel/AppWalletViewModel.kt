@@ -100,7 +100,7 @@ class AppWalletViewModel : ViewModel() {
     val assets = AssetsList()
     val coinAssets = CoinAssets(
         walletAccountInfo.coinType,
-        walletAccountInfo.coinType.coinName,
+        walletAccountInfo.coinType.defUnit,
         walletAccountInfo.coinType.digits,
         "",
         LocalImage(
