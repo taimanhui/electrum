@@ -78,5 +78,5 @@ jobs:
             export TAG_NAME=`git describe --tags --abbrev=0`
             export MAINNET_GOOGLEPLAY_APK=`ls android/app/build/outputs/apk/MainNetGooglePlay/release/*.apk`
             export REGTEST_APK=`ls android/app/build/outputs/apk/RegTestOnekey/release/*.apk`
-            scp "$MAINNET_APK" "MAINNET_GOOGLEPLAY_APK" "REGTEST_APK" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK '\"$TAG_NAME\"' && ./push_release.sh $MAINNET_APK '\"$TAG_NAME for googleplay\"' && ./push.sh $REGTEST_APK '\"$TAG_NAME for regtest network\"' >>android_release.log"
+            scp "$MAINNET_APK" "$MAINNET_GOOGLEPLAY_APK" "$REGTEST_APK" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/output/
+            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /output && ./push_release.sh $MAINNET_APK '\"$TAG_NAME\"' && ./push_release.sh $MAINNET_GOOGLEPLAY_APK '\"$TAG_NAME for googleplay\"' && ./push.sh $REGTEST_APK '\"$TAG_NAME for regtest network\"' >>android_release.log"
