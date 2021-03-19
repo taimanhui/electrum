@@ -7,17 +7,18 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
-
+import java.util.ArrayList;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -34,34 +35,35 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.MainNewWalletBean;
 import org.haobtc.onekey.bean.MaintrsactionlistEvent;
 import org.haobtc.onekey.event.SecondEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.MyDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class CheckHideWalletActivity extends BaseActivity implements OnRefreshListener {
 
     @BindView(R.id.wallet_card_tv4)
     TextView walletCardTv4;
+
     @BindView(R.id.tet_fiat)
     TextView tetFiat;
+
     @BindView(R.id.tet_Cny)
     TextView tetCny;
+
     @BindView(R.id.recy_data)
     RecyclerView recyData;
+
     @BindView(R.id.smart_RefreshLayout)
     SmartRefreshLayout refreshLayout;
+
     @BindView(R.id.tet_None)
     TextView tetNone;
+
     @BindView(R.id.wallet_card_tv3)
     TextView walletCard;
+
     private PyObject selectWallet;
     private MaindowndatalistAdapetr trsactionlistAdapter;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
@@ -83,7 +85,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
         ButterKnife.bind(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
-        //Eventbus register
+        // Eventbus register
         EventBus.getDefault().register(this);
         myDialog = MyDialog.showDialog(CheckHideWalletActivity.this);
         Intent intent = getIntent();
@@ -91,7 +93,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     }
 
     private void inits() {
-        //get wallet unit
+        // get wallet unit
         String baseUnit = preferences.getString("base_unit", "");
         walletCard.setText(String.format("%s（%s）", getString(R.string.balance), baseUnit));
         refreshLayout.setEnableLoadMore(false);
@@ -102,26 +104,26 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
     @Override
     public void initData() {
         maintrsactionlistEvents = new ArrayList<>();
-        //Binder Adapter
+        // Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
         recyData.setAdapter(trsactionlistAdapter);
         getWalletMsg();
-        //trsaction list data
+        // trsaction list data
         downMainListdata();
     }
 
-    //get wallet message
+    // get wallet message
     public void getWalletMsg() {
         try {
-            selectWallet = Daemon.commands.callAttr("select_wallet", "隐藏钱包");
+            selectWallet = PyEnv.sCommands.callAttr("select_wallet", "隐藏钱包");
         } catch (Exception e) {
-//            Log.i("select_wallet", "--------- " + e.getMessage());
+            //            Log.i("select_wallet", "--------- " + e.getMessage());
             e.printStackTrace();
         }
 
         if (selectWallet != null) {
             String toString = selectWallet.toString();
-//            Log.i("CheckHideWalletActivity", "select_wallet+++: " + toString);
+            //            Log.i("CheckHideWalletActivity", "select_wallet+++: " + toString);
             Gson gson = new Gson();
             MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
             String balanceC = mainWheelBean.getBalance();
@@ -131,7 +133,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                     Log.e("substring", "substring: " + substring);
                     Log.e("substring", "balanceC: " + balanceC);
                     walletCardTv4.setText(substring);
-                    String strCny = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
+                    String strCny =
+                            balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
                     if (!TextUtils.isEmpty(strCny)) {
                         tetCny.setText(String.format("≈ %s", strCny));
                     }
@@ -147,8 +150,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
         trsactionlistAdapter.notifyDataSetChanged();
         PyObject getHistoryTx = null;
         try {
-            //get transaction json
-            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list");
+            // get transaction json
+            getHistoryTx = PyEnv.sCommands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
             myDialog.dismiss();
@@ -159,12 +162,12 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             Log.i("downMainListdata", "downMaina===: " + e.getMessage());
             return;
         }
-        //get transaction list
+        // get transaction list
         if (getHistoryTx != null) {
             tetNone.setVisibility(View.GONE);
             recyData.setVisibility(View.VISIBLE);
             String strHistory = getHistoryTx.toString();
-            //Log.i("strHistory", "onPage----: " + strHistory);
+            // Log.i("strHistory", "onPage----: " + strHistory);
             refreshLayout.finishRefresh();
             if (strHistory.length() == 2) {
                 myDialog.dismiss();
@@ -172,7 +175,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 tetNone.setVisibility(View.VISIBLE);
                 recyData.setVisibility(View.GONE);
             } else {
-                //show trsaction list
+                // show trsaction list
                 showTrsactionlist(strHistory);
             }
 
@@ -183,10 +186,9 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             tetNone.setVisibility(View.VISIBLE);
             recyData.setVisibility(View.GONE);
         }
-
     }
 
-    //show trsaction list
+    // show trsaction list
     private void showTrsactionlist(String strHistory) {
         maintrsactionlistEvents.clear();
         try {
@@ -197,13 +199,13 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 String type = jsonObject.getString("type");
                 String txHash = jsonObject.getString("tx_hash");
                 String amount = jsonObject.getString("amount");
-                //false ->get   true ->push
+                // false ->get   true ->push
                 isMine = jsonObject.getBoolean("is_mine");
                 date = jsonObject.getString("date");
                 String txStatus = jsonObject.getString("tx_status");
                 if ("history".equals(type)) {
                     String confirmations = jsonObject.getString("confirmations");
-                    //add attribute
+                    // add attribute
                     maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
@@ -215,8 +217,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 } else {
 
                     String txCreatTrsaction = jsonObject.getString("tx");
-                    String invoiceId = jsonObject.getString("invoice_id");//delete use
-                    //add attribute
+                    String invoiceId = jsonObject.getString("invoice_id"); // delete use
+                    // add attribute
                     maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
@@ -229,81 +231,100 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             }
             myDialog.dismiss();
             trsactionlistAdapter.notifyDataSetChanged();
-            trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                private String txHash1;
-                private boolean status;
+            trsactionlistAdapter.setOnItemChildClickListener(
+                    new BaseQuickAdapter.OnItemChildClickListener() {
+                        private String txHash1;
+                        private boolean status;
 
-                @Override
-                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    String typeDele = maintrsactionlistEvents.get(position).getType();
-                    switch (view.getId()) {
-                        case R.id.lin_Item:
-                            try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                txHash1 = jsonObject.getString("tx_hash");
-                                isMine = jsonObject.getBoolean("is_mine");
-                                date = jsonObject.getString("date");
-                                Intent intent = new Intent(CheckHideWalletActivity.this, TransactionDetailsActivity.class);
-                                intent.putExtra("hideWallet", "hideWallet");
-                                intent.putExtra("keyValue", "B");
-                                intent.putExtra("dataTime", date);
-                                intent.putExtra("is_mine", isMine);
-                                intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
-                                intent.putExtra("tx_hash", txHash1);
-                                intent.putExtra("strwalletType", "1-1");
-                                intent.putExtra("listType", typeDele);
-                                if ("tx".equals(typeDele)) {
-                                    String txOnclick = jsonObject.getString("tx");
-                                    intent.putExtra("txCreatTrsaction", txOnclick);
-                                    startActivity(intent);
-                                } else {
-                                    startActivity(intent);
-                                }
+                        @Override
+                        public void onItemChildClick(
+                                BaseQuickAdapter adapter, View view, int position) {
+                            String typeDele = maintrsactionlistEvents.get(position).getType();
+                            switch (view.getId()) {
+                                case R.id.lin_Item:
+                                    try {
+                                        JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                        txHash1 = jsonObject.getString("tx_hash");
+                                        isMine = jsonObject.getBoolean("is_mine");
+                                        date = jsonObject.getString("date");
+                                        Intent intent =
+                                                new Intent(
+                                                        CheckHideWalletActivity.this,
+                                                        TransactionDetailsActivity.class);
+                                        intent.putExtra("hideWallet", "hideWallet");
+                                        intent.putExtra("keyValue", "B");
+                                        intent.putExtra("dataTime", date);
+                                        intent.putExtra("is_mine", isMine);
+                                        intent.putExtra(
+                                                "listTxStatus",
+                                                maintrsactionlistEvents
+                                                        .get(position)
+                                                        .getTxStatus());
+                                        intent.putExtra("tx_hash", txHash1);
+                                        intent.putExtra("strwalletType", "1-1");
+                                        intent.putExtra("listType", typeDele);
+                                        if ("tx".equals(typeDele)) {
+                                            String txOnclick = jsonObject.getString("tx");
+                                            intent.putExtra("txCreatTrsaction", txOnclick);
+                                            startActivity(intent);
+                                        } else {
+                                            startActivity(intent);
+                                        }
 
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                case R.id.txt_delete:
+                                    try {
+                                        JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                        txHash1 = jsonObject.getString("tx_hash");
+                                        PyObject getRemoveFlag =
+                                                PyEnv.sCommands.callAttr(
+                                                        "get_remove_flag", txHash1);
+                                        status = getRemoveFlag.toBoolean();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    if (status) {
+                                        //                                String invoice_id =
+                                        // maintrsactionlistEvents.get(position).getInvoice_id();
+                                        try {
+                                            PyEnv.sCommands.callAttr("remove_local_tx", txHash1);
+                                            maintrsactionlistEvents.remove(position);
+                                            trsactionlistAdapter.notifyItemChanged(position);
+                                            trsactionlistAdapter.notifyDataSetChanged();
+                                            downMainListdata();
+
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    } else {
+                                        mToast(getString(R.string.delete_unBroad));
+                                    }
+
+                                    break;
+                                default:
+                                    throw new IllegalStateException(
+                                            "Unexpected value: " + view.getId());
                             }
-                            break;
-                        case R.id.txt_delete:
-                            try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                txHash1 = jsonObject.getString("tx_hash");
-                                PyObject getRemoveFlag = Daemon.commands.callAttr("get_remove_flag", txHash1);
-                                status = getRemoveFlag.toBoolean();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            if (status) {
-//                                String invoice_id = maintrsactionlistEvents.get(position).getInvoice_id();
-                                try {
-                                    Daemon.commands.callAttr("remove_local_tx", txHash1);
-                                    maintrsactionlistEvents.remove(position);
-                                    trsactionlistAdapter.notifyItemChanged(position);
-                                    trsactionlistAdapter.notifyDataSetChanged();
-                                    downMainListdata();
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                mToast(getString(R.string.delete_unBroad));
-                            }
-
-                            break;
-                        default:
-                   throw new IllegalStateException("Unexpected value: " + view.getId());
-                    }
-                }
-            });
+                        }
+                    });
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.conlay_back, R.id.textView_more})
+    @OnClick({
+        R.id.img_back,
+        R.id.linear_send,
+        R.id.linear_receive,
+        R.id.linear_sign,
+        R.id.conlay_back,
+        R.id.textView_more
+    })
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -312,7 +333,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             case R.id.linear_send:
                 edit.putString("wallet_type_to_sign", "1-1");
                 edit.apply();
-                Intent intent1 = new Intent(CheckHideWalletActivity.this, SendOne2OneMainPageActivity.class);
+                Intent intent1 =
+                        new Intent(CheckHideWalletActivity.this, SendOne2OneMainPageActivity.class);
                 intent1.putExtra("wallet_name", "隐藏钱包");
                 intent1.putExtra("wallet_type", "1-1");
                 intent1.putExtra("strNowBtc", walletCardTv4.getText().toString());
@@ -321,8 +343,9 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 startActivity(intent1);
                 break;
             case R.id.linear_receive:
-                Intent intent2 = new Intent(CheckHideWalletActivity.this, ReceivedPageActivity.class);
-                intent2.putExtra("hideWalletReceive","hideWalletReceive");
+                Intent intent2 =
+                        new Intent(CheckHideWalletActivity.this, ReceivedPageActivity.class);
+                intent2.putExtra("hideWalletReceive", "hideWalletReceive");
                 startActivity(intent2);
                 break;
             case R.id.linear_sign:
@@ -332,7 +355,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 startActivity(intent3);
                 break;
             case R.id.conlay_back:
-                Intent intent = new Intent(CheckHideWalletActivity.this, WalletDetailsActivity.class);
+                Intent intent =
+                        new Intent(CheckHideWalletActivity.this, WalletDetailsActivity.class);
                 intent.putExtra("wallet_name", "隐藏钱包");
                 startActivity(intent);
                 break;
@@ -356,7 +380,7 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
         String msgVote = updataHint.getMsg();
         Log.i("JXMmsgVote", "event: " + msgVote);
         if (!TextUtils.isEmpty(msgVote) || msgVote.length() != 2 && !"finish".equals(msgVote)) {
-            //Rolling Wallet
+            // Rolling Wallet
             try {
                 JSONObject jsonObject = new JSONObject(msgVote);
                 if (msgVote.contains("balance")) {
@@ -369,7 +393,8 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                 }
                 if (msgVote.contains("unconfirmed")) {
                     String unconfirmed = jsonObject.getString("unconfirmed");
-                    tetFiat.setText(String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
+                    tetFiat.setText(
+                            String.format("%s%s", unconfirmed, getString(R.string.unconfirm)));
                 } else {
                     tetFiat.setText("");
                 }
@@ -377,20 +402,18 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            //trsaction list data
+            // trsaction list data
             downMainListdata();
-
         }
     }
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
         maintrsactionlistEvents.clear();
-        //trsaction list data
+        // trsaction list data
         downMainListdata();
         if (trsactionlistAdapter != null) {
             trsactionlistAdapter.notifyDataSetChanged();
         }
     }
-
 }

@@ -298,7 +298,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         myLoopDisposable = new CompositeDisposable();
         Disposable mLoopDisposable =
                 Observable.interval(30, TimeUnit.SECONDS)
-                        .doOnSubscribe(disposable -> {})
                         .flatMap(
                                 (Function<Long, ObservableSource<PyResponse<String>>>)
                                         aLong -> getDefaultObservable())

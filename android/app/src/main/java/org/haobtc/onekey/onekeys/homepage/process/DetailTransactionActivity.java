@@ -29,7 +29,7 @@ import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.bean.TransactionSummaryVo;
 import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
 import org.haobtc.onekey.constant.Vm;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class DetailTransactionActivity extends BaseActivity {
 
@@ -157,7 +157,7 @@ public class DetailTransactionActivity extends BaseActivity {
         mLoadTxDetailDisposable =
                 Single.fromCallable(
                                 () ->
-                                        Daemon.commands
+                                        PyEnv.sCommands
                                                 .callAttr(
                                                         "get_tx_info",
                                                         hashDetail,
@@ -191,7 +191,7 @@ public class DetailTransactionActivity extends BaseActivity {
         mLoadTxDetailDisposable =
                 Single.fromCallable(
                                 () ->
-                                        Daemon.commands
+                                        PyEnv.sCommands
                                                 .callAttr("get_tx_info_from_raw", tx)
                                                 .toString())
                         .observeOn(AndroidSchedulers.mainThread())

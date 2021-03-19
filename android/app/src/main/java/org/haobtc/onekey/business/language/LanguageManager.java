@@ -4,18 +4,15 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
-
+import java.util.Locale;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.FileNameConstant;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.LanguageUtils;
-
-import java.util.Locale;
 
 /**
  * 多语言管理类
@@ -39,8 +36,7 @@ public class LanguageManager {
         return instance;
     }
 
-    private LanguageManager() {
-    }
+    private LanguageManager() {}
 
     public Configuration updateConfigurationIfSupported(Configuration config) {
         // Configuration.getLocales is added after 24 and Configuration.locale is deprecated in 24
@@ -56,7 +52,8 @@ public class LanguageManager {
 
         Locale customLocale = getCurrentLocale(MyApplication.getInstance());
         if (customLocale != null) {
-            // Configuration.setLocale is added after 17 and Configuration.locale is deprecated after 24
+            // Configuration.setLocale is added after 17 and Configuration.locale is deprecated
+            // after 24
             if (Build.VERSION.SDK_INT >= 17) {
                 config.setLocale(customLocale);
             } else {
@@ -72,7 +69,8 @@ public class LanguageManager {
     }
 
     public String getLocalLanguage(Context context) {
-        return PreferencesManager.get(context, FileNameConstant.myPreferences, SAVE_LANGUAGE, "").toString();
+        return PreferencesManager.get(context, FileNameConstant.myPreferences, SAVE_LANGUAGE, "")
+                .toString();
     }
 
     /**
@@ -84,9 +82,13 @@ public class LanguageManager {
         try {
             String hardWareLanguage = convertHardWareLanguage(language);
             if (hardWareLanguage != null) {
-                Daemon.commands.callAttr("set_language", hardWareLanguage);
+                PyEnv.sCommands.callAttr("set_language", hardWareLanguage);
             }
-            PreferencesManager.put(context, FileNameConstant.myPreferences, SAVE_LANGUAGE, language == null ? "" : language);
+            PreferencesManager.put(
+                    context,
+                    FileNameConstant.myPreferences,
+                    SAVE_LANGUAGE,
+                    language == null ? "" : language);
         } catch (Exception e) {
             throw HardWareExceptions.exceptionConvert(e);
         }

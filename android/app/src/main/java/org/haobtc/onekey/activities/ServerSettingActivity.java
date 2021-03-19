@@ -31,7 +31,7 @@ import org.haobtc.onekey.bean.DefaultNodeBean;
 import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class ServerSettingActivity extends BaseActivity {
 
@@ -101,7 +101,7 @@ public class ServerSettingActivity extends BaseActivity {
 
     private void getElectrumData() {
         try {
-            PyObject defaultServer = Daemon.commands.callAttr("get_default_server");
+            PyObject defaultServer = PyEnv.sCommands.callAttr("get_default_server");
             Gson gson = new Gson();
             DefaultNodeBean defaultNodeBean =
                     gson.fromJson(defaultServer.toString(), DefaultNodeBean.class);
@@ -116,7 +116,7 @@ public class ServerSettingActivity extends BaseActivity {
     // get now server address
     private void getServerAddress() {
         try {
-            PyObject get_sync_server_host = Daemon.commands.callAttr("get_sync_server_host");
+            PyObject get_sync_server_host = PyEnv.sCommands.callAttr("get_sync_server_host");
             testNodeType.setText(get_sync_server_host.toString());
 
         } catch (Exception e) {
@@ -128,7 +128,7 @@ public class ServerSettingActivity extends BaseActivity {
     private void getdefaultServer() {
         PyObject getExchanges = null;
         try {
-            getExchanges = Daemon.commands.callAttr("get_exchanges");
+            getExchanges = PyEnv.sCommands.callAttr("get_exchanges");
         } catch (Exception e) {
             e.printStackTrace();
         }

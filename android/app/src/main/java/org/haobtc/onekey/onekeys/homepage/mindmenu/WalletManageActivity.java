@@ -26,7 +26,6 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.BackupRequireDialog;
-import org.haobtc.onekey.utils.Daemon;
 
 public class WalletManageActivity extends BaseActivity {
 
@@ -89,7 +88,7 @@ public class WalletManageActivity extends BaseActivity {
         Log.i("deleteHdWalletNamejxm", "hdWalletIsBackup: " + deleteHdWalletName);
         try {
             PyObject data =
-                    Daemon.commands.callAttr(
+                    PyEnv.sCommands.callAttr(
                             "get_backup_info", new Kwarg("name", deleteHdWalletName));
             boolean isBackup = data.toBoolean();
             if (isBackup) {

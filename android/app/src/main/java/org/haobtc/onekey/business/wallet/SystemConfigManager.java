@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import androidx.annotation.StringDef;
 import org.haobtc.onekey.bean.FiatUnitSymbolBean;
 import org.haobtc.onekey.constant.Vm;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 
 /**
  * 系统配置管理
@@ -111,7 +111,7 @@ public class SystemConfigManager {
             return false;
         }
         try {
-            Daemon.commands.callAttr("set_currency", symbol.getUnit());
+            PyEnv.sCommands.callAttr("set_currency", symbol.getUnit());
             mPreferencesSharedPreferences
                     .edit()
                     .putString(CURRENT_CURRENCY_SYMBOL, symbol.getUnit())
@@ -159,7 +159,7 @@ public class SystemConfigManager {
             return false;
         }
         try {
-            Daemon.commands.callAttr("set_base_uint", unit);
+            PyEnv.sCommands.callAttr("set_base_uint", unit);
             mPreferencesSharedPreferences.edit().putString("base_unit", unit).apply();
         } catch (Exception e) {
             e.printStackTrace();

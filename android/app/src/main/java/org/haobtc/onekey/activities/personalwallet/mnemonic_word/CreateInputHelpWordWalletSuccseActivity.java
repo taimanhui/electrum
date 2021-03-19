@@ -11,12 +11,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -26,29 +30,26 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.MyDialog;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
 
     @BindView(R.id.img_backCreat)
     ImageView imgBackCreat;
+
     @BindView(R.id.tet_who_wallet)
     TextView tetWhoWallet;
+
     @BindView(R.id.img_Orcode)
     ImageView imgOrcode;
+
     @BindView(R.id.tet_Preservation)
     TextView tetPreservation;
+
     @BindView(R.id.btn_Finish)
     Button btnFinish;
+
     private Bitmap bitmap;
     private MyDialog myDialog;
     private RxPermissions rxPermissions;
@@ -66,7 +67,6 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
         myDialog = MyDialog.showDialog(this);
         String newWalletName = getIntent().getStringExtra("newWalletName");
         tetWhoWallet.setText(newWalletName);
-
     }
 
     @Override
@@ -83,21 +83,33 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
                 break;
             case R.id.tet_Preservation:
                 rxPermissions
-                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                if (bitmap != null) {
-                                    boolean toGallery = saveBitmap(bitmap);
-                                    if (toGallery) {
-                                        mToast(getString(R.string.preservationbitmappic));
-                                    } else {
-                                        Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
+                        .request(
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(
+                                granted -> {
+                                    if (granted) { // Always true pre-M
+                                        if (bitmap != null) {
+                                            boolean toGallery = saveBitmap(bitmap);
+                                            if (toGallery) {
+                                                mToast(getString(R.string.preservationbitmappic));
+                                            } else {
+                                                Toast.makeText(
+                                                                this,
+                                                                R.string.preservationfail,
+                                                                Toast.LENGTH_SHORT)
+                                                        .show();
+                                            }
+                                        }
+                                    } else { // Oups permission denied
+                                        Toast.makeText(
+                                                        this,
+                                                        R.string.reservatpion_photo,
+                                                        Toast.LENGTH_SHORT)
+                                                .show();
                                     }
-                                }
-                            } else { // Oups permission denied
-                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
-                            }
-                        }).dispose();
+                                })
+                        .dispose();
                 break;
             case R.id.btn_Finish:
                 mIntent(MainActivity.class);
@@ -111,7 +123,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
     private void mGeneratecode() {
         PyObject walletAddressShowUi = null;
         try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            walletAddressShowUi = PyEnv.sCommands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
             myDialog.dismiss();
@@ -122,7 +134,8 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
             Log.i("strCode", "mGenerate--: " + strCode);
             myDialog.dismiss();
             Gson gson = new Gson();
-            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            CurrentAddressDetail currentAddressDetail =
+                    gson.fromJson(strCode, CurrentAddressDetail.class);
             String qrData = currentAddressDetail.getQrData();
             bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
             imgOrcode.setImageBitmap(bitmap);
@@ -132,7 +145,13 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
 
     public boolean saveBitmap(Bitmap bitmap) {
         try {
-            File filePic = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + System.currentTimeMillis() + ".jpg");
+            File filePic =
+                    new File(
+                            Environment.getExternalStoragePublicDirectory(
+                                                    Environment.DIRECTORY_PICTURES)
+                                            .toString()
+                                    + System.currentTimeMillis()
+                                    + ".jpg");
             if (!filePic.exists()) {
                 filePic.getParentFile().mkdirs();
                 filePic.createNewFile();
@@ -141,7 +160,10 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
             boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filePic.getAbsolutePath())));
+            sendBroadcast(
+                    new Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                            Uri.parse("file://" + filePic.getAbsolutePath())));
             return success;
 
         } catch (IOException ignored) {
@@ -153,7 +175,7 @@ public class CreateInputHelpWordWalletSuccseActivity extends BaseActivity {
     public void event(FirstEvent updataHint) {
         String createSinglePass = updataHint.getMsg();
         if ("createSinglePass".equals(createSinglePass)) {
-            //get Or code
+            // get Or code
             mGeneratecode();
         }
     }

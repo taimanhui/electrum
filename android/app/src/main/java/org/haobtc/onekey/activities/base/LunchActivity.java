@@ -1,6 +1,8 @@
 package org.haobtc.onekey.activities.base;
 
 import android.content.Intent;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import java.util.Optional;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.constant.Constant;
@@ -8,6 +10,7 @@ import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.GuidanceActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.utils.Global;
 import org.haobtc.onekey.utils.NfcUtils;
 
 /** @author liyan */
@@ -26,7 +29,7 @@ public class LunchActivity extends BaseActivity {
         }
     }
 
-    private void init() {
+    private void gotoHome() {
         boolean firstRun =
                 (boolean) PreferencesManager.get(this, "Preferences", Constant.FIRST_RUN, false);
         if (firstRun) {
@@ -46,7 +49,15 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        PyEnv.init(MyApplication.getInstance());
-        init();
+        initChaquo();
+        PyEnv.init();
+        gotoHome();
+    }
+
+    private void initChaquo() {
+        if (!Python.isStarted()) {
+            Python.start(new AndroidPlatform(MyApplication.getInstance()));
+        }
+        Global.py = Python.getInstance();
     }
 }

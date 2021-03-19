@@ -32,9 +32,9 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.databinding.FragmentImportMnemonicBinding;
 import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
-import org.haobtc.onekey.utils.Daemon;
 
 /**
  * 使用助记词导入账户
@@ -231,7 +231,7 @@ public class ImportMnemonicFragment extends BaseFragment
     private void getAllMnemonic() {
         PyObject allSeeds = null;
         try {
-            allSeeds = Daemon.commands.callAttr("get_all_mnemonic");
+            allSeeds = PyEnv.sCommands.callAttr("get_all_mnemonic");
             String content = allSeeds.toString();
             String seeds = content.replaceAll("\"", "");
             String[] pathArr = (seeds.substring(1, seeds.length() - 1)).split(",");
@@ -244,7 +244,7 @@ public class ImportMnemonicFragment extends BaseFragment
     private void isSeed(String strNewseed) {
         PyObject isSeeds = null;
         try {
-            isSeeds = Daemon.commands.callAttr("is_seed", strNewseed);
+            isSeeds = PyEnv.sCommands.callAttr("is_seed", strNewseed);
         } catch (Exception e) {
             e.printStackTrace();
             showToast(HardWareExceptions.getExceptionString(e));

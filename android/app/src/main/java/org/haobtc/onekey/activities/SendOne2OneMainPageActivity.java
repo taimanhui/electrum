@@ -78,7 +78,7 @@ import org.haobtc.onekey.event.HandlerEvent;
 import org.haobtc.onekey.event.MainpageWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.IndicatorSeekBar;
 import org.json.JSONException;
 
@@ -337,7 +337,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
             } else {
                 try {
                     PyObject money =
-                            Daemon.commands.callAttr("get_exchange_currency", "base", strAmount);
+                            PyEnv.sCommands.callAttr("get_exchange_currency", "base", strAmount);
                     editChangeMoney.setText(money.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -362,7 +362,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
     private void getFeeamont() {
         PyObject getDefaultFeeStatus = null;
         try {
-            getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
+            getDefaultFeeStatus = PyEnv.sCommands.callAttr("get_default_fee_status");
         } catch (Exception e) {
             e.printStackTrace();
             mToast(HardWareExceptions.getExceptionString(e));
@@ -464,9 +464,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                 .setOnClickListener(
                         v -> {
                             try {
-                                Daemon.commands.callAttr("load_wallet", wallet_name);
+                                PyEnv.sCommands.callAttr("load_wallet", wallet_name);
                                 PyObject selectWallet =
-                                        Daemon.commands.callAttr("select_wallet", wallet_name);
+                                        PyEnv.sCommands.callAttr("select_wallet", wallet_name);
                                 if (selectWallet != null) {
                                     Log.i(
                                             "select_wallet",
@@ -541,7 +541,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                     @Override
                     public void run() {
                         try {
-                            get_wallets_list = Daemon.commands.callAttr("list_wallets");
+                            get_wallets_list = PyEnv.sCommands.callAttr("list_wallets");
                         } catch (Exception e) {
                             e.printStackTrace();
                             return;
@@ -722,7 +722,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
         String strPramas = new Gson().toJson(arrayList);
         PyObject mktx;
         try {
-            mktx = Daemon.commands.callAttr("mktx", strPramas, strComment);
+            mktx = PyEnv.sCommands.callAttr("mktx", strPramas, strComment);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("Insufficient funds")) {
@@ -743,7 +743,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                 if (wallet_type_to_sign.contains("1-") && TextUtils.isEmpty(hideRefresh)) {
                     try {
                         PyObject txInfoFromRaw =
-                                Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
+                                PyEnv.sCommands.callAttr("get_tx_info_from_raw", rowtx);
                         gson = new Gson();
                         TransactionInfoBean transactionInfoBean =
                                 gson.fromJson(txInfoFromRaw.toString(), TransactionInfoBean.class);
@@ -762,7 +762,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                     if ("1-1".equals(wallet_type_to_sign)
                             && Ble.getInstance().getConnetedDevices().size() != 0) {
                         String deviceId =
-                                Daemon.commands
+                                PyEnv.sCommands
                                         .callAttr("get_device_info")
                                         .toString()
                                         .replaceAll("\"", "");
@@ -814,7 +814,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
     private void mGeneratecode() {
         PyObject walletAddressShowUi = null;
         try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            walletAddressShowUi = PyEnv.sCommands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -850,7 +850,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
                 //                Log.i("sendScanData", "on------: " + content);
                 if (!TextUtils.isEmpty(content)) {
-                    PyObject parsePr = Daemon.commands.callAttr("parse_pr", content);
+                    PyObject parsePr = PyEnv.sCommands.callAttr("parse_pr", content);
                     //                    Log.i("sendScanData", "on------: " + parsePr);
                     if (!TextUtils.isEmpty(parsePr.toString())) {
                         try {
@@ -955,7 +955,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
         if (!TextUtils.isEmpty(strAmount)) {
             BigDecimal amount = new BigDecimal(strAmount);
             try {
-                pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", amount);
+                pyObject = PyEnv.sCommands.callAttr("get_exchange_currency", "base", amount);
                 Log.i("pyObjectcommands", "---------: " + pyObject);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -985,7 +985,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                 if (!TextUtils.isEmpty(utxoListDates)) {
                     Log.i("utxoListDates", "getFeerate:--- " + utxoListDates);
                     getFeeByFeeRate =
-                            Daemon.commands.callAttr(
+                            PyEnv.sCommands.callAttr(
                                     "get_fee_by_feerate",
                                     strPramas,
                                     strComment,
@@ -993,7 +993,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                                     new Kwarg("customer", utxoListDates));
                 } else {
                     getFeeByFeeRate =
-                            Daemon.commands.callAttr(
+                            PyEnv.sCommands.callAttr(
                                     "get_fee_by_feerate", strPramas, strComment, intmaxFee);
                 }
                 errorMessage = "";
@@ -1091,7 +1091,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                     flag = false;
                     try {
                         pyObject =
-                                Daemon.commands.callAttr(
+                                PyEnv.sCommands.callAttr(
                                         "get_exchange_currency", "base", strAmount);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1130,7 +1130,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity
                     flag = false;
                     try {
                         pyObject =
-                                Daemon.commands.callAttr(
+                                PyEnv.sCommands.callAttr(
                                         "get_exchange_currency", "fiat", editable.toString());
                     } catch (Exception e) {
                         e.printStackTrace();

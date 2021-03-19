@@ -1,18 +1,12 @@
 package org.haobtc.onekey.utils;
 
 import android.text.TextUtils;
-import com.chaquo.python.Kwarg;
-import com.chaquo.python.PyObject;
-import com.orhanobut.logger.Logger;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.constant.PyConstant;
-import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.SecondEvent;
 
 public class Daemon {
-    public static PyObject commands = null;
-    public static PyObject network = null;
     private static volatile Daemon daemon;
 
     private Daemon() {}
@@ -26,24 +20,6 @@ public class Daemon {
             }
         }
         return daemon;
-    }
-
-    public static void initCommands() {
-        if (commands == null) {
-            Global.guiConsole = Global.py.getModule(PyConstant.ELECTRUM_GUI_ANDROID_CONSOLE);
-            try {
-                String ethNetwork = Vm.getEthNetwork();
-                commands =
-                        Global.guiConsole.callAttr(
-                                PyConstant.ANDROID_COMMANDS,
-                                new Kwarg("chain_type", ethNetwork),
-                                new Kwarg(PyConstant.ANDROID_ID, "112233"),
-                                new Kwarg(PyConstant.CALLBACK, getInstance()));
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-                Logger.e("异常：" + ignored.getMessage());
-            }
-        }
     }
 
     public void onCallback(String event) {

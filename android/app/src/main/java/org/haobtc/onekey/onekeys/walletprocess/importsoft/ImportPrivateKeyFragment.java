@@ -31,9 +31,9 @@ import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.databinding.FragmentImportPrivateKeyBinding;
 import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
-import org.haobtc.onekey.utils.Daemon;
 
 /**
  * 导入私钥
@@ -169,7 +169,7 @@ public class ImportPrivateKeyFragment extends BaseFragment
             }
             argList.add(new Kwarg("data", privateKey));
             argList.add(new Kwarg("flag", "private"));
-            Daemon.commands.callAttr("verify_legality", argList.toArray(new Object[0]));
+            PyEnv.sCommands.callAttr("verify_legality", argList.toArray(new Object[0]));
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 showToast(HardWareExceptions.getExceptionString(e));

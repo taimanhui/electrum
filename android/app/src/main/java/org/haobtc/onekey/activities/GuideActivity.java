@@ -3,32 +3,22 @@ package org.haobtc.onekey.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.utils.Daemon;
-
+import butterknife.ButterKnife;
 import java.util.ArrayList;
 import java.util.List;
+import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.manager.PyEnv;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-/***
- * splash
- * */
+/** * splash */
 public class GuideActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
 
     private List<View> viewList = new ArrayList<>();
@@ -53,29 +43,31 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         LayoutInflater inflater = LayoutInflater.from(this);
         viewList.add(inflater.inflate(R.layout.boot_page_item1, null));
         viewList.add(inflater.inflate(R.layout.boot_page_item2, null));
-        viewPager.setAdapter(new PagerAdapter() {
-            @Override
-            public int getCount() {
-                return viewList.size();
-            }
+        viewPager.setAdapter(
+                new PagerAdapter() {
+                    @Override
+                    public int getCount() {
+                        return viewList.size();
+                    }
 
-            @Override
-            public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-                return view == object;
-            }
+                    @Override
+                    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+                        return view == object;
+                    }
 
-            @NonNull
-            @Override
-            public Object instantiateItem(@NonNull ViewGroup container, int position) {
-                container.addView(viewList.get(position));
-                return viewList.get(position);
-            }
+                    @NonNull
+                    @Override
+                    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+                        container.addView(viewList.get(position));
+                        return viewList.get(position);
+                    }
 
-            @Override
-            public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-                container.removeView(viewList.get(position));
-            }
-        });
+                    @Override
+                    public void destroyItem(
+                            @NonNull ViewGroup container, int position, @NonNull Object object) {
+                        container.removeView(viewList.get(position));
+                    }
+                });
         viewPager.addOnPageChangeListener(this);
     }
 
@@ -86,11 +78,11 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     }
 
     private void currency() {
-        edit.putBoolean("bluetoothStatus", true);//open bluetooth
+        edit.putBoolean("bluetoothStatus", true); // open bluetooth
         edit.apply();
         try {
-            Daemon.commands.callAttr("set_currency", "CNY");
-            Daemon.commands.callAttr("set_base_uint", "BTC");
+            PyEnv.sCommands.callAttr("set_currency", "CNY");
+            PyEnv.sCommands.callAttr("set_base_uint", "BTC");
             edit.putString("base_unit", "BTC");
             edit.apply();
         } catch (Exception e) {
@@ -98,7 +90,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         }
 
         try {
-            Daemon.commands.callAttr("set_rbf", true);
+            PyEnv.sCommands.callAttr("set_rbf", true);
             edit.putBoolean("set_rbf", true);
             edit.apply();
         } catch (Exception e) {
@@ -106,7 +98,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         }
 
         try {
-            Daemon.commands.callAttr("set_unconf", false);
+            PyEnv.sCommands.callAttr("set_unconf", false);
             edit.putBoolean("set_unconf", true);
             edit.apply();
         } catch (Exception e) {
@@ -114,14 +106,14 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         }
 
         try {
-            Daemon.commands.callAttr("set_syn_server", true);
-            edit.putBoolean("set_syn_server", true);//setting synchronize server
+            PyEnv.sCommands.callAttr("set_syn_server", true);
+            edit.putBoolean("set_syn_server", true); // setting synchronize server
             edit.apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            Daemon.commands.callAttr("set_dust", false);
+            PyEnv.sCommands.callAttr("set_dust", false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,9 +136,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
     @Override
     public void onPageSelected(int position) {
@@ -163,8 +153,5 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
-
-    }
-
+    public void onPageScrollStateChanged(int state) {}
 }

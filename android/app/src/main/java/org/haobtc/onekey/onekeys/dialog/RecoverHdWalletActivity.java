@@ -38,10 +38,10 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
-import org.haobtc.onekey.utils.Daemon;
 
 public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocusChangeListener {
 
@@ -186,7 +186,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     private void getAllMnemonic() {
         PyObject allSeeds = null;
         try {
-            allSeeds = Daemon.commands.callAttr("get_all_mnemonic");
+            allSeeds = PyEnv.sCommands.callAttr("get_all_mnemonic");
             String content = allSeeds.toString();
             String seeds = content.replaceAll("\"", "");
             String[] pathArr = (seeds.substring(1, seeds.length() - 1)).split(",");
@@ -293,7 +293,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     private void isSeed(String seed) {
         PyObject isSeeds = null;
         try {
-            isSeeds = Daemon.commands.callAttr("is_seed", seed);
+            isSeeds = PyEnv.sCommands.callAttr("is_seed", seed);
         } catch (Exception e) {
             e.printStackTrace();
             mToast(HardWareExceptions.getExceptionString(e));

@@ -307,7 +307,7 @@ class AppWalletViewModel : ViewModel() {
 
   @Subscribe(threadMode = ThreadMode.ASYNC)
   fun onCreateWalletSuccess(event: CreateSuccessEvent) {
-    PyEnv.loadLocalWalletInfo(MyApplication.getInstance())
+    PyEnv.loadLocalWalletInfo()
     if (TextUtils.isEmpty(event.name)) {
       // 容错处理：如果有人发送一个空的名字，则随机选择一下钱包账户。
       autoSelectWallet()

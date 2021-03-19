@@ -1,5 +1,7 @@
 package org.haobtc.onekey.activities.personalwallet;
 
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,35 +12,31 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-
-import com.chaquo.python.PyObject;
-
-import org.greenrobot.eventbus.EventBus;
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
-import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.event.MnemonicEvent;
-import org.haobtc.onekey.utils.Daemon;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
-
+import com.chaquo.python.PyObject;
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.event.MnemonicEvent;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class AppWalletSetPassActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.btn_setPin)
     Button btnSetPin;
+
     @BindView(R.id.edt_Pass1)
     EditText edtPass1;
+
     @BindView(R.id.edt_Pass2)
     EditText edtPass2;
+
     private String strName;
     private SharedPreferences.Editor edit;
     private String strpyObject;
@@ -60,7 +58,6 @@ public class AppWalletSetPassActivity extends BaseActivity {
         defaultName = preferences.getInt("defaultName", 0);
         Intent intent = getIntent();
         strName = intent.getStringExtra("strName");
-
     }
 
     @Override
@@ -69,7 +66,6 @@ public class AppWalletSetPassActivity extends BaseActivity {
         edtPass1.addTextChangedListener(textWatcher1);
         edtPass2.addTextChangedListener(textWatcher1);
     }
-
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.btn_setPin})
@@ -93,33 +89,39 @@ public class AppWalletSetPassActivity extends BaseActivity {
                     mToast(getString(R.string.two_different_pass));
                     return;
                 }
-                executorService.execute(() -> {
-                    Intent intent1 = new Intent(AppWalletSetPassActivity.this, MnemonicActivity.class);
-                    intent1.putExtra("strName", strName);
-                    intent1.putExtra("strPass1", strPass1);
-                    startActivity(intent1);
-                    finish();
-                    try {
-                        pyObject = Daemon.commands.callAttr("create", strName, strPass1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (e.getMessage().contains("path is exist")) {
-                            mToast(getString(R.string.changewalletname));
-                        } else if (e.getMessage().contains("The same seed have create wallet")) {
-                            String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=")+5);
-                            mToast(getString(R.string.same_seed_have)+haveWalletName);
-                        }
-                        return;
-                    }
-                    strpyObject = pyObject.toString();
-                    if (!TextUtils.isEmpty(strpyObject)) {
-                        int walletNameNum = defaultName + 1;
-                        edit.putInt("defaultName", walletNameNum);
-                        edit.putBoolean("haveCreateNopass", true);
-                        edit.apply();
-                        EventBus.getDefault().postSticky(new MnemonicEvent(strpyObject));
-                    }
-                });
+                executorService.execute(
+                        () -> {
+                            Intent intent1 =
+                                    new Intent(
+                                            AppWalletSetPassActivity.this, MnemonicActivity.class);
+                            intent1.putExtra("strName", strName);
+                            intent1.putExtra("strPass1", strPass1);
+                            startActivity(intent1);
+                            finish();
+                            try {
+                                pyObject = PyEnv.sCommands.callAttr("create", strName, strPass1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                if (e.getMessage().contains("path is exist")) {
+                                    mToast(getString(R.string.changewalletname));
+                                } else if (e.getMessage()
+                                        .contains("The same seed have create wallet")) {
+                                    String haveWalletName =
+                                            e.getMessage()
+                                                    .substring(e.getMessage().indexOf("name=") + 5);
+                                    mToast(getString(R.string.same_seed_have) + haveWalletName);
+                                }
+                                return;
+                            }
+                            strpyObject = pyObject.toString();
+                            if (!TextUtils.isEmpty(strpyObject)) {
+                                int walletNameNum = defaultName + 1;
+                                edit.putInt("defaultName", walletNameNum);
+                                edit.putBoolean("haveCreateNopass", true);
+                                edit.apply();
+                                EventBus.getDefault().postSticky(new MnemonicEvent(strpyObject));
+                            }
+                        });
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + view.getId());
@@ -129,13 +131,10 @@ public class AppWalletSetPassActivity extends BaseActivity {
     class TextWatcher1 implements TextWatcher {
 
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
         public void afterTextChanged(Editable editable) {
@@ -148,5 +147,4 @@ public class AppWalletSetPassActivity extends BaseActivity {
             }
         }
     }
-
 }

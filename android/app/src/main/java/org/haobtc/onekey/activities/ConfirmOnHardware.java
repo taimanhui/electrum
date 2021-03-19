@@ -1,5 +1,9 @@
 package org.haobtc.onekey.activities;
 
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfc;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,11 +17,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.google.gson.Gson;
-
+import java.util.ArrayList;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -34,36 +38,36 @@ import org.haobtc.onekey.event.SendMoreAddressEvent;
 import org.haobtc.onekey.event.SendSignBroadcastEvent;
 import org.haobtc.onekey.event.SignFailedEvent;
 import org.haobtc.onekey.event.SignResultEvent;
-import org.haobtc.onekey.utils.Daemon;
-
-import java.util.ArrayList;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfc;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class ConfirmOnHardware extends BaseActivity implements View.OnClickListener {
     public static final String TAG = "org.haobtc.onekey.activities.ConfirmOnHardware";
+
     @BindView(R.id.linBitcoin)
     LinearLayout linBitcoin;
+
     @BindView(R.id.testConfirmMsg)
     TextView testConfirmMsg;
+
     @BindView(R.id.confirm_layout)
     LinearLayout confirmLayout;
+
     @BindView(R.id.confirm_on_hardware)
     Button confirmOnHardware;
+
     private Dialog dialog;
     private View view;
     private ImageView imageViewCancel;
+
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.tet_payAddress)
     TextView tetPayAddress;
+
     @BindView(R.id.tet_feeNum)
     TextView tetFeeNum;
+
     @BindView(R.id.recl_Msg)
     RecyclerView reclMsg;
     //    private TextView signSuccess;
@@ -94,7 +98,9 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         if (bundle != null) {
             String payAddress = bundle.getString("pay_address");
             String fee = bundle.getString("fee");
-            ArrayList<TransactionInfoBean.OutputAddrBean> outputs = (ArrayList<TransactionInfoBean.OutputAddrBean>) bundle.getSerializable("output");
+            ArrayList<TransactionInfoBean.OutputAddrBean> outputs =
+                    (ArrayList<TransactionInfoBean.OutputAddrBean>)
+                            bundle.getSerializable("output");
             if (outputs != null) {
                 for (TransactionInfoBean.OutputAddrBean output : outputs) {
                     SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
@@ -125,7 +131,8 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         dialog.setContentView(view);
         imageViewCancel.setOnClickListener(this);
         Window window = dialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.BOTTOM);
         window.setWindowAnimations(R.style.AnimBottom);
         dialog.show();
@@ -134,9 +141,10 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignSuccessful(SignResultEvent resultEvent) {
 
-//        Drawable drawableStart = getDrawable(R.drawable.chenggong);
-//        Objects.requireNonNull(drawableStart).setBounds(0, 0, drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
-//        signSuccess.setCompoundDrawables(drawableStart, null, null, null);
+        //        Drawable drawableStart = getDrawable(R.drawable.chenggong);
+        //        Objects.requireNonNull(drawableStart).setBounds(0, 0,
+        // drawableStart.getMinimumWidth(), drawableStart.getMinimumHeight());
+        //        signSuccess.setCompoundDrawables(drawableStart, null, null, null);
         String signedRaw = resultEvent.getSignedRaw();
         if (!TextUtils.isEmpty(signedRaw)) {
             EventBus.getDefault().post(new SecondEvent("finish"));
@@ -155,11 +163,12 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         if (!TextUtils.isEmpty(signedTx)) {
             try {
                 Gson gson = new Gson();
-                TransactionInfoBean transactionInfoBean = gson.fromJson(signedTx, TransactionInfoBean.class);
+                TransactionInfoBean transactionInfoBean =
+                        gson.fromJson(signedTx, TransactionInfoBean.class);
                 String tx = transactionInfoBean.getTx();
                 txHash = transactionInfoBean.getTxid();
                 //  Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
-                Daemon.commands.callAttr("broadcast_tx", tx);
+                PyEnv.sCommands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {
                 String message = e.getMessage();
                 if (message.contains(".")) {
@@ -187,7 +196,8 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSignFailed(SignFailedEvent failedEvent) {
-        if ("BaseException: Sign failed, May be BiXin cannot pair with your device".equals(failedEvent.getException().getMessage())) {
+        if ("BaseException: Sign failed, May be BiXin cannot pair with your device"
+                .equals(failedEvent.getException().getMessage())) {
             mToast(getString(R.string.sign_failed_device));
         }
         showPopupSignFailed();
@@ -200,6 +210,7 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
             needTouch = true;
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(FinishEvent event) {
         if (hasWindowFocus()) {

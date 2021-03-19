@@ -5,60 +5,69 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.adapter.HelpWordAdapter;
-import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.MyDialog;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.adapter.HelpWordAdapter;
+import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.utils.MyDialog;
 
 public class ImportMnemonicActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.recl_helpWord)
     RecyclerView reclHelpWord;
+
     @BindView(R.id.edit_one)
     TextView editOne;
+
     @BindView(R.id.edit_two)
     TextView editTwo;
+
     @BindView(R.id.edit_three)
     TextView editThree;
+
     @BindView(R.id.edit_four)
     TextView editFour;
+
     @BindView(R.id.edit_five)
     TextView editFive;
+
     @BindView(R.id.edit_six)
     TextView editSix;
+
     @BindView(R.id.edit_seven)
     TextView editSeven;
+
     @BindView(R.id.edit_eight)
     TextView editEight;
+
     @BindView(R.id.edit_nine)
     TextView editNine;
+
     @BindView(R.id.edit_ten)
     TextView editTen;
+
     @BindView(R.id.edit_eleven)
     TextView editEleven;
+
     @BindView(R.id.edit_twelve)
     TextView editTwelve;
+
     private String strRemeber = "";
     private String strPass1;
     private MyDialog myDialog;
@@ -85,23 +94,23 @@ public class ImportMnemonicActivity extends BaseActivity {
 
         List<String> randomList = createRandomList(strings, 12);
 
-        reclHelpWord.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+        reclHelpWord.setLayoutManager(
+                new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         HelpWordAdapter helpWordAdapter = new HelpWordAdapter(randomList);
         reclHelpWord.setAdapter(helpWordAdapter);
-        helpWordAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @SingleClick
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-//                mIntent(AppWalletCreateFinishActivity.class);
-                String strWord = randomList.get(position);
-                helpWord(strWord);
-            }
-        });
-
+        helpWordAdapter.setOnItemClickListener(
+                new BaseQuickAdapter.OnItemClickListener() {
+                    @SingleClick
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        //                mIntent(AppWalletCreateFinishActivity.class);
+                        String strWord = randomList.get(position);
+                        helpWord(strWord);
+                    }
+                });
     }
 
-
-    //change list -- random number
+    // change list -- random number
     private List<String> createRandomList(List<String> list, int n) {
         Map<Integer, String> mmap = new HashMap<Integer, String>();
         List<String> mlistNew = new ArrayList<String>();
@@ -114,7 +123,6 @@ public class ImportMnemonicActivity extends BaseActivity {
         }
         return mlistNew;
     }
-
 
     private void helpWord(String strWord) {
         strRemeber = strWord;
@@ -142,11 +150,9 @@ public class ImportMnemonicActivity extends BaseActivity {
             editEleven.setText(strWord);
         } else if (TextUtils.isEmpty(editTwelve.getText().toString())) {
             editTwelve.setText(strWord);
-            //if ok
+            // if ok
             helpWordOk();
-
         }
-
     }
 
     private void helpWordOk() {
@@ -164,10 +170,13 @@ public class ImportMnemonicActivity extends BaseActivity {
         String streleven = editEleven.getText().toString();
         String strtwelve = editTwelve.getText().toString();
 
-        String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
+        String strNewseed =
+                strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " "
+                        + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten
+                        + " " + streleven + " " + strtwelve;
 
         try {
-            Daemon.commands.callAttr("check_seed", strNewseed, strPass1);
+            PyEnv.sCommands.callAttr("check_seed", strNewseed, strPass1);
             Intent intent = new Intent(this, AppWalletCreateFinishActivity.class);
             intent.putExtra("strName", strName);
             myDialog.dismiss();
@@ -182,7 +191,6 @@ public class ImportMnemonicActivity extends BaseActivity {
             }
             e.printStackTrace();
         }
-
     }
 
     private void changeNull() {
@@ -201,9 +209,7 @@ public class ImportMnemonicActivity extends BaseActivity {
     }
 
     @Override
-    public void initData() {
-
-    }
+    public void initData() {}
 
     @SingleClick
     @OnClick({R.id.img_back})

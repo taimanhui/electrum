@@ -22,7 +22,7 @@ import org.haobtc.onekey.adapter.ImportHistryWalletAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.InputHistoryWalletEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +73,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
     private void getHistryWallet() {
         PyObject infoFromServer = null;
         try {
-            infoFromServer = Daemon.commands.callAttr("get_wallet_info_from_server", historyXpub);
+            infoFromServer = PyEnv.sCommands.callAttr("get_wallet_info_from_server", historyXpub);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,7 +175,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
 
     private void importWallet(String listDates) {
         try {
-            PyObject bulkCreateWallet = Daemon.commands.callAttr("bulk_create_wallet", listDates);
+            PyObject bulkCreateWallet = PyEnv.sCommands.callAttr("bulk_create_wallet", listDates);
             String errorStr = bulkCreateWallet.toString();
             if (!TextUtils.isEmpty(errorStr)) {
                 mToast(getString(R.string.some_wallet_existence));

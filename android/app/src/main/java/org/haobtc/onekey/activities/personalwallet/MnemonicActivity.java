@@ -10,10 +10,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -24,31 +27,29 @@ import org.haobtc.onekey.adapter.HelpWordAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.MnemonicEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.MyDialog;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MnemonicActivity extends BaseActivity {
 
-
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.recl_helpWord)
     RecyclerView reclHelpWord;
+
     @BindView(R.id.btn_setPin)
     Button btnSetPin;
+
     @BindView(R.id.tet_jump)
     TextView tetJump;
+
     @BindView(R.id.text_all_word)
     TextView textAllWord;
+
     @BindView(R.id.text_copy_mnemonic)
     TextView textCopyMnemonic;
+
     private String strSeed;
     private String strPass1;
     private String strName;
@@ -68,7 +69,6 @@ public class MnemonicActivity extends BaseActivity {
         Intent intent = getIntent();
         strPass1 = intent.getStringExtra("strPass1");
         strName = intent.getStringExtra("strName");
-
     }
 
     @Override
@@ -77,7 +77,7 @@ public class MnemonicActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.btn_setPin, R.id.tet_jump,R.id.text_copy_mnemonic})
+    @OnClick({R.id.img_back, R.id.btn_setPin, R.id.tet_jump, R.id.text_copy_mnemonic})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -85,7 +85,7 @@ public class MnemonicActivity extends BaseActivity {
                 break;
             case R.id.btn_setPin:
                 try {
-                    Daemon.commands.callAttr("select_wallet", strName);
+                    PyEnv.sCommands.callAttr("select_wallet", strName);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -103,13 +103,15 @@ public class MnemonicActivity extends BaseActivity {
                 finishAffinity();
                 break;
             case R.id.text_copy_mnemonic:
-                //copy text
-                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                // copy text
+                ClipboardManager cm =
+                        (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
                 if (cm != null) {
                     cm.setPrimaryClip(ClipData.newPlainText(null, textAllWord.getText()));
                 }
-                Toast.makeText(MnemonicActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+                Toast.makeText(MnemonicActivity.this, R.string.copysuccess, Toast.LENGTH_LONG)
+                        .show();
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + view.getId());
@@ -128,7 +130,8 @@ public class MnemonicActivity extends BaseActivity {
             tetJump.setVisibility(View.VISIBLE);
             btnSetPin.setEnabled(true);
             btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
-            reclHelpWord.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+            reclHelpWord.setLayoutManager(
+                    new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
             reclHelpWord.setAdapter(new HelpWordAdapter(strings));
             EventBus.getDefault().post(new FirstEvent("11"));
         }
@@ -139,5 +142,4 @@ public class MnemonicActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
 }

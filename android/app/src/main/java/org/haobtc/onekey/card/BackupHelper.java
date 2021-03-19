@@ -1,5 +1,16 @@
 package org.haobtc.onekey.card;
 
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.bleTransport;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.futureTask;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfc;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfcHandler;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfcTransport;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.usbTransport;
+import static org.haobtc.onekey.asynctask.BusinessAsyncTask.SE_PROXY;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
@@ -15,11 +26,14 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.google.common.base.Strings;
-
+import java.util.Objects;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
@@ -31,27 +45,8 @@ import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.fragment.NeedNewVersion;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.NfcUtils;
-
-import java.util.Objects;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.bleTransport;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.futureTask;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfc;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfcHandler;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfcTransport;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.usbTransport;
-import static org.haobtc.onekey.asynctask.BusinessAsyncTask.SE_PROXY;
 
 /**
  * @author liyan
@@ -60,18 +55,23 @@ import static org.haobtc.onekey.asynctask.BusinessAsyncTask.SE_PROXY;
 //
 public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Helper {
     public static final String TAG = BackupHelper.class.getSimpleName();
+
     @BindView(R.id.text_prompt)
     TextView textPrompt;
+
     @BindView(R.id.radio_ble)
     RadioButton radioBle;
+
     @BindView(R.id.img_cancel)
     ImageView imgCancel;
+
     @BindView(R.id.input_layout)
     RelativeLayout inputLayout;
+
     @BindView(R.id.touch_nfc)
     ImageView imageView;
-    private AnimationDrawable animationDrawable;
 
+    private AnimationDrawable animationDrawable;
 
     @Override
     public int getLayoutId() {
@@ -104,9 +104,7 @@ public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Help
     }
 
     @Override
-    public void initData() {
-
-    }
+    public void initData() {}
 
     @SingleClick
     @OnClick(R.id.img_cancel)
@@ -131,41 +129,67 @@ public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Help
             usbTransport.put("ENABLED", false);
             bleTransport.put("ENABLED", false);
             nfcTransport.put("ENABLED", true);
-            new Handler().postDelayed(() -> {
-                nfcHandler.put("device", tags);
-                if (!Strings.isNullOrEmpty(getIntent().getAction())) {
-                    try {
-                        HardwareFeatures features = getFeatures();
-                        if (!features.isInitialized() && "backup2card".equals(getIntent().getAction())) {
-                            Toast.makeText(this, R.string.need_active, Toast.LENGTH_LONG).show();
-                            finish();
-                            return;
-                        } else if (features.isInitialized() && "recovery".equals(getIntent().getAction())) {
-                            Toast.makeText(this, R.string.need_reset, Toast.LENGTH_LONG).show();
-                            finish();
-                            return;
-                        }
-                        // features.getSeVersion() present after 2.0.0.2,if the version of se is below 2.0.0.2, it can be ""
-                        if (Strings.isNullOrEmpty(features.getSeVersion())) {
-                            Toast.makeText(this, R.string.old_se_version, Toast.LENGTH_LONG).show();
-                            EventBus.getDefault().post(new ExitEvent());
-                            finish();
-                            return;
-                        }
-                        // if the version of stm32 is below 1.9.6, turn to upgrade page
-                        if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7) {
-                            NeedNewVersion fragment = new NeedNewVersion(R.string.update2_new_version, R.string.old_version);
-                            fragment.setActivity(this);
-                            fragment.show(getSupportFragmentManager(), "");
-                            return;
-                        }
-                        String message = getIntent().getStringExtra("message");
-                        new BusinessAsyncTask().setHelper(this).execute(SE_PROXY, message, COMMUNICATION_MODE_NFC);
-                    } catch (Exception e) {
-                        finish();
-                    }
-                }
-            }, 1000);
+            new Handler()
+                    .postDelayed(
+                            () -> {
+                                nfcHandler.put("device", tags);
+                                if (!Strings.isNullOrEmpty(getIntent().getAction())) {
+                                    try {
+                                        HardwareFeatures features = getFeatures();
+                                        if (!features.isInitialized()
+                                                && "backup2card".equals(getIntent().getAction())) {
+                                            Toast.makeText(
+                                                            this,
+                                                            R.string.need_active,
+                                                            Toast.LENGTH_LONG)
+                                                    .show();
+                                            finish();
+                                            return;
+                                        } else if (features.isInitialized()
+                                                && "recovery".equals(getIntent().getAction())) {
+                                            Toast.makeText(
+                                                            this,
+                                                            R.string.need_reset,
+                                                            Toast.LENGTH_LONG)
+                                                    .show();
+                                            finish();
+                                            return;
+                                        }
+                                        // features.getSeVersion() present after 2.0.0.2,if the
+                                        // version of se is below 2.0.0.2, it can be ""
+                                        if (Strings.isNullOrEmpty(features.getSeVersion())) {
+                                            Toast.makeText(
+                                                            this,
+                                                            R.string.old_se_version,
+                                                            Toast.LENGTH_LONG)
+                                                    .show();
+                                            EventBus.getDefault().post(new ExitEvent());
+                                            finish();
+                                            return;
+                                        }
+                                        // if the version of stm32 is below 1.9.6, turn to upgrade
+                                        // page
+                                        if (features.getMajorVersion() <= 1
+                                                && features.getMinorVersion() <= 9
+                                                && features.getPatchVersion() < 7) {
+                                            NeedNewVersion fragment =
+                                                    new NeedNewVersion(
+                                                            R.string.update2_new_version,
+                                                            R.string.old_version);
+                                            fragment.setActivity(this);
+                                            fragment.show(getSupportFragmentManager(), "");
+                                            return;
+                                        }
+                                        String message = getIntent().getStringExtra("message");
+                                        new BusinessAsyncTask()
+                                                .setHelper(this)
+                                                .execute(SE_PROXY, message, COMMUNICATION_MODE_NFC);
+                                    } catch (Exception e) {
+                                        finish();
+                                    }
+                                }
+                            },
+                            1000);
         }
     }
 
@@ -173,7 +197,9 @@ public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Help
     private HardwareFeatures getFeatures() throws Exception {
         String feature;
         try {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr("get_feature", COMMUNICATION_MODE_NFC));
+            futureTask =
+                    new FutureTask<>(
+                            () -> PyEnv.sCommands.callAttr("get_feature", COMMUNICATION_MODE_NFC));
             executorService.submit(futureTask);
             feature = futureTask.get(5, TimeUnit.SECONDS).toString();
             return HardwareFeatures.objectFromData(feature);
@@ -187,33 +213,33 @@ public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Help
             throw e;
         }
     }
+
     @Subscribe
     public void onButtonRequest(ButtonRequestEvent event) {
-        if("backup2card".equals(getIntent().getAction())) {
+        if ("backup2card".equals(getIntent().getAction())) {
             Intent intent = new Intent(this, ConfirmActivity.class);
             intent.putExtra("tag", TAG);
             startActivity(intent);
         }
     }
+
     @Subscribe
     public void onExit(ExitEvent event) {
         finish();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         NfcUtils.mNfcAdapter = null;
         EventBus.getDefault().unregister(this);
     }
-    @Override
-    public void onPreExecute() {
-
-    }
 
     @Override
-    public void onException(Exception e) {
+    public void onPreExecute() {}
 
-    }
+    @Override
+    public void onException(Exception e) {}
 
     @Override
     public void onResult(String s) {
@@ -228,17 +254,12 @@ public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Help
             intent.putExtra("extras", s);
             startActivity(intent);
             finish();
-       }
-
+        }
     }
 
     @Override
-    public void onCancelled() {
-
-    }
+    public void onCancelled() {}
 
     @Override
-    public void currentMethod(String methodName) {
-
-    }
+    public void currentMethod(String methodName) {}
 }

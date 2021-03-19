@@ -55,7 +55,7 @@ import org.haobtc.onekey.event.CheckReceiveAddress;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.HandlerEvent;
 import org.haobtc.onekey.event.SecondEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.IndicatorSeekBar;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -290,7 +290,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     // Show RBF button or not
     private void setSpeedBtn() {
         try {
-            getRbfStatus = Daemon.commands.callAttr("get_rbf_or_cpfp_status", txHash);
+            getRbfStatus = PyEnv.sCommands.callAttr("get_rbf_or_cpfp_status", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -318,7 +318,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (!TextUtils.isEmpty(txHash)) {
             PyObject getTxInfo;
             try {
-                getTxInfo = Daemon.commands.callAttr("get_tx_info", txHash);
+                getTxInfo = PyEnv.sCommands.callAttr("get_tx_info", txHash);
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
@@ -336,7 +336,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         if (!TextUtils.isEmpty(publicTrsation)) {
             PyObject txInfoFromRaw = null;
             try {
-                txInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", publicTrsation);
+                txInfoFromRaw = PyEnv.sCommands.callAttr("get_tx_info_from_raw", publicTrsation);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -718,7 +718,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void ifHaveRbf() {
         PyObject getRbfFeeInfo = null;
         try {
-            getRbfFeeInfo = Daemon.commands.callAttr("get_rbf_fee_info", txHash);
+            getRbfFeeInfo = PyEnv.sCommands.callAttr("get_rbf_fee_info", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -782,7 +782,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void receiveAddSpeed() {
         PyObject getRbfFeeInfo = null;
         try {
-            getRbfFeeInfo = Daemon.commands.callAttr("get_cpfp_info", txHash);
+            getRbfFeeInfo = PyEnv.sCommands.callAttr("get_cpfp_info", txHash);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("max fee exceeded")) {
@@ -911,7 +911,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         PyObject getRbfFeeInfo = null;
         try {
             getRbfFeeInfo =
-                    Daemon.commands.callAttr(
+                    PyEnv.sCommands.callAttr(
                             "get_cpfp_info",
                             txHash,
                             new Kwarg(
@@ -976,7 +976,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         PyObject createBumpFee = null;
         try {
             createBumpFee =
-                    Daemon.commands.callAttr(
+                    PyEnv.sCommands.callAttr(
                             "create_bump_fee", txHash, Float.parseFloat(String.valueOf(newFee)));
             Log.i("getRbfFeeInfosss", "createBumpFee----: " + createBumpFee);
         } catch (Exception e) {
@@ -995,7 +995,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void confirmedReceiveSpeed(String feeForChild) {
         PyObject createCpfpTx = null;
         try {
-            createCpfpTx = Daemon.commands.callAttr("create_cpfp_tx", txHash, feeForChild);
+            createCpfpTx = PyEnv.sCommands.callAttr("create_cpfp_tx", txHash, feeForChild);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1037,7 +1037,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 if ("1-1".equals(walletTypeToSign)
                         && Ble.getInstance().getConnetedDevices().size() != 0) {
                     String deviceId =
-                            Daemon.commands
+                            PyEnv.sCommands
                                     .callAttr("get_device_info")
                                     .toString()
                                     .replaceAll("\"", "");
@@ -1074,7 +1074,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void braodcastTrsaction() {
         String signedRowTrsation = preferences.getString("signedRowTransaction", "");
         try {
-            Daemon.commands.callAttr("broadcast_tx", signedRowTrsation);
+            PyEnv.sCommands.callAttr("broadcast_tx", signedRowTrsation);
         } catch (Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
@@ -1126,7 +1126,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                             }
                             try {
                                 PyObject signTx =
-                                        Daemon.commands.callAttr(
+                                        PyEnv.sCommands.callAttr(
                                                 "sign_tx",
                                                 rawtx,
                                                 new Kwarg("password", strPassword));
@@ -1163,7 +1163,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private void confirmedSpeed() {
         PyObject createBumpFee = null;
         try {
-            createBumpFee = Daemon.commands.callAttr("confirm_rbf_tx", txHash);
+            createBumpFee = PyEnv.sCommands.callAttr("confirm_rbf_tx", txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }

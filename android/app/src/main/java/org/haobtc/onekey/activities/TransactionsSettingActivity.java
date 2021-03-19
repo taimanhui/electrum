@@ -1,8 +1,6 @@
 package org.haobtc.onekey.activities;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
@@ -10,38 +8,40 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.MyDialog;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.utils.MyDialog;
 
 public class TransactionsSettingActivity extends BaseActivity {
 
-
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.tet_addNode)
     TextView tetAddNode;
+
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_rbf)
     Switch switchRbf;
+
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_noConfirm)
     Switch switchNoConfirm;
+
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_find)
     Switch switchFind;
+
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_usdt)
     Switch switchUsdt;
+
     private SharedPreferences preferences;
     private MyDialog myDialog;
 
@@ -83,92 +83,93 @@ public class TransactionsSettingActivity extends BaseActivity {
         } else {
             switchUsdt.setChecked(false);
         }
-
     }
 
     @Override
     public void initData() {
         switchChoose();
-
     }
 
     private void switchChoose() {
-        switchRbf.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                try {
-                    Daemon.commands.callAttr("set_rbf", true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putBoolean("set_rbf", true).apply();
-                mToast(getString(R.string.set_success));
-            } else {
-                try {
-                    Daemon.commands.callAttr("set_rbf", false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putBoolean("set_rbf", false).apply();
-            }
-        });
-        //pay unConfirmed income
-        switchNoConfirm.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                try {
-                    Daemon.commands.callAttr("set_unconf", false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putBoolean("set_unconf", true).apply();
-                mToast(getString(R.string.set_success));
-            } else {
-                try {
-                    Daemon.commands.callAttr("set_unconf", true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putBoolean("set_unconf", false).apply();
-            }
-        });
-        //use Give change adrress
-        switchFind.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                try {
-                    Daemon.commands.callAttr("set_use_change", true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putBoolean("set_use_change", true).apply();
-                mToast(getString(R.string.set_success));
-            } else {
-                try {
-                    Daemon.commands.callAttr("set_use_change", false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putBoolean("set_use_change", false).apply();
-            }
-        });
-        //Prevent dust attack
-        switchUsdt.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                try {
-                    Daemon.commands.callAttr("set_dust", true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putBoolean("set_prevent_dust", true).apply();
-                mToast(getString(R.string.set_success));
-            } else {
-                try {
-                    Daemon.commands.callAttr("set_dust", false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putBoolean("set_prevent_dust", false).apply();
-            }
-        });
-
+        switchRbf.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    if (isChecked) {
+                        try {
+                            PyEnv.sCommands.callAttr("set_rbf", true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putBoolean("set_rbf", true).apply();
+                        mToast(getString(R.string.set_success));
+                    } else {
+                        try {
+                            PyEnv.sCommands.callAttr("set_rbf", false);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putBoolean("set_rbf", false).apply();
+                    }
+                });
+        // pay unConfirmed income
+        switchNoConfirm.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    if (isChecked) {
+                        try {
+                            PyEnv.sCommands.callAttr("set_unconf", false);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putBoolean("set_unconf", true).apply();
+                        mToast(getString(R.string.set_success));
+                    } else {
+                        try {
+                            PyEnv.sCommands.callAttr("set_unconf", true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putBoolean("set_unconf", false).apply();
+                    }
+                });
+        // use Give change adrress
+        switchFind.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    if (isChecked) {
+                        try {
+                            PyEnv.sCommands.callAttr("set_use_change", true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putBoolean("set_use_change", true).apply();
+                        mToast(getString(R.string.set_success));
+                    } else {
+                        try {
+                            PyEnv.sCommands.callAttr("set_use_change", false);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putBoolean("set_use_change", false).apply();
+                    }
+                });
+        // Prevent dust attack
+        switchUsdt.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    if (isChecked) {
+                        try {
+                            PyEnv.sCommands.callAttr("set_dust", true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putBoolean("set_prevent_dust", true).apply();
+                        mToast(getString(R.string.set_success));
+                    } else {
+                        try {
+                            PyEnv.sCommands.callAttr("set_dust", false);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putBoolean("set_prevent_dust", false).apply();
+                    }
+                });
     }
 
     @SingleClick
@@ -179,7 +180,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.tet_addNode:
-                //Restore default settings
+                // Restore default settings
                 handler.sendEmptyMessage(1);
                 break;
             default:
@@ -187,22 +188,23 @@ public class TransactionsSettingActivity extends BaseActivity {
     }
 
     @SuppressLint("HandlerLeak")
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1) {
-                restoreSet();
-            }
-        }
-    };
+    Handler handler =
+            new Handler() {
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    super.handleMessage(msg);
+                    if (msg.what == 1) {
+                        restoreSet();
+                    }
+                }
+            };
 
     private void restoreSet() {
         try {
-            Daemon.commands.callAttr("set_rbf", true);
-            Daemon.commands.callAttr("set_unconf", false);
-//            Daemon.commands.callAttr("set_use_change", false);
-//            Daemon.commands.callAttr("set_dust", false);
+            PyEnv.sCommands.callAttr("set_rbf", true);
+            PyEnv.sCommands.callAttr("set_unconf", false);
+            //            PyEnv.sCommands.callAttr("set_use_change", false);
+            //            PyEnv.sCommands.callAttr("set_dust", false);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -217,7 +219,5 @@ public class TransactionsSettingActivity extends BaseActivity {
         switchUsdt.setChecked(false);
         myDialog.dismiss();
         mToast(getString(R.string.recovery_succse));
-
     }
-
 }

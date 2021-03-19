@@ -10,6 +10,7 @@ import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.TransactionSummaryVo
 import org.haobtc.onekey.business.chain.TransactionListType
 import org.haobtc.onekey.constant.Vm
+import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
 
@@ -21,12 +22,12 @@ class BitcoinService {
   private fun request(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): PyObject? {
     return when (status) {
       TransactionListType.ALL ->
-        Daemon.commands.callAttr("get_all_tx_list",
+        PyEnv.sCommands.callAttr("get_all_tx_list",
             Kwarg("coin", Vm.CoinType.BTC.callFlag),
             Kwarg("start", position),
             Kwarg("end", position + limit))
       else ->
-        Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.BTC.callFlag, position, position + limit)
+        PyEnv.sCommands.callAttr("get_all_tx_list", status, Vm.CoinType.BTC.callFlag, position, position + limit)
     }
   }
 

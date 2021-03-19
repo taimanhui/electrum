@@ -11,8 +11,8 @@ import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
-import org.haobtc.onekey.utils.Daemon;
 
 public class DeleteWatchWalletDialog extends BaseDialogFragment {
     @Override
@@ -42,7 +42,7 @@ public class DeleteWatchWalletDialog extends BaseDialogFragment {
                                 "")
                         .toString();
         try {
-            Daemon.commands.callAttr("delete_wallet", "111111", new Kwarg("name", keyName));
+            PyEnv.sCommands.callAttr("delete_wallet", "111111", new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(

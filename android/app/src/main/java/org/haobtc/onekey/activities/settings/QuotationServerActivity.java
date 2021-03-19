@@ -4,11 +4,14 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chaquo.python.PyObject;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -16,22 +19,16 @@ import org.haobtc.onekey.adapter.QuetationChooseAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CNYBean;
 import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.utils.Daemon;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class QuotationServerActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.recl_Quetation)
     RecyclerView reclQuetation;
+
     private ArrayList<CNYBean> exchangeList;
     private int exChange;
     private SharedPreferences preferences;
@@ -44,24 +41,22 @@ public class QuotationServerActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         exChange = preferences.getInt("exChange", 0);
-
     }
 
     @Override
     public void initData() {
         reclQuetation.setNestedScrollingEnabled(false);
         exchangeList = new ArrayList<>();
-        //get exchanges list
+        // get exchanges list
         getExchangelist();
-
     }
 
     private void getExchangelist() {
         PyObject get_exchanges = null;
         try {
-            get_exchanges = Daemon.commands.callAttr("get_exchanges");
+            get_exchanges = PyEnv.sCommands.callAttr("get_exchanges");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,25 +71,25 @@ public class QuotationServerActivity extends BaseActivity {
                 CNYBean cnyBean = new CNYBean(pathList.get(i), false);
                 exchangeList.add(cnyBean);
             }
-
         }
-        QuetationChooseAdapter quetationChooseAdapter = new QuetationChooseAdapter(QuotationServerActivity.this, exchangeList, exChange);
+        QuetationChooseAdapter quetationChooseAdapter =
+                new QuetationChooseAdapter(QuotationServerActivity.this, exchangeList, exChange);
         reclQuetation.setAdapter(quetationChooseAdapter);
-        quetationChooseAdapter.setOnLisennorClick(new QuetationChooseAdapter.onLisennorClick() {
-            @Override
-            public void itemClick(int pos) {
-                String exchangeName = exchangeList.get(pos).getName();
-                try {
-                    Daemon.commands.callAttr("set_exchange", exchangeName);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                preferences.edit().putInt("exChange", pos).apply();
-                preferences.edit().putString("exchangeName", exchangeName).apply();
-                EventBus.getDefault().post(new FirstEvent("defaultServer"));
-            }
-        });
-
+        quetationChooseAdapter.setOnLisennorClick(
+                new QuetationChooseAdapter.onLisennorClick() {
+                    @Override
+                    public void itemClick(int pos) {
+                        String exchangeName = exchangeList.get(pos).getName();
+                        try {
+                            PyEnv.sCommands.callAttr("set_exchange", exchangeName);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        preferences.edit().putInt("exChange", pos).apply();
+                        preferences.edit().putString("exchangeName", exchangeName).apply();
+                        EventBus.getDefault().post(new FirstEvent("defaultServer"));
+                    }
+                });
     }
 
     @SingleClick

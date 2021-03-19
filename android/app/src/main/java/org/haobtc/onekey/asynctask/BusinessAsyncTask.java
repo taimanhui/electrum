@@ -13,7 +13,6 @@ import org.haobtc.onekey.event.OperationTimeoutEvent;
 import org.haobtc.onekey.event.WhiteListEnum;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.utils.Daemon;
 
 /** @author liyan */
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
@@ -80,7 +79,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case GET_EXTEND_PUBLIC_KEY_PERSONAL:
                 try {
                     result =
-                            Daemon.commands
+                            PyEnv.sCommands
                                     .callAttr(
                                             strings[0].endsWith("single")
                                                     ? GET_EXTEND_PUBLIC_KEY
@@ -99,7 +98,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case SIGN_MESSAGE:
                 try {
                     result =
-                            Daemon.commands
+                            PyEnv.sCommands
                                     .callAttr(strings[0], strings[1], strings[2], strings[3])
                                     .toString();
                 } catch (Exception e) {
@@ -113,7 +112,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case BACK_UP:
             case READ_MNEMONIC_FROM_HARDWARE:
                 try {
-                    result = Daemon.commands.callAttr(strings[0], strings[1]).toString();
+                    result = PyEnv.sCommands.callAttr(strings[0], strings[1]).toString();
                     Logger.d("look Seeds:" + result);
                 } catch (Exception e) {
                     cancel(true);
@@ -124,7 +123,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case IMPORT_MNEMONIC:
                 try {
                     result =
-                            Daemon.commands
+                            PyEnv.sCommands
                                     .callAttr(
                                             strings[0],
                                             strings[1],
@@ -141,7 +140,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 try {
                     if ("setBluetooth".equals(strings[2])) {
                         result =
-                                Daemon.commands
+                                PyEnv.sCommands
                                         .callAttr(
                                                 strings[0],
                                                 strings[1],
@@ -153,7 +152,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                         int moneyLimit = Integer.parseInt(strings[3]);
                         int moneyTimes = Integer.parseInt(strings[4]);
                         result =
-                                Daemon.commands
+                                PyEnv.sCommands
                                         .callAttr(
                                                 strings[0],
                                                 strings[1],
@@ -168,7 +167,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                                         .toString();
                     } else if ("label".equals(strings[2])) {
                         result =
-                                Daemon.commands
+                                PyEnv.sCommands
                                         .callAttr(
                                                 strings[0],
                                                 strings[1],
@@ -177,7 +176,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                     } else if ("shutdown_time".equals(strings[2])) {
                         int shutdownTime = Integer.parseInt(strings[3]);
                         result =
-                                Daemon.commands
+                                PyEnv.sCommands
                                         .callAttr(
                                                 strings[0],
                                                 strings[1],
@@ -186,7 +185,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                                         .toString();
                     } else if ("fix_hardware_language".equals(strings[2])) {
                         result =
-                                Daemon.commands
+                                PyEnv.sCommands
                                         .callAttr(
                                                 strings[0],
                                                 strings[1],
@@ -201,7 +200,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case SHOW_ADDRESS:
                 try {
                     result =
-                            Daemon.commands
+                            PyEnv.sCommands
                                     .callAttr(strings[0], strings[1], strings[2], strings[3])
                                     .toString();
                 } catch (Exception e) {
@@ -213,7 +212,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case EDIT_WHITE_LIST:
                 try {
                     result =
-                            Daemon.commands
+                            PyEnv.sCommands
                                     .callAttr(
                                             strings[0],
                                             strings[1],
@@ -230,7 +229,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 try {
                     if ("Add".equals(strings[2])) {
                         result =
-                                Daemon.commands
+                                PyEnv.sCommands
                                         .callAttr(
                                                 strings[0],
                                                 strings[1],
@@ -241,7 +240,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                                         .toString();
                     } else if ("Delete".equals(strings[2])) {
                         result =
-                                Daemon.commands
+                                PyEnv.sCommands
                                         .callAttr(
                                                 strings[0],
                                                 strings[1],

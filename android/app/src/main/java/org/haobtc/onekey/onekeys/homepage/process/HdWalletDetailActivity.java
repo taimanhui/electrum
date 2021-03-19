@@ -44,7 +44,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.LocalWalletInfo;
@@ -67,7 +66,6 @@ import org.haobtc.onekey.ui.dialog.ExportTipsDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomBackupDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.utils.ClipboardUtils;
-import org.haobtc.onekey.utils.Daemon;
 
 public class HdWalletDetailActivity extends BaseActivity {
 
@@ -696,7 +694,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                                                         CURRENT_SELECTED_WALLET_NAME,
                                                         "")
                                                 .toString();
-                                Daemon.commands.callAttr(
+                                PyEnv.sCommands.callAttr(
                                         "rename_wallet", keyName, walletName.getText().toString());
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -704,7 +702,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                                 return;
                             }
                             mToast(getString(R.string.fix_success));
-                            PyEnv.loadLocalWalletInfo(MyApplication.getInstance());
+                            PyEnv.loadLocalWalletInfo();
                             textWalletName.setText(walletName.getText().toString());
                             EventBus.getDefault()
                                     .post(new FixWalletNameEvent(walletName.getText().toString()));

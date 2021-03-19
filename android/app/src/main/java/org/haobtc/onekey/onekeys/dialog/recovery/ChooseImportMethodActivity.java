@@ -37,7 +37,6 @@ import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyAc
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.WatchWalletActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.custom.CustomCoverWatchPopup;
-import org.haobtc.onekey.utils.Daemon;
 
 @Deprecated
 public class ChooseImportMethodActivity extends BaseActivity {
@@ -175,7 +174,7 @@ public class ChooseImportMethodActivity extends BaseActivity {
     private void importWallet() {
         try {
             PyObject pyObject =
-                    Daemon.commands.callAttr("create", name, new Kwarg("addresses", data));
+                    PyEnv.sCommands.callAttr("create", name, new Kwarg("addresses", data));
             CreateWalletBean createWalletBean =
                     new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
             EventBus.getDefault()

@@ -62,7 +62,7 @@ import org.haobtc.onekey.event.HandlerEvent;
 import org.haobtc.onekey.event.MainpageWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.IndicatorSeekBar;
 
 public class SendOne2ManyMainPageActivity extends BaseActivity {
@@ -190,7 +190,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private void mGeneratecode() {
         PyObject walletAddressShowUi = null;
         try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            walletAddressShowUi = PyEnv.sCommands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
             mToast(HardWareExceptions.getExceptionString(e));
@@ -208,7 +208,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private void getFeeamont() {
         PyObject getDefaultFeeStatuses = null;
         try {
-            getDefaultFeeStatuses = Daemon.commands.callAttr("get_default_fee_status");
+            getDefaultFeeStatuses = PyEnv.sCommands.callAttr("get_default_fee_status");
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage().replace("", ""));
@@ -263,7 +263,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private void payAddressMore() {
         PyObject getWalletsListInfo = null;
         try {
-            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
+            getWalletsListInfo = PyEnv.sCommands.callAttr("list_wallets");
         } catch (Exception e) {
             e.printStackTrace();
             mToast(HardWareExceptions.getExceptionString(e));
@@ -331,7 +331,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 break;
             case R.id.create_trans_one2many:
                 try {
-                    mktx = Daemon.commands.callAttr("mktx", "", "");
+                    mktx = PyEnv.sCommands.callAttr("mktx", "", "");
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (e.getMessage().contains("Insufficient funds")) {
@@ -353,7 +353,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                         if (walletTypeToSign.contains("1-")) {
                             try {
                                 PyObject txInfoFromRaw =
-                                        Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
+                                        PyEnv.sCommands.callAttr("get_tx_info_from_raw", rowtx);
                                 gson = new Gson();
                                 TransactionInfoBean transactionInfoBean =
                                         gson.fromJson(
@@ -375,7 +375,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                             if ("1-1".equals(walletTypeToSign)
                                     && Ble.getInstance().getConnetedDevices().size() != 0) {
                                 String deviceId =
-                                        Daemon.commands
+                                        PyEnv.sCommands
                                                 .callAttr("get_device_info")
                                                 .toString()
                                                 .replaceAll("\"", "");
@@ -470,8 +470,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                                     preferences.getBoolean("haveCreateNopass", false);
                             if (!TextUtils.isEmpty(strScrollPass)) {
                                 try {
-                                    Daemon.commands.callAttr("load_wallet", mwalletName);
-                                    Daemon.commands.callAttr("select_wallet", mwalletName);
+                                    PyEnv.sCommands.callAttr("load_wallet", mwalletName);
+                                    PyEnv.sCommands.callAttr("select_wallet", mwalletName);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     return;
@@ -482,8 +482,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                             } else {
                                 if (haveCreateNopass) {
                                     try {
-                                        Daemon.commands.callAttr("load_wallet", mwalletName);
-                                        Daemon.commands.callAttr("select_wallet", mwalletName);
+                                        PyEnv.sCommands.callAttr("load_wallet", mwalletName);
+                                        PyEnv.sCommands.callAttr("select_wallet", mwalletName);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                         return;
@@ -529,11 +529,11 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                                 return;
                             }
                             try {
-                                Daemon.commands.callAttr(
+                                PyEnv.sCommands.callAttr(
                                         "load_wallet",
                                         mwalletName,
                                         new Kwarg("password", strPassword));
-                                Daemon.commands.callAttr("select_wallet", mwalletName);
+                                PyEnv.sCommands.callAttr("select_wallet", mwalletName);
                                 walletName.setText(mwalletName);
                                 dialogBtom.cancel();
                                 // get pay address
@@ -584,7 +584,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         PyObject getFeeByFeeRate = null;
         try {
             getFeeByFeeRate =
-                    Daemon.commands.callAttr("get_fee_by_feerate", strmapBtc, "", intmaxFee);
+                    PyEnv.sCommands.callAttr("get_fee_by_feerate", strmapBtc, "", intmaxFee);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -59,7 +59,6 @@ import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.PassInputDialog;
 import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
-import org.haobtc.onekey.utils.Daemon;
 
 /** @author liyan */
 public class SignActivity extends BaseActivity
@@ -421,7 +420,7 @@ public class SignActivity extends BaseActivity
     private void getAddress() {
         PyObject walletAddressShowUi = null;
         try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            walletAddressShowUi = PyEnv.sCommands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -444,7 +443,7 @@ public class SignActivity extends BaseActivity
             String signedTx = null;
             try {
                 signedTx =
-                        Daemon.commands
+                        PyEnv.sCommands
                                 .callAttr(
                                         "sign_tx", strSoftMsg, "", new Kwarg("password", password))
                                 .toString();
@@ -469,7 +468,7 @@ public class SignActivity extends BaseActivity
             String signedMessage = null;
             try {
                 signedMessage =
-                        Daemon.commands
+                        PyEnv.sCommands
                                 .callAttr(
                                         "sign_message",
                                         strinputAddress,
@@ -541,7 +540,7 @@ public class SignActivity extends BaseActivity
             try {
                 // read file
                 PyObject txFromFile =
-                        Daemon.commands.callAttr(
+                        PyEnv.sCommands.callAttr(
                                 "read_tx_from_file",
                                 strPath,
                                 new Kwarg("is_tx", signTransaction.isChecked()));

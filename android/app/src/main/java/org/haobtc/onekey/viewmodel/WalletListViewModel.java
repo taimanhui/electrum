@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import com.google.common.base.Strings;
-import com.orhanobut.logger.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import org.haobtc.onekey.activities.base.MyApplication;
@@ -74,8 +73,6 @@ public class WalletListViewModel extends AndroidViewModel {
                     mCoinWallets.postValue(list);
                 }
             }
-        } else {
-            Logger.d("异常", "-->" + response.getErrors());
         }
     }
 

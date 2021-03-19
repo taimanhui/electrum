@@ -69,7 +69,6 @@ import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.adapter.WalletAssetsAdapter;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.dialog.BackupDialog;
-import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.haobtc.onekey.viewmodel.NetworkViewModel;
@@ -338,7 +337,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                     } else {
                         // no wallet
                         try {
-                            Daemon.commands.callAttr("set_currency", "CNY");
+                            PyEnv.sCommands.callAttr("set_currency", "CNY");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

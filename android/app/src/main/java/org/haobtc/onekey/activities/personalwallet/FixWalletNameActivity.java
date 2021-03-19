@@ -18,7 +18,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class FixWalletNameActivity extends BaseActivity {
 
@@ -97,7 +97,7 @@ public class FixWalletNameActivity extends BaseActivity {
     private void reNameWallet() {
         String walletName = getIntent().getStringExtra("wallet_name");
         try {
-            Daemon.commands.callAttr("rename_wallet", walletName, nameEdit.getText().toString());
+            PyEnv.sCommands.callAttr("rename_wallet", walletName, nameEdit.getText().toString());
         } catch (Exception e) {
             e.printStackTrace();
             mToast(HardWareExceptions.getExceptionString(e));

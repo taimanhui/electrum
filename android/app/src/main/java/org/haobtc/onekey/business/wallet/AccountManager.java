@@ -29,7 +29,6 @@ import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.exception.AccountException;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.utils.Daemon;
 
 /**
  * 账户管理类
@@ -242,7 +241,7 @@ public class AccountManager {
         String type = coinType.callFlag;
         try {
             String result =
-                    Daemon.commands
+                    PyEnv.sCommands
                             .callAttr(
                                     "create_derived_wallet",
                                     walletName,
@@ -356,7 +355,7 @@ public class AccountManager {
             Vm.CoinType coinType, String walletName, String address) throws AccountException {
         try {
             PyObject pyObject =
-                    Daemon.commands.callAttr(
+                    PyEnv.sCommands.callAttr(
                             PyConstant.CREATE_WALLET,
                             walletName,
                             new Kwarg("addresses", address),

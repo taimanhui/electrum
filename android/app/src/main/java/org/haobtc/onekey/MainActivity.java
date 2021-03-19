@@ -94,7 +94,7 @@ import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.fragment.mainwheel.AddViewFragment;
 import org.haobtc.onekey.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.onekey.fragment.mainwheel.WheelViewpagerFragment;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -205,7 +205,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         walletnameList.clear();
         fragmentList.clear();
         // wallet list
-        if (Daemon.commands == null) {
+        if (PyEnv.sCommands == null) {
             finishAndRemoveTask();
             System.exit(0);
         }
@@ -215,7 +215,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     public void run() {
                         // wallet list
                         try {
-                            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
+                            getWalletsListInfo = PyEnv.sCommands.callAttr("list_wallets");
                         } catch (Exception e) {
                             e.printStackTrace();
                             cardBuyKey.setVisibility(View.VISIBLE);
@@ -357,7 +357,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         PyObject getHistoryTx = null;
         try {
             // get transaction json
-            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list");
+            getHistoryTx = PyEnv.sCommands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
             mToast(getString(R.string.switch_server));
@@ -501,7 +501,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                         JSONObject jsonObject = jsonArray.getJSONObject(position);
                                         txHash1 = jsonObject.getString("tx_hash");
                                         status =
-                                                Daemon.commands
+                                                PyEnv.sCommands
                                                         .callAttr("get_remove_flag", txHash1)
                                                         .toBoolean();
                                     } catch (Exception e) {
@@ -511,7 +511,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                                     }
                                     if (status) {
                                         try {
-                                            Daemon.commands.callAttr("remove_local_tx", txHash1);
+                                            PyEnv.sCommands.callAttr("remove_local_tx", txHash1);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                             mToast(getString(R.string.delete_fail));
@@ -546,7 +546,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (!deviceValue.isEmpty()) {
             try {
                 String strDeviceId =
-                        Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                        PyEnv.sCommands.callAttr("get_device_info").toString().replaceAll("\"", "");
                 if (!Strings.isNullOrEmpty(strDeviceId)) {
                     for (HardwareFeatures entity : deviceValue) {
                         if (strDeviceId.equals(entity.getDeviceId())) {
@@ -804,7 +804,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 if (!TextUtils.isEmpty(content)) {
                     PyObject parseQr;
                     try {
-                        parseQr = Daemon.commands.callAttr("parse_pr", content);
+                        parseQr = PyEnv.sCommands.callAttr("parse_pr", content);
 
                     } catch (Exception e) {
                         e.printStackTrace();

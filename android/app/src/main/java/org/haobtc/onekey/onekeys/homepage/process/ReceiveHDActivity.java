@@ -55,7 +55,6 @@ import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomCenterDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
-import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.ImageUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
@@ -243,7 +242,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
     private void mGeneratecode() {
         PyObject walletAddressShowUi = null;
         try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            walletAddressShowUi = PyEnv.sCommands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(

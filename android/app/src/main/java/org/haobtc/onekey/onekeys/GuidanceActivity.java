@@ -13,85 +13,94 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.constant.StringConstant;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.ViewTouchUtil;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-/**
- * @author jinxiaomin
- */
-public class GuidanceActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
+/** @author jinxiaomin */
+public class GuidanceActivity extends BaseActivity
+        implements CompoundButton.OnCheckedChangeListener {
     @BindView(R.id.checkbox_ok)
     CheckBox checkboxOk;
+
     @BindView(R.id.btn_begin)
     Button btnBegin;
+
     @BindView(R.id.text_user1)
     TextView userTV;
+
     private SharedPreferences preferences;
 
     @Override
-    public int getLayoutId () {
+    public int getLayoutId() {
         return R.layout.activity_guidance;
     }
 
     @Override
-    public void initView () {
+    public void initView() {
         ButterKnife.bind(this);
         preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         inits();
     }
 
-    private void inits () {
+    private void inits() {
         setAgreementPolicy();
         checkboxOk.setOnCheckedChangeListener(this);
-        ViewTouchUtil.expandViewTouchDelegate(checkboxOk,16F);
+        ViewTouchUtil.expandViewTouchDelegate(checkboxOk, 16F);
     }
 
-    private void setAgreementPolicy () {
+    private void setAgreementPolicy() {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(getString(R.string.use_onekey));
         String userAgreement = getResources().getString(R.string.user_agreement_guide);
         SpannableString userAgreementSpannable = new SpannableString(userAgreement);
-        userAgreementSpannable.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick (@NonNull View widget) {
-                CheckChainDetailWebActivity.start(mContext, StringConstant.USER_AGREEMENT, StringConstant.USER_URL);
-            }
+        userAgreementSpannable.setSpan(
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(@NonNull View widget) {
+                        CheckChainDetailWebActivity.start(
+                                mContext, StringConstant.USER_AGREEMENT, StringConstant.USER_URL);
+                    }
 
-            @Override
-            public void updateDrawState (@NonNull TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setColor(getColor(R.color.onekey));
-                ds.setUnderlineText(false);
-            }
-        }, 0, userAgreement.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    @Override
+                    public void updateDrawState(@NonNull TextPaint ds) {
+                        super.updateDrawState(ds);
+                        ds.setColor(getColor(R.color.onekey));
+                        ds.setUnderlineText(false);
+                    }
+                },
+                0,
+                userAgreement.length(),
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         builder.append(userAgreementSpannable);
         builder.append(getString(R.string.and));
         String privacyPolicy = getString(R.string.privacy_policy);
         SpannableString privacyPolicySpannable = new SpannableString(privacyPolicy);
-        privacyPolicySpannable.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick (@NonNull View widget) {
-                CheckChainDetailWebActivity.start(mContext, StringConstant.PRI_POLICY, StringConstant.POLICY_URL);
-            }
+        privacyPolicySpannable.setSpan(
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(@NonNull View widget) {
+                        CheckChainDetailWebActivity.start(
+                                mContext, StringConstant.PRI_POLICY, StringConstant.POLICY_URL);
+                    }
 
-            @Override
-            public void updateDrawState (@NonNull TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setColor(getColor(R.color.onekey));
-                ds.setUnderlineText(false);
-            }
-        }, 0, privacyPolicy.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    @Override
+                    public void updateDrawState(@NonNull TextPaint ds) {
+                        super.updateDrawState(ds);
+                        ds.setColor(getColor(R.color.onekey));
+                        ds.setUnderlineText(false);
+                    }
+                },
+                0,
+                privacyPolicy.length(),
+                Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         builder.append(privacyPolicySpannable);
         userTV.setMovementMethod(LinkMovementMethod.getInstance());
         userTV.setHighlightColor(getResources().getColor(android.R.color.transparent, null));
@@ -99,42 +108,45 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
     }
 
     @Override
-    public void initData () {
+    public void initData() {
         set();
     }
 
-    private void set () {
-        preferences.edit().putBoolean("bluetoothStatus", true).apply();//open bluetooth
+    private void set() {
+        preferences.edit().putBoolean("bluetoothStatus", true).apply(); // open bluetooth
         try {
-            Daemon.commands.callAttr("set_currency", "CNY");
-            Daemon.commands.callAttr("set_base_uint", "BTC");
+            PyEnv.sCommands.callAttr("set_currency", "CNY");
+            PyEnv.sCommands.callAttr("set_base_uint", "BTC");
             preferences.edit().putString("base_unit", "BTC").apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            Daemon.commands.callAttr("set_rbf", true);
+            PyEnv.sCommands.callAttr("set_rbf", true);
             preferences.edit().putBoolean("set_rbf", true).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            Daemon.commands.callAttr("set_unconf", false);
+            PyEnv.sCommands.callAttr("set_unconf", false);
             preferences.edit().putBoolean("set_unconf", true).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            Daemon.commands.callAttr("set_syn_server", true);
-            preferences.edit().putBoolean("set_syn_server", true).apply();//setting synchronize server
+            PyEnv.sCommands.callAttr("set_syn_server", true);
+            preferences
+                    .edit()
+                    .putBoolean("set_syn_server", true)
+                    .apply(); // setting synchronize server
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            Daemon.commands.callAttr("set_dust", false);
+            PyEnv.sCommands.callAttr("set_dust", false);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,5 +1,8 @@
 package org.haobtc.onekey.fragment.mainwheel;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,13 +24,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.fragment.app.Fragment;
-
 import com.chaquo.python.PyObject;
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
-
+import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -37,26 +36,19 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.ReceivedPageActivity;
 import org.haobtc.onekey.activities.SendOne2OneMainPageActivity;
 import org.haobtc.onekey.activities.personalwallet.WalletDetailsActivity;
-import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.MainNewWalletBean;
 import org.haobtc.onekey.event.CardUnitEvent;
 import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Objects;
-
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-
-/**
- * A simple {@link Fragment} subclass.
- */
-public class WheelViewpagerFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+/** A simple {@link Fragment} subclass. */
+public class WheelViewpagerFragment extends Fragment
+        implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private TextView walletCardName;
     private TextView walletpersonce;
@@ -84,9 +76,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     private LinearLayout linCheck;
     private TextView testStarCny;
 
-    public WheelViewpagerFragment() {
-
-    }
+    public WheelViewpagerFragment() {}
 
     public WheelViewpagerFragment(String name, String personce) {
         this.name = name;
@@ -101,8 +91,8 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
     @SuppressLint("CommitPrefEdits")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wheel_viewpager, container, false);
         EventBus.getDefault().register(this);
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
@@ -152,8 +142,10 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                     walletpersonce.setText(personce);
                     conlayBback.setBackground(getActivity().getDrawable(R.drawable.home_gray_bg));
                     btnLeft.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
-                    btncenetr.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
-                    btnRight.setBackground(getActivity().getDrawable(R.drawable.text_tou_back_blue));
+                    btncenetr.setBackground(
+                            getActivity().getDrawable(R.drawable.text_tou_back_blue));
+                    btnRight.setBackground(
+                            getActivity().getDrawable(R.drawable.text_tou_back_blue));
                 }
             }
         }
@@ -164,10 +156,9 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         if (isFirst) {
             refreshList();
         }
-        //get wallet unit
+        // get wallet unit
         String baseUnit = preferences.getString("base_unit", "");
         walletCard.setText(String.format("%s(%s)", getString(R.string.balance), baseUnit));
-
     }
 
     public void refreshList() {
@@ -177,17 +168,17 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         }
 
         try {
-            Daemon.commands.callAttr("load_wallet", name);
+            PyEnv.sCommands.callAttr("load_wallet", name);
             getWalletMsg();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    //get wallet message
+    // get wallet message
     public void getWalletMsg() {
         try {
-            selectWallet = Daemon.commands.callAttr("select_wallet", name);
+            selectWallet = PyEnv.sCommands.callAttr("select_wallet", name);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -263,7 +254,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.linear_send:
                 if (!MainActivity.isBacked && !"standard".equals(personce)) {
-                    //unBackup key dialog
+                    // unBackup key dialog
                     unBackupKeyDialog();
 
                 } else {
@@ -281,7 +272,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.linear_receive:
                 if (!MainActivity.isBacked && !"standard".equals(personce)) {
-                    //unBackup key dialog
+                    // unBackup key dialog
                     unBackupKeyDialog();
                 } else {
                     Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
@@ -292,7 +283,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.linear_sign:
                 if (!MainActivity.isBacked && !"standard".equals(personce)) {
-                    //unBackup key dialog
+                    // unBackup key dialog
                     unBackupKeyDialog();
                 } else {
                     Intent intent3 = new Intent(getActivity(), SignActivity.class);
@@ -305,22 +296,28 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
         }
     }
 
-    //unBackup key dialog
+    // unBackup key dialog
     private void unBackupKeyDialog() {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.un_backup_dialog, null, false);
+        View view =
+                LayoutInflater.from(getActivity()).inflate(R.layout.un_backup_dialog, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(view).create();
-        Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
-        view.findViewById(R.id.btn_add_Speed).setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), BackupRecoveryActivity.class);
-            intent.putExtra("home_un_backup", "home_un_backup");
-            startActivity(intent);
-            alertDialog.dismiss();
-        });
+        Objects.requireNonNull(alertDialog.getWindow())
+                .setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        view.findViewById(R.id.img_cancel)
+                .setOnClickListener(
+                        v -> {
+                            alertDialog.dismiss();
+                        });
+        view.findViewById(R.id.btn_add_Speed)
+                .setOnClickListener(
+                        v -> {
+                            Intent intent = new Intent(getActivity(), BackupRecoveryActivity.class);
+                            intent.putExtra("home_un_backup", "home_un_backup");
+                            startActivity(intent);
+                            alertDialog.dismiss();
+                        });
         alertDialog.show();
-        //show center
+        // show center
         Window dialogWindow = alertDialog.getWindow();
         WindowManager m = getActivity().getWindowManager();
         Display d = m.getDefaultDisplay();
@@ -350,7 +347,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     public void event(CardUnitEvent cardUnitEvent) {
         String cnyStrunit = preferences.getString(CURRENT_CURRENCY_SYMBOL, "CNY");
         testStarCny.setText(String.format("%s%s", getString(R.string.cny_star), cnyStrunit));
-
     }
 
     @Override

@@ -29,7 +29,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.BackupCompleteEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class CheckMnemonicActivity extends BaseActivity {
 
@@ -300,7 +300,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                         && chooseWord.get(1).equals(word2)
                         && chooseWord.get(2).equals(word3)) {
                     try {
-                        Daemon.commands.callAttr("delete_backup_info", keyName);
+                        PyEnv.sCommands.callAttr("delete_backup_info", keyName);
                     } catch (Exception e) {
                         e.printStackTrace();
                         mToast(HardWareExceptions.getExceptionString(e));

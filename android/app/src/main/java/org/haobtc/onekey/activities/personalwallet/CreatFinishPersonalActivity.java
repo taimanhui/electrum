@@ -17,13 +17,18 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.encode.CodeCreator;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -32,28 +37,22 @@ import org.haobtc.onekey.adapter.PublicPersonAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.XpubItem;
-import org.haobtc.onekey.utils.Daemon;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class CreatFinishPersonalActivity extends BaseActivity {
 
     @BindView(R.id.tetWalletname)
     TextView tetWalletname;
+
     @BindView(R.id.img_Orcode)
     ImageView imgOrcode;
+
     @BindView(R.id.tet_Preservation)
     TextView tetPreservation;
+
     @BindView(R.id.recl_keyView)
     RecyclerView reclKeyView;
+
     private Bitmap bitmap;
     private String walletNames;
     private String flagTag;
@@ -68,46 +67,51 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        //Whether to set pin after activation
+        // Whether to set pin after activation
         intent = getIntent();
         walletNames = intent.getStringExtra("walletNames");
         flagTag = intent.getStringExtra("flagTag");
         tetWalletname.setText(walletNames);
-
     }
 
     @Override
     public void initData() {
         boolean needBackup = intent.getBooleanExtra("needBackup", false);
         if (needBackup) {
-            //show set PIN dialog
+            // show set PIN dialog
             showBackupDialog();
         }
 
         keyList = new ArrayList<>();
-        //get wallet QR code
+        // get wallet QR code
         mGeneratecode();
-        //all bixinkey
+        // all bixinkey
         checkAllBixinkey();
-
     }
 
-    //show Whether to set pin after activation dialog
+    // show Whether to set pin after activation dialog
     private void showBackupDialog() {
         View view1 = LayoutInflater.from(this).inflate(R.layout.to_backup, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        view1.findViewById(R.id.test_no_yet).setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
-        view1.findViewById(R.id.test_to_backup).setOnClickListener(v -> {
-            Intent intent = new Intent(CreatFinishPersonalActivity.this, BackupRecoveryActivity.class);
-            intent.putExtra("home_un_backup", "create_to_backup");
-            startActivity(intent);
-            finish();
-        });
+        view1.findViewById(R.id.test_no_yet)
+                .setOnClickListener(
+                        v -> {
+                            alertDialog.dismiss();
+                        });
+        view1.findViewById(R.id.test_to_backup)
+                .setOnClickListener(
+                        v -> {
+                            Intent intent =
+                                    new Intent(
+                                            CreatFinishPersonalActivity.this,
+                                            BackupRecoveryActivity.class);
+                            intent.putExtra("home_un_backup", "create_to_backup");
+                            startActivity(intent);
+                            finish();
+                        });
         alertDialog.show();
-        //show center
+        // show center
         Window dialogWindow = alertDialog.getWindow();
         WindowManager m = getWindowManager();
         Display d = m.getDefaultDisplay();
@@ -121,7 +125,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
         if ("personal".equals(flagTag)) {
             String strBixinname = intent.getStringExtra("strBixinname");
             keyList.add(new XpubItem(strBixinname, ""));
-            //public person
+            // public person
             PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(keyList);
             reclKeyView.setAdapter(publicPersonAdapter);
 
@@ -130,12 +134,10 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             for (int i = 0; i < bixinKeylist.size(); i++) {
                 keyList.add((XpubItem) bixinKeylist.get(i));
             }
-            //public person
+            // public person
             PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(keyList);
             reclKeyView.setAdapter(publicPersonAdapter);
-
         }
-
     }
 
     @SingleClick
@@ -161,8 +163,8 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     private void mGeneratecode() {
         PyObject walletAddressShowUi = null;
         try {
-            Daemon.commands.callAttr("select_wallet", walletNames);
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            PyEnv.sCommands.callAttr("select_wallet", walletNames);
+            walletAddressShowUi = PyEnv.sCommands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -171,7 +173,8 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             String strCode = walletAddressShowUi.toString();
             Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
-            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            CurrentAddressDetail currentAddressDetail =
+                    gson.fromJson(strCode, CurrentAddressDetail.class);
             String qrData = currentAddressDetail.getQrData();
             bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
             imgOrcode.setImageBitmap(bitmap);
@@ -180,7 +183,13 @@ public class CreatFinishPersonalActivity extends BaseActivity {
 
     public boolean saveBitmap(Bitmap bitmap) {
         try {
-            File filePic = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + System.currentTimeMillis() + ".jpg");
+            File filePic =
+                    new File(
+                            Environment.getExternalStoragePublicDirectory(
+                                                    Environment.DIRECTORY_PICTURES)
+                                            .toString()
+                                    + System.currentTimeMillis()
+                                    + ".jpg");
             if (!filePic.exists()) {
                 filePic.getParentFile().mkdirs();
                 filePic.createNewFile();
@@ -189,12 +198,14 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filePic.getAbsolutePath())));
+            sendBroadcast(
+                    new Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                            Uri.parse("file://" + filePic.getAbsolutePath())));
             return success;
 
         } catch (IOException ignored) {
             return false;
         }
     }
-
 }

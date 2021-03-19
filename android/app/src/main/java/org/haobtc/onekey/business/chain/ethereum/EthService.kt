@@ -10,6 +10,7 @@ import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.TransactionSummaryVo
 import org.haobtc.onekey.business.chain.TransactionListType
 import org.haobtc.onekey.constant.Vm
+import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
 import java.util.*
@@ -29,7 +30,7 @@ class EthService {
       argList.add(Kwarg("contract_address", it))
     }
 
-    return Daemon.commands.callAttr("get_all_tx_list", *argList.toTypedArray())
+    return PyEnv.sCommands.callAttr("get_all_tx_list", *argList.toTypedArray())
   }
 
   @Throws(Exception::class)

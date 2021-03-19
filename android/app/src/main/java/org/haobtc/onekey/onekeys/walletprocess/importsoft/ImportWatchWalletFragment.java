@@ -37,9 +37,9 @@ import org.haobtc.onekey.business.qrdecode.QRDecode;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.databinding.FragmentImportWatchWalletBinding;
 import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
-import org.haobtc.onekey.utils.Daemon;
 
 /**
  * 导入观察钱包
@@ -175,7 +175,7 @@ public class ImportWatchWalletFragment extends BaseFragment
             }
             argList.add(new Kwarg("data", watchAddress));
             argList.add(new Kwarg("flag", "address"));
-            Daemon.commands.callAttr("verify_legality", argList.toArray(new Object[0]));
+            PyEnv.sCommands.callAttr("verify_legality", argList.toArray(new Object[0]));
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 showToast(HardWareExceptions.getExceptionString(e));

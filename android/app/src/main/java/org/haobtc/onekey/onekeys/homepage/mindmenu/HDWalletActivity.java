@@ -17,7 +17,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.LocalWalletInfo;
@@ -159,7 +158,7 @@ public class HDWalletActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCreateWalletSuccess(CreateSuccessEvent event) {
-        PyEnv.loadLocalWalletInfo(MyApplication.getInstance());
+        PyEnv.loadLocalWalletInfo();
         PreferencesManager.put(
                 this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, event.getName());
         getHomeWalletList();

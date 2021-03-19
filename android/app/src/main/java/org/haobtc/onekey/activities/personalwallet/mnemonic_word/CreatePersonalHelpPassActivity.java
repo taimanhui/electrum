@@ -1,43 +1,42 @@
 package org.haobtc.onekey.activities.personalwallet.mnemonic_word;
 
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chaquo.python.Kwarg;
-
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.utils.Daemon;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
-
+import org.haobtc.onekey.manager.PyEnv;
 
 public class CreatePersonalHelpPassActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.edt_Pass1)
     EditText edtPass1;
+
     @BindView(R.id.edt_Pass2)
     EditText edtPass2;
+
     @BindView(R.id.btn_setPin)
     Button btnSetPin;
+
     private String seed;
     private String name;
     private int walletNameNum;
@@ -61,60 +60,55 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         walletNameNum = intent.getIntExtra("walletNameNum", 0);
         mnemonicWalletType = intent.getStringExtra("mnemonicWalletType");
         inits();
-
     }
 
     private void inits() {
-        edtPass1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        edtPass1.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
 
-            }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        if (!TextUtils.isEmpty(s)
+                                && !TextUtils.isEmpty(edtPass2.getText().toString())) {
+                            btnSetPin.setEnabled(true);
+                            btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
+                        } else {
+                            btnSetPin.setEnabled(false);
+                            btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
+                        }
+                    }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!TextUtils.isEmpty(s) && !TextUtils.isEmpty(edtPass2.getText().toString())) {
-                    btnSetPin.setEnabled(true);
-                    btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
-                } else {
-                    btnSetPin.setEnabled(false);
-                    btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }
-            }
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
+        edtPass2.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
 
-            @Override
-            public void afterTextChanged(Editable s) {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        if (!TextUtils.isEmpty(s)
+                                && !TextUtils.isEmpty(edtPass1.getText().toString())) {
+                            btnSetPin.setEnabled(true);
+                            btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
+                        } else {
+                            btnSetPin.setEnabled(false);
+                            btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
+                        }
+                    }
 
-            }
-        });
-        edtPass2.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!TextUtils.isEmpty(s) && !TextUtils.isEmpty(edtPass1.getText().toString())) {
-                    btnSetPin.setEnabled(true);
-                    btnSetPin.setBackground(getDrawable(R.drawable.button_bk));
-                } else {
-                    btnSetPin.setEnabled(false);
-                    btnSetPin.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
     }
 
     @Override
-    public void initData() {
-
-    }
+    public void initData() {}
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.btn_setPin})
@@ -124,7 +118,10 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_setPin:
-                Intent intent = new Intent(CreatePersonalHelpPassActivity.this, CreateInputHelpWordWalletSuccseActivity.class);
+                Intent intent =
+                        new Intent(
+                                CreatePersonalHelpPassActivity.this,
+                                CreateInputHelpWordWalletSuccseActivity.class);
                 intent.putExtra("newWalletName", name);
                 startActivity(intent);
                 finish();
@@ -134,7 +131,6 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
                 throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
-
 
     private void improtWallet() {
         String strPass1 = edtPass1.getText().toString();
@@ -151,42 +147,48 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
             mToast(getString(R.string.two_different_pass));
             return;
         }
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (!TextUtils.isEmpty(mnemonicWalletType)) {
-                        Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed), new Kwarg("bip39_derivation", mnemonicWalletType));
-                    } else {
-                        Daemon.commands.callAttr("create", name, strPass1, new Kwarg("seed", seed));
-                    }
+        executorService.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (!TextUtils.isEmpty(mnemonicWalletType)) {
+                                PyEnv.sCommands.callAttr(
+                                        "create",
+                                        name,
+                                        strPass1,
+                                        new Kwarg("seed", seed),
+                                        new Kwarg("bip39_derivation", mnemonicWalletType));
+                            } else {
+                                PyEnv.sCommands.callAttr(
+                                        "create", name, strPass1, new Kwarg("seed", seed));
+                            }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (e.getMessage().contains("path is exist")) {
-                        mToast(getString(R.string.changewalletname));
-                    } else if (e.getMessage().contains("The same seed have create wallet")) {
-                        String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                        mToast(getString(R.string.same_seed_have) + haveWalletName);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            if (e.getMessage().contains("path is exist")) {
+                                mToast(getString(R.string.changewalletname));
+                            } else if (e.getMessage()
+                                    .contains("The same seed have create wallet")) {
+                                String haveWalletName =
+                                        e.getMessage()
+                                                .substring(e.getMessage().indexOf("name=") + 5);
+                                mToast(getString(R.string.same_seed_have) + haveWalletName);
+                            }
+                            return;
+                        }
+                        edit.putBoolean("haveCreateNopass", true);
+                        edit.putInt("defaultName", walletNameNum);
+                        edit.apply();
+                        try {
+                            PyEnv.sCommands.callAttr("load_wallet", name);
+                            PyEnv.sCommands.callAttr("select_wallet", name);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                        EventBus.getDefault().postSticky(new FirstEvent("createSinglePass"));
                     }
-                    return;
-                }
-                edit.putBoolean("haveCreateNopass", true);
-                edit.putInt("defaultName", walletNameNum);
-                edit.apply();
-                try {
-                    Daemon.commands.callAttr("load_wallet", name);
-                    Daemon.commands.callAttr("select_wallet", name);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
-                EventBus.getDefault().postSticky(new FirstEvent("createSinglePass"));
-            }
-        });
+                });
     }
 }
-
-
-
-

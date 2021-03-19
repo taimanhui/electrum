@@ -8,16 +8,17 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
-
+import java.util.ArrayList;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -25,39 +26,40 @@ import org.haobtc.onekey.adapter.MaindowndatalistAdapetr;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.MaintrsactionlistEvent;
 import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class TransactionRecordsActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener, OnRefreshListener {
+public class TransactionRecordsActivity extends BaseActivity
+        implements RadioGroup.OnCheckedChangeListener, OnRefreshListener {
     @BindView(R.id.recy_jylist)
     RecyclerView recyJylist;
+
     @BindView(R.id.tet_None)
     TextView tetNone;
+
     @BindView(R.id.img_backTrsa)
     ImageView imgBackTrsa;
+
     @BindView(R.id.radio_one)
     RadioButton radioOne;
+
     @BindView(R.id.radio_two)
     RadioButton radioTwo;
+
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
+
     @BindView(R.id.smart_RefreshLayout)
     SmartRefreshLayout refreshLayout;
+
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
     private String strChoose = "send";
     private String date;
     private boolean isMine;
     private MaindowndatalistAdapetr trsactionlistAdapter;
     private String strwalletType;
-
 
     @Override
     public int getLayoutId() {
@@ -82,20 +84,18 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
             recyJylist.setVisibility(View.GONE);
         } else {
             maintrsactionlistEvents = new ArrayList<>();
-            //Binder Adapter
+            // Binder Adapter
             trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
             recyJylist.setAdapter(trsactionlistAdapter);
             mTransactionrecordSend(strChoose);
         }
-
-
     }
 
     private void mTransactionrecordSend(String sends) {
-        //get transaction json
+        // get transaction json
         PyObject getHistoryTx = null;
         try {
-            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list", sends);
+            getHistoryTx = PyEnv.sCommands.callAttr("get_all_tx_list", sends);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -103,12 +103,11 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
         if (getHistoryTx != null) {
             getHistroyIntry(getHistoryTx);
         }
-
     }
 
     private void getHistroyIntry(PyObject getHistoryTx) {
         maintrsactionlistEvents.clear();
-        //get transaction list
+        // get transaction list
         if (!getHistoryTx.isEmpty()) {
             String strHistory = getHistoryTx.toString();
             // Log.i("strHistory", "onPage----: " + strHistory);
@@ -119,7 +118,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
             } else {
                 tetNone.setVisibility(View.GONE);
                 recyJylist.setVisibility(View.VISIBLE);
-                //show trsaction ist
+                // show trsaction ist
                 showTrsactionlist(strHistory);
             }
 
@@ -128,10 +127,9 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
             tetNone.setVisibility(View.VISIBLE);
             recyJylist.setVisibility(View.GONE);
         }
-
     }
 
-    //show trsaction list
+    // show trsaction list
     private void showTrsactionlist(String strHistory) {
         refreshLayout.finishRefresh();
         try {
@@ -143,12 +141,12 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                 //    private String strChoosestate;
                 String txHash = jsonObject.getString("tx_hash");
                 String amount = jsonObject.getString("amount");
-                isMine = jsonObject.getBoolean("is_mine");//false ->get   true ->push
+                isMine = jsonObject.getBoolean("is_mine"); // false ->get   true ->push
                 date = jsonObject.getString("date");
                 String txStatus = jsonObject.getString("tx_status");
                 if ("history".equals(type)) {
                     String confirmations = jsonObject.getString("confirmations");
-                    //add attribute
+                    // add attribute
                     maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
@@ -159,8 +157,8 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
 
-                    String invoiceId = jsonObject.getString("invoice_id");//delete use
-                    //add attribute
+                    String invoiceId = jsonObject.getString("invoice_id"); // delete use
+                    // add attribute
                     maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
@@ -171,81 +169,99 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 }
                 trsactionlistAdapter.notifyDataSetChanged();
-                trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                    private boolean status;
-                    private String txHash1;
+                trsactionlistAdapter.setOnItemChildClickListener(
+                        new BaseQuickAdapter.OnItemChildClickListener() {
+                            private boolean status;
+                            private String txHash1;
 
-                    @Override
-                    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                        String typeDele = maintrsactionlistEvents.get(position).getType();
-                        switch (view.getId()) {
-                            case R.id.lin_Item:
-                                try {
-                                    JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                    String tx_hash1 = jsonObject.getString("tx_hash");
-                                    Intent intent = new Intent(TransactionRecordsActivity.this, TransactionDetailsActivity.class);
-                                    if (typeDele.equals("tx")) {
-                                        String tx_Onclick = jsonObject.getString("tx");
-                                        intent.putExtra("keyValue", "B");
-                                        intent.putExtra("listType", typeDele);
-                                        intent.putExtra("tx_hash", tx_hash1);
-                                        intent.putExtra("strwalletType", strwalletType);
-                                        intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
-                                        intent.putExtra("is_mine", isMine);
-                                        intent.putExtra("dataTime", date);
-                                        intent.putExtra("txCreatTrsaction", tx_Onclick);
-                                        startActivity(intent);
+                            @Override
+                            public void onItemChildClick(
+                                    BaseQuickAdapter adapter, View view, int position) {
+                                String typeDele = maintrsactionlistEvents.get(position).getType();
+                                switch (view.getId()) {
+                                    case R.id.lin_Item:
+                                        try {
+                                            JSONObject jsonObject =
+                                                    jsonArray.getJSONObject(position);
+                                            String tx_hash1 = jsonObject.getString("tx_hash");
+                                            Intent intent =
+                                                    new Intent(
+                                                            TransactionRecordsActivity.this,
+                                                            TransactionDetailsActivity.class);
+                                            if (typeDele.equals("tx")) {
+                                                String tx_Onclick = jsonObject.getString("tx");
+                                                intent.putExtra("keyValue", "B");
+                                                intent.putExtra("listType", typeDele);
+                                                intent.putExtra("tx_hash", tx_hash1);
+                                                intent.putExtra("strwalletType", strwalletType);
+                                                intent.putExtra(
+                                                        "listTxStatus",
+                                                        maintrsactionlistEvents
+                                                                .get(position)
+                                                                .getTxStatus());
+                                                intent.putExtra("is_mine", isMine);
+                                                intent.putExtra("dataTime", date);
+                                                intent.putExtra("txCreatTrsaction", tx_Onclick);
+                                                startActivity(intent);
 
-                                    } else {
-                                        intent.putExtra("tx_hash", tx_hash1);
-                                        intent.putExtra("is_mine", isMine);
-                                        intent.putExtra("strwalletType", strwalletType);
-                                        intent.putExtra("dataTime", date);
-                                        intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
-                                        intent.putExtra("keyValue", "B");
-                                        intent.putExtra("listType", typeDele);
-                                        startActivity(intent);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                            } else {
+                                                intent.putExtra("tx_hash", tx_hash1);
+                                                intent.putExtra("is_mine", isMine);
+                                                intent.putExtra("strwalletType", strwalletType);
+                                                intent.putExtra("dataTime", date);
+                                                intent.putExtra(
+                                                        "listTxStatus",
+                                                        maintrsactionlistEvents
+                                                                .get(position)
+                                                                .getTxStatus());
+                                                intent.putExtra("keyValue", "B");
+                                                intent.putExtra("listType", typeDele);
+                                                startActivity(intent);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        break;
+                                    case R.id.txt_delete:
+                                        try {
+                                            JSONObject jsonObject =
+                                                    jsonArray.getJSONObject(position);
+                                            txHash1 = jsonObject.getString("tx_hash");
+                                            PyObject get_remove_flag =
+                                                    PyEnv.sCommands.callAttr(
+                                                            "get_remove_flag", txHash1);
+                                            status = get_remove_flag.toBoolean();
+                                            Log.i("onItemChildClick", "onItemCh==== " + status);
+
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        if (status) {
+                                            try {
+                                                PyEnv.sCommands.callAttr(
+                                                        "remove_local_tx", txHash1);
+                                                maintrsactionlistEvents.remove(position);
+                                                trsactionlistAdapter.notifyItemChanged(position);
+                                                mTransactionrecordSend(strChoose);
+                                                EventBus.getDefault().post(new FirstEvent("22"));
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        } else {
+                                            mToast(getString(R.string.delete_unBroad));
+                                        }
+                                        break;
+                                    default:
+                                        throw new IllegalStateException(
+                                                "Unexpected value: " + view.getId());
                                 }
-                                break;
-                            case R.id.txt_delete:
-                                try {
-                                    JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                    txHash1 = jsonObject.getString("tx_hash");
-                                    PyObject get_remove_flag = Daemon.commands.callAttr("get_remove_flag", txHash1);
-                                    status = get_remove_flag.toBoolean();
-                                    Log.i("onItemChildClick", "onItemCh==== " + status);
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                if (status) {
-                                    try {
-                                        Daemon.commands.callAttr("remove_local_tx", txHash1);
-                                        maintrsactionlistEvents.remove(position);
-                                        trsactionlistAdapter.notifyItemChanged(position);
-                                        mTransactionrecordSend(strChoose);
-                                        EventBus.getDefault().post(new FirstEvent("22"));
-
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                } else {
-                                    mToast(getString(R.string.delete_unBroad));
-                                }
-                                break;
-                            default:
-                                throw new IllegalStateException("Unexpected value: " + view.getId());
-                        }
-                    }
-                });
+                            }
+                        });
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     @SingleClick
@@ -255,7 +271,6 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
             finish();
         }
     }
-
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -293,7 +308,7 @@ public class TransactionRecordsActivity extends BaseActivity implements RadioGro
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
         maintrsactionlistEvents.clear();
-        //trsaction list data
+        // trsaction list data
         mTransactionrecordSend(strChoose);
         if (trsactionlistAdapter != null) {
             trsactionlistAdapter.notifyDataSetChanged();

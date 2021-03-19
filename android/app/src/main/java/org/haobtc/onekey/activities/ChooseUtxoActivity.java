@@ -1,17 +1,22 @@
 package org.haobtc.onekey.activities;
 
+import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -19,33 +24,27 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.ChooseUtxoAdapter;
 import org.haobtc.onekey.event.ChooseUtxoEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 public class ChooseUtxoActivity extends BaseActivity {
 
     @BindView(R.id.text_all_num)
     TextView textAllNum;
+
     @BindView(R.id.text_unit)
     TextView textUnit;
+
     @BindView(R.id.recl_choose_utxo)
     RecyclerView reclChooseUtxo;
+
     @BindView(R.id.text_no_content)
     TextView textNoContent;
+
     @BindView(R.id.text_standard)
     TextView textStandard;
+
     private ArrayList<ChooseUtxoEvent> chooseUtxoList;
     private ArrayList<Map<String, String>> listDates;
     private ChooseUtxoAdapter chooseUtxoAdapter;
@@ -64,29 +63,31 @@ public class ChooseUtxoActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        sendNum = getIntent().getStringExtra(WALLET_BALANCE);//total num
+        sendNum = getIntent().getStringExtra(WALLET_BALANCE); // total num
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         mBtcUnit = preferences.getString("base_unit", "mBtc");
         textUnit.setText(mBtcUnit);
-        textStandard.setText(String.format("%s %s %s", getString(R.string.utxo_tips), sendNum, mBtcUnit));
+        textStandard.setText(
+                String.format("%s %s %s", getString(R.string.utxo_tips), sendNum, mBtcUnit));
         utxoPositionData = getIntent().getStringArrayListExtra("utxoPositionData");
     }
 
     @Override
     public void initData() {
         utxoPosList = new ArrayList<>();
-        listDates = new ArrayList<>();//choose UTXO data list
+        listDates = new ArrayList<>(); // choose UTXO data list
         chooseUtxoList = new ArrayList<>();
-        //get utxo data
+        // get utxo data
         getUtxoData();
         mOnlickFinish();
-        chooseUtxoAdapter = new ChooseUtxoAdapter(ChooseUtxoActivity.this, chooseUtxoList, utxoPositionData);
+        chooseUtxoAdapter =
+                new ChooseUtxoAdapter(ChooseUtxoActivity.this, chooseUtxoList, utxoPositionData);
         reclChooseUtxo.setAdapter(chooseUtxoAdapter);
     }
 
     private void getUtxoData() {
         try {
-            PyObject getUnspendUtxos = Daemon.commands.callAttr("get_unspend_utxos");
+            PyObject getUnspendUtxos = PyEnv.sCommands.callAttr("get_unspend_utxos");
             Log.i("utxoListDates", "getUtxoData---: " + getUnspendUtxos);
             if (getUnspendUtxos != null && getUnspendUtxos.size() != 0) {
                 JSONArray jsonArray = new JSONArray(getUnspendUtxos.toString());
@@ -111,7 +112,6 @@ public class ChooseUtxoActivity extends BaseActivity {
             reclChooseUtxo.setVisibility(View.GONE);
             textNoContent.setVisibility(View.VISIBLE);
         }
-
     }
 
     @OnClick({R.id.img_back, R.id.btn_finish})
@@ -132,7 +132,13 @@ public class ChooseUtxoActivity extends BaseActivity {
                         setResult(RESULT_OK, intent);
                         finish();
                     } else {
-                        mToast(String.format("%s%s%s%s", getString(R.string.choose), getString(R.string.utxo_tips), sendNum, mBtcUnit));
+                        mToast(
+                                String.format(
+                                        "%s%s%s%s",
+                                        getString(R.string.choose),
+                                        getString(R.string.utxo_tips),
+                                        sendNum,
+                                        mBtcUnit));
                     }
                 } else {
                     mToast(getString(R.string.please_choose));
@@ -150,9 +156,13 @@ public class ChooseUtxoActivity extends BaseActivity {
         for (int i = 0; i < chooseUtxoList.size(); i++) {
             pramas = new HashMap();
             if (map.get(i)) {
-                String bitAmount = chooseUtxoList.get(i).getValue().substring(0, chooseUtxoList.get(i).getValue().indexOf(" "));
+                String bitAmount =
+                        chooseUtxoList
+                                .get(i)
+                                .getValue()
+                                .substring(0, chooseUtxoList.get(i).getValue().indexOf(" "));
                 BigDecimal bignum1 = new BigDecimal(bitAmount);
-                //Total transfer quantity
+                // Total transfer quantity
                 totalAmount = totalAmount.add(bignum1);
                 pramas.put(chooseUtxoList.get(i).getHash(), chooseUtxoList.get(i).getAddress());
                 if (!utxoPosList.contains(chooseUtxoList.get(i).getHash())) {
@@ -167,7 +177,6 @@ public class ChooseUtxoActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(ChooseUtxoEvent updataHint) {
         mOnlickFinish();
-
     }
 
     @Override

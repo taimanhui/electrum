@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -19,42 +18,47 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import java.util.ArrayList;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.ChoosePayAddressAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.AddressEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 
-import java.util.ArrayList;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class AgentServerActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
+public class AgentServerActivity extends BaseActivity
+        implements CompoundButton.OnCheckedChangeListener {
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switchAgent)
     Switch switchAgent;
+
     @BindView(R.id.btnConfirm)
     Button btnConfirm;
+
     @BindView(R.id.editAgentIP)
     EditText editAgentIp;
+
     @BindView(R.id.editPort)
     EditText editPort;
+
     @BindView(R.id.editUsername)
     EditText editUsername;
+
     @BindView(R.id.editPass)
     EditText editPass;
+
     @BindView(R.id.testNodeType)
     TextView testNodeType;
+
     @BindView(R.id.relNodeType)
     RelativeLayout relNodeType;
+
     private ArrayList<AddressEvent> dataList;
     private String nodetype;
     private String strAgentIp;
@@ -67,7 +71,6 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     private String set_proxy;
     private boolean set_proxy_status;
     private boolean proxy_switch;
-
 
     @Override
     public int getLayoutId() {
@@ -90,7 +93,6 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         switchAgent.setOnCheckedChangeListener(this);
 
         inits();
-
     }
 
     private void inits() {
@@ -109,7 +111,6 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         testNodeType.setText(wordsList[0]);
                         editAgentIp.setText(wordsList[1]);
                         editPort.setText(wordsList[2]);
-
                 }
                 btnConfirm.setEnabled(true);
                 btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
@@ -131,7 +132,6 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         dataList = new ArrayList<>();
         dataList.add(new AddressEvent("socks4"));
         dataList.add(new AddressEvent("socks5"));
-
     }
 
     @SingleClick
@@ -161,12 +161,15 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         strUsername = editUsername.getText().toString();
         strPass = editPass.getText().toString();
         try {
-            Daemon.commands.callAttr("set_proxy", strNodetype, strAgentIp, strPort, strUsername, strPass);
+            PyEnv.sCommands.callAttr(
+                    "set_proxy", strNodetype, strAgentIp, strPort, strUsername, strPass);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        edit.putString("set_proxy", strNodetype + " " + strAgentIp + " " + strPort + " " + strUsername + " " + strPass);
+        edit.putString(
+                "set_proxy",
+                strNodetype + " " + strAgentIp + " " + strPort + " " + strUsername + " " + strPass);
         edit.putBoolean("set_proxy_status", true);
         edit.apply();
         mToast(getString(R.string.set_success));
@@ -174,34 +177,39 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     }
 
     private void showDialogs(Context context, @LayoutRes int resource) {
-        //set see view
+        // set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtom = new Dialog(context, R.style.dialog);
         RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
         Log.i("jianxoiain", "dataList: " + dataList.get(0));
-        ChoosePayAddressAdapter choosePayAddressAdapetr = new ChoosePayAddressAdapter(AgentServerActivity.this, dataList);
+        ChoosePayAddressAdapter choosePayAddressAdapetr =
+                new ChoosePayAddressAdapter(AgentServerActivity.this, dataList);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
-        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                nodetype = dataList.get(position).getName();
-                testNodeType.setText(nodetype);
-                //judge button status
-                buttonColorStatus();
-                dialogBtom.cancel();
-            }
-        });
-        //cancel dialog
-        view.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
+        choosePayAddressAdapetr.setmOnItemClickListener(
+                new ChoosePayAddressAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        nodetype = dataList.get(position).getName();
+                        testNodeType.setText(nodetype);
+                        // judge button status
+                        buttonColorStatus();
+                        dialogBtom.cancel();
+                    }
+                });
+        // cancel dialog
+        view.findViewById(R.id.cancel_select_wallet)
+                .setOnClickListener(
+                        v -> {
+                            dialogBtom.cancel();
+                        });
         dialogBtom.setContentView(view);
         Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
+        // set pop_up size
+        window.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        // set locate
         window.setGravity(Gravity.BOTTOM);
-        //set animal
+        // set animal
         window.setWindowAnimations(R.style.AnimBottom);
         dialogBtom.show();
     }
@@ -248,7 +256,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
 
     private void closeAgentServer() {
         try {
-            Daemon.commands.callAttr("set_proxy", "", "", "", "", "");
+            PyEnv.sCommands.callAttr("set_proxy", "", "", "", "", "");
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -260,23 +268,19 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
 
     class TextChange implements TextWatcher {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
+        public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
         @Override
         public void afterTextChanged(Editable s) {
-            //judge button status
+            // judge button status
             buttonColorStatus();
         }
     }
 
-    //judge button status
+    // judge button status
     private void buttonColorStatus() {
         strNodetype = testNodeType.getText().toString();
         strAgentIp = editAgentIp.getText().toString();
@@ -284,7 +288,9 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         strUsername = editUsername.getText().toString();
         strPass = editPass.getText().toString();
 
-        if (TextUtils.isEmpty(strAgentIp) || TextUtils.isEmpty(strPort) || TextUtils.isEmpty(strNodetype)) {
+        if (TextUtils.isEmpty(strAgentIp)
+                || TextUtils.isEmpty(strPort)
+                || TextUtils.isEmpty(strNodetype)) {
             if (proxy_switch) {
                 btnConfirm.setEnabled(false);
                 btnConfirm.setBackground(getDrawable(R.drawable.btn_no_check));
@@ -296,9 +302,6 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         } else {
             btnConfirm.setEnabled(true);
             btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
-
         }
-
     }
-
 }

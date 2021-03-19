@@ -12,7 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import java.util.Locale;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -23,24 +26,22 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.ReceiveXpub;
-import org.haobtc.onekey.utils.Daemon;
-
-import java.util.Locale;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class SingleSigWalletCreator extends BaseActivity {
 
     @BindView(R.id.img_backCreat)
     ImageView imgBackCreat;
+
     @BindView(R.id.edit_walletName_setting)
     EditText editWalletNameSetting;
+
     @BindView(R.id.bn_multi_next)
     Button bnMultiNext;
+
     @BindView(R.id.number)
     TextView number;
+
     private SharedPreferences.Editor edit;
     private int defaultName;
     private int walletNameNum;
@@ -62,7 +63,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         edit = preferences.edit();
         defaultName = preferences.getInt("defaultName", 0);
         init();
-
     }
 
     private void init() {
@@ -70,41 +70,39 @@ public class SingleSigWalletCreator extends BaseActivity {
         editWalletNameSetting.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
         number.setText(String.format(Locale.CHINA, "%d/16", editWalletNameSetting.length()));
 
-        editWalletNameSetting.addTextChangedListener(new TextWatcher() {
-            CharSequence input;
+        editWalletNameSetting.addTextChangedListener(
+                new TextWatcher() {
+                    CharSequence input;
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                input = s;
-            }
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        input = s;
+                    }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                number.setText(String.format(Locale.CHINA, "%d/16", input.length()));
-                if (input.length() > 15) {
-                    mToast(getString(R.string.moreinput_text_fixbixinkey));
-                }
-            }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        number.setText(String.format(Locale.CHINA, "%d/16", input.length()));
+                        if (input.length() > 15) {
+                            mToast(getString(R.string.moreinput_text_fixbixinkey));
+                        }
+                    }
 
-            @SuppressLint("UseCompatLoadingForDrawables")
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s.toString())) {
-                    bnMultiNext.setEnabled(true);
-                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
-                } else {
-                    bnMultiNext.setEnabled(false);
-                    bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
-                }
-            }
-        });
-
+                    @SuppressLint("UseCompatLoadingForDrawables")
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!TextUtils.isEmpty(s.toString())) {
+                            bnMultiNext.setEnabled(true);
+                            bnMultiNext.setBackground(getDrawable(R.drawable.button_bk));
+                        } else {
+                            bnMultiNext.setEnabled(false);
+                            bnMultiNext.setBackground(getDrawable(R.drawable.button_bk_grey));
+                        }
+                    }
+                });
     }
 
     @Override
-    public void initData() {
-
-    }
+    public void initData() {}
 
     @SingleClick
     @OnClick({R.id.img_backCreat, R.id.bn_multi_next})
@@ -121,7 +119,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         }
     }
 
-    //creat personal wallet
+    // creat personal wallet
     private void mCreatOnlyWallet() {
         String strWalletName = editWalletNameSetting.getText().toString();
         if (TextUtils.isEmpty(strWalletName)) {
@@ -133,7 +131,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         Intent intent = new Intent(this, CommunicationModeSelector.class);
         intent.putExtra("tag", TAG);
         startActivity(intent);
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
@@ -148,7 +145,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         String strXpub = "[[\"" + xpub + "\",\"" + deviceId + "\"]]";
         String walletName = editWalletNameSetting.getText().toString();
         try {
-            Daemon.commands.callAttr("import_create_hw_wallet", walletName, 1, 1, strXpub);
+            PyEnv.sCommands.callAttr("import_create_hw_wallet", walletName, 1, 1, strXpub);
         } catch (Exception e) {
             e.printStackTrace();
             String message = e.getMessage();
@@ -168,7 +165,8 @@ public class SingleSigWalletCreator extends BaseActivity {
         edit.apply();
         walletName = editWalletNameSetting.getText().toString();
         if (event.isShowUI()) {
-            Intent intent = new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
+            Intent intent =
+                    new Intent(SingleSigWalletCreator.this, CreatFinishPersonalActivity.class);
             intent.putExtra("walletNames", walletName);
             intent.putExtra("flagTag", "personal");
             intent.putExtra("strBixinname", xpub);
@@ -178,12 +176,14 @@ public class SingleSigWalletCreator extends BaseActivity {
             EventBus.getDefault().post(new FixWalletNameEvent(walletName));
         }
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                finish();
-            }
-        }, 1000);
+        handler.postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                },
+                1000);
     }
 
     @Override
@@ -191,5 +191,4 @@ public class SingleSigWalletCreator extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
 }

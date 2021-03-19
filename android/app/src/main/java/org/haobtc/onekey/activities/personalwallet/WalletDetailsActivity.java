@@ -41,7 +41,7 @@ import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.WalletAddressEvent;
 import org.haobtc.onekey.event.WalletDetailBixinKeyEvent;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.MyDialog;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -123,7 +123,7 @@ public class WalletDetailsActivity extends BaseActivity {
     private void mGeneratecode() {
         PyObject walletAddressShowUi = null;
         try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
+            walletAddressShowUi = PyEnv.sCommands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -154,7 +154,7 @@ public class WalletDetailsActivity extends BaseActivity {
             deviceValue.add(hardwareFeatures);
         }
         try {
-            PyObject deviceInfo = Daemon.commands.callAttr("get_device_info");
+            PyObject deviceInfo = PyEnv.sCommands.callAttr("get_device_info");
             String strDeviceId = deviceInfo.toString();
             if (!TextUtils.isEmpty(strDeviceId)) {
                 for (HardwareFeatures entity : deviceValue) {
@@ -219,7 +219,7 @@ public class WalletDetailsActivity extends BaseActivity {
     private void getAllFundedAddress() {
         PyObject getAllFundedAddress = null;
         try {
-            getAllFundedAddress = Daemon.commands.callAttr("get_all_funded_address");
+            getAllFundedAddress = PyEnv.sCommands.callAttr("get_all_funded_address");
             JSONArray jsonArray = new JSONArray(getAllFundedAddress.toString());
             if (jsonArray.length() != 0) {
                 for (int i = 0; i < jsonArray.length(); i++) {

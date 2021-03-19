@@ -14,6 +14,8 @@ import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import com.alibaba.fastjson.JSON;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -119,17 +121,41 @@ public final class PyEnv {
     public static HardwareFeatures currentHwFeatures;
     public static Semaphore semaphore = new Semaphore(1);
 
-    public static void init(@NonNull Context context) {
-        if (BuildConfig.net_type.equals(context.getString(R.string.TestNet))) {
+    public static void init() {
+        if (BuildConfig.net_type.equals(MyApplication.getInstance().getString(R.string.TestNet))) {
             setTestNet();
-        } else if (BuildConfig.net_type.equals(context.getString(R.string.RegTest))) {
+        } else if (BuildConfig.net_type.equals(
+                MyApplication.getInstance().getString(R.string.RegTest))) {
             setRegNet();
         }
-        Daemon.initCommands();
-        sCommands = Daemon.commands;
-        // 加载钱包信息
-        sCommands.callAttr(PyConstant.LOAD_ALL_WALLET);
-        loadLocalWalletInfo(context);
+        sCommands = initCommands();
+        loadAllWallet();
+        loadLocalWalletInfo();
+    }
+
+    private static void initChaquo() {
+        if (!Python.isStarted()) {
+            Python.start(new AndroidPlatform(MyApplication.getInstance()));
+        }
+        Global.py = Python.getInstance();
+    }
+
+    public static PyObject initCommands() {
+        if (sCommands == null) {
+            try {
+                Global.guiConsole = Global.py.getModule(PyConstant.ELECTRUM_GUI_ANDROID_CONSOLE);
+                String ethNetwork = Vm.getEthNetwork();
+                return sCommands =
+                        Global.guiConsole.callAttr(
+                                PyConstant.ANDROID_COMMANDS,
+                                new Kwarg("chain_type", ethNetwork),
+                                new Kwarg(PyConstant.ANDROID_ID, "112233"),
+                                new Kwarg(PyConstant.CALLBACK, Daemon.getInstance()));
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        }
+        return null;
     }
 
     public static void cancelPinInput() {
@@ -229,6 +255,15 @@ public final class PyEnv {
         sCommands.callAttr(PyConstant.CANCEL_RECOVERY);
     }
 
+    public static void loadAllWallet() {
+        try {
+            Logger.d("sCommands -----》" + sCommands != null);
+            sCommands.callAttr(PyConstant.LOAD_ALL_WALLET);
+        } catch (Exception e) {
+            Logger.d("异常---》");
+        }
+    }
+
     /** 获取硬件设备信息 */
     public static void getFeature(
             Context context, Consumer<PyResponse<HardwareFeatures>> callback) {
@@ -242,7 +277,7 @@ public final class PyEnv {
                 Futures.withTimeout(
                         mExecutorService.submit(
                                 () ->
-                                        Daemon.commands
+                                        PyEnv.sCommands
                                                 .callAttr(
                                                         PyConstant.GET_FEATURE,
                                                         MyApplication.getInstance().getDeviceWay())
@@ -507,7 +542,7 @@ public final class PyEnv {
     }
 
     /** 加载本地钱包信息 */
-    public static void loadLocalWalletInfo(Context context) {
+    public static void loadLocalWalletInfo() {
         try {
             String walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO).toString();
             LogUtil.d("oneKey", "----->" + walletsInfo);
@@ -520,7 +555,7 @@ public final class PyEnv {
                                     .forEach(
                                             (walletName) ->
                                                     PreferencesManager.put(
-                                                            context,
+                                                            MyApplication.getInstance(),
                                                             Constant.WALLETS,
                                                             walletName,
                                                             wallet.getAsJsonObject()
@@ -923,7 +958,7 @@ public final class PyEnv {
             params.put(receiver, amount);
             arrayList.add(params);
             String result =
-                    Daemon.commands
+                    PyEnv.sCommands
                             .callAttr(
                                     PyConstant.CALCULATE_FEE,
                                     coin,
@@ -971,7 +1006,7 @@ public final class PyEnv {
         params.put("gas_limit", String.valueOf(gasLimit));
         try {
             String result =
-                    Daemon.commands
+                    PyEnv.sCommands
                             .callAttr(
                                     PyConstant.CALCULATE_FEE,
                                     coin,
@@ -1513,6 +1548,8 @@ public final class PyEnv {
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());
+            Logger.e("e.getMessage()--->" + e.getMessage());
+            Logger.d("是否初始化成功" + sCommands != null);
         }
         return response;
     }

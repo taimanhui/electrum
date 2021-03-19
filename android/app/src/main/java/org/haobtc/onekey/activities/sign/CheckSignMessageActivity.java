@@ -6,28 +6,28 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chaquo.python.PyObject;
-
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.HideInputPassFinishEvent;
-import org.haobtc.onekey.utils.Daemon;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import org.haobtc.onekey.manager.PyEnv;
 
 public class CheckSignMessageActivity extends BaseActivity {
 
     @BindView(R.id.testOriginal)
     TextView testOriginal;
+
     @BindView(R.id.testPublickey)
     TextView testPublickey;
+
     @BindView(R.id.testSignedMsg)
     TextView testSignedMsg;
+
     private String signMsg;
     private String signAddress;
     private String signedFinish;
@@ -78,7 +78,8 @@ public class CheckSignMessageActivity extends BaseActivity {
     private void checkSigned() {
         PyObject verifyMessage = null;
         try {
-            verifyMessage = Daemon.commands.callAttr("verify_message", signAddress, signMsg, signedFinish);
+            verifyMessage =
+                    PyEnv.sCommands.callAttr("verify_message", signAddress, signMsg, signedFinish);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("Invalid Bitcoin address")) {
@@ -96,12 +97,11 @@ public class CheckSignMessageActivity extends BaseActivity {
     }
 
     private void copyMessage(TextView editMsg) {
-        //copy text
+        // copy text
         ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         // The text is placed on the system clipboard.
         cm.setText(editMsg.getText());
-        Toast.makeText(CheckSignMessageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
-
+        Toast.makeText(CheckSignMessageActivity.this, R.string.copysuccess, Toast.LENGTH_LONG)
+                .show();
     }
-
 }

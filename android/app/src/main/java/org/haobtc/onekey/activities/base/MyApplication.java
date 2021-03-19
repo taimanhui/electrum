@@ -56,7 +56,6 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
         EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
         mInstance = this;
         initBle();
-        initChaquo();
         CrashReport.initCrashReport(getApplicationContext(), BUGLY_APPID, true);
         Logger.addLogAdapter(
                 new AndroidLogAdapter() {

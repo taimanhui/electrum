@@ -34,9 +34,9 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.databinding.FragmentImportKeystoreBinding;
 import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
-import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.MyDialog;
 
 /**
@@ -182,7 +182,7 @@ public class ImportKeystoreFragment extends BaseFragment implements View.OnClick
                                             argList.add(new Kwarg("data", keystoreContent));
                                             argList.add(new Kwarg("password", keystorePass));
                                             argList.add(new Kwarg("flag", "keystore"));
-                                            Daemon.commands.callAttr(
+                                            PyEnv.sCommands.callAttr(
                                                     "verify_legality",
                                                     argList.toArray(new Object[0]));
                                             emitter.onSuccess("success");
