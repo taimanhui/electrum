@@ -2,6 +2,8 @@ package org.haobtc.onekey.onekeys.homepage.process;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+import static org.haobtc.onekey.constant.Vm.CoinType.BTC;
+import static org.haobtc.onekey.constant.Vm.CoinType.ETH;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -188,32 +190,23 @@ public class HdWalletDetailActivity extends BaseActivity {
                 linSingle.setVisibility(View.GONE);
                 break;
             case WalletType.IMPORT_PRIVATE:
-                switch (coinType) {
-                    case BTC:
-                    case ETH:
-                        exportWordLayout.setVisibility(View.GONE);
-                        exportPrivateLayout.setVisibility(View.VISIBLE);
-                        break;
-                    default:
-                        exportPrivateLayout.setVisibility(View.GONE);
-                        exportWordLayout.setVisibility(View.VISIBLE);
-                        break;
+                if (coinType.chainType.equalsIgnoreCase(BTC.chainType)
+                        || coinType.chainType.equalsIgnoreCase(ETH.chainType)) {
+                    exportWordLayout.setVisibility(View.GONE);
+                    exportPrivateLayout.setVisibility(View.VISIBLE);
+                } else {
+                    exportPrivateLayout.setVisibility(View.GONE);
+                    exportWordLayout.setVisibility(View.VISIBLE);
                 }
             case WalletType.STANDARD:
                 linHdWalletShow.setVisibility(View.GONE);
                 linSingleShow.setVisibility(View.VISIBLE);
                 textHdWallet.setText(getString(R.string.single));
-
-                switch (coinType) {
-                    default:
-                    case BTC:
-                        exportKeystoreLayout.setVisibility(View.GONE);
-                        break;
-                    case ETH:
-                        exportKeystoreLayout.setVisibility(View.VISIBLE);
-                        break;
+                if (coinType.chainType.equalsIgnoreCase(BTC.chainType)) {
+                    exportKeystoreLayout.setVisibility(View.GONE);
+                } else if (coinType.chainType.equalsIgnoreCase(ETH.chainType)) {
+                    exportKeystoreLayout.setVisibility(View.VISIBLE);
                 }
-                break;
         }
     }
 
