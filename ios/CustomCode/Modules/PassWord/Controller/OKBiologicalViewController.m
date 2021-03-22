@@ -47,16 +47,30 @@
     [self setNavigationBarBackgroundColorWithClearColor];
     [self hideBackBtn];
     self.title = MyLocalizedString(@"Create a new wallet", nil);
-    
+
     self.descTitleLabel.text = MyLocalizedString(@"You can more easily unlock your wallet without having to type in your password every time", nil);
     self.descDetailLabel.text = MyLocalizedString(@"Your face, fingerprints and other biological data are stored on this machine, encrypted by the operating system of your phone manufacturer, and we can neither access nor save these data", nil);
     [self.nextBtn setTitle:MyLocalizedString(@"The next time again say", nil) forState:UIControlStateNormal];
     [self.startBtn setLayerRadius:20];
     [self.nextBtn setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-   
-    
+
+
     [YZAuthID biologicalRecognitionResult:^(YZAuthenticationType type) {
         switch (type) {
+            case YZAuthenticationNone:
+            {
+                if (kTools.isNotchScreen) {
+                    self.setTitleLabel.text = MyLocalizedString(@"Set face recognition", nil);
+                    self.iconImageView.image = [UIImage imageNamed:@"face_id"];
+                    [self.startBtn setTitle:MyLocalizedString(@"Turn on Face recognition", nil) forState:UIControlStateNormal];
+                }else{
+                    self.setTitleLabel.text = MyLocalizedString(@"Set fingerprint identification", nil);
+                    self.iconImageView.image = [UIImage imageNamed:@"touch_id"];
+                    [self.startBtn setTitle:MyLocalizedString(@"Turn on fingerprint identification", nil) forState:UIControlStateNormal];
+                }
+
+            }
+                break;
             case YZAuthenticationFace:
             {
                 self.setTitleLabel.text = MyLocalizedString(@"Set face recognition", nil);
@@ -95,12 +109,16 @@
 
 - (IBAction)startBtnClick:(UIButton *)sender {
     [self.authIDControl yz_showAuthIDWithDescribe:@"OneKey" BlockState:^(YZAuthIDState state, NSError *error) {
-        if (state == YZAuthIDStateNotSupport
-            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+        if (state == YZAuthIDStateNotSupport || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+            NSString *tipsStr = MyLocalizedString(@"TouchID is not supported or TouchID is not enabled", nil);
+            if (kTools.isNotchScreen) {
+                tipsStr = MyLocalizedString(@"FaceID is not supported or FaceID is not enabled", nil);
+            }
+            [kTools tipMessage:tipsStr];
         } else if(state == YZAuthIDStateFail) { // 认证失败
-            
-        } else if(state == YZAuthIDStateTouchIDLockout) {   // 多次错误，已被锁定
-            
+
+        }else if(state == YZAuthIDStateTouchIDLockout) {   // 多次错误，已被锁定
+
         } else if (state == YZAuthIDStateSuccess) { // TouchID/FaceID验证成功
             kWalletManager.isOpenAuthBiological = YES;
             [kOneKeyPwdManager saveOneKeyPassWord:self.pwd];
