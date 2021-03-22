@@ -57,7 +57,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
     private int time;
     private String fee;
     private String fiat;
-    private String hdWalletName;
+    private String hdWalletId;
     private SystemConfigManager mSystemConfigManager;
 
     /**
@@ -79,7 +79,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
         size = bundle.getInt(Constant.TAG_TX_SIZE, 0);
         feeRateMin = bundle.getDouble(Constant.CUSTOMIZE_FEE_RATE_MIN);
         feeRateMax = (int) bundle.getDouble(Constant.CUSTOMIZE_FEE_RATE_MAX);
-        hdWalletName = bundle.getString(Constant.HDWALLET_NAME);
+        hdWalletId = bundle.getString(Constant.HDWALLET_NAME);
         double nowRate = bundle.getDouble(Constant.FEE_RATE);
         textSize.setText(String.valueOf(size));
         if (String.valueOf(nowRate).contains(".")) {
@@ -118,7 +118,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
                             .show();
                     return;
                 }
-                MySPManager.getInstance().put(hdWalletName, feeRate);
+                MySPManager.getInstance().put(hdWalletId, feeRate);
                 EventBus.getDefault()
                         .post(
                                 new CustomizeFeeRateEvent(

@@ -27,6 +27,7 @@ import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.core.CenterPopupView;
 import com.orhanobut.logger.Logger;
 import java.util.Objects;
+import java.util.Optional;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -466,11 +467,13 @@ public class SearchDevicesActivity extends BaseActivity
         String firmwareVersion = "";
         if (!features.isBootloaderMode()) {
             firmwareVersion =
-                    features.getMajorVersion()
-                            + "."
-                            + features.getMinorVersion()
-                            + "."
-                            + features.getPatchVersion();
+                    Optional.ofNullable(features.getOneKeyVersion())
+                            .orElse(
+                                    features.getMajorVersion()
+                                            + "."
+                                            + features.getMinorVersion()
+                                            + "."
+                                            + features.getPatchVersion());
         }
         String nrfVersion = features.getBleVer();
         String bleName = features.getBleName();

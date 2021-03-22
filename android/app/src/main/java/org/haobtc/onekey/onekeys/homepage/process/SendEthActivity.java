@@ -164,7 +164,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     TextView pasteAddress;
 
     @BindView(R.id.wallet_name)
-    TextView walletName;
+    TextView walletChainName;
 
     @BindView(R.id.text_max_amount)
     TextView textMaxAmount;
@@ -382,6 +382,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         String mWalletID = getIntent().getStringExtra(EXT_WALLET_ID);
         walletInfo = mAppWalletViewModel.currentWalletAccountInfo.getValue();
+        hdWalletName = walletInfo.getName();
         walletType =
                 mAppWalletViewModel
                         .currentWalletAssetsList
@@ -400,8 +401,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     Logger.json(JSON.toJSONString(mAssets));
                     coinAssetBalance = assets.getCoinAsset().getBalance().getBalance();
                     initAssetBalance(mAssets);
-                    hdWalletName = mAssets.getName();
-                    walletName.setText(hdWalletName);
+                    walletChainName.setText(mAssets.getName());
                     if (mAssets instanceof ERC20Assets) {
                         ERC20Assets erc20Assets = (ERC20Assets) mAssets;
                         tokenBalance = erc20Assets.getBalance().getBalance();
@@ -1195,8 +1195,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                 .getCoinAsset()
                                 .getBalance()
                                 .getBalance();
-                hdWalletName = mAssets.getName();
-                walletName.setText(hdWalletName);
+                walletChainName.setText(mAssets.getName());
                 initAssetBalance(mAssets);
                 String address = "";
                 if (mAssets instanceof ERC20Assets) {

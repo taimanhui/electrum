@@ -26,6 +26,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.orhanobut.logger.Logger;
@@ -282,6 +283,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         showWalletType = mAccountManager.getCurrentWalletAccurateType();
         mWalletType = mAccountManager.getCurWalletType();
+        hdWalletName = mAppWalletViewModel.currentWalletAccountInfo.getValue().getName();
         baseUnit = mSystemConfigManager.getCurrentBaseUnit();
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         switchCoinType.setText(Vm.CoinType.BTC.coinName);
@@ -295,8 +297,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                                     .currentWalletAssetsList
                                     .getValue()
                                     .getByUniqueIdOrZero(-1);
-
-                    hdWalletName = mAssets.getName();
+                    Logger.d(JSON.toJSONString(mAssets));
                     balance = CoinDisplayUtils.getCoinBalanceDisplay(mAssets);
                     if (!Strings.isNullOrEmpty(balance)) {
                         decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
@@ -436,9 +437,18 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                             Constant.CUSTOMIZE_FEE_RATE_MAX,
                             mCurrentFeeDetails.getFast().getFeerate() * 20);
                     bundle.putInt(Constant.TAG_TX_SIZE, transactionSize);
-                    bundle.putString(Constant.HDWALLET_NAME, hdWalletName);
+                    bundle.putString(
+                            Constant.HDWALLET_NAME,
+                            mAppWalletViewModel.currentWalletAccountInfo.getValue().getId());
                     String customFeeRemember =
-                            (String) MySPManager.getInstance().get(hdWalletName, "");
+                            (String)
+                                    MySPManager.getInstance()
+                                            .get(
+                                                    mAppWalletViewModel
+                                                            .currentWalletAccountInfo
+                                                            .getValue()
+                                                            .getId(),
+                                                    "");
                     if (!Strings.isNullOrEmpty(customFeeRemember)) {
                         bundle.putDouble(Constant.FEE_RATE, Double.parseDouble(customFeeRemember));
                     } else {
