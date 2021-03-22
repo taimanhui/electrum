@@ -118,7 +118,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     public void getEthXpub(String coinType) {
         Disposable disposable =
-                getXpubObserVable(Vm.CoinType.ETH.callFlag, "")
+                getXpubObserVable(coinType, "")
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
