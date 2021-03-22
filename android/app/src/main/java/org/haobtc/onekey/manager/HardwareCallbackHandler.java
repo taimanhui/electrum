@@ -10,17 +10,17 @@ import static org.haobtc.onekey.constant.PyConstant.PIN_NEW_FIRST;
 import static org.haobtc.onekey.constant.PyConstant.VERIFY_ADDRESS_CONFIRM;
 import static org.haobtc.onekey.manager.PyEnv.currentHwFeatures;
 
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import com.google.common.base.Strings;
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.ui.activity.InputPinOnHardware;
+import org.haobtc.onekey.utils.Utils;
 
 /**
  * @author liyan
@@ -32,17 +32,17 @@ public class HardwareCallbackHandler extends Handler {
     /** handler used in python */
     private static volatile HardwareCallbackHandler callbackHandle;
     /** the handler to start new activity */
-    private FragmentActivity fragmentActivity;
+    //    private FragmentActivity fragmentActivity;
 
-    private HardwareCallbackHandler(FragmentActivity activity) {
-        this.fragmentActivity = activity;
-    }
+    //    private HardwareCallbackHandler(FragmentActivity activity) {
+    //        this.fragmentActivity = activity;
+    //    }
 
-    public static HardwareCallbackHandler getInstance(FragmentActivity fragmentActivity) {
+    public static HardwareCallbackHandler getInstance() {
         if (callbackHandle == null) {
             synchronized (CommunicationModeSelector.MyHandler.class) {
                 if (callbackHandle == null) {
-                    callbackHandle = new HardwareCallbackHandler(fragmentActivity);
+                    callbackHandle = new HardwareCallbackHandler();
                 }
             }
         }
@@ -59,13 +59,12 @@ public class HardwareCallbackHandler extends Handler {
                 boolean isVerifyPinOnHardwareSp =
                         (boolean)
                                 PreferencesManager.get(
-                                        fragmentActivity,
+                                        MyApplication.getInstance(),
                                         "Preferences",
                                         Constant.PIN_VERIFY_ON_HARDWARE,
                                         true);
                 if (isVerifyPinOnHardwareSp && getBleMajorVersion()) {
-                    fragmentActivity.startActivity(
-                            new Intent(fragmentActivity, InputPinOnHardware.class));
+                    InputPinOnHardware.start(Utils.getTopActivity());
                     PyEnv.setPin(Constant.PIN_INVALID);
                 } else {
                     EventBus.getDefault().post(new ButtonRequestEvent(msg.what));

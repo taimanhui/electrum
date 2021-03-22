@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -381,6 +382,13 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         String mWalletID = getIntent().getStringExtra(EXT_WALLET_ID);
         walletInfo = mAppWalletViewModel.currentWalletAccountInfo.getValue();
+        walletType =
+                mAppWalletViewModel
+                        .currentWalletAssetsList
+                        .getValue()
+                        .getCoinAsset()
+                        .getCoinType()
+                        .callFlag;
         scale = walletInfo.getCoinType().digits;
         baseUnit = walletInfo.getCoinType().defUnit;
         contractAddress = walletInfo.getAddress();
@@ -391,7 +399,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     Assets mAssets = assets.getByUniqueIdOrZero(mAssetsID);
                     Logger.json(JSON.toJSONString(mAssets));
                     coinAssetBalance = assets.getCoinAsset().getBalance().getBalance();
-                    walletType = assets.getCoinAsset().getCoinType().callFlag;
                     initAssetBalance(mAssets);
                     hdWalletName = mAssets.getName();
                     walletName.setText(hdWalletName);
@@ -832,7 +839,9 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                         : Constant.WALLET_TYPE_SOFTWARE);
         confirmDialog = new TransactionConfirmDialog();
         confirmDialog.setArguments(bundle);
-        confirmDialog.show(getSupportFragmentManager(), "confirm");
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(confirmDialog, "confirm");
+        ft.commitAllowingStateLoss();
     }
 
     @Subscribe

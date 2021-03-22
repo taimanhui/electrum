@@ -1,5 +1,7 @@
 package org.haobtc.onekey.ui.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,6 +36,10 @@ public class InputPinOnHardware extends BaseActivity {
     public void init() {
         title.setText(R.string.verify_pin_onkey);
         confirmBtn.setEnabled(false);
+    }
+
+    public static void start(Context context) {
+        context.startActivity(new Intent(context, InputPinOnHardware.class));
     }
 
     /**
