@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.lifecycle.ViewModelProvider;
 import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
@@ -22,12 +23,14 @@ import io.reactivex.disposables.Disposable;
 import java.util.Objects;
 import java.util.Optional;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.ClipboardUtils;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 /** @author xiaomin */
 public class CheckSignActivity extends BaseActivity {
@@ -68,6 +71,8 @@ public class CheckSignActivity extends BaseActivity {
     private static final int REQUEST_CODE_SIGNED = 2;
     private Bundle bundle;
     private Disposable subscriber;
+    private AppWalletViewModel mAppWalletViewModel;
+    private String mCoinType;
 
     /** init */
     @Override
@@ -76,6 +81,9 @@ public class CheckSignActivity extends BaseActivity {
         editAddress.setMovementMethod(ScrollingMovementMethod.getInstance());
         editSignature.setMovementMethod(ScrollingMovementMethod.getInstance());
         rxPermissions = new RxPermissions(this);
+        mAppWalletViewModel =
+                new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
+        mCoinType = mAppWalletViewModel.currentWalletAccountInfo.getValue().getCoinType().callFlag;
         getCurrentAddress();
         bundle = getIntent().getBundleExtra(org.haobtc.onekey.constant.Constant.VERIFY_DETAIL);
         if (bundle != null) {
@@ -226,6 +234,7 @@ public class CheckSignActivity extends BaseActivity {
                 address,
                 message,
                 signature,
+                mCoinType,
                 (response) -> {
                     if (Objects.isNull(response)) {
                         return;

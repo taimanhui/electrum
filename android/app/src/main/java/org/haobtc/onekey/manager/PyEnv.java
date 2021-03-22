@@ -1096,6 +1096,7 @@ public final class PyEnv {
             String address,
             String message,
             String signature,
+            String coinType,
             Consumer<PyResponse<Boolean>> callback) {
         PyResponse<Boolean> response = new PyResponse<>();
         if (tryAcquire()) {
@@ -1109,6 +1110,7 @@ public final class PyEnv {
                                                     address,
                                                     message,
                                                     signature,
+                                                    coinType,
                                                     new Kwarg(
                                                             "path",
                                                             MyApplication.getInstance()
