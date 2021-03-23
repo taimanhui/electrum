@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment;
 import java.util.HashMap;
 import java.util.Map;
 import org.haobtc.onekey.onekeys.homepage.FindFragment;
-import org.haobtc.onekey.onekeys.homepage.MindFragment;
+import org.haobtc.onekey.onekeys.homepage.MineFragment;
 import org.haobtc.onekey.onekeys.homepage.WalletFragment;
 import org.haobtc.onekey.ui.base.BaseFragment;
 
@@ -23,7 +23,7 @@ public class MainFragmentFactory {
                     fragment = new FindFragment();
                     break;
                 case 2:
-                    fragment = new MindFragment();
+                    fragment = new MineFragment();
                     break;
             }
             mMap.put(position, fragment);

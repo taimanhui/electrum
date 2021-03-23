@@ -1,10 +1,14 @@
 package org.haobtc.onekey.onekeys;
 
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import butterknife.BindView;
+import butterknife.OnClick;
 import java.util.ArrayList;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.SupportActivity;
 import org.haobtc.onekey.adapter.FragmentMainAdapter;
 import org.haobtc.onekey.bean.TabEntity;
 import org.haobtc.onekey.business.update.AutoCheckUpdate;
@@ -26,6 +30,9 @@ public class HomeOneKeyActivity extends BaseActivity {
 
     @BindView(R.id.common_tab)
     CommonTabLayout tabLayout;
+
+    @BindView(R.id.customer_service_layout)
+    LinearLayout customerServiceLayout;
 
     private long firstTime = 0;
 
@@ -85,6 +92,8 @@ public class HomeOneKeyActivity extends BaseActivity {
                     @Override
                     public void onTabSelect(int position) {
                         scrollViewPager.setCurrentItem(position);
+                        customerServiceLayout.setVisibility(
+                                position == mTitles.length - 1 ? View.VISIBLE : View.GONE);
                     }
 
                     @Override
@@ -113,6 +122,11 @@ public class HomeOneKeyActivity extends BaseActivity {
             return;
         }
         mAutoCheckUpdate.checkUpdate(getSupportFragmentManager(), false);
+    }
+
+    @OnClick({R.id.customer_service_layout})
+    public void onClick(View view) {
+        SupportActivity.start(mContext);
     }
 
     @Override

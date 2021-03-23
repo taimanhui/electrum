@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/color_page_background"
     android:orientation="vertical"
-    tools:context="org.haobtc.onekey.onekeys.homepage.MindFragment">
+    tools:context="org.haobtc.onekey.onekeys.homepage.MineFragment">
 
     <com.github.lzyzsd.jsbridge.BridgeWebView
         android:id="@+id/webview_bridge"

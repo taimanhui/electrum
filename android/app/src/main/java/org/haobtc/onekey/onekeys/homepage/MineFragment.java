@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.OnClick;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.AboutActivity;
 import org.haobtc.onekey.activities.LanguageSettingActivity;
@@ -22,38 +23,42 @@ import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
 import org.haobtc.onekey.ui.activity.PinVerifyWaySelector;
 import org.haobtc.onekey.ui.base.BaseFragment;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-
-
-/**
- * @author jinxiaomin
- */
-public class MindFragment extends BaseFragment {
-
+/** @author jinxiaomin */
+public class MineFragment extends BaseFragment {
 
     @BindView(R.id.all_assets)
     RelativeLayout allAssets;
+
     @BindView(R.id.rel_hd_wallet)
     RelativeLayout relHdWallet;
+
     @BindView(R.id.rel_all_device)
     RelativeLayout relAllDevice;
+
     @BindView(R.id.rel_link_method)
     RelativeLayout relLinkMethod;
+
     @BindView(R.id.rel_pass)
     RelativeLayout relPass;
+
     @BindView(R.id.face_id)
     RelativeLayout faceId;
+
     @BindView(R.id.fingerprint)
     RelativeLayout fingerprint;
+
     @BindView(R.id.rel_language)
     RelativeLayout relLanguage;
+
     @BindView(R.id.rel_currency)
     RelativeLayout relCurrency;
+
     @BindView(R.id.rel_internet)
     RelativeLayout relInternet;
+
     @BindView(R.id.rel_tx_set)
     RelativeLayout relTxSet;
+
     @BindView(R.id.rel_about)
     RelativeLayout relAbout;
 
@@ -68,12 +73,24 @@ public class MindFragment extends BaseFragment {
      * @param view
      */
     @Override
-    public void init(View view) {
-
-    }
+    public void init(View view) {}
 
     @SingleClick
-    @OnClick({R.id.all_assets, R.id.rel_hd_wallet, R.id.rel_all_device, R.id.rel_link_method, R.id.rel_pass, R.id.face_id, R.id.fingerprint, R.id.rel_language, R.id.rel_currency, R.id.rel_internet, R.id.rel_tx_set, R.id.rel_about, R.id.pin_verify_way})
+    @OnClick({
+        R.id.all_assets,
+        R.id.rel_hd_wallet,
+        R.id.rel_all_device,
+        R.id.rel_link_method,
+        R.id.rel_pass,
+        R.id.face_id,
+        R.id.fingerprint,
+        R.id.rel_language,
+        R.id.rel_currency,
+        R.id.rel_internet,
+        R.id.rel_tx_set,
+        R.id.rel_about,
+        R.id.pin_verify_way
+    })
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.all_assets:
@@ -93,12 +110,17 @@ public class MindFragment extends BaseFragment {
                 startActivity(intent4);
                 break;
             case R.id.rel_pass:
-                boolean isHaveWallet = PreferencesManager.getAll(getContext(), Constant.WALLETS).isEmpty();
+                boolean isHaveWallet =
+                        PreferencesManager.getAll(getContext(), Constant.WALLETS).isEmpty();
                 if (!isHaveWallet) {
                     Intent intent8 = new Intent(getActivity(), FixHdPassActivity.class);
                     startActivity(intent8);
                 } else {
-                    Toast.makeText(getActivity(), getString(R.string.please_create_wallet), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                                    getActivity(),
+                                    getString(R.string.please_create_wallet),
+                                    Toast.LENGTH_SHORT)
+                            .show();
                 }
                 break;
             case R.id.face_id:
@@ -125,8 +147,8 @@ public class MindFragment extends BaseFragment {
                 startActivity(intent5);
                 break;
             case R.id.pin_verify_way:
-//                showToast(R.string.support_less_promote);
-               startActivity(new Intent(getActivity(), PinVerifyWaySelector.class));
+                //                showToast(R.string.support_less_promote);
+                startActivity(new Intent(getActivity(), PinVerifyWaySelector.class));
                 break;
         }
     }

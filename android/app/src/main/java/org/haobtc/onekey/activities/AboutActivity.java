@@ -48,7 +48,7 @@ public class AboutActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5, R.id.service})
+    @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -60,9 +60,6 @@ public class AboutActivity extends BaseActivity {
             case R.id.tet_s5:
                 CheckChainDetailWebActivity.start(
                         mContext, "userAgreement", StringConstant.USER_URL);
-                break;
-            case R.id.service:
-                SupportActivity.start(mContext);
                 break;
         }
     }
