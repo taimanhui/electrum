@@ -953,7 +953,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                 stringPyResponse -> {
                                     if (Strings.isNullOrEmpty(stringPyResponse.getErrors())) {
                                         signedTx = stringPyResponse.getResult();
-                                        Logger.d("签名--->" + signedTx);
                                         if (confirmDialog != null
                                                 && confirmDialog.getBtnConfirmPay() != null) {
                                             confirmDialog.getBtnConfirmPay().setEnabled(true);

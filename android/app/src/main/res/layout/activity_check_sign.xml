@@ -114,7 +114,7 @@
                 android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_25"
                 android:gravity="center"
-                android:text="@string/public_address"
+                android:text="@string/address"
                 android:textColor="@color/text_six"
                 android:textSize="@dimen/sp_14" />
 
