@@ -46,6 +46,7 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
+
         <activity
             android:name=".onekeys.SelectTokenActivity"
             android:screenOrientation="portrait" />
@@ -622,9 +623,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.CreatePersonalWalletActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.activity.CreateMultiSigWalletActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -724,6 +722,10 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".onekeys.dappbrowser.ui.DappBrowserActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.activity.CreateHardWalletActivity"
             android:screenOrientation="portrait" />
     </application>
 

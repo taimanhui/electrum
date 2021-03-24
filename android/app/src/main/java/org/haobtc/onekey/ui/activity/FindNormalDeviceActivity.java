@@ -48,7 +48,7 @@ public class FindNormalDeviceActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.add_new_wallet:
-                startActivity(new Intent(this, CreatePersonalWalletActivity.class));
+                CreateHardWalletActivity.start(mContext);
                 break;
             case R.id.recovery_used_wallet:
                 startActivity(new Intent(this, RecoveryHardwareOnceWallet.class));
