@@ -404,7 +404,11 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
 
         if (walletType == Vm.WalletType.HARDWARE) {
             textHard.setVisibility(View.VISIBLE);
-            linearSign.setVisibility(View.VISIBLE);
+            if (coinType == Vm.CoinType.BTC) {
+                linearSign.setVisibility(View.VISIBLE);
+            } else {
+                linearSign.setVisibility(View.GONE);
+            }
             String walletIdentity = localWalletInfo.getDeviceId();
             currentDeviceSer = walletIdentity;
             String deviceInfo =
