@@ -4,18 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,8 +22,8 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.StringConstant;
+import org.haobtc.onekey.manager.OkHttpWebViewClient;
 import org.haobtc.onekey.utils.MyDialog;
-import org.haobtc.onekey.utils.WebViewPxoxyUtils;
 import org.haobtc.onekey.utils.internet.NetBroadcastReceiver;
 
 public class CheckChainDetailWebActivity extends BaseActivity
@@ -139,41 +135,34 @@ public class CheckChainDetailWebActivity extends BaseActivity
         webHeckChain.setWebChromeClient(new WebChromeClient());
         webHeckChain.getSettings().setAllowFileAccess(false);
         webHeckChain.setWebViewClient(
-                new WebViewClient() {
-                    @Override
-                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                        super.onPageStarted(view, url, favicon);
-                        if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
-                            myDialog.show();
-                        }
-                    }
+                new OkHttpWebViewClient(
+                        new OkHttpWebViewClient.onReceivePageStatus() {
+                            @Override
+                            public void onPageStarted() {
+                                if (myDialog != null
+                                        && !CheckChainDetailWebActivity.this.isFinishing()) {
+                                    myDialog.show();
+                                }
+                            }
 
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        super.onPageFinished(view, url);
-                        if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
-                            myDialog.dismiss();
-                        }
-                    }
+                            @Override
+                            public void onPageFinished() {
+                                if (myDialog != null
+                                        && !CheckChainDetailWebActivity.this.isFinishing()) {
+                                    myDialog.dismiss();
+                                }
+                            }
 
-                    @Override
-                    public void onReceivedError(
-                            WebView view, WebResourceRequest request, WebResourceError error) {
-                        super.onReceivedError(view, request, error);
-                        if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
-                            myDialog.dismiss();
-                        }
-                    }
-                });
+                            @Override
+                            public void onReceivedError() {
+                                if (myDialog != null
+                                        && !CheckChainDetailWebActivity.this.isFinishing()) {
+                                    myDialog.dismiss();
+                                }
+                            }
+                        }));
         if (mCurrentNetStatus == HAVE_NETWORK) {
             if (!TextUtils.isEmpty(loadUrl)) {
-                WebViewPxoxyUtils.setProxy(
-                        webHeckChain,
-                        HOST,
-                        PORT,
-                        mContext.getApplicationInfo().className,
-                        USER_NAME,
-                        PASS);
                 webHeckChain.loadUrl(loadUrl);
             } else {
                 if (!TextUtils.isEmpty(keyLink)) {
@@ -239,6 +228,5 @@ public class CheckChainDetailWebActivity extends BaseActivity
         if (netBroadcastReceiver != null) {
             unregisterReceiver(netBroadcastReceiver);
         }
-        WebViewPxoxyUtils.revertBackProxy(webHeckChain, mContext.getApplicationInfo().className);
     }
 }
