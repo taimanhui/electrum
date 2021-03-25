@@ -203,7 +203,7 @@ class PanBottomAlertViewController: PanModalViewController {
 
     @objc init(normalTitle: String, onTap: (()->Void)?) {
         self.title = normalTitle
-        self.color = .fg_B02()
+        self.color = .fg_B01()
         self.onTap = onTap
     }
 

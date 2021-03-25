@@ -46,7 +46,7 @@
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.extendedLayoutIncludesOpaqueBars = YES;
     [self.searchController.searchBar sizeToFit];
-    self.searchController.searchBar.tintColor = UIColor.FG_B01;
+    self.searchController.searchBar.tintColor = UIColor.FG_B00;
     self.searchController.searchBar.translucent = NO;
 
     self.tableView.tableHeaderView = self.searchController.searchBar;

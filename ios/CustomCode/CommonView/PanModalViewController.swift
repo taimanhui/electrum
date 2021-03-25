@@ -21,7 +21,7 @@ class PanModalViewController: ViewController, PanModalPresentable {
     var panScrollable: UIScrollView? {
         nil
     }
-    
+
     var longFormHeight: PanModalHeight {
         .intrinsicHeight
     }
@@ -29,19 +29,19 @@ class PanModalViewController: ViewController, PanModalPresentable {
     var shortFormHeight: PanModalHeight {
         .intrinsicHeight
     }
-    
+
     var panModalBackgroundColor: UIColor {
-        .fg_B04()
+        .fg_B03()
     }
-    
+
     var showDragIndicator: Bool {
         false
     }
-    
+
     var cornerRadius: CGFloat {
         20
     }
-    
+
     var isHapticFeedbackEnabled: Bool {
         false
     }
@@ -53,7 +53,7 @@ class PanModalViewController: ViewController, PanModalPresentable {
     var allowsDragToDismiss: Bool {
         false
     }
-    
+
     var allowsTapToDismiss: Bool {
         false
     }
@@ -61,11 +61,11 @@ class PanModalViewController: ViewController, PanModalPresentable {
     var isUserInteractionEnabled: Bool {
          true
     }
-    
+
     func shouldRespond(to panModalGestureRecognizer: UIPanGestureRecognizer) -> Bool {
         false
     }
-    
+
     var transitionDuration: Double {
         0.5
     }

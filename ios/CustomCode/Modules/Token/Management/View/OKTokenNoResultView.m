@@ -25,7 +25,7 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.noResultText.textColor = UIColor.FG_B02;
+    self.noResultText.textColor = UIColor.FG_B01;
     self.addTokenLabel.textColor = UIColor.FG_W01;
     self.addTokenView.backgroundColor = UIColor.TintBrand;
     [self.addTokenView setLayerRadius:8];

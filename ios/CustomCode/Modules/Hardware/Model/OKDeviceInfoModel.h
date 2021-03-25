@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger minor_version; // 次版本号
 @property (nonatomic, assign) NSInteger patch_version; // 修订号    硬件的软件版本(俗称固件，在2.0.1 之前使用)
 @property (nonatomic, assign) BOOL bootloader_mode; // 设备当时是不是在bootloader模式
-@property (nonatomic, copy) NSString *device_id; // 设备唯一标识，设备恢复出厂设置这个值会变
+@property (nonatomic, copy) NSString *device_id; // 设备唯一标识，设备恢复出厂设置这个值会变, getter -> serial_num ?: _device
 @property (nonatomic, assign) BOOL pin_protection; // 是否开启了PIN码保护，
 @property (nonatomic, assign) BOOL passphrase_protection; // 这个用来支持创建隐藏钱包
 @property (nonatomic, copy) NSString *language;

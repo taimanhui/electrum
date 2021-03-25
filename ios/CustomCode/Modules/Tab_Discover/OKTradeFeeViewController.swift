@@ -208,7 +208,7 @@ class OKTradeFeeViewController: PanModalViewController {
             break
         }
         feeViews.forEach {
-            $0?.borderColor = highlightView == $0 ? UIColor.tintBrand() : UIColor.fg_B04()
+            $0?.borderColor = highlightView == $0 ? UIColor.tintBrand() : UIColor.fg_B03()
         }
         selectedViews.forEach {
             $0?.isHidden = selectedView != $0

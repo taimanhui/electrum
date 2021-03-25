@@ -99,7 +99,7 @@
     headerView.backgroundColor = UIColor.BG_W02;
     headerLabel.text = self.showList[section].name;
     headerLabel.font = [UIFont systemFontOfSize:13];
-    headerLabel.textColor = UIColor.FG_B02;
+    headerLabel.textColor = UIColor.FG_B01;
     [headerView addSubview:headerLabel];
     return headerView;
 }

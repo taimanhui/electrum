@@ -21,10 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 // Foreground
 // 前景色有时含透明度，用于背景或视图中的文本、图标的颜色填充。
 
-+ (UIColor *)FG_B01; // 1A1A1A
-+ (UIColor *)FG_B02; // 3C3C43 .6
-+ (UIColor *)FG_B03; // 3C3C43 .3
-+ (UIColor *)FG_B04; // 3C3C43 .2
++ (UIColor *)FG_B00; // 1A1A1A
++ (UIColor *)FG_B01; // 3C3C43 .6
++ (UIColor *)FG_B02; // 3C3C43 .3
++ (UIColor *)FG_B03; // 3C3C43 .2
 + (UIColor *)FG_W01; // FFFFFF
 + (UIColor *)FG_W02; // FFFFFF .6
 + (UIColor *)FG_W03; // FFFFFF .3
