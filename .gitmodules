@@ -10,3 +10,6 @@
 [submodule "trezor/python-trezor"]
 	path = trezor/python-trezor
 	url = https://github.com/OneKeyHQ/python-trezor.git
+[submodule "ios"]
+	path = ios
+	url = https://github.com/OneKeyHQ/ios.git
