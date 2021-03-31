@@ -6,14 +6,6 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-merge-conflict
-  - repo: https://github.com/OneKeyHQ/google-style-precommit-hook
-    rev: e7990326dd4a22631bffca2bcf8abba49582f23e
-    hooks:
-    -   id: google-style-java
-  - repo: https://github.com/doublify/pre-commit-clang-format
-    rev: 62302476d0da01515660132d76902359bed0f782
-    hooks:
-      - id: clang-format
   - repo: https://github.com/PyCQA/isort
     rev: 5.7.0
     hooks:
