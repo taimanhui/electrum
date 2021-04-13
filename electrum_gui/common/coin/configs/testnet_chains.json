@@ -172,5 +172,35 @@
     ],
     "chain_affinity": "sol",
     "qr_code_prefix": "sol"
+  },
+  {
+    "chain_code": "tstc",
+    "name": "Starcoin barnard",
+    "chain_model": "account",
+    "fee_code": "tstc",
+    "curve": "ed25519",
+    "bip44_coin_type": 101010,
+    "bip44_target_level": "ADDRESS_INDEX",
+    "bip44_auto_increment_level": "ADDRESS_INDEX",
+    "bip44_last_hardened_level": "ADDRESS_INDEX",
+    "fee_price_decimals_for_legibility": 0,
+    "coins": [
+      {
+        "code": "tstc",
+        "symbol": "TSTC",
+        "name": "Starcoin barnard",
+        "decimals": 9,
+        "icon": "https://onekey-asset.com/assets/stc/stc.png"
+      }
+    ],
+    "clients": [
+      {
+        "class": "STCJsonRPC",
+        "url": "https://barnard-seed.starcoin.org"
+      }
+    ],
+    "chain_affinity": "stc",
+    "qr_code_prefix": "starcoin",
+    "chain_id": "251"
   }
 ]
