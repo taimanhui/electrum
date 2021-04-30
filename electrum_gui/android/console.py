@@ -64,8 +64,6 @@ from electrum.util import (
     UnavaiableHdWallet,
     UnavailableBtcAddr,
     UnavailableEthAddr,
-    UnavailablePrivateKey,
-    UnavailablePublicKey,
     UnsupportedCurrencyCoin,
     UserCancel,
     bfh,
@@ -76,6 +74,7 @@ from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
 from electrum_gui.android import hardware, helpers, wallet_context
 from electrum_gui.common import the_begging
+from electrum_gui.common.basic import exceptions
 from electrum_gui.common.provider import data as provider_data
 from electrum_gui.common.provider import exceptions as provider_exceptions
 
@@ -3086,7 +3085,8 @@ class AndroidCommands(commands.Commands):
         """
         return electrum_mnemonic.Mnemonic(lang='en').mnemonic_encode(int(decoded_info))
 
-    def verify_legality(self, data, flag="", coin="btc", password=None):  # noqa
+    @exceptions.catch_exception  # noqa
+    def verify_legality(self, data, *, flag="seed", coin="btc", password=None):  # noqa
         """
         Verify legality for seed/private/public/address
         :param data: data as string
@@ -3097,7 +3097,7 @@ class AndroidCommands(commands.Commands):
         if flag == "seed":
             is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(data)
             if not keystore.is_seed(data) and not is_checksum:
-                raise BaseException(_("Incorrect mnemonic format."))
+                raise exceptions.InvalidMnemonicFormat()
             return
         chain_affinity = _get_chain_affinity(coin)
         if chain_affinity == "btc":
@@ -3107,36 +3107,36 @@ class AndroidCommands(commands.Commands):
                 except BaseException:
                     private_key = keystore.get_private_keys(data, allow_spaces_inside_key=False)
                     if private_key is None:
-                        raise BaseException(UnavailablePrivateKey())
+                        raise exceptions.UnavailablePrivateKey()
             elif flag == "address":
                 try:
                     ecc.ECPubkey(bfh(data))
                 except Exception:
                     if not keystore.is_xpub(data) and not bitcoin.is_address(data):
-                        raise util.UnavailableBtcAddr()
+                        raise exceptions.UnavailableBtcAddr()
         elif chain_affinity == "eth":
             if flag == "private":
                 try:
                     keys.PrivateKey(HexBytes(data))
                 except BaseException:
-                    raise BaseException(UnavailablePrivateKey())
+                    raise exceptions.UnavailablePrivateKey()
             elif flag == "keystore":
                 try:
                     eth_account_account.Account.decrypt(json.loads(data), password).hex()
                 except (TypeError, KeyError, NotImplementedError):
-                    raise util.InvalidKeystoreFormat()
+                    raise exceptions.InvalidKeystoreFormat()
                 except BaseException:
-                    raise InvalidPassword()
+                    raise exceptions.InvalidPassword()
 
             elif flag == "public":
                 try:
                     uncom_key = get_uncompressed_key(data)
                     keys.PublicKey(HexBytes(uncom_key[2:]))
                 except BaseException:
-                    raise BaseException(UnavailablePublicKey())
+                    raise exceptions.UnavailablePublicKey()
             elif flag == "address":
                 if not eth_utils.is_address(data):
-                    raise UnavailableEthAddr()
+                    raise exceptions.UnavailableEthAddr()
         else:
             raise UnsupportedCurrencyCoin()
 
