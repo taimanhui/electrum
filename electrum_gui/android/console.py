@@ -32,7 +32,7 @@ from electrum.bip32 import convert_bip32_path_to_list_of_uint32 as parse_path
 from electrum.bip32 import get_uncompressed_key
 from electrum.bitcoin import COIN
 from electrum.constants import read_json
-from electrum.eth_wallet import Abstract_Eth_Wallet, Eth_Wallet, Imported_Eth_Wallet, Standard_Eth_Wallet
+from electrum.eth_wallet import Abstract_Eth_Wallet, Imported_Eth_Wallet, Standard_Eth_Wallet
 from electrum.i18n import _, set_language
 from electrum.interface import ServerAddr
 from electrum.keystore import (
@@ -480,7 +480,7 @@ class AndroidCommands(commands.Commands):
                 wallet.start_network(self.network)
             elif chain_affinity == "eth":
                 if "importe" in wallet_type:
-                    wallet = Eth_Wallet(db, storage, config=self.config)
+                    wallet = Imported_Eth_Wallet(db, storage, config=self.config)
                 else:
                     index = 0
                     if "address_index" in db.data:
