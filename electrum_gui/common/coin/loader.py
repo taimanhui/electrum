@@ -4,6 +4,7 @@ from typing import Dict, List, Tuple
 
 from electrum_gui.common.coin.data import ChainInfo, ChainModel, CoinInfo
 from electrum_gui.common.conf import settings
+from electrum_gui.common.secret.data import CurveEnum
 
 
 def _load_config(json_name: str) -> Tuple[Dict[str, ChainInfo], Dict[str, CoinInfo]]:
@@ -13,6 +14,7 @@ def _load_config(json_name: str) -> Tuple[Dict[str, ChainInfo], Dict[str, CoinIn
     for chain_config in configs:
         coins_config = chain_config.pop("coins")
         chain_config["chain_model"] = ChainModel[chain_config["chain_model"].upper()]
+        chain_config["curve"] = CurveEnum[chain_config["curve"].upper()]
         chain_info = ChainInfo(**chain_config)
         chains[chain_info.chain_code] = chain_info
         coins.update({i["code"]: CoinInfo(chain_code=chain_info.chain_code, **i) for i in coins_config})

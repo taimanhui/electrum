@@ -113,7 +113,10 @@ def get_related_coins(coin_code: str) -> Tuple[CoinInfo, CoinInfo, CoinInfo]:
     coin_info = get_coin_info(coin_code)
     chain_info = get_chain_info(coin_info.chain_code)
 
-    return get_coin_info(coin_info.chain_code), coin_info, get_coin_info(chain_info.fee_code)
+    chain_coin = coin_info if chain_info.chain_code == coin_code else get_coin_info(coin_info.chain_code)
+    fee_coin = coin_info if chain_info.fee_code == coin_code else get_coin_info(chain_info.fee_code)
+
+    return chain_coin, coin_info, fee_coin
 
 
 def add_coin(
