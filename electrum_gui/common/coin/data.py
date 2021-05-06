@@ -19,12 +19,13 @@ class ChainInfo(DataClassMixin):
     name: str  # full name of chain
     chain_model: ChainModel  # model of chain (UTXO, Account etc.)
     curve: CurveEnum  # curve type
-    bip44_coin_type: int  # coin_type of bip44 path
     chain_affinity: str  # mark chain affinity
     qr_code_prefix: str  # QR code prefix of address
-    bip44_auto_increment_level: str = (
-        "ADDRESS_INDEX"  # Auto increase 'ADDRESS_INDEX' level to derive new address (options: ACCOUNT, ADDRESS_INDEX)
+    bip44_coin_type: int  # coin_type of bip44 path
+    bip44_target_level: str = (
+        "ADDRESS_INDEX"  # Derive to 'ADDRESS_INDEX' as default (options: ACCOUNT, CHANGE, ADDRESS_INDEX)
     )
+    bip44_auto_increment_level: str = "ADDRESS_INDEX"  # Auto increase 'ADDRESS_INDEX' level to derive new address (options: ACCOUNT, CHANGE, ADDRESS_INDEX)
     bip44_last_hardened_level: str = (
         "ACCOUNT"  # hardened to 'ACCOUNT' level as default, but hardened to 'ADDRESS_INDEX' level in ED25519 curve
     )
