@@ -1,3 +1,5 @@
+from typing import List
+
 from electrum_gui.common.secret.data import CurveEnum, PubKeyType, SecretKeyType
 from electrum_gui.common.secret.models import PubKeyModel, SecretKeyModel
 
@@ -42,15 +44,28 @@ def get_pubkey_model_by_id(pubkey_id: int) -> PubKeyModel:
     return PubKeyModel.get_by_id(pubkey_id)
 
 
+def query_pubkey_models_by_ids(pubkey_ids: List[int]) -> List[PubKeyModel]:
+    models = PubKeyModel.select().where(PubKeyModel.id.in_(pubkey_ids))
+    return list(models)
+
+
 def create_secret_key_model(
     secret_key_type: SecretKeyType,
     encrypted_secret_key: str,
+    encrypted_message: str = None,
 ) -> SecretKeyModel:
     return SecretKeyModel.create(
         secret_key_type=secret_key_type,
         encrypted_secret_key=encrypted_secret_key,
+        encrypted_message=encrypted_message,
     )
 
 
 def get_secret_key_model_by_id(secret_key_id: int) -> SecretKeyModel:
     return SecretKeyModel.get_by_id(secret_key_id)
+
+
+def update_secret_key_encrypted_data(secret_key_id: int, encrypted_secret_key: str, encrypted_message: str):
+    SecretKeyModel.update(encrypted_secret_key=encrypted_secret_key, encrypted_message=encrypted_message).where(
+        SecretKeyModel.id == secret_key_id
+    ).execute()

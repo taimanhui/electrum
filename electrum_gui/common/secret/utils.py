@@ -1,5 +1,7 @@
 from typing import List
 
+from mnemonic import Mnemonic
+
 import electrum.bip32
 from electrum_gui.common.basic.functional.require import require
 
@@ -42,3 +44,15 @@ def merge_bip32_paths(*paths: str) -> str:
 def diff_bip32_paths(src: str, dst: str) -> str:
     require(src.startswith("m") and dst.startswith("m") and dst.startswith(src))
     return "m" + dst[len(src) :]
+
+
+def mnemonic_to_seed(mnemonic: str, passphrase: str = None) -> bytes:
+    return Mnemonic.to_seed(mnemonic, passphrase=passphrase or "")
+
+
+def generate_mnemonic(strength: int) -> str:
+    return Mnemonic("english").generate(strength)
+
+
+def check_mnemonic(mnemonic: str) -> bool:
+    return Mnemonic("english").check(mnemonic)
