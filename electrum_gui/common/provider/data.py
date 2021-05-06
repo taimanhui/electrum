@@ -170,9 +170,15 @@ class PricesPerUnit(DataClassMixin):
         ):
             yield description, price
 
+    def to_dict(self) -> dict:
+        result = {description: price.to_dict() for description, price in self}
+        return result
+
 
 @dataclass
 class AddressValidation(DataClassMixin):
+    normalized_address: str
+    display_address: str
     is_valid: bool
     encoding: Optional[str] = None
 
@@ -189,5 +195,5 @@ class UnsignedTx(DataClassMixin):
 
 @dataclass
 class SignedTx(DataClassMixin):
-    txid: str
     raw_tx: str
+    txid: Optional[str] = None
