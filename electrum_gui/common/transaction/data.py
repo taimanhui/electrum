@@ -7,6 +7,7 @@ from electrum_gui.common.provider.data import TransactionStatus
 class TxActionStatus(IntEnum):
     UNEXPECTED_FAILED = -2
     UNKNOWN = -1
+    SIGNED = 9
     PENDING = 10
     REPLACED = 20
     CONFIRM_REVERTED = 99
@@ -16,6 +17,7 @@ class TxActionStatus(IntEnum):
     def to_choices(cls):
         return (
             (cls.UNEXPECTED_FAILED, "Unexpected Failed"),
+            (cls.SIGNED, "Signed"),
             (cls.PENDING, "Pending"),
             (cls.REPLACED, "Replaced"),
             (cls.CONFIRM_REVERTED, "Confirm Reverted"),
