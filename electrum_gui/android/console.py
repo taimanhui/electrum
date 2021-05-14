@@ -1991,6 +1991,11 @@ class AndroidCommands(commands.Commands):
         data = data.strip()
         try:
             out = util.parse_URI(data)
+            coin = out.get("coin")
+            if coin is None or coin == "btc":
+                pass
+            elif not coin_manager.is_chain_enabled(coin_manager.get_chain_code_by_legacy_wallet_chain(coin)):
+                out["coin"] = "eth"
 
             r = out.get("r")
             sig = out.get("sig")
@@ -4398,7 +4403,7 @@ class AndroidCommands(commands.Commands):
     def list_wallets(self, type_=None):
         """
         List available wallets
-        :param type: None/hw/hd/btc/eth/bsc/heco/okt
+        :param type: None/hw/hd/btc/eth/...
         :return: json like "[{"wallet_key":{'type':"", "addr":"", "name":"", "label":"", "device_id": ""}}, ...]"
         exp:
             all_list = testcommond.list_wallets()
@@ -4412,7 +4417,7 @@ class AndroidCommands(commands.Commands):
         generic_wallet_type = None
         if type_ in ("hw", "hd"):
             generic_wallet_type = type_
-        elif type_ in ("btc", "eth", "bsc", "heco", "okt"):
+        elif coin_manager.is_chain_enabled(coin_manager.get_chain_code_by_legacy_wallet_chain(type_)):
             coin = type_
         elif type_ is not None:
             raise BaseException(_("Unsupported coin types"))
