@@ -4381,10 +4381,13 @@ class AndroidCommands(commands.Commands):
     def _fill_balance_info_with_coin(self, fiat: Decimal, coin: str) -> str:
         price = price_manager.get_last_price(coin, self.ccy)
         chain_affinity = _get_chain_affinity(coin)
+        if price == 0:
+            return "0"
+
         if chain_affinity == "btc":
             return self.format_amount((int(Decimal(fiat) / Decimal(price) * COIN)))
         else:
-            return Decimal(fiat) / Decimal(price)
+            return str(Decimal(fiat) / Decimal(price))
 
     def set_wallet_location_info(self, wallet_location_info: list, wallet_type="btc") -> None:
         """
