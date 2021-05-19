@@ -1,6 +1,6 @@
+import functools
 import time
-from functools import partial
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 import eth_utils
 
@@ -25,7 +25,7 @@ from electrum_gui.common.provider.data import (
 from electrum_gui.common.provider.exceptions import FailedToGetGasPrices, TransactionNotFound
 from electrum_gui.common.provider.interfaces import BatchGetAddressMixin, ClientInterface
 
-_hex2int = partial(int, base=16)
+_hex2int = functools.partial(int, base=16)
 
 
 def _extract_eth_call_str_result(data: bytes) -> str:
@@ -199,28 +199,37 @@ class Geth(ClientInterface, BatchGetAddressMixin):
         resp = self.rpc.call("eth_getCode", params=[address, self.__LAST_BLOCK__])
         return eth_utils.remove_0x_prefix(resp)
 
+    @functools.lru_cache
     def is_contract(self, address: str) -> bool:
         return len(self.get_contract_code(address)) > 0
 
     def get_token_info_by_address(self, token_address: str) -> str:
-        if not self.is_contract(token_address):
-            raise InvalidContractAddress(token_address)
-
         # >>> eth_utils.keccak("symbol()".encode())[:4].hex()
         # '95d89b41'
         # >>> eth_utils.keccak("name()".encode())[:4].hex()
         # '06fdde03'
         # >>> eth_utils.keccak("decimals()".encode())[:4].hex()
         # '313ce567'
-        symbol_resp, name_resp, decimals_resp = self.rpc.batch_call(
-            [
-                ("eth_call", [{"to": token_address, "data": "0x95d89b41"}, self.__LAST_BLOCK__]),
-                ("eth_call", [{"to": token_address, "data": "0x06fdde03"}, self.__LAST_BLOCK__]),
-                ("eth_call", [{"to": token_address, "data": "0x313ce567"}, self.__LAST_BLOCK__]),
-            ]
+        symbol_resp, name_resp, decimals_resp = self.call_contract(
+            token_address, ["0x95d89b41", "0x06fdde03", "0x313ce567"]
         )
         return (
             _extract_eth_call_str_result(bytes.fromhex(symbol_resp[2:])),
             _extract_eth_call_str_result(bytes.fromhex(name_resp[2:])),
             _hex2int(decimals_resp),
         )
+
+    def call_contract(self, contract_address: str, data: Union[str, List[str]]) -> Union[str, List[str]]:
+        if not self.is_contract(contract_address):
+            raise InvalidContractAddress(contract_address)
+
+        if isinstance(data, list):
+            return self.rpc.batch_call(
+                [
+                    ("eth_call", [{"to": contract_address, "data": call_data}, self.__LAST_BLOCK__])
+                    for call_data in data
+                ],
+                ignore_errors=True,
+            )
+        else:
+            return self.eth_call({"to": contract_address, "data": data})
