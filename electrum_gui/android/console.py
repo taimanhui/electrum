@@ -4436,6 +4436,7 @@ class AndroidCommands(commands.Commands):
                         "name": wallet.identity,
                         "label": wallet.get_name(),
                         "device_id": device_id,
+                        "derivation_path": wallet.get_derivation_path(wallet.get_addresses()[0]),
                     }
                 }
             )
