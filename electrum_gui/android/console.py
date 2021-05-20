@@ -1844,7 +1844,7 @@ class AndroidCommands(commands.Commands):
             'sign_status': None,
             'output_addr': [transaction.outputs[0].address],
             'input_addr': [transaction.inputs[0].address],
-            'height': transaction.block_header.block_number if transaction.block_header else -2,
+            'height': transaction.block_header.block_number if transaction.block_header else 0,
             'cosigner': [],
             'tx': transaction.raw_tx,
         }
