@@ -10,14 +10,15 @@ from electrum_gui.common.coin import codes
 from electrum_gui.common.coin import manager as coin_manager
 from electrum_gui.common.conf import settings
 from electrum_gui.common.price import daos
-from electrum_gui.common.price.channels.coingecko import Coingecko
+from electrum_gui.common.price.channels import coingecko, uniswap
 from electrum_gui.common.price.data import Channel
 from electrum_gui.common.price.interfaces import PriceChannelInterface
 
 logger = logging.getLogger("app.price")
 
 _registry: Dict[Channel, Callable[[], PriceChannelInterface]] = {
-    Channel.CGK: functools.partial(Coingecko, settings.COINGECKO_API_HOST),
+    Channel.CGK: functools.partial(coingecko.Coingecko, settings.COINGECKO_API_HOST),
+    Channel.UNISWAP: uniswap.Uniswap,
 }
 
 

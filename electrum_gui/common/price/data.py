@@ -5,6 +5,7 @@ from enum import IntEnum, unique
 @unique
 class Channel(IntEnum):
     CGK = 10
+    UNISWAP = 20
 
     @classmethod
     def to_choices(cls):
