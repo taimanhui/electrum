@@ -1844,7 +1844,7 @@ class AndroidCommands(commands.Commands):
             'sign_status': None,
             'output_addr': [transaction.outputs[0].address],
             'input_addr': [transaction.inputs[0].address],
-            'height': transaction.block_header.block_number if transaction.block_header else -2,
+            'height': transaction.block_header.block_number if transaction.block_header else 0,
             'cosigner': [],
             'tx': transaction.raw_tx,
         }
@@ -4381,10 +4381,13 @@ class AndroidCommands(commands.Commands):
     def _fill_balance_info_with_coin(self, fiat: Decimal, coin: str) -> str:
         price = price_manager.get_last_price(coin, self.ccy)
         chain_affinity = _get_chain_affinity(coin)
+        if price == 0:
+            return "0"
+
         if chain_affinity == "btc":
             return self.format_amount((int(Decimal(fiat) / Decimal(price) * COIN)))
         else:
-            return Decimal(fiat) / Decimal(price)
+            return str(Decimal(fiat) / Decimal(price))
 
     def set_wallet_location_info(self, wallet_location_info: list, wallet_type="btc") -> None:
         """
@@ -4433,6 +4436,7 @@ class AndroidCommands(commands.Commands):
                         "name": wallet.identity,
                         "label": wallet.get_name(),
                         "device_id": device_id,
+                        "derivation_path": wallet.get_derivation_path(wallet.get_addresses()[0]),
                     }
                 }
             )
