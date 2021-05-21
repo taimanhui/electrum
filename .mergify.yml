@@ -6,4 +6,4 @@ pull_request_rules:
       - "-draft"
     actions:
       merge:
-        method: rebase
+        method: merge
