@@ -2980,6 +2980,9 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
+    def _chain_code_to_chain_name(self, coin):
+        return f"{coin.upper()}" if "okt" != coin.lower() else "OEC"
+
     def create_hd_wallet(
         self, password, seed=None, passphrase="", purpose=84, strength=128, create_coin=json.dumps(["btc"])
     ):
@@ -3040,7 +3043,7 @@ class AndroidCommands(commands.Commands):
                 )
             elif chain_affinity == "eth":
                 wallet_info = self.create(
-                    coin.upper(),
+                    self._chain_code_to_chain_name(coin),
                     password,
                     seed=seed,
                     passphrase=passphrase,
@@ -3899,11 +3902,12 @@ class AndroidCommands(commands.Commands):
         account_id = int(self.get_account_id(bip39_derivation, coin))
         purpose = int(helpers.get_path_info(bip39_derivation, PURPOSE_POS))
         chain_affinity = _get_chain_affinity(coin)
+
         if account_id == 0:
             if purpose == 49:
-                name = "BTC"
+                name = f"{coin.upper()}"
             elif chain_affinity == "eth":
-                name = "%s" % coin.upper()
+                name = self._chain_code_to_chain_name(coin)
             else:
                 name = "btc-derived-%s" % purpose
         temp_path = helpers.get_temp_file()
