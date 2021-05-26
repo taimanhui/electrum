@@ -5,6 +5,7 @@ import copy
 import itertools
 import json
 import logging
+import math
 import os
 import random
 import string
@@ -1049,8 +1050,8 @@ class AndroidCommands(commands.Commands):
         last_price = price_manager.get_last_price(main_coin_code, self.ccy)
         estimated_gas_prices = {}
         for description, estimated_gas_price in provider_manager.get_prices_per_unit_of_fee(chain_code):
-            fee = eth_utils.from_wei(gas_limit * estimated_gas_price.price, "ether")
-            price = int(eth_utils.from_wei(estimated_gas_price.price, "gwei"))
+            price = math.ceil(eth_utils.from_wei(estimated_gas_price.price, "gwei"))
+            fee = eth_utils.from_wei(gas_limit * eth_utils.to_wei(price, "gwei"), "ether")
             gas_price_info = {
                 "gas_price": price,
                 "time": Decimal(estimated_gas_price.time) / 60,
