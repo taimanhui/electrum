@@ -49,6 +49,14 @@ def get_action_by_id(action_id: int) -> TxAction:
     return daos.get_action_by_id(action_id)
 
 
+def update_action_status(
+    chain_code: str,
+    txid: str,
+    status: TxActionStatus,
+):
+    daos.update_actions_status(chain_code, txid, status)
+
+
 def query_actions_by_address(
     chain_code: str,
     address: str,

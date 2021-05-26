@@ -1,7 +1,8 @@
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 from electrum_gui.common.basic.orm import test_utils
+from electrum_gui.common.secret import exceptions
 from electrum_gui.common.secret import manager as secret_manager
 from electrum_gui.common.secret import utils
 from electrum_gui.common.secret.data import CurveEnum, PubKeyType, SecretKeyType
@@ -13,21 +14,25 @@ class TestSecretManager(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.message = b"Hello OneKey"
-        cls.master_seed = b"OneKey"
+        cls.mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+        cls.passphrase = "OneKey"
+        cls.master_seed = bytes.fromhex(
+            "ac7728a67cf7fe4a237668db29f7d93243da5cecd3e7cb790dc393e31fdfaadf8ced5e17bb53be83823faae50eb4fc4a8d67486fa04851238accc29005734692"
+        )
 
         cls.account_level_path = "m/44'/60'/0'"
-        cls.account_level_xpub = "xpub6D4isiEFQXfAVCF3CnvT5Y6XMfhTLS5ktxfEmogY8XARnHGEE5Q3kwggdhmfZPgkotFkcBFGzEz4NpPJGBuTjKa1CArZbVHAN11rLtut5ir"
-        cls.account_level_xprv = "xprv9z5NUChMaA6sGiAa6mPSiQ9nodrxvyMuXjjdyRGvaBdSuUw5gY5oD9NCnPbfgYrV4dueoezeqdNsjKS5p3itgKpTJE3Adr1UNhaojqBo982"
+        cls.account_level_xpub = "xpub6CEGaxz3GGxefcUFP4mYo6f8BmAUywBSfYbLd8Z851RntgRrp2vhYaiddPFJR9a6TV2Fsz2PY3PbGHNMgnNTKQVPssfcaieBHnT8Leh47VR"
+        cls.account_level_xprv = "xprv9yEvBTT9RuQMT8PnH3EYRxiPdjKzaUTbJKfjpk9WWftp1t6iGVcSznQ9n7Y6aLTjGf2P1pD3QDfugmjgVRw1d8t1MmZeaqArnKCUTMfovLR"
         cls.account_level_signature = (
-            "efaa470b160ca83ca394f71bea8e62aef5c12525ea4e233fc57cb354056ce8fb05ae7461d196736b31a5acf48fa0157b2b9543095da48643df178c9cc4623896",
+            "19f8ab7d24d019bdf1443719447516961d4918cb441ef083e3531ad74f364b5303c070d6a0175751afb93fb32f21f666e652f89262139b5f474b34d9305d8ece",
             0,
         )
 
         cls.address_level_path = f"{cls.account_level_path}/0/0"
-        cls.address_level_prvkey = "097f2126bf59ee30179c967054d7011069867eca9bcfb9f09b10d5ad3faee314"
-        cls.address_level_pubkey = "032bb3c861b4a61c15e4009240d0849a25b12b4aa209ec54c7867f67ea1fe963cf"
+        cls.address_level_prvkey = "77f22e0d920c7b59df81a629dc75c27513b5360a45d55f3253454f5d3cb23bab"
+        cls.address_level_pubkey = "02deb60902c06bfed8d78e33337be995d0b3efc28fbc61b6f88cb5cfb27dc4efd1"
         cls.address_level_signature = (
-            "3c16acda928bd6b6e8ab71f17346cd3afe847e653ed612487adc65a6f0bf25a57b9a35af00a2f87e3f55f9dc045d579e296e666700616f2f6b9fe24945f61b05",
+            "e1b1ed07c97cc6204cb9b5a5f446d4757bf3abc6bf48f886c7a96c303552575b41cc543b07ca36c6987121a9628ddd1d76ab603e7821b5f5ca83f063aba6bbf7",
             1,
         )
 
@@ -146,9 +151,14 @@ class TestSecretManager(TestCase):
     def test_import_master_seed(self, fake_encrypt):
         fake_encrypt.encrypt_data.side_effect = lambda p, d: f"Encrypted<{p},{d}>"
 
-        secret_key_model = secret_manager.import_master_seed("hello", self.master_seed)
+        secret_key_model = secret_manager.import_mnemonic("hello", self.mnemonic, self.passphrase)
 
-        fake_encrypt.encrypt_data.assert_called_once_with("hello", self.master_seed.hex())
+        fake_encrypt.encrypt_data.assert_has_calls(
+            [
+                call("hello", self.master_seed.hex()),
+                call("hello", f"{self.mnemonic}|{self.passphrase}"),
+            ]
+        )
         fake_encrypt.decrypt_data.assert_not_called()
 
         secret_key_models = list(SecretKeyModel.select())
@@ -158,15 +168,51 @@ class TestSecretManager(TestCase):
         self.assertEqual(first_secret_key_model.id, secret_key_model.id)
         self.assertEqual(first_secret_key_model.secret_key_type, SecretKeyType.SEED)
         self.assertEqual(first_secret_key_model.encrypted_secret_key, f"Encrypted<hello,{self.master_seed.hex()}>")
+        self.assertEqual(
+            first_secret_key_model.encrypted_message,
+            f"Encrypted<hello,{self.mnemonic}|{self.passphrase}>",
+        )
+
+    @patch("electrum_gui.common.secret.manager.encrypt")
+    def test_export_mnemonic(self, fake_encrypt):
+        fake_encrypt.encrypt_data.side_effect = lambda p, d: d
+        fake_encrypt.decrypt_data.side_effect = lambda p, d: d
+
+        secret_key_model = secret_manager.import_mnemonic("hello", self.mnemonic, self.passphrase)
+
+        fake_encrypt.encrypt_data.assert_has_calls(
+            [
+                call("hello", self.master_seed.hex()),
+                call("hello", f"{self.mnemonic}|{self.passphrase}"),
+            ]
+        )
+        fake_encrypt.decrypt_data.assert_not_called()
+        fake_encrypt.encrypt_data.reset_mock()
+
+        mnemonic, passphrase = secret_manager.export_mnemonic("hello", secret_key_model.id)
+        fake_encrypt.encrypt_data.assert_not_called()
+        fake_encrypt.decrypt_data.assert_has_calls(
+            [
+                call("hello", f"{self.mnemonic}|{self.passphrase}"),
+                call("hello", self.master_seed.hex()),
+            ]
+        )
+        self.assertEqual(mnemonic, self.mnemonic)
+        self.assertEqual(passphrase, self.passphrase)
 
     @patch("electrum_gui.common.secret.manager.encrypt")
     def test_derive_by_secret_key(self, fake_encrypt):
         fake_encrypt.encrypt_data.side_effect = lambda p, d: d
         fake_encrypt.decrypt_data.side_effect = lambda p, d: d
 
-        secret_key_model = secret_manager.import_master_seed("hello", self.master_seed)
+        secret_key_model = secret_manager.import_mnemonic("hello", self.mnemonic, self.passphrase)
 
-        fake_encrypt.encrypt_data.assert_called_once_with("hello", self.master_seed.hex())
+        fake_encrypt.encrypt_data.assert_has_calls(
+            [
+                call("hello", self.master_seed.hex()),
+                call("hello", f"{self.mnemonic}|{self.passphrase}"),
+            ]
+        )
         fake_encrypt.decrypt_data.assert_not_called()
         fake_encrypt.encrypt_data.reset_mock()
 
@@ -190,9 +236,14 @@ class TestSecretManager(TestCase):
     def test_derive_by_xpub(self, fake_encrypt):
         fake_encrypt.encrypt_data.side_effect = lambda p, d: d
 
-        secret_key_model = secret_manager.import_master_seed("hello", self.master_seed)
+        secret_key_model = secret_manager.import_mnemonic("hello", self.mnemonic, self.passphrase)
 
-        fake_encrypt.encrypt_data.assert_called_once_with("hello", self.master_seed.hex())
+        fake_encrypt.encrypt_data.assert_has_calls(
+            [
+                call("hello", self.master_seed.hex()),
+                call("hello", f"{self.mnemonic}|{self.passphrase}"),
+            ]
+        )
         fake_encrypt.decrypt_data.assert_not_called()
         fake_encrypt.encrypt_data.reset_mock()
 
@@ -250,10 +301,15 @@ class TestSecretManager(TestCase):
         fake_encrypt.encrypt_data.side_effect = lambda p, d: d
         fake_encrypt.decrypt_data.side_effect = lambda p, d: d
 
-        # 1. import master seed
-        secret_key_model = secret_manager.import_master_seed("hello", self.master_seed)
+        # 1. import mnemonic
+        secret_key_model = secret_manager.import_mnemonic("hello", self.mnemonic, self.passphrase)
 
-        fake_encrypt.encrypt_data.assert_called_once_with("hello", self.master_seed.hex())
+        fake_encrypt.encrypt_data.assert_has_calls(
+            [
+                call("hello", self.master_seed.hex()),
+                call("hello", f"{self.mnemonic}|{self.passphrase}"),
+            ]
+        )
         fake_encrypt.decrypt_data.assert_not_called()
         fake_encrypt.encrypt_data.reset_mock()
 
@@ -299,3 +355,18 @@ class TestSecretManager(TestCase):
         self.assertEqual(
             signer.sign(self.message), (bytes.fromhex(self.address_level_signature[0]), self.address_level_signature[1])
         )
+
+    def test_update_secret_key_password(self):
+        # 1. import mnemonic
+        secret_key_model = secret_manager.import_mnemonic("hello", self.mnemonic, self.passphrase)
+
+        # 2. raise if password illegal
+        with self.assertRaises(exceptions.InvalidPassword):
+            secret_manager.update_secret_key_password(secret_key_model.id, "HELLO", "bye")
+
+        # 3. change password successfully
+        secret_manager.update_secret_key_password(secret_key_model.id, "hello", "bye")
+
+        # 4. it can be called multiple times, as long as the new password is correct
+        secret_manager.update_secret_key_password(secret_key_model.id, "hello", "bye")
+        secret_manager.update_secret_key_password(secret_key_model.id, "hello2", "bye")

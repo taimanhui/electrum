@@ -42,6 +42,7 @@ DB_MODULES = [
     "electrum_gui.common.price",
     "electrum_gui.common.transaction",
     "electrum_gui.common.secret",
+    "electrum_gui.common.wallet",
 ]
 
 ENABLED_CHAIN_COINS = (

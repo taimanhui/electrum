@@ -25,6 +25,7 @@ class SecretKeyModel(BaseModel):
     id = peewee.AutoField(primary_key=True)
     secret_key_type = peewee.IntegerField(choices=SecretKeyType.to_choices())
     encrypted_secret_key = peewee.CharField(help_text="Encrypted secret key")
+    encrypted_message = peewee.CharField(null=True, help_text="Extra encrypted message")
     created_time = AutoDateTimeField()
 
     def __str__(self):

@@ -4,6 +4,15 @@
     "name": "Bitcoin TestNet3",
     "fee_code": "tbtc",
     "chain_model": "utxo",
+    "curve": "secp256k1",
+    "bip44_coin_type": 1,
+    "bip44_auto_increment_level": "ACCOUNT",
+    "default_address_encoding": "P2WPKH-P2SH",
+    "bip44_purpose_options": {
+      "P2PKH": 44,
+      "P2WPKH-P2SH": 49,
+      "P2WPKH": 84
+    },
     "coins": [
       {
         "code": "tbtc",
@@ -21,6 +30,9 @@
     "name": "Ethereum Ropsten Test Network",
     "fee_code": "teth",
     "chain_model": "account",
+    "curve": "secp256k1",
+    "bip44_coin_type": 60,
+    "fee_price_decimals_for_legibility": 9,
     "coins": [
       {
         "code": "teth",
@@ -56,6 +68,9 @@
     "name": "Binance Smart Chain Test Network",
     "fee_code": "tbsc",
     "chain_model": "account",
+    "curve": "secp256k1",
+    "bip44_coin_type": 60,
+    "fee_price_decimals_for_legibility": 9,
     "coins": [
       {
         "code": "tbsc",
@@ -80,6 +95,9 @@
     "name": "Fork Huobi ECO Chain",
     "fee_code": "theco",
     "chain_model": "account",
+    "curve": "secp256k1",
+    "bip44_coin_type": 60,
+    "fee_price_decimals_for_legibility": 9,
     "coins": [
       {
         "code": "theco",
@@ -104,6 +122,9 @@
     "name": "OKExChain Testnet",
     "fee_code": "tokt",
     "chain_model": "account",
+    "curve": "secp256k1",
+    "bip44_coin_type": 60,
+    "fee_price_decimals_for_legibility": 9,
     "coins": [
       {
         "code": "tokt",

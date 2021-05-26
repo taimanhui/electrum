@@ -27,14 +27,28 @@ class TestETHProvider(TestCase):
     def test_verify_address(self):
         self.assertEqual(
             self.provider.verify_address("0x2E5124C037871DeB014490C37a4844F7019f38bD"),
-            AddressValidation(is_valid=True, encoding="checksum"),
+            AddressValidation(
+                normalized_address="0x2e5124c037871deb014490c37a4844f7019f38bd",
+                display_address="0x2E5124C037871DeB014490C37a4844F7019f38bD",
+                is_valid=True,
+            ),
         )
         self.assertEqual(
             self.provider.verify_address("0x2e5124c037871deb014490c37a4844f7019f38bd"),
-            AddressValidation(is_valid=True, encoding="hex"),
+            AddressValidation(
+                normalized_address="0x2e5124c037871deb014490c37a4844f7019f38bd",
+                display_address="0x2E5124C037871DeB014490C37a4844F7019f38bD",
+                is_valid=True,
+            ),
         )
-        self.assertEqual(self.provider.verify_address(""), AddressValidation(is_valid=False))
-        self.assertEqual(self.provider.verify_address("0x"), AddressValidation(is_valid=False))
+        self.assertEqual(
+            self.provider.verify_address(""),
+            AddressValidation(normalized_address="", display_address="", is_valid=False),
+        )
+        self.assertEqual(
+            self.provider.verify_address("0x"),
+            AddressValidation(normalized_address="", display_address="", is_valid=False),
+        )
 
     def test_pubkey_to_address(self):
         verifier = Mock(get_pubkey=Mock(return_value=b"\4" + b"\0" * 64))

@@ -80,12 +80,15 @@ from electrum_gui.common.provider import data as provider_data
 from electrum_gui.common.provider import exceptions as provider_exceptions
 
 from ..common.basic.functional.text import force_text
+from ..common.basic.orm.database import db
 from ..common.coin import codes
 from ..common.coin import manager as coin_manager
 from ..common.price import manager as price_manager
 from ..common.provider import provider_manager
+from ..common.wallet.bip44 import BIP44Level, BIP44Path
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
+from .migrating import GeneralWallet, is_coin_migrated
 from .tx_db import TxDb
 
 log_info = logging.getLogger(__name__)
@@ -314,7 +317,14 @@ class AndroidCommands(commands.Commands):
 
         chain_affinity = _get_chain_affinity(coin)
 
-        if chain_affinity == "eth":  # eth base
+        if is_coin_migrated(coin):
+            main_balance_info, contracts_balance_info, sum_fiat = self._get_general_wallet_all_balance(self.wallet)
+            out = main_balance_info
+            out["tokens"] = contracts_balance_info
+            out["sum_fiat"] = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
+            out["coin_asset"] = self._fill_balance_info_with_coin(sum_fiat, coin)
+            out["name"] = self.wallet.identity
+        elif chain_affinity == "eth":  # eth base
             main_balance_info, contracts_balance_info, sum_fiat = self._get_eth_wallet_all_balance(self.wallet)
             out = main_balance_info
             out["tokens"] = contracts_balance_info
@@ -475,7 +485,9 @@ class AndroidCommands(commands.Commands):
             wallet_type = db.data["wallet_type"]
             coin = db.data["coin"]
             chain_affinity = _get_chain_affinity(coin)
-            if chain_affinity == "btc":
+            if is_coin_migrated(coin):
+                wallet = GeneralWallet(db, storage, self.config)
+            elif chain_affinity == "btc":
                 wallet = Wallet(db, storage, config=self.config)
                 wallet.start_network(self.network)
             elif chain_affinity == "eth":
@@ -924,7 +936,31 @@ class AndroidCommands(commands.Commands):
         """
         self._assert_wallet_isvalid()
         chain_affinity = _get_chain_affinity(coin)
-        if chain_affinity == "eth":
+
+        if is_coin_migrated(coin):
+            if eth_tx_info:
+                eth_tx_info = json.loads(eth_tx_info)
+            else:
+                eth_tx_info = {}
+            fee = self.get_general_fee_info(
+                to_address=eth_tx_info.pop("to_address", None),
+                value=eth_tx_info.pop("value", None),
+                token_address=eth_tx_info.pop("contract_address", None),
+                fee_price_per_unit=eth_tx_info.pop("fee_price_per_unit", None) or eth_tx_info.pop("gas_price", None),
+                fee_limit=eth_tx_info.pop("fee_limit", None) or eth_tx_info.pop("gas_limit", None),
+                payload=eth_tx_info,
+            )
+            fee = json.loads(fee)
+            fee = {
+                k: {
+                    **v,
+                    "gas_limit": v["fee_limit"],
+                    "gas_price": v["fee_price_per_unit"],
+                }
+                for k, v in fee.items()
+            }
+            return json.dumps(fee, cls=DecimalEncoder)
+        elif chain_affinity == "eth":
             if eth_tx_info:
                 eth_tx_info = json.loads(eth_tx_info)
             else:
@@ -2362,8 +2398,10 @@ class AndroidCommands(commands.Commands):
             coin = self.wallet.coin if self.wallet is not None else "eth"
 
         chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_info = coin_manager.get_chain_info(chain_code)
+        if chain_info.chain_affinity == "eth":
+            contract_addr = contract_addr.lower()
 
-        contract_addr = contract_addr.lower()
         token_info = self._load_tokens_dict(chain_code).get(contract_addr)
         if token_info is not None:
             symbol = token_info["symbol"]
@@ -2385,6 +2423,65 @@ class AndroidCommands(commands.Commands):
         """
         if contract_addr:
             self.wallet.delete_contract_token(contract_addr)
+
+    def get_general_fee_info(
+        self,
+        to_address=None,
+        value=None,
+        token_address=None,
+        fee_price_per_unit=None,
+        fee_limit=None,
+        **kwargs,
+    ):
+        assert isinstance(self.wallet, GeneralWallet)
+        estimated_fee = self.wallet.pre_send(
+            to_address=to_address,
+            value=value,
+            token_address=token_address,
+            fee_price_per_unit=fee_price_per_unit,
+            fee_limit=fee_limit,
+            payload=kwargs,
+        )
+        fee_coin_last_price = price_manager.get_last_price(self.wallet.fee_coin.code, self.ccy)
+        estimated_fee = {
+            k: {
+                "fee_price_per_unit": v["fee_price_per_unit"],
+                "time": v["time"],
+                "fee_limit": v["fee_limit"],
+                "fee": v["fee"],
+                "fiat": f"{self.daemon.fx.ccy_amount_str(Decimal(v['fee']) * fee_coin_last_price, True)} {self.ccy}",
+            }
+            for k, v in estimated_fee.items()
+        }
+
+        return json.dumps(estimated_fee, cls=DecimalEncoder)
+
+    def send_general_tx(
+        self,
+        to_address,
+        value,
+        password=None,
+        token_address=None,
+        fee_price_per_unit=None,
+        fee_limit=None,
+        nonce=None,
+        auto_broadcast=True,
+        **kwargs,
+    ):
+        assert isinstance(self.wallet, GeneralWallet)
+
+        signed_tx = self.wallet.send(
+            to_address,
+            value,
+            password,
+            token_address=token_address,
+            fee_price_per_unit=fee_price_per_unit,
+            fee_limit=fee_limit,
+            nonce=nonce,
+            auto_broadcast=auto_broadcast,
+            payload=kwargs,
+        )
+        return signed_tx.raw_tx
 
     def sign_eth_tx(
         self,
@@ -2412,6 +2509,19 @@ class AndroidCommands(commands.Commands):
         :param nonce: from address nonce
         :return: tx_hash as string
         """
+        if is_coin_migrated(self.wallet.coin):
+            return self.send_general_tx(
+                to_address=to_addr,
+                value=value,
+                password=password,
+                token_address=contract_addr,
+                fee_price_per_unit=gas_price,
+                fee_limit=gas_limit,
+                auto_broadcast=auto_send_tx,
+                nonce=nonce,
+                data=data,
+            )
+
         chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
         if contract_addr is None:
             main_coin_code = coin_manager.get_chain_info(chain_code).fee_code
@@ -2898,30 +3008,50 @@ class AndroidCommands(commands.Commands):
             new_seed = seed
 
         create_coin_list = json.loads(create_coin)
-        if "btc" in create_coin_list:
-            wallet_info = self.create(
-                "BTC",
-                password,
-                seed=seed,
-                passphrase=passphrase,
-                bip39_derivation=bip44_derivation(0, purpose),
-                hd=True,
-            )
-            wallet_data.append(json.loads(wallet_info))
-
-        for chain_info in coin_manager.get_chains_by_affinity("eth"):
-            if chain_info.chain_code in create_coin_list:
-                coin = coin_manager.get_coin_info(chain_info.fee_code)
+        for coin in create_coin_list:
+            chain_affinity = _get_chain_affinity(coin)
+            wallet_info = None
+            if is_coin_migrated(coin):
+                chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+                chain_info = coin_manager.get_chain_info(chain_code)
+                last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
+                target_level = BIP44Level[chain_info.bip44_target_level.upper()]
                 wallet_info = self.create(
-                    f"{coin.symbol}",
+                    coin.upper(),
+                    password,
+                    seed=seed,
+                    passphrase=passphrase,
+                    bip39_derivation=BIP44Path(
+                        44, chain_info.bip44_coin_type, 0, last_hardened_level=last_hardened_level
+                    )
+                    .to_target_level(target_level)
+                    .to_bip44_path(),
+                    hd=True,
+                    coin=coin,
+                )
+            elif chain_affinity == "btc":
+                wallet_info = self.create(
+                    coin.upper(),
+                    password,
+                    seed=seed,
+                    passphrase=passphrase,
+                    bip39_derivation=bip44_derivation(0, purpose),
+                    hd=True,
+                )
+            elif chain_affinity == "eth":
+                wallet_info = self.create(
+                    coin.upper(),
                     password,
                     seed=seed,
                     passphrase=passphrase,
                     bip39_derivation=bip44_eth_derivation(0),
                     hd=True,
-                    coin=chain_info.chain_code,
+                    coin=coin,
                 )
+
+            if wallet_info is not None:
                 wallet_data.append(json.loads(wallet_info))
+
         key = self.get_hd_wallet_encode_seed(seed=seed)
         self.wallet_context.set_backup_info(key)
 
@@ -3054,6 +3184,7 @@ class AndroidCommands(commands.Commands):
     ):
         wallet.ensure_storage(self._wallet_path(wallet.identity))
         wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
+        wallet.save_db()
         self.daemon.add_wallet(wallet)
         if wallet.coin == "btc":
             wallet.start_network(self.daemon.network)
@@ -3131,7 +3262,9 @@ class AndroidCommands(commands.Commands):
         if addresses is not None:
             watch_only = True
             wallet_type = f"{coin}-watch-standard"
-            if chain_affinity == "btc":
+            if is_coin_migrated(coin):
+                wallet = GeneralWallet.from_pubkey_or_addresses(name, coin, self.config, addresses)
+            elif chain_affinity == "btc":
                 if keystore.is_xpub(addresses):
                     wallet = Standard_Wallet.from_master_key("btc", self.config, addresses)
                 else:
@@ -3140,6 +3273,9 @@ class AndroidCommands(commands.Commands):
                 wallet = Imported_Eth_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
             else:
                 raise UnsupportedCurrencyCoin()
+        elif is_coin_migrated(coin) and privkeys is not None:
+            wallet_type = f"{coin}-private-standard"
+            wallet = GeneralWallet.from_prvkeys(name, coin, self.config, privkeys, password)
         elif privkeys is not None and chain_affinity == "btc":
             wallet_type = f"{coin}-private-standard"
             wallet = Imported_Wallet.from_privkeys(coin, self.config, privkeys, purpose)
@@ -3152,7 +3288,18 @@ class AndroidCommands(commands.Commands):
                 wallet = Imported_Eth_Wallet.from_privkeys(coin, self.config, privkeys)
         elif bip39_derivation is not None and seed is not None and not is_customized_path:
             wallet_type = f"{coin}-derived-standard"
-            if chain_affinity == "btc":
+            if is_coin_migrated(coin):
+                wallet = GeneralWallet.from_seed_or_bip39(
+                    name,
+                    coin,
+                    self.config,
+                    seed,
+                    password=password,
+                    passphrase=passphrase,
+                    bip44_path=bip39_derivation,
+                    as_primary_wallet=True,
+                )
+            elif chain_affinity == "btc":
                 wallet = Standard_Wallet.from_seed_or_bip39(coin, self.config, seed, passphrase, bip39_derivation)
             elif chain_affinity == "eth":
                 derivation = util.get_keystore_path(bip39_derivation)
@@ -3163,7 +3310,18 @@ class AndroidCommands(commands.Commands):
                 seed = Mnemonic("english").generate(strength=strength)
                 new_seed = True
             wallet_type = f"{coin}-customer-standard"
-            if chain_affinity == "btc":
+            if is_coin_migrated(coin):
+                wallet = GeneralWallet.from_seed_or_bip39(
+                    name,
+                    coin,
+                    self.config,
+                    seed,
+                    password=password,
+                    passphrase=passphrase,
+                    bip44_path=bip39_derivation,
+                    as_primary_wallet=False,
+                )
+            elif chain_affinity == "btc":
                 wallet = Imported_Wallet.from_seed(
                     coin,
                     self.config,
@@ -3185,7 +3343,18 @@ class AndroidCommands(commands.Commands):
             if seed is None:
                 seed = Mnemonic("english").generate(strength=strength)
                 new_seed = True
-            if chain_affinity == "btc":
+
+            if is_coin_migrated(coin):
+                wallet = GeneralWallet.from_seed_or_bip39(
+                    name,
+                    coin,
+                    self.config,
+                    seed,
+                    password=password,
+                    passphrase=passphrase,
+                    as_primary_wallet=True,
+                )
+            elif chain_affinity == "btc":
                 wallet = Standard_Wallet.from_seed_or_bip39(
                     coin, self.config, seed, passphrase, bip44_derivation(0, purpose)
                 )
@@ -3210,6 +3379,7 @@ class AndroidCommands(commands.Commands):
                 raise BaseException(FileAlreadyExist())
         return wallet, wallet_type, new_seed
 
+    @db.atomic()
     def create(  # noqa
         self,
         name,
@@ -3696,18 +3866,29 @@ class AndroidCommands(commands.Commands):
 
         seed = self.get_hd_wallet().get_seed(password)
         chain_affinity = _get_chain_affinity(coin)
-        if chain_affinity == "btc":
+        if is_coin_migrated(coin):
+            chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+            chain_info = coin_manager.get_chain_info(chain_code)
+            encode_seed = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose="44")
+            account_id = self._get_derived_account_id(encode_seed)
+            last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
+            target_level = BIP44Level[chain_info.bip44_target_level.upper()]
+            bip44_path = BIP44Path(44, chain_info.bip44_coin_type, 0, last_hardened_level=last_hardened_level)
+            bip44_path = bip44_path.to_target_level(target_level)
+            bip44_path = bip44_path.next_sibling(gap=account_id)
+            derived_path = bip44_path.to_bip44_path()
+        elif chain_affinity == "btc":
             encode_seed = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose=str(purpose))
             account_id = self._get_derived_account_id(encode_seed)
-            derivat_path = bip44_derivation(account_id, int(purpose))
+            derived_path = bip44_derivation(account_id, int(purpose))
         elif chain_affinity == "eth":
             encode_seed = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose="44")
             account_id = self._get_derived_account_id(encode_seed)
-            derivat_path = bip44_eth_derivation(account_id)
+            derived_path = bip44_eth_derivation(account_id)
         else:
             raise UnsupportedCurrencyCoin()
 
-        return self.create(name, password, seed=seed, bip39_derivation=derivat_path, strength=strength, coin=coin)
+        return self.create(name, password, seed=seed, bip39_derivation=derived_path, strength=strength, coin=coin)
 
     def recovery_create(self, name, seed, password, bip39_derivation, passphrase="", coin="btc"):
         try:
@@ -3793,13 +3974,9 @@ class AndroidCommands(commands.Commands):
         return derived_num
 
     def get_account_id(self, path, coin):
-        chain_affinity = _get_chain_affinity(coin)
-        if chain_affinity == "eth":
-            return helpers.get_path_info(path, INDEX_POS)
-        elif chain_affinity == "btc":
-            return helpers.get_path_info(path, ACCOUNT_POS)
-        else:
-            raise UnsupportedCurrencyCoin()
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_info = coin_manager.get_chain_info(chain_code)
+        return helpers.get_path_info(path, BIP44Level[chain_info.bip44_auto_increment_level.upper()])
 
     def update_devired_wallet_info(self, bip39_derivation, xpub, name, coin):
         account_id = self.get_account_id(bip39_derivation, coin)
@@ -3851,7 +4028,13 @@ class AndroidCommands(commands.Commands):
                 coin = wallet.coin
                 wallet_info["coin"] = coin
                 chain_affinity = _get_chain_affinity(coin)
-                if chain_affinity == "eth":
+                if is_coin_migrated(coin):
+                    main_balance_info, contracts_balance_info, sum_fiat = self._get_general_wallet_all_balance(wallet)
+                    wallet_info["wallets"] = [main_balance_info, *contracts_balance_info]
+                    wallet_info["sum_fiat"] = sum_fiat
+                    all_balance += sum_fiat
+                    all_wallet_info.append(wallet_info)
+                elif chain_affinity == "eth":
                     main_balance_info, contracts_balance_info, sum_fiat = self._get_eth_wallet_all_balance(wallet)
                     wallet_info["wallets"] = [main_balance_info] + contracts_balance_info
                     wallet_info["sum_fiat"] = sum_fiat
@@ -4239,7 +4422,16 @@ class AndroidCommands(commands.Commands):
         coin = self.wallet.coin
         info = {"name": self.wallet.identity, "label": self.wallet.get_name(), "coin": coin}
         chain_affinity = _get_chain_affinity(coin)
-        if chain_affinity == "eth":
+        if is_coin_migrated(coin):
+            main_balance_info, contracts_balance_info, sum_fiat = self._get_general_wallet_all_balance(self.wallet)
+            info.update(
+                {
+                    "all_balance": f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}",
+                    "wallets": [main_balance_info] + contracts_balance_info,
+                    "coin_asset": self._fill_balance_info_with_coin(sum_fiat, coin),
+                }
+            )
+        elif chain_affinity == "eth":
             main_balance_info, contracts_balance_info, sum_fiat = self._get_eth_wallet_all_balance(self.wallet)
             info.update(
                 {
@@ -4297,7 +4489,15 @@ class AndroidCommands(commands.Commands):
         self.wallet.use_change = self.config.get("use_change", False)
         coin = self.wallet.coin
         chain_affinity = _get_chain_affinity(coin)
-        if chain_affinity == "eth":
+        if is_coin_migrated(coin):
+            main_balance_info, contracts_balance_info, _ = self._get_general_wallet_all_balance(self.wallet)
+            info = {
+                "name": name,
+                "label": self.wallet.get_name(),
+                "wallets": [main_balance_info] + contracts_balance_info,
+            }
+            return json.dumps(info, cls=DecimalEncoder)
+        elif chain_affinity == "eth":
             main_balance_info, contracts_balance_info, _zero_fiat = self._get_eth_wallet_all_balance(
                 self.wallet, with_sum_fiat=False
             )
@@ -4325,6 +4525,39 @@ class AndroidCommands(commands.Commands):
             return json.dumps(info, cls=DecimalEncoder)
         else:
             raise UnsupportedCurrencyCoin()
+
+    def _get_general_wallet_all_balance(self, wallet: Optional[GeneralWallet]) -> Tuple[dict, list, Decimal]:
+        wallet = wallet or self.wallet
+        assert isinstance(wallet, GeneralWallet)
+
+        sum_fiat = Decimal('0')
+        assets = wallet.get_all_balance()
+        chain_code = wallet.chain_code
+
+        balances_info = {}
+        _sort_helper_dict = {}
+        for coin_code, asset in assets.items():
+            price = price_manager.get_last_price(coin_code, self.ccy)
+            balance_with_decimals = Decimal(asset["balance"]) / pow(10, Decimal(asset["decimals"]))
+            fiat = balance_with_decimals * price
+            sum_fiat += fiat
+
+            balance_info = {
+                "coin": asset["symbol"],  # The key is misleading, should be symbol
+                "address": asset["token_address"] or asset["address"],
+                "icon": asset["icon"],
+                "balance": balance_with_decimals,
+                "fiat": f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}",
+            }
+            balances_info[coin_code] = balance_info
+            if coin_code != chain_code:
+                _sort_helper_dict[asset["token_address"]] = fiat
+
+        ret_main_balance_info = balances_info.pop(chain_code)
+        ret_contracts_balance_info = sorted(
+            balances_info.values(), key=lambda i: (_sort_helper_dict.get(i["address"]), i["balance"]), reverse=True
+        )
+        return ret_main_balance_info, ret_contracts_balance_info, sum_fiat
 
     def _get_eth_wallet_all_balance(
         self, wallet: Optional[Abstract_Eth_Wallet] = None, with_sum_fiat: bool = True

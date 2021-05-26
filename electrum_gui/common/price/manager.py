@@ -5,7 +5,6 @@ from typing import Callable, Dict, Iterable, List, Sequence, Set, Tuple
 
 from electrum_gui.common.basic.functional.timing import timing_logger
 from electrum_gui.common.basic.functional.wraps import cache_it
-from electrum_gui.common.basic.orm.database import db
 from electrum_gui.common.basic.ticker.utils import on_interval
 from electrum_gui.common.coin import codes
 from electrum_gui.common.coin import manager as coin_manager
@@ -114,6 +113,5 @@ def _split_paths_to_pairs(paths: List[Sequence[str]]) -> Set[Tuple[str, str]]:
 
 @on_interval(15 * 60)
 @timing_logger("price_manager.on_ticker_signal")
-@db
 def on_ticker_signal():
     pricing()

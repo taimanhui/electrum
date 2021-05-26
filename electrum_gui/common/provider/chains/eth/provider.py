@@ -23,14 +23,15 @@ class _EthKey(object):
 
 class ETHProvider(ProviderInterface):
     def verify_address(self, address: str) -> AddressValidation:
-        is_valid, encoding = False, None
-
-        if eth_utils.is_checksum_formatted_address(address) and eth_utils.is_checksum_address(address):
-            is_valid, encoding = True, "checksum"
-        elif eth_utils.is_hex_address(address):
-            is_valid, encoding = True, "hex"
-
-        return AddressValidation(is_valid=is_valid, encoding=encoding)
+        is_valid = eth_utils.is_address(address)
+        normalized_address, display_address = (
+            (address.lower(), eth_utils.to_checksum_address(address)) if is_valid else ("", "")
+        )
+        return AddressValidation(
+            normalized_address=normalized_address,
+            display_address=display_address,
+            is_valid=is_valid,
+        )
 
     def pubkey_to_address(self, verifier: VerifierInterface, encoding: str = None) -> str:
         pubkey = verifier.get_pubkey(compressed=False)
