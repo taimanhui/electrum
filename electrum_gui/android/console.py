@@ -2546,6 +2546,22 @@ class AndroidCommands(commands.Commands):
         data = "0x70a08231" + eth_abi.encode_abi(("address",), (owner_address,)).hex()
         return self._get_action_result(coin, contract_address, data)
 
+    @exceptions.catch_exception
+    def get_tx_status_by_txid(self, txid, coin):
+        """
+        Get transaction status based on txid
+        :param txid: txid as str
+        :param coin: chain code
+        :return:(Sending failure/Confirmed/Unconfirmed/{5} confirmations)
+
+        exp:
+            testcommond.get_tx_status_by_txid("0x41e11464913e92a978ee503b272e964ffaf38aed5bdd41338c52d4d77351d7db", "eth")
+            return:
+                {"status": 0, "info": "Confirmed"}
+        """
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        return provider_manager.get_transaction_by_txid(chain_code, txid).detailed_status
+
     def sign_eth_tx(
         self,
         to_addr,
