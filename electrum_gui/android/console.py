@@ -214,6 +214,7 @@ class AndroidCommands(commands.Commands):
         self.recovery_wallets = {}
         self.path = ""
         self.replace_wallet_info = {}
+        self._set_base_uint("BTC")
         ran_str = self.config.get("ra_str", None)
         if ran_str is None:
             ran_str = "".join(random.sample(string.ascii_letters + string.digits, 8))
@@ -1301,7 +1302,7 @@ class AndroidCommands(commands.Commands):
                 text = self.format_amount((int(Decimal(amount) / Decimal(rate) * COIN)))
             return text
 
-    def set_base_uint(self, base_unit):
+    def _set_base_uint(self, base_unit):
         """
         Set base unit for(BTC/mBTC/bits/sat), for btc only
         :param base_unit: (BTC or mBTC or bits or sat) as string
