@@ -191,16 +191,14 @@ class TestETHProvider(TestCase):
                     ],
                     nonce=11,
                     fee_price_per_unit=int(102 * 1e9),
-                    fee_limit=int(60000 * 1.2),  # Update to the latest estimated gas limit and keep 20% buffer
+                    fee_limit=40000,  # Use the provided value
                     payload={"data": erc20_transfer_data},
                 ),
             )
             fake_client.get_prices_per_unit_of_fee.assert_not_called()
             fake_client.get_address.assert_called_once_with(external_address_a)
             fake_geth.is_contract.assert_not_called()
-            fake_geth.estimate_gas_limit.assert_called_once_with(
-                external_address_a, contract_address, 0, erc20_transfer_data
-            )
+            fake_geth.estimate_gas_limit.assert_not_called()
 
             fake_client.get_address.reset_mock()
             fake_geth.estimate_gas_limit.reset_mock()
