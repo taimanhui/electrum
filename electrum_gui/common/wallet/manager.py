@@ -727,15 +727,19 @@ def refresh_assets(
     assets: List[AssetModel], force_update: bool = False, cache_in_seconds: int = 10
 ) -> List[AssetModel]:
     need_update_flag_datetime = datetime.datetime.now() - datetime.timedelta(seconds=cache_in_seconds)
-    assets = assets if force_update else [i for i in assets if i.modified_time < need_update_flag_datetime]
+    need_update_assets = assets if force_update else [i for i in assets if i.modified_time < need_update_flag_datetime]
 
-    accounts = daos.account.query_accounts_by_ids([i.account_id for i in assets])
+    if not need_update_assets:
+        return assets
+
+    accounts = daos.account.query_accounts_by_ids([i.account_id for i in need_update_assets])
     accounts_lookup = {i.id: i for i in accounts}
-    coins = coin_manager.query_coins_by_codes([i.coin_code for i in assets])
+    coins = coin_manager.query_coins_by_codes([i.coin_code for i in need_update_assets])
     coins_lookup = {i.code: i for i in coins}
 
-    assets = sorted(assets, key=lambda i: (i.chain_code, i.account_id))
-    for chain_code, group in groupby(assets, key=lambda i: i.chain_code):
+    updated_assets = []
+    need_update_assets = sorted(need_update_assets, key=lambda i: (i.chain_code, i.account_id))
+    for chain_code, group in groupby(need_update_assets, key=lambda i: i.chain_code):
         for account_id, sub_group in groupby(group, key=lambda i: i.account_id):
             for asset in sub_group:  # todo batch
                 try:
@@ -743,6 +747,7 @@ def refresh_assets(
                     coin = coins_lookup[asset.coin_code]
                     balance = provider_manager.get_balance(chain_code, account.address, coin.token_address)
                     asset.balance = Decimal(balance)
+                    updated_assets.append(asset)
                 except Exception as e:
                     logger.exception(
                         f"Error in get balance by asset. chain_code: {chain_code}, coin_code: {asset.coin_code}, "
@@ -750,7 +755,6 @@ def refresh_assets(
                     )
 
     with db.atomic():
-        daos.asset.bulk_update_balance(assets)
+        daos.asset.bulk_update_balance(updated_assets)
 
-    assets = daos.asset.query_assets_by_ids([i.id for i in assets])
     return assets
