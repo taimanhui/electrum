@@ -45,6 +45,9 @@ def load_library():
                          'libsecp256k1-0.dll')
     elif 'ANDROID_DATA' in os.environ:
         library_paths = ('libsecp256k1.so',)
+    elif 'DYLIB_PATH' in os.environ:
+        library_paths = os.environ["DYLIB_PATH"]
+        library_paths += "libsecp256k1.framework/libsecp256k1.cpython-38-darwin.so"
     else:  # desktop Linux and similar
         library_paths = (os.path.join(os.path.dirname(__file__), 'libsecp256k1.so.0'),
                          'libsecp256k1.so.0')
