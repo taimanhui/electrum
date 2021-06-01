@@ -238,14 +238,14 @@ class TestCoinManager(TestCase):
                 )
 
     @patch("electrum_gui.common.coin.manager.settings")
-    def test_get_chain_code_by_legacy_wallet_chain(self, fake_settings):
+    def test_legacy_coin_to_chain_code(self, fake_settings):
         with self.subTest("in DEV model"):
             fake_settings.IS_DEV = True
-            self.assertEqual("teth", manager.get_chain_code_by_legacy_wallet_chain("eth"))
+            self.assertEqual("teth", manager.legacy_coin_to_chain_code("eth"))
 
         with self.subTest("in Release model"):
             fake_settings.IS_DEV = False
-            self.assertEqual("eth", manager.get_chain_code_by_legacy_wallet_chain("eth"))
+            self.assertEqual("eth", manager.legacy_coin_to_chain_code("eth"))
 
     @patch("electrum_gui.common.coin.manager.settings")
     def test_chain_code_to_legacy_coin(self, fake_settings):
