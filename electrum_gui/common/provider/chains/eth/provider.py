@@ -48,7 +48,7 @@ class ETHProvider(ProviderInterface):
         payload = unsigned_tx.payload.copy()
         tx_input = unsigned_tx.inputs[0] if unsigned_tx.inputs else None
         tx_output = unsigned_tx.outputs[0] if unsigned_tx.outputs else None
-        fee_limit = unsigned_tx.fee_limit or 21000
+        fee_limit = unsigned_tx.fee_limit
 
         if tx_input is not None and tx_output is not None:
             from_address = tx_input.address
@@ -70,10 +70,13 @@ class ETHProvider(ProviderInterface):
 
             if data:
                 payload["data"] = data
-            if token_address or self.geth.is_contract(to_address):
+
+            if not fee_limit and (token_address or self.geth.is_contract(to_address)):
                 estimate_fee_limit = self.geth.estimate_gas_limit(from_address, to_address, value, data)
                 estimate_fee_limit = round(estimate_fee_limit * 1.2)
-                fee_limit = max(fee_limit, estimate_fee_limit)
+                fee_limit = estimate_fee_limit
+
+        fee_limit = fee_limit or 21000
 
         return unsigned_tx.clone(
             inputs=[tx_input] if tx_input is not None else [],
