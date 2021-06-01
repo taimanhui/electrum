@@ -15,8 +15,9 @@ from code import InteractiveConsole
 from decimal import Decimal
 from operator import attrgetter
 from os.path import exists, join
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
+import eth_abi
 import eth_utils
 from eth_account import account as eth_account_account
 from eth_keys import keys
@@ -78,6 +79,7 @@ from electrum_gui.common import the_begging
 from electrum_gui.common.basic import exceptions
 from electrum_gui.common.provider import data as provider_data
 from electrum_gui.common.provider import exceptions as provider_exceptions
+from electrum_gui.common.provider.chains.eth.clients.geth import Geth
 
 from ..common.basic.functional.text import force_text
 from ..common.basic.orm.database import db
@@ -2483,6 +2485,82 @@ class AndroidCommands(commands.Commands):
             payload=kwargs,
         )
         return signed_tx.raw_tx
+
+    @exceptions.catch_exception
+    def get_erc20_approve_action_field_data(self, spender_address, value) -> str:
+        """
+        Get the field data for erc20 api approve
+        :param spender_address:
+        :param value:
+        :return: json like {"status": "", "info":""}
+
+        exp:
+            testcommond.get_erc20_approve_action_field_data("0x514910771af9ca656af840dff83e8264ecf986ca", 1)
+
+            return data:
+                {"status": 0, "info": "0x095ea7b3000000000000000000000000514910771af9ca656af840dff83e8264ecf986ca0000000000000000000000000000000000000000000000000000000000000001"}
+
+        """
+        return "0x095ea7b3" + eth_abi.encode_abi(("address", "uint256"), (spender_address, value)).hex()
+
+    def _get_action_result(self, coin: str, contract_address: str, data: str) -> str:
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        geth = provider_manager.get_client_by_chain(chain_code, instance_required=Geth)
+        out = geth.eth_call({"to": contract_address, "data": data})
+        return str(int((out[2:]), base=16))
+
+    @exceptions.catch_exception
+    def get_erc20_allowance_action_result(
+        self, coin: str, contract_address: str, owner_address: str, spender_address: str
+    ) -> Any:
+        """
+        Get the result of the allowance api
+        :param coin: chain code
+        :param contract_address: contract address
+        :param owner_address:
+        :param spender_address:
+        :return:
+
+        exp:
+            testcommond.get_erc20_allowance_action_result("eth", "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", "0x514910771af9ca656af840dff83e8264ecf986ca", "0x514910771af9ca656af840dff83e8264ecf986ca")
+            return data:
+                {"status": 0, "info": "0"}
+        """
+        data = "0xdd62ed3e" + eth_abi.encode_abi(("address", "address"), (owner_address, spender_address)).hex()
+        return self._get_action_result(coin, contract_address, data)
+
+    @exceptions.catch_exception
+    def get_erc20_balanceof_action_result(self, coin: str, contract_address: str, owner_address: str) -> Any:
+        """
+        Get the result of the allowance api
+        :param coin: chain code
+        :param contract_address: contract address
+        :param owner_address:
+        :return:
+
+        exp:
+            testcommond.get_erc20_balanceof_action_result("eth", "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", "0x514910771af9ca656af840dff83e8264ecf986ca")
+            return data:
+                {"status": 0, "info": "0"}
+        """
+        data = "0x70a08231" + eth_abi.encode_abi(("address",), (owner_address,)).hex()
+        return self._get_action_result(coin, contract_address, data)
+
+    @exceptions.catch_exception
+    def get_tx_status_by_txid(self, txid, coin):
+        """
+        Get transaction status based on txid
+        :param txid: txid as str
+        :param coin: chain code
+        :return:(Sending failure/Confirmed/Unconfirmed/{5} confirmations)
+
+        exp:
+            testcommond.get_tx_status_by_txid("0x41e11464913e92a978ee503b272e964ffaf38aed5bdd41338c52d4d77351d7db", "eth")
+            return:
+                {"status": 0, "info": "Confirmed"}
+        """
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        return provider_manager.get_transaction_by_txid(chain_code, txid).detailed_status
 
     def sign_eth_tx(
         self,

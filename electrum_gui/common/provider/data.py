@@ -86,14 +86,14 @@ class Transaction(DataClassMixin):
     @property
     def detailed_status(self) -> str:
         if self.status == TransactionStatus.CONFIRM_REVERTED:
-            return i18n._("Sending failure")
+            return "Sending failure"
         elif self.status == TransactionStatus.CONFIRM_SUCCESS:
             if self.block_header is not None and self.block_header.confirmations > 0:
-                return i18n._("{} confirmations").format(self.block_header.confirmations)
+                return ("{} confirmations").format(self.block_header.confirmations)
             else:
-                return i18n._("Confirmed")
+                return "Confirmed"
         else:
-            return i18n._("Unconfirmed")
+            return "Unconfirmed"
 
     @property
     def show_status(self) -> List:

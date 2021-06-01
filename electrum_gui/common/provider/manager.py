@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 
@@ -115,3 +115,7 @@ def search_utxos_by_address(chain_code: str, address: str) -> List[data.UTXO]:
 
 def get_token_info_by_address(chain_code: str, token_address: str) -> Tuple[str, str, int]:
     return loader.get_provider_by_chain(chain_code).get_token_info_by_address(token_address)
+
+
+def get_client_by_chain(chain_code: str, instance_required: Any = None) -> interfaces.ClientInterface:
+    return loader.get_client_by_chain(chain_code, instance_required=instance_required)
