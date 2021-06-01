@@ -3606,17 +3606,10 @@ class AndroidCommands(commands.Commands):
         :param password: as string
         :return: raise except if error
         """
-        try:
-            if self.check_pw_wallet is None:
-                self.check_pw_wallet = self.get_check_wallet()
+        if self.check_pw_wallet is None:
+            self.check_pw_wallet = self.get_check_wallet()
+        if self.check_pw_wallet is not None:
             self.check_pw_wallet.check_password(password, str_pw=self.android_id)
-        except BaseException as e:
-            if len(e.args) != 0:
-                if -1 != e.args[0].find("out of range"):
-                    log_info.info("out of range when check_password error {}.".format(e))
-                    pass
-            else:
-                raise e
 
     def recovery_confirmed(self, name_list, hw=False):
         """

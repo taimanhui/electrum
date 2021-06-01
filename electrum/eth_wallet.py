@@ -712,7 +712,7 @@ class Abstract_Eth_Wallet(abc.ABC):
 
     def check_password(self, password, str_pw=None):
         if self.has_keystore_encryption():
-            self.keystore.check_password(password)
+            self.keystore.check_password(password, eth_status=True)
         if self.has_storage_encryption():
             if str_pw is not None:
                 self.storage.check_password(str_pw)
