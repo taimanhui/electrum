@@ -4654,10 +4654,8 @@ class AndroidCommands(commands.Commands):
         generic_wallet_type = None
         if type_ in ("hw", "hd"):
             generic_wallet_type = type_
-        elif type_ in ("btc", "eth", "bsc", "heco", "okt"):
+        else:
             coin = type_
-        elif type_ is not None:
-            raise BaseException(_("Unsupported coin types"))
 
         wallet_infos = []
         for wallet_id, wallet_type in self.wallet_context.get_stored_wallets_types(generic_wallet_type, coin):
