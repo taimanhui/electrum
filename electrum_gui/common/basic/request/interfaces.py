@@ -89,6 +89,7 @@ class JsonRPCInterface(ABC):
     def batch_call(
         self,
         calls: List[Tuple[str, Union[list, dict]]],
+        ignore_errors: bool = False,
         headers: dict = None,
         timeout: int = None,
         path: str = "",
@@ -97,6 +98,7 @@ class JsonRPCInterface(ABC):
         """
         Batch call to server
         :param calls: Batch calls group
+        :param ignore_errors: whether to ignore errors and return None instead of raising exceptions
         :param headers: request headers, optional
         :param timeout: request timeout, optional
         :param path: target path, optional

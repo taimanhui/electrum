@@ -74,6 +74,18 @@
         ]
       }
     ],
+    "dexes": {
+        "ImplUniswapCompatible": {
+            "router_address": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+            "base_token_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "media_token_addresses": [
+                "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+                "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                "0x6b175474e89094c44da98b954eedeac495271d0f"
+            ]
+        }
+    },
     "chain_affinity": "eth",
     "qr_code_prefix": "ethereum",
     "chain_id": "1"
@@ -120,6 +132,20 @@
         ]
       }
     ],
+    "dexes": {
+        "ImplUniswapCompatible": {
+            "router_address": "0x05ff2b0db69458a0750badebc4f9e13add608c7f",
+            "base_token_address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+            "media_token_addresses": [
+                "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+                "0x55d398326f99059ff775485246999027b3197955",
+                "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+                "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+                "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+                "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c"
+            ]
+        }
+    },
     "chain_affinity": "eth",
     "qr_code_prefix": "bsc",
     "chain_id": "56"
@@ -166,6 +192,20 @@
         ]
       }
     ],
+    "dexes": {
+        "ImplUniswapCompatible": {
+            "router_address": "0xed7d5f38c79115ca12fe6c0041abb22f0a06c300",
+            "base_token_address": "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f",
+            "media_token_addresses": [
+                "0x66a79d23e58475d2738179ca52cd0b41d73f0bea",
+                "0x64ff637fb478863b7468bc97d30a5bf3a428a1fd",
+                "0xa71edc38d189767582c38a3145b5873052c3e47a",
+                "0x0298c2b32eae4da002a15f36fdf7615bea3da047",
+                "0x25d2e80cb6b86881fd7e07dd263fb79f4abe033c",
+                "0x9362bbef4b8313a8aa9f0c9808b80577aa26b73b"
+            ]
+        }
+    },
     "chain_affinity": "eth",
     "qr_code_prefix": "heco",
     "chain_id": "128"

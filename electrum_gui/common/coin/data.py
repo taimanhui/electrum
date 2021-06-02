@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import IntEnum, unique
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from electrum_gui.common.basic.dataclass.dataclass import DataClassMixin
 from electrum_gui.common.secret.data import CurveEnum
@@ -31,6 +31,7 @@ class ChainInfo(DataClassMixin):
     )
     default_address_encoding: Optional[str] = None
     clients: List[dict] = field(default_factory=list)  # config of clients
+    dexes: Dict[str, dict] = field(default_factory=dict)  # config of decentralized exchanges
     chain_id: Optional[str] = None  # optional, identify multi forked chains by chain_id (use by eth etc.)
     bip44_purpose_options: dict = field(default_factory=dict)
     fee_price_decimals_for_legibility: int = 0  # (gwei in eth etc.)

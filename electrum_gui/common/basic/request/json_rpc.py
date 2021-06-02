@@ -42,6 +42,7 @@ class JsonRPCRequest(JsonRPCInterface):
     def batch_call(
         self,
         calls: List[Tuple[str, Union[list, dict]]],
+        ignore_errors: bool = False,
         headers: dict = None,
         timeout: int = None,
         path: str = "",
@@ -61,7 +62,15 @@ class JsonRPCRequest(JsonRPCInterface):
             raise JsonRPCException(f"Batch with {len(resp)} calls, but got {len(calls)} responses", json_response=resp)
         else:
             resp = sorted(resp, key=lambda i: int(i.get("id", 0)))
-            results = [self.parse_response(i) for i in resp]
+            results = []
+            for single_resp in resp:
+                try:
+                    results.append(self.parse_response(single_resp))
+                except JsonRPCException as e:
+                    if ignore_errors:
+                        results.append(None)
+                    else:
+                        raise e
             return results
 
     @staticmethod
