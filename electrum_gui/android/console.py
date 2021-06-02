@@ -456,7 +456,7 @@ class AndroidCommands(commands.Commands):
         if self.hd_wallet is None:
             self.hd_wallet = wallet_obj
 
-    def load_wallet(self, name, password=None):
+    def load_wallet(self, name, password=None):  # noqa
         """
         load an wallet
         :param name: wallet name as a string
@@ -485,8 +485,15 @@ class AndroidCommands(commands.Commands):
                 return
             if db.get_action():
                 return
-            wallet_type = db.data["wallet_type"]
-            coin = db.data["coin"]
+            try:
+                wallet_type = db.data["wallet_type"]
+                coin = db.data["coin"]
+            except Exception:
+                wallet_type = self.wallet_context.get_wallet_type_by_id(name)
+                if wallet_type:
+                    coin = wallet_context.split_coin_from_wallet_type(wallet_type)
+                else:
+                    return
             chain_affinity = _get_chain_affinity(coin)
             if is_coin_migrated(coin):
                 wallet = GeneralWallet(db, storage, self.config)
@@ -494,12 +501,15 @@ class AndroidCommands(commands.Commands):
                 wallet = Wallet(db, storage, config=self.config)
                 wallet.start_network(self.network)
             elif chain_affinity == "eth":
-                if "importe" in wallet_type:
+                if (
+                    "importe" in wallet_type
+                    or "private" in wallet_type
+                    or "watch" in wallet_type
+                    or "customer" in wallet_type
+                ):
                     wallet = Eth_Wallet(db, storage, config=self.config)
                 else:
-                    index = 0
-                    if "address_index" in db.data:
-                        index = db.data["address_index"]
+                    index = db.data.get("address_index", 0)
                     wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=index)
             else:
                 raise UnsupportedCurrencyCoin()

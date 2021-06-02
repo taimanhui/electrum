@@ -137,6 +137,9 @@ class WalletContext(object):
         self._type_info = {}
         self._save_type_info()
 
+    def get_wallet_type_by_id(self, wallet_id: str) -> str:
+        return self._type_info.get(wallet_id, {}).get('type', '')
+
     def get_stored_wallets_types(
         self, generic_wallet_type: Optional[str] = None, coin: Optional[str] = None
     ) -> List[Tuple[str, str]]:
