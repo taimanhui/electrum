@@ -46,7 +46,7 @@ def load_price_by_pairs(pairs: Set[Tuple[str, str]]) -> Dict[Tuple[str, str], De
     expression = functools.reduce(lambda a, b: a | b, expression)
 
     pair_prices = {}
-    models = Price.select().where(expression)
+    models = Price.select().where(expression).order_by(Price.modified_time.asc())
 
     for i in models:
         pair_prices[(i.coin_code, i.unit)] = i.price
