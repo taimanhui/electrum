@@ -24,7 +24,6 @@ class TestWalletManager(TestCase):
             "ETH_WATCHONLY", "eth", "0x8Be73940864fD2B15001536E76b3ECcd85a80a5d"
         )
         self.assertEqual(
-            wallet_info,
             {
                 'address': '0x8be73940864fd2b15001536e76b3eccd85a80a5d',
                 'address_encoding': None,
@@ -45,13 +44,11 @@ class TestWalletManager(TestCase):
                 'wallet_id': 1,
                 'wallet_type': 'WATCHONLY',
             },
+            wallet_info,
         )
 
     def test_import_watchonly_wallet_by_address__btc(self):
         self.assertEqual(
-            wallet_manager.import_watchonly_wallet_by_address(
-                "BTC_WATCHONLY", "btc", "3Nu7tDXHbqtuMfMi3DMVrnLFabTvaY2FyF"
-            ),
             {
                 'address': '3Nu7tDXHbqtuMfMi3DMVrnLFabTvaY2FyF',
                 'address_encoding': 'P2WPKH-P2SH',
@@ -72,15 +69,13 @@ class TestWalletManager(TestCase):
                 'wallet_id': 1,
                 'wallet_type': 'WATCHONLY',
             },
+            wallet_manager.import_watchonly_wallet_by_address(
+                "BTC_WATCHONLY", "btc", "3Nu7tDXHbqtuMfMi3DMVrnLFabTvaY2FyF"
+            ),
         )
 
     def test_import_watchonly_wallet_by_pubkey(self):
         self.assertEqual(
-            wallet_manager.import_watchonly_wallet_by_pubkey(
-                "ETH_WATCHONLY_BY_PUBKEY",
-                "eth",
-                bytes.fromhex("02deb60902c06bfed8d78e33337be995d0b3efc28fbc61b6f88cb5cfb27dc4efd1"),
-            ),
             {
                 'address': '0x8be73940864fd2b15001536e76b3eccd85a80a5d',
                 'address_encoding': None,
@@ -101,16 +96,15 @@ class TestWalletManager(TestCase):
                 'wallet_id': 1,
                 'wallet_type': 'WATCHONLY',
             },
+            wallet_manager.import_watchonly_wallet_by_pubkey(
+                "ETH_WATCHONLY_BY_PUBKEY",
+                "eth",
+                bytes.fromhex("02deb60902c06bfed8d78e33337be995d0b3efc28fbc61b6f88cb5cfb27dc4efd1"),
+            ),
         )
 
     def test_import_standalone_wallet_by_prvkey(self):
         self.assertEqual(
-            wallet_manager.import_standalone_wallet_by_prvkey(
-                "ETH_BY_PRVKEY",
-                "eth",
-                bytes.fromhex("77f22e0d920c7b59df81a629dc75c27513b5360a45d55f3253454f5d3cb23bab"),
-                "moon",
-            ),
             {
                 'address': '0x8be73940864fd2b15001536e76b3eccd85a80a5d',
                 'address_encoding': None,
@@ -131,18 +125,16 @@ class TestWalletManager(TestCase):
                 'wallet_id': 1,
                 'wallet_type': 'SOFTWARE_STANDALONE_PRVKEY',
             },
+            wallet_manager.import_standalone_wallet_by_prvkey(
+                "ETH_BY_PRVKEY",
+                "eth",
+                bytes.fromhex("77f22e0d920c7b59df81a629dc75c27513b5360a45d55f3253454f5d3cb23bab"),
+                "moon",
+            ),
         )
 
     def test_import_standalone_wallet_by_mnemonic(self):
         self.assertEqual(
-            wallet_manager.import_standalone_wallet_by_mnemonic(
-                "ETH_BY_MNEMONIC",
-                "eth",
-                self.mnemonic,
-                passphrase=self.passphrase,
-                password=self.password,
-                bip44_path="m/44'/60'/0'/0/0",
-            ),
             {
                 'address': '0x8be73940864fd2b15001536e76b3eccd85a80a5d',
                 'address_encoding': None,
@@ -163,16 +155,18 @@ class TestWalletManager(TestCase):
                 'wallet_id': 1,
                 'wallet_type': 'SOFTWARE_STANDALONE_MNEMONIC',
             },
+            wallet_manager.import_standalone_wallet_by_mnemonic(
+                "ETH_BY_MNEMONIC",
+                "eth",
+                self.mnemonic,
+                passphrase=self.passphrase,
+                password=self.password,
+                bip44_path="m/44'/60'/0'/0/0",
+            ),
         )
 
     def test_create_primary_wallets(self):
         self.assertEqual(
-            wallet_manager.create_primary_wallets(
-                ["btc", "eth"],
-                password=self.password,
-                mnemonic=self.mnemonic,
-                passphrase=self.passphrase,
-            ),
             [
                 {
                     'address': '3Nu7tDXHbqtuMfMi3DMVrnLFabTvaY2FyF',
@@ -215,6 +209,12 @@ class TestWalletManager(TestCase):
                     'wallet_type': 'SOFTWARE_PRIMARY',
                 },
             ],
+            wallet_manager.create_primary_wallets(
+                ["btc", "eth"],
+                password=self.password,
+                mnemonic=self.mnemonic,
+                passphrase=self.passphrase,
+            ),
         )
 
     def test_create_next_derived_primary_wallet(self):
@@ -226,7 +226,6 @@ class TestWalletManager(TestCase):
         )
 
         self.assertEqual(
-            wallet_manager.create_next_derived_primary_wallet("btc", "BTC-1", "moon"),
             {
                 'address': '3Nu7tDXHbqtuMfMi3DMVrnLFabTvaY2FyF',
                 'address_encoding': 'P2WPKH-P2SH',
@@ -247,10 +246,10 @@ class TestWalletManager(TestCase):
                 'wallet_id': 2,
                 'wallet_type': 'SOFTWARE_PRIMARY',
             },
+            wallet_manager.create_next_derived_primary_wallet("btc", "BTC-1", "moon"),
         )
 
         self.assertEqual(
-            wallet_manager.create_next_derived_primary_wallet("eth", "ETH-2", "moon"),
             {
                 'address': '0xd927952eed3a0a838bbe2db0ba5a15673003903d',
                 'address_encoding': None,
@@ -271,10 +270,10 @@ class TestWalletManager(TestCase):
                 'wallet_id': 3,
                 'wallet_type': 'SOFTWARE_PRIMARY',
             },
+            wallet_manager.create_next_derived_primary_wallet("eth", "ETH-2", "moon"),
         )
 
         self.assertEqual(
-            wallet_manager.create_next_derived_primary_wallet("btc", "BTC-2", "moon"),
             {
                 'address': '34y7g9uRnjJwvu2zLJVMfrucnbzgyYc4af',
                 'address_encoding': 'P2WPKH-P2SH',
@@ -295,6 +294,7 @@ class TestWalletManager(TestCase):
                 'wallet_id': 4,
                 'wallet_type': 'SOFTWARE_PRIMARY',
             },
+            wallet_manager.create_next_derived_primary_wallet("btc", "BTC-2", "moon"),
         )
 
     def test_export_mnemonic__primary_wallet(self):
@@ -305,7 +305,8 @@ class TestWalletManager(TestCase):
             passphrase=self.passphrase,
         )[0]
         self.assertEqual(
-            wallet_manager.export_mnemonic(wallet_info["wallet_id"], self.password), (self.mnemonic, self.passphrase)
+            (self.mnemonic, self.passphrase),
+            wallet_manager.export_mnemonic(wallet_info["wallet_id"], self.password),
         )
 
     def test_export_mnemonic__standalone_mnemonic_wallet(self):
@@ -318,7 +319,7 @@ class TestWalletManager(TestCase):
         )
 
         self.assertEqual(
-            wallet_manager.export_mnemonic(wallet_info["wallet_id"], self.password), (self.mnemonic, self.passphrase)
+            (self.mnemonic, self.passphrase), wallet_manager.export_mnemonic(wallet_info["wallet_id"], self.password)
         )
 
     @patch("electrum_gui.common.wallet.manager.provider_manager.get_address")
@@ -330,7 +331,6 @@ class TestWalletManager(TestCase):
         )
 
         self.assertEqual(
-            wallet_manager.search_existing_wallets(["btc", "eth"], self.mnemonic, passphrase=self.passphrase),
             [
                 {
                     'address': '3Nu7tDXHbqtuMfMi3DMVrnLFabTvaY2FyF',
@@ -349,6 +349,7 @@ class TestWalletManager(TestCase):
                     'name': 'ETH-1',
                 },
             ],
+            wallet_manager.search_existing_wallets(["btc", "eth"], self.mnemonic, passphrase=self.passphrase),
         )
 
     def test_update_wallet_password(self):

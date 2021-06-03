@@ -26,34 +26,34 @@ class TestETHProvider(TestCase):
 
     def test_verify_address(self):
         self.assertEqual(
+            AddressValidation(
+                normalized_address="0x2e5124c037871deb014490c37a4844f7019f38bd",
+                display_address="0x2E5124C037871DeB014490C37a4844F7019f38bD",
+                is_valid=True,
+            ),
             self.provider.verify_address("0x2E5124C037871DeB014490C37a4844F7019f38bD"),
+        )
+        self.assertEqual(
             AddressValidation(
                 normalized_address="0x2e5124c037871deb014490c37a4844f7019f38bd",
                 display_address="0x2E5124C037871DeB014490C37a4844F7019f38bD",
                 is_valid=True,
             ),
-        )
-        self.assertEqual(
             self.provider.verify_address("0x2e5124c037871deb014490c37a4844f7019f38bd"),
-            AddressValidation(
-                normalized_address="0x2e5124c037871deb014490c37a4844f7019f38bd",
-                display_address="0x2E5124C037871DeB014490C37a4844F7019f38bD",
-                is_valid=True,
-            ),
         )
         self.assertEqual(
+            AddressValidation(normalized_address="", display_address="", is_valid=False),
             self.provider.verify_address(""),
-            AddressValidation(normalized_address="", display_address="", is_valid=False),
         )
         self.assertEqual(
-            self.provider.verify_address("0x"),
             AddressValidation(normalized_address="", display_address="", is_valid=False),
+            self.provider.verify_address("0x"),
         )
 
     def test_pubkey_to_address(self):
         verifier = Mock(get_pubkey=Mock(return_value=b"\4" + b"\0" * 64))
         self.assertEqual(
-            self.provider.pubkey_to_address(verifier=verifier), "0x3f17f1962b36e491b30a40b2405849e597ba5fb5"
+            "0x3f17f1962b36e491b30a40b2405849e597ba5fb5", self.provider.pubkey_to_address(verifier=verifier)
         )
         verifier.get_pubkey.assert_called_once_with(compressed=False)
 
@@ -88,10 +88,10 @@ class TestETHProvider(TestCase):
 
         with self.subTest("Empty UnsignedTx"):
             self.assertEqual(
+                UnsignedTx(fee_limit=21000, fee_price_per_unit=int(30 * 1e9)),
                 self.provider.fill_unsigned_tx(
                     UnsignedTx(),
                 ),
-                UnsignedTx(fee_limit=21000, fee_price_per_unit=int(30 * 1e9)),
             )
             fake_client.get_prices_per_unit_of_fee.assert_called_once()
             fake_client.get_address.assert_not_called()
@@ -102,19 +102,19 @@ class TestETHProvider(TestCase):
 
         with self.subTest("Transfer ETH to external address with preset gas price"):
             self.assertEqual(
-                self.provider.fill_unsigned_tx(
-                    UnsignedTx(
-                        inputs=[TransactionInput(address=external_address_a, value=21)],
-                        outputs=[TransactionOutput(address=external_address_b, value=21)],
-                        fee_price_per_unit=int(102 * 1e9),
-                    )
-                ),
                 UnsignedTx(
                     inputs=[TransactionInput(address=external_address_a, value=21)],
                     outputs=[TransactionOutput(address=external_address_b, value=21)],
                     nonce=11,
                     fee_price_per_unit=int(102 * 1e9),
                     fee_limit=21000,
+                ),
+                self.provider.fill_unsigned_tx(
+                    UnsignedTx(
+                        inputs=[TransactionInput(address=external_address_a, value=21)],
+                        outputs=[TransactionOutput(address=external_address_b, value=21)],
+                        fee_price_per_unit=int(102 * 1e9),
+                    )
                 ),
             )
             fake_client.get_prices_per_unit_of_fee.assert_not_called()
@@ -127,19 +127,19 @@ class TestETHProvider(TestCase):
 
         with self.subTest("Transfer ETH to contract address with preset nonce"):
             self.assertEqual(
-                self.provider.fill_unsigned_tx(
-                    UnsignedTx(
-                        inputs=[TransactionInput(address=external_address_a, value=21)],
-                        outputs=[TransactionOutput(address=contract_address, value=21)],
-                        nonce=101,
-                    )
-                ),
                 UnsignedTx(
                     inputs=[TransactionInput(address=external_address_a, value=21)],
                     outputs=[TransactionOutput(address=contract_address, value=21)],
                     nonce=101,
                     fee_price_per_unit=int(30 * 1e9),
                     fee_limit=int(60000 * 1.2),
+                ),
+                self.provider.fill_unsigned_tx(
+                    UnsignedTx(
+                        inputs=[TransactionInput(address=external_address_a, value=21)],
+                        outputs=[TransactionOutput(address=contract_address, value=21)],
+                        nonce=101,
+                    )
                 ),
             )
             fake_client.get_prices_per_unit_of_fee.assert_called_once()
@@ -154,26 +154,6 @@ class TestETHProvider(TestCase):
         with self.subTest("Transfer ERC20 with preset gas price and lower gas limit"):
             erc20_transfer_data = "0xa9059cbb000000000000000000000000a305fab8bda7e1638235b054889b3217441dd6450000000000000000000000000000000000000000000000000000000000000015"
             self.assertEqual(
-                self.provider.fill_unsigned_tx(
-                    UnsignedTx(
-                        inputs=[
-                            TransactionInput(
-                                address=external_address_a,
-                                value=21,
-                                token_address=contract_address,
-                            )
-                        ],
-                        outputs=[
-                            TransactionOutput(
-                                address=external_address_b,
-                                value=21,
-                                token_address=contract_address,
-                            )
-                        ],
-                        fee_price_per_unit=int(102 * 1e9),
-                        fee_limit=40000,
-                    )
-                ),
                 UnsignedTx(
                     inputs=[
                         TransactionInput(
@@ -193,6 +173,26 @@ class TestETHProvider(TestCase):
                     fee_price_per_unit=int(102 * 1e9),
                     fee_limit=40000,  # Use the provided value
                     payload={"data": erc20_transfer_data},
+                ),
+                self.provider.fill_unsigned_tx(
+                    UnsignedTx(
+                        inputs=[
+                            TransactionInput(
+                                address=external_address_a,
+                                value=21,
+                                token_address=contract_address,
+                            )
+                        ],
+                        outputs=[
+                            TransactionOutput(
+                                address=external_address_b,
+                                value=21,
+                                token_address=contract_address,
+                            )
+                        ],
+                        fee_price_per_unit=int(102 * 1e9),
+                        fee_limit=40000,
+                    )
                 ),
             )
             fake_client.get_prices_per_unit_of_fee.assert_not_called()
@@ -219,6 +219,10 @@ class TestETHProvider(TestCase):
             )
             signers = {"0x71df3bb810127271d400f7be99cc1f4504ab4c1a": fake_signer}
             self.assertEqual(
+                SignedTx(
+                    txid="0xd27c78c026978846312d70cb56f8e2863b5480a37159dab9e22fb8cdd5127469",
+                    raw_tx="0xf86c80851911a1d18082520894a305fab8bda7e1638235b054889b3217441dd64588d01b493cdc1dbc008025a018c8df4036ef8e80434b789d84e14bbbc4db461bfcc14ffdf4faf4784cd8bf4fa0557d08ae22b87620bbadfb75e27a33ce4fb03aabd95c30925b4483315ab4493f",
+                ),
                 self.provider.sign_transaction(
                     UnsignedTx(
                         inputs=[
@@ -236,10 +240,6 @@ class TestETHProvider(TestCase):
                         fee_price_per_unit=107670000000,
                     ),
                     signers,
-                ),
-                SignedTx(
-                    txid="0xd27c78c026978846312d70cb56f8e2863b5480a37159dab9e22fb8cdd5127469",
-                    raw_tx="0xf86c80851911a1d18082520894a305fab8bda7e1638235b054889b3217441dd64588d01b493cdc1dbc008025a018c8df4036ef8e80434b789d84e14bbbc4db461bfcc14ffdf4faf4784cd8bf4fa0557d08ae22b87620bbadfb75e27a33ce4fb03aabd95c30925b4483315ab4493f",
                 ),
             )
             fake_signer.sign.assert_called_once_with(
@@ -260,6 +260,10 @@ class TestETHProvider(TestCase):
 
             signers = {"0x9ce42ba2d6bb04f1e464520b044012187782f869": fake_signer}
             self.assertEqual(
+                SignedTx(
+                    txid="0xaee8c4369180309b99abc48b736fbda7a70c1de014f902cb2fc2e3441a72e4fa",
+                    raw_tx="0xf8a98085174876e80082e03194a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4880b844a9059cbb000000000000000000000000a305fab8bda7e1638235b054889b3217441dd64500000000000000000000000000000000000000000000000000000003110c5a4f26a0ff00510948d652626624d8f518309a66f7ec2149da47735f378e90c267c579f8a022afc54c308fcddd4a19b313ecf03be9ee328e670e9109f141902dd89e43aaf7",
+                ),
                 self.provider.sign_transaction(
                     UnsignedTx(
                         inputs=[
@@ -284,9 +288,5 @@ class TestETHProvider(TestCase):
                         },
                     ),
                     signers,
-                ),
-                SignedTx(
-                    txid="0xaee8c4369180309b99abc48b736fbda7a70c1de014f902cb2fc2e3441a72e4fa",
-                    raw_tx="0xf8a98085174876e80082e03194a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4880b844a9059cbb000000000000000000000000a305fab8bda7e1638235b054889b3217441dd64500000000000000000000000000000000000000000000000000000003110c5a4f26a0ff00510948d652626624d8f518309a66f7ec2149da47735f378e90c267c579f8a022afc54c308fcddd4a19b313ecf03be9ee328e670e9109f141902dd89e43aaf7",
                 ),
             )

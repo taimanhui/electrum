@@ -40,13 +40,13 @@ class TestSecretManager(TestCase):
         pubkey_model = secret_manager.import_pubkey(CurveEnum.SECP256K1, bytes.fromhex(self.address_level_pubkey))
 
         models = list(PubKeyModel.select())
-        self.assertEqual(len(models), 1)
+        self.assertEqual(1, len(models))
 
         first_model: PubKeyModel = models[0]
-        self.assertEqual(first_model.id, pubkey_model.id)
-        self.assertEqual(first_model.curve, CurveEnum.SECP256K1)
-        self.assertEqual(first_model.pubkey_type, PubKeyType.PUBKEY)
-        self.assertEqual(first_model.pubkey, self.address_level_pubkey)
+        self.assertEqual(pubkey_model.id, first_model.id)
+        self.assertEqual(CurveEnum.SECP256K1, first_model.curve)
+        self.assertEqual(PubKeyType.PUBKEY, first_model.pubkey_type)
+        self.assertEqual(self.address_level_pubkey, first_model.pubkey)
         self.assertIsNone(first_model.path)
         self.assertIsNone(first_model.parent_pubkey_id)
         self.assertIsNone(first_model.secret_key_id)
@@ -55,14 +55,14 @@ class TestSecretManager(TestCase):
         xpub_model = secret_manager.import_xpub(CurveEnum.SECP256K1, self.account_level_xpub, self.account_level_path)
 
         models = list(PubKeyModel.select())
-        self.assertEqual(len(models), 1)
+        self.assertEqual(1, len(models))
 
         first_model: PubKeyModel = models[0]
-        self.assertEqual(first_model.id, xpub_model.id)
-        self.assertEqual(first_model.curve, CurveEnum.SECP256K1)
-        self.assertEqual(first_model.pubkey_type, PubKeyType.XPUB)
-        self.assertEqual(first_model.pubkey, self.account_level_xpub)
-        self.assertEqual(first_model.path, self.account_level_path)
+        self.assertEqual(xpub_model.id, first_model.id)
+        self.assertEqual(CurveEnum.SECP256K1, first_model.curve)
+        self.assertEqual(PubKeyType.XPUB, first_model.pubkey_type)
+        self.assertEqual(self.account_level_xpub, first_model.pubkey)
+        self.assertEqual(self.account_level_path, first_model.path)
         self.assertIsNone(first_model.parent_pubkey_id)
         self.assertIsNone(first_model.secret_key_id)
 
@@ -76,9 +76,9 @@ class TestSecretManager(TestCase):
         )
 
         models = list(PubKeyModel.select())
-        self.assertEqual(len(models), 2)
-        self.assertEqual(models[0], xpub_model)
-        self.assertEqual(models[1], pubkey_model)
+        self.assertEqual(2, len(models))
+        self.assertEqual(xpub_model, models[0])
+        self.assertEqual(pubkey_model, models[1])
 
     @patch("electrum_gui.common.secret.manager.encrypt")
     def test_import_prvkey(self, fake_encrypt):
@@ -94,22 +94,22 @@ class TestSecretManager(TestCase):
         fake_encrypt.decrypt_data.assert_not_called()
 
         secret_key_models = list(SecretKeyModel.select())
-        self.assertEqual(len(secret_key_models), 1)
+        self.assertEqual(1, len(secret_key_models))
 
         first_secret_key_model: SecretKeyModel = secret_key_models[0]
-        self.assertEqual(first_secret_key_model.id, secret_key_model.id)
-        self.assertEqual(first_secret_key_model.secret_key_type, SecretKeyType.PRVKEY)
-        self.assertEqual(first_secret_key_model.encrypted_secret_key, f"Encrypted<hello,{self.address_level_prvkey}>")
+        self.assertEqual(secret_key_model.id, first_secret_key_model.id)
+        self.assertEqual(SecretKeyType.PRVKEY, first_secret_key_model.secret_key_type)
+        self.assertEqual(f"Encrypted<hello,{self.address_level_prvkey}>", first_secret_key_model.encrypted_secret_key)
 
         pubkey_models = list(PubKeyModel.select())
-        self.assertEqual(len(pubkey_models), 1)
+        self.assertEqual(1, len(pubkey_models))
 
         first_pubkey_model: PubKeyModel = pubkey_models[0]
-        self.assertEqual(first_pubkey_model.id, pubkey_model.id)
-        self.assertEqual(first_pubkey_model.secret_key_id, secret_key_model.id)
-        self.assertEqual(first_pubkey_model.pubkey_type, PubKeyType.PUBKEY)
-        self.assertEqual(first_pubkey_model.pubkey, self.address_level_pubkey)
-        self.assertEqual(first_pubkey_model.curve, CurveEnum.SECP256K1)
+        self.assertEqual(pubkey_model.id, first_pubkey_model.id)
+        self.assertEqual(secret_key_model.id, first_pubkey_model.secret_key_id)
+        self.assertEqual(PubKeyType.PUBKEY, first_pubkey_model.pubkey_type)
+        self.assertEqual(self.address_level_pubkey, first_pubkey_model.pubkey)
+        self.assertEqual(CurveEnum.SECP256K1, first_pubkey_model.curve)
         self.assertIsNone(first_pubkey_model.path)
         self.assertIsNone(first_pubkey_model.parent_pubkey_id)
 
@@ -128,23 +128,23 @@ class TestSecretManager(TestCase):
         fake_encrypt.decrypt_data.assert_not_called()
 
         secret_key_models = list(SecretKeyModel.select())
-        self.assertEqual(len(secret_key_models), 1)
+        self.assertEqual(1, len(secret_key_models))
 
         first_secret_key_model: SecretKeyModel = secret_key_models[0]
-        self.assertEqual(first_secret_key_model.id, secret_key_model.id)
-        self.assertEqual(first_secret_key_model.secret_key_type, SecretKeyType.XPRV)
-        self.assertEqual(first_secret_key_model.encrypted_secret_key, f"Encrypted<hello,{self.account_level_xprv}>")
+        self.assertEqual(secret_key_model.id, first_secret_key_model.id)
+        self.assertEqual(SecretKeyType.XPRV, first_secret_key_model.secret_key_type)
+        self.assertEqual(f"Encrypted<hello,{self.account_level_xprv}>", first_secret_key_model.encrypted_secret_key)
 
         pubkey_models = list(PubKeyModel.select())
-        self.assertEqual(len(pubkey_models), 1)
+        self.assertEqual(1, len(pubkey_models))
 
         first_pubkey_model: PubKeyModel = pubkey_models[0]
-        self.assertEqual(first_pubkey_model.id, pubkey_model.id)
-        self.assertEqual(first_pubkey_model.secret_key_id, secret_key_model.id)
-        self.assertEqual(first_pubkey_model.pubkey_type, PubKeyType.XPUB)
-        self.assertEqual(first_pubkey_model.pubkey, self.account_level_xpub)
-        self.assertEqual(first_pubkey_model.curve, CurveEnum.SECP256K1)
-        self.assertEqual(first_pubkey_model.path, self.account_level_path)
+        self.assertEqual(pubkey_model.id, first_pubkey_model.id)
+        self.assertEqual(secret_key_model.id, first_pubkey_model.secret_key_id)
+        self.assertEqual(PubKeyType.XPUB, first_pubkey_model.pubkey_type)
+        self.assertEqual(self.account_level_xpub, first_pubkey_model.pubkey)
+        self.assertEqual(CurveEnum.SECP256K1, first_pubkey_model.curve)
+        self.assertEqual(self.account_level_path, first_pubkey_model.path)
         self.assertIsNone(first_pubkey_model.parent_pubkey_id)
 
     @patch("electrum_gui.common.secret.manager.encrypt")
@@ -162,15 +162,15 @@ class TestSecretManager(TestCase):
         fake_encrypt.decrypt_data.assert_not_called()
 
         secret_key_models = list(SecretKeyModel.select())
-        self.assertEqual(len(secret_key_models), 1)
+        self.assertEqual(1, len(secret_key_models))
 
         first_secret_key_model: SecretKeyModel = secret_key_models[0]
-        self.assertEqual(first_secret_key_model.id, secret_key_model.id)
-        self.assertEqual(first_secret_key_model.secret_key_type, SecretKeyType.SEED)
-        self.assertEqual(first_secret_key_model.encrypted_secret_key, f"Encrypted<hello,{self.master_seed.hex()}>")
+        self.assertEqual(secret_key_model.id, first_secret_key_model.id)
+        self.assertEqual(SecretKeyType.SEED, first_secret_key_model.secret_key_type)
+        self.assertEqual(f"Encrypted<hello,{self.master_seed.hex()}>", first_secret_key_model.encrypted_secret_key)
         self.assertEqual(
-            first_secret_key_model.encrypted_message,
             f"Encrypted<hello,{self.mnemonic}|{self.passphrase}>",
+            first_secret_key_model.encrypted_message,
         )
 
     @patch("electrum_gui.common.secret.manager.encrypt")
@@ -197,8 +197,8 @@ class TestSecretManager(TestCase):
                 call("hello", self.master_seed.hex()),
             ]
         )
-        self.assertEqual(mnemonic, self.mnemonic)
-        self.assertEqual(passphrase, self.passphrase)
+        self.assertEqual(self.mnemonic, mnemonic)
+        self.assertEqual(self.passphrase, passphrase)
 
     @patch("electrum_gui.common.secret.manager.encrypt")
     def test_derive_by_secret_key(self, fake_encrypt):
@@ -223,13 +223,13 @@ class TestSecretManager(TestCase):
         fake_encrypt.encrypt_data.assert_not_called()
         fake_encrypt.decrypt_data.assert_called_once_with("hello", secret_key_model.encrypted_secret_key)
 
-        self.assertEqual(len(PubKeyModel.select()), 0)
+        self.assertEqual(0, len(PubKeyModel.select()))
         self.assertIsNone(pubkey_model.id)
-        self.assertEqual(pubkey_model.secret_key_id, secret_key_model.id)
-        self.assertEqual(pubkey_model.pubkey_type, PubKeyType.XPUB)
-        self.assertEqual(pubkey_model.pubkey, self.account_level_xpub)
-        self.assertEqual(pubkey_model.curve, CurveEnum.SECP256K1)
-        self.assertEqual(pubkey_model.path, self.account_level_path)
+        self.assertEqual(secret_key_model.id, pubkey_model.secret_key_id)
+        self.assertEqual(PubKeyType.XPUB, pubkey_model.pubkey_type)
+        self.assertEqual(self.account_level_xpub, pubkey_model.pubkey)
+        self.assertEqual(CurveEnum.SECP256K1, pubkey_model.curve)
+        self.assertEqual(self.account_level_path, pubkey_model.path)
         self.assertIsNone(pubkey_model.parent_pubkey_id)
 
     @patch("electrum_gui.common.secret.manager.encrypt")
@@ -254,7 +254,7 @@ class TestSecretManager(TestCase):
         fake_encrypt.decrypt_data.assert_not_called()
 
         sub_path = utils.diff_bip32_paths(self.account_level_path, self.address_level_path)
-        self.assertEqual(sub_path, "m/0/0")
+        self.assertEqual("m/0/0", sub_path)
 
         pubkey_model = secret_manager.derive_by_xpub(
             xpub_model.id, sub_path, target_pubkey_type=PubKeyType.PUBKEY
@@ -262,14 +262,14 @@ class TestSecretManager(TestCase):
         fake_encrypt.encrypt_data.assert_not_called()
         fake_encrypt.decrypt_data.assert_not_called()
 
-        self.assertEqual(len(PubKeyModel.select()), 1)
+        self.assertEqual(1, len(PubKeyModel.select()))
         self.assertIsNone(pubkey_model.id)
-        self.assertEqual(pubkey_model.secret_key_id, secret_key_model.id)
-        self.assertEqual(pubkey_model.pubkey_type, PubKeyType.PUBKEY)
-        self.assertEqual(pubkey_model.pubkey, self.address_level_pubkey)
-        self.assertEqual(pubkey_model.curve, CurveEnum.SECP256K1)
-        self.assertEqual(pubkey_model.path, self.address_level_path)
-        self.assertEqual(pubkey_model.parent_pubkey_id, xpub_model.id)
+        self.assertEqual(secret_key_model.id, pubkey_model.secret_key_id)
+        self.assertEqual(PubKeyType.PUBKEY, pubkey_model.pubkey_type)
+        self.assertEqual(self.address_level_pubkey, pubkey_model.pubkey)
+        self.assertEqual(CurveEnum.SECP256K1, pubkey_model.curve)
+        self.assertEqual(self.address_level_path, pubkey_model.path)
+        self.assertEqual(xpub_model.id, pubkey_model.parent_pubkey_id)
 
     @patch("electrum_gui.common.secret.manager.encrypt")
     def test_get_verifier(self, fake_encrypt):
@@ -353,7 +353,8 @@ class TestSecretManager(TestCase):
         fake_encrypt.decrypt_data.assert_called_once_with("hello", secret_key_model.encrypted_secret_key)
 
         self.assertEqual(
-            signer.sign(self.message), (bytes.fromhex(self.address_level_signature[0]), self.address_level_signature[1])
+            (bytes.fromhex(self.address_level_signature[0]), self.address_level_signature[1]),
+            signer.sign(self.message),
         )
 
     def test_update_secret_key_password(self):

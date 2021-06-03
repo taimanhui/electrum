@@ -138,10 +138,10 @@ class TestBIP32(TestCase):
                 with self.subTest(f"Case-{i}-{curve.name}-{path}"):
                     sub_node = node.derive_path(path)
 
-                    self.assertEqual(sub_node.parent_fingerprint.hex(), result["parent_fingerprint"])
-                    self.assertEqual(sub_node.chain_code.hex(), result["chain_code"])
-                    self.assertEqual(sub_node._prvkey.hex(), result["prvkey"])
-                    self.assertEqual(sub_node._pubkey.hex(), result["pubkey"])
+                    self.assertEqual(result["parent_fingerprint"], sub_node.parent_fingerprint.hex())
+                    self.assertEqual(result["chain_code"], sub_node.chain_code.hex())
+                    self.assertEqual(result["prvkey"], sub_node._prvkey.hex())
+                    self.assertEqual(result["pubkey"], sub_node._pubkey.hex())
 
     def test_slip0010_ed25519_vector2(self):
         master_seed = "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542"
@@ -189,18 +189,18 @@ class TestBIP32(TestCase):
             with self.subTest(f"Case-{i}-{CurveEnum.ED25519.name}-{path}"):
                 sub_node = node.derive_path(path)
 
-                self.assertEqual(sub_node.parent_fingerprint.hex(), result["parent_fingerprint"])
-                self.assertEqual(sub_node.chain_code.hex(), result["chain_code"])
-                self.assertEqual(sub_node._prvkey.hex(), result["prvkey"])
-                self.assertEqual(sub_node._pubkey.hex(), result["pubkey"])
+                self.assertEqual(result["parent_fingerprint"], sub_node.parent_fingerprint.hex())
+                self.assertEqual(result["chain_code"], sub_node.chain_code.hex())
+                self.assertEqual(result["prvkey"], sub_node._prvkey.hex())
+                self.assertEqual(result["pubkey"], sub_node._pubkey.hex())
 
     def test_slip0010_secp256r1_derivation_retry(self):
         node = bip32_class_on_curve(CurveEnum.SECP256R1).from_master_seed(bytes.fromhex(self._master_seed))
         sub_node = node.derive_path("m/28578'")
-        self.assertEqual(sub_node.parent_fingerprint.hex(), "be6105b5")
-        self.assertEqual(sub_node.chain_code.hex(), "e94c8ebe30c2250a14713212f6449b20f3329105ea15b652ca5bdfc68f6c65c2")
-        self.assertEqual(sub_node._prvkey.hex(), "06f0db126f023755d0b8d86d4591718a5210dd8d024e3e14b6159d63f53aa669")
-        self.assertEqual(sub_node._pubkey.hex(), "02519b5554a4872e8c9c1c847115363051ec43e93400e030ba3c36b52a3e70a5b7")
+        self.assertEqual("be6105b5", sub_node.parent_fingerprint.hex())
+        self.assertEqual("e94c8ebe30c2250a14713212f6449b20f3329105ea15b652ca5bdfc68f6c65c2", sub_node.chain_code.hex())
+        self.assertEqual("06f0db126f023755d0b8d86d4591718a5210dd8d024e3e14b6159d63f53aa669", sub_node._prvkey.hex())
+        self.assertEqual("02519b5554a4872e8c9c1c847115363051ec43e93400e030ba3c36b52a3e70a5b7", sub_node._pubkey.hex())
 
         with self.assertRaises(exceptions.InvalidECPointException):
             # different from slip-0010, leave it raise refer to trezor bip32 impl
@@ -209,10 +209,10 @@ class TestBIP32(TestCase):
     def test_slip0010_secp256r1_seed_retry(self):
         master_seed = "a7305bc8df8d0951f0cb224c0e95d7707cbdf2c6ce7e8d481fec69c7ff5e9446"
         node = bip32_class_on_curve(CurveEnum.SECP256R1).from_master_seed(bytes.fromhex(master_seed))
-        self.assertEqual(node.parent_fingerprint.hex(), "00000000")
-        self.assertEqual(node.chain_code.hex(), "7762f9729fed06121fd13f326884c82f59aa95c57ac492ce8c9654e60efd130c")
-        self.assertEqual(node._prvkey.hex(), "3b8c18469a4634517d6d0b65448f8e6c62091b45540a1743c5846be55d47d88f")
-        self.assertEqual(node._pubkey.hex(), "0383619fadcde31063d8c5cb00dbfe1713f3e6fa169d8541a798752a1c1ca0cb20")
+        self.assertEqual("00000000", node.parent_fingerprint.hex())
+        self.assertEqual("7762f9729fed06121fd13f326884c82f59aa95c57ac492ce8c9654e60efd130c", node.chain_code.hex())
+        self.assertEqual("3b8c18469a4634517d6d0b65448f8e6c62091b45540a1743c5846be55d47d88f", node._prvkey.hex())
+        self.assertEqual("0383619fadcde31063d8c5cb00dbfe1713f3e6fa169d8541a798752a1c1ca0cb20", node._pubkey.hex())
 
     @staticmethod
     def vectors_from_bip0032() -> List[Tuple[str, dict]]:
@@ -299,8 +299,8 @@ class TestBIP32(TestCase):
                 for j, (path, (xprv, xpub)) in enumerate(vector.items()):
                     with self.subTest(f"Case-{i}-{seed}-{j}-{path}"):
                         sub_node = node.derive_path(path)
-                        self.assertEqual(sub_node.get_hd_wif(), xpub)
-                        self.assertEqual(sub_node.get_hd_wif(as_private=True), xprv)
+                        self.assertEqual(xpub, sub_node.get_hd_wif())
+                        self.assertEqual(xprv, sub_node.get_hd_wif(as_private=True))
 
     def test_bip0032_vectors_xprv(self):
         curve = CurveEnum.SECP256K1
@@ -309,15 +309,15 @@ class TestBIP32(TestCase):
                 with self.subTest(f"Case-{i}-{path}-{xprv}"):
                     node = bip32_class_on_curve(curve).from_hd_wif(xprv)
 
-                    self.assertEqual(node.get_hd_wif(), xpub)
-                    self.assertEqual(node.get_hd_wif(as_private=True), xprv)
+                    self.assertEqual(xpub, node.get_hd_wif())
+                    self.assertEqual(xprv, node.get_hd_wif(as_private=True))
 
                     sub_vector = {"m" + p[len(path) :]: v for p, v in vector.items() if path in p}
                     for j, (sub_path, (sub_xprv, sub_xpub)) in enumerate(sub_vector.items()):
                         with self.subTest(f"Case-{i}-{path}-{xprv}-{j}-{sub_path}"):
                             sub_node = node.derive_path(sub_path)
-                            self.assertEqual(sub_node.get_hd_wif(), sub_xpub)
-                            self.assertEqual(sub_node.get_hd_wif(as_private=True), sub_xprv)
+                            self.assertEqual(sub_xpub, sub_node.get_hd_wif())
+                            self.assertEqual(sub_xprv, sub_node.get_hd_wif(as_private=True))
 
     def test_bip0032_vectors_xpub(self):
         curve = CurveEnum.SECP256K1
@@ -326,7 +326,7 @@ class TestBIP32(TestCase):
                 with self.subTest(f"Case-{i}-{path}-{xpub}"):
                     node = bip32_class_on_curve(curve).from_hd_wif(xpub)
 
-                    self.assertEqual(node.get_hd_wif(), xpub)
+                    self.assertEqual(xpub, node.get_hd_wif())
                     with self.assertRaisesRegex(Exception, "Private key not found"):
                         node.get_hd_wif(as_private=True)
 
@@ -340,6 +340,6 @@ class TestBIP32(TestCase):
                                 break
 
                             sub_node = node.derive_path(sub_path)
-                            self.assertEqual(sub_node.get_hd_wif(), sub_xpub)
+                            self.assertEqual(sub_xpub, sub_node.get_hd_wif())
                             with self.assertRaisesRegex(Exception, "Private key not found"):
                                 sub_node.get_hd_wif(as_private=True)
