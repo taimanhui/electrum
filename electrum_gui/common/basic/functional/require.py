@@ -1,21 +1,16 @@
-from typing import Any
+from typing import Any, Union
 
 
-def require(statement: bool, message: str = None):
+def require(statement: Any, or_error: Union[str, Exception] = None):
     if not statement:
-        message = message or "raising by require"
-        raise AssertionError(message)
+        or_error = or_error if isinstance(or_error, Exception) else AssertionError(or_error or "raising by require")
+        raise or_error
 
 
-def require_not_none(obj: Any, message: str = None) -> Any:
-    if obj is None:
-        message = message or "require not none but none found"
-        raise AssertionError(message)
-
+def require_not_none(obj: Any, or_error: Union[str, Exception] = None) -> Any:
+    require(obj is not None, or_error or "require not none but none found")
     return obj
 
 
-def require_none(obj: Any, message: str = None):
-    if obj is None:
-        message = message or f"require none but {repr(obj)} found"
-        raise AssertionError(message)
+def require_none(obj: Any, or_error: Union[str, Exception] = None):
+    require(obj is None, or_error or f"require none but {repr(obj)} found")

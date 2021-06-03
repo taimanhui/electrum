@@ -59,7 +59,7 @@ class JsonRPCRequest(JsonRPCInterface):
         if not isinstance(resp, list):
             raise JsonRPCException(f"Responses of batch call should be a list, but got <{resp}>", json_response=resp)
         elif len(resp) != len(calls):
-            raise JsonRPCException(f"Batch with {len(resp)} calls, but got {len(calls)} responses", json_response=resp)
+            raise JsonRPCException(f"Batch with {len(calls)} calls, but got {len(resp)} responses", json_response=resp)
         else:
             resp = sorted(resp, key=lambda i: int(i.get("id", 0)))
             results = []
