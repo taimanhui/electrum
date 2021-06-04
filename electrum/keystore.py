@@ -202,7 +202,7 @@ class Software_KeyStore(KeyStore):
         pass
 
     @abstractmethod
-    def check_password(self, password):
+    def check_password(self, password, eth_status=None):
         pass
 
     @abstractmethod
@@ -234,7 +234,10 @@ class Imported_KeyStore(Software_KeyStore):
         return True
 
     def check_password(self, password, eth_status=None):
-        pubkey = list(self.keypairs.keys())[0]
+        pubkeys = list(self.keypairs.keys())
+        if not pubkeys:
+            return
+        pubkey = pubkeys[0]
         if eth_status is not None:
             self.get_eth_private_key(pubkey, password)
         else:
@@ -563,7 +566,7 @@ class BIP32_KeyStore(Xpub, Deterministic_KeyStore):
     def get_master_private_key(self, password):
         return pw_decode(self.xprv, password, version=self.pw_hash_version)
 
-    def check_password(self, password):
+    def check_password(self, password, eth_status=None):
         xprv = pw_decode(self.xprv, password, version=self.pw_hash_version)
         if BIP32Node.from_xkey(xprv).chaincode != self.get_bip32_node_for_xpub().chaincode:
             raise InvalidPassword()
@@ -719,7 +722,7 @@ class Old_KeyStore(MasterPublicKeyMixin, Deterministic_KeyStore):
         if master_public_key != bfh(self.mpk):
             raise InvalidPassword()
 
-    def check_password(self, password):
+    def check_password(self, password, eth_status=None):
         seed = self.get_hex_seed(password)
         self._check_seed(seed)
 
