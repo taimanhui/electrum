@@ -1512,10 +1512,17 @@ class AndroidCommands(commands.Commands):
                     if show_fee != "":
                         self.txdb.add_received_tx_fee_info(tx_details.txid, show_fee)
         if block_height == -2:
-            status = _("Unconfirmed")
+            status = {"status": provider_data.TransactionStatus.PENDING, "other_info": ""}
             can_broadcast = False
         else:
             status = tx_details.status
+            if "Confirmed" in status:
+                status = {"status": provider_data.TransactionStatus.CONFIRM_SUCCESS, "other_info": ""}
+            elif "confirmations" in status:
+                status = {
+                    "status": provider_data.TransactionStatus.CONFIRM_SUCCESS,
+                    "other_info": status[status.index("{") + 1 : status.index("}")],
+                }
             can_broadcast = tx_details.can_broadcast
 
         ret_data = {
@@ -1532,11 +1539,11 @@ class AndroidCommands(commands.Commands):
             "height": 0 if block_height < 0 else block_height,
             "cosigner": [x.xpub if not isinstance(x, Imported_KeyStore) else "" for x in self.wallet.get_keystores()],
             "tx": str(tx),
-            "show_status": [1, _("Unconfirmed")]
+            "show_status": [provider_data.TransactionStatus.PENDING, _("Unconfirmed")]
             if (block_height == 0 or (block_height < 0 and not can_broadcast))
-            else [3, _("Confirmed")]
+            else [provider_data.TransactionStatus.CONFIRM_SUCCESS, _("Confirmed")]
             if block_height > 0
-            else [2, _("Sending failure")],
+            else [provider_data.TransactionStatus.CONFIRM_REVERTED, _("Sending failure")],
         }
         json_data = json.dumps(ret_data)
         return json_data
@@ -1652,7 +1659,7 @@ class AndroidCommands(commands.Commands):
                 i = {}
                 i["type"] = "history"
                 data = self.get_tx_info_from_raw(info[3], tx_list=True)
-                i["tx_status"] = _("Sending failure")
+                i["tx_status"] = {"status": provider_data.TransactionStatus.CONFIRM_REVERTED, "other_info": ""}
                 i["date"] = util.format_time(int(info[4]))
                 i["tx_hash"] = info[0]
                 i["is_mine"] = True
@@ -1863,17 +1870,17 @@ class AndroidCommands(commands.Commands):
 
         if transaction.status == provider_data.TransactionStatus.CONFIRM_REVERTED:
             tx_status = _("Sending failure")
-            show_status = [2, _("Sending failure")]
+            show_status = [provider_data.TransactionStatus.CONFIRM_REVERTED, _("Sending failure")]
         elif transaction.status == provider_data.TransactionStatus.CONFIRM_SUCCESS:
             tx_status = (
                 _("{} confirmations").format(transaction.block_header.confirmations)
                 if transaction.block_header and transaction.block_header.confirmations > 0
                 else _("Confirmed")
             )
-            show_status = [3, _("Confirmed")]
+            show_status = [provider_data.TransactionStatus.CONFIRM_SUCCESS, _("Confirmed")]
         else:
             tx_status = _("Unconfirmed")
-            show_status = [1, _("Unconfirmed")]
+            show_status = [provider_data.TransactionStatus.PENDING, _("Unconfirmed")]
 
         amount = Decimal(eth_utils.from_wei(transaction.outputs[0].value, "ether"))
         fee = Decimal(eth_utils.from_wei(transaction.fee.used * transaction.fee.price_per_unit, "ether"))
@@ -2567,7 +2574,7 @@ class AndroidCommands(commands.Commands):
         exp:
             testcommond.get_tx_status_by_txid("0x41e11464913e92a978ee503b272e964ffaf38aed5bdd41338c52d4d77351d7db", "eth")
             return:
-                {"status": 0, "info": "Confirmed"}
+                {"status": 0, "info": {"status":0, "other_info": ""}}
         """
         chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         return provider_manager.get_transaction_by_txid(chain_code, txid).detailed_status
