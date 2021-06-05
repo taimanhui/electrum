@@ -105,6 +105,9 @@ class Uniswap(interfaces.PriceChannelInterface):
                     coins_in_one_request = []
                     data_in_one_request = []
 
-            yield from _obtain_prices_from_dex(
-                chain, router_address, base_divisor, coins_in_one_request, data_in_one_request
-            )
+            if data_in_one_request:
+                yield from _obtain_prices_from_dex(
+                    chain, router_address, base_divisor, coins_in_one_request, data_in_one_request
+                )
+            else:
+                yield from tuple()
