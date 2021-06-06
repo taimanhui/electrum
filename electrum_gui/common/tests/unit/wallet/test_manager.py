@@ -1,17 +1,32 @@
+import datetime
+import decimal
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import Mock, call, patch
 
 from electrum_gui.common.basic.orm import test_utils
-from electrum_gui.common.coin.models import CoinModel
-from electrum_gui.common.provider.data import Address
-from electrum_gui.common.secret.exceptions import InvalidPassword
-from electrum_gui.common.secret.models import PubKeyModel, SecretKeyModel
-from electrum_gui.common.transaction.models import TxAction
+from electrum_gui.common.coin import data as coin_data
+from electrum_gui.common.coin import models as coin_models
+from electrum_gui.common.provider import data as provider_data
+from electrum_gui.common.secret import exceptions as secret_exceptions
+from electrum_gui.common.secret import models as secret_models
+from electrum_gui.common.transaction import data as transaction_data
+from electrum_gui.common.transaction import models as transaction_models
+from electrum_gui.common.wallet import daos as wallet_daos
+from electrum_gui.common.wallet import data as wallet_data
+from electrum_gui.common.wallet import exceptions as wallet_exceptions
 from electrum_gui.common.wallet import manager as wallet_manager
-from electrum_gui.common.wallet.models import AccountModel, AssetModel, WalletModel
+from electrum_gui.common.wallet import models as wallet_models
 
 
-@test_utils.cls_test_database(WalletModel, AccountModel, AssetModel, PubKeyModel, SecretKeyModel, TxAction, CoinModel)
+@test_utils.cls_test_database(
+    wallet_models.WalletModel,
+    wallet_models.AccountModel,
+    wallet_models.AssetModel,
+    secret_models.PubKeyModel,
+    secret_models.SecretKeyModel,
+    transaction_models.TxAction,
+    coin_models.CoinModel,
+)
 class TestWalletManager(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -325,9 +340,9 @@ class TestWalletManager(TestCase):
     @patch("electrum_gui.common.wallet.manager.provider_manager.get_address")
     def test_search_existing_wallets(self, fake_get_address):
         fake_get_address.side_effect = (
-            lambda chain_code, address: Address(address=address, balance=18888, existing=True)
+            lambda chain_code, address: provider_data.Address(address=address, balance=18888, existing=True)
             if address == "0xa0331fcfa308e488833de1fe16370b529fa7c720"
-            else Address(address=address, balance=0, existing=False)
+            else provider_data.Address(address=address, balance=0, existing=False)
         )
 
         self.assertEqual(
@@ -361,8 +376,322 @@ class TestWalletManager(TestCase):
             passphrase=self.passphrase,
         )
 
-        with self.assertRaises(InvalidPassword):
+        with self.assertRaises(secret_exceptions.InvalidPassword):
             wallet_manager.update_wallet_password(wallet_info["wallet_id"], "hello world", "bye")
 
         wallet_manager.update_wallet_password(wallet_info["wallet_id"], self.password, "bye")
         wallet_manager.update_wallet_password(wallet_info["wallet_id"], "bye", self.password)
+
+    @patch("electrum_gui.common.wallet.manager.get_handler_by_chain_model")
+    @patch("electrum_gui.common.wallet.manager.coin_manager")
+    @patch("electrum_gui.common.wallet.manager.provider_manager")
+    @patch("electrum_gui.common.wallet.manager._verify_unsigned_tx")
+    def test_pre_send(
+        self, fake_verify_unsigned_tx, fake_provider_manager, fake_coin_manager, fake_get_handler_by_chain_model
+    ):
+        wallet = wallet_daos.wallet.create_wallet("testing", wallet_data.WalletType.SOFTWARE_PRIMARY, "eth")
+
+        fake_handler = Mock()
+        fake_get_handler_by_chain_model.return_value = fake_handler
+        fake_coin_manager.get_chain_info.return_value = Mock(chain_model=coin_data.ChainModel.ACCOUNT, chain_code="eth")
+
+        fake_prices = provider_data.PricesPerUnit(
+            fast=provider_data.EstimatedTimeOnPrice(price=31, time=60),
+            normal=provider_data.EstimatedTimeOnPrice(price=21, time=120),
+            slow=provider_data.EstimatedTimeOnPrice(price=11, time=180),
+        )
+        fake_provider_manager.get_prices_per_unit_of_fee.return_value = fake_prices
+        fake_verify_unsigned_tx.return_value = (False, "validate failed")
+
+        with self.subTest("First time"):
+            fake_unsigned_tx = provider_data.UnsignedTx(fee_limit=1001, fee_price_per_unit=11)
+            fake_handler.generate_unsigned_tx.return_value = fake_unsigned_tx
+            self.assertEqual(
+                {
+                    "unsigned_tx": fake_unsigned_tx.to_dict(),
+                    "is_valid": False,
+                    "validation_message": "validate failed",
+                    "fee_prices": fake_prices.to_dict(),
+                },
+                wallet_manager.pre_send(wallet.id, "eth_usdt"),
+            )
+            fake_coin_manager.get_chain_info.assert_called_once_with("eth")
+            fake_provider_manager.verify_address.assert_not_called()
+            fake_get_handler_by_chain_model.assert_called_once_with(coin_data.ChainModel.ACCOUNT)
+            fake_handler.generate_unsigned_tx.assert_called_once_with(
+                wallet.id, "eth_usdt", None, None, None, None, None, None
+            )
+            fake_verify_unsigned_tx.assert_called_once_with(wallet.id, "eth_usdt", fake_unsigned_tx)
+            fake_provider_manager.get_prices_per_unit_of_fee.assert_called_once_with("eth")
+            fake_handler.generate_unsigned_tx.reset_mock()
+
+        with self.subTest("Call with to_address"):
+            fake_provider_manager.verify_address.return_value = provider_data.AddressValidation(
+                normalized_address="fake_normal_address", display_address="fake_display_address", is_valid=True
+            )
+            wallet_manager.pre_send(wallet.id, "eth_usdt", "fake_display_address")
+            fake_provider_manager.verify_address.assert_called_once_with("eth", "fake_display_address")
+            fake_handler.generate_unsigned_tx.assert_called_once_with(
+                wallet.id, "eth_usdt", "fake_normal_address", None, None, None, None, None
+            )
+
+        with self.subTest("Call with illegal to_address"):
+            fake_provider_manager.verify_address.return_value = provider_data.AddressValidation(
+                normalized_address="fake_normal_address", display_address="fake_display_address", is_valid=False
+            )
+            with self.assertRaisesRegex(
+                wallet_exceptions.IllegalWalletOperation, "Invalid to_address: 'fake_display_address'"
+            ):
+                wallet_manager.pre_send(wallet.id, "eth_usdt", "fake_display_address")
+
+    @patch("electrum_gui.common.wallet.manager.get_handler_by_chain_model")
+    @patch("electrum_gui.common.wallet.manager.coin_manager")
+    @patch("electrum_gui.common.wallet.manager.provider_manager")
+    @patch("electrum_gui.common.wallet.manager.secret_manager")
+    @patch("electrum_gui.common.wallet.manager.transaction_manager")
+    def test_send(
+        self,
+        fake_transaction_manager,
+        fake_secret_manager,
+        fake_provider_manager,
+        fake_coin_manager,
+        fake_get_handler_by_chain_model,
+    ):
+        with self.subTest("Illegal wallet type"):
+            wallet = wallet_daos.wallet.create_wallet("testing", wallet_data.WalletType.WATCHONLY, "eth")
+            with self.assertRaisesRegex(
+                wallet_exceptions.IllegalWalletOperation, "Watchonly wallet can not send asset"
+            ):
+                wallet_manager.send(wallet.id, "eth_usdt", "fake_display_address", 10, "123")
+
+        with self.subTest("Send asset"):
+            wallet = wallet_daos.wallet.create_wallet("testing", wallet_data.WalletType.SOFTWARE_PRIMARY, "eth")
+            account = wallet_daos.account.create_account(wallet.id, "eth", "my_address", pubkey_id=111)
+            wallet_daos.asset.create_asset(wallet.id, account.id, "eth", "eth_usdt")
+
+            fake_handler = Mock()
+            fake_unsigned_tx = provider_data.UnsignedTx(
+                inputs=[provider_data.TransactionInput(address="my_address", value=10)],
+                outputs=[provider_data.TransactionOutput(address="fake_normal_address", value=10)],
+                nonce=3,
+                fee_limit=101,
+                fee_price_per_unit=11,
+            )
+            fake_handler.generate_unsigned_tx.return_value = fake_unsigned_tx
+            fake_get_handler_by_chain_model.return_value = fake_handler
+
+            fake_coin_manager.get_coin_info.return_value = Mock(chain_code="eth")
+            fake_coin_manager.get_chain_info.return_value = Mock(
+                chain_code="eth", chain_model=coin_data.ChainModel.ACCOUNT
+            )
+
+            fake_provider_manager.verify_address.return_value = provider_data.AddressValidation(
+                normalized_address="fake_normal_address", display_address="fake_display_address", is_valid=True
+            )
+            fake_provider_manager.sign_transaction.return_value = provider_data.SignedTx(
+                txid="fake_txid", raw_tx="fake_raw_tx"
+            )
+            fake_provider_manager.broadcast_transaction.return_value = provider_data.TxBroadcastReceipt(
+                txid="fake_txid", is_success=True, receipt_code=provider_data.TxBroadcastReceiptCode.SUCCESS
+            )
+
+            fake_signer = Mock()
+            fake_secret_manager.get_signer.return_value = fake_signer
+
+            self.assertEqual(
+                provider_data.SignedTx(txid="fake_txid", raw_tx="fake_raw_tx"),
+                wallet_manager.send(wallet.id, "eth_usdt", "fake_display_address", 10, "123"),
+            )
+
+            fake_coin_manager.get_coin_info.assert_called_once_with("eth_usdt")
+            fake_coin_manager.get_chain_info.assert_called_once_with("eth")
+            fake_get_handler_by_chain_model.assert_called_once_with(coin_data.ChainModel.ACCOUNT)
+            fake_provider_manager.verify_address.assert_has_calls(
+                [call("eth", "fake_display_address"), call("eth", "fake_normal_address")]
+            )
+            fake_handler.generate_unsigned_tx.assert_called_once_with(
+                wallet.id, "eth_usdt", "fake_normal_address", 10, None, None, None, None
+            )
+            fake_secret_manager.get_signer.assert_called_once_with("123", 111)
+            fake_provider_manager.sign_transaction.assert_called_once_with(
+                "eth", fake_unsigned_tx, {"my_address": fake_signer}
+            )
+            fake_provider_manager.broadcast_transaction.assert_called_once_with("eth", "fake_raw_tx")
+            fake_transaction_manager.update_action_status.assert_called_once_with(
+                "eth", "fake_txid", transaction_data.TxActionStatus.PENDING
+            )
+            fake_transaction_manager.create_action.assert_called_once_with(
+                txid="fake_txid",
+                status=transaction_data.TxActionStatus.PENDING,
+                chain_code="eth",
+                coin_code="eth_usdt",
+                value=decimal.Decimal(10),
+                from_address="my_address",
+                to_address="fake_normal_address",
+                fee_limit=decimal.Decimal(101),
+                fee_price_per_unit=decimal.Decimal(11),
+                nonce=3,
+                raw_tx="fake_raw_tx",
+            )
+
+    @patch("electrum_gui.common.wallet.manager.provider_manager")
+    @patch("electrum_gui.common.wallet.manager.transaction_manager")
+    def test_broadcast_transaction(self, fake_transaction_manager, fake_provider_manager):
+        with self.subTest("broadcast success"):
+            fake_receipt = provider_data.TxBroadcastReceipt(
+                is_success=True, txid="fake_txid", receipt_code=provider_data.TxBroadcastReceiptCode.SUCCESS
+            )
+            fake_provider_manager.broadcast_transaction.return_value = fake_receipt
+            self.assertEqual(
+                fake_receipt,
+                wallet_manager.broadcast_transaction(
+                    "eth", provider_data.SignedTx(txid="fake_txid", raw_tx="fake_raw_tx")
+                ),
+            )
+
+            fake_provider_manager.broadcast_transaction.assert_called_once_with("eth", "fake_raw_tx")
+            fake_transaction_manager.update_action_status.assert_called_once_with(
+                "eth", "fake_txid", transaction_data.TxActionStatus.PENDING
+            )
+            fake_provider_manager.broadcast_transaction.reset_mock()
+            fake_transaction_manager.update_action_status.reset_mock()
+
+        with self.subTest("broadcast failed"):
+            fake_receipt = provider_data.TxBroadcastReceipt(
+                is_success=False, txid="fake_txid", receipt_code=provider_data.TxBroadcastReceiptCode.UNEXPECTED_FAILED
+            )
+            fake_provider_manager.broadcast_transaction.return_value = fake_receipt
+            self.assertEqual(
+                fake_receipt,
+                wallet_manager.broadcast_transaction(
+                    "eth", provider_data.SignedTx(txid="fake_txid", raw_tx="fake_raw_tx")
+                ),
+            )
+            fake_provider_manager.broadcast_transaction.assert_called_once_with("eth", "fake_raw_tx")
+            fake_transaction_manager.update_action_status.assert_called_once_with(
+                "eth", "fake_txid", transaction_data.TxActionStatus.UNEXPECTED_FAILED
+            )
+            fake_provider_manager.broadcast_transaction.reset_mock()
+            fake_transaction_manager.update_action_status.reset_mock()
+
+        with self.subTest("Txid mismatched"):
+            fake_receipt = provider_data.TxBroadcastReceipt(
+                is_success=False, txid="fake_txid2", receipt_code=provider_data.TxBroadcastReceiptCode.UNEXPECTED_FAILED
+            )
+            fake_provider_manager.broadcast_transaction.return_value = fake_receipt
+            with self.assertRaisesRegex(AssertionError, "Txid mismatched. expected: fake_txid, actual: fake_txid2"):
+                wallet_manager.broadcast_transaction(
+                    "eth", provider_data.SignedTx(txid="fake_txid", raw_tx="fake_raw_tx")
+                )
+
+        with self.subTest("Txid filling"):
+            fake_receipt = provider_data.TxBroadcastReceipt(
+                is_success=True, receipt_code=provider_data.TxBroadcastReceiptCode.SUCCESS
+            )
+            fake_provider_manager.broadcast_transaction.return_value = fake_receipt
+            self.assertEqual(
+                fake_receipt.clone(txid="fake_txid"),
+                wallet_manager.broadcast_transaction(
+                    "eth", provider_data.SignedTx(txid="fake_txid", raw_tx="fake_raw_tx")
+                ),
+            )
+
+    @patch("electrum_gui.common.wallet.manager.get_default_account_by_wallet")
+    @patch("electrum_gui.common.wallet.manager.coin_manager")
+    def test_create_or_show_asset(self, fake_coin_manager, fake_get_default_account_by_wallet):
+        with self.subTest("Create asset as expected"):
+            fake_coin_manager.get_coin_info.return_value = Mock(code="eth_usdt", chain_code="eth")
+            fake_get_default_account_by_wallet.return_value = Mock(id=1001, chain_code="eth")
+
+            wallet_manager.create_or_show_asset(11, "eth_usdt")
+
+            assets = wallet_daos.asset.query_assets_by_accounts([1001])
+            self.assertEqual(1, len(assets))
+            testing_asset = assets[0]
+            self.assertEqual(
+                (11, 1001, "eth", "eth_usdt", True),
+                (
+                    testing_asset.wallet_id,
+                    testing_asset.account_id,
+                    testing_asset.chain_code,
+                    testing_asset.coin_code,
+                    testing_asset.is_visible,
+                ),
+            )
+            fake_coin_manager.get_coin_info.assert_called_once_with("eth_usdt")
+            fake_get_default_account_by_wallet.assert_called_once_with(11)
+            fake_coin_manager.get_coin_info.reset_mock()
+
+        wallet_daos.asset.hide_asset(testing_asset.id)
+        testing_asset = wallet_daos.asset.query_assets_by_ids([testing_asset.id])[0]
+        self.assertFalse(testing_asset.is_visible)
+
+        with self.subTest("Show created asset again"):
+            wallet_manager.create_or_show_asset(11, "eth_usdt")
+            testing_asset = wallet_daos.asset.query_assets_by_ids([testing_asset.id])[0]
+            self.assertTrue(testing_asset.is_visible)
+
+    @patch("electrum_gui.common.wallet.manager.get_default_account_by_wallet")
+    @patch("electrum_gui.common.wallet.manager.coin_manager")
+    def test_hide_asset(self, fake_coin_manager, fake_get_default_account_by_wallet):
+        with self.subTest("Asset not found"):
+            fake_coin_manager.get_coin_info.return_value = Mock(code="eth_usdt", chain_code="eth")
+            fake_get_default_account_by_wallet.return_value = Mock(id=1001, chain_code="eth")
+
+            with self.assertRaisesRegex(
+                wallet_exceptions.IllegalWalletOperation, "Asset not found. wallet_id: 11, coin_code: eth_usdt"
+            ):
+                wallet_manager.hide_asset(11, "eth_usdt")
+
+        with self.subTest("Hide asset as expected"):
+            asset = wallet_daos.asset.create_asset(11, 1001, "eth", "eth_usdt")
+            self.assertTrue(asset.is_visible)
+            wallet_manager.hide_asset(11, "eth_usdt")
+            asset = wallet_daos.asset.query_assets_by_ids([asset.id])[0]
+            self.assertFalse(asset.is_visible)
+
+    @patch("electrum_gui.common.wallet.manager.coin_manager")
+    @patch("electrum_gui.common.wallet.manager.provider_manager")
+    def test_refresh_assets(self, fake_provider_manager, fake_coin_manager):
+        account = wallet_daos.account.create_account(11, "eth", "fake_address")
+        asset_a = wallet_daos.asset.create_asset(11, account.id, "eth", "eth_usdt")
+        asset_b = wallet_daos.asset.create_asset(11, account.id, "eth", "eth_cc")
+
+        fake_coin_manager.query_coins_by_codes.return_value = [
+            Mock(code="eth_usdt", token_address="contract_a"),
+            Mock(code="eth_cc", token_address="contract_b"),
+        ]
+        fake_provider_manager.get_balance.side_effect = lambda chain_code, address, token_address: {
+            "contract_a": 11,
+            "contract_b": 12,
+        }.get(token_address)
+
+        with self.subTest("Refresh nothing"):
+            self.assertEqual([asset_a, asset_b], wallet_manager.refresh_assets([asset_a, asset_b]))
+            fake_coin_manager.query_coins_by_codes.assert_not_called()
+            fake_provider_manager.get_balance.assert_not_called()
+
+        with self.subTest("Refresh asset_b"):
+            wallet_models.AssetModel.update(
+                modified_time=datetime.datetime.now() - datetime.timedelta(seconds=10)
+            ).where(wallet_models.AssetModel.id == asset_b.id).execute()
+            asset_b = wallet_models.AssetModel.get_by_id(asset_b.id)
+
+            asset_a, asset_b = wallet_manager.refresh_assets([asset_a, asset_b])
+            self.assertEqual(12, asset_b.balance)
+            fake_coin_manager.query_coins_by_codes.assert_called_once_with(["eth_cc"])
+            fake_provider_manager.get_balance.assert_called_once_with("eth", "fake_address", "contract_b")
+            fake_coin_manager.query_coins_by_codes.reset_mock()
+            fake_provider_manager.get_balance.reset_mock()
+
+        with self.subTest("Refresh all"):
+            asset_a, asset_b = wallet_manager.refresh_assets([asset_a, asset_b], force_update=True)
+            self.assertEqual(11, asset_a.balance)
+            self.assertEqual(12, asset_b.balance)
+            fake_coin_manager.query_coins_by_codes.assert_called_once_with(["eth_usdt", "eth_cc"])
+            fake_provider_manager.get_balance.assert_has_calls(
+                [
+                    call("eth", "fake_address", "contract_a"),
+                    call("eth", "fake_address", "contract_b"),
+                ]
+            )

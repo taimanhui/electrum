@@ -43,6 +43,10 @@ class IllegalUnsignedTx(BaseWalletModuleException):
     pass
 
 
+class UnexpectedBroadcastReceipt(BaseWalletModuleException):
+    pass
+
+
 class InsufficientBalance(BaseWalletModuleException):
     def __init__(self, wallet_id: int, coin_code: str, address: str, balance: int, value_required: int):
         super(InsufficientBalance, self).__init__(
