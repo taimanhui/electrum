@@ -1,3 +1,4 @@
+import decimal
 import json
 from typing import List, Optional
 
@@ -191,9 +192,9 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
         if result is None:
             raise FailedToGetGasPrices()
 
-        slow = int(result["SafeGasPrice"] * 1e9)
-        normal = int(result["ProposeGasPrice"] * 1e9)
-        fast = int(result["FastGasPrice"] * 1e9)
+        slow = int(decimal.Decimal(result["SafeGasPrice"]) * 10 ** 9)
+        normal = int(decimal.Decimal(result["ProposeGasPrice"]) * 10 ** 9)
+        fast = int(decimal.Decimal(result["FastGasPrice"]) * 10 ** 9)
 
         return PricesPerUnit(
             fast=EstimatedTimeOnPrice(price=fast, time=60),
