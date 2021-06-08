@@ -925,7 +925,6 @@ class AndroidCommands(commands.Commands):
         }
         return ret_data
 
-    @exceptions.catch_exception
     def get_default_fee_info(self, feerate=None, coin="btc", eth_tx_info=None):
         """
         Get default fee info for btc
