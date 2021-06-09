@@ -650,7 +650,7 @@ def send(
         to_address=to_address,
         fee_limit=Decimal(unsigned_tx.fee_limit),
         fee_price_per_unit=unsigned_tx.fee_price_per_unit,
-        nonce=unsigned_tx.nonce,
+        nonce=-1 if unsigned_tx.nonce is None else unsigned_tx.nonce,
         raw_tx=signed_tx.raw_tx,
     )
 

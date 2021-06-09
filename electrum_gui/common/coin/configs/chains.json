@@ -236,5 +236,34 @@
     "chain_affinity": "eth",
     "qr_code_prefix": "okt",
     "chain_id": "66"
+  },
+  {
+    "chain_code": "sol",
+    "name": "Solana",
+    "fee_code": "sol",
+    "chain_model": "account",
+    "curve": "ed25519",
+    "bip44_coin_type": 501,
+    "bip44_target_level": "CHANGE",
+    "bip44_auto_increment_level": "ACCOUNT",
+    "bip44_last_hardened_level": "CHANGE",
+    "fee_price_decimals_for_legibility": 0,
+    "coins": [
+      {
+        "code": "sol",
+        "symbol": "SOL",
+        "name": "Solana",
+        "decimals": 9,
+        "icon": "https://onekey-asset.com/assets/sol/sol.png"
+      }
+    ],
+    "clients": [
+      {
+        "class": "Solana",
+        "url": "https://api.mainnet-beta.solana.com"
+      }
+    ],
+    "chain_affinity": "sol",
+    "qr_code_prefix": "sol"
   }
 ]
