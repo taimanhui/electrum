@@ -1,0 +1,6 @@
+# https://coverage.readthedocs.io/en/coverage-5.0/config.html
+[run]
+branch = True
+omit =
+    */site-packages/*
+    electrum/*

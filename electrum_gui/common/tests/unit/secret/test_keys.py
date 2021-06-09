@@ -13,20 +13,20 @@ class TestKeys(TestCase):
         for i, (curve, key_class) in enumerate(registry.KEY_CLASS_MAPPING.items()):
             with self.subTest(f"Case-{i}-{curve}"):
                 self.assertTrue(issubclass(key_class, KeyInterface))
-                self.assertEqual(registry.key_class_on_curve(curve), key_class)
+                self.assertEqual(key_class, registry.key_class_on_curve(curve))
 
                 prvkey: KeyInterface = key_class(prvkey=prvkey_bytes)
                 self.assertTrue(prvkey.has_prvkey())
 
                 if curve in (CurveEnum.SECP256K1, CurveEnum.SECP256R1):
-                    self.assertEqual(len(prvkey.get_pubkey()), 33)
-                    self.assertEqual(len(prvkey.get_pubkey(compressed=True)), 33)
-                    self.assertEqual(len(prvkey.get_pubkey(compressed=False)), 65)
+                    self.assertEqual(33, len(prvkey.get_pubkey()))
+                    self.assertEqual(33, len(prvkey.get_pubkey(compressed=True)))
+                    self.assertEqual(65, len(prvkey.get_pubkey(compressed=False)))
 
                 pubkey: KeyInterface = key_class(pubkey=prvkey.get_pubkey())
-                self.assertEqual(prvkey.get_pubkey(), pubkey.get_pubkey())
-                self.assertEqual(prvkey.get_pubkey(compressed=True), pubkey.get_pubkey(compressed=True))
-                self.assertEqual(prvkey.get_pubkey(compressed=False), pubkey.get_pubkey(compressed=False))
+                self.assertEqual(pubkey.get_pubkey(), prvkey.get_pubkey())
+                self.assertEqual(pubkey.get_pubkey(compressed=True), prvkey.get_pubkey(compressed=True))
+                self.assertEqual(pubkey.get_pubkey(compressed=False), prvkey.get_pubkey(compressed=False))
 
                 for j, digest in enumerate(digests):
                     with self.subTest(f"Case-{i}-{curve}-Digest-{j}"):

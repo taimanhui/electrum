@@ -207,7 +207,8 @@ def sync_address_actions(chain_code: str, address: str, force_update: bool = Fal
     action_factory = _TX_ACTION_FACTORY_REGISTRY.get(chain_info.chain_model)
     if not action_factory:
         raise Exception(
-            f"This chain model isn't supported yet. chain_code: {chain_code}, chain_model: {chain_info.chain_model}"
+            f"This chain model isn't supported yet. "
+            f"chain_code: {chain_code}, chain_model: {repr(chain_info.chain_model)}"
         )
 
     if not force_update:

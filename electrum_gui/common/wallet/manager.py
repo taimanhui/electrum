@@ -4,7 +4,7 @@ from collections import defaultdict
 from contextlib import contextmanager
 from decimal import Decimal
 from itertools import groupby
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Iterable, List, Tuple, Union
 
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.timing import timing_logger
@@ -13,7 +13,7 @@ from electrum_gui.common.coin import codes
 from electrum_gui.common.coin import manager as coin_manager
 from electrum_gui.common.coin.data import ChainInfo
 from electrum_gui.common.provider import manager as provider_manager
-from electrum_gui.common.provider.data import SignedTx, UnsignedTx
+from electrum_gui.common.provider.data import SignedTx, TxBroadcastReceipt, UnsignedTx
 from electrum_gui.common.secret import manager as secret_manager
 from electrum_gui.common.secret.data import PubKeyType
 from electrum_gui.common.transaction import manager as transaction_manager
@@ -560,8 +560,8 @@ def get_default_account_by_wallet(wallet_id: int) -> AccountModel:
 def pre_send(
     wallet_id: int,
     coin_code: str,
-    to_address: str,
-    value: int,
+    to_address: str = None,
+    value: int = None,
     nonce: int = None,
     fee_limit: int = None,
     fee_price_per_unit: int = None,
@@ -574,7 +574,7 @@ def pre_send(
     if to_address:
         to_address_validation = provider_manager.verify_address(chain_info.chain_code, to_address)
         if not to_address_validation.is_valid:
-            raise exceptions.IllegalWalletOperation()
+            raise exceptions.IllegalWalletOperation(f"Invalid to_address: {repr(to_address)}")
         to_address = to_address_validation.normalized_address
 
     unsigned_tx = handler.generate_unsigned_tx(
@@ -609,7 +609,7 @@ def send(
 ) -> SignedTx:
     wallet = _get_wallet_by_id(wallet_id)
     if wallet.type == WalletType.WATCHONLY:
-        raise exceptions.IllegalWalletOperation()
+        raise exceptions.IllegalWalletOperation("Watchonly wallet can not send asset")
 
     coin_info = coin_manager.get_coin_info(coin_code)
     if coin_info.chain_code != wallet.chain_code:
@@ -634,7 +634,11 @@ def send(
     signed_tx = _sign_tx(wallet, accounts, password, unsigned_tx)
 
     if auto_broadcast:
-        broadcast_transaction(wallet.chain_code, signed_tx)
+        receipt = broadcast_transaction(wallet.chain_code, signed_tx)
+        if not receipt.is_success:
+            raise exceptions.UnexpectedBroadcastReceipt(
+                f"Error in broadcast. txid: {receipt.txid}, signed_tx: {signed_tx.to_dict()}"
+            )
 
     transaction_manager.create_action(
         txid=signed_tx.txid,
@@ -685,23 +689,23 @@ def _sign_tx(wallet: WalletModel, accounts: List[AccountModel], password: str, u
     return signed_tx
 
 
-def broadcast_transaction(chain_code: str, signed_tx: SignedTx) -> Optional[str]:
+def broadcast_transaction(chain_code: str, signed_tx: SignedTx) -> TxBroadcastReceipt:
     receipt = provider_manager.broadcast_transaction(chain_code, signed_tx.raw_tx)
     if receipt.txid:
-        require(receipt.txid == signed_tx.txid)
+        require(receipt.txid == signed_tx.txid, f"Txid mismatched. expected: {signed_tx.txid}, actual: {receipt.txid}")
 
     txid = signed_tx.txid or receipt.txid
     if txid:
-        transaction_manager.update_action_status(chain_code, txid, TxActionStatus.PENDING)
+        transaction_manager.update_action_status(
+            chain_code, txid, TxActionStatus.PENDING if receipt.is_success else TxActionStatus.UNEXPECTED_FAILED
+        )
 
-    return txid
+    receipt.txid = txid
+    return receipt
 
 
 def create_or_show_asset(wallet_id: int, coin_code: str):
-    coin = coin_manager.get_coin_info(coin_code, nullable=True)
-    if coin is None:
-        raise exceptions.IllegalWalletOperation()
-
+    _ = coin_manager.get_coin_info(coin_code)  # Check coin existing only
     default_account = get_default_account_by_wallet(wallet_id)
     asset = daos.asset.get_asset_by_account_and_coin_code(default_account.id, coin_code)
     if asset is None:
@@ -711,14 +715,11 @@ def create_or_show_asset(wallet_id: int, coin_code: str):
 
 
 def hide_asset(wallet_id: int, coin_code: str):
-    coin = coin_manager.get_coin_info(coin_code, nullable=True)
-    if coin is None:
-        raise exceptions.IllegalWalletOperation()
-
+    _ = coin_manager.get_coin_info(coin_code)
     default_account = get_default_account_by_wallet(wallet_id)
     asset = daos.asset.get_asset_by_account_and_coin_code(default_account.id, coin_code)
     if asset is None:
-        raise exceptions.IllegalWalletOperation()
+        raise exceptions.IllegalWalletOperation(f"Asset not found. wallet_id: {wallet_id}, coin_code: {coin_code}")
 
     daos.asset.hide_asset(asset.id)
 

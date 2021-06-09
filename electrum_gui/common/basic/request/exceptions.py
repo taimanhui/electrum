@@ -16,7 +16,7 @@ class ResponseException(IOError):
 
 
 class JsonRPCException(IOError):
-    def __init__(self, message: str, json_response: Any):
+    def __init__(self, message: str, json_response: Any = None):
         self.message = message
         self.json_response = json_response
 
