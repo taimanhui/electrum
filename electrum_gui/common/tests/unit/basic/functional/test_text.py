@@ -7,11 +7,11 @@ from electrum_gui.common.basic.functional.text import force_bytes, force_text
 
 class TestText(TestCase):
     def test_force_text(self):
-        mock_datetime = datetime.datetime.fromtimestamp(1600000000)
+        mock_datetime = datetime.datetime.utcfromtimestamp(1600000000)
 
         with self.subTest("with strings_only is False as default"):
             self.assertEqual(
-                ["None", "1", "1.1", "1.13", "z", "zb", "2020-09-13 20:26:40", "2020-09-13", "20:26:40"],
+                ["None", "1", "1.1", "1.13", "z", "zb", "2020-09-13 12:26:40", "2020-09-13", "12:26:40"],
                 [
                     force_text(None),
                     force_text(1),
@@ -56,7 +56,7 @@ class TestText(TestCase):
                 force_text(bytes.fromhex("adadad"))
 
     def test_force_bytes(self):
-        mock_datetime = datetime.datetime.fromtimestamp(1600000000)
+        mock_datetime = datetime.datetime.utcfromtimestamp(1600000000)
 
         with self.subTest("with strings_only is False as default"):
             self.assertEqual(
@@ -67,9 +67,9 @@ class TestText(TestCase):
                     b"1.13",
                     b"z",
                     b"zb",
-                    b"2020-09-13 20:26:40",
+                    b"2020-09-13 12:26:40",
                     b"2020-09-13",
-                    b"20:26:40",
+                    b"12:26:40",
                 ],
                 [
                     force_bytes(None),
