@@ -1,7 +1,7 @@
 import logging
 import time
 from decimal import Decimal
-from typing import Optional, Set, Union
+from typing import List, Optional, Set, Union
 
 from electrum import crypto, simple_config, storage, util, wallet_db
 from electrum_gui.common.basic.functional.require import require
@@ -253,11 +253,13 @@ class GeneralWallet(object):
         return assets
 
     def get_all_token_address(self):
+        return [i.token_address for i in self.get_all_token_coins()]
+
+    def get_all_token_coins(self) -> List[CoinInfo]:
         assets = wallet_manager.get_all_assets_by_wallet(self.general_wallet_id)
-        coin_codes = [i.coin_code for i in assets]
+        coin_codes = [i.coin_code for i in assets if i.coin_code != self.chain_code]
         coins = coin_manager.query_coins_by_codes(coin_codes)
-        chain_code = self.chain_code
-        return [i.token_address for i in coins if i.code != chain_code]
+        return coins
 
     def add_contract_token(self, token_symbol, token_address):
         coin = coin_manager.query_coins_by_token_addresses(self.chain_code, [token_address])[0]
