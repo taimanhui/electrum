@@ -232,6 +232,35 @@ class TestWalletManager(TestCase):
             ),
         )
 
+    def test_generate_next_bip44_path_for_derived_primary_wallet(self):
+        wallet_manager.create_primary_wallets(
+            ["btc", "eth"],
+            password=self.password,
+            mnemonic=self.mnemonic,
+            passphrase=self.passphrase,
+        )
+
+        self.assertEqual(
+            "m/49'/0'/1'/0/0",
+            wallet_manager.generate_next_bip44_path_for_derived_primary_wallet("btc", "P2WPKH-P2SH").to_bip44_path(),
+        )
+        self.assertEqual(
+            "m/44'/0'/0'/0/0",
+            wallet_manager.generate_next_bip44_path_for_derived_primary_wallet("btc", "P2PKH").to_bip44_path(),
+        )
+        self.assertEqual(
+            "m/84'/0'/0'/0/0",
+            wallet_manager.generate_next_bip44_path_for_derived_primary_wallet("btc", "P2WPKH").to_bip44_path(),
+        )
+        self.assertEqual(
+            "m/44'/60'/0'/0/1",
+            wallet_manager.generate_next_bip44_path_for_derived_primary_wallet("eth").to_bip44_path(),
+        )
+        self.assertEqual(
+            "m/44'/60'/0'/0/0",
+            wallet_manager.generate_next_bip44_path_for_derived_primary_wallet("bsc").to_bip44_path(),
+        )
+
     def test_create_next_derived_primary_wallet(self):
         wallet_manager.create_primary_wallets(
             ["eth"],
@@ -695,3 +724,11 @@ class TestWalletManager(TestCase):
                     call("eth", "fake_address", "contract_b"),
                 ]
             )
+
+    def test_get_default_bip44_path(self):
+        self.assertEqual("m/44'/0'/0'/0/0", wallet_manager.get_default_bip44_path("btc", "P2PKH").to_bip44_path())
+        self.assertEqual("m/49'/0'/0'/0/0", wallet_manager.get_default_bip44_path("btc", "P2WPKH-P2SH").to_bip44_path())
+        self.assertEqual("m/84'/0'/0'/0/0", wallet_manager.get_default_bip44_path("btc", "P2WPKH").to_bip44_path())
+        self.assertEqual("m/44'/60'/0'/0/0", wallet_manager.get_default_bip44_path("eth").to_bip44_path())
+        self.assertEqual("m/44'/101010'/0'/0'/0'", wallet_manager.get_default_bip44_path("stc").to_bip44_path())
+        self.assertEqual("m/44'/501'/0'/0'", wallet_manager.get_default_bip44_path("sol").to_bip44_path())

@@ -87,6 +87,7 @@ from ..common.coin import codes
 from ..common.coin import manager as coin_manager
 from ..common.price import manager as price_manager
 from ..common.provider import provider_manager
+from ..common.wallet import manager as wallet_manager
 from ..common.wallet.bip44 import BIP44Level, BIP44Path
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
@@ -3320,6 +3321,20 @@ class AndroidCommands(commands.Commands):
         :param path: NFC/android_usb/bluetooth as str
         :return:
         """
+        if not hw and is_coin_migrated(coin):
+            chain_code = coin_manager.legacy_coin_to_chain_code(coin)
+            chain_info = coin_manager.get_chain_info(chain_code)
+            address_encoding = None
+            if purpose:
+                purpose_to_address_encoding = {v: k for k, v in chain_info.bip44_purpose_options.items()}
+                address_encoding = purpose_to_address_encoding.get(int(purpose))
+
+            address_encoding = address_encoding or chain_info.default_address_encoding
+            if derived:
+                return wallet_manager.generate_next_bip44_path_for_derived_primary_wallet(chain_code, address_encoding)
+            else:
+                return wallet_manager.get_default_bip44_path(chain_code, address_encoding)
+
         account_id = 0
         if not hw and derived:
             derive_key = self.get_hd_wallet_encode_seed(coin=coin, purpose=str(purpose))
