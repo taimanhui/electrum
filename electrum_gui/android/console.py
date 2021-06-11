@@ -4469,7 +4469,14 @@ class AndroidCommands(commands.Commands):
         self.wallet = self.daemon.get_wallet(self._wallet_path(name))
         # self.wallet.use_change = self.config.get("use_change", False)
         chain_affinity = _get_chain_affinity(self.wallet.coin)
-        if chain_affinity == "eth":
+        if is_coin_migrated(self.wallet.coin) and isinstance(self.wallet, GeneralWallet):
+            tokens = self.wallet.get_all_token_coins()
+            info = {
+                "name": name,
+                "label": self.wallet.get_name(),
+                "wallets": [{"coin": i.symbol, "address": i.token_address, "coin_code": i.code} for i in tokens],
+            }
+        elif chain_affinity == "eth":
             contract_info = self.wallet.get_contract_symbols_with_address()
 
             info = {"name": name, "label": self.wallet.get_name(), "wallets": contract_info}
