@@ -144,8 +144,6 @@ class WalletContext(object):
         self, generic_wallet_type: Optional[str] = None, coin: Optional[str] = None
     ) -> List[Tuple[str, str]]:
 
-        unknowns = []
-
         stored_wallets = self.stored_wallets
         extra_filter_func = _type_info_default_extra_filter_func
         sort_func = _type_info_default_sort_func
@@ -165,9 +163,6 @@ class WalletContext(object):
             extra_filter_func = functools.partial(_type_info_filter_wallet_type_by_coin, coin)
             sort_func = _type_info_by_type_and_time_sort_func
             order_info = dict(zip(self.get_wallet_location_info(coin), itertools.count()))
-        else:
-            # We want all stored wallets.
-            unknowns = list(zip(stored_wallets - set(self._type_info.keys()), itertools.repeat('unknow')))
 
         saved_wallets = {}
         for wallet_id, type_info in self._type_info.items():
@@ -178,7 +173,7 @@ class WalletContext(object):
 
         saved = [kv for kv in sorted(saved_wallets.items(), key=sort_func, reverse=True)]
         saved = [(kv[0], kv[1]['type']) for kv in sorted(saved, key=_type_info_by_customised_sort_func)]
-        return unknowns + saved
+        return saved
 
     def set_wallet_type(self, wallet_id: str, wallet_type: str) -> None:
         self._type_info[wallet_id] = {'type': wallet_type, 'time': time.time()}
