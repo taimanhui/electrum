@@ -753,3 +753,15 @@ def get_default_bip44_path(chain_code: str, address_encoding: str = None) -> BIP
     )
     bip44_path = bip44_path.to_target_level(bip44_target_level)
     return bip44_path
+
+
+def get_encoded_address_by_account_id(account_id: int, address_encoding: str = None) -> str:
+    accounts = daos.account.query_accounts_by_ids([account_id])
+    require(len(accounts) == 1, Exception("no corresponding account found"))
+    account = accounts[0]
+    require(account.pubkey_id is not None, Exception("no pubkey_id found"))
+
+    verifier = secret_manager.get_verifier(account.pubkey_id)
+    chain_info = coin_manager.get_chain_info(account.chain_code)
+    address_encoding = address_encoding or chain_info.default_address_encoding
+    return provider_manager.pubkey_to_address(account.chain_code, verifier, encoding=address_encoding)

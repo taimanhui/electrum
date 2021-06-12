@@ -403,6 +403,11 @@ class GeneralWallet(object):
         else:
             return None
 
+    def stc_spec_get_receipt_identifier_address(self):
+        require(self._chain_code in ["stc", "tstc"])
+        account = self._get_default_account()
+        return wallet_manager.get_encoded_address_by_account_id(account.id, "BECH32")
+
 
 class _BypassKeystore:
     def __init__(self, wallet: "GeneralWallet"):

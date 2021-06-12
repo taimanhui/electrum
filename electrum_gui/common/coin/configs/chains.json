@@ -277,6 +277,7 @@
     "bip44_auto_increment_level": "ADDRESS_INDEX",
     "bip44_last_hardened_level": "ADDRESS_INDEX",
     "fee_price_decimals_for_legibility": 0,
+    "default_address_encoding": "HEX",
     "coins": [
       {
         "code": "stc",

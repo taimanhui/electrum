@@ -61,12 +61,14 @@ class STCProvider(ProviderInterface):
         )
 
     def pubkey_to_address(self, verifier: VerifierInterface, encoding: str = None) -> str:
+        require(encoding in ("HEX", "BECH32"))
         pubkey = verifier.get_pubkey(compressed=False)
         auth_key = AuthKey.from_public_key(PublicKey(pubkey))
-        if encoding == "BECH32":
-            address = ReceiptIdentifier(auth_key.account_address(), auth_key).encode()
-        else:
+
+        if encoding == "HEX":
             address = "0x" + stc_utils.account_address_hex(auth_key.account_address())
+        elif encoding == "BECH32":
+            address = ReceiptIdentifier(auth_key.account_address(), auth_key).encode()
         return address
 
     @property
