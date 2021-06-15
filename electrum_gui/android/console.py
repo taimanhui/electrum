@@ -1018,7 +1018,7 @@ class AndroidCommands(commands.Commands):
         main_coin = coin_manager.get_coin_info(main_coin_code)
 
         if not to_address:
-            gas_limit = gas_limit or 40000
+            gas_limit = gas_limit or 21000
         if gas_limit is None:
             # Use provider_manager.fill_unsigned_tx to estimate gas limit
             # TODO: Android app set contract_address to from_address if main
