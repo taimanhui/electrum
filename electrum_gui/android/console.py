@@ -2503,7 +2503,7 @@ class AndroidCommands(commands.Commands):
         )
         return signed_tx.raw_tx
 
-    @exceptions.catch_exception
+    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
     def get_erc20_approve_action_field_data(self, spender_address, value) -> str:
         """
         Get the field data for erc20 api approve
@@ -2526,7 +2526,7 @@ class AndroidCommands(commands.Commands):
         out = geth.eth_call({"to": contract_address, "data": data})
         return str(int((out[2:]), base=16))
 
-    @exceptions.catch_exception
+    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
     def get_erc20_allowance_action_result(
         self, coin: str, contract_address: str, owner_address: str, spender_address: str
     ) -> Any:
@@ -2546,7 +2546,7 @@ class AndroidCommands(commands.Commands):
         data = "0xdd62ed3e" + eth_abi.encode_abi(("address", "address"), (owner_address, spender_address)).hex()
         return self._get_action_result(coin, contract_address, data)
 
-    @exceptions.catch_exception
+    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
     def get_erc20_balanceof_action_result(self, coin: str, contract_address: str, owner_address: str) -> Any:
         """
         Get the result of the allowance api
@@ -2563,7 +2563,7 @@ class AndroidCommands(commands.Commands):
         data = "0x70a08231" + eth_abi.encode_abi(("address",), (owner_address,)).hex()
         return self._get_action_result(coin, contract_address, data)
 
-    @exceptions.catch_exception
+    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
     def get_tx_status_by_txid(self, txid, coin):
         """
         Get transaction status based on txid
@@ -3185,7 +3185,7 @@ class AndroidCommands(commands.Commands):
         """
         return electrum_mnemonic.Mnemonic(lang='en').mnemonic_encode(int(decoded_info))
 
-    @exceptions.catch_exception  # noqa
+    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)  # noqa
     def verify_legality(self, data, *, flag="seed", coin="btc", password=None):  # noqa
         """
         Verify legality for seed/private/public/address
