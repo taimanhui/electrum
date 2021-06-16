@@ -3452,7 +3452,7 @@ class AndroidCommands(commands.Commands):
                     seed,
                     password=password,
                     passphrase=passphrase,
-                    as_primary_wallet=True,
+                    as_primary_wallet=False,
                 )
             elif chain_affinity == "btc":
                 wallet = Standard_Wallet.from_seed_or_bip39(
