@@ -19,36 +19,36 @@ class ApiVersion(IntEnum):
 
 
 class OneKeyException(Exception):
-    key = "msg_unknown_error"
+    key = "msg__unknown_error"
     status = ResultStatus.FAILED
 
 
 class UnavailablePrivateKey(OneKeyException):
-    key = "msg_incorrect_private_key"
+    key = "msg__incorrect_private_key"
 
 
 class InvalidKeystoreFormat(OneKeyException):
-    key = "msg_incorrect_keystore_format"
+    key = "msg__incorrect_keystore_format"
 
 
 class InvalidMnemonicFormat(OneKeyException):
-    key = "msg_incorrect_recovery_phrase_format"
+    key = "msg__incorrect_recovery_phrase_format"
 
 
 class UnavailableBtcAddr(OneKeyException):
-    key = "msg_incorrect_bitcoin_address"
+    key = "msg__incorrect_bitcoin_address"
 
 
 class InvalidPassword(OneKeyException):
-    key = "msg_incorrect_password"
+    key = "msg__incorrect_password"
 
 
 class UnavailablePublicKey(OneKeyException):
-    key = "msg_incorrect_public_key"
+    key = "msg__incorrect_public_key"
 
 
 class UnavailableEthAddr(OneKeyException):
-    key = "msg_incorrect_eth_address"
+    key = "msg__incorrect_eth_address"
 
 
 def catch_exception(force_api_version: int = None):
