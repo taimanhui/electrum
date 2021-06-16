@@ -92,7 +92,7 @@ class TestSTCProvider(TestCase):
         )
         self.assertEqual(
             "0x194d36be65a955201ec79166b88ca18e",
-            self.provider.pubkey_to_address(verifier=verifier),
+            self.provider.pubkey_to_address(verifier=verifier, encoding="HEX"),
         )
         verifier.get_pubkey.assert_called_once_with(compressed=False)
         self.assertEqual(

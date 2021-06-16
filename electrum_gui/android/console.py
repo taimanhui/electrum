@@ -4882,6 +4882,11 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
+    def stc_spec_get_receipt_identifier_address(self, wallet_name):
+        wallet = self.get_wallet_by_name(wallet_name)
+        assert isinstance(wallet, GeneralWallet)
+        return wallet.stc_spec_get_receipt_identifier_address()
+
     def _assert_daemon_running(self):
         if not self.daemon_running:
             raise BaseException(

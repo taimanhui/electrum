@@ -732,3 +732,24 @@ class TestWalletManager(TestCase):
         self.assertEqual("m/44'/60'/0'/0/0", wallet_manager.get_default_bip44_path("eth").to_bip44_path())
         self.assertEqual("m/44'/101010'/0'/0'/0'", wallet_manager.get_default_bip44_path("stc").to_bip44_path())
         self.assertEqual("m/44'/501'/0'/0'", wallet_manager.get_default_bip44_path("sol").to_bip44_path())
+
+    def test_get_address_by_wallet_id(self):
+        wallet_info = wallet_manager.create_primary_wallets(
+            ["stc"],
+            password=self.password,
+            mnemonic=self.mnemonic,
+            passphrase=self.passphrase,
+        )[0]
+        account_info = wallet_manager.get_default_account_by_wallet(wallet_info["wallet_id"])
+
+        with self.subTest("bech32"):
+            self.assertEqual(
+                "stc1pynrlp8w98nnky4f2pz952hdjupduxlectpjhwjj8me5w5nxkdwtjf3lsnhzneemz254q3z69tkewqe8f96q",
+                wallet_manager.get_encoded_address_by_account_id(account_info.id, "BECH32"),
+            )
+
+        with self.subTest("default"):
+            self.assertEqual(
+                "0x24c7f09dc53ce762552a088b455db2e0",
+                wallet_manager.get_encoded_address_by_account_id(account_info.id),
+            )
