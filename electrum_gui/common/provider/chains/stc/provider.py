@@ -79,7 +79,7 @@ class STCProvider(ProviderInterface):
         payload = unsigned_tx.payload.copy()
         tx_input = unsigned_tx.inputs[0] if unsigned_tx.inputs else None
         tx_output = unsigned_tx.outputs[0] if unsigned_tx.outputs else None
-        fee_limit = unsigned_tx.fee_limit or 10000000
+        fee_limit = unsigned_tx.fee_limit or 100000
 
         if tx_input is not None and tx_output is not None:
             from_address = tx_input.address

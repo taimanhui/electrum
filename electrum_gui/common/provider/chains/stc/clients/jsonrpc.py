@@ -190,7 +190,7 @@ class STCJsonRPC(ClientInterface):
         fast = int(max(slow * 1, min_wei))
 
         return PricesPerUnit(
-            fast=EstimatedTimeOnPrice(price=fast, time=30),
-            normal=EstimatedTimeOnPrice(price=normal, time=30),
-            slow=EstimatedTimeOnPrice(price=slow, time=30),
+            fast=EstimatedTimeOnPrice(price=fast, time=60),
+            normal=EstimatedTimeOnPrice(price=normal, time=60),
+            slow=EstimatedTimeOnPrice(price=slow, time=60),
         )
