@@ -134,7 +134,7 @@ class TestSTCProvider(TestCase):
                 self.provider.fill_unsigned_tx(
                     UnsignedTx(),
                 ),
-                UnsignedTx(fee_limit=10000000, fee_price_per_unit=int(1)),
+                UnsignedTx(fee_limit=100000, fee_price_per_unit=int(1)),
             )
             fake_client.get_prices_per_unit_of_fee.assert_called_once()
             fake_client.get_address.assert_not_called()
@@ -171,6 +171,7 @@ class TestSTCProvider(TestCase):
                             outputs=[TransactionOutput(address="0x194d36be65a955201ec79166b88ca18e", value=1024)],
                             nonce=18,
                             fee_price_per_unit=1,
+                            fee_limit=10000000,
                             payload={"expiration_time": 1621325706},
                         ),
                     ),
