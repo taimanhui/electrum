@@ -1,4 +1,5 @@
 import datetime
+import functools
 import logging
 from collections import defaultdict
 from contextlib import contextmanager
@@ -147,21 +148,11 @@ def import_standalone_wallet_by_mnemonic(
     chain_info = coin_manager.get_chain_info(chain_code)
     address_encoding = address_encoding or chain_info.default_address_encoding
 
-    last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
-    target_level = BIP44Level[chain_info.bip44_target_level.upper()]
     if bip44_path is None:
-        bip44_path = (
-            BIP44Path(
-                purpose=chain_info.bip44_purpose_options.get(address_encoding, 44),
-                coin_type=chain_info.bip44_coin_type,
-                account=0,
-                last_hardened_level=last_hardened_level,
-            )
-            .to_target_level(target_level)
-            .to_bip44_path()
-        )
+        bip44_path = get_default_bip44_path(chain_code, address_encoding).to_bip44_path()
     else:
         bip44_path_ins = BIP44Path.from_bip44_path(bip44_path)
+        last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
         require(bip44_path_ins.last_hardened_level >= last_hardened_level)
 
     master_seed = secret_manager.mnemonic_to_seed(mnemonic, passphrase)
@@ -202,18 +193,7 @@ def create_primary_wallets(
     for chain_code in chain_codes:
         chain_info = coin_manager.get_chain_info(chain_code)
         address_encoding = chain_info.default_address_encoding
-        last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
-        target_level = BIP44Level[chain_info.bip44_target_level.upper()]
-        bip44_path = (
-            BIP44Path(
-                purpose=chain_info.bip44_purpose_options.get(address_encoding, 44),
-                coin_type=chain_info.bip44_coin_type,
-                account=0,
-                last_hardened_level=last_hardened_level,
-            )
-            .to_target_level(target_level)
-            .to_bip44_path()
-        )
+        bip44_path = get_default_bip44_path(chain_code, address_encoding).to_bip44_path()
         verifier = secret_manager.raw_create_key_by_master_seed(chain_info.curve, master_seed, path=bip44_path)
         address = provider_manager.pubkey_to_address(chain_code, verifier, encoding=address_encoding)
         default_wallets.append(
@@ -395,50 +375,13 @@ def _get_wallet_secret_key_id(wallet_id: int) -> int:
 def create_next_derived_primary_wallet(chain_code: str, name: str, password: str, address_encoding: str = None) -> dict:
     chain_info = coin_manager.get_chain_info(chain_code)
     address_encoding = address_encoding or chain_info.default_address_encoding
-    target_chain_code_existing_primary_wallets = daos.wallet.list_all_wallets(chain_code, WalletType.SOFTWARE_PRIMARY)
+    next_derived_bip44_path = generate_next_bip44_path_for_derived_primary_wallet(
+        chain_code, address_encoding
+    ).to_bip44_path()
 
-    if not target_chain_code_existing_primary_wallets:
-        first_primary_wallet = daos.wallet.get_first_primary_wallet()
-        require(first_primary_wallet is not None)
-        secret_key_id = _get_wallet_secret_key_id(first_primary_wallet.id)
-
-        last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
-        target_level = BIP44Level[chain_info.bip44_target_level.upper()]
-        next_derived_bip44_path = (
-            BIP44Path(
-                purpose=chain_info.bip44_purpose_options.get(address_encoding, 44),
-                coin_type=chain_info.bip44_coin_type,
-                account=0,
-                last_hardened_level=last_hardened_level,
-            )
-            .to_target_level(target_level)
-            .to_bip44_path()
-        )
-    else:
-        secret_key_id = _get_wallet_secret_key_id(target_chain_code_existing_primary_wallets[0].id)
-        last_account_lookup = {
-            i.wallet_id: i
-            for i in daos.account.query_accounts_by_wallets([i.id for i in target_chain_code_existing_primary_wallets])
-        }
-
-        bip44_auto_increment_level = BIP44Level[chain_info.bip44_auto_increment_level.upper()]
-        require(bip44_auto_increment_level >= BIP44Level.ACCOUNT)
-
-        max_index = -1
-        last_path = None
-        paths = (BIP44Path.from_bip44_path(i.bip44_path) for i in last_account_lookup.values() if i.bip44_path)
-        paths = (i.to_target_level(bip44_auto_increment_level) for i in paths)
-
-        for path in paths:
-            cur_index = path.index_of(bip44_auto_increment_level)
-            if cur_index > max_index:
-                max_index = cur_index
-                last_path = path
-
-        require(last_path is not None)
-        require(max_index >= 0)
-        target_level = BIP44Level[chain_info.bip44_target_level.upper()]
-        next_derived_bip44_path = last_path.next_sibling().to_target_level(target_level).to_bip44_path()
+    first_primary_wallet = daos.wallet.get_first_primary_wallet()
+    require(first_primary_wallet is not None)
+    secret_key_id = _get_wallet_secret_key_id(first_primary_wallet.id)
 
     new_pubkey_model = secret_manager.derive_by_secret_key(
         password, chain_info.curve, secret_key_id, next_derived_bip44_path, target_pubkey_type=PubKeyType.PUBKEY
@@ -461,6 +404,40 @@ def create_next_derived_primary_wallet(chain_code: str, name: str, password: str
         )
 
     return wallet_info
+
+
+def generate_next_bip44_path_for_derived_primary_wallet(chain_code: str, address_encoding: str = None) -> BIP44Path:
+    chain_info = coin_manager.get_chain_info(chain_code)
+    address_encoding = address_encoding or chain_info.default_address_encoding
+    default_bip44_path = get_default_bip44_path(chain_code, address_encoding)
+    existing_primary_wallets = daos.wallet.list_all_wallets(chain_code, WalletType.SOFTWARE_PRIMARY)
+
+    if not existing_primary_wallets:
+        return default_bip44_path
+    else:
+        bip44_auto_increment_level = BIP44Level[chain_info.bip44_auto_increment_level.upper()]
+        target_level = BIP44Level[chain_info.bip44_target_level.upper()]
+        require(bip44_auto_increment_level >= BIP44Level.ACCOUNT)
+
+        last_account_lookup = {
+            i.wallet_id: i
+            for i in daos.account.query_accounts_by_wallets(
+                [i.id for i in existing_primary_wallets], address_encoding=address_encoding
+            )
+        }
+        indexes = (
+            BIP44Path.from_bip44_path(i.bip44_path)
+            .to_target_level(bip44_auto_increment_level)
+            .index_of(bip44_auto_increment_level)
+            for i in last_account_lookup.values()
+            if i.bip44_path
+        )
+        max_index = max((-1, *indexes))
+        return (
+            default_bip44_path.to_target_level(bip44_auto_increment_level)
+            .next_sibling(gap=max_index + 1)
+            .to_target_level(target_level)
+        )
 
 
 def export_mnemonic(wallet_id: int, password) -> Tuple[str, str]:
@@ -759,3 +736,20 @@ def refresh_assets(
         daos.asset.bulk_update_balance(updated_assets)
 
     return assets
+
+
+@functools.lru_cache
+def get_default_bip44_path(chain_code: str, address_encoding: str = None) -> BIP44Path:
+    chain_info = coin_manager.get_chain_info(chain_code)
+    address_encoding = address_encoding or chain_info.default_address_encoding
+    purpose = chain_info.bip44_purpose_options.get(address_encoding) or 44
+    bip44_last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
+    bip44_target_level = BIP44Level[chain_info.bip44_target_level.upper()]
+    bip44_path = BIP44Path(
+        purpose=purpose,
+        coin_type=chain_info.bip44_coin_type,
+        account=0,
+        last_hardened_level=bip44_last_hardened_level,
+    )
+    bip44_path = bip44_path.to_target_level(bip44_target_level)
+    return bip44_path

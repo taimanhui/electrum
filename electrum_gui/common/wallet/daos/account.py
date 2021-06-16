@@ -21,8 +21,13 @@ def create_account(
     )
 
 
-def query_accounts_by_wallets(wallet_ids: List[int]) -> List[AccountModel]:
-    models = AccountModel.select().where(AccountModel.wallet_id.in_(wallet_ids)).order_by(AccountModel.id.asc())
+def query_accounts_by_wallets(wallet_ids: List[int], address_encoding: str = None) -> List[AccountModel]:
+    expressions = [AccountModel.wallet_id.in_(wallet_ids)]
+
+    if address_encoding is not None:
+        expressions.append(AccountModel.address_encoding == address_encoding)
+
+    models = AccountModel.select().where(*expressions).order_by(AccountModel.id.asc())
     return list(models)
 
 
