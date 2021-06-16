@@ -10,9 +10,9 @@ from electrum_gui.common.basic.dataclass.dataclass import DataClassMixin
 @unique
 class TransactionStatus(IntEnum):
     UNKNOWN = 0
-    PENDING = 10
-    CONFIRM_REVERTED = 99
-    CONFIRM_SUCCESS = 100
+    PENDING = 1
+    CONFIRM_REVERTED = 2
+    CONFIRM_SUCCESS = 3
 
 
 @unique
@@ -86,23 +86,23 @@ class Transaction(DataClassMixin):
     @property
     def detailed_status(self) -> str:
         if self.status == TransactionStatus.CONFIRM_REVERTED:
-            return "Sending failure"
+            return {"status": TransactionStatus.CONFIRM_REVERTED, "other_info": ""}
         elif self.status == TransactionStatus.CONFIRM_SUCCESS:
             if self.block_header is not None and self.block_header.confirmations > 0:
-                return ("{} confirmations").format(self.block_header.confirmations)
+                return {"status": TransactionStatus.CONFIRM_SUCCESS, "other_info": str(self.block_header.confirmations)}
             else:
-                return "Confirmed"
+                return {"status": TransactionStatus.CONFIRM_SUCCESS, "other_info": ""}
         else:
-            return "Unconfirmed"
+            return {"status": TransactionStatus.PENDING, "other_info": ""}
 
     @property
     def show_status(self) -> List:
         if self.status == TransactionStatus.CONFIRM_REVERTED:
-            return [2, i18n._("Sending failure")]
+            return [TransactionStatus.CONFIRM_REVERTED, i18n._("Sending failure")]
         elif self.status == TransactionStatus.CONFIRM_SUCCESS:
-            return [3, i18n._("Confirmed")]
+            return [TransactionStatus.CONFIRM_SUCCESS, i18n._("Confirmed")]
         else:
-            return [1, i18n._("Unconfirmed")]
+            return [TransactionStatus.PENDING, i18n._("Unconfirmed")]
 
     @property
     def date_str(self) -> str:
