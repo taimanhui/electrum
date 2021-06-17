@@ -53,6 +53,9 @@ class EthSoftwareSigner(secret_interfaces.SignerInterface):
     def get_pubkey(self, compressed=True) -> bytes:
         raise NotImplementedError()  # Shouldn't reach
 
+    def get_prvkey(self) -> bytes:
+        raise NotImplementedError()  # Shouldn't reach
+
     def verify(self, digest: bytes, signature: bytes) -> bool:
         raise NotImplementedError()  # Shouldn't reach
 
