@@ -231,6 +231,12 @@ class GeneralWallet(object):
         if old_pw and new_pw:
             wallet_manager.update_wallet_password(self.general_wallet_id, old_pw, new_pw)
 
+    def check_password(self, password, str_pw=None):
+        if password:
+            wallet_manager.update_wallet_password(
+                self.general_wallet_id, password, password
+            )  # todo maybe add check_password to the wallet manager
+
     def get_all_balance(self) -> dict:
         if (
             self._balance_info.get("time")
