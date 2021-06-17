@@ -25,6 +25,10 @@ class ED25519(KeyInterface):
     def get_pubkey(self, compressed=True) -> bytes:
         return bytes(self._pubkey)
 
+    def get_prvkey(self) -> bytes:
+        require(self.has_prvkey())
+        return bytes(self._prvkey)
+
     def verify(self, digest: bytes, signature: bytes) -> bool:
         try:
             _ = self._pubkey.verify(digest, signature)

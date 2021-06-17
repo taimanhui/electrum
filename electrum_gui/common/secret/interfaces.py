@@ -35,6 +35,13 @@ class SignerInterface(VerifierInterface, ABC):
         :return: signature with rec_id
         """
 
+    @abstractmethod
+    def get_prvkey(self) -> bytes:
+        """
+        Get prvkey
+        :return: prvkey as bytes
+        """
+
 
 class KeyInterface(SignerInterface, ABC):
     def __init__(self, prvkey: bytes = None, pubkey: bytes = None):
