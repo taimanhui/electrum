@@ -2506,7 +2506,7 @@ class AndroidCommands(commands.Commands):
         return signed_tx.raw_tx
 
     @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
-    def get_erc20_approve_action_field_data(self, spender_address, value) -> str:
+    def get_erc20_approve_action_field_data(self, spender_address: str, value: str) -> str:
         """
         Get the field data for erc20 api approve
         :param spender_address:
@@ -2514,13 +2514,13 @@ class AndroidCommands(commands.Commands):
         :return: json like {"status": "", "info":""}
 
         exp:
-            testcommond.get_erc20_approve_action_field_data("0x514910771af9ca656af840dff83e8264ecf986ca", 1)
+            testcommond.get_erc20_approve_action_field_data("0x514910771af9ca656af840dff83e8264ecf986ca", "1000000000000000000000000000000000000000000")
 
             return data:
                 {"status": 0, "info": "0x095ea7b3000000000000000000000000514910771af9ca656af840dff83e8264ecf986ca0000000000000000000000000000000000000000000000000000000000000001"}
 
         """
-        return "0x095ea7b3" + eth_abi.encode_abi(("address", "uint256"), (spender_address, value)).hex()
+        return "0x095ea7b3" + eth_abi.encode_abi(("address", "uint256"), (spender_address, int(value))).hex()
 
     def _get_action_result(self, coin: str, contract_address: str, data: str) -> str:
         chain_code = coin_manager.legacy_coin_to_chain_code(coin)
@@ -2566,7 +2566,7 @@ class AndroidCommands(commands.Commands):
         return self._get_action_result(coin, contract_address, data)
 
     @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
-    def get_tx_status_by_txid(self, txid, coin):
+    def get_tx_status_by_txid(self, txid: str, coin: str) -> str:
         """
         Get transaction status based on txid
         :param txid: txid as str
