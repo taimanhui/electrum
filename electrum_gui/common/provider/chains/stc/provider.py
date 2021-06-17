@@ -86,7 +86,13 @@ class STCProvider(ProviderInterface):
         if tx_input is not None and tx_output is not None:
             from_address = tx_input.address
             to_address = tx_output.address
-            payee_auth_key = ReceiptIdentifier.decode(to_address).auth_key if to_address.startswith("stc") else None
+            if to_address.startswith("stc"):
+                ri = ReceiptIdentifier.decode(to_address)
+                require(ri is not None)
+                payee_auth_key = ri.auth_key
+                to_address = ri.account_address
+            else:
+                payee_auth_key = None
 
             value = tx_output.value
             if tx_output.token_address:
@@ -142,7 +148,7 @@ class STCProvider(ProviderInterface):
             gas_unit_price=uint64(unsigned_tx.fee_price_per_unit),
             gas_token_code="0x1::STC::STC",
             expiration_timestamp_secs=unsigned_tx.payload.get("expiration_time"),
-            chain_id=ChainId(uint8(self.chain_info.chain_id)),
+            chain_id=ChainId(uint8(int(self.chain_info.chain_id))),
         )
 
         signature = stc_key.sign_msg_hash(stc_utils.raw_transaction_signing_msg(raw_txn))
