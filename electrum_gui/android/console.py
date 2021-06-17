@@ -3352,9 +3352,11 @@ class AndroidCommands(commands.Commands):
 
             address_encoding = address_encoding or chain_info.default_address_encoding
             if derived:
-                return wallet_manager.generate_next_bip44_path_for_derived_primary_wallet(chain_code, address_encoding)
+                return wallet_manager.generate_next_bip44_path_for_derived_primary_wallet(
+                    chain_code, address_encoding
+                ).to_bip44_path()
             else:
-                return wallet_manager.get_default_bip44_path(chain_code, address_encoding)
+                return wallet_manager.get_default_bip44_path(chain_code, address_encoding).to_bip44_path()
 
         account_id = 0
         if not hw and derived:
