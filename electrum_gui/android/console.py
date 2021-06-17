@@ -327,14 +327,24 @@ class AndroidCommands(commands.Commands):
             out = main_balance_info
             out["tokens"] = contracts_balance_info
             out["sum_fiat"] = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
-            out["coin_asset"] = self._fill_balance_info_with_coin(sum_fiat, coin)
+            out["coin_asset"] = (
+                self._fill_balance_info_with_coin(sum_fiat, coin)
+                if sum_fiat != Decimal(0)
+                else main_balance_info["balance"]
+            )
+
             out["name"] = self.wallet.identity
         elif chain_affinity == "eth":  # eth base
             main_balance_info, contracts_balance_info, sum_fiat = self._get_eth_wallet_all_balance(self.wallet)
             out = main_balance_info
             out["tokens"] = contracts_balance_info
             out["sum_fiat"] = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
-            out["coin_asset"] = self._fill_balance_info_with_coin(sum_fiat, coin)
+            out["coin_asset"] = (
+                self._fill_balance_info_with_coin(sum_fiat, coin)
+                if sum_fiat != Decimal(0)
+                else main_balance_info["balance"]
+            )
+
             out["name"] = self.wallet.identity
         elif (
             self.network
@@ -4567,7 +4577,9 @@ class AndroidCommands(commands.Commands):
                 {
                     "all_balance": f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}",
                     "wallets": [main_balance_info] + contracts_balance_info,
-                    "coin_asset": self._fill_balance_info_with_coin(sum_fiat, coin),
+                    "coin_asset": self._fill_balance_info_with_coin(sum_fiat, coin)
+                    if sum_fiat != Decimal(0)
+                    else main_balance_info["balance"],
                 }
             )
         elif chain_affinity == "eth":
@@ -4576,7 +4588,9 @@ class AndroidCommands(commands.Commands):
                 {
                     "all_balance": f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}",
                     "wallets": [main_balance_info] + contracts_balance_info,
-                    "coin_asset": self._fill_balance_info_with_coin(sum_fiat, coin),
+                    "coin_asset": self._fill_balance_info_with_coin(sum_fiat, coin)
+                    if sum_fiat != Decimal(0)
+                    else main_balance_info["balance"],
                 }
             )
         elif chain_affinity == "btc":
