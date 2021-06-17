@@ -861,8 +861,8 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
     @classmethod
     def from_pubkey_or_addresses(cls, coin: str, config: simple_config.SimpleConfig, pubkey_or_addresses: str):
         try:
-            pubkey = eth_keys.keys.PublicKey(hexbytes.HexBytes(pubkey_or_addresses))
-            addresses = pubkey.to_address()
+            pubkey = eth_keys.keys.PublicKey.from_compressed_bytes(hexbytes.HexBytes(pubkey_or_addresses))
+            addresses = [pubkey.to_address()]
         except Exception:
             addresses = pubkey_or_addresses.split()
 
