@@ -144,9 +144,9 @@ class TestSTCProvider(TestCase):
             fake_client.get_prices_per_unit_of_fee.reset_mock()
 
     def test_sign_transaction(self):
-        self.fake_chain_info.chain_id = 251
+        self.fake_chain_info.chain_id = "251"
 
-        with self.subTest("Sign STC Transfer Tx"):
+        with self.subTest("Sign STC Transfer Tx with hex to address"):
             fake_signer = Mock(
                 sign=Mock(
                     return_value=(
@@ -164,6 +164,10 @@ class TestSTCProvider(TestCase):
             )
             signers = {"0xb61a35af603018441b06177a8820ff2a": fake_signer}
             self.assertEqual(
+                SignedTx(
+                    txid="0x55a8ab2df5db77e3be24304cc868f12fd35cb78e77842003d5f2aa17494adfd9",
+                    raw_tx="0xb61a35af603018441b06177a8820ff2a120000000000000002000000000000000000000000000000010f5472616e73666572536372697074730c706565725f746f5f706565720107000000000000000000000000000000010353544303535443000310194d36be65a955201ec79166b88ca18e01001000040000000000000000000000000000809698000000000001000000000000000d3078313a3a5354433a3a5354438a77a36000000000fb00207b945271879962dde59a0e170219d04a1c3ae3901de95041283c473902d0b03d40b4f0eb5b9994767f8e43885d4c50f5e066f14dee8c8c72bca1d717b392cb77d0738373e3bd1a7809c587afcbc8e31185bcdf0d288a63b01bca5eb7b713bed200",
+                ),
                 self.provider.sign_transaction(
                     self.provider.fill_unsigned_tx(
                         UnsignedTx(
@@ -177,8 +181,46 @@ class TestSTCProvider(TestCase):
                     ),
                     signers,
                 ),
+            )
+
+        with self.subTest("Sign STC Transfer Tx with ReceiptIdentifier"):
+            fake_signer = Mock(
+                sign=Mock(
+                    return_value=(
+                        bytes.fromhex(
+                            "b4f0eb5b9994767f8e43885d4c50f5e066f14dee8c8c72bca1d717b392cb77d0738373e3bd1a7809c587afcbc8e31185bcdf0d288a63b01bca5eb7b713bed200"
+                        ),
+                        0,
+                    )
+                ),
+                get_pubkey=Mock(
+                    return_value=bytes(
+                        x for x in bytes.fromhex("7b945271879962dde59a0e170219d04a1c3ae3901de95041283c473902d0b03d")
+                    )
+                ),
+            )
+            signers = {"0xb61a35af603018441b06177a8820ff2a": fake_signer}
+            self.assertEqual(
                 SignedTx(
-                    txid="0x55a8ab2df5db77e3be24304cc868f12fd35cb78e77842003d5f2aa17494adfd9",
-                    raw_tx="0xb61a35af603018441b06177a8820ff2a120000000000000002000000000000000000000000000000010f5472616e73666572536372697074730c706565725f746f5f706565720107000000000000000000000000000000010353544303535443000310194d36be65a955201ec79166b88ca18e01001000040000000000000000000000000000809698000000000001000000000000000d3078313a3a5354433a3a5354438a77a36000000000fb00207b945271879962dde59a0e170219d04a1c3ae3901de95041283c473902d0b03d40b4f0eb5b9994767f8e43885d4c50f5e066f14dee8c8c72bca1d717b392cb77d0738373e3bd1a7809c587afcbc8e31185bcdf0d288a63b01bca5eb7b713bed200",
+                    txid="0x4fe1184686c5d2270833a55fdbfb83e6551cb8c56452cc9ea58ff55c1277aac5",
+                    raw_tx="0xb61a35af603018441b06177a8820ff2a120000000000000002000000000000000000000000000000010f5472616e73666572536372697074730c706565725f746f5f706565720107000000000000000000000000000000010353544303535443000310194d36be65a955201ec79166b88ca18e21201273db5df397f2e09dfabde8f43136be194d36be65a955201ec79166b88ca18e1000040000000000000000000000000000809698000000000001000000000000000d3078313a3a5354433a3a5354438a77a36000000000fb00207b945271879962dde59a0e170219d04a1c3ae3901de95041283c473902d0b03d40b4f0eb5b9994767f8e43885d4c50f5e066f14dee8c8c72bca1d717b392cb77d0738373e3bd1a7809c587afcbc8e31185bcdf0d288a63b01bca5eb7b713bed200",
+                ),
+                self.provider.sign_transaction(
+                    self.provider.fill_unsigned_tx(
+                        UnsignedTx(
+                            inputs=[TransactionInput(address="0xb61a35af603018441b06177a8820ff2a", value=1024)],
+                            outputs=[
+                                TransactionOutput(
+                                    address="stc1pr9xnd0n9492jq8k8j9nt3r9p3cf88k6a7wtl9cyal2773ap3x6lpjnfkhej6j4fqrmreze4c3jscug7yx2e",
+                                    value=1024,
+                                )
+                            ],
+                            nonce=18,
+                            fee_price_per_unit=1,
+                            fee_limit=10000000,
+                            payload={"expiration_time": 1621325706},
+                        ),
+                    ),
+                    signers,
                 ),
             )
