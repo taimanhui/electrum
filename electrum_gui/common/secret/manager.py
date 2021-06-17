@@ -339,3 +339,7 @@ def raw_create_key_by_master_seed(curve: CurveEnum, master_seed: bytes, path: st
         node = node.derive_path(path)
 
     return node.prvkey_interface
+
+
+def export_prvkey(password: str, pubkey_id: int) -> str:
+    return get_signer(password, pubkey_id).get_prvkey().hex()

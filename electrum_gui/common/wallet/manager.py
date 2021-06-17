@@ -440,12 +440,22 @@ def generate_next_bip44_path_for_derived_primary_wallet(chain_code: str, address
         )
 
 
-def export_mnemonic(wallet_id: int, password) -> Tuple[str, str]:
+def export_mnemonic(wallet_id: int, password: str) -> Tuple[str, str]:
     wallet_model = _get_wallet_by_id(wallet_id)
     require(wallet_model.type in (WalletType.SOFTWARE_PRIMARY, WalletType.SOFTWARE_STANDALONE_MNEMONIC))
     secret_key_id = _get_wallet_secret_key_id(wallet_id)
     mnemonic, passphrase = secret_manager.export_mnemonic(password, secret_key_id)
     return mnemonic, passphrase
+
+
+def export_prvkey(wallet_id: int, password: str) -> str:
+    wallet_model = _get_wallet_by_id(wallet_id)
+    require(
+        wallet_model.type
+        in (WalletType.SOFTWARE_PRIMARY, WalletType.SOFTWARE_STANDALONE_MNEMONIC, WalletType.SOFTWARE_STANDALONE_PRVKEY)
+    )
+    account = get_default_account_by_wallet(wallet_id)
+    return secret_manager.export_prvkey(password, account.pubkey_id)
 
 
 def get_wallet_info_by_id(wallet_id: int, only_visible: bool = True) -> dict:

@@ -376,7 +376,8 @@ class GeneralWallet(object):
         return address == self.get_address()
 
     def export_private_key(self, address: str, password: Optional[str]) -> str:
-        raise NotImplementedError()
+        require(address == self.get_address())
+        return wallet_manager.export_prvkey(self.general_wallet_id, password)
 
     def create_new_address(self, for_change: bool = False):
         raise NotImplementedError()

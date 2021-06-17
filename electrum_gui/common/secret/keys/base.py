@@ -35,6 +35,10 @@ class BaseECDSAKey(KeyInterface, ABC):
     def get_pubkey(self, compressed=True) -> bytes:
         return self._verifying_key.to_string(encoding="compressed" if compressed else "uncompressed")
 
+    def get_prvkey(self) -> bytes:
+        require(self.has_prvkey())
+        return self._signing_key.to_string()
+
     def verify(self, digest: bytes, signature: bytes) -> bool:
         try:
             return self._verifying_key.verify_digest(signature, digest)

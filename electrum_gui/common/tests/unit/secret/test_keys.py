@@ -17,11 +17,16 @@ class TestKeys(TestCase):
 
                 prvkey: KeyInterface = key_class(prvkey=prvkey_bytes)
                 self.assertTrue(prvkey.has_prvkey())
+                self.assertEqual(prvkey_bytes, prvkey.get_prvkey())
 
                 if curve in (CurveEnum.SECP256K1, CurveEnum.SECP256R1):
                     self.assertEqual(33, len(prvkey.get_pubkey()))
                     self.assertEqual(33, len(prvkey.get_pubkey(compressed=True)))
                     self.assertEqual(65, len(prvkey.get_pubkey(compressed=False)))
+                elif curve == CurveEnum.ED25519:
+                    self.assertEqual(32, len(prvkey.get_pubkey()))
+                    self.assertEqual(32, len(prvkey.get_pubkey(compressed=True)))  # compressed field has no effect
+                    self.assertEqual(32, len(prvkey.get_pubkey(compressed=False)))
 
                 pubkey: KeyInterface = key_class(pubkey=prvkey.get_pubkey())
                 self.assertEqual(pubkey.get_pubkey(), prvkey.get_pubkey())
