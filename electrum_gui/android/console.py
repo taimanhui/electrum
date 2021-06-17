@@ -974,7 +974,7 @@ class AndroidCommands(commands.Commands):
                 eth_tx_info = json.loads(eth_tx_info)
             else:
                 eth_tx_info = {}
-            fee = self.get_general_fee_info(
+            fee_info = self.get_general_fee_info(
                 to_address=eth_tx_info.pop("to_address", None),
                 value=eth_tx_info.pop("value", None),
                 token_address=eth_tx_info.pop("contract_address", None),
@@ -982,16 +982,7 @@ class AndroidCommands(commands.Commands):
                 fee_limit=eth_tx_info.pop("fee_limit", None) or eth_tx_info.pop("gas_limit", None),
                 payload=eth_tx_info,
             )
-            fee = json.loads(fee)
-            fee = {
-                k: {
-                    **v,
-                    "gas_limit": v["fee_limit"],
-                    "gas_price": v["fee_price_per_unit"],
-                }
-                for k, v in fee.items()
-            }
-            return json.dumps(fee, cls=json_encoders.DecimalEncoder)
+            return json.dumps(fee_info, cls=json_encoders.DecimalEncoder)
         elif chain_affinity == "eth":
             if eth_tx_info:
                 eth_tx_info = json.loads(eth_tx_info)
@@ -1010,15 +1001,15 @@ class AndroidCommands(commands.Commands):
 
         fee_info_list = self.get_block_info()
         out_size_p2pkh = 141
-        out_info = {}
         if feerate is None:
-            for block, feerate in fee_info_list.items():
-                if block == 2 or block == 5 or block == 10:
-                    key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
-                    out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
+            out_info = [
+                # Assuming all needed data are present
+                self.format_return_data(fee_info_list.get(block), out_size_p2pkh, block)
+                for block in (2, 5, 10)
+            ]
         else:
             block = helpers.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
-            out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
+            out_info = {"customer": self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)}
         return json.dumps(out_info)
 
     def eth_estimate_fee(
@@ -1080,8 +1071,8 @@ class AndroidCommands(commands.Commands):
             gas_limit = unsigned_tx.fee_limit
 
         last_price = price_manager.get_last_price(main_coin_code, self.ccy)
-        estimated_gas_prices = {}
-        for description, estimated_gas_price in provider_manager.get_prices_per_unit_of_fee(chain_code):
+        estimated_gas_prices = []
+        for estimated_gas_price in provider_manager.get_prices_per_unit_of_fee(chain_code):
             price = math.ceil(eth_utils.from_wei(estimated_gas_price.price, "gwei"))
             fee = eth_utils.from_wei(gas_limit * eth_utils.to_wei(price, "gwei"), "ether")
             gas_price_info = {
@@ -1094,7 +1085,7 @@ class AndroidCommands(commands.Commands):
             if gas_price is not None and gas_price >= price:
                 return {"customer": gas_price_info}
             else:
-                estimated_gas_prices[description] = gas_price_info
+                estimated_gas_prices.append(gas_price_info)
 
         return estimated_gas_prices
 
@@ -2560,7 +2551,8 @@ class AndroidCommands(commands.Commands):
         **kwargs,
     ):
         assert isinstance(self.wallet, GeneralWallet)
-        estimated_fee = self.wallet.pre_send(
+        ret = []
+        estimated_fees = self.wallet.pre_send(
             to_address=to_address,
             value=value,
             token_address=token_address,
@@ -2569,18 +2561,20 @@ class AndroidCommands(commands.Commands):
             payload=kwargs,
         )
         fee_coin_last_price = price_manager.get_last_price(self.wallet.fee_coin.code, self.ccy)
-        estimated_fee = {
-            k: {
-                "fee_price_per_unit": v["fee_price_per_unit"],
-                "time": v["time"],
-                "fee_limit": v["fee_limit"],
-                "fee": v["fee"],
-                "fiat": f"{self.daemon.fx.ccy_amount_str(Decimal(v['fee']) * fee_coin_last_price, True)} {self.ccy}",
-            }
-            for k, v in estimated_fee.items()
-        }
 
-        return json.dumps(estimated_fee, cls=json_encoders.DecimalEncoder)
+        for estimated_fee in estimated_fees:
+            fiat_value = self.daemon.fx.ccy_amount_str(Decimal(estimated_fee["fee"]) * fee_coin_last_price, True)
+            ret.append(
+                {
+                    "gas_price": estimated_fee["fee_price_per_unit"],
+                    "time": estimated_fee["time"],
+                    "gas_limit": estimated_fee["fee_limit"],
+                    "fee": estimated_fee["fee"],
+                    "fiat": f"{fiat_value} {self.ccy}",
+                }
+            )
+
+        return ret
 
     def send_general_tx(
         self,

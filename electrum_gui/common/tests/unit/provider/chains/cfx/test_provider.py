@@ -63,13 +63,7 @@ class TestCFXProvider(TestCase):
         contract_address = "cfxtest:acepe88unk7fvs18436178up33hb4zkuf62a9dk1gv"
 
         fake_client = Mock(
-            get_prices_per_unit_of_fee=Mock(
-                return_value=PricesPerUnit(
-                    slow=EstimatedTimeOnPrice(price=1),
-                    normal=EstimatedTimeOnPrice(price=1),
-                    fast=EstimatedTimeOnPrice(price=1),
-                )
-            ),
+            get_prices_per_unit_of_fee=Mock(return_value=PricesPerUnit(normal=EstimatedTimeOnPrice(price=1))),
             get_address=Mock(return_value=Mock(nonce=10)),
             estimate_gas_and_collateral=Mock(return_value=(21000, 0)),
             get_epoch_number=Mock(return_value=110),

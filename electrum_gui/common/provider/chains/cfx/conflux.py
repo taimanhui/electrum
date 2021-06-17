@@ -180,9 +180,11 @@ class CFXClient(ClientInterface, BatchGetAddressMixin):
         fast = max(round(slow * 1.5), min_drip)
 
         return PricesPerUnit(
-            fast=EstimatedTimeOnPrice(price=fast, time=30),
             normal=EstimatedTimeOnPrice(price=normal, time=60),
-            slow=EstimatedTimeOnPrice(price=slow, time=120),
+            others=[
+                EstimatedTimeOnPrice(price=fast, time=30),
+                EstimatedTimeOnPrice(price=slow, time=120),
+            ],
         )
 
     def estimate_gas_and_collateral(

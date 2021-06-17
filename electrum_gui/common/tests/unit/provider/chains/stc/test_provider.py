@@ -109,9 +109,10 @@ class TestSTCProvider(TestCase):
         fake_client = Mock(
             get_prices_per_unit_of_fee=Mock(
                 return_value=PricesPerUnit(
-                    slow=EstimatedTimeOnPrice(price=int(1)),
                     normal=EstimatedTimeOnPrice(price=int(1)),
-                    fast=EstimatedTimeOnPrice(price=int(2)),
+                    others=[
+                        EstimatedTimeOnPrice(price=int(2)),
+                    ],
                 )
             ),
             get_address=Mock(return_value=Mock(nonce=18)),

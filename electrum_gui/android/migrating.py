@@ -348,16 +348,15 @@ class GeneralWallet(object):
         )
         fee_limit = result["unsigned_tx"]["fee_limit"]
 
-        estimated_fee = {}
-        for tag, fee in result["fee_prices"].items():
-            estimated_fee[tag] = {
-                "fee_price_per_unit": Decimal(fee["price"]) / fee_price_decimals_for_legibility_multiply,
-                "time": max(int(fee["time"] / 60), 1),  # second to minute
+        return [
+            {
+                "fee_price_per_unit": Decimal(fee.price) / fee_price_decimals_for_legibility_multiply,
+                "time": Decimal(max(fee.time or 60, 60)) / 60,
                 "fee_limit": fee_limit,
-                "fee": Decimal(fee["price"]) * fee_limit / fee_decimals_multiply,
+                "fee": Decimal(fee.price) * fee_limit / fee_decimals_multiply,
             }
-
-        return estimated_fee
+            for fee in provider_manager.get_prices_per_unit_of_fee(self.chain_code)
+        ]
 
     def send(
         self,

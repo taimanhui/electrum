@@ -200,7 +200,9 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
         fast = int(decimal.Decimal(result["FastGasPrice"]) * 10 ** 9)
 
         return PricesPerUnit(
-            fast=EstimatedTimeOnPrice(price=fast, time=60),
             normal=EstimatedTimeOnPrice(price=normal, time=180),
-            slow=EstimatedTimeOnPrice(price=slow, time=600),
+            others=[
+                EstimatedTimeOnPrice(price=slow, time=600),
+                EstimatedTimeOnPrice(price=fast, time=60),
+            ],
         )

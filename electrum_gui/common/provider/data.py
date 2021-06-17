@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import IntEnum, unique
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from electrum import i18n
 from electrum import util as electrum_utils
@@ -160,21 +160,11 @@ class EstimatedTimeOnPrice(DataClassMixin):
 
 @dataclass
 class PricesPerUnit(DataClassMixin):
-    slow: EstimatedTimeOnPrice
     normal: EstimatedTimeOnPrice
-    fast: EstimatedTimeOnPrice
-    extra_prices: Dict[str, EstimatedTimeOnPrice] = field(default_factory=dict)
+    others: List[EstimatedTimeOnPrice] = field(default_factory=list)
 
     def __iter__(self):
-        all_prices = {**self.extra_prices, "slow": self.slow, "normal": self.normal, "fast": self.fast}
-        for description, price in sorted(
-            all_prices.items(), key=lambda item: (item[1].time, item[1].price), reverse=True
-        ):
-            yield description, price
-
-    def to_dict(self) -> dict:
-        result = {description: price.to_dict() for description, price in self}
-        return result
+        yield from sorted((self.normal, *self.others), key=lambda item: item.price)
 
 
 @dataclass

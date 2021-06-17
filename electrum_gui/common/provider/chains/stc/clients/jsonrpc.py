@@ -185,16 +185,10 @@ class STCJsonRPC(ClientInterface):
     def get_prices_per_unit_of_fee(self) -> PricesPerUnit:
         resp = self.rpc.call("txpool.gas_price", params=[])
 
-        min_wei = 1
-        slow = int(max(int(resp), min_wei))
-        normal = int(max(slow * 1, min_wei))
-        fast = int(max(slow * 1, min_wei))
+        price = max(int(resp), 1)
+        normal = EstimatedTimeOnPrice(price=price, time=60)
 
-        return PricesPerUnit(
-            fast=EstimatedTimeOnPrice(price=fast, time=60),
-            normal=EstimatedTimeOnPrice(price=normal, time=60),
-            slow=EstimatedTimeOnPrice(price=slow, time=60),
-        )
+        return PricesPerUnit(normal=normal)
 
     def estimate_gas_limit(self, params=dict) -> int:
         resp = self.rpc.call("contract.dry_run", params=[params])

@@ -75,12 +75,12 @@ def get_prices_per_unit_of_fee(chain_code: str) -> data.PricesPerUnit:
             resp = requests.get('https://www.gasnow.org/api/v3/gas/price?utm_source=onekey')
             gasnow_data = resp.json()["data"]
             return data.PricesPerUnit(
-                fast=data.EstimatedTimeOnPrice(price=gasnow_data["fast"], time=60),
                 normal=data.EstimatedTimeOnPrice(price=gasnow_data["standard"], time=180),
-                slow=data.EstimatedTimeOnPrice(price=gasnow_data["slow"], time=600),
-                extra_prices={
-                    "rapid": data.EstimatedTimeOnPrice(price=gasnow_data["rapid"], time=15),
-                },
+                others=[
+                    data.EstimatedTimeOnPrice(price=gasnow_data["rapid"], time=15),
+                    data.EstimatedTimeOnPrice(price=gasnow_data["fast"], time=60),
+                    data.EstimatedTimeOnPrice(price=gasnow_data["slow"], time=600),
+                ],
             )
         except Exception:
             # Avoid bandit try_except_pass

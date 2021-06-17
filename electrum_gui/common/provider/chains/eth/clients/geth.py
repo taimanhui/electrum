@@ -183,9 +183,11 @@ class Geth(ClientInterface, BatchGetAddressMixin):
         fast = int(max(slow * 1.5, min_wei))
 
         return PricesPerUnit(
-            fast=EstimatedTimeOnPrice(price=fast, time=60),
             normal=EstimatedTimeOnPrice(price=normal, time=180),
-            slow=EstimatedTimeOnPrice(price=slow, time=600),
+            others=[
+                EstimatedTimeOnPrice(price=slow, time=600),
+                EstimatedTimeOnPrice(price=fast, time=60),
+            ],
         )
 
     def estimate_gas_limit(self, from_address: str, to_address: str, value: int, data: str = None) -> int:
