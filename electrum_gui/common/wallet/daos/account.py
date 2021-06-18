@@ -44,6 +44,6 @@ def query_accounts_by_ids(account_ids: List[int]) -> List[AccountModel]:
     return list(models)
 
 
-def query_accounts_by_addresses(chain_code: str, addresses: List[str]) -> List[AccountModel]:
-    models = AccountModel.select().where(AccountModel.chain_code == chain_code, AccountModel.address.in_(addresses))
+def query_accounts_by_addresses(wallet_id: int, addresses: List[str]) -> List[AccountModel]:
+    models = AccountModel.select().where(AccountModel.wallet_id == wallet_id, AccountModel.address.in_(addresses))
     return list(models)

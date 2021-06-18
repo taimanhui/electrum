@@ -617,7 +617,7 @@ def send(
     if not is_valid:
         raise exceptions.IllegalUnsignedTx(validation_message)
 
-    accounts = daos.account.query_accounts_by_addresses(wallet.chain_code, [i.address for i in unsigned_tx.inputs])
+    accounts = daos.account.query_accounts_by_addresses(wallet.id, [i.address for i in unsigned_tx.inputs])
     signed_tx = _sign_tx(wallet, accounts, password, unsigned_tx)
 
     if auto_broadcast:
@@ -651,7 +651,7 @@ def _verify_unsigned_tx(wallet_id: int, coin_code: str, unsigned_tx: UnsignedTx)
     if not input_addresses:
         return False, "No input addresses found"
 
-    input_accounts = daos.account.query_accounts_by_addresses(wallet.chain_code, input_addresses)
+    input_accounts = daos.account.query_accounts_by_addresses(wallet.id, input_addresses)
     input_accounts_address_set = {i.address for i in input_accounts}
     if (
         not input_accounts
