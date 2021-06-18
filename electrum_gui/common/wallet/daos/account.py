@@ -47,3 +47,7 @@ def query_accounts_by_ids(account_ids: List[int]) -> List[AccountModel]:
 def query_accounts_by_addresses(wallet_id: int, addresses: List[str]) -> List[AccountModel]:
     models = AccountModel.select().where(AccountModel.wallet_id == wallet_id, AccountModel.address.in_(addresses))
     return list(models)
+
+
+def delete_accounts_by_wallet_id(wallet_id: int):
+    AccountModel.delete().where(AccountModel.wallet_id == wallet_id).execute()

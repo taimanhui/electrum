@@ -4921,15 +4921,19 @@ class AndroidCommands(commands.Commands):
             if not wallet.is_watching_only() and not self.wallet_context.is_hw(name):
                 self.check_password(password=password)
 
-            if hd is not None:
-                self.delete_derived_wallet()
-            else:
-                if self.wallet_context.is_derived(name):
-                    hw = self.wallet_context.is_hw(name)
-                    self.delete_wallet_derived_info(wallet, hw=hw)
-                self.delete_wallet_from_deamon(self._wallet_path(name))
-                self.wallet_context.remove_type_info(name)
-            # os.remove(self._wallet_path(name))
+            with db.atomic():
+                if isinstance(wallet, GeneralWallet):
+                    wallet.delete_wallet(password)
+
+                if hd is not None:
+                    self.delete_derived_wallet()
+                else:
+                    if self.wallet_context.is_derived(name):
+                        hw = self.wallet_context.is_hw(name)
+                        self.delete_wallet_derived_info(wallet, hw=hw)
+                    self.delete_wallet_from_deamon(self._wallet_path(name))
+                    self.wallet_context.remove_type_info(name)
+                # os.remove(self._wallet_path(name))
         except Exception as e:
             raise BaseException(e)
 

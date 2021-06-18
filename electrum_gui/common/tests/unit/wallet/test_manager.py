@@ -753,3 +753,27 @@ class TestWalletManager(TestCase):
                 "0x24c7f09dc53ce762552a088b455db2e0",
                 wallet_manager.get_encoded_address_by_account_id(account_info.id),
             )
+
+    def test_cascade_delete_wallet_related_models(self):
+        wallet_info = wallet_manager.import_standalone_wallet_by_mnemonic(
+            "ETH_BY_MNEMONIC",
+            "eth",
+            self.mnemonic,
+            passphrase=self.passphrase,
+            password=self.password,
+            bip44_path="m/44'/60'/0'/0/0",
+        )
+
+        self.assertEqual(1, len(secret_models.SecretKeyModel.select()))
+        self.assertEqual(1, len(secret_models.PubKeyModel.select()))
+        self.assertEqual(1, len(wallet_models.WalletModel.select()))
+        self.assertEqual(1, len(wallet_models.AccountModel.select()))
+        self.assertEqual(1, len(wallet_models.AssetModel.select()))
+
+        wallet_manager.cascade_delete_wallet_related_models(wallet_info["wallet_id"], self.password)
+
+        self.assertEqual(0, len(secret_models.SecretKeyModel.select()))
+        self.assertEqual(0, len(secret_models.PubKeyModel.select()))
+        self.assertEqual(0, len(wallet_models.WalletModel.select()))
+        self.assertEqual(0, len(wallet_models.AccountModel.select()))
+        self.assertEqual(0, len(wallet_models.AssetModel.select()))
