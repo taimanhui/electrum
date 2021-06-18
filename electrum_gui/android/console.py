@@ -12,6 +12,7 @@ import string
 import threading
 import urllib.parse
 from code import InteractiveConsole
+from contextlib import contextmanager
 from decimal import Decimal
 from operator import attrgetter
 from os.path import exists, join
@@ -1781,7 +1782,19 @@ class AndroidCommands(commands.Commands):
 
         return json.dumps({"input_list": in_list, "output_list": out_list})
 
-    def get_all_tx_list(self, search_type=None, coin="btc", contract_address=None, start=None, end=None):
+    @contextmanager
+    def override_wallet(self, id):
+        if id is not None:
+            cache_wallet = self.wallet
+            try:
+                self.wallet = self.get_wallet_by_name(id)
+                yield
+            finally:
+                self.wallet = cache_wallet
+        else:
+            yield
+
+    def get_all_tx_list(self, search_type=None, coin="btc", contract_address=None, start=None, end=None, id=None):
         """
         Get the histroy list with the wallet that you select
         :param search_type: None/send/receive as str
@@ -1800,13 +1813,14 @@ class AndroidCommands(commands.Commands):
                  "address":"",
                  "amount":""}, ...]
         """
-        chain_affinity = _get_chain_affinity(coin)
-        if chain_affinity == "btc":
-            return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
-        elif chain_affinity == "eth" or is_coin_migrated(coin):
-            return self.get_general_coin_tx_list(contract_address=contract_address, search_type=search_type)
-        else:
-            raise UnsupportedCurrencyCoin()
+        with self.override_wallet(id):
+            chain_affinity = _get_chain_affinity(coin)
+            if chain_affinity == "btc":
+                return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
+            elif chain_affinity == "eth" or is_coin_migrated(coin):
+                return self.get_general_coin_tx_list(contract_address=contract_address, search_type=search_type)
+            else:
+                raise UnsupportedCurrencyCoin()
 
     def get_history_show_info(self, info, list_info):
         info["type"] = "history"
