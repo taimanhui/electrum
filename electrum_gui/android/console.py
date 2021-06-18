@@ -1534,7 +1534,7 @@ class AndroidCommands(commands.Commands):
             elif "confirmations" in status:
                 status = {
                     "status": provider_data.TransactionStatus.CONFIRM_SUCCESS,
-                    "other_info": status[status.index("{") + 1 : status.index("}")],
+                    "other_info": status.split(" ")[0],
                 }
             can_broadcast = tx_details.can_broadcast
 
@@ -1895,17 +1895,15 @@ class AndroidCommands(commands.Commands):
         transaction = provider_manager.get_transaction_by_txid(chain_code, tx_hash)
 
         if transaction.status == provider_data.TransactionStatus.CONFIRM_REVERTED:
-            tx_status = _("Sending failure")
+            tx_status = {"status": provider_data.TransactionStatus.CONFIRM_REVERTED, "other_info": ""}
             show_status = [provider_data.TransactionStatus.CONFIRM_REVERTED, _("Sending failure")]
         elif transaction.status == provider_data.TransactionStatus.CONFIRM_SUCCESS:
-            tx_status = (
-                _("{} confirmations").format(transaction.block_header.confirmations)
-                if transaction.block_header and transaction.block_header.confirmations > 0
-                else _("Confirmed")
-            )
+            tx_status = {"status": provider_data.TransactionStatus.CONFIRM_SUCCESS, "other_info": ""}
+            if transaction.block_header and transaction.block_header.confirmations > 0:
+                tx_status["other_info"] = transaction.block_header.confirmations
             show_status = [provider_data.TransactionStatus.CONFIRM_SUCCESS, _("Confirmed")]
         else:
-            tx_status = _("Unconfirmed")
+            tx_status = {"status": provider_data.TransactionStatus.PENDING, "other_info": ""}
             show_status = [provider_data.TransactionStatus.PENDING, _("Unconfirmed")]
 
         amount = Decimal(eth_utils.from_wei(transaction.outputs[0].value, "ether"))
