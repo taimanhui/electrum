@@ -23,7 +23,7 @@
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg BUSD-T",
-		"symbol": "BUSD-T",
+		"symbol": "USDT",
 		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BUSD-T.png",
 		"address": "0x55d398326f99059ff775485246999027b3197955",
 		"decimals": 18
