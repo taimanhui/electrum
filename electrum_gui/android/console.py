@@ -1531,6 +1531,8 @@ class AndroidCommands(commands.Commands):
             status = tx_details.status
             if "Confirmed" in status:
                 status = {"status": provider_data.TransactionStatus.CONFIRM_SUCCESS, "other_info": ""}
+            elif "Unconfirmed" in status:
+                status = {"status": provider_data.TransactionStatus.PENDING, "other_info": ""}
             elif "confirmations" in status:
                 status = {
                     "status": provider_data.TransactionStatus.CONFIRM_SUCCESS,
