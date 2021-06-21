@@ -1,6 +1,7 @@
 import time
 from typing import Dict, Tuple
 
+import eth_utils
 from nacl.public import PublicKey
 
 from electrum_gui.common.basic.functional.require import require
@@ -51,6 +52,7 @@ class STCProvider(ProviderInterface):
                 pass
             else:
                 if len(addr) == 32:
+                    encoding = "HEX"
                     is_valid = True
 
         return AddressValidation(
@@ -81,7 +83,7 @@ class STCProvider(ProviderInterface):
         payload = unsigned_tx.payload.copy()
         tx_input = unsigned_tx.inputs[0] if unsigned_tx.inputs else None
         tx_output = unsigned_tx.outputs[0] if unsigned_tx.outputs else None
-        fee_limit = unsigned_tx.fee_limit or 100000
+        fee_limit = unsigned_tx.fee_limit
 
         if tx_input is not None and tx_output is not None:
             from_address = tx_input.address
@@ -90,9 +92,11 @@ class STCProvider(ProviderInterface):
             if to_address.startswith("stc"):
                 ri = ReceiptIdentifier.decode(to_address)
                 require(ri is not None)
-                to_address = ri.account_address
+                to_address = stc_utils.account_address_hex(ri.account_address)
                 if not self.client.get_address(to_address).existing:
                     payee_auth_key = ri.auth_key
+            if not eth_utils.is_0x_prefixed(to_address):
+                to_address = "0x" + to_address
 
             value = tx_output.value
             if tx_output.token_address:
@@ -122,6 +126,29 @@ class STCProvider(ProviderInterface):
                 amount=uint128(value),
             )
 
+            if fee_limit is None:
+                args_payee_auth_key = 'x""' if payee_auth_key is None else f'x"{payee_auth_key.data.hex()}"'
+                fee_limit = self.client.estimate_gas_limit(
+                    {
+                        "chain_id": int(self.chain_info.chain_id),
+                        "gas_unit_price": fee_price_per_unit,
+                        "sender": from_address,
+                        "sender_public_key": tx_input.pubkey,
+                        "sequence_number": nonce,
+                        "max_gas_amount": 10000000,
+                        "script": {
+                            "code": "0x1::TransferScripts::peer_to_peer",
+                            "type_args": ["0x1::STC::STC"],
+                            "args": [
+                                to_address,
+                                args_payee_auth_key,
+                                "19950u128",
+                            ],
+                        },
+                    }
+                )
+
+        fee_limit = fee_limit or 10000000
         return unsigned_tx.clone(
             inputs=[tx_input] if tx_input is not None else [],
             outputs=[tx_output] if tx_output is not None else [],

@@ -23,17 +23,21 @@ class TestSTCProvider(TestCase):
             coins_loader=self.fake_coins_loader,
             client_selector=self.fake_client_selector,
         )
+        self.fake_chain_info.chain_id = "251"
 
     def test_verify_address(self):
         self.assertEqual(
             AddressValidation(
-                "0xb61a35af603018441b06177a8820ff2a", "0xb61a35af603018441b06177a8820ff2a", is_valid=True, encoding=None
+                "0xb61a35af603018441b06177a8820ff2a",
+                "0xb61a35af603018441b06177a8820ff2a",
+                is_valid=True,
+                encoding="HEX",
             ),
             self.provider.verify_address("0xb61a35af603018441b06177a8820ff2a"),
         )
         self.assertEqual(
             AddressValidation(
-                "b61a35af603018441b06177a8820ff2a", "b61a35af603018441b06177a8820ff2a", is_valid=True, encoding=None
+                "b61a35af603018441b06177a8820ff2a", "b61a35af603018441b06177a8820ff2a", is_valid=True, encoding="HEX"
             ),
             self.provider.verify_address("b61a35af603018441b06177a8820ff2a"),
         )
@@ -125,7 +129,7 @@ class TestSTCProvider(TestCase):
 
         with self.subTest("Empty UnsignedTx"):
             self.assertEqual(
-                UnsignedTx(fee_limit=100000, fee_price_per_unit=int(1)),
+                UnsignedTx(fee_limit=10000000, fee_price_per_unit=int(1)),
                 self.provider.fill_unsigned_tx(
                     UnsignedTx(),
                 ),
@@ -143,7 +147,6 @@ class TestSTCProvider(TestCase):
                 return fake_client
 
         self.fake_client_selector.side_effect = _client_selector_side_effect
-        self.fake_chain_info.chain_id = "251"
 
         fake_signer = Mock(
             sign=Mock(

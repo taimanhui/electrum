@@ -55,6 +55,10 @@ class IncorrectAddress(OneKeyException):
     key = "msg__incorrect_address"
 
 
+class InactiveAddress(OneKeyException):
+    key = "msg__the_address_has_not_been_activated_please_enter_receipt_identifier"
+
+
 def catch_exception(force_api_version: int = None):
     def middle(func):
         @functools.wraps(func)

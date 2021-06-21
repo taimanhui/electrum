@@ -3,6 +3,7 @@ from typing import Optional
 from electrum_gui.common.coin import manager as coin_manager
 from electrum_gui.common.provider import manager as provider_manager
 from electrum_gui.common.provider.data import TransactionInput, TransactionOutput, UnsignedTx
+from electrum_gui.common.secret import manager as secret_manager
 from electrum_gui.common.wallet import daos
 from electrum_gui.common.wallet.interfaces import ChainModelInterface
 
@@ -46,6 +47,15 @@ class AccountChainModelHandler(ChainModelInterface):
             fee_price_per_unit=fee_price_per_unit,
             payload=payload or {},
         )
+        extend_if_stc(account, unsigned_tx)
         unsigned_tx = provider_manager.fill_unsigned_tx(chain_coin.code, unsigned_tx)
 
         return unsigned_tx
+
+
+def extend_if_stc(account, unsigned_tx):
+    chain_info = coin_manager.get_chain_info(account.chain_code)
+    if chain_info.chain_affinity != "stc":
+        return
+    for input_tx in unsigned_tx.inputs:
+        input_tx.pubkey = secret_manager.get_verifier(account.pubkey_id).get_pubkey().hex()
