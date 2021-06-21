@@ -659,11 +659,11 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 label = self.get_label(tx_hash)
                 if tx_mined_status.height > 0:
                     if tx_mined_status.conf:
-                        status = _("{} confirmations").format(tx_mined_status.conf)
+                        status = "{} confirmations".format(tx_mined_status.conf)
                     else:
-                        status = _('Not verified')
+                        status = 'Not verified'
                 elif tx_mined_status.height in (TX_HEIGHT_UNCONF_PARENT, TX_HEIGHT_UNCONFIRMED):
-                    status = _('Unconfirmed')
+                    status = 'Unconfirmed'
                     if fee is None:
                         fee = self.get_tx_fee(tx_hash)
                     if fee and self.network and self.config.has_fee_mempool():
@@ -672,15 +672,15 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                         exp_n = self.config.fee_to_depth(fee_per_byte)
                     can_bump = is_mine and not tx.is_final()
                 else:
-                    status = _('Local')
+                    status = 'Local'
                     can_broadcast = self.network is not None
                     can_bump = is_mine and not tx.is_final()
             else:
-                status = _("Signed")
+                status = "Signed"
                 can_broadcast = self.network is not None
         else:
             s, r = tx.signature_count()
-            status = _("Unsigned") if s == 0 else _('Partially signed') + ' (%d/%d)' % (s, r)
+            status = "Unsigned" if s == 0 else 'Partially signed' + ' (%d/%d)' % (s, r)
 
         if is_relevant:
             if is_mine:
