@@ -86,13 +86,13 @@ class STCProvider(ProviderInterface):
         if tx_input is not None and tx_output is not None:
             from_address = tx_input.address
             to_address = tx_output.address
+            payee_auth_key = None
             if to_address.startswith("stc"):
                 ri = ReceiptIdentifier.decode(to_address)
                 require(ri is not None)
-                payee_auth_key = ri.auth_key
                 to_address = ri.account_address
-            else:
-                payee_auth_key = None
+                if not self.client.get_address(to_address).existing:
+                    payee_auth_key = ri.auth_key
 
             value = tx_output.value
             if tx_output.token_address:
