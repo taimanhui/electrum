@@ -69,3 +69,16 @@ def update_secret_key_encrypted_data(secret_key_id: int, encrypted_secret_key: s
     SecretKeyModel.update(encrypted_secret_key=encrypted_secret_key, encrypted_message=encrypted_message).where(
         SecretKeyModel.id == secret_key_id
     ).execute()
+
+
+def query_pubkey_models_by_secret_ids(secret_key_ids: List[int]) -> List[PubKeyModel]:
+    models = PubKeyModel.select().where(PubKeyModel.secret_key_id.in_(secret_key_ids))
+    return list(models)
+
+
+def delete_pubkey_by_ids(pubkey_ids: List[int]):
+    PubKeyModel.delete().where(PubKeyModel.id.in_(pubkey_ids)).execute()
+
+
+def delete_secret_key_by_ids(secret_key_ids: List[int]):
+    SecretKeyModel.delete().where(SecretKeyModel.id.in_(secret_key_ids)).execute()

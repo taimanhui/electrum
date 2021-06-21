@@ -62,3 +62,7 @@ def hide_asset(asset_id: int):
 
 def show_asset(asset_id: int):
     AssetModel.update(is_visible=True, modified_time=datetime.datetime.now()).where(AssetModel.id == asset_id).execute()
+
+
+def delete_assets_by_wallet_id(wallet_id):
+    AssetModel.delete().where(AssetModel.wallet_id == wallet_id).execute()

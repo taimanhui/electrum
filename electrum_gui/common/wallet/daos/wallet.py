@@ -43,3 +43,7 @@ def get_first_primary_wallet() -> Optional[WalletModel]:
 
 def update_wallet_name(wallet_id: int, name: str):
     WalletModel.update(name=name, modified_time=datetime.datetime.now()).where(WalletModel.id == wallet_id).execute()
+
+
+def delete_wallet_by_id(wallet_id: int):
+    WalletModel.delete_by_id(wallet_id)

@@ -364,6 +364,12 @@ def update_wallet_password(wallet_id: int, old_password: str, new_password: str)
     secret_manager.update_secret_key_password(secret_key_id, old_password, new_password)
 
 
+def check_wallet_password(wallet_id: int, password: str):
+    update_wallet_password(
+        wallet_id, password, password
+    )  # todo separate check_wallet_password from update_wallet_password
+
+
 def _get_wallet_secret_key_id(wallet_id: int) -> int:
     account = daos.account.query_first_account_by_wallet(wallet_id)
     require(account is not None)
@@ -775,3 +781,19 @@ def get_encoded_address_by_account_id(account_id: int, address_encoding: str = N
     chain_info = coin_manager.get_chain_info(account.chain_code)
     address_encoding = address_encoding or chain_info.default_address_encoding
     return provider_manager.pubkey_to_address(account.chain_code, verifier, encoding=address_encoding)
+
+
+@db.atomic()
+def cascade_delete_wallet_related_models(wallet_id: int, password: str = None):
+    wallet = _get_wallet_by_id(wallet_id)
+    if wallet.type != WalletType.WATCHONLY:
+        check_wallet_password(wallet_id, password)
+
+    accounts = daos.account.query_accounts_by_wallets([wallet_id])
+    related_pubkey_ids = {i.pubkey_id for i in accounts if i.pubkey_id is not None}
+    if related_pubkey_ids:
+        secret_manager.cascade_delete_related_models_by_pubkey_ids(list(related_pubkey_ids))
+
+    daos.wallet.delete_wallet_by_id(wallet_id)
+    daos.account.delete_accounts_by_wallet_id(wallet_id)
+    daos.asset.delete_assets_by_wallet_id(wallet_id)

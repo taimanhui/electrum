@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import call, patch
 
 from electrum_gui.common.basic.orm import test_utils
+from electrum_gui.common.secret import daos as secret_daos
 from electrum_gui.common.secret import exceptions
 from electrum_gui.common.secret import manager as secret_manager
 from electrum_gui.common.secret import utils
@@ -371,3 +372,72 @@ class TestSecretManager(TestCase):
         # 4. it can be called multiple times, as long as the new password is correct
         secret_manager.update_secret_key_password(secret_key_model.id, "hello", "bye")
         secret_manager.update_secret_key_password(secret_key_model.id, "hello2", "bye")
+
+    def test_cascade_delete_related_models_by_pubkey_ids(self):
+        # 1. create secret key a
+        secret_key_model_a = secret_manager.import_mnemonic("hello", self.mnemonic, self.passphrase)
+        pubkeys_from_a = []
+
+        # 2. create a bunch of public keys by secret key a
+        for i in range(10):
+            pubkey_model = secret_manager.derive_by_secret_key(
+                "hello",
+                CurveEnum.SECP256K1,
+                secret_key_model_a.id,
+                f"m/44'/0'/0'/0/{i}",
+                target_pubkey_type=PubKeyType.PUBKEY,
+            )
+            pubkey_model = secret_manager.import_pubkey(
+                pubkey_model.curve,
+                bytes.fromhex(pubkey_model.pubkey),
+                pubkey_model.path,
+                secret_key_id=pubkey_model.secret_key_id,
+            )
+
+            pubkeys_from_a.append(pubkey_model)
+
+        # 3. create secret key b
+        secret_key_model_b = secret_manager.import_mnemonic("hello", self.mnemonic, self.passphrase + "1")
+        pubkeys_from_b = []
+
+        # 4. create a bunch of public keys by secret key b
+        for i in range(10):
+            pubkey_model = secret_manager.derive_by_secret_key(
+                "hello",
+                CurveEnum.SECP256K1,
+                secret_key_model_b.id,
+                f"m/44'/0'/0'/0/{i}",
+                target_pubkey_type=PubKeyType.PUBKEY,
+            )
+            pubkey_model = secret_manager.import_pubkey(
+                pubkey_model.curve,
+                bytes.fromhex(pubkey_model.pubkey),
+                pubkey_model.path,
+                secret_key_id=pubkey_model.secret_key_id,
+            )
+
+            pubkeys_from_b.append(pubkey_model)
+
+        # 5. verify existing first
+        self.assertEqual(pubkeys_from_a, secret_daos.query_pubkey_models_by_secret_ids([secret_key_model_a.id]))
+        self.assertEqual(pubkeys_from_b, secret_daos.query_pubkey_models_by_secret_ids([secret_key_model_b.id]))
+
+        # 6. delete all public keys belonging to secret key a
+        secret_manager.cascade_delete_related_models_by_pubkey_ids([i.id for i in pubkeys_from_a])
+        self.assertEqual(0, len(secret_daos.query_pubkey_models_by_secret_ids([secret_key_model_a.id])))
+        with self.assertRaises(SecretKeyModel.DoesNotExist):
+            secret_daos.get_secret_key_model_by_id(secret_key_model_a.id)
+
+        # 7. delete all public keys belonging to secret key b except for the first one
+        secret_manager.cascade_delete_related_models_by_pubkey_ids([i.id for i in pubkeys_from_b[1:]])
+        self.assertEqual(pubkeys_from_b[:1], secret_daos.query_pubkey_models_by_secret_ids([secret_key_model_b.id]))
+        self.assertEqual(secret_key_model_b, secret_daos.get_secret_key_model_by_id(secret_key_model_b.id))
+
+        # 8. only one pubkey and secret key existing
+        self.assertEqual(pubkeys_from_b[:1], list(PubKeyModel.select()))
+        self.assertEqual([secret_key_model_b], list(SecretKeyModel.select()))
+
+        # 9. delete the last pubkey, then nothing anymore
+        secret_manager.cascade_delete_related_models_by_pubkey_ids([pubkeys_from_b[0].id])
+        self.assertEqual(0, len(PubKeyModel.select()))
+        self.assertEqual(0, len(SecretKeyModel.select()))

@@ -233,9 +233,7 @@ class GeneralWallet(object):
 
     def check_password(self, password, str_pw=None):
         if password:
-            wallet_manager.update_wallet_password(
-                self.general_wallet_id, password, password
-            )  # todo maybe add check_password to the wallet manager
+            wallet_manager.check_wallet_password(self.general_wallet_id, password)
 
     def get_all_balance(self) -> dict:
         if (
@@ -414,6 +412,9 @@ class GeneralWallet(object):
         require(self._chain_code in ["stc", "tstc"])
         account = self._get_default_account()
         return wallet_manager.get_encoded_address_by_account_id(account.id, "BECH32")
+
+    def delete_wallet(self, password: str = None):
+        wallet_manager.cascade_delete_wallet_related_models(self.general_wallet_id, password)
 
 
 class _BypassKeystore:

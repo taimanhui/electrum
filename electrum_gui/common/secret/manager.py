@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple
+from typing import List, Tuple
 
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.orm.database import db
@@ -343,3 +343,22 @@ def raw_create_key_by_master_seed(curve: CurveEnum, master_seed: bytes, path: st
 
 def export_prvkey(password: str, pubkey_id: int) -> str:
     return get_signer(password, pubkey_id).get_prvkey().hex()
+
+
+@db.atomic()
+def cascade_delete_related_models_by_pubkey_ids(pubkey_ids: List[int]):
+    if not pubkey_ids:
+        return
+
+    pubkey_models = daos.query_pubkey_models_by_ids(pubkey_ids)
+    related_secret_key_ids = {i.secret_key_id for i in pubkey_models if i.secret_key_id is not None}
+
+    daos.delete_pubkey_by_ids(pubkey_ids)
+    useless_secret_key_ids = related_secret_key_ids - {
+        i.secret_key_id
+        for i in daos.query_pubkey_models_by_secret_ids(list(related_secret_key_ids))
+        if i.secret_key_id is not None
+    }
+
+    if useless_secret_key_ids:
+        daos.delete_secret_key_by_ids(list(useless_secret_key_ids))
