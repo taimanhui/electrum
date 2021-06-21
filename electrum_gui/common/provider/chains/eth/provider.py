@@ -71,10 +71,13 @@ class ETHProvider(ProviderInterface):
             if data:
                 payload["data"] = data
 
-            if not fee_limit and (token_address or self.geth.is_contract(to_address)):
+            if not fee_limit:
                 estimate_fee_limit = self.geth.estimate_gas_limit(from_address, to_address, value, data)
-                estimate_fee_limit = round(estimate_fee_limit * 1.2)
-                fee_limit = estimate_fee_limit
+                fee_limit = (
+                    round(estimate_fee_limit * 1.2)
+                    if token_address or self.geth.is_contract(to_address)
+                    else estimate_fee_limit
+                )
 
         fee_limit = fee_limit or 21000
 
