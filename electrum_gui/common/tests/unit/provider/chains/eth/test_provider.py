@@ -74,7 +74,7 @@ class TestETHProvider(TestCase):
         )
         fake_geth = Mock(
             is_contract=Mock(side_effect=lambda address: address == contract_address),
-            estimate_gas_limit=Mock(return_value=60000),
+            estimate_gas_limit=Mock(return_value=21000),
         )
 
         def _client_selector_side_effect(**kwargs):
@@ -120,12 +120,43 @@ class TestETHProvider(TestCase):
             fake_client.get_prices_per_unit_of_fee.assert_not_called()
             fake_client.get_address.assert_called_once_with(external_address_a)
             fake_geth.is_contract.assert_called_once_with(external_address_b)
-            fake_geth.estimate_gas_limit.assert_not_called()
+            fake_geth.estimate_gas_limit.assert_called_once_with(external_address_a, external_address_b, 21, None)
 
             fake_client.get_address.reset_mock()
             fake_geth.is_contract.reset_mock()
+            fake_geth.estimate_gas_limit.reset_mock()
+
+        with self.subTest("Transfer ETH to external address with preset data"):
+            fake_geth.estimate_gas_limit.return_value = 21096
+            self.assertEqual(
+                UnsignedTx(
+                    inputs=[TransactionInput(address=external_address_a, value=21)],
+                    outputs=[TransactionOutput(address=external_address_b, value=21)],
+                    nonce=11,
+                    fee_price_per_unit=int(102 * 1e9),
+                    fee_limit=21096,
+                    payload={"data": b"OneKey"},
+                ),
+                self.provider.fill_unsigned_tx(
+                    UnsignedTx(
+                        inputs=[TransactionInput(address=external_address_a, value=21)],
+                        outputs=[TransactionOutput(address=external_address_b, value=21)],
+                        fee_price_per_unit=int(102 * 1e9),
+                        payload={"data": b"OneKey"},
+                    )
+                ),
+            )
+            fake_client.get_prices_per_unit_of_fee.assert_not_called()
+            fake_client.get_address.assert_called_once_with(external_address_a)
+            fake_geth.is_contract.assert_called_once_with(external_address_b)
+            fake_geth.estimate_gas_limit.assert_called_once_with(external_address_a, external_address_b, 21, b"OneKey")
+
+            fake_client.get_address.reset_mock()
+            fake_geth.is_contract.reset_mock()
+            fake_geth.estimate_gas_limit.reset_mock()
 
         with self.subTest("Transfer ETH to contract address with preset nonce"):
+            fake_geth.estimate_gas_limit.return_value = 60000
             self.assertEqual(
                 UnsignedTx(
                     inputs=[TransactionInput(address=external_address_a, value=21)],
@@ -152,6 +183,7 @@ class TestETHProvider(TestCase):
             fake_geth.estimate_gas_limit.reset_mock()
 
         with self.subTest("Transfer ERC20 with preset gas price and lower gas limit"):
+            fake_geth.estimate_gas_limit.return_value = 60000
             erc20_transfer_data = "0xa9059cbb000000000000000000000000a305fab8bda7e1638235b054889b3217441dd6450000000000000000000000000000000000000000000000000000000000000015"
             self.assertEqual(
                 UnsignedTx(
