@@ -4787,7 +4787,7 @@ class AndroidCommands(commands.Commands):
         if chain_affinity == "btc":
             return self.format_amount((int(Decimal(fiat) / Decimal(price) * COIN)))
         else:
-            return str(Decimal(fiat) / Decimal(price))
+            return Decimal(fiat) / Decimal(price)
 
     def set_wallet_location_info(self, wallet_location_info: list, wallet_type="btc") -> None:
         """
