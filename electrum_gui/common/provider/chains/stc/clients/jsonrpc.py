@@ -194,3 +194,10 @@ class STCJsonRPC(ClientInterface):
             normal=EstimatedTimeOnPrice(price=normal, time=60),
             slow=EstimatedTimeOnPrice(price=slow, time=60),
         )
+
+    def estimate_gas_limit(self, params=dict) -> int:
+        resp = self.rpc.call("contract.dry_run", params=[params])
+        if resp.get("status") == 'Executed':
+            return int(resp.get("gas_used"))
+        else:
+            return 0

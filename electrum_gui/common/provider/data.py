@@ -63,6 +63,7 @@ class TransactionInput(DataClassMixin):
     value: int
     token_address: Optional[str] = None
     utxo: Optional[UTXO] = None
+    pubkey: Optional[str] = None
 
 
 @dataclass

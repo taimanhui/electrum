@@ -3246,6 +3246,12 @@ class AndroidCommands(commands.Commands):
                 validation = provider_manager.verify_address(chain_code, data)
                 if not validation.is_valid:
                     raise exceptions.IncorrectAddress()
+                if (
+                    chain_affinity == "stc"
+                    and validation.encoding == "HEX"
+                    and not provider_manager.get_address(chain_code, data).existing
+                ):
+                    raise exceptions.InactiveAddress()
         elif chain_affinity == "btc":
             if flag == "private":
                 try:
