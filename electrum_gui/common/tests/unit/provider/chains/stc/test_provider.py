@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import Mock
 
 from electrum_gui.common.provider.chains.stc import STCJsonRPC, STCProvider
+from electrum_gui.common.provider.chains.stc.provider import STC_DEFAULT_GAS_LIMIT
 from electrum_gui.common.provider.data import (
     AddressValidation,
     EstimatedTimeOnPrice,
@@ -129,7 +130,7 @@ class TestSTCProvider(TestCase):
 
         with self.subTest("Empty UnsignedTx"):
             self.assertEqual(
-                UnsignedTx(fee_limit=10000000, fee_price_per_unit=int(1)),
+                UnsignedTx(fee_limit=STC_DEFAULT_GAS_LIMIT, fee_price_per_unit=int(1)),
                 self.provider.fill_unsigned_tx(
                     UnsignedTx(),
                 ),

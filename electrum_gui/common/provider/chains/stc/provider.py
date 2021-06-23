@@ -22,6 +22,8 @@ from electrum_gui.common.provider.data import AddressValidation, SignedTx, Unsig
 from electrum_gui.common.provider.interfaces import ProviderInterface
 from electrum_gui.common.secret.interfaces import SignerInterface, VerifierInterface
 
+STC_DEFAULT_GAS_LIMIT = 127845
+
 
 class _STCKey(object):
     def __init__(self, signer: SignerInterface):
@@ -148,7 +150,7 @@ class STCProvider(ProviderInterface):
                     }
                 )
 
-        fee_limit = fee_limit or 10000000
+        fee_limit = fee_limit or STC_DEFAULT_GAS_LIMIT
         return unsigned_tx.clone(
             inputs=[tx_input] if tx_input is not None else [],
             outputs=[tx_output] if tx_output is not None else [],
