@@ -1790,7 +1790,7 @@ class AndroidCommands(commands.Commands):
                 "tx_status": detailed_status,
                 "show_status": [action.status, show_status_desc],
                 "fee": f"{fee_value.normalize():f} {fee_coin.symbol} "
-                       f"({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})",
+                f"({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})",
                 "date": confirmed_date_str,
                 "tx_hash": action.txid,
                 "is_mine": action.from_address == address,
@@ -1934,17 +1934,16 @@ class AndroidCommands(commands.Commands):
         if chain_affinity == "btc":
             tx = self.get_btc_raw_tx(tx_hash)
             return self.get_details_info(tx, tx_list=tx_list)
-        elif chain_affinity == "eth":
-            return self.get_eth_tx_info(tx_hash)
+        elif chain_affinity == "eth" or is_coin_migrated(coin):
+            return self.get_general_tx_info(tx_hash)
         else:
             raise UnsupportedCurrencyCoin()
 
-    def get_eth_tx_info(self, tx_hash) -> str:
+    def get_general_tx_info(self, tx_hash) -> str:
         chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
-        fee_code = coin_manager.get_chain_info(chain_code).fee_code
-        symbol = coin_manager.get_coin_info(fee_code).symbol
+        __, transfer_coin, fee_coin = coin_manager.get_related_coins(chain_code)
 
-        main_coin_price = price_manager.get_last_price(fee_code, self.ccy)
+        fee_coin_price = price_manager.get_last_price(fee_coin.code, self.ccy)
         transaction = provider_manager.get_transaction_by_txid(chain_code, tx_hash)
 
         if transaction.status == provider_data.TransactionStatus.CONFIRM_REVERTED:
@@ -1959,10 +1958,20 @@ class AndroidCommands(commands.Commands):
             tx_status = {"status": provider_data.TransactionStatus.PENDING, "other_info": ""}
             show_status = [provider_data.TransactionStatus.PENDING, _("Unconfirmed")]
 
-        amount = Decimal(eth_utils.from_wei(transaction.outputs[0].value, "ether"))
-        fee = Decimal(eth_utils.from_wei(transaction.fee.used * transaction.fee.price_per_unit, "ether"))
-        display_amount = f"{amount.normalize():f} {symbol} ({self.daemon.fx.ccy_amount_str(amount * main_coin_price, True)} {self.ccy})"
-        display_fee = f"{fee} {symbol} ({self.daemon.fx.ccy_amount_str(fee * main_coin_price, True)} {self.ccy})"
+        amount = Decimal(transaction.outputs[0].value) / pow(10, transfer_coin.decimals)
+        fee = (
+            Decimal(transaction.fee.used or transaction.fee.limit)
+            * Decimal(transaction.fee.price_per_unit)
+            / pow(10, fee_coin.decimals)
+        )
+        display_amount = (
+            f"{amount.normalize():f} {transfer_coin.symbol} "
+            f"({self.daemon.fx.ccy_amount_str(amount * fee_coin_price, True)} {self.ccy})"
+        )
+        display_fee = (
+            f"{fee.normalize():f} {fee_coin.symbol} "
+            f"({self.daemon.fx.ccy_amount_str(fee * fee_coin_price, True)} {self.ccy})"
+        )
 
         ret = {
             "txid": tx_hash,
