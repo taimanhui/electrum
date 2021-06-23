@@ -5,13 +5,13 @@ from electrum_gui.common.provider.data import TransactionStatus
 
 @unique
 class TxActionStatus(IntEnum):
-    UNEXPECTED_FAILED = -2
-    UNKNOWN = -1
-    SIGNED = 9
-    PENDING = 10
-    REPLACED = 20
-    CONFIRM_REVERTED = 99
-    CONFIRM_SUCCESS = 100
+    UNEXPECTED_FAILED = -99
+    REPLACED = -10
+    SIGNED = -1
+    UNKNOWN = 0
+    PENDING = 1
+    CONFIRM_REVERTED = 2
+    CONFIRM_SUCCESS = 3
 
     @classmethod
     def to_choices(cls):
