@@ -51,7 +51,6 @@ from electrum.plugin import Plugins
 from electrum.storage import WalletStorage
 from electrum.transaction import PartialTransaction, PartialTxOutput, SerializationError, Transaction, tx_from_any
 from electrum.util import (
-    DecimalEncoder,
     DerivedWalletLimit,
     FailedGetTx,
     FailedToSwitchWallet,
@@ -77,20 +76,21 @@ from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
 from electrum_gui.android import hardware, helpers, wallet_context
 from electrum_gui.common import the_begging
-from electrum_gui.common.basic import exceptions
+from electrum_gui.common.basic import api, exceptions
+from electrum_gui.common.basic.functional import json_encoders
+from electrum_gui.common.basic.functional import text as text_utils
+from electrum_gui.common.basic.orm import database as orm_database
+from electrum_gui.common.coin import codes
+from electrum_gui.common.coin import manager as coin_manager
+from electrum_gui.common.price import manager as price_manager
 from electrum_gui.common.provider import data as provider_data
 from electrum_gui.common.provider import exceptions as provider_exceptions
-from electrum_gui.common.provider.chains.eth.clients.geth import Geth
+from electrum_gui.common.provider import provider_manager
+from electrum_gui.common.provider.chains.eth.clients import geth as geth_client
+from electrum_gui.common.secret import manager as secret_manager
+from electrum_gui.common.wallet import bip44
+from electrum_gui.common.wallet import manager as wallet_manager
 
-from ..common.basic.functional.text import force_text
-from ..common.basic.orm.database import db
-from ..common.coin import codes
-from ..common.coin import manager as coin_manager
-from ..common.price import manager as price_manager
-from ..common.provider import provider_manager
-from ..common.secret import manager as secret_manager
-from ..common.wallet import manager as wallet_manager
-from ..common.wallet.bip44 import BIP44Level, BIP44Path
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
 from .migrating import GeneralWallet, is_coin_migrated
@@ -377,7 +377,7 @@ class AndroidCommands(commands.Commands):
                 out["unmatured"] = self.format_amount(x, is_diff=True).strip()
 
         if out and self.callbackIntent is not None:
-            self.callbackIntent.onCallback("update_status=%s" % json.dumps(out, cls=DecimalEncoder))
+            self.callbackIntent.onCallback("update_status=%s" % json.dumps(out, cls=json_encoders.DecimalEncoder))
 
     def get_remove_flag(self, tx_hash):
         height = self.wallet.get_tx_height(tx_hash).height
@@ -985,7 +985,7 @@ class AndroidCommands(commands.Commands):
                 }
                 for k, v in fee.items()
             }
-            return json.dumps(fee, cls=DecimalEncoder)
+            return json.dumps(fee, cls=json_encoders.DecimalEncoder)
         elif chain_affinity == "eth":
             if eth_tx_info:
                 eth_tx_info = json.loads(eth_tx_info)
@@ -997,7 +997,7 @@ class AndroidCommands(commands.Commands):
 
             address = self.wallet.get_addresses()[0]
             fee = self.eth_estimate_fee(coin, address, **eth_tx_info)
-            return json.dumps(fee, cls=DecimalEncoder)
+            return json.dumps(fee, cls=json_encoders.DecimalEncoder)
 
         if chain_affinity != "btc":
             raise UnsupportedCurrencyCoin()
@@ -1132,7 +1132,7 @@ class AndroidCommands(commands.Commands):
                 raise Exception(_("Invalid Value"))
             fee = self.eth_estimate_fee(coin, self.wallet.get_addresses()[0], **eth_tx_info)
             fee = fee.get("customer")
-            return json.dumps(fee, cls=DecimalEncoder)
+            return json.dumps(fee, cls=json_encoders.DecimalEncoder)
 
         if chain_affinity != "btc":
             raise UnsupportedCurrencyCoin()
@@ -1762,7 +1762,7 @@ class AndroidCommands(commands.Commands):
                     }
                 )
 
-        return json.dumps(ret, cls=DecimalEncoder)
+        return json.dumps(ret, cls=json_encoders.DecimalEncoder)
 
     def get_detail_tx_info_by_hash(self, tx_hash):
         """
@@ -1931,7 +1931,7 @@ class AndroidCommands(commands.Commands):
             'tx': transaction.raw_tx,
         }
 
-        return json.dumps(ret, cls=DecimalEncoder)
+        return json.dumps(ret, cls=json_encoders.DecimalEncoder)
 
     def get_card(self, tx_hash, tx_mined_status, delta, fee, balance):
         try:
@@ -2223,7 +2223,7 @@ class AndroidCommands(commands.Commands):
             result["type"] = 3
             result["data"] = "parse pr error"
 
-        return json.dumps(result, cls=DecimalEncoder)
+        return json.dumps(result, cls=json_encoders.DecimalEncoder)
 
     def update_local_info(self, txid, address, tx, msg):
         self.remove_local_tx(txid)
@@ -2309,7 +2309,7 @@ class AndroidCommands(commands.Commands):
 
         sig = self.wallet.sign_message(address, message, password)
 
-        return force_text(sig)
+        return text_utils.force_text(sig)
 
     def verify_message(self, address, message, signature, coin='btc', path="android_usb"):
         """
@@ -2428,7 +2428,7 @@ class AndroidCommands(commands.Commands):
             for i in custom_token_coins
         ]
 
-        return json.dumps(custom_token_info_list, cls=DecimalEncoder)
+        return json.dumps(custom_token_info_list, cls=json_encoders.DecimalEncoder)
 
     def add_token(self, symbol, contract_addr, coin=None):
         """
@@ -2500,7 +2500,7 @@ class AndroidCommands(commands.Commands):
             for k, v in estimated_fee.items()
         }
 
-        return json.dumps(estimated_fee, cls=DecimalEncoder)
+        return json.dumps(estimated_fee, cls=json_encoders.DecimalEncoder)
 
     def send_general_tx(
         self,
@@ -2529,7 +2529,7 @@ class AndroidCommands(commands.Commands):
         )
         return signed_tx.raw_tx
 
-    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
+    @api.api_entry(force_version=api.Version.V2)
     def get_erc20_approve_action_field_data(self, spender_address: str, value: str) -> str:
         """
         Get the field data for erc20 api approve
@@ -2548,11 +2548,11 @@ class AndroidCommands(commands.Commands):
 
     def _get_action_result(self, coin: str, contract_address: str, data: str) -> str:
         chain_code = coin_manager.legacy_coin_to_chain_code(coin)
-        geth = provider_manager.get_client_by_chain(chain_code, instance_required=Geth)
+        geth = provider_manager.get_client_by_chain(chain_code, instance_required=geth_client.Geth)
         out = geth.eth_call({"to": contract_address, "data": data})
         return str(int((out[2:]), base=16))
 
-    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
+    @api.api_entry(force_version=api.Version.V2)
     def get_erc20_allowance_action_result(
         self, coin: str, contract_address: str, owner_address: str, spender_address: str
     ) -> Any:
@@ -2572,7 +2572,7 @@ class AndroidCommands(commands.Commands):
         data = "0xdd62ed3e" + eth_abi.encode_abi(("address", "address"), (owner_address, spender_address)).hex()
         return self._get_action_result(coin, contract_address, data)
 
-    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
+    @api.api_entry(force_version=api.Version.V2)
     def get_erc20_balanceof_action_result(self, coin: str, contract_address: str, owner_address: str) -> Any:
         """
         Get the result of the allowance api
@@ -2589,7 +2589,7 @@ class AndroidCommands(commands.Commands):
         data = "0x70a08231" + eth_abi.encode_abi(("address",), (owner_address,)).hex()
         return self._get_action_result(coin, contract_address, data)
 
-    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)
+    @api.api_entry(force_version=api.Version.V2)
     def get_tx_status_by_txid(self, txid: str, coin: str) -> str:
         """
         Get transaction status based on txid
@@ -3139,14 +3139,14 @@ class AndroidCommands(commands.Commands):
             if is_coin_migrated(coin):
                 chain_code = coin_manager.legacy_coin_to_chain_code(coin)
                 chain_info = coin_manager.get_chain_info(chain_code)
-                last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
-                target_level = BIP44Level[chain_info.bip44_target_level.upper()]
+                last_hardened_level = bip44.BIP44Level[chain_info.bip44_last_hardened_level.upper()]
+                target_level = bip44.BIP44Level[chain_info.bip44_target_level.upper()]
                 wallet_info = self.create(
                     coin.upper(),
                     password,
                     seed=seed,
                     passphrase=passphrase,
-                    bip39_derivation=BIP44Path(
+                    bip39_derivation=bip44.BIP44Path(
                         44, chain_info.bip44_coin_type, 0, last_hardened_level=last_hardened_level
                     )
                     .to_target_level(target_level)
@@ -3211,7 +3211,7 @@ class AndroidCommands(commands.Commands):
         """
         return electrum_mnemonic.Mnemonic(lang='en').mnemonic_encode(int(decoded_info))
 
-    @exceptions.catch_exception(force_api_version=exceptions.ApiVersion.V2)  # noqa
+    @api.api_entry(force_version=api.Version.V2)
     def verify_legality(self, data, *, flag="seed", coin="btc", password=None):  # noqa
         """
         Verify legality for seed/private/public/address
@@ -3547,7 +3547,7 @@ class AndroidCommands(commands.Commands):
                 raise BaseException(FileAlreadyExist())
         return wallet, wallet_type, new_seed
 
-    @db.atomic()
+    @orm_database.db.atomic()
     def create(  # noqa
         self,
         name,
@@ -4032,9 +4032,9 @@ class AndroidCommands(commands.Commands):
             chain_info = coin_manager.get_chain_info(chain_code)
             encode_seed = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose="44")
             account_id = self._get_derived_account_id(encode_seed)
-            last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
-            target_level = BIP44Level[chain_info.bip44_target_level.upper()]
-            bip44_path = BIP44Path(44, chain_info.bip44_coin_type, 0, last_hardened_level=last_hardened_level)
+            last_hardened_level = bip44.BIP44Level[chain_info.bip44_last_hardened_level.upper()]
+            target_level = bip44.BIP44Level[chain_info.bip44_target_level.upper()]
+            bip44_path = bip44.BIP44Path(44, chain_info.bip44_coin_type, 0, last_hardened_level=last_hardened_level)
             bip44_path = bip44_path.to_target_level(target_level)
             bip44_path = bip44_path.next_sibling(gap=account_id)
             derived_path = bip44_path.to_bip44_path()
@@ -4138,7 +4138,7 @@ class AndroidCommands(commands.Commands):
     def get_account_id(self, path, coin):
         chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         chain_info = coin_manager.get_chain_info(chain_code)
-        return helpers.get_path_info(path, BIP44Level[chain_info.bip44_auto_increment_level.upper()])
+        return helpers.get_path_info(path, bip44.BIP44Level[chain_info.bip44_auto_increment_level.upper()])
 
     def update_devired_wallet_info(self, bip39_derivation, xpub, name, coin):
         account_id = self.get_account_id(bip39_derivation, coin)
@@ -4240,7 +4240,7 @@ class AndroidCommands(commands.Commands):
             out["all_balance"] = f"{self.daemon.fx.ccy_amount_str(all_balance, True)} {self.ccy}"
             out["btc_asset"] = self._fill_balance_info_with_coin(all_balance, "btc")
             out["wallet_info"] = all_wallet_info
-            return json.dumps(out, cls=DecimalEncoder)
+            return json.dumps(out, cls=json_encoders.DecimalEncoder)
         except BaseException as e:
             raise e
 
@@ -4570,7 +4570,7 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.load_wallet(self.wallet)
         else:
             raise UnsupportedCurrencyCoin()
-        return json.dumps(info, cls=DecimalEncoder)
+        return json.dumps(info, cls=json_encoders.DecimalEncoder)
 
     def get_wallet_balance(self):
         """
@@ -4637,7 +4637,7 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.load_wallet(self.wallet)
         else:
             raise UnsupportedCurrencyCoin()
-        return json.dumps(info, cls=DecimalEncoder)
+        return json.dumps(info, cls=json_encoders.DecimalEncoder)
 
     def select_wallet(self, name):  # TODO: Will be deleted later
         """
@@ -4669,7 +4669,7 @@ class AndroidCommands(commands.Commands):
                 "label": self.wallet.get_name(),
                 "wallets": [main_balance_info] + contracts_balance_info,
             }
-            return json.dumps(info, cls=DecimalEncoder)
+            return json.dumps(info, cls=json_encoders.DecimalEncoder)
         elif chain_affinity == "eth":
             main_balance_info, contracts_balance_info, _zero_fiat = self._get_eth_wallet_all_balance(
                 self.wallet, with_sum_fiat=False
@@ -4679,7 +4679,7 @@ class AndroidCommands(commands.Commands):
                 "label": self.wallet.get_name(),
                 "wallets": [main_balance_info] + contracts_balance_info,
             }
-            return json.dumps(info, cls=DecimalEncoder)
+            return json.dumps(info, cls=json_encoders.DecimalEncoder)
         elif chain_affinity == "btc":
             c, u, x = self.wallet.get_balance()
             util.trigger_callback("wallet_updated", self.wallet)
@@ -4695,7 +4695,7 @@ class AndroidCommands(commands.Commands):
             }
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.load_wallet(self.wallet)
-            return json.dumps(info, cls=DecimalEncoder)
+            return json.dumps(info, cls=json_encoders.DecimalEncoder)
         else:
             raise UnsupportedCurrencyCoin()
 
@@ -4927,7 +4927,7 @@ class AndroidCommands(commands.Commands):
             if not wallet.is_watching_only() and not self.wallet_context.is_hw(name):
                 self.check_password(password=password)
 
-            with db.atomic():
+            with orm_database.db.atomic():
                 if isinstance(wallet, GeneralWallet):
                     wallet.delete_wallet(password)
 
