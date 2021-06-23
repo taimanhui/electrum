@@ -26,7 +26,7 @@ from electrum_gui.common.provider.interfaces import ClientInterface, SearchTrans
 
 class Etherscan(ClientInterface, SearchTransactionMixin):
     def __init__(self, url: str, api_keys: List[str] = None):
-        self.restful = RestfulRequest(url)
+        self.restful = RestfulRequest(url, timeout=10)
         self.api_key = api_keys[0] if api_keys else None
 
     def _call_action(self, module: str, action: str, **kwargs) -> dict:
@@ -121,6 +121,9 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
 
         if paginate.start_block_number is not None:
             payload["startblock"] = paginate.start_block_number
+
+        if paginate.end_block_number is not None:
+            payload["endblock"] = paginate.end_block_number
 
         if paginate.page_number is not None:
             payload["page"] = paginate.page_number
