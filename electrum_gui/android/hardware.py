@@ -16,6 +16,7 @@ from electrum import plugin as electrum_plugin
 from electrum.i18n import _
 from electrum.plugins.trezor import clientbase as trezor_clientbase
 from electrum_gui.android import firmware_sign_nordic_dfu
+from electrum_gui.common.basic import api
 
 TREZOR_PLUGIN_NAME = 'trezor'
 
@@ -166,6 +167,7 @@ class TrezorManager(object):
     def se_proxy(self, message: str, path: str = "android_usb") -> str:
         return self._bridge(path, 'se_proxy', message)
 
+    @api.api_entry()
     def bixin_backup_device(self, path: str = "android_usb") -> str:
         """
         Export seed, used by hardware
