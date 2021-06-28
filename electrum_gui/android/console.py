@@ -2109,7 +2109,7 @@ class AndroidCommands(commands.Commands):
         if not maybe_address:
             raise InvalidAddressURI(f"Address not found. data: {data}")
 
-        all_enabled_chains = coin_manager.get_all_chains(only_enabled=True)
+        all_enabled_chains = coin_manager.get_all_chains()
         selection = []
 
         def _remove_testnet_prefix(chain_code: str) -> str:
