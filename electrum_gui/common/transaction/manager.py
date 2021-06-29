@@ -7,6 +7,7 @@ from typing import Iterable, List, Literal, Optional, Tuple
 
 from electrum_gui.common.basic.functional.timing import timing_logger
 from electrum_gui.common.basic.orm.database import db
+from electrum_gui.common.basic.ticker.utils import on_interval
 from electrum_gui.common.coin import manager as coin_manager
 from electrum_gui.common.coin.data import ChainModel
 from electrum_gui.common.provider import provider_manager
@@ -56,8 +57,8 @@ def update_action_status(
     daos.update_actions_status(chain_code, txid, status)
 
 
-def update_pending_actions(chain_code: Optional[str] = None):
-    pending_actions = daos.query_actions_by_status(TxActionStatus.PENDING, chain_code=chain_code)
+def update_pending_actions(chain_code: Optional[str] = None, address: Optional[str] = None):
+    pending_actions = daos.query_actions_by_status(TxActionStatus.PENDING, chain_code=chain_code, address=address)
 
     if not pending_actions:
         return
@@ -320,3 +321,9 @@ def _sync_actions_by_address(chain_code: str, address: str, archived_id: int, re
             expand_count += len(to_be_created_actions)
 
     return expand_count
+
+
+@on_interval(60)
+@timing_logger("transaction_manager.on_ticker_signal")
+def on_ticker_signal():
+    update_pending_actions()

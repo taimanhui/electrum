@@ -200,11 +200,12 @@ def get_action_by_id(action_id: int) -> Optional[TxAction]:
 def query_actions_by_status(
     status: TxActionStatus,
     chain_code: str = None,
+    address: str = None,
 ) -> List[TxAction]:
     expressions = [TxAction.status == status]
 
-    if chain_code is not None:
-        expressions.append(TxAction.chain_code == chain_code)
+    chain_code is None or expressions.append(TxAction.chain_code == chain_code)
+    address is None or expressions.append(TxAction.from_address == address or TxAction.to_address == address)
 
     models = TxAction.select().where(*expressions)
     return list(models)
