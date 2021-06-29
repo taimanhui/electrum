@@ -203,5 +203,32 @@
     "chain_affinity": "stc",
     "qr_code_prefix": "starcoin",
     "chain_id": "251"
+  },
+  {
+    "chain_code": "tcfx",
+    "name": "Conflux Testnet",
+    "fee_code": "tcfx",
+    "chain_model": "account",
+    "curve": "secp256k1",
+    "bip44_coin_type": 503,
+    "fee_price_decimals_for_legibility": 0,
+    "coins": [
+      {
+        "code": "tcfx",
+        "symbol": "TCFX",
+        "name": "Conflux Testnet",
+        "decimals": 18,
+        "icon": "https://onekey-asset.com/assets/cfx/cfx.png"
+      }
+    ],
+    "clients": [
+      {
+        "class": "CFXClient",
+        "url": "https://test.confluxrpc.com"
+      }
+    ],
+    "chain_affinity": "cfx",
+    "qr_code_prefix": "conflux",
+    "chain_id": "1"
   }
 ]
