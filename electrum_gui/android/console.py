@@ -1704,9 +1704,11 @@ class AndroidCommands(commands.Commands):
         ret = []
 
         chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
-        main_coin = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).chain_code)
+        main_coin = coin_manager.get_coin_info(chain_code)
         main_coin_price = price_manager.get_last_price(main_coin.code, self.ccy)
         if contract_address is not None:
+            # Normalize contract address
+            contract_address = provider_manager.verify_address(chain_code, contract_address).normalized_address
             coin = coin_manager.get_coin_by_token_address(chain_code, contract_address)
             coin_price = price_manager.get_last_price(coin.code, self.ccy)
         else:
