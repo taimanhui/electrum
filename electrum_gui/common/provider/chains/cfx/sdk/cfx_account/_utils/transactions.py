@@ -1,7 +1,6 @@
 from typing import Dict
 
 import rlp
-from cytoolz import dissoc, identity, merge, partial, pipe
 from eth_account._utils.transactions import (
     TRANSACTION_DEFAULTS,
     VALID_EMPTY_ADDRESSES,
@@ -20,6 +19,7 @@ from eth_utils.curried import (
     to_int,
 )
 from rlp.sedes import Binary, big_endian_int, binary
+from toolz import dissoc, identity, merge, partial, pipe
 
 from electrum_gui.common.provider.chains.cfx.sdk.cfx_address.address import Address
 
