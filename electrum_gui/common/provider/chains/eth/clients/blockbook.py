@@ -49,7 +49,7 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
         self.restful = RestfulRequest(url)
 
     def get_info(self) -> ClientInfo:
-        resp = self.restful.get("/api")
+        resp = self.restful.get("/api/v2")
 
         is_ready = resp["blockbook"].get("inSync") is True
         if is_ready:
