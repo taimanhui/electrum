@@ -1760,7 +1760,7 @@ class AndroidCommands(commands.Commands):
                         "input_addr": [input_address],
                         "output_addr": [output_address],
                         "address": f"{show_address[:6]}...{show_address[-6:]}",
-                        "amount": f"{amount} {coin.symbol} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})",
+                        "amount": f"{amount.normalize():f} {coin.symbol} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})",
                     }
                 )
 
@@ -1912,9 +1912,7 @@ class AndroidCommands(commands.Commands):
 
         amount = Decimal(eth_utils.from_wei(transaction.outputs[0].value, "ether"))
         fee = Decimal(eth_utils.from_wei(transaction.fee.used * transaction.fee.price_per_unit, "ether"))
-        display_amount = (
-            f"{amount} {symbol} ({self.daemon.fx.ccy_amount_str(amount * main_coin_price, True)} {self.ccy})"
-        )
+        display_amount = f"{amount.normalize():f} {symbol} ({self.daemon.fx.ccy_amount_str(amount * main_coin_price, True)} {self.ccy})"
         display_fee = f"{fee} {symbol} ({self.daemon.fx.ccy_amount_str(fee * main_coin_price, True)} {self.ccy})"
 
         ret = {
@@ -3213,7 +3211,7 @@ class AndroidCommands(commands.Commands):
         """
         return electrum_mnemonic.Mnemonic(lang='en').mnemonic_encode(int(decoded_info))
 
-    @api.api_entry(force_version=api.Version.V2)
+    @api.api_entry(force_version=api.Version.V2)  # noqa
     def verify_legality(self, data, *, flag="seed", coin="btc", password=None):  # noqa
         """
         Verify legality for seed/private/public/address
