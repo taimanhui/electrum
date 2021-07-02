@@ -197,7 +197,8 @@
     "clients": [
       {
         "class": "STCJsonRPC",
-        "url": "https://barnard-seed.starcoin.org"
+        "url": "https://barnard-seed.starcoin.org",
+        "expire_interval": 864000
       }
     ],
     "chain_affinity": "stc",

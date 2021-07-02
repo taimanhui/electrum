@@ -37,8 +37,9 @@ class StateNotFoundError(ValueError):
 
 
 class STCJsonRPC(ClientInterface):
-    def __init__(self, url: str, timeout: int = 5):
+    def __init__(self, url: str, timeout: int = 5, expire_interval: int = 120):
         self.rpc = JsonRPCRequest(url=url, timeout=timeout)
+        self.expire_interval = expire_interval
 
     def get_info(self) -> ClientInfo:
         block_info = self.rpc.call("chain.info", params=[])
@@ -47,7 +48,7 @@ class STCJsonRPC(ClientInterface):
         return ClientInfo(
             "STC_JSON_RPC",
             best_block_number=int(block_number),
-            is_ready=int(time.time()) - block_time < 120,
+            is_ready=int(time.time()) - block_time < self.expire_interval,
         )
 
     def _get_account_sequence_number(self, addr: str) -> int:
@@ -124,7 +125,7 @@ class STCJsonRPC(ClientInterface):
             if isinstance(
                 _script_function_call,
                 (
-                    starcoin_stdlib.ScriptFunctionCall__PeerToPeer,
+                    starcoin_stdlib.ScriptFunctionCall__PeerToPeerV2,
                     # starcoin_stdlib.ScriptFunctionCall__AcceptToken, todo parse accept token tx
                 ),
             ):

@@ -3281,7 +3281,7 @@ class AndroidCommands(commands.Commands):
         """
         Verify legality for seed/private/public/address
         :param data: data as string
-        :param falg: seed/private/public/address/keystore as string
+        :param flag: seed/private/public/address/keystore as string
         :param coin: btc/eth as string
         :return: raise except if failed
         """
@@ -3311,12 +3311,6 @@ class AndroidCommands(commands.Commands):
                 validation = provider_manager.verify_address(chain_code, data)
                 if not validation.is_valid:
                     raise exceptions.IncorrectAddress()
-                if (
-                    chain_affinity == "stc"
-                    and validation.encoding == "HEX"
-                    and not provider_manager.get_address(chain_code, data).existing
-                ):
-                    raise exceptions.InactiveAddress()
         elif chain_affinity == "btc":
             if flag == "private":
                 try:

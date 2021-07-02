@@ -7,7 +7,7 @@ from nacl.public import PublicKey
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.provider.chains.stc import STCJsonRPC
 from electrum_gui.common.provider.chains.stc.sdk.serde_types import uint8, uint64, uint128
-from electrum_gui.common.provider.chains.stc.sdk.starcoin_stdlib import encode_peer_to_peer_script_function
+from electrum_gui.common.provider.chains.stc.sdk.starcoin_stdlib import encode_peer_to_peer_v2_script_function
 from electrum_gui.common.provider.chains.stc.sdk.starcoin_types import (
     ChainId,
     Identifier,
@@ -36,15 +36,16 @@ class _STCKey(object):
 
 class STCProvider(ProviderInterface):
     def verify_address(self, address: str) -> AddressValidation:
-        is_valid, encoding = False, None
+        normalized_address, is_valid, encoding = "", False, None
 
         if address.startswith("stc"):
             try:
-                ReceiptIdentifier.decode(address)
+                ri = ReceiptIdentifier.decode(address)
             except BaseException:
                 pass
             else:
                 encoding = "BECH32"
+                normalized_address = "0x" + stc_utils.account_address_hex(ri.account_address)
                 is_valid = True
 
         else:
@@ -54,11 +55,12 @@ class STCProvider(ProviderInterface):
                 pass
             else:
                 if len(addr) == 32:
+                    normalized_address = address
                     encoding = "HEX"
                     is_valid = True
 
         return AddressValidation(
-            normalized_address=address if is_valid else "",
+            normalized_address=normalized_address if is_valid else "",
             display_address=address if is_valid else "",
             is_valid=is_valid,
             encoding=encoding,
@@ -90,13 +92,10 @@ class STCProvider(ProviderInterface):
         if tx_input is not None and tx_output is not None:
             from_address = tx_input.address
             to_address = tx_output.address
-            payee_auth_key = None
             if to_address.startswith("stc"):
                 ri = ReceiptIdentifier.decode(to_address)
                 require(ri is not None)
                 to_address = stc_utils.account_address_hex(ri.account_address)
-                if not self.client.get_address(to_address).existing:
-                    payee_auth_key = ri.auth_key
             if not eth_utils.is_0x_prefixed(to_address):
                 to_address = "0x" + to_address
 
@@ -114,7 +113,7 @@ class STCProvider(ProviderInterface):
             if payload.get("expiration_time") is None:
                 payload['expiration_time'] = int(time.time()) + 3600
 
-            payload['txScript'] = encode_peer_to_peer_script_function(
+            payload['txScript'] = encode_peer_to_peer_v2_script_function(
                 token_type=TypeTag__Struct(
                     value=StructTag(
                         address=stc_utils.account_address(token_address),
@@ -124,12 +123,11 @@ class STCProvider(ProviderInterface):
                     )
                 ),
                 payee=stc_utils.account_address(to_address),
-                payee_auth_key=payee_auth_key.data if payee_auth_key is not None else b"",
                 amount=uint128(value),
             )
 
             if fee_limit is None:
-                args_payee_auth_key = 'x""' if payee_auth_key is None else f'x"{payee_auth_key.data.hex()}"'
+                args_payee_auth_key = 'x""'
                 fee_limit = self.client.estimate_gas_limit(
                     {
                         "chain_id": int(self.chain_info.chain_id),

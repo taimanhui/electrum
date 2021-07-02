@@ -30,12 +30,11 @@ class ScriptFunctionCall__AcceptToken(ScriptFunctionCall):
 
 
 @dataclass(frozen=True)
-class ScriptFunctionCall__PeerToPeer(ScriptFunctionCall):
+class ScriptFunctionCall__PeerToPeerV2(ScriptFunctionCall):
     """."""
 
     token_type: starcoin_types.TypeTag
     payee: starcoin_types.AccountAddress
-    payee_auth_key: bytes
     amount: st.uint128
 
 
@@ -64,22 +63,17 @@ def encode_accept_token_script_function(token_type: TypeTag) -> TransactionPaylo
     )
 
 
-def encode_peer_to_peer_script_function(
-    token_type: TypeTag, payee: AccountAddress, payee_auth_key: bytes, amount: st.uint128
+def encode_peer_to_peer_v2_script_function(
+    token_type: TypeTag, payee: AccountAddress, amount: st.uint128
 ) -> TransactionPayload:
-    """."""
     return TransactionPayload__ScriptFunction(
         value=ScriptFunction(
             module=ModuleId(
                 address=AccountAddress.from_hex("00000000000000000000000000000001"), name=Identifier("TransferScripts")
             ),
-            function=Identifier("peer_to_peer"),
+            function=Identifier("peer_to_peer_v2"),
             ty_args=[token_type],
-            args=[
-                bcs.serialize(payee, starcoin_types.AccountAddress),
-                bcs.serialize(payee_auth_key, bytes),
-                bcs.serialize(amount, st.uint128),
-            ],
+            args=[bcs.serialize(payee, starcoin_types.AccountAddress), bcs.serialize(amount, st.uint128)],
         )
     )
 
@@ -92,18 +86,17 @@ def decode_accept_token_script_function(script: TransactionPayload) -> ScriptFun
     )
 
 
-def decode_peer_to_peer_script_function(script: TransactionPayload) -> ScriptFunctionCall:
+def decode_peer_to_peer_v2_script_function(script: TransactionPayload) -> ScriptFunctionCall:
     if not isinstance(script, ScriptFunction):
         raise ValueError("Unexpected transaction payload")
-    return ScriptFunctionCall__PeerToPeer(
+    return ScriptFunctionCall__PeerToPeerV2(
         token_type=script.ty_args[0],
         payee=bcs.deserialize(script.args[0], starcoin_types.AccountAddress),
-        payee_auth_key=bcs.deserialize(script.args[1], bytes),
-        amount=bcs.deserialize(script.args[2], st.uint128),
+        amount=bcs.deserialize(script.args[1], st.uint128),
     )
 
 
 SCRIPT_FUNCTION_DECODER_MAP: typing.Dict[str, typing.Callable[[TransactionPayload], ScriptFunctionCall]] = {
     "Accountaccept_token": decode_accept_token_script_function,
-    "TransferScriptspeer_to_peer": decode_peer_to_peer_script_function,
+    "TransferScriptspeer_to_peer_v2": decode_peer_to_peer_v2_script_function,
 }
