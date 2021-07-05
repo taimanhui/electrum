@@ -201,8 +201,14 @@ class CFXClient(ClientInterface, BatchGetAddressMixin):
         return gas
 
     def get_contract_code(self, address: str) -> str:
-        resp = self.rpc.call("cfx_getCode", params=[address, self.EpochTag])
-        return eth_utils.remove_0x_prefix(resp)
+        try:
+            resp = self.rpc.call("cfx_getCode", params=[address, self.EpochTag])
+        except JsonRPCException as e:
+            # the rpc method cfx_getCode has behavior different from eth
+            if "does not exist" in e.message:
+                return ""
+        else:
+            return eth_utils.remove_0x_prefix(resp)
 
     @functools.lru_cache
     def is_contract(self, address: str) -> bool:
