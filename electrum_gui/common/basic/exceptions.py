@@ -36,3 +36,31 @@ class IncorrectAddress(OneKeyException):
 
 class InactiveAddress(OneKeyException):
     key = "msg__the_address_has_not_been_activated_please_enter_receipt_identifier"
+
+
+class UnsupportedCurrencyCoin(OneKeyException):
+    key = "msg__unsupported_currency_coin"
+
+
+class NotEnoughFunds(OneKeyException):
+    key = "msg__not_enough_fund"
+
+
+class InvalidBip39Seed(OneKeyException):
+    key = "msg__invalid_bip39_seed"
+
+
+class UserCancel(OneKeyException):
+    key = "msg__user_cancel"
+
+
+class DerivedWalletLimit(OneKeyException):
+    key = "msg__derived_wallet_limit"
+
+
+class NotChosenWallet(OneKeyException):
+    key = "msg__you_have_not_chosen_a_wallet_yet"
+
+
+class DustTransaction(OneKeyException):
+    key = "msg__dust_transaction"

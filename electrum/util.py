@@ -57,6 +57,7 @@ import dns.resolver
 import ecdsa
 import eth_utils
 
+from electrum_gui.common.basic import exceptions  # TODO: need to delete when V2 are supported after
 from .i18n import _
 from .logging import get_logger, Logger
 
@@ -99,9 +100,9 @@ def base_unit_name_to_decimal_point(unit_name: str) -> int:
         raise UnknownBaseUnit(unit_name) from None
 
 
-class NotEnoughFunds(Exception):
+class NotEnoughFunds(exceptions.NotEnoughFunds):
     def __str__(self):
-        return BaseException(_("Insufficient funds"))
+        return _("Insufficient funds")
 
 
 class NoDynamicFeeEstimates(Exception):
@@ -128,13 +129,12 @@ class ReplaceWatchonlyWallet(Exception):
     def __str__(self):
         return BaseException(("Replace watch-only wallet."))
 
-
-class NotEnoughFundsStr(Exception):
+class DustTransaction(exceptions.DustTransaction):
     def __str__(self):
-        return (_("Insufficient funds"))
+        return (_("Dust transaction"))
 
 
-class InvalidPassword(BaseException):
+class InvalidPassword(exceptions.InvalidPassword):
     def __str__(self):
         return _("Incorrect password.")
 
@@ -144,14 +144,19 @@ class InvalidKeystoreFormat(BaseException):
         return _("Incorrect eth keystore.")
 
 
-class UserCancel(Exception):
+class UserCancel(exceptions.UserCancel):
     def __str__(self):
         return _("Operation cancelled")
 
 
-class InvalidBip39Seed(Exception):
+class InvalidBip39Seed(exceptions.InvalidBip39Seed):
     def __str__(self):
         return _("Incorrect Bip39 mnemonic format.")
+
+
+class NotChosenWallet(exceptions.NotChosenWallet):
+    def __str__(self):
+        return _("You haven't chosen a wallet yet.")
 
 
 class NotSupportExportSeed(Exception):
@@ -159,7 +164,7 @@ class NotSupportExportSeed(Exception):
         return _("Current wallet does not support exporting Mnemonic.")
 
 
-class UnsupportedCurrencyCoin(BaseException):
+class UnsupportedCurrencyCoin(exceptions.UnsupportedCurrencyCoin):
     def __str__(self):
         return _("Unsupported coin types.")
 
@@ -194,7 +199,7 @@ class UnavailablePrivateKey(Exception):
         return _("Incorrect private key.")
 
 
-class DerivedWalletLimit(Exception):
+class DerivedWalletLimit(exceptions.DerivedWalletLimit):
     def __str__(self):
         return _("The number of wallets created is limited, currently up to 20 HD wallets can be created.")
 

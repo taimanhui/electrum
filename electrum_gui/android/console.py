@@ -59,8 +59,6 @@ from electrum.util import (
     InvalidAddressURI,
     InvalidBip39Seed,
     InvalidPassword,
-    NotEnoughFunds,
-    NotEnoughFundsStr,
     NotSupportExportSeed,
     Ticker,
     UnavaiableHdWallet,
@@ -283,6 +281,7 @@ class AndroidCommands(commands.Commands):
 
         raise AttributeError
 
+    # not needed in the future
     def set_language(self, language):
         """
         Set the language of error messages displayed to users
@@ -911,7 +910,7 @@ class AndroidCommands(commands.Commands):
                 if amount != "!":
                     amount = self.get_amount(amount)
                     if amount <= 546:
-                        raise BaseException(_("Dust transaction"))
+                        raise util.DustTransaction()
                 outputs_addrs.append(PartialTxOutput.from_address_and_value(address, amount))
         return outputs_addrs
 
@@ -928,6 +927,7 @@ class AndroidCommands(commands.Commands):
     def format_return_data(self, feerate, size, block):
         fee = float(feerate / 1000) * size
         fiat = Decimal(fee) / COIN * price_manager.get_last_price(self.wallet.coin, self.ccy)
+
         fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
         ret_data = {
             "fee": self.format_amount(fee),
@@ -938,6 +938,7 @@ class AndroidCommands(commands.Commands):
         }
         return ret_data
 
+    @api.api_entry()
     def get_default_fee_info(self, feerate=None, coin="btc", eth_tx_info=None):
         """
         Get default fee info for btc
@@ -1103,6 +1104,7 @@ class AndroidCommands(commands.Commands):
                 fee_info_list = fee_info["feerate_info"]
         return fee_info_list
 
+    @api.api_entry()
     def get_fee_by_feerate(self, coin="btc", outputs=None, message=None, feerate=None, customer=None, eth_tx_info=None):
         """
         Get fee info when Send
@@ -1137,43 +1139,38 @@ class AndroidCommands(commands.Commands):
         if chain_affinity != "btc":
             raise UnsupportedCurrencyCoin()
 
-        try:
-            self._assert_wallet_isvalid()
-            outputs_addrs = self.parse_output(outputs)
-            if customer is None:
-                coins = self.wallet.get_spendable_coins(domain=None)
-            else:
-                coins = self.get_coins(json.loads(customer))
-            c, u, x = self.wallet.get_balance()
-            if not coins and self.config.get("confirmed_only", False):
-                raise BaseException(_("Please use unconfirmed utxo."))
-            fee_per_kb = 1000 * Decimal(feerate)
-            from functools import partial
+        self._assert_wallet_isvalid()
+        outputs_addrs = self.parse_output(outputs)
+        if customer is None:
+            coins = self.wallet.get_spendable_coins(domain=None)
+        else:
+            coins = self.get_coins(json.loads(customer))
+        c, u, x = self.wallet.get_balance()
+        if not coins and self.config.get("confirmed_only", False):
+            raise BaseException(_("Please use unconfirmed utxo."))
+        fee_per_kb = 1000 * Decimal(feerate)
+        from functools import partial
 
-            fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
-            # tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee_estimator))
-            tx = self.wallet.make_unsigned_transaction(coins=coins, outputs=outputs_addrs, fee=fee_estimator)
-            tx.set_rbf(self.rbf)
-            self.wallet.set_label(tx.txid(), message)
-            size = tx.estimated_size()
-            fee = tx.get_fee()
-            self.tx = tx
-            tx_details = self.wallet.get_tx_info(tx)
+        fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
+        # tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee_estimator))
+        tx = self.wallet.make_unsigned_transaction(coins=coins, outputs=outputs_addrs, fee=fee_estimator)
+        tx.set_rbf(self.rbf)
+        self.wallet.set_label(tx.txid(), message)
+        size = tx.estimated_size()
+        fee = tx.get_fee()
+        self.tx = tx
+        tx_details = self.wallet.get_tx_info(tx)
 
-            fee_info_list = self.get_block_info()
-            block = helpers.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
-            ret_data = {
-                "amount": self.format_amount(tx_details.amount),
-                "size": size,
-                "fee": self.format_amount(tx_details.fee),
-                "time": block * BTC_BLOCK_INTERVAL_TIME,
-                "tx": str(self.tx),
-            }
-            return json.dumps(ret_data)
-        except NotEnoughFunds:
-            raise BaseException(NotEnoughFundsStr())
-        except BaseException as e:
-            raise BaseException(e)
+        fee_info_list = self.get_block_info()
+        block = helpers.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
+        ret_data = {
+            "amount": self.format_amount(tx_details.amount),
+            "size": size,
+            "fee": self.format_amount(tx_details.fee),
+            "time": block * BTC_BLOCK_INTERVAL_TIME,
+            "tx": str(self.tx),
+        }
+        return json.dumps(ret_data)
 
     def mktx(self, tx=None):
         """
@@ -1766,6 +1763,7 @@ class AndroidCommands(commands.Commands):
 
         return json.dumps(ret, cls=json_encoders.DecimalEncoder)
 
+    @api.api_entry()
     def get_detail_tx_info_by_hash(self, tx_hash):
         """
         Show detailed inputs and outputs
@@ -1798,6 +1796,7 @@ class AndroidCommands(commands.Commands):
         else:
             yield
 
+    @api.api_entry()
     def get_all_tx_list(self, search_type=None, coin="btc", contract_address=None, start=None, end=None, id=None):
         """
         Get the histroy list with the wallet that you select
@@ -3105,6 +3104,7 @@ class AndroidCommands(commands.Commands):
     def _chain_code_to_chain_name(self, coin):
         return f"{coin.upper()}" if "okt" != coin.lower() else "OEC"
 
+    @api.api_entry()
     def create_hd_wallet(
         self, password, seed=None, passphrase="", purpose=84, strength=128, create_coin=json.dumps(["btc"])
     ):
@@ -3288,7 +3288,7 @@ class AndroidCommands(commands.Commands):
                     raise exceptions.UnavailablePublicKey()
             elif flag == "address":
                 if not eth_utils.is_address(data):
-                    raise exceptions.UnavailableEthAddr()
+                    raise exceptions.IncorrectAddress()
         else:
             raise UnsupportedCurrencyCoin()
 
@@ -3362,6 +3362,7 @@ class AndroidCommands(commands.Commands):
             account_id = 0
         return account_id
 
+    @api.api_entry()
     def get_default_show_path(self, hw=False, coin=None, derived=False, purpose="49", path="android_usb"):
         """
         Get the default path for creating a wallet
@@ -3674,6 +3675,7 @@ class AndroidCommands(commands.Commands):
                 wallet = self.load_wallet(name, password=storage_password)
                 wallet.force_change_storage_password(self.android_id)
 
+    @api.api_entry()
     def update_wallet_password(self, old_password, new_password):
         """
         Update password
@@ -3685,6 +3687,7 @@ class AndroidCommands(commands.Commands):
         for _name, wallet in self.daemon._wallets.items():
             wallet.update_password(old_pw=old_password, new_pw=new_password, str_pw=self.android_id)
 
+    @api.api_entry()
     def check_password(self, password):
         """
         Check wallet password
@@ -4151,6 +4154,7 @@ class AndroidCommands(commands.Commands):
         """
         return json.dumps(Wordlist.from_file("english.txt"))
 
+    @api.api_entry()
     def get_all_wallet_balance(self):
         """
         Get all wallet balances
@@ -4558,7 +4562,6 @@ class AndroidCommands(commands.Commands):
         elif chain_affinity == "btc":
             if not isinstance(self.wallet, Imported_Wallet):
                 self.wallet.set_key_pool_size()
-            c, u, x = self.wallet.get_balance()
             util.trigger_callback("wallet_updated", self.wallet)
 
             info = {
@@ -4572,6 +4575,7 @@ class AndroidCommands(commands.Commands):
             raise UnsupportedCurrencyCoin()
         return json.dumps(info, cls=json_encoders.DecimalEncoder)
 
+    @api.api_entry()
     def get_wallet_balance(self):
         """
         Get the current balance of your wallet
@@ -4912,6 +4916,7 @@ class AndroidCommands(commands.Commands):
 
         self.wallet_context.remove_derived_wallet(xpub, account_id)
 
+    @api.api_entry()
     def delete_wallet(self, password="", name="", hd=None):
         """
         Delete (a/all hd) wallet
@@ -4921,27 +4926,24 @@ class AndroidCommands(commands.Commands):
         :return: None
         """
 
-        try:
-            wallet = self.daemon.get_wallet(self._wallet_path(name))
+        wallet = self.daemon.get_wallet(self._wallet_path(name))
 
-            if not wallet.is_watching_only() and not self.wallet_context.is_hw(name):
-                self.check_password(password=password)
+        if not wallet.is_watching_only() and not self.wallet_context.is_hw(name):
+            self.check_password(password=password)
 
-            with orm_database.db.atomic():
-                if isinstance(wallet, GeneralWallet):
-                    wallet.delete_wallet(password)
+        with orm_database.db.atomic():
+            if isinstance(wallet, GeneralWallet):
+                wallet.delete_wallet(password)
 
-                if hd is not None:
-                    self.delete_derived_wallet()
-                else:
-                    if self.wallet_context.is_derived(name):
-                        hw = self.wallet_context.is_hw(name)
-                        self.delete_wallet_derived_info(wallet, hw=hw)
-                    self.delete_wallet_from_deamon(self._wallet_path(name))
-                    self.wallet_context.remove_type_info(name)
-                # os.remove(self._wallet_path(name))
-        except Exception as e:
-            raise BaseException(e)
+            if hd is not None:
+                self.delete_derived_wallet()
+            else:
+                if self.wallet_context.is_derived(name):
+                    hw = self.wallet_context.is_hw(name)
+                    self.delete_wallet_derived_info(wallet, hw=hw)
+                self.delete_wallet_from_deamon(self._wallet_path(name))
+                self.wallet_context.remove_type_info(name)
+            # os.remove(self._wallet_path(name))
 
     def stc_spec_get_receipt_identifier_address(self, wallet_name):
         wallet = self.get_wallet_by_name(wallet_name)
@@ -4962,7 +4964,7 @@ class AndroidCommands(commands.Commands):
 
     def _assert_wallet_isvalid(self):
         if self.wallet is None:
-            raise BaseException(_("You haven't chosen a wallet yet."))
+            raise util.NotChosenWallet()
             # Log callbacks on stderr so they'll appear in the console activity.
 
     def _assert_hd_wallet_isvalid(self):
