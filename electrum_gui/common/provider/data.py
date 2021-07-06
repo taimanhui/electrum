@@ -129,7 +129,8 @@ class Transaction(DataClassMixin):
 
 @dataclass
 class TxPaginate(DataClassMixin):
-    start_block_number: int
+    start_block_number: int = None
+    end_block_number: int = None
     page_number: int = 1  # start from 1
     items_per_page: int = None
 

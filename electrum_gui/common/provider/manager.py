@@ -6,6 +6,10 @@ from electrum_gui.common.provider import data, exceptions, interfaces, loader
 from electrum_gui.common.secret import interfaces as secret_interfaces
 
 
+def get_best_block_number(chain_code: str) -> int:
+    return loader.get_client_by_chain(chain_code).get_info().best_block_number
+
+
 def get_address(chain_code: str, address: str) -> data.Address:
     return loader.get_client_by_chain(chain_code).get_address(address)
 

@@ -16,7 +16,7 @@ from contextlib import contextmanager
 from decimal import Decimal
 from operator import attrgetter
 from os.path import exists, join
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
 import eth_abi
 import eth_utils
@@ -68,6 +68,7 @@ from electrum.util import (
     UserCancel,
     bfh,
     create_and_start_event_loop,
+    format_time,
 )
 from electrum.util import user_dir as get_dir
 from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
@@ -86,6 +87,8 @@ from electrum_gui.common.provider import exceptions as provider_exceptions
 from electrum_gui.common.provider import provider_manager
 from electrum_gui.common.provider.chains.eth.clients import geth as geth_client
 from electrum_gui.common.secret import manager as secret_manager
+from electrum_gui.common.transaction import data as transaction_data
+from electrum_gui.common.transaction import manager as transaction_manager
 from electrum_gui.common.wallet import bip44
 from electrum_gui.common.wallet import manager as wallet_manager
 
@@ -1697,71 +1700,111 @@ class AndroidCommands(commands.Commands):
             self.old_history_info = all_data
             return json.dumps(all_data[start:end])
 
-    def get_general_coin_tx_list(self, contract_address=None, search_type=None):
-        ret = []
+    def get_general_coin_tx_list(
+        self,
+        coin: str,
+        address: str,
+        token_address: str = None,
+        search_type: str = None,
+        start: int = None,
+        end: int = None,
+    ):
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
+        __, transfer_coin, fee_coin = coin_manager.get_related_coins(chain_code)
 
-        chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
-        main_coin = coin_manager.get_coin_info(chain_code)
-        main_coin_price = price_manager.get_last_price(main_coin.code, self.ccy)
-        if contract_address is not None:
-            # Normalize contract address
-            contract_address = provider_manager.verify_address(chain_code, contract_address).normalized_address
-            coin = coin_manager.get_coin_by_token_address(chain_code, contract_address)
-            coin_price = price_manager.get_last_price(coin.code, self.ccy)
-        else:
-            contract_address = None
-            coin = main_coin
-            coin_price = main_coin_price
+        if token_address:
+            token_address = provider_manager.verify_address(chain_code, token_address).normalized_address
+            transfer_coin = coin_manager.get_coin_by_token_address(chain_code, token_address)
 
-        main_coin_decimal_divisor = pow(10, main_coin.decimals)
-        coin_decimal_divisor = pow(10, coin.decimals)
-        address = self.wallet.get_addresses()[0].lower()
-        for transaction in provider_manager.search_txs_by_address(chain_code, address):
-            fee = Decimal(transaction.fee.used * transaction.fee.price_per_unit / main_coin_decimal_divisor)
-            fee_fiat = fee * main_coin_price
-            detailed_status = transaction.detailed_status
-            show_status = transaction.show_status
-            date_str = transaction.date_str
-            height = transaction.height
-            confirmations = transaction.confirmations
+        start = start or 0
+        end = end or start + 20
+        items_per_page = max(end - start, 20)
+        page_number = max(round(start / items_per_page), 0) + 1
 
-            for input, output in zip(transaction.inputs, transaction.outputs):
-                if output.token_address != contract_address:
-                    continue
+        searching_address_as: Literal["sender", "receiver", "both"] = "both"
+        if search_type == "send":
+            searching_address_as = "sender"
+        elif search_type == "receive":
+            searching_address_as = "receiver"
 
-                input_address = input.address.lower()
-                output_address = output.address.lower()
+        actions = transaction_manager.query_actions_by_address(
+            chain_code=chain_code,
+            coin_code=transfer_coin.code,
+            address=address,
+            page_number=page_number,
+            items_per_page=items_per_page,
+            searching_address_as=searching_address_as,
+        )
+        if not actions:
+            return []
 
-                if search_type == "send" and input_address != address:
-                    continue
-                elif search_type == "receive" and output_address != address:
-                    continue
-                elif input_address != address and output_address != address:
-                    continue
+        try:
+            best_block_number = provider_manager.get_best_block_number(chain_code)
+        except Exception as e:
+            log_info.exception(f"Error in get_best_block_number. chain_code: {chain_code}, error: {e}")
+            best_block_number = 0
 
-                show_address = output_address if input_address == address else input_address
-                amount = Decimal(output.value) / coin_decimal_divisor
-                fiat = amount * coin_price
-                ret.append(
-                    {
-                        "type": "histroy",
-                        "coin": coin.symbol,
-                        "tx_status": detailed_status,
-                        "show_status": show_status,
-                        "fee": f"{fee} {main_coin.symbol} ({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})",
-                        "date": date_str,
-                        "tx_hash": transaction.txid,
-                        "is_mine": input_address == address,
-                        "height": height,
-                        "confirmations": confirmations,
-                        "input_addr": [input_address],
-                        "output_addr": [output_address],
-                        "address": f"{show_address[:6]}...{show_address[-6:]}",
-                        "amount": f"{amount.normalize():f} {coin.symbol} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})",
-                    }
-                )
+        address = provider_manager.verify_address(chain_code, address).normalized_address
+        transfer_coin_price = price_manager.get_last_price(transfer_coin.code, self.ccy)
+        fee_coin_price = (
+            transfer_coin_price
+            if fee_coin.code == transfer_coin.code
+            else price_manager.get_last_price(fee_coin.code, self.ccy)
+        )
+        transfer_coin_decimal_divisor = pow(10, transfer_coin.decimals)
+        fee_coin_decimal_divisor = pow(10, fee_coin.decimals)
 
-        return json.dumps(ret, cls=json_encoders.DecimalEncoder)
+        result = []
+        processing_statuses = {
+            transaction_data.TxActionStatus.CONFIRM_REVERTED,
+            transaction_data.TxActionStatus.CONFIRM_SUCCESS,
+            transaction_data.TxActionStatus.PENDING,
+        }
+
+        for action in actions:
+            if action.status not in processing_statuses:
+                continue
+
+            show_address = action.to_address if action.from_address == address else action.from_address
+
+            transfer_value = action.value / transfer_coin_decimal_divisor
+            transfer_fiat = transfer_value * transfer_coin_price
+            fee_value = (action.fee_used or action.fee_limit) * action.fee_price_per_unit / fee_coin_decimal_divisor
+            fee_fiat = fee_value * fee_coin_price
+
+            confirmed_date_str = format_time(action.block_time) if action.block_time is not None else _("Unknown")
+            confirmed_block_number = action.block_number if action.block_number is not None else 0
+            confirmed_number = max(best_block_number - confirmed_block_number, 0) if confirmed_block_number > 0 else 0
+
+            detailed_status = {"status": action.status, "other_info": ""}
+            if action.status == transaction_data.TxActionStatus.CONFIRM_REVERTED:
+                show_status_desc = _("Sending failure")
+            elif action.status == transaction_data.TxActionStatus.CONFIRM_SUCCESS:
+                show_status_desc = _("Confirmed")
+            else:
+                show_status_desc = _("Unconfirmed")
+
+            item = {
+                "type": "histroy",
+                "coin": transfer_coin.symbol,
+                "tx_status": detailed_status,
+                "show_status": [action.status, show_status_desc],
+                "fee": f"{fee_value.normalize():f} {fee_coin.symbol} "
+                f"({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})",
+                "date": confirmed_date_str,
+                "tx_hash": action.txid,
+                "is_mine": action.from_address == address,
+                "height": confirmed_block_number,
+                "confirmations": confirmed_number,
+                "input_addr": [action.from_address],
+                "output_addr": [action.to_address],
+                "address": f"{show_address[:6]}...{show_address[-6:]}",
+                "amount": f"{transfer_value.normalize():f} {transfer_coin.symbol} "
+                f"({self.daemon.fx.ccy_amount_str(transfer_fiat, True)} {self.ccy})",
+            }
+            result.append(item)
+
+        return json.dumps(result, cls=json_encoders.DecimalEncoder)
 
     @api.api_entry()
     def get_detail_tx_info_by_hash(self, tx_hash):
@@ -1821,7 +1864,14 @@ class AndroidCommands(commands.Commands):
             if chain_affinity == "btc":
                 return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
             elif chain_affinity == "eth" or is_coin_migrated(coin):
-                return self.get_general_coin_tx_list(contract_address=contract_address, search_type=search_type)
+                return self.get_general_coin_tx_list(
+                    coin=self.wallet.coin,
+                    address=self.wallet.get_addresses()[0],
+                    token_address=contract_address,
+                    search_type=search_type,
+                    start=start,
+                    end=end,
+                )
             else:
                 raise UnsupportedCurrencyCoin()
 
@@ -1884,17 +1934,16 @@ class AndroidCommands(commands.Commands):
         if chain_affinity == "btc":
             tx = self.get_btc_raw_tx(tx_hash)
             return self.get_details_info(tx, tx_list=tx_list)
-        elif chain_affinity == "eth":
-            return self.get_eth_tx_info(tx_hash)
+        elif chain_affinity == "eth" or is_coin_migrated(coin):
+            return self.get_general_tx_info(tx_hash)
         else:
             raise UnsupportedCurrencyCoin()
 
-    def get_eth_tx_info(self, tx_hash) -> str:
+    def get_general_tx_info(self, tx_hash) -> str:
         chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
-        fee_code = coin_manager.get_chain_info(chain_code).fee_code
-        symbol = coin_manager.get_coin_info(fee_code).symbol
+        __, transfer_coin, fee_coin = coin_manager.get_related_coins(chain_code)
 
-        main_coin_price = price_manager.get_last_price(fee_code, self.ccy)
+        fee_coin_price = price_manager.get_last_price(fee_coin.code, self.ccy)
         transaction = provider_manager.get_transaction_by_txid(chain_code, tx_hash)
 
         if transaction.status == provider_data.TransactionStatus.CONFIRM_REVERTED:
@@ -1909,10 +1958,20 @@ class AndroidCommands(commands.Commands):
             tx_status = {"status": provider_data.TransactionStatus.PENDING, "other_info": ""}
             show_status = [provider_data.TransactionStatus.PENDING, _("Unconfirmed")]
 
-        amount = Decimal(eth_utils.from_wei(transaction.outputs[0].value, "ether"))
-        fee = Decimal(eth_utils.from_wei(transaction.fee.used * transaction.fee.price_per_unit, "ether"))
-        display_amount = f"{amount.normalize():f} {symbol} ({self.daemon.fx.ccy_amount_str(amount * main_coin_price, True)} {self.ccy})"
-        display_fee = f"{fee} {symbol} ({self.daemon.fx.ccy_amount_str(fee * main_coin_price, True)} {self.ccy})"
+        amount = Decimal(transaction.outputs[0].value) / pow(10, transfer_coin.decimals)
+        fee = (
+            Decimal(transaction.fee.used or transaction.fee.limit)
+            * Decimal(transaction.fee.price_per_unit)
+            / pow(10, fee_coin.decimals)
+        )
+        display_amount = (
+            f"{amount.normalize():f} {transfer_coin.symbol} "
+            f"({self.daemon.fx.ccy_amount_str(amount * fee_coin_price, True)} {self.ccy})"
+        )
+        display_fee = (
+            f"{fee.normalize():f} {fee_coin.symbol} "
+            f"({self.daemon.fx.ccy_amount_str(fee * fee_coin_price, True)} {self.ccy})"
+        )
 
         ret = {
             "txid": tx_hash,

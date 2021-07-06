@@ -1,6 +1,7 @@
 import datetime
+import functools
 from decimal import Decimal
-from typing import Iterable, List, Optional, Set
+from typing import Iterable, List, Literal, Optional, Set
 
 from electrum_gui.common.transaction.data import TxActionStatus
 from electrum_gui.common.transaction.models import TxAction
@@ -12,8 +13,6 @@ def new_action(
     chain_code: str,
     coin_code: str,
     value: Decimal,
-    symbol: str,
-    decimals: int,
     from_address: str,
     to_address: str,
     fee_limit: Decimal,
@@ -25,15 +24,14 @@ def new_action(
     block_time: int = None,
     index: int = 0,
     nonce: int = -1,
+    created_time: datetime.datetime = None,
 ) -> TxAction:
-    return TxAction(
+    data = dict(
         txid=txid,
         status=status,
         chain_code=chain_code,
         coin_code=coin_code,
         value=value,
-        symbol=symbol,
-        decimals=decimals,
         from_address=from_address,
         to_address=to_address,
         fee_limit=fee_limit,
@@ -46,6 +44,10 @@ def new_action(
         index=index,
         nonce=nonce,
     )
+    if created_time is not None:
+        data["created_time"] = created_time
+
+    return TxAction(**data)
 
 
 def bulk_create(actions: Iterable[TxAction]):
@@ -60,6 +62,7 @@ def on_actions_confirmed(
     block_number: int,
     block_hash: str,
     block_time: int,
+    archived_id: int = None,
 ):
     return (
         TxAction.update(
@@ -68,6 +71,7 @@ def on_actions_confirmed(
             block_number=block_number,
             block_hash=block_hash,
             block_time=block_time,
+            archived_id=archived_id,
             modified_time=datetime.datetime.now(),
         )
         .where(TxAction.chain_code == chain_code, TxAction.txid == txid)
@@ -93,23 +97,99 @@ def update_actions_status(
 def query_actions_by_address(
     chain_code: str,
     address: str,
-    txid: Optional[str] = None,
+    coin_code: str = None,
     page_number: int = 1,
-    items_per_page: int = 100,
+    items_per_page: int = 20,
+    archived_ids: List[int] = None,
+    searching_address_as: Literal["sender", "receiver", "both"] = "both",
 ) -> List[TxAction]:
+    address_query_expression_options = (
+        TxAction.from_address == address,
+        TxAction.to_address == address,
+    )
+
+    if searching_address_as == "sender":
+        address_query_expression = address_query_expression_options[0]
+    elif searching_address_as == "receiver":
+        address_query_expression = address_query_expression_options[1]
+    else:
+        address_query_expression = address_query_expression_options[0] | address_query_expression_options[1]
+
     expressions = [
         TxAction.chain_code == chain_code,
-        (TxAction.from_address.collate("NOCASE") == address) | (TxAction.to_address.collate("NOCASE") == address),
+        address_query_expression,
     ]
 
-    if txid is not None:
-        expressions.append(TxAction.txid == txid)
+    coin_code is None or expressions.append(TxAction.coin_code == coin_code)
+    not archived_ids or expressions.append(
+        functools.reduce(lambda a, b: a | b, (TxAction.archived_id == i for i in archived_ids))
+    )
 
-    return list(
+    actions = TxAction.select().where(*expressions).order_by(TxAction.created_time.desc())
+    if page_number is not None and items_per_page is not None:
+        actions = actions.paginate(page_number, items_per_page)
+
+    return list(actions)
+
+
+def get_first_confirmed_action_at_the_same_archived_id(
+    chain_code: str, address: str, archived_id: int
+) -> Optional[TxAction]:
+    return (
         TxAction.select()
-        .where(*expressions)
-        .order_by(TxAction.block_time.desc(nulls="first"))
-        .paginate(page_number, items_per_page)
+        .where(
+            TxAction.chain_code == chain_code,
+            (TxAction.from_address == address) | (TxAction.to_address == address),
+            TxAction.block_number != None,  # noqa
+            TxAction.archived_id == archived_id,
+        )
+        .order_by(TxAction.block_number.asc())
+        .first()
+    )
+
+
+def get_last_confirmed_action_before_archived_id(chain_code: str, address: str, archived_id: int) -> Optional[TxAction]:
+    return (
+        TxAction.select()
+        .where(
+            TxAction.chain_code == chain_code,
+            (TxAction.from_address == address) | (TxAction.to_address == address),
+            TxAction.block_number != None,  # noqa
+            TxAction.archived_id < archived_id,
+        )
+        .order_by(TxAction.archived_id.desc(), TxAction.block_number.desc())
+        .first()
+    )
+
+
+def query_existing_archived_ids(chain_code: str, txids: List[str]) -> Set[int]:
+    items = (
+        TxAction.select(TxAction.archived_id.distinct())
+        .where(
+            TxAction.chain_code == chain_code,
+            TxAction.txid.in_(txids),
+            TxAction.archived_id != None,  # noqa
+        )
+        .tuples()
+    )
+    return {i[0] for i in items}
+
+
+def filter_existing_txids(chain_code: str, txids: List[str], status: TxActionStatus = None) -> Set[str]:
+    expressions = [TxAction.chain_code == chain_code, TxAction.txid.in_(txids)]
+
+    if status is not None:
+        expressions.append(TxAction.status == status)
+
+    items = TxAction.select(TxAction.txid.distinct()).where(*expressions).tuples()
+    return {i[0] for i in items}
+
+
+def update_archived_id(from_archived_ids: List[int], archived_id: int) -> int:
+    return (
+        TxAction.update(archived_id=archived_id, modified_time=datetime.datetime.now())
+        .where(TxAction.archived_id.in_(from_archived_ids))
+        .execute()
     )
 
 
@@ -120,32 +200,12 @@ def get_action_by_id(action_id: int) -> Optional[TxAction]:
 def query_actions_by_status(
     status: TxActionStatus,
     chain_code: str = None,
+    address: str = None,
 ) -> List[TxAction]:
     expressions = [TxAction.status == status]
 
-    if chain_code is not None:
-        expressions.append(TxAction.chain_code == chain_code)
+    chain_code is None or expressions.append(TxAction.chain_code == chain_code)
+    address is None or expressions.append(TxAction.from_address == address or TxAction.to_address == address)
 
     models = TxAction.select().where(*expressions)
     return list(models)
-
-
-def get_last_confirmed_action_by_address(chain_code: str, address: str) -> Optional[TxAction]:
-    return (
-        TxAction.select()
-        .where(
-            TxAction.chain_code == chain_code,
-            TxAction.block_time.is_null(False),
-            (TxAction.from_address.collate("NOCASE") == address) | (TxAction.to_address.collate("NOCASE") == address),
-        )
-        .order_by(TxAction.block_time.desc())
-        .first()
-    )
-
-
-def filter_existing_txids(chain_code: str, txids: Iterable[str]) -> Set[str]:
-    models = TxAction.select().where(
-        TxAction.chain_code == chain_code,
-        TxAction.txid << txids,
-    )
-    return {i.txid for i in models}

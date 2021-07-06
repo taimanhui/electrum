@@ -46,7 +46,7 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
     }
 
     def __init__(self, url: str):
-        self.restful = RestfulRequest(url)
+        self.restful = RestfulRequest(url, timeout=10)
 
     def get_info(self) -> ClientInfo:
         resp = self.restful.get("/api/v2")
@@ -196,6 +196,9 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
 
         if paginate.start_block_number is not None:
             payload["from"] = paginate.start_block_number
+
+        if paginate.end_block_number is not None:
+            payload["to"] = paginate.end_block_number
 
         if paginate.page_number is not None:
             payload["page"] = paginate.page_number
