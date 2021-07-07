@@ -290,7 +290,8 @@
     "clients": [
       {
         "class": "STCJsonRPC",
-        "url": "https://main-seed.starcoin.org"
+        "url": "https://main-seed.starcoin.org",
+        "expire_interval": 120
       }
     ],
     "chain_affinity": "stc",

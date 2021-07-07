@@ -123,3 +123,7 @@ def get_token_info_by_address(chain_code: str, token_address: str) -> Tuple[str,
 
 def get_client_by_chain(chain_code: str, instance_required: Any = None) -> interfaces.ClientInterface:
     return loader.get_client_by_chain(chain_code, instance_required=instance_required)
+
+
+def get_provider_by_chain(chain_code: str) -> interfaces.ProviderInterface:
+    return loader.get_provider_by_chain(chain_code)
