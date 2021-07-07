@@ -207,6 +207,8 @@ class CFXClient(ClientInterface, BatchGetAddressMixin):
             # the rpc method cfx_getCode has behavior different from eth
             if "does not exist" in e.message:
                 return ""
+            else:
+                raise e
         else:
             return eth_utils.remove_0x_prefix(resp)
 
