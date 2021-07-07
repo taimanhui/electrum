@@ -142,6 +142,10 @@ class GeneralWallet(object):
             )[0]
             legacy_wallet_type = f"{coin}_derived_standard"
         else:
+            first_wallet_id = wallet_manager.get_first_primary_wallet_id()
+            origin_mnemonic, origin_passphrase = wallet_manager.export_mnemonic(first_wallet_id, password)
+            is_mnemonic_and_passphrase_match = origin_mnemonic == mnemonic and origin_passphrase == passphrase
+            require(is_mnemonic_and_passphrase_match, "mnemonic or passphrase mismatched")  # just in case
             wallet_info = wallet_manager.create_next_derived_primary_wallet(
                 chain_code=chain_code,
                 name=name,

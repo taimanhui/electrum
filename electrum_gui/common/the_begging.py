@@ -29,3 +29,14 @@ def terminate():
     from electrum_gui.common.basic import ticker
 
     ticker.cancel_default_ticker()
+
+
+def reset_runtime():
+    import os
+
+    from electrum_gui.common.basic.orm import database
+
+    terminate()
+    database.db.close()
+    os.remove(database.db.database)
+    initialize()
