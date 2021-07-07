@@ -7,6 +7,8 @@ from decimal import Decimal
 from itertools import groupby
 from typing import Iterable, List, Tuple, Union
 
+import eth_account
+
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.timing import timing_logger
 from electrum_gui.common.basic.orm.database import db
@@ -126,11 +128,11 @@ def import_standalone_wallet_by_prvkey(
     return wallet_info
 
 
-def import_standalone_wallet_by_keystore__eth_only(
+def import_standalone_wallet_by_keystore(
     name: str, chain_code: str, keyfile_json: str, keystore_password: str, password: str, address_encoding: str = None
 ) -> dict:
     chain_info = coin_manager.get_chain_info(chain_code)
-    require(chain_info.chain_affinity == codes.ETH)
+    require(chain_info.chain_affinity in (codes.ETH, codes.CFX))
     address_encoding = address_encoding or chain_info.default_address_encoding
     prvkey = utils.decrypt_eth_keystore(keyfile_json, keystore_password)
     return import_standalone_wallet_by_prvkey(name, chain_code, prvkey, password, address_encoding)
@@ -462,6 +464,12 @@ def export_prvkey(wallet_id: int, password: str) -> str:
     )
     account = get_default_account_by_wallet(wallet_id)
     return secret_manager.export_prvkey(password, account.pubkey_id)
+
+
+def export_keystore(wallet_id: int, password: str) -> dict:
+    prvk = export_prvkey(wallet_id, password)
+    encrypted_private_key = eth_account.Account.encrypt(prvk, password)
+    return encrypted_private_key
 
 
 def get_wallet_info_by_id(wallet_id: int, only_visible: bool = True) -> dict:

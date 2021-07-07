@@ -71,7 +71,9 @@ class GeneralWallet(object):
         return cls(my_db, None, config)
 
     @classmethod
-    def from_prvkeys(cls, name: str, coin: str, config: simple_config.SimpleConfig, prvkeys: str, password: str):
+    def from_prvkeys(
+        cls, name: str, coin: str, config: simple_config.SimpleConfig, prvkeys: str, password: str
+    ) -> 'GeneralWallet':
         chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         prvkey = prvkeys.split()[0]
         wallet_info = wallet_manager.import_standalone_wallet_by_prvkey(
@@ -80,6 +82,32 @@ class GeneralWallet(object):
 
         my_db = cls.create_wallet_db(coin, f"{coin}_imported", wallet_info)
         return cls(my_db, None, config)
+
+    @classmethod
+    def from_keystore(
+        cls,
+        name: str,
+        coin: str,
+        config: simple_config.SimpleConfig,
+        keystores: str,
+        keystore_password: str,
+        password: str,
+    ) -> 'GeneralWallet':
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
+        wallet_info = wallet_manager.import_standalone_wallet_by_keystore(
+            name=name,
+            chain_code=chain_code,
+            keyfile_json=keystores,
+            keystore_password=keystore_password,
+            password=password,
+        )
+
+        my_db = cls.create_wallet_db(coin, f"{coin}_imported", wallet_info)
+        return cls(my_db, None, config)
+
+    def export_keystore(self, address: str, password: Optional[str]) -> dict:
+        require(address == self.get_address())
+        return wallet_manager.export_keystore(self.general_wallet_id, password)
 
     @classmethod
     def from_seed_or_bip39(
