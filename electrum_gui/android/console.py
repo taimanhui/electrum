@@ -3004,7 +3004,7 @@ class AndroidCommands(commands.Commands):
             )
         return dervied_xpub
 
-    def export_keystore(self, password):
+    def export_keystore(self, password: str) -> str:
         """
         Export keystory from eth wallet, for eth only
         :param password: password as string
@@ -3501,9 +3501,12 @@ class AndroidCommands(commands.Commands):
                 wallet = Imported_Eth_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
             else:
                 raise UnsupportedCurrencyCoin()
-        elif is_coin_migrated(coin) and privkeys is not None:
+        elif is_coin_migrated(coin) and (privkeys is not None or keystores is not None):
             wallet_type = f"{coin}-private-standard"
-            wallet = GeneralWallet.from_prvkeys(name, coin, self.config, privkeys, password)
+            if keystores is not None:
+                wallet = GeneralWallet.from_keystore(name, coin, self.config, keystores, keystore_password, password)
+            else:
+                wallet = GeneralWallet.from_prvkeys(name, coin, self.config, privkeys, password)
         elif privkeys is not None and chain_affinity == "btc":
             wallet_type = f"{coin}-private-standard"
             wallet = Imported_Wallet.from_privkeys(coin, self.config, privkeys, purpose)
