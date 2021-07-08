@@ -43,10 +43,7 @@ class Signal(object):
         receiver_id = _make_id(receiver)
 
         with self._lock:
-            for i in range(len(self._receivers)):
-                cur_id, _ = self._receivers[i]
-                if cur_id == receiver_id:
-                    self._receivers.pop(i)
+            self._receivers = [i for i in self._receivers if i[0] != receiver_id]
 
         self._clean_dead_receivers()
 

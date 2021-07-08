@@ -797,11 +797,26 @@ def cascade_delete_wallet_related_models(wallet_id: int, password: str = None):
     if wallet.type != WalletType.WATCHONLY:
         check_wallet_password(wallet_id, password)
 
+    chain_code = wallet.chain_code
     accounts = daos.account.query_accounts_by_wallets([wallet_id])
+    addresses = [i.address for i in accounts]
     related_pubkey_ids = {i.pubkey_id for i in accounts if i.pubkey_id is not None}
     if related_pubkey_ids:
         secret_manager.cascade_delete_related_models_by_pubkey_ids(list(related_pubkey_ids))
 
+    transaction_manager.delete_actions_by_addresses(chain_code, addresses)
     daos.wallet.delete_wallet_by_id(wallet_id)
     daos.account.delete_accounts_by_wallet_id(wallet_id)
     daos.asset.delete_assets_by_wallet_id(wallet_id)
+
+
+@_require_primary_wallet_exists()
+def get_first_primary_wallet_id() -> int:
+    return daos.wallet.get_first_primary_wallet().id
+
+
+@db.atomic()
+def clear_all_primary_wallets(password: str = None):
+    wallets = daos.wallet.list_all_wallets(wallet_type=WalletType.SOFTWARE_PRIMARY)
+    for wallet in wallets:
+        cascade_delete_wallet_related_models(wallet.id, password)

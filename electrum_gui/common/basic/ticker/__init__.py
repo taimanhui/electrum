@@ -20,3 +20,4 @@ def start_default_ticker(seconds: int):
 def cancel_default_ticker():
     global _ticker
     _ticker.cancel()
+    _ticker = None

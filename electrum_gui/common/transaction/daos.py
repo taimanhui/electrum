@@ -209,3 +209,14 @@ def query_actions_by_status(
 
     models = TxAction.select().where(*expressions)
     return list(models)
+
+
+def delete_actions_by_addresses(chain_code: str, addresses: List[str]) -> int:
+    return (
+        TxAction.delete()
+        .where(
+            TxAction.chain_code == chain_code,
+            TxAction.from_address.in_(addresses) or TxAction.to_address.in_(addresses),
+        )
+        .execute()
+    )

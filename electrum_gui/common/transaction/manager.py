@@ -323,6 +323,10 @@ def _sync_actions_by_address(chain_code: str, address: str, archived_id: int, re
     return expand_count
 
 
+def delete_actions_by_addresses(chain_code: str, addresses: List[str]) -> int:
+    return daos.delete_actions_by_addresses(chain_code, addresses)
+
+
 @on_interval(60)
 @timing_logger("transaction_manager.on_ticker_signal")
 def on_ticker_signal():

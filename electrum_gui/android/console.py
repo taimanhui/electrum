@@ -4095,14 +4095,14 @@ class AndroidCommands(commands.Commands):
         if is_coin_migrated(coin):
             chain_code = coin_manager.legacy_coin_to_chain_code(coin)
             chain_info = coin_manager.get_chain_info(chain_code)
-            encode_seed = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose="44")
-            account_id = self._get_derived_account_id(encode_seed)
-            last_hardened_level = bip44.BIP44Level[chain_info.bip44_last_hardened_level.upper()]
-            target_level = bip44.BIP44Level[chain_info.bip44_target_level.upper()]
-            bip44_path = bip44.BIP44Path(44, chain_info.bip44_coin_type, 0, last_hardened_level=last_hardened_level)
-            bip44_path = bip44_path.to_target_level(target_level)
-            bip44_path = bip44_path.next_sibling(gap=account_id)
-            derived_path = bip44_path.to_bip44_path()
+            address_encoding = None
+            if purpose:
+                purpose_to_address_encoding = {v: k for k, v in chain_info.bip44_purpose_options.items()}
+                address_encoding = purpose_to_address_encoding.get(int(purpose))
+
+            derived_path = wallet_manager.generate_next_bip44_path_for_derived_primary_wallet(
+                chain_code, address_encoding
+            ).to_bip44_path()
         elif chain_affinity == "btc":
             encode_seed = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose=str(purpose))
             account_id = self._get_derived_account_id(encode_seed)
@@ -4935,6 +4935,7 @@ class AndroidCommands(commands.Commands):
         :return: raise except if error
         """
         try:
+            the_begging.reset_runtime()
             util.delete_file(self._wallet_path())
             util.delete_file(self._tx_list_path())
             self.reset_config_info()
@@ -4979,6 +4980,7 @@ class AndroidCommands(commands.Commands):
         self.wallet_context.remove_derived_wallet(xpub, account_id)
 
     @api.api_entry()
+    @orm_database.db.atomic()
     def delete_wallet(self, password="", name="", hd=None):
         """
         Delete (a/all hd) wallet
@@ -4993,18 +4995,18 @@ class AndroidCommands(commands.Commands):
         if not wallet.is_watching_only() and not self.wallet_context.is_hw(name):
             self.check_password(password=password)
 
-        with orm_database.db.atomic():
+        if hd is not None:
+            self.delete_derived_wallet()
+            wallet_manager.clear_all_primary_wallets(password)
+        else:
             if isinstance(wallet, GeneralWallet):
                 wallet.delete_wallet(password)
 
-            if hd is not None:
-                self.delete_derived_wallet()
-            else:
-                if self.wallet_context.is_derived(name):
-                    hw = self.wallet_context.is_hw(name)
-                    self.delete_wallet_derived_info(wallet, hw=hw)
-                self.delete_wallet_from_deamon(self._wallet_path(name))
-                self.wallet_context.remove_type_info(name)
+            if self.wallet_context.is_derived(name):
+                hw = self.wallet_context.is_hw(name)
+                self.delete_wallet_derived_info(wallet, hw=hw)
+            self.delete_wallet_from_deamon(self._wallet_path(name))
+            self.wallet_context.remove_type_info(name)
             # os.remove(self._wallet_path(name))
 
     def stc_spec_get_receipt_identifier_address(self, wallet_name):
