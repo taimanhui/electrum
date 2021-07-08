@@ -69,7 +69,14 @@ def get_client_by_chain(
     if instance_required is not None:
         candidates = [i for i in candidates if isinstance(i.get("client"), instance_required)]
 
-    for candidate in candidates:
+    ready_candidate_indexes = [index for index, candidate in enumerate(candidates) if candidate.get("is_ready") is True]
+    last_ready_candidate_index = (
+        ready_candidate_indexes[0] if ready_candidate_indexes else 0
+    )  # There is at most one ready candidate
+    candidates_count = len(candidates)
+
+    for index in range(candidates_count):
+        candidate = candidates[(last_ready_candidate_index + index) % candidates_count]
         client, is_ready, expired_at = (
             candidate["client"],
             candidate["is_ready"],
@@ -85,7 +92,7 @@ def get_client_by_chain(
         try:
             is_ready, skip_seconds = client.is_ready, 300
         except Exception as e:
-            is_ready, skip_seconds = False, 30
+            is_ready, skip_seconds = False, 0
             logger.info(f"Error in check status of <{candidate}>. error: {e}", exc_info=True)
 
         candidate.update({"expired_at": int(time.time() + skip_seconds), "is_ready": is_ready})
