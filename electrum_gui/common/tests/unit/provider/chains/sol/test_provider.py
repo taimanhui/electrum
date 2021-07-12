@@ -102,9 +102,7 @@ class TestSOLProvider(TestCase):
         fake_client = Mock(
             get_prices_per_unit_of_fee=Mock(
                 return_value=PricesPerUnit(
-                    slow=EstimatedTimeOnPrice(price=5000),
                     normal=EstimatedTimeOnPrice(price=5000),
-                    fast=EstimatedTimeOnPrice(price=5000),
                 )
             ),
             get_account_info=Mock(

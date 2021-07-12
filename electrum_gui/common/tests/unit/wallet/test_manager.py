@@ -424,12 +424,6 @@ class TestWalletManager(TestCase):
         fake_get_handler_by_chain_model.return_value = fake_handler
         fake_coin_manager.get_chain_info.return_value = Mock(chain_model=coin_data.ChainModel.ACCOUNT, chain_code="eth")
 
-        fake_prices = provider_data.PricesPerUnit(
-            fast=provider_data.EstimatedTimeOnPrice(price=31, time=60),
-            normal=provider_data.EstimatedTimeOnPrice(price=21, time=120),
-            slow=provider_data.EstimatedTimeOnPrice(price=11, time=180),
-        )
-        fake_provider_manager.get_prices_per_unit_of_fee.return_value = fake_prices
         fake_verify_unsigned_tx.return_value = (False, "validate failed")
 
         with self.subTest("First time"):
@@ -440,7 +434,6 @@ class TestWalletManager(TestCase):
                     "unsigned_tx": fake_unsigned_tx.to_dict(),
                     "is_valid": False,
                     "validation_message": "validate failed",
-                    "fee_prices": fake_prices.to_dict(),
                 },
                 wallet_manager.pre_send(wallet.id, "eth_usdt"),
             )
@@ -451,7 +444,6 @@ class TestWalletManager(TestCase):
                 wallet.id, "eth_usdt", None, None, None, None, None, None
             )
             fake_verify_unsigned_tx.assert_called_once_with(wallet.id, "eth_usdt", fake_unsigned_tx)
-            fake_provider_manager.get_prices_per_unit_of_fee.assert_called_once_with("eth")
             fake_handler.generate_unsigned_tx.reset_mock()
 
         with self.subTest("Call with to_address"):

@@ -239,12 +239,14 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
 
         to_wei_multiple = Decimal(1e18)
         min_wei = 1e9
-        normal = int(max(normal * to_wei_multiple, min_wei))
         slow = int(max(slow * to_wei_multiple, min_wei))
+        normal = int(max(normal * to_wei_multiple, min_wei))
         fast = int(max(fast * to_wei_multiple, min_wei))
 
         return PricesPerUnit(
-            fast=EstimatedTimeOnPrice(price=fast, time=60),
             normal=EstimatedTimeOnPrice(price=normal, time=180),
-            slow=EstimatedTimeOnPrice(price=slow, time=600),
+            others=[
+                EstimatedTimeOnPrice(price=slow, time=600),
+                EstimatedTimeOnPrice(price=fast, time=60),
+            ],
         )

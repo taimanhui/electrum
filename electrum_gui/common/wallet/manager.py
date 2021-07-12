@@ -586,13 +586,10 @@ def pre_send(
     except Exception as e:
         is_valid, validation_message = False, str(e)
 
-    fee_prices = provider_manager.get_prices_per_unit_of_fee(wallet.chain_code)
-
     return {
         "unsigned_tx": unsigned_tx.to_dict(),
         "is_valid": is_valid,
         "validation_message": validation_message,
-        "fee_prices": fee_prices.to_dict(),
     }
 
 

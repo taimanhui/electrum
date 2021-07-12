@@ -62,7 +62,7 @@ class Solana(ClientInterface, SearchTransactionMixin):
     def get_prices_per_unit_of_fee(self) -> PricesPerUnit:
         lamports_per_sig, _ = self.get_fees()
         fee = EstimatedTimeOnPrice(price=lamports_per_sig, time=60)
-        return PricesPerUnit(normal=fee, fast=fee, slow=fee)
+        return PricesPerUnit(normal=fee)
 
     def _get_token_balance(self, owner: str, token_address: str, encoding="jsonParsed") -> int:
         response = self.rpc.call("getTokenAccountsByOwner", [owner, {"mint": token_address}, {"encoding": encoding}])

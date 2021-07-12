@@ -65,9 +65,11 @@ class TestETHProvider(TestCase):
         fake_client = Mock(
             get_prices_per_unit_of_fee=Mock(
                 return_value=PricesPerUnit(
-                    slow=EstimatedTimeOnPrice(price=int(20 * 1e9)),
                     normal=EstimatedTimeOnPrice(price=int(30 * 1e9)),
-                    fast=EstimatedTimeOnPrice(price=int(50 * 1e9)),
+                    others=[
+                        EstimatedTimeOnPrice(price=int(20 * 1e9)),
+                        EstimatedTimeOnPrice(price=int(50 * 1e9)),
+                    ],
                 )
             ),
             get_address=Mock(return_value=Mock(nonce=11)),
