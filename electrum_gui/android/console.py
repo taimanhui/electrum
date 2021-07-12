@@ -4204,7 +4204,9 @@ class AndroidCommands(commands.Commands):
         derived_num = 0
         coin = coin.lower()
         chain_affinity = _get_chain_affinity(coin)
-        if chain_affinity == "btc":
+        if is_coin_migrated(coin):
+            return wallet_manager.count_primary_wallet_by_chain(coin_manager.legacy_coin_to_chain_code(coin))
+        elif chain_affinity == "btc":
             for add_type in ["49", "84", "44"]:
                 xpub = self.get_hd_wallet_encode_seed(coin=coin, purpose=add_type)
                 derived_num += self.wallet_context.get_derived_num(xpub)

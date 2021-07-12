@@ -817,3 +817,7 @@ def clear_all_primary_wallets(password: str = None):
     wallets = daos.wallet.list_all_wallets(wallet_type=WalletType.SOFTWARE_PRIMARY)
     for wallet in wallets:
         cascade_delete_wallet_related_models(wallet.id, password)
+
+
+def count_primary_wallet_by_chain(chain_code: str) -> int:
+    return len(daos.wallet.list_all_wallets(chain_code, wallet_type=WalletType.SOFTWARE_PRIMARY))
