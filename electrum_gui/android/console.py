@@ -1629,7 +1629,7 @@ class AndroidCommands(commands.Commands):
         value = tx._outputs[n].value
         return addr, value
 
-    def get_btc_tx_list(self, start=None, end=None, search_type=None):  # noqa
+    def _get_btc_tx_list(self, start=None, end=None, search_type=None):  # noqa
         history_data = []
         try:
             history_info = self.get_history_tx()
@@ -1658,14 +1658,14 @@ class AndroidCommands(commands.Commands):
             else:
                 end = all_tx_len
         if (search_type is None or "send" in search_type) and all_tx_len == self.old_history_len:
-            return json.dumps(self.old_history_info[start:end])
+            return self.old_history_info[start:end]
 
         all_data = []
         if search_type == "receive":
             for pos, info in enumerate(history_data):
                 if pos >= start and pos <= end:
                     self.get_history_show_info(info, all_data)
-            return json.dumps(all_data)
+            return all_data
         else:
             self.old_history_len = all_tx_len
             for info in history_data:
@@ -1700,9 +1700,9 @@ class AndroidCommands(commands.Commands):
 
             all_data.sort(reverse=True, key=lambda info: info["date"])
             self.old_history_info = all_data
-            return json.dumps(all_data[start:end])
+            return all_data[start:end]
 
-    def get_general_coin_tx_list(
+    def _get_general_coin_tx_list(
         self,
         coin: str,
         address: str,
@@ -1806,7 +1806,7 @@ class AndroidCommands(commands.Commands):
             }
             result.append(item)
 
-        return json.dumps(result, cls=json_encoders.DecimalEncoder)
+        return result
 
     @api.api_entry()
     def get_detail_tx_info_by_hash(self, tx_hash):
@@ -1864,9 +1864,9 @@ class AndroidCommands(commands.Commands):
         with self.override_wallet(id):
             chain_affinity = _get_chain_affinity(coin)
             if chain_affinity == "btc":
-                return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
+                ret = self._get_btc_tx_list(start=start, end=end, search_type=search_type)
             elif chain_affinity == "eth" or is_coin_migrated(coin):
-                return self.get_general_coin_tx_list(
+                ret = self._get_general_coin_tx_list(
                     coin=self.wallet.coin,
                     address=self.wallet.get_addresses()[0],
                     token_address=contract_address,
@@ -1876,6 +1876,8 @@ class AndroidCommands(commands.Commands):
                 )
             else:
                 raise UnsupportedCurrencyCoin()
+
+            return json.dumps(ret, cls=json_encoders.DecimalEncoder)
 
     def get_history_show_info(self, info, list_info):
         info["type"] = "history"
