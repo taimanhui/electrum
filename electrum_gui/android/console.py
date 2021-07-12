@@ -46,7 +46,7 @@ from electrum.keystore import (
     purpose48_derivation,
 )
 from electrum.mnemonic import Wordlist
-from electrum.network import BestEffortRequestFailed, TxBroadcastError
+from electrum.network import TxBroadcastError
 from electrum.plugin import Plugins
 from electrum.storage import WalletStorage
 from electrum.transaction import PartialTransaction, PartialTxOutput, SerializationError, Transaction, tx_from_any
@@ -79,6 +79,8 @@ from electrum_gui.common.basic import api, exceptions
 from electrum_gui.common.basic.functional import json_encoders
 from electrum_gui.common.basic.functional import text as text_utils
 from electrum_gui.common.basic.orm import database as orm_database
+from electrum_gui.common.basic.request.exceptions import ResponseException
+from electrum_gui.common.basic.request.restful import RestfulRequest
 from electrum_gui.common.coin import codes
 from electrum_gui.common.coin import manager as coin_manager
 from electrum_gui.common.price import manager as price_manager
@@ -2298,6 +2300,8 @@ class AndroidCommands(commands.Commands):
         :raise: BaseException
         """
         trans = None
+        is_electrm_broadcast_status = False
+        is_blockbook_broadcast_status = False
         try:
             if isinstance(tx, str):
                 trans = tx_from_any(tx)
@@ -2306,21 +2310,34 @@ class AndroidCommands(commands.Commands):
                 self.network.run_from_another_thread(self.network.broadcast_transaction(trans))
             else:
                 self.txdb.add_tx_time_info(trans.txid())
-                raise BaseException(_("Cannot broadcast transaction due to network connected exceptions"))
+                msg = _("Cannot broadcast transaction due to network connected exceptions")
+                raise Exception(msg)
         except SerializationError:
-            raise BaseException(_("Transaction formatter error"))
+            msg = _("Transaction formatter error")
+            raise Exception(msg)
         except TxBroadcastError as e:
             msg = e.get_message_for_gui()
-            self.update_local_info(trans.txid(), self.wallet.get_addresses()[0], tx, msg)
-            raise BaseException(msg)
-        except BestEffortRequestFailed as e:
-            msg = str(e)
-            raise BaseException(msg)
+            raise Exception(msg)
         else:
+            is_electrm_broadcast_status = True
             return "success"
         finally:
+            if self.network and not constants.net.TESTNET:
+                try:
+                    restful = RestfulRequest("https://btc1.blkdb.cn/", timeout=5)
+                    restful.get(f"/api/v2/sendtx/{tx}")
+                except ResponseException as e:
+                    msg = str(e)
+                    pass
+                else:
+                    is_blockbook_broadcast_status = True
+
             if trans:
                 self.txdb.add_tx_time_info(trans.txid())
+                if (
+                    not constants.net.TESTNET and not is_electrm_broadcast_status and not is_blockbook_broadcast_status
+                ) or (constants.net.TESTNET and not is_electrm_broadcast_status):
+                    self.update_local_info(trans.txid(), self.wallet.get_addresses()[0], tx, msg)
 
     def set_use_change(self, status_change):
         """
