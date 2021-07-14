@@ -44,7 +44,7 @@ class STCJsonRPC(ClientInterface):
     def get_info(self) -> ClientInfo:
         block_info = self.rpc.call("chain.info", params=[])
         block_number = block_info["head"]["number"]
-        block_time = int(block_info["head"]["timestamp"]) / 1e3
+        block_time = int(block_info["head"]["timestamp"][:-3])
         return ClientInfo(
             "STC_JSON_RPC",
             best_block_number=int(block_number),
@@ -102,10 +102,12 @@ class STCJsonRPC(ClientInterface):
             tx = tx.get("user_transaction").get("raw_txn")
 
         if receipt:
+            _block_number = int(receipt.get("block_number"))
+            block_info = self.rpc.call("chain.get_block_by_number", [_block_number])
             block_header = BlockHeader(
                 block_hash=receipt.get("block_hash", ""),
-                block_number=int(receipt.get("block_number", "0")),
-                block_time=0,
+                block_number=_block_number,
+                block_time=int(block_info["header"]["timestamp"][:-3]),
             )
             status = (
                 TransactionStatus.CONFIRM_SUCCESS
