@@ -94,6 +94,7 @@ from electrum_gui.common.transaction import manager as transaction_manager
 from electrum_gui.common.wallet import bip44
 from electrum_gui.common.wallet import manager as wallet_manager
 
+from ..common.basic.functional.require import require
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
 from .migrating import GeneralWallet, is_coin_migrated
@@ -2152,7 +2153,7 @@ class AndroidCommands(commands.Commands):
     def _parse_address_v2(data: str) -> dict:
         parse_result = urllib.parse.urlparse(data)
         # deal with cfx firstly
-        if parse_result.scheme in ("cfx", "cfxtest"):
+        if parse_result.scheme in (codes.CFX, "cfxtest"):
             maybe_address = f"{parse_result.scheme}:{parse_result.path}"
         else:
             maybe_address = parse_result.path
@@ -2621,12 +2622,22 @@ class AndroidCommands(commands.Commands):
                 {"status": 0, "info": "0x095ea7b3000000000000000000000000514910771af9ca656af840dff83e8264ecf986ca0000000000000000000000000000000000000000000000000000000000000001"}
 
         """
+        coin = self.wallet.coin
+        if coin == codes.CFX:
+            from electrum_gui.common.provider.chains.cfx.sdk import cfx_address
+
+            spender_address = cfx_address.Address.decode_hex_address(base32_address=spender_address)
         return "0x095ea7b3" + eth_abi.encode_abi(("address", "uint256"), (spender_address, int(value))).hex()
 
     def _get_action_result(self, coin: str, contract_address: str, data: str) -> str:
         chain_code = coin_manager.legacy_coin_to_chain_code(coin)
-        geth = provider_manager.get_client_by_chain(chain_code, instance_required=geth_client.Geth)
-        out = geth.eth_call({"to": contract_address, "data": data})
+        if coin == codes.CFX:
+            client = provider_manager.get_client_by_chain(chain_code)
+            out = client.cfx_call({"to": contract_address, "data": data})
+        else:
+            geth = provider_manager.get_client_by_chain(chain_code, instance_required=geth_client.Geth)
+            out = geth.eth_call({"to": contract_address, "data": data})
+
         return str(int((out[2:]), base=16))
 
     @api.api_entry(force_version=api.Version.V2)
@@ -2646,6 +2657,11 @@ class AndroidCommands(commands.Commands):
             return data:
                 {"status": 0, "info": "0"}
         """
+        if coin == codes.CFX:
+            from electrum_gui.common.provider.chains.cfx.sdk import cfx_address
+
+            spender_address = cfx_address.Address.decode_hex_address(base32_address=spender_address)
+            owner_address = cfx_address.Address.decode_hex_address(base32_address=owner_address)
         data = "0xdd62ed3e" + eth_abi.encode_abi(("address", "address"), (owner_address, spender_address)).hex()
         return self._get_action_result(coin, contract_address, data)
 
@@ -2663,6 +2679,10 @@ class AndroidCommands(commands.Commands):
             return data:
                 {"status": 0, "info": "0"}
         """
+        if coin == codes.CFX:
+            from electrum_gui.common.provider.chains.cfx.sdk import cfx_address
+
+            owner_address = cfx_address.Address.decode_hex_address(base32_address=owner_address)
         data = "0x70a08231" + eth_abi.encode_abi(("address",), (owner_address,)).hex()
         return self._get_action_result(coin, contract_address, data)
 
@@ -2802,17 +2822,21 @@ class AndroidCommands(commands.Commands):
     ):
         transaction = json.loads(transaction)
         current_address = self.wallet.get_addresses()[0]
+        coin = self.wallet.coin
 
         if transaction.get("from") and transaction["from"].lower() != current_address.lower():
             raise Exception(f"current wallet address is {current_address}, not {transaction['from']}")
 
         if not transaction.get("to"):
             raise Exception("'to' address not found")
-
+        if coin == codes.CFX:
+            gas_price = transaction.get("gasPrice")
+        else:
+            gas_price = eth_utils.from_wei(transaction["gasPrice"], "gwei") if transaction.get("gasPrice") else None
         signed_tx_hex = self.sign_eth_tx(
             to_addr=transaction["to"],
             value=eth_utils.from_wei(transaction["value"], "ether") if transaction.get("value") else 0,
-            gas_price=eth_utils.from_wei(transaction["gasPrice"], "gwei") if transaction.get("gasPrice") else None,
+            gas_price=gas_price,
             gas_limit=transaction.get("gas"),
             data=transaction.get("data"),
             nonce=transaction.get("nonce"),
@@ -2820,7 +2844,12 @@ class AndroidCommands(commands.Commands):
             password=password,
             auto_send_tx=False,
         )
-        signed_tx = eth_account_account.Transaction.from_bytes(bytes.fromhex(signed_tx_hex[2:]))
+        if coin == codes.CFX:
+            from electrum_gui.common.provider.chains.cfx.sdk import cfx_account
+
+            signed_tx = cfx_account.Transaction.from_bytes(bytes.fromhex(signed_tx_hex[2:]))
+        else:
+            signed_tx = eth_account_account.Transaction.from_bytes(bytes.fromhex(signed_tx_hex[2:]))
         signed_tx_info = {
             "raw": signed_tx_hex,
             "tx": {
@@ -2836,6 +2865,21 @@ class AndroidCommands(commands.Commands):
                 "hash": signed_tx.hash().hex(),
             },
         }
+        if coin == codes.CFX:
+            from electrum_gui.common.provider.chains.cfx.sdk import cfx_address
+
+            chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
+            chain_id = int(coin_manager.get_chain_info(chain_code).chain_id)
+            signed_tx_info["tx"].update(
+                {
+                    "to": cfx_address.Address.encode_hex_address(
+                        cfx_address.eth_address_to_cfx(signed_tx.to.hex()), chain_id
+                    )
+                }
+            )
+            signed_tx_info["tx"].update({"storage_limit": hex(signed_tx.storage_limit)})
+            signed_tx_info["tx"].update({"epoch_height": hex(signed_tx.epoch_height)})
+
         return json.dumps(signed_tx_info)
 
     def dapp_eth_send_tx(self, tx_hex: str):
@@ -2847,13 +2891,13 @@ class AndroidCommands(commands.Commands):
         return receipt.txid
 
     def dapp_eth_rpc_info(self):
-        legacy_chain_code = "eth"
+        legacy_chain_code = codes.ETH
         if self.wallet is not None:
-            # TODO: check coin is eth-based
             legacy_chain_code = self.wallet.coin
 
         chain_code = coin_manager.legacy_coin_to_chain_code(legacy_chain_code)
         chain_info = coin_manager.get_chain_info(chain_code)
+        require(chain_info.chain_affinity in (codes.ETH, codes.CFX))
         ret = {
             "rpc": chain_info.clients[0]["url"],  # TODO: use the URL of an alive client
             "chain_id": chain_info.chain_id,
