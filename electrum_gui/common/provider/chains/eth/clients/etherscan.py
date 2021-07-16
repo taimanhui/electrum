@@ -141,6 +141,9 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
         raw_txs = resp["result"]
 
         txs = []
+        if not isinstance(raw_txs, list):
+            return txs
+
         for raw_tx in raw_txs:
             block_header = BlockHeader(
                 block_hash=raw_tx["blockHash"],
